@@ -25,6 +25,8 @@ module Pdfbox::Pdfparser
       @source = source
     end
 
+    getter source
+
     # Parse PDF header and return version string (e.g., "1.4")
     def parse_header : String
       # Read first line (up to newline)
@@ -127,7 +129,7 @@ module Pdfbox::Pdfparser
     end
 
     # Parse an indirect object at given offset
-    private def parse_indirect_object_at_offset(offset : Int64) : Pdfbox::Cos::Base
+    def parse_indirect_object_at_offset(offset : Int64) : Pdfbox::Cos::Base
       @source.seek(offset)
       scanner = PDFScanner.new(@source)
       scanner.skip_whitespace
@@ -155,7 +157,7 @@ module Pdfbox::Pdfparser
     end
 
     # Locate xref table offset using startxref pointer
-    private def locate_xref_offset : Int64?
+    def locate_xref_offset : Int64?
       # Save current position
       original_pos = @source.position
       begin
@@ -531,6 +533,7 @@ module Pdfbox::Pdfparser
       when Float64
         Pdfbox::Cos::Float.new(number)
       else
+        # Should never happen since number is Float64 | Int64
         nil
       end
     end
@@ -780,12 +783,12 @@ module Pdfbox::Pdfparser
           break
         elsif char =~ /[0-9A-Fa-f]/
           if scanned = @scanner.scan(/./)
-            hex_chars << scanned
+            hex_chars += scanned
           end
-          if hex_chars.size == 2
-            buffer << hex_chars.to_i(16).chr
-            hex_chars.clear
-          end
+           if hex_chars.size == 2
+             buffer << hex_chars.to_i(16).chr
+             hex_chars = ""
+           end
         else
           # Invalid hex character
           @scanner.scan(/./)

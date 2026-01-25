@@ -147,12 +147,12 @@ describe Pdfbox::Cos::String do
   end
 
   # Test from testEmptyStringWithBOM
-  pending "empty string with BOM" do
+  describe "empty string with BOM" do
     it "treats string with only BOM as empty" do
-      # str1 = Pdfbox::Cos::String.parse_hex("FEFF")
-      # str1.value.should eq("")
-      # str2 = Pdfbox::Cos::String.parse_hex("FFFE")
-      # str2.value.should eq("")
+      str1 = Pdfbox::Cos::String.parse_hex("FEFF")
+      str1.value.should eq("")
+      str2 = Pdfbox::Cos::String.parse_hex("FFFE")
+      str2.value.should eq("")
     end
   end
 end

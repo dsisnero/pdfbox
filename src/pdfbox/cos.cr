@@ -185,7 +185,16 @@ module Pdfbox::Cos
         j += 1
       end
 
-      new(result[0, j], false)
+      bytes = result[0, j]
+      # Handle BOM: if string contains only BOM, return empty string
+      # PDFBOX-3881: Test that if String has only the BOM, that it be an empty string.
+      if bytes.size == 2
+        if (bytes[0] == 0xFE_u8 && bytes[1] == 0xFF_u8) ||
+           (bytes[0] == 0xFF_u8 && bytes[1] == 0xFE_u8)
+          bytes = Bytes.empty
+        end
+      end
+      new(bytes, false)
     end
 
     private def self.hex_char_to_nibble(char : Char) : UInt8

@@ -37,6 +37,25 @@ shards install         # Install dependencies
 shards update          # Update dependencies
 ```
 
+## TDD / Porting Workflow
+
+**When porting features from Apache PDFBox:**
+
+1. **Port tests first** - Create or port corresponding test files before implementing functionality
+2. **Run quality checks** - After each significant change:
+   ```bash
+   crystal tool format    # Ensure consistent formatting
+   ameba --fix           # Fix linting issues automatically
+   crystal spec          # Ensure all tests pass
+   ```
+3. **Fix ameba issues** - Address any remaining linting warnings that can't be auto-fixed
+4. **Follow existing patterns** - Mimic code style, naming conventions, and architecture of already-ported components
+
+**Critical:**
+- ALWAYS run `crystal spec` after any test changes to verify they fail appropriately before implementation
+- ALWAYS fix compilation errors before running tests
+- ALWAYS address ameba warnings before committing
+
 ## Landing the Plane (Session Completion)
 
 **When ending a work session**, you MUST complete ALL steps below. Work is NOT complete until `git push` succeeds.

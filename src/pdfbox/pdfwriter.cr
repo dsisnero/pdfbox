@@ -245,7 +245,7 @@ module Pdfbox::Pdfwriter
       # Write subsection header
       @destination << start << ' ' << count << '\n'
 
-      @entries.each_with_index do |entry, _|
+      @entries.each do |entry|
         # Format offset as 10-digit zero-padded
         @destination << entry.offset.to_s.rjust(10, '0')
         @destination << ' '

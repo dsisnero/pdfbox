@@ -1,0 +1,5 @@
+# Ameba configuration for PDFBox Crystal port
+
+# Exclude spec files from all checks
+exclude:
+  - "spec/**"
