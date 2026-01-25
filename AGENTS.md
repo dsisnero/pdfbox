@@ -1,16 +1,21 @@
 # Agent Instructions
 
-This project is a **Crystal port of Apache PDFBox** - a library for working with PDF documents in Crystal. It uses **bd** (beads) for issue tracking. Run `bd onboard` to get started.
+This project is a **Crystal port of Apache PDFBox** - a library for working with PDF documents in Crystal.
 
-## Quick Reference
+## Issue Tracking
 
-```bash
-bd ready              # Find available work
-bd show <id>          # View issue details
-bd update <id> --status in_progress  # Claim work
-bd close <id>         # Complete work
-bd sync               # Sync with git
-```
+This project uses **bd (beads)** for ALL issue tracking and task management.
+**DO NOT use todo lists** - use beads issues with proper tags and labels instead.
+
+Run `bd prime` for workflow context, or install hooks (`bd hooks install`) for auto-injection.
+
+**Quick reference:**
+- `bd ready` - Find unblocked work
+- `bd create "Title" --type task --priority 2` - Create issue
+- `bd close <id>` - Complete work
+- `bd sync` - Sync with git (run at session end)
+
+For full workflow details: `bd prime`
 
 ## Crystal Development Commands
 
@@ -38,12 +43,12 @@ shards update          # Update dependencies
 
 **MANDATORY WORKFLOW:**
 
-1. **File issues for remaining work** - Create issues for anything that needs follow-up
+1. **Create beads issues for remaining work** - Use `bd create` for anything that needs follow-up. **DO NOT use todo lists**.
 2. **Run quality gates** (if code changed) - Tests, linters, builds
    - **ALWAYS run `ameba --fix` before committing** to fix linting issues
    - **ALWAYS run `crystal spec` before committing** to ensure tests pass
    - **ALWAYS run `crystal tool format` before committing** to ensure consistent formatting
-3. **Update issue status** - Close finished work, update in-progress items
+3. **Update beads issue status** - Close finished work with `bd close`, update in-progress items
 4. **PUSH TO REMOTE** - This is MANDATORY:
    ```bash
    git pull --rebase
@@ -62,4 +67,6 @@ shards update          # Update dependencies
 - If push fails, resolve and retry until it succeeds
 - **ALWAYS fix ameba issues before committing**
 - **ALWAYS ensure specs pass before committing and pushing**
+- **ALWAYS use beads issues instead of todo lists**
+- **Create beads issues with proper tags and labels for all tasks**
 
