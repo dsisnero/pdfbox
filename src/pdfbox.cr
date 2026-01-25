@@ -19,6 +19,8 @@ end
 require "./pdfbox/cos"
 require "./pdfbox/pdmodel"
 require "./pdfbox/io"
+require "./pdfbox/pdfparser"
+require "./pdfbox/pdfwriter"
 require "./fontbox"
 require "./xmpbox"
 require "./tools"
