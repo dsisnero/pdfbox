@@ -25,6 +25,33 @@ module Pdfbox::Pdfparser
       @source = source
     end
 
+    # Parse PDF header and return version string (e.g., "1.4")
+    def parse_header : String
+      # Read first line (up to newline)
+      line = read_line
+      unless line.starts_with?("%PDF-")
+        raise SyntaxError.new("Invalid PDF header: #{line.inspect}")
+      end
+      # Extract version: %PDF-1.4
+      version = line[5..]
+      # Optional: read binary comment line (second line starting with %)
+      # Check if next byte is '%' (binary comment)
+      if @source.peek == '%'.ord
+        read_line # skip binary comment line
+      end
+      version
+    end
+
+    private def read_line : String
+      builder = String::Builder.new
+      while byte = @source.read
+        ch = byte.chr
+        break if ch == '\n'
+        builder << ch
+      end
+      builder.to_s
+    end
+
     # Parse the PDF document
     def parse : Pdfbox::Pdmodel::Document
       # TODO: Implement PDF parsing
@@ -404,28 +431,56 @@ module Pdfbox::Pdfparser
       end
     end
 
+    # Check if we've reached end of string based on lookahead
+    private def check_for_end_of_string(braces : Int32) : Int32
+      return 0 if braces == 0
+
+      # Peek next 3 bytes
+      peeked = @scanner.peek(3)
+      return braces if peeked.empty?
+
+      bytes = peeked.bytes
+      # Check patterns:
+      # 1. CR or LF followed by '/' or '>'
+      # 2. CR followed by LF followed by '/' or '>'
+      if bytes.size >= 2 && (bytes[0] == '\r'.ord || bytes[0] == '\n'.ord) && (bytes[1] == '/'.ord || bytes[1] == '>'.ord)
+        return 0
+      elsif bytes.size >= 3 && bytes[0] == '\r'.ord && bytes[1] == '\n'.ord && (bytes[2] == '/'.ord || bytes[2] == '>'.ord)
+        return 0
+      end
+
+      braces
+    end
+
     # Read literal string (parentheses)
-    private def read_literal_string : String
+    def read_literal_string : String
       @scanner.scan('(') || raise SyntaxError.new("Expected '(' for literal string")
 
       buffer = String::Builder.new
-      depth = 1
+      braces = 1
 
-      while depth > 0
+      while braces > 0
         char = @scanner.scan(/./)
         break unless char
 
         case char
-        when '('
-          depth += 1
+        when "("
+          braces += 1
           buffer << char
-        when ')'
-          depth -= 1
-          buffer << char unless depth == 0
+        when ")"
+          braces -= 1
+          braces = check_for_end_of_string(braces)
+          buffer << char unless braces == 0
         when '\\'
           # Escape sequence
-          esc_char = @scanner.scan(/./)
-          break unless esc_char
+          esc_str = @scanner.scan(/./)
+          if esc_str.nil?
+            # Invalid escape, treat as literal backslash?
+            buffer << '\\'
+            next
+          end
+          str = esc_str.as(String)
+          esc_char = str[0]
 
           case esc_char
           when 'n'
@@ -439,21 +494,24 @@ module Pdfbox::Pdfparser
           when 'f'
             buffer << '\f'
           when '(', ')', '\\'
-            buffer << esc_char
+            buffer << str
           when '\n', '\r'
             # Line continuation - skip
             @scanner.skip(/\s*/)
           when '0'..'7'
             # Octal sequence
-            octal = esc_char
-            2.times do
-              next_char = @scanner.check(/[0-7]/)
-              break unless next_char
-              octal << @scanner.scan(/./)
+            digits = String.build do |dig|
+              dig << str
+              2.times do
+                next_char = @scanner.check(/[0-7]/)
+                break unless next_char
+                scanned = @scanner.scan(/./).as(String)
+                dig << scanned
+              end
             end
-            buffer << octal.to_i(8).chr
+            buffer << digits.to_i(8).chr
           else
-            buffer << esc_char
+            buffer << str
           end
         else
           buffer << char
@@ -530,7 +588,7 @@ module Pdfbox::Pdfparser
   # Utility for reading PDF-specific data types
   module PDFIO
     # Read a PDF string (literal or hexadecimal)
-    def self.read_string(io : IO) : String
+    def self.read_string(io : ::IO) : String
       if io.is_a?(Pdfbox::IO::RandomAccessRead)
         scanner = PDFScanner.new(io)
         scanner.read_string
@@ -542,7 +600,7 @@ module Pdfbox::Pdfparser
     end
 
     # Read a PDF name
-    def self.read_name(io : IO) : String
+    def self.read_name(io : ::IO) : String
       if io.is_a?(Pdfbox::IO::RandomAccessRead)
         scanner = PDFScanner.new(io)
         scanner.read_name
@@ -553,7 +611,7 @@ module Pdfbox::Pdfparser
     end
 
     # Read a PDF number
-    def self.read_number(io : IO) : Float64 | Int64
+    def self.read_number(io : ::IO) : Float64 | Int64
       if io.is_a?(Pdfbox::IO::RandomAccessRead)
         scanner = PDFScanner.new(io)
         scanner.read_number
@@ -602,7 +660,7 @@ module Pdfbox::Pdfparser
     end
 
     # Skip whitespace and comments
-    def self.skip_whitespace(io : IO) : Nil
+    def self.skip_whitespace(io : ::IO) : Nil
       if io.is_a?(Pdfbox::IO::RandomAccessRead)
         scanner = PDFScanner.new(io)
         scanner.skip_whitespace
@@ -633,7 +691,7 @@ module Pdfbox::Pdfparser
     end
 
     # Peek next non-whitespace character
-    def self.peek(io : IO) : Char?
+    def self.peek(io : ::IO) : Char?
       if io.is_a?(Pdfbox::IO::RandomAccessRead)
         scanner = PDFScanner.new(io)
         scanner.peek
@@ -652,11 +710,25 @@ module Pdfbox::Pdfparser
     end
 
     # Read PDF date string
-    def self.read_date(io : IO) : Time?
+    def self.read_date(io : ::IO) : Time?
       if io.is_a?(Pdfbox::IO::RandomAccessRead)
         scanner = PDFScanner.new(io)
         scanner.read_date
       end
+    end
+  end
+
+  # Parser for COS objects
+  class COSParser
+    @scanner : PDFScanner
+
+    def initialize(source : Pdfbox::IO::RandomAccessRead)
+      @scanner = PDFScanner.new(source)
+    end
+
+    # Parse a COS literal string from the input
+    def parse_cos_literal_string : Pdfbox::Cos::String
+      Pdfbox::Cos::String.new(@scanner.read_literal_string)
     end
   end
 end

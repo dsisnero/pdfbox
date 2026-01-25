@@ -14,10 +14,17 @@ module Pdfbox::Pdfwriter
 
   # Main PDF writer class
   class Writer
-    @destination : IO
+    @destination : ::IO
     @document : Pdfbox::Pdmodel::Document
 
-    def initialize(@destination : IO, @document : Pdfbox::Pdmodel::Document)
+    def initialize(@destination : ::IO, @document : Pdfbox::Pdmodel::Document)
+    end
+
+    # Write PDF header with version (e.g., "1.4")
+    def write_header(version : String) : Nil
+      @destination << "%PDF-#{version}\n"
+      # Write binary comment line (required by PDF spec for binary files)
+      @destination << "%\xE2\xE3\xCF\xD3\n"
     end
 
     # Write the PDF document
@@ -50,68 +57,106 @@ module Pdfbox::Pdfwriter
 
   # COS object writer
   class COSWriter
-    @destination : IO
+    @destination : ::IO
 
-    def initialize(@destination : IO)
+    def initialize(@destination : ::IO)
     end
 
     # Write a COS object
     def write(object : Pdfbox::Cos::Base) : Nil
-      # TODO: Implement COS object writing
+      case object
+      when Pdfbox::Cos::Dictionary
+        write_dictionary(object)
+      when Pdfbox::Cos::Array
+        write_array(object)
+      when Pdfbox::Cos::String
+        write_string(object)
+      when Pdfbox::Cos::Name
+        write_name(object)
+      when Pdfbox::Cos::Integer, Pdfbox::Cos::Float
+        write_number(object)
+      when Pdfbox::Cos::Boolean
+        write_boolean(object)
+      when Pdfbox::Cos::Null
+        write_null(object)
+      when Pdfbox::Cos::Stream
+        write_stream(object)
+      when Pdfbox::Cos::Object
+        write_object_reference(object)
+      else
+        raise WriteError.new("Unsupported COS object type: #{object.class}")
+      end
     end
 
     # Write a COS dictionary
     def write_dictionary(dict : Pdfbox::Cos::Dictionary) : Nil
-      # TODO: Implement dictionary writing
+      @destination << "<<"
+      dict.entries.each do |key, value|
+        write_name(key)
+        PDFIO.write_whitespace(@destination)
+        write(value)
+        PDFIO.write_whitespace(@destination)
+      end
+      @destination << ">>"
     end
 
     # Write a COS array
     def write_array(array : Pdfbox::Cos::Array) : Nil
-      # TODO: Implement array writing
+      @destination << '['
+      array.items.each_with_index do |item, index|
+        write(item)
+        if index < array.size - 1
+          PDFIO.write_whitespace(@destination)
+        end
+      end
+      @destination << ']'
     end
 
     # Write a COS string
     def write_string(string : Pdfbox::Cos::String) : Nil
-      # TODO: Implement string writing
+      PDFIO.write_string(@destination, string.value)
     end
 
     # Write a COS name
     def write_name(name : Pdfbox::Cos::Name) : Nil
-      # TODO: Implement name writing
+      PDFIO.write_name(@destination, name.value)
     end
 
     # Write a COS number
     def write_number(number : Pdfbox::Cos::Integer | Pdfbox::Cos::Float) : Nil
-      # TODO: Implement number writing
+      PDFIO.write_number(@destination, number.value)
     end
 
     # Write a COS boolean
     def write_boolean(boolean : Pdfbox::Cos::Boolean) : Nil
-      # TODO: Implement boolean writing
+      @destination << (boolean.value ? "true" : "false")
     end
 
     # Write a COS null
     def write_null(null : Pdfbox::Cos::Null) : Nil
-      # TODO: Implement null writing
+      @destination << "null"
     end
 
     # Write a COS stream
     def write_stream(stream : Pdfbox::Cos::Stream) : Nil
-      # TODO: Implement stream writing
+      # Write stream dictionary
+      write_dictionary(stream)
+      @destination << '\n' << "stream" << '\n'
+      @destination.write(stream.data)
+      @destination << '\n' << "endstream"
     end
 
     # Write a COS object reference
     def write_object_reference(ref : Pdfbox::Cos::Object) : Nil
-      # TODO: Implement object reference writing
+      @destination << ref.object_number << ' ' << ref.generation_number << " R"
     end
   end
 
   # Cross-reference table writer
   class XRefWriter
-    @destination : IO
-    @entries = [] of XRefEntry
+    @destination : ::IO
 
-    def initialize(@destination : IO)
+    def initialize(@destination : ::IO)
     end
 
     # Add an entry to the xref table
@@ -157,42 +202,84 @@ module Pdfbox::Pdfwriter
   # Utility for writing PDF-specific data types
   module PDFIO
     # Write a PDF string (literal or hexadecimal)
-    def self.write_string(io : IO, string : String, hex : Bool = false) : Nil
-      # TODO: Implement PDF string writing
+    def self.write_string(io : ::IO, string : String, hex : Bool = false) : Nil
+      if hex
+        io << '<'
+        string.each_byte do |byte|
+          io << byte.to_s(16).upcase.rjust(2, '0')
+        end
+        io << '>'
+      else
+        io << '('
+        # Escape special characters in literal strings
+        string.each_char do |char|
+          case char
+          when '('
+            io << '\\' << '('
+          when ')'
+            io << '\\' << ')'
+          when '\\'
+            io << '\\' << '\\'
+          when '\n'
+            io << '\\' << 'n'
+          when '\r'
+            io << '\\' << 'r'
+          when '\t'
+            io << '\\' << 't'
+          when '\b'
+            io << '\\' << 'b'
+          when '\f'
+            io << '\\' << 'f'
+          else
+            io << char
+          end
+        end
+        io << ')'
+      end
     end
 
     # Write a PDF name
-    def self.write_name(io : IO, name : String) : Nil
-      # TODO: Implement PDF name writing
+    def self.write_name(io : ::IO, name : String) : Nil
+      io << '/'
+      # Escape special characters in names
+      name.each_char do |char|
+        case char
+        when ' ', '\t', '\n', '\r', '\f', '(', ')', '<', '>', '[', ']', '{', '}', '/', '%', '#'
+          # Write as hex escape
+          io << '#' << char.ord.to_s(16).upcase.rjust(2, '0')
+        else
+          io << char
+        end
+      end
     end
 
     # Write a PDF number
-    def self.write_number(io : IO, number : Float64 | Int64) : Nil
-      # TODO: Implement PDF number writing
+    def self.write_number(io : ::IO, number : Float64 | Int64) : Nil
+      io << number
     end
 
     # Write a PDF date
-    def self.write_date(io : IO, date : Time) : Nil
-      # TODO: Implement PDF date writing
+    def self.write_date(io : ::IO, date : Time) : Nil
+      io << "(D:" << date.to_s("%Y%m%d%H%M%S") << ")"
     end
 
     # Write PDF whitespace
-    def self.write_whitespace(io : IO) : Nil
-      # TODO: Implement whitespace writing
+    def self.write_whitespace(io : ::IO) : Nil
+      io << ' '
     end
 
     # Write PDF comment
-    def self.write_comment(io : IO, comment : String) : Nil
-      # TODO: Implement comment writing
+    def self.write_comment(io : ::IO, comment : String) : Nil
+      io << '%' << comment << '\n'
     end
   end
 
   # Document information writer
   class DocumentInformationWriter
-    @destination : IO
+    @destination : ::IO
     @info : Pdfbox::Cos::Dictionary?
 
-    def initialize(@destination : IO, @info : Pdfbox::Cos::Dictionary? = nil)
+    def initialize(@destination : ::IO, @info : Pdfbox::Cos::Dictionary? = nil)
     end
 
     # Write document information dictionary

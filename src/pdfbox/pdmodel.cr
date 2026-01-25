@@ -18,7 +18,7 @@ module Pdfbox::Pdmodel
     end
 
     # Load a PDF document from an IO stream
-    def self.load(io : IO) : Document
+    def self.load(io : ::IO) : Document
       # TODO: Implement PDF loading from IO
       Document.new
     end
@@ -35,7 +35,7 @@ module Pdfbox::Pdmodel
     end
 
     # Save the document to an IO stream
-    def save(io : IO) : Nil
+    def save(io : ::IO) : Nil
       # TODO: Implement PDF saving to IO
     end
 

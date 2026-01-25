@@ -3,9 +3,13 @@
 # This module contains the fundamental object types used in PDF documents,
 # corresponding to the COS (Cos Object System) in Apache PDFBox.
 module Pdfbox::Cos
+  # Error class for COS operations
+  class Error < Pdfbox::PDFError; end
+
   # Base class for all COS objects
   abstract class Base
-    # TODO: Implement COSBase functionality
+    # Write this object in PDF format to the given IO
+    abstract def write_pdf(io : ::IO) : Nil
   end
 
   # Marker for null values in PDF
@@ -18,6 +22,11 @@ module Pdfbox::Cos
 
     def self.instance : Null
       INSTANCE
+    end
+
+    # Write null in PDF format to the given IO
+    def write_pdf(io : ::IO) : Nil
+      io << "null"
     end
   end
 
@@ -48,6 +57,11 @@ module Pdfbox::Cos
     def self.get(value : Bool) : Boolean
       value ? TRUE : FALSE
     end
+
+    # Write this boolean in PDF format to the given IO
+    def write_pdf(io : ::IO) : Nil
+      io << (@value ? "true" : "false")
+    end
   end
 
   # Integer value in PDF document
@@ -64,6 +78,21 @@ module Pdfbox::Cos
     def value_as_object : Int64
       @value
     end
+
+    # Write this integer in PDF format to the given IO
+    def write_pdf(io : ::IO) : Nil
+      io << @value
+    end
+
+    def ==(other : self) : Bool
+      @value == other.@value
+    end
+
+    def ==(other) : Bool
+      false
+    end
+
+    def_hash @value
   end
 
   # Floating point value in PDF document
@@ -80,22 +109,125 @@ module Pdfbox::Cos
     def value_as_object : Float64
       @value
     end
+
+    # Write this float in PDF format to the given IO
+    def write_pdf(io : ::IO) : Nil
+      io << @value
+    end
+
+    def ==(other : self) : Bool
+      @value == other.@value
+    end
+
+    def ==(other) : Bool
+      false
+    end
+
+    def_hash @value
   end
 
   # String value in PDF document
   class String < Base
-    @value : ::String
+    @bytes : Bytes
+    @force_hex_form : Bool
 
-    def initialize(@value : ::String)
+    # Creates a new PDF string from a String (text string)
+    def initialize(string : ::String, @force_hex_form : Bool = false)
+      @bytes = string.to_slice
     end
 
+    # Creates a new PDF string from raw bytes
+    def initialize(@bytes : Bytes, @force_hex_form : Bool = false)
+    end
+
+    # Gets the string value (decoded as UTF-8)
     def value : ::String
-      @value
+      ::String.new(@bytes)
     end
 
+    # Gets the string value as object
     def value_as_object : ::String
-      @value
+      value
     end
+
+    # Gets the raw bytes
+    def bytes : Bytes
+      @bytes
+    end
+
+    # Whether this string should be written in hex form
+    def force_hex_form? : Bool
+      @force_hex_form
+    end
+
+    # Creates a COS string from a hex string representation
+    def self.parse_hex(hex : ::String) : self
+      # Remove whitespace
+      hex = hex.strip
+      return new(Bytes.empty, false) if hex.empty?
+
+      result = Bytes.new((hex.size + 1) // 2)
+      i = 0
+      j = 0
+
+      while i + 1 < hex.size
+        high = hex_char_to_nibble(hex[i])
+        low = hex_char_to_nibble(hex[i + 1])
+        result[j] = (high << 4 | low).to_u8
+        i += 2
+        j += 1
+      end
+
+      # Handle odd number of hex digits
+      if i < hex.size
+        high = hex_char_to_nibble(hex[i])
+        result[j] = (high << 4).to_u8
+        j += 1
+      end
+
+      new(result[0, j], false)
+    end
+
+    private def self.hex_char_to_nibble(char : Char) : UInt8
+      case char
+      when '0'..'9'
+        (char - '0').to_u8
+      when 'a'..'f'
+        (char - 'a' + 10).to_u8
+      when 'A'..'F'
+        (char - 'A' + 10).to_u8
+      else
+        raise Error.new("Invalid hex character: #{char.inspect}")
+      end
+    end
+
+    # Returns hex representation of the string bytes
+    def to_hex_string : ::String
+      ::String.build do |str|
+        @bytes.each do |byte|
+          str << "0123456789ABCDEF"[byte >> 4]
+          str << "0123456789ABCDEF"[byte & 0x0F]
+        end
+      end
+    end
+
+    # Write this string in PDF format to the given IO
+    def write_pdf(io : ::IO) : Nil
+      Pdfbox::Pdfwriter::PDFIO.write_string(io, ::String.new(@bytes), @force_hex_form)
+    end
+
+    # Equality comparison
+    def ==(other : self) : Bool
+      return false unless @force_hex_form == other.@force_hex_form
+      @bytes == other.@bytes
+    end
+
+    def ==(other) : Bool
+      false
+    end
+
+    # Hash code
+    def_hash @bytes, @force_hex_form
   end
 
   # Name object in PDF document (PDF keyword)
@@ -112,13 +244,29 @@ module Pdfbox::Cos
     def value_as_object : ::String
       @value
     end
+
+    # Write this name in PDF format to the given IO
+    def write_pdf(io : ::IO) : Nil
+      Pdfbox::Pdfwriter::PDFIO.write_name(io, @value)
+    end
+
+    def ==(other : self) : Bool
+      @value == other.@value
+    end
+
+    def ==(other) : Bool
+      false
+    end
+
+    def_hash @value
   end
 
   # Array of COS objects
   class Array < Base
     @items = [] of Base
 
-    def initialize(@items : ::Array(Base) = [] of Base)
+    def initialize(items : Enumerable(Base) = [] of Base)
+      @items = items.to_a
     end
 
     def items : ::Array(Base)
@@ -141,6 +289,28 @@ module Pdfbox::Cos
     def size : Int32
       @items.size
     end
+
+    # Write this array in PDF format to the given IO
+    def write_pdf(io : ::IO) : Nil
+      io << '['
+      @items.each_with_index do |item, index|
+        item.write_pdf(io)
+        if index < @items.size - 1
+          Pdfbox::Pdfwriter::PDFIO.write_whitespace(io)
+        end
+      end
+      io << ']'
+    end
+
+    def ==(other : self) : Bool
+      @items == other.@items
+    end
+
+    def ==(other) : Bool
+      false
+    end
+
+    def_hash @items
   end
 
   # Dictionary (key-value pairs) of COS objects
@@ -169,6 +339,28 @@ module Pdfbox::Cos
     def size : Int32
       @entries.size
     end
+
+    # Write this dictionary in PDF format to the given IO
+    def write_pdf(io : ::IO) : Nil
+      io << "<<"
+      @entries.each do |key, value|
+        key.write_pdf(io)
+        Pdfbox::Pdfwriter::PDFIO.write_whitespace(io)
+        value.write_pdf(io)
+        Pdfbox::Pdfwriter::PDFIO.write_whitespace(io)
+      end
+      io << ">>"
+    end
+
+    def ==(other : self) : Bool
+      @entries == other.@entries
+    end
+
+    def ==(other) : Bool
+      false
+    end
+
+    def_hash @entries
   end
 
   # Stream object (dictionary with binary data)
@@ -186,6 +378,25 @@ module Pdfbox::Cos
     def data=(@data : Bytes) : Bytes
       @data
     end
+
+    # Write this stream in PDF format to the given IO
+    def write_pdf(io : ::IO) : Nil
+      # Write stream dictionary
+      super
+      io << '\n' << "stream" << '\n'
+      io.write(@data)
+      io << '\n' << "endstream"
+    end
+
+    def ==(other : self) : Bool
+      super && @data == other.@data
+    end
+
+    def ==(other) : Bool
+      false
+    end
+
+    def_hash @data
   end
 
   # Object reference (indirect object)
@@ -212,5 +423,20 @@ module Pdfbox::Cos
     def object=(@object : Base?) : Base?
       @object
     end
+
+    # Write this object reference in PDF format to the given IO
+    def write_pdf(io : ::IO) : Nil
+      io << @object_number << ' ' << @generation_number << " R"
+    end
+
+    def ==(other : self) : Bool
+      @object_number == other.@object_number && @generation_number == other.@generation_number
+    end
+
+    def ==(other) : Bool
+      false
+    end
+
+    def_hash @object_number, @generation_number
   end
 end

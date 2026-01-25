@@ -111,8 +111,8 @@ module Pdfbox::IO
     end
 
     def peek : UInt8?
-      byte = @io.peek
-      byte.nil? ? nil : byte
+      slice = @io.peek
+      slice.nil? ? nil : slice.first?
     end
 
     def eof? : Bool
