@@ -126,20 +126,95 @@ module Pdfbox::Pdfparser
       xref
     end
 
+    # Parse an indirect object at given offset
+    private def parse_indirect_object_at_offset(offset : Int64) : Pdfbox::Cos::Base
+      @source.seek(offset)
+      scanner = PDFScanner.new(@source)
+      scanner.skip_whitespace
+      _obj_num = scanner.read_number.to_i64
+      _gen_num = scanner.read_number.to_i64
+      scanner.skip_whitespace
+      unless scanner.scanner.scan(/obj/)
+        raise SyntaxError.new("Expected 'obj' at position #{scanner.position}")
+      end
+      scanner.skip_whitespace
+
+      # Parse the object using ObjectParser (starting at current position)
+      object_parser = ObjectParser.new(@source)
+      object = object_parser.parse_object
+      unless object
+        raise SyntaxError.new("Failed to parse object at position #{scanner.position}")
+      end
+
+      scanner.skip_whitespace
+      unless scanner.scanner.scan(/endobj/)
+        raise SyntaxError.new("Expected 'endobj' at position #{scanner.position}")
+      end
+
+      object
+    end
+
+    # Locate xref table offset using startxref pointer
+    private def locate_xref_offset : Int64?
+      # Save current position
+      original_pos = @source.position
+      begin
+        file_size = @source.length
+        read_size = 1024
+        start = file_size - read_size
+        start = 0_i64 if start < 0
+        @source.seek(start)
+        data = @source.read_all
+        # Find "startxref" from end
+        str = String.new(data, "ISO-8859-1")
+        if idx = str.index("startxref")
+          idx += 9 # length of "startxref"
+          # Skip whitespace
+          while idx < str.size && str[idx].ascii_whitespace?
+            idx += 1
+          end
+          # Parse digits
+          start_idx = idx
+          while idx < str.size && str[idx].ascii_number?
+            idx += 1
+          end
+          if start_idx < idx
+            digits = str[start_idx...idx]
+            return digits.to_i64
+          end
+        end
+      ensure
+        @source.seek(original_pos)
+      end
+      nil
+    end
+
+    # Parse page count from xref table (count page objects)
+    private def parse_page_count_from_xref(xref : XRef) : Int32
+      # Count objects with object number >= 3 that are in-use (page objects)
+      page_count = 0
+      xref.entries.each do |obj_num, entry|
+        if obj_num >= 3 && entry.in_use?
+          page_count += 1
+        end
+      end
+      page_count
+    end
+
     # Parse the PDF document
     def parse : Pdfbox::Pdmodel::Document
       version = parse_header
       doc = Pdfbox::Pdmodel::Document.new(nil, version)
 
-      # Read lines until EOF marker
       page_count = 0
-      while !@source.eof?
-        line = read_line
-        break if line == "%%EOF"
-
-        if line.starts_with?("% Pages: ")
-          page_count = line[9..].to_i? || 0
-        end
+      xref_offset = locate_xref_offset
+      if xref_offset
+        @source.seek(xref_offset)
+        xref = parse_xref
+        page_count = parse_page_count_from_xref(xref)
+      else
+        # Simple format with comments
+        page_count = parse_simple_page_count
       end
 
       # Add pages to document
@@ -148,6 +223,81 @@ module Pdfbox::Pdfparser
       end
 
       doc
+    end
+
+    private def parse_simple_page_count : Int32
+      # Save current position
+      original_pos = @source.position
+      begin
+        page_count = 0
+        while !@source.eof?
+          line = read_line
+          break if line == "%%EOF"
+
+          if line.starts_with?("% Pages: ")
+            page_count = line[9..].to_i? || 0
+          end
+        end
+        page_count
+      ensure
+        @source.seek(original_pos)
+      end
+    end
+
+    private def parse_xref_from_scanner(scanner : PDFScanner) : XRef
+      # Expect "xref" keyword (already checked)
+      scanner.scanner.scan(/xref/)
+      scanner.skip_whitespace
+
+      xref = XRef.new
+
+      # Parse subsections until we hit "trailer" or other keyword
+      loop do
+        scanner.skip_whitespace
+        # Check for next keyword (trailer, startxref) or end of input
+        break if scanner.scanner.eos? || scanner.scanner.check(/trailer|startxref/i)
+
+        # Read starting object number and count
+        start_obj = scanner.read_number
+        count = scanner.read_number
+
+        # Ensure they are integers
+        start_obj = start_obj.to_i64
+        count = count.to_i64
+
+        # Parse count entries
+        count.times do |i|
+          scanner.skip_whitespace
+          offset_str = scanner.scanner.scan(/\d{10}/)
+          unless offset_str
+            raise SyntaxError.new("Expected 10-digit offset at position #{scanner.position}")
+          end
+          offset = offset_str.to_i64
+
+          scanner.scanner.scan(/\s+/)
+          gen_str = scanner.scanner.scan(/\d{5}/)
+          unless gen_str
+            raise SyntaxError.new("Expected 5-digit generation at position #{scanner.position}")
+          end
+          generation = gen_str.to_i64
+
+          scanner.scanner.scan(/\s+/)
+          type_char = scanner.scanner.scan(/[nf]/)
+          unless type_char
+            raise SyntaxError.new("Expected 'n' or 'f' at position #{scanner.position}")
+          end
+          type = type_char == "n" ? :in_use : :free
+
+          # Add entry to xref table
+          obj_num = start_obj + i
+          xref[obj_num] = XRefEntry.new(offset, generation, type)
+
+          # Skip optional whitespace/newline
+          scanner.skip_whitespace
+        end
+      end
+
+      xref
     end
 
     # Parse with password for encrypted PDFs
@@ -629,7 +779,9 @@ module Pdfbox::Pdfparser
           @scanner.scan('>')
           break
         elsif char =~ /[0-9A-Fa-f]/
-          hex_chars << @scanner.scan(/./)
+          if scanned = @scanner.scan(/./)
+            hex_chars << scanned
+          end
           if hex_chars.size == 2
             buffer << hex_chars.to_i(16).chr
             hex_chars.clear

@@ -103,4 +103,44 @@ describe Pdfbox::Pdmodel::Document do
       # Should not raise error
     end
   end
+
+  describe "xref table integration" do
+    it "generates PDF with xref table" do
+      doc = Pdfbox::Pdmodel::Document.new
+      doc.add_page(Pdfbox::Pdmodel::Page.new)
+
+      io = IO::Memory.new
+      doc.save(io)
+
+      pdf = io.to_s
+      pdf.should contain("xref\n")
+      pdf.should contain("trailer\n")
+      pdf.should end_with("%%EOF\n")
+    end
+
+    it "saves and loads document with xref table" do
+      doc = Pdfbox::Pdmodel::Document.new
+      doc.add_page(Pdfbox::Pdmodel::Page.new)
+
+      io = IO::Memory.new
+      doc.save(io)
+
+      load_doc = Pdfbox::Pdmodel::Document.load(IO::Memory.new(io.to_s))
+      load_doc.page_count.should eq(1)
+    end
+
+    it "handles multiple pages with xref table" do
+      doc = Pdfbox::Pdmodel::Document.new
+      3.times { doc.add_page(Pdfbox::Pdmodel::Page.new) }
+
+      io = IO::Memory.new
+      doc.save(io)
+
+      pdf = io.to_s
+      pdf.should contain("xref\n")
+
+      load_doc = Pdfbox::Pdmodel::Document.load(IO::Memory.new(pdf))
+      load_doc.page_count.should eq(3)
+    end
+  end
 end

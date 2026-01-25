@@ -2,6 +2,8 @@
 #
 # This module contains PDF writing functionality,
 # corresponding to the pdfwriter package in Apache PDFBox.
+require "./cos"
+
 module Pdfbox::Pdfwriter
   # Base class for PDF writing errors
   class WriteError < Pdfbox::PDFError; end
@@ -31,14 +33,68 @@ module Pdfbox::Pdfwriter
     def write : Nil
       write_header(@document.version)
 
-      # Write our simple format with page count
-      @destination << "% PDFBox-Crystal format\n"
-      @destination << "% Pages: " << @document.page_count << "\n"
+      # Create xref writer
+      xref_writer = XRefWriter.new(@destination)
 
-      # Add padding to ensure total size > 200 bytes
-      # Header: ~20 bytes, page line: ~15, this comment: 162, %%EOF: 6 = ~203 bytes
-      @destination << "% " << "x" * 159 << "\n"
+      # Object 0: free entry (required by PDF spec)
+      xref_writer.add_entry(0_i64, 65535_i64, :free)
 
+      # Write catalog object (object 1)
+      catalog_offset = @destination.pos.to_i64
+      xref_writer.add_entry(catalog_offset, 0_i64, :in_use)
+      @destination << "1 0 obj\n"
+      @destination << "<<\n"
+      @destination << "/Type /Catalog\n"
+      @destination << "/Pages 2 0 R\n"
+      @destination << ">>\n"
+      @destination << "endobj\n"
+
+      # Write pages object (object 2)
+      pages_offset = @destination.pos.to_i64
+      xref_writer.add_entry(pages_offset, 0_i64, :in_use)
+      @destination << "2 0 obj\n"
+      @destination << "<<\n"
+      @destination << "/Type /Pages\n"
+      @destination << "/Kids ["
+      # Add page references (object 3..)
+      @document.page_count.times do |i|
+        @destination << " " << (3 + i) << " 0 R"
+      end
+      @destination << " ]\n"
+      @destination << "/Count " << @document.page_count << "\n"
+      @destination << ">>\n"
+      @destination << "endobj\n"
+
+      # Write each page object
+      @document.page_count.times do |i|
+        page_offset = @destination.pos.to_i64
+        xref_writer.add_entry(page_offset, 0_i64, :in_use)
+        obj_num = 3 + i
+        @destination << obj_num << " 0 obj\n"
+        @destination << "<<\n"
+        @destination << "/Type /Page\n"
+        @destination << "/Parent 2 0 R\n"
+        @destination << "/MediaBox [0 0 612 792]\n" # Letter size
+        @destination << ">>\n"
+        @destination << "endobj\n"
+      end
+
+      # Write xref table
+      xref_start = @destination.pos
+      xref_writer.write
+
+      # Write trailer
+      @destination << "trailer\n"
+      @destination << "<<\n"
+      @destination << "/Size " << (xref_writer.size) << "\n" # includes object 0
+      @destination << "/Root 1 0 R\n"
+      @destination << ">>\n"
+
+      # Write startxref
+      @destination << "startxref\n"
+      @destination << xref_start << "\n"
+
+      # Write EOF marker
       @destination << "%%EOF\n"
     end
 
