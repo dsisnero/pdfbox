@@ -165,6 +165,7 @@ module Pdfbox::Pdfwriter
   # Cross-reference table writer
   class XRefWriter
     @destination : ::IO
+    @entries = [] of XRefEntry
 
     def initialize(@destination : ::IO)
     end
@@ -178,7 +179,26 @@ module Pdfbox::Pdfwriter
 
     # Write the xref table
     def write : Nil
-      # TODO: Implement xref writing
+      @destination << "xref\n"
+
+      # Group entries by consecutive object numbers starting from 0
+      # We assume entries were added in order of object numbers
+      start = 0
+      count = @entries.size
+
+      # Write subsection header
+      @destination << start << ' ' << count << '\n'
+
+      @entries.each_with_index do |entry, _|
+        # Format offset as 10-digit zero-padded
+        @destination << entry.offset.to_s.rjust(10, '0')
+        @destination << ' '
+        # Format generation as 5-digit zero-padded
+        @destination << entry.generation.to_s.rjust(5, '0')
+        @destination << ' '
+        @destination << (entry.type == :in_use ? 'n' : 'f')
+        @destination << '\n'
+      end
     end
 
     # Get number of entries

@@ -52,6 +52,80 @@ module Pdfbox::Pdfparser
       builder.to_s
     end
 
+    # Parse cross-reference table
+    def parse_xref : XRef
+      xref = XRef.new
+      # Skip whitespace/comments before "xref"
+      scanner = PDFScanner.new(@source)
+      scanner.skip_whitespace
+
+      # Expect "xref" keyword
+      unless scanner.scanner.scan(/xref/)
+        raise SyntaxError.new("Expected 'xref' keyword at position #{scanner.position}")
+      end
+
+      # Skip whitespace after keyword
+      scanner.skip_whitespace
+
+      # Debug: check remaining
+      # raise "Remaining: #{scanner.scanner.rest.inspect}"
+      # Check peek
+      # raise "Peek: #{scanner.peek.inspect}, rest: #{scanner.scanner.rest.inspect}"
+      # Try scanning number manually
+      # match = scanner.scanner.scan(/[+-]?\d+(?:\.\d+)?/)
+      # raise "Match: #{match.inspect}"
+      # Debug before read_number
+      # raise "Before read_number: rest=#{scanner.scanner.rest.inspect}, offset=#{scanner.scanner.offset}, pos=#{scanner.position}, string length=#{scanner.scanner.string.bytesize}"
+
+      # Parse subsections until we hit "trailer" or other keyword
+      loop do
+        scanner.skip_whitespace
+        # Check for next keyword (trailer, startxref) or end of input
+        break if scanner.scanner.eos? || scanner.scanner.check(/trailer|startxref/i)
+
+        # Read starting object number and count
+        start_obj = scanner.read_number
+        count = scanner.read_number
+
+        # Ensure they are integers
+        start_obj = start_obj.to_i64
+        count = count.to_i64
+
+        # Parse count entries
+        count.times do |i|
+          scanner.skip_whitespace
+          offset_str = scanner.scanner.scan(/\d{10}/)
+          unless offset_str
+            raise SyntaxError.new("Expected 10-digit offset at position #{scanner.position}")
+          end
+          offset = offset_str.to_i64
+
+          scanner.scanner.scan(/\s+/)
+          gen_str = scanner.scanner.scan(/\d{5}/)
+          unless gen_str
+            raise SyntaxError.new("Expected 5-digit generation at position #{scanner.position}")
+          end
+          generation = gen_str.to_i64
+
+          scanner.scanner.scan(/\s+/)
+          type_char = scanner.scanner.scan(/[nf]/)
+          unless type_char
+            raise SyntaxError.new("Expected 'n' or 'f' at position #{scanner.position}")
+          end
+          type = type_char == "n" ? :in_use : :free
+
+          # Add entry to xref table
+          obj_num = start_obj + i
+          xref[obj_num] = XRefEntry.new(offset, generation, type)
+
+          # Skip optional whitespace/newline
+          scanner.skip_whitespace
+        end
+      end
+
+      xref
+    end
+
     # Parse the PDF document
     def parse : Pdfbox::Pdmodel::Document
       version = parse_header
