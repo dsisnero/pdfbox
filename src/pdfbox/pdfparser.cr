@@ -54,14 +54,32 @@ module Pdfbox::Pdfparser
 
     # Parse the PDF document
     def parse : Pdfbox::Pdmodel::Document
-      # TODO: Implement PDF parsing
-      Pdfbox::Pdmodel::Document.new
+      version = parse_header
+      doc = Pdfbox::Pdmodel::Document.new(nil, version)
+
+      # Read lines until EOF marker
+      page_count = 0
+      while !@source.eof?
+        line = read_line
+        break if line == "%%EOF"
+
+        if line.starts_with?("% Pages: ")
+          page_count = line[9..].to_i? || 0
+        end
+      end
+
+      # Add pages to document
+      page_count.times do
+        doc.add_page(Pdfbox::Pdmodel::Page.new)
+      end
+
+      doc
     end
 
     # Parse with password for encrypted PDFs
     def parse(password : String) : Pdfbox::Pdmodel::Document
-      # TODO: Implement encrypted PDF parsing
-      Pdfbox::Pdmodel::Document.new
+      # For now, ignore password and parse normally
+      parse
     end
 
     # Check if PDF is encrypted

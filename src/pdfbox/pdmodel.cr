@@ -6,42 +6,60 @@ module Pdfbox::Pdmodel
   # Main PDF document class
   class Document
     @cos_document : Cos::Dictionary?
+    @version : String
+    @pages : Array(Page)
 
-    def initialize(@cos_document : Cos::Dictionary? = nil)
-      # TODO: Initialize document structure
+    def initialize(@cos_document : Cos::Dictionary? = nil, @version : String = "1.4")
+      @pages = [] of Page
+    end
+
+    # Get PDF version (e.g., "1.4")
+    def version : String
+      @version
+    end
+
+    # Set PDF version (e.g., "1.5")
+    def version=(version : String) : String
+      @version = version
     end
 
     # Load a PDF document from a file
     def self.load(filename : String) : Document
-      # TODO: Implement PDF loading
-      Document.new
+      File.open(filename) do |file|
+        load(file)
+      end
     end
 
     # Load a PDF document from an IO stream
     def self.load(io : ::IO) : Document
-      # TODO: Implement PDF loading from IO
-      Document.new
+      # Use parser to read PDF
+      source = Pdfbox::IO::MemoryRandomAccessRead.new(io.gets_to_end.to_slice)
+      parser = Pdfbox::Pdfparser::Parser.new(source)
+      parser.parse
     end
 
     # Create a new empty PDF document
     def self.create : Document
-      # TODO: Implement PDF creation
       Document.new
     end
 
     # Save the document to a file
     def save(filename : String) : Nil
-      # TODO: Implement PDF saving
+      File.open(filename, "w") do |file|
+        save(file)
+      end
     end
 
     # Save the document to an IO stream
     def save(io : ::IO) : Nil
-      # TODO: Implement PDF saving to IO
+      # Use writer to write PDF
+      writer = Pdfbox::Pdfwriter::Writer.new(io, self)
+      writer.write
     end
 
     # Add a page to the document
     def add_page(page : Page) : Page
-      # TODO: Implement page addition
+      @pages << page
       page
     end
 
@@ -53,8 +71,7 @@ module Pdfbox::Pdmodel
 
     # Get all pages in the document
     def pages : Array(Page)
-      # TODO: Implement pages retrieval
-      [] of Page
+      @pages
     end
 
     # Get the number of pages
@@ -69,14 +86,12 @@ module Pdfbox::Pdmodel
 
     # Remove a page from the document
     def remove_page(page : Page) : Bool
-      # TODO: Implement page removal
-      false
+      @pages.delete(page)
     end
 
     # Remove a page by index
     def remove_page(index : Int) : Bool
-      # TODO: Implement page removal by index
-      false
+      !!@pages.delete_at?(index)
     end
 
     # Close the document and release resources

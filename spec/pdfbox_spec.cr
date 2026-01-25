@@ -87,8 +87,16 @@ describe Pdfbox::Pdmodel do
     end
 
     it "can load (placeholder)" do
-      doc = Pdfbox::Pdmodel::Document.load("test.pdf")
-      doc.should_not be_nil
+      # Create a minimal PDF in memory
+      io = IO::Memory.new
+      doc = Pdfbox::Pdmodel::Document.new
+      doc.add_page(Pdfbox::Pdmodel::Page.new)
+      doc.save(io)
+
+      # Load it back
+      loaded = Pdfbox::Pdmodel::Document.load(IO::Memory.new(io.to_s))
+      loaded.should_not be_nil
+      loaded.page_count.should eq(1)
     end
 
     it "can create new (placeholder)" do
