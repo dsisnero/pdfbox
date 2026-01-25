@@ -411,7 +411,10 @@ module Pdfbox::Pdfparser
     def parse_object : Pdfbox::Cos::Base?
       @scanner.skip_whitespace
 
-      case @scanner.peek
+      char = @scanner.peek
+      return if char.nil?
+
+      case char
       when '/'
         parse_name
       when '('
@@ -463,7 +466,7 @@ module Pdfbox::Pdfparser
         value = parse_object
         break unless value
 
-        dict[key.value] = value
+        dict[key] = value
       end
 
       @scanner.scanner.scan(">>") rescue nil
@@ -488,7 +491,7 @@ module Pdfbox::Pdfparser
         value = parse_object
         break unless value
 
-        array << value
+        array.add(value)
 
         @scanner.skip_whitespace
         break if @scanner.scanner.check(']')
@@ -785,10 +788,10 @@ module Pdfbox::Pdfparser
           if scanned = @scanner.scan(/./)
             hex_chars += scanned
           end
-           if hex_chars.size == 2
-             buffer << hex_chars.to_i(16).chr
-             hex_chars = ""
-           end
+          if hex_chars.size == 2
+            buffer << hex_chars.to_i(16).chr
+            hex_chars = ""
+          end
         else
           # Invalid hex character
           @scanner.scan(/./)

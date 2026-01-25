@@ -66,3 +66,102 @@ describe Pdfbox::Pdfparser::COSParser do
     end
   end
 end
+
+describe Pdfbox::Pdfparser::ObjectParser do
+  describe "#parse_object" do
+    it "parses COS name" do
+      bytes = Bytes['/'.ord, 'F'.ord, 'o'.ord, 'n'.ord, 't'.ord, ' '.ord]
+      source = Pdfbox::IO::MemoryRandomAccessRead.new(bytes)
+      parser = Pdfbox::Pdfparser::ObjectParser.new(source)
+      obj = parser.parse_object
+      obj.should be_a(Pdfbox::Cos::Name)
+      obj.as(Pdfbox::Cos::Name).value.should eq("Font")
+    end
+
+    it "parses COS integer" do
+      bytes = Bytes['4'.ord, '2'.ord, ' '.ord]
+      source = Pdfbox::IO::MemoryRandomAccessRead.new(bytes)
+      parser = Pdfbox::Pdfparser::ObjectParser.new(source)
+      obj = parser.parse_object
+      obj.should be_a(Pdfbox::Cos::Integer)
+      obj.as(Pdfbox::Cos::Integer).value.should eq(42_i64)
+    end
+
+    it "parses COS float" do
+      bytes = Bytes['3'.ord, '.'.ord, '1'.ord, '4'.ord, ' '.ord]
+      source = Pdfbox::IO::MemoryRandomAccessRead.new(bytes)
+      parser = Pdfbox::Pdfparser::ObjectParser.new(source)
+      obj = parser.parse_object
+      obj.should be_a(Pdfbox::Cos::Float)
+      obj.as(Pdfbox::Cos::Float).value.should eq(3.14)
+    end
+
+    it "parses COS boolean true" do
+      bytes = Bytes['t'.ord, 'r'.ord, 'u'.ord, 'e'.ord, ' '.ord]
+      source = Pdfbox::IO::MemoryRandomAccessRead.new(bytes)
+      parser = Pdfbox::Pdfparser::ObjectParser.new(source)
+      obj = parser.parse_object
+      obj.should be_a(Pdfbox::Cos::Boolean)
+      obj.as(Pdfbox::Cos::Boolean).value.should be_true
+    end
+
+    it "parses COS boolean false" do
+      bytes = Bytes['f'.ord, 'a'.ord, 'l'.ord, 's'.ord, 'e'.ord, ' '.ord]
+      source = Pdfbox::IO::MemoryRandomAccessRead.new(bytes)
+      parser = Pdfbox::Pdfparser::ObjectParser.new(source)
+      obj = parser.parse_object
+      obj.should be_a(Pdfbox::Cos::Boolean)
+      obj.as(Pdfbox::Cos::Boolean).value.should be_false
+    end
+
+    it "parses COS null" do
+      bytes = Bytes['n'.ord, 'u'.ord, 'l'.ord, 'l'.ord, ' '.ord]
+      source = Pdfbox::IO::MemoryRandomAccessRead.new(bytes)
+      parser = Pdfbox::Pdfparser::ObjectParser.new(source)
+      obj = parser.parse_object
+      obj.should be_a(Pdfbox::Cos::Null)
+    end
+
+    it "parses COS literal string" do
+      bytes = Bytes['('.ord, 'H'.ord, 'e'.ord, 'l'.ord, 'l'.ord, 'o'.ord, ')'.ord, ' '.ord]
+      source = Pdfbox::IO::MemoryRandomAccessRead.new(bytes)
+      parser = Pdfbox::Pdfparser::ObjectParser.new(source)
+      obj = parser.parse_object
+      obj.should be_a(Pdfbox::Cos::String)
+      obj.as(Pdfbox::Cos::String).value.should eq("Hello")
+    end
+
+    it "parses COS hexadecimal string" do
+      bytes = Bytes['<'.ord, '4'.ord, '8'.ord, '6'.ord, '5'.ord, '6'.ord, 'C'.ord, '6'.ord, 'C'.ord, '6'.ord, 'F'.ord, '>'.ord, ' '.ord]
+      source = Pdfbox::IO::MemoryRandomAccessRead.new(bytes)
+      parser = Pdfbox::Pdfparser::ObjectParser.new(source)
+      obj = parser.parse_object
+      obj.should be_a(Pdfbox::Cos::String)
+      obj.as(Pdfbox::Cos::String).value.should eq("Hello")
+    end
+
+    it "parses COS array" do
+      bytes = Bytes['['.ord, '4'.ord, '2'.ord, ']'.ord, ' '.ord]
+      source = Pdfbox::IO::MemoryRandomAccessRead.new(bytes)
+      parser = Pdfbox::Pdfparser::ObjectParser.new(source)
+      obj = parser.parse_object
+      obj.should be_a(Pdfbox::Cos::Array)
+      arr = obj.as(Pdfbox::Cos::Array)
+      arr.size.should eq(1)
+      arr[0].should be_a(Pdfbox::Cos::Integer)
+      arr[0].as(Pdfbox::Cos::Integer).value.should eq(42_i64)
+    end
+
+    it "parses COS dictionary" do
+      bytes = Bytes['<'.ord, '<'.ord, '/'.ord, 'K'.ord, 'e'.ord, 'y'.ord, ' '.ord, '('.ord, 'v'.ord, 'a'.ord, 'l'.ord, 'u'.ord, 'e'.ord, ')'.ord, '>'.ord, '>'.ord, ' '.ord]
+      source = Pdfbox::IO::MemoryRandomAccessRead.new(bytes)
+      parser = Pdfbox::Pdfparser::ObjectParser.new(source)
+      obj = parser.parse_object
+      obj.should be_a(Pdfbox::Cos::Dictionary)
+      dict = obj.as(Pdfbox::Cos::Dictionary)
+      dict.size.should eq(1)
+      dict[Pdfbox::Cos::Name.new("Key")].should be_a(Pdfbox::Cos::String)
+      dict[Pdfbox::Cos::Name.new("Key")].as(Pdfbox::Cos::String).value.should eq("value")
+    end
+  end
+end

@@ -425,6 +425,14 @@ module Pdfbox::Cos
       @generation_number
     end
 
+    def obj_number : Int64
+      @object_number
+    end
+
+    def gen_number : Int64
+      @generation_number
+    end
+
     def object : Base?
       @object
     end

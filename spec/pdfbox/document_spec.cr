@@ -177,8 +177,8 @@ describe Pdfbox::Pdmodel::Document do
       catalog_dict[Pdfbox::Cos::Name.new("Type")].should be_a(Pdfbox::Cos::Name)
       catalog_dict[Pdfbox::Cos::Name.new("Type")].as(Pdfbox::Cos::Name).value.should eq("Catalog")
 
-      catalog_dict[Pdfbox::Cos::Name.new("Pages")].should be_a(Pdfbox::Cos::Reference)
-      pages_ref = catalog_dict["Pages"].as(Pdfbox::Cos::Reference)
+      catalog_dict[Pdfbox::Cos::Name.new("Pages")].should be_a(Pdfbox::Cos::Object)
+      pages_ref = catalog_dict[Pdfbox::Cos::Name.new("Pages")].as(Pdfbox::Cos::Object)
       pages_ref.obj_number.should eq(2)
       pages_ref.gen_number.should eq(0)
     end
@@ -209,17 +209,17 @@ describe Pdfbox::Pdmodel::Document do
       pages_obj.should be_a(Pdfbox::Cos::Dictionary)
 
       pages_dict = pages_obj.as(Pdfbox::Cos::Dictionary)
-      pages_dict["Type"].should be_a(Pdfbox::Cos::Name)
-      pages_dict["Type"].as(Pdfbox::Cos::Name).value.should eq("Pages")
+      pages_dict[Pdfbox::Cos::Name.new("Type")].should be_a(Pdfbox::Cos::Name)
+      pages_dict[Pdfbox::Cos::Name.new("Type")].as(Pdfbox::Cos::Name).value.should eq("Pages")
 
-      pages_dict["Count"].should be_a(Pdfbox::Cos::Integer)
-      pages_dict["Count"].as(Pdfbox::Cos::Integer).value.should eq(1)
+      pages_dict[Pdfbox::Cos::Name.new("Count")].should be_a(Pdfbox::Cos::Integer)
+      pages_dict[Pdfbox::Cos::Name.new("Count")].as(Pdfbox::Cos::Integer).value.should eq(1)
 
-      pages_dict["Kids"].should be_a(Pdfbox::Cos::Array)
-      kids = pages_dict["Kids"].as(Pdfbox::Cos::Array)
+      pages_dict[Pdfbox::Cos::Name.new("Kids")].should be_a(Pdfbox::Cos::Array)
+      kids = pages_dict[Pdfbox::Cos::Name.new("Kids")].as(Pdfbox::Cos::Array)
       kids.items.size.should eq(1)
-      kids.items[0].should be_a(Pdfbox::Cos::Reference)
-      kids.items[0].as(Pdfbox::Cos::Reference).obj_number.should eq(3)
+      kids.items[0].should be_a(Pdfbox::Cos::Object)
+      kids.items[0].as(Pdfbox::Cos::Object).obj_number.should eq(3)
     end
   end
 end
