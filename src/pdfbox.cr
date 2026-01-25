@@ -13,23 +13,12 @@ module Pdfbox
 
   # Raised when a PDF operation is not supported
   class UnsupportedFeatureError < Error; end
-
-  # Main PDF document class
-  class PDFDocument
-    def initialize
-      # TODO: Implement PDF document initialization
-    end
-
-    # Load a PDF document from a file
-    def self.load(filename : String) : PDFDocument
-      # TODO: Implement PDF loading
-      PDFDocument.new
-    end
-
-    # Create a new empty PDF document
-    def self.create : PDFDocument
-      # TODO: Implement PDF creation
-      PDFDocument.new
-    end
-  end
 end
+
+# Require all PDFBox modules
+require "./pdfbox/cos"
+require "./pdfbox/pdmodel"
+require "./pdfbox/io"
+require "./fontbox"
+require "./xmpbox"
+require "./tools"
