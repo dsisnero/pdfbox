@@ -1,0 +1,3 @@
+[submodule "apache_pdfbox"]
+	path = apache_pdfbox
+	url = https://github.com/apache/pdfbox.git
