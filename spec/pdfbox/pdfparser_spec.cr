@@ -165,3 +165,87 @@ describe Pdfbox::Pdfparser::ObjectParser do
     end
   end
 end
+
+describe Pdfbox::Pdfparser::Parser do
+  pending "test PDF parser missing catalog" do
+    # TODO: Port testPDFParserMissingCatalog
+    # Test loading MissingCatalog.pdf
+  end
+
+  pending "test PDFBOX-3208" do
+    # TODO: Port testPDFBox3208
+    # Test /Info dictionary retrieval
+  end
+
+  pending "test PDFBOX-3783" do
+    # TODO: Port testPDFBox3783
+    # Test parsing file with trash after %%EOF
+  end
+
+  pending "test PDFBOX-3785" do
+    # TODO: Port testPDFBox3785
+    # Test truncated file with several revisions has correct page count
+  end
+
+  pending "test PDFBOX-3947" do
+    # TODO: Port testPDFBox3947
+    # Test parsing file with broken object stream
+  end
+
+  pending "test PDFBOX-3948" do
+    # TODO: Port testPDFBox3948
+    # Test parsing file with object stream containing unexpected newlines
+  end
+
+  pending "test PDFBOX-3949" do
+    # TODO: Port testPDFBox3949
+    # Test parsing file with incomplete object stream
+  end
+
+  pending "test PDFBOX-3950" do
+    # TODO: Port testPDFBox3950
+    # Test parsing and rendering of truncated file with missing pages
+  end
+
+  pending "test PDFBOX-3951" do
+    # TODO: Port testPDFBox3951
+    # Test parsing of truncated file
+  end
+
+  pending "test PDFBOX-3964" do
+    # TODO: Port testPDFBox3964
+    # Test parsing of broken file
+  end
+
+  pending "test PDFBOX-3977" do
+    # TODO: Port testPDFBox3977
+    # Test /Info dictionary retrieval in brute force search
+  end
+
+  pending "test parse genko file" do
+    # TODO: Port testParseGenko
+  end
+
+  pending "test PDFBOX-4338" do
+    # TODO: Port testPDFBox4338
+  end
+
+  pending "test PDFBOX-4339" do
+    # TODO: Port testPDFBox4339
+  end
+
+  pending "test PDFBOX-4153" do
+    # TODO: Port testPDFBox4153
+    # Test parsing file with outline
+  end
+
+  pending "test PDFBOX-4490" do
+    # TODO: Port testPDFBox4490
+    # Test page count
+  end
+
+  pending "test PDFBOX-5025" do
+    # TODO: Port testPDFBox5025
+    # Test for "74191endobj"
+  end
+end

@@ -20,9 +20,11 @@ module Pdfbox::Pdfparser
   # Main PDF parser class
   class Parser
     @source : Pdfbox::IO::RandomAccessRead
+    @trailer : Pdfbox::Cos::Dictionary?
 
     def initialize(source : Pdfbox::IO::RandomAccessRead)
       @source = source
+      @trailer = nil
     end
 
     getter source
@@ -206,18 +208,34 @@ module Pdfbox::Pdfparser
     # Parse the PDF document
     def parse : Pdfbox::Pdmodel::Document
       version = parse_header
-      doc = Pdfbox::Pdmodel::Document.new(nil, version)
 
       page_count = 0
+      catalog_dict = nil
       xref_offset = locate_xref_offset
       if xref_offset
         @source.seek(xref_offset)
         xref = parse_xref
         page_count = parse_page_count_from_xref(xref)
+
+        # Parse trailer dictionary
+        if trailer = parse_trailer
+          @trailer = trailer
+          root_ref = trailer[Pdfbox::Cos::Name.new("Root")]
+          if root_ref.is_a?(Pdfbox::Cos::Object)
+            if xref_entry = xref[root_ref.obj_number]
+              catalog_obj = parse_indirect_object_at_offset(xref_entry.offset)
+              if catalog_obj.is_a?(Pdfbox::Cos::Dictionary)
+                catalog_dict = catalog_obj
+              end
+            end
+          end
+        end
       else
         # Simple format with comments
         page_count = parse_simple_page_count
       end
+
+      doc = Pdfbox::Pdmodel::Document.new(catalog_dict, version)
 
       # Add pages to document
       page_count.times do
@@ -243,6 +261,18 @@ module Pdfbox::Pdfparser
         page_count
       ensure
         @source.seek(original_pos)
+      end
+    end
+
+    # Parse trailer dictionary after xref table
+    private def parse_trailer : Pdfbox::Cos::Dictionary?
+      scanner = PDFScanner.new(@source)
+      scanner.skip_whitespace
+      if scanner.scanner.scan(/trailer/i)
+        scanner.skip_whitespace
+        @source.seek(scanner.position)
+        object_parser = ObjectParser.new(@source)
+        object_parser.parse_dictionary
       end
     end
 
@@ -340,8 +370,7 @@ module Pdfbox::Pdfparser
 
     # Get trailer dictionary
     def trailer : Pdfbox::Cos::Dictionary?
-      # TODO: Implement trailer retrieval
-      nil
+      @trailer
     end
   end
 

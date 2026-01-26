@@ -6,7 +6,7 @@ A **Crystal language port** of [Apache PDFBox](https://pdfbox.apache.org/) - an 
 
 Apache PDFBox is a Java library that allows:
 - Creation of new PDF documents
-- Manipulation of existing PDF documents  
+- Manipulation of existing PDF documents
 - Extraction of content from PDF documents
 - Command-line utilities for PDF operations
 

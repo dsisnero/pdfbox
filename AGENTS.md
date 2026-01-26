@@ -6,7 +6,7 @@ This project is a **Crystal port of Apache PDFBox** - a library for working with
 
 **Crystal Idioms & Standard Library:** Prefer Crystal idioms and standard library over Java patterns. Adapt Java APIs to fit Crystal's type system and conventions (e.g., use `Enumerable`, `IO`, Crystal's exception hierarchy).
 
-**Test-Driven Development (TDD):** 
+**Test-Driven Development (TDD):**
 - **Port tests first** before implementing functionality
 - Reference test files in `./apache_pdfbox/pdfbox/src/test/` for expected behavior
 - Write Crystal specs that match the behavior of the original Java tests

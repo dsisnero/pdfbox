@@ -79,6 +79,11 @@ module Pdfbox::Pdmodel
       pages.size
     end
 
+    # Get the document catalog
+    def document_catalog : DocumentCatalog?
+      nil
+    end
+
     # Get a page by index (0-based)
     def get_page(index : Int) : Page?
       pages[index]?
@@ -230,5 +235,26 @@ module Pdfbox::Pdmodel
 
     # A0: 841 x 1189 mm
     A0 = Rectangle.from_dimensions(2384.0, 3370.0)
+  end
+
+  # Document catalog class
+  class DocumentCatalog
+    @cos_dict : Cos::Dictionary
+
+    def initialize(@cos_dict : Cos::Dictionary)
+    end
+
+    # Get page labels
+    def page_labels : PageLabels?
+      nil
+    end
+  end
+
+  # Page labels class
+  class PageLabels
+    # Get labels by page indices
+    def labels_by_page_indices : Array(String)
+      [] of String
+    end
   end
 end
