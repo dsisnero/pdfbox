@@ -78,16 +78,16 @@ describe Pdfbox::Pdfparser::Parser do
       # Check free entry (object 0)
       entry0 = xref[0]
       entry0.should_not be_nil
-      entry0.not_nil!.offset.should eq(0_i64)
-      entry0.not_nil!.generation.should eq(65535_i64)
-      entry0.not_nil!.type.should eq(:free)
+      entry0.as(Pdfbox::Pdfparser::XRefEntry).offset.should eq(0_i64)
+      entry0.as(Pdfbox::Pdfparser::XRefEntry).generation.should eq(65535_i64)
+      entry0.as(Pdfbox::Pdfparser::XRefEntry).type.should eq(:free)
 
       # Check in-use entry (object 1)
       entry1 = xref[1]
       entry1.should_not be_nil
-      entry1.not_nil!.offset.should eq(10_i64)
-      entry1.not_nil!.generation.should eq(0_i64)
-      entry1.not_nil!.type.should eq(:in_use)
+      entry1.as(Pdfbox::Pdfparser::XRefEntry).offset.should eq(10_i64)
+      entry1.as(Pdfbox::Pdfparser::XRefEntry).generation.should eq(0_i64)
+      entry1.as(Pdfbox::Pdfparser::XRefEntry).type.should eq(:in_use)
     end
 
     it "parses xref with multiple subsections" do
@@ -105,10 +105,10 @@ describe Pdfbox::Pdfparser::Parser do
       xref = parser.parse_xref
       xref.size.should eq(3)
 
-      xref[0].not_nil!.type.should eq(:free)
-      xref[3].not_nil!.offset.should eq(100_i64)
-      xref[4].not_nil!.offset.should eq(200_i64)
-      xref[4].not_nil!.generation.should eq(1_i64)
+      xref[0].as(Pdfbox::Pdfparser::XRefEntry).type.should eq(:free)
+      xref[3].as(Pdfbox::Pdfparser::XRefEntry).offset.should eq(100_i64)
+      xref[4].as(Pdfbox::Pdfparser::XRefEntry).offset.should eq(200_i64)
+      xref[4].as(Pdfbox::Pdfparser::XRefEntry).generation.should eq(1_i64)
     end
   end
 end

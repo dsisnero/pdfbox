@@ -161,16 +161,16 @@ describe Pdfbox::Pdmodel::Document do
       xref_offset.should_not be_nil
 
       # Parse xref table
-      parser.source.seek(xref_offset.not_nil!)
+      parser.source.seek(xref_offset.as(Int64))
       xref = parser.parse_xref
 
       # Get catalog object (object 1)
       catalog_entry = xref[1]
       catalog_entry.should_not be_nil
-      catalog_entry.not_nil!.type.should eq(:in_use)
+      catalog_entry.as(Pdfbox::Pdfparser::XRefEntry).type.should eq(:in_use)
 
       # Parse catalog object
-      catalog_obj = parser.parse_indirect_object_at_offset(catalog_entry.not_nil!.offset)
+      catalog_obj = parser.parse_indirect_object_at_offset(catalog_entry.as(Pdfbox::Pdfparser::XRefEntry).offset)
       catalog_obj.should be_a(Pdfbox::Cos::Dictionary)
 
       catalog_dict = catalog_obj.as(Pdfbox::Cos::Dictionary)
@@ -196,16 +196,16 @@ describe Pdfbox::Pdmodel::Document do
       xref_offset = parser.locate_xref_offset
       xref_offset.should_not be_nil
 
-      parser.source.seek(xref_offset.not_nil!)
+      parser.source.seek(xref_offset.as(Int64))
       xref = parser.parse_xref
 
       # Get pages object (object 2)
       pages_entry = xref[2]
       pages_entry.should_not be_nil
-      pages_entry.not_nil!.type.should eq(:in_use)
+      pages_entry.as(Pdfbox::Pdfparser::XRefEntry).type.should eq(:in_use)
 
       # Parse pages object
-      pages_obj = parser.parse_indirect_object_at_offset(pages_entry.not_nil!.offset)
+      pages_obj = parser.parse_indirect_object_at_offset(pages_entry.as(Pdfbox::Pdfparser::XRefEntry).offset)
       pages_obj.should be_a(Pdfbox::Cos::Dictionary)
 
       pages_dict = pages_obj.as(Pdfbox::Cos::Dictionary)

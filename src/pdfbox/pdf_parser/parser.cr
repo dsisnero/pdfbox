@@ -882,9 +882,13 @@ module Pdfbox::Pdfparser
       sections.reverse.each do |offset_val, xref_section, trailer_section|
         Log.debug { "applying xref section from offset #{offset_val} (#{xref_section.size} entries)" }
 
-        # Merge xref entries (newer sections override older ones)
+        # Combine traditional xref entries with XRefStm entries for this section
+        # Traditional entries take precedence over XRefStm entries within same section
+        section_entries = {} of Int64 => XRefEntry
+
+        # Add traditional xref entries
         xref_section.entries.each do |obj_num, entry|
-          xref[obj_num] = entry
+          section_entries[obj_num] = entry
         end
 
         # Merge trailer dictionaries (newer overrides older)
@@ -908,9 +912,10 @@ module Pdfbox::Pdfparser
               xref_stream = parse_xref_stream(xref_stm_offset)
               Log.debug { "xref_stream size before merging: #{xref_stream.size}" }
 
-              # Merge xref stream entries with main xref table
+              # Merge xref stream entries with section entries
+              # Don't overwrite existing entries (traditional xref takes precedence)
               xref_stream.entries.each do |obj_num, entry|
-                xref[obj_num] = entry
+                section_entries[obj_num] = entry unless section_entries.has_key?(obj_num)
               end
               Log.debug { "Merged #{xref_stream.size} entries from xref stream" }
             rescue ex
@@ -918,6 +923,11 @@ module Pdfbox::Pdfparser
               Log.debug(exception: ex) { "xref stream parsing error" }
             end
           end
+        end
+
+        # Merge combined section entries into final xref (newer sections override older ones)
+        section_entries.each do |obj_num, entry|
+          xref[obj_num] = entry
         end
       end
 
