@@ -481,6 +481,7 @@ module Pdfbox::Pdfparser
         end
         if xref_entry = xref[obj_num]
           if key = obj.key
+            Log.debug { "resolve_object: obj #{obj_num}, type=#{xref_entry.type}, compressed?=#{xref_entry.compressed?}, offset=#{xref_entry.offset}, generation=#{xref_entry.generation}" }
             if xref_entry.compressed?
               # Object is compressed in an object stream
               parse_object_from_stream(xref_entry.offset, key, xref_entry.generation, xref)
@@ -697,13 +698,8 @@ module Pdfbox::Pdfparser
       output
     end
 
-    # Parse all objects from object stream and return map of object keys to objects
-    private def parse_all_objects_from_stream(obj_stream : Cos::Stream) : Hash(Cos::ObjectKey, Cos::Base)
-      Log.debug { "parse_all_objects_from_stream: parsing all objects from stream" }
-
-      # Get stream dictionary
-      dict = obj_stream
-
+    # Validate object stream dictionary and extract N and First values
+    private def validate_object_stream_dict(dict : Cos::Dictionary) : Tuple(Int32, Int32)
       # Check type
       type_entry = dict[Cos::Name.new("Type")]
       unless type_entry.is_a?(Cos::Name) && type_entry.value == "ObjStm"
@@ -716,6 +712,9 @@ module Pdfbox::Pdfparser
         raise SyntaxError.new("/N entry missing or invalid in object stream")
       end
       n = n_entry.value.to_i
+      if n < 0
+        raise SyntaxError.new("Illegal /N entry in object stream: #{n}")
+      end
 
       # Get offset of first object
       first_entry = dict[Cos::Name.new("First")]
@@ -723,57 +722,56 @@ module Pdfbox::Pdfparser
         raise SyntaxError.new("/First entry missing or invalid in object stream")
       end
       first = first_entry.value.to_i
+      if first < 0
+        raise SyntaxError.new("Illegal /First entry in object stream: #{first}")
+      end
 
-      Log.debug { "parse_all_objects_from_stream: N=#{n}, First=#{first}" }
+      Log.debug { "validate_object_stream_dict: N=#{n}, First=#{first}" }
+      {n, first}
+    end
 
-      # Get stream data (decompressed and decoded)
-      data = decode_stream_data(obj_stream)
-      Log.debug { "parse_all_objects_from_stream: stream data size = #{data.size}" }
-
-      # Create RandomAccessRead from stream data
-      memory_io = Pdfbox::IO::MemoryRandomAccessRead.new(data)
-      scanner = PDFScanner.new(memory_io)
-
-      # Read object number/offset pairs into a sorted map (by offset)
-      # Use Array of tuples then sort by offset (second element)
-      object_pairs = [] of Tuple(Int64, Int64) # (object_number, offset)
+    # Read object number/offset pairs from object stream data
+    private def read_object_offset_pairs(scanner : PDFScanner, first : Int32, n : Int32) : Hash(Int32, Int64)
+      offset_to_obj_num = Hash(Int32, Int64).new
+      first_object_position = scanner.position + first - 1
       n.times do |i|
         # Stop if we've consumed first bytes (position is 0-based)
-        if scanner.position >= first
-          Log.debug { "parse_all_objects_from_stream: reached first byte limit at pair #{i}, stopping" }
+        # Don't read beyond the part of the stream reserved for the object numbers
+        if scanner.position >= first_object_position
+          Log.debug { "read_object_offset_pairs: reached first byte limit at pair #{i}, stopping (position=#{scanner.position}, first_object_position=#{first_object_position})" }
           break
         end
         obj_num = scanner.read_number.to_i64
-        offset = scanner.read_number.to_i64
-        object_pairs << {obj_num, offset}
-        Log.debug { "parse_all_objects_from_stream: obj_num=#{obj_num}, offset=#{offset}" }
+        offset = scanner.read_number.to_i64.to_i32
+        offset_to_obj_num[offset] = obj_num
+        Log.debug { "read_object_offset_pairs: obj_num=#{obj_num}, offset=#{offset}" }
       end
+      offset_to_obj_num
+    end
 
-      # Sort by offset (second element of tuple)
-      object_pairs.sort_by! { |pair| pair[1] }
-
-      # Check if index is needed (multiple objects with same object number)
-      # Count unique object numbers
-      unique_obj_numbers = object_pairs.map { |pair| pair[0] }.uniq!.size
-      index_needed = object_pairs.size > unique_obj_numbers
-      Log.debug { "parse_all_objects_from_stream: index_needed=#{index_needed} (total=#{object_pairs.size}, unique=#{unique_obj_numbers})" }
-
-      # Parse objects in offset order
+    # Parse objects from stream data using sorted offsets
+    private def parse_objects_from_sorted_offsets(
+      memory_io : Pdfbox::IO::MemoryRandomAccessRead,
+      offset_to_obj_num : Hash(Int32, Int64),
+      sorted_offsets : Array(Int32),
+      first : Int32,
+      index_needed : Bool,
+    ) : Hash(Cos::ObjectKey, Cos::Base)
       all_objects = Hash(Cos::ObjectKey, Cos::Base).new
+      index = 0
 
-      # Jump to start of object data (after the pairs)
-      memory_io.seek(first)
-      scanner = PDFScanner.new(memory_io)
+      sorted_offsets.each do |offset|
+        obj_num = offset_to_obj_num[offset]
+        final_position = first + offset
 
-      object_pairs.each_with_index do |pair, index|
-        obj_num, offset = pair
-        # Calculate absolute position in stream data
-        absolute_pos = first + offset
+        # Create scanner for current position
+        scanner = PDFScanner.new(memory_io)
+        current_position = scanner.position
 
         # Skip to object position if needed
-        current_pos = scanner.position
-        if absolute_pos != current_pos
-          memory_io.seek(absolute_pos)
+        if final_position > 0 && current_position < final_position
+          # jump to the offset of the object to be parsed
+          memory_io.seek(final_position)
           scanner = PDFScanner.new(memory_io)
         end
 
@@ -781,7 +779,7 @@ module Pdfbox::Pdfparser
         object_parser = ObjectParser.new(scanner, self)
         object = object_parser.parse_object
         unless object
-          raise SyntaxError.new("Failed to parse object at offset #{absolute_pos}")
+          raise SyntaxError.new("Failed to parse object at offset #{final_position}")
         end
 
         # Create object key with stream index if needed
@@ -789,8 +787,63 @@ module Pdfbox::Pdfparser
         key = Cos::ObjectKey.new(obj_num, 0, stream_index)
         all_objects[key] = object
 
-        Log.debug { "parse_all_objects_from_stream: parsed object #{obj_num} at offset #{offset}, key=#{key}" }
+        Log.debug { "parse_objects_from_sorted_offsets: parsed object #{obj_num} at offset #{offset}, key=#{key}" }
+        index += 1
       end
+
+      all_objects
+    end
+
+    # Parse all objects from object stream and return map of object keys to objects
+    private def parse_all_objects_from_stream(obj_stream : Cos::Stream) : Hash(Cos::ObjectKey, Cos::Base)
+      Log.debug { "parse_all_objects_from_stream: parsing all objects from stream" }
+
+      # Get stream dictionary
+      dict = obj_stream
+
+      # Validate dictionary and get N and First
+      n, first = validate_object_stream_dict(dict)
+
+      # Get stream data (decompressed and decoded)
+      data = decode_stream_data(obj_stream)
+      Log.debug { "parse_all_objects_from_stream: stream data size = #{data.size}" }
+
+      # Validate first offset
+      if first > data.size
+        raise SyntaxError.new("/First offset #{first} exceeds stream data size #{data.size}")
+      end
+
+      # Create RandomAccessRead from stream data
+      memory_io = Pdfbox::IO::MemoryRandomAccessRead.new(data)
+      scanner = PDFScanner.new(memory_io)
+
+      # Read object number/offset pairs
+      offset_to_obj_num = read_object_offset_pairs(scanner, first, n)
+
+      # Sort offsets (TreeMap in Java automatically sorts)
+      sorted_offsets = offset_to_obj_num.keys.sort!
+      Log.debug { "parse_all_objects_from_stream: read #{offset_to_obj_num.size} object pairs, sorted #{sorted_offsets.size} offsets" }
+
+      # Count unique object numbers to determine if index is needed
+      unique_obj_numbers = offset_to_obj_num.values.uniq!.size
+      index_needed = offset_to_obj_num.size > unique_obj_numbers
+      Log.debug { "parse_all_objects_from_stream: index_needed=#{index_needed} (total=#{offset_to_obj_num.size}, unique=#{unique_obj_numbers})" }
+
+      # Jump to start of object data (after the pairs)
+      current_position = scanner.position
+      if first > 0 && current_position < first
+        # Skip to first object position
+        memory_io.seek(first)
+      end
+
+      # Parse objects in offset order
+      all_objects = parse_objects_from_sorted_offsets(
+        memory_io,
+        offset_to_obj_num,
+        sorted_offsets,
+        first,
+        index_needed
+      )
 
       Log.debug { "parse_all_objects_from_stream: successfully parsed #{all_objects.size} objects" }
       all_objects
