@@ -345,6 +345,10 @@ module Pdfbox::Cos
       @entries.has_key?(key)
     end
 
+    def delete(key : Name) : Base?
+      @entries.delete(key)
+    end
+
     def size : Int32
       @entries.size
     end

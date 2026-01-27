@@ -531,4 +531,192 @@ module Pdfbox::Pdmodel
       result
     end
   end
+
+  # Number tree node class
+  # Corresponds to PDNumberTreeNode in Apache PDFBox
+  # Represents a PDF Number tree. See the PDF Reference 1.7 section 7.9.7
+  class NumberTreeNode(T)
+    @node : Cos::Dictionary
+    @converter : Proc(Cos::Base, T)
+
+    # Constructor with converter proc
+    def initialize(@converter : Proc(Cos::Base, T), @node : Cos::Dictionary = Cos::Dictionary.new)
+    end
+
+    # Constructor from existing dictionary
+    def self.new(dict : Cos::Dictionary, &block : Cos::Base -> T) : self
+      new(block, dict)
+    end
+
+    # Get the underlying COS dictionary
+    def cos_object : Cos::Dictionary
+      @node
+    end
+
+    # Return the children of this node
+    def kids : Array(NumberTreeNode(T))?
+      kids_array = @node[Cos::Name.new("Kids")]
+      return unless kids_array.is_a?(Cos::Array)
+
+      result = [] of NumberTreeNode(T)
+      kids_array.items.each do |item|
+        if item.is_a?(Cos::Dictionary)
+          result << NumberTreeNode(T).new(item) { |cos| @converter.call(cos) }
+        end
+      end
+      result
+    end
+
+    # Set the children of this number tree
+    def kids=(kids : Array(NumberTreeNode(T))?)
+      if kids && !kids.empty?
+        first_kid = kids.first
+        last_kid = kids.last
+        lower_limit = first_kid.lower_limit
+        upper_limit = last_kid.upper_limit
+
+        set_lower_limit(lower_limit)
+        set_upper_limit(upper_limit)
+
+        cos_array = Cos::Array.new
+        kids.each do |kid|
+          cos_array.add(kid.cos_object)
+        end
+        @node[Cos::Name.new("Kids")] = cos_array
+      elsif !@node.has_key?(Cos::Name.new("Nums"))
+        # Remove limits if there are no kids and no numbers set
+        @node.delete(Cos::Name.new("Limits"))
+        @node.delete(Cos::Name.new("Kids"))
+      end
+    end
+
+    # Get value for a given index
+    def get_value(index : Int32) : T?
+      # Check local numbers first
+      numbers = get_numbers
+      if numbers && numbers.has_key?(index)
+        return numbers[index]
+      end
+
+      # Check kids recursively
+      kids_list = kids
+      if kids_list
+        kids_list.each do |child|
+          if child.lower_limit && child.upper_limit &&
+             child.lower_limit.not_nil! <= index && child.upper_limit.not_nil! >= index
+            return child.get_value(index)
+          end
+        end
+      end
+
+      nil
+    end
+
+    # Get numbers map from this node
+    def get_numbers : Hash(Int32, T)?
+      nums_array = @node[Cos::Name.new("Nums")]
+      return unless nums_array.is_a?(Cos::Array)
+
+      size = nums_array.size
+      return unless size % 2 == 0
+
+      result = {} of Int32 => T
+      i = 0
+      while i < size
+        key_item = nums_array[i]
+        value_item = nums_array[i + 1]
+
+        if key_item.is_a?(Cos::Integer)
+          key = key_item.value.to_i32
+          # Convert value using converter
+          value = @converter.call(value_item)
+          result[key] = value
+        end
+        i += 2
+      end
+
+      result
+    end
+
+    # Set numbers for this node
+    def numbers=(numbers : Hash(Int32, T)?)
+      if numbers.nil?
+        @node.delete(Cos::Name.new("Nums"))
+        @node.delete(Cos::Name.new("Limits"))
+      else
+        # Sort keys
+        sorted_keys = numbers.keys.sort!
+        array = Cos::Array.new
+
+        sorted_keys.each do |key|
+          array.add(Cos::Integer.new(key.to_i64))
+          value = numbers[key]
+          if value.responds_to?(:cos_object)
+            array.add(value.cos_object)
+          else
+            # Default: assume it's a COS object already
+            array.add(value.as(Cos::Base))
+          end
+        end
+
+        lower = sorted_keys.empty? ? nil : sorted_keys.first
+        upper = sorted_keys.empty? ? nil : sorted_keys.last
+
+        set_upper_limit(upper)
+        set_lower_limit(lower)
+        @node[Cos::Name.new("Nums")] = array
+      end
+    end
+
+    # Get upper limit
+    def upper_limit : Int32?
+      limits = @node[Cos::Name.new("Limits")]
+      return unless limits.is_a?(Cos::Array) && limits.size >= 2
+
+      upper_item = limits[1]
+      return unless upper_item.is_a?(Cos::Integer)
+
+      upper_item.value.to_i32
+    end
+
+    # Get lower limit
+    def lower_limit : Int32?
+      limits = @node[Cos::Name.new("Limits")]
+      return unless limits.is_a?(Cos::Array) && limits.size >= 2
+
+      lower_item = limits[0]
+      return unless lower_item.is_a?(Cos::Integer)
+
+      lower_item.value.to_i32
+    end
+
+    private def set_upper_limit(upper : Int32?)
+      limits = get_or_create_limits_array
+      if upper
+        limits[1] = Cos::Integer.new(upper.to_i64)
+      else
+        limits[1] = Cos::Null.instance
+      end
+    end
+
+    private def set_lower_limit(lower : Int32?)
+      limits = get_or_create_limits_array
+      if lower
+        limits[0] = Cos::Integer.new(lower.to_i64)
+      else
+        limits[0] = Cos::Null.instance
+      end
+    end
+
+    private def get_or_create_limits_array : Cos::Array
+      limits = @node[Cos::Name.new("Limits")]
+      unless limits.is_a?(Cos::Array)
+        limits = Cos::Array.new
+        limits.add(Cos::Null.instance)
+        limits.add(Cos::Null.instance)
+        @node[Cos::Name.new("Limits")] = limits
+      end
+      limits
+    end
+  end
 end
