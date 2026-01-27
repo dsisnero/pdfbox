@@ -1,5 +1,8 @@
 require "string_scanner"
 
+require "compress/zlib"
+require "compress/deflate"
+
 # PDF Parser module for PDFBox Crystal
 #
 # This module contains PDF parsing functionality,
@@ -126,6 +129,187 @@ module Pdfbox::Pdfparser
       xref
     end
 
+    # Parse an xref stream
+    def parse_xref_stream(offset : Int64) : XRef
+      puts "DEBUG parse_xref_stream: START parsing xref stream at offset #{offset}"
+      STDOUT.flush
+      # Parse the stream object
+      stream_obj = parse_indirect_object_at_offset(offset)
+      unless stream_obj.is_a?(Pdfbox::Cos::Stream)
+        raise SyntaxError.new("Expected stream object at offset #{offset}, got #{stream_obj.class}")
+      end
+
+      stream = stream_obj
+      dict = stream
+      puts "DEBUG parse_xref_stream: stream dict keys: #{dict.entries.keys.map(&.value)}"
+
+      # Check if it's actually an xref stream
+      type_entry = dict[Pdfbox::Cos::Name.new("Type")]
+      unless type_entry && type_entry.is_a?(Pdfbox::Cos::Name) && type_entry.value == "XRef"
+        raise SyntaxError.new("Not an XRef stream at offset #{offset}")
+      end
+
+      # Get /W array (required)
+      w_entry = dict[Pdfbox::Cos::Name.new("W")]
+      unless w_entry && w_entry.is_a?(Pdfbox::Cos::Array) && w_entry.size == 3
+        raise SyntaxError.new("/W array missing or invalid in XRef stream")
+      end
+
+      w = [] of Int32
+      w_entry.items.each do |item|
+        unless item.is_a?(Pdfbox::Cos::Integer)
+          raise SyntaxError.new("/W array element is not an integer")
+        end
+        w << item.value.to_i32
+      end
+      unless w.size == 3
+        raise SyntaxError.new("/W array must have 3 elements, got #{w.size}")
+      end
+      if w[0] < 0 || w[1] < 0 || w[2] < 0
+        raise SyntaxError.new("Incorrect /W array in XRef: #{w}")
+      end
+      if w[0] + w[1] + w[2] > 20
+        # PDFBOX-6037
+        raise SyntaxError.new("Incorrect /W array in XRef: #{w}")
+      end
+
+      puts "DEBUG parse_xref_stream: W array = #{w}"
+
+      # Get /Index array or default to [0, Size]
+      size_entry = dict[Pdfbox::Cos::Name.new("Size")]
+      unless size_entry && size_entry.is_a?(Pdfbox::Cos::Integer)
+        raise SyntaxError.new("/Size missing in XRef stream")
+      end
+      size = size_entry.value.to_i64
+
+      index_array = Array(Int64).new
+      index_entry = dict[Pdfbox::Cos::Name.new("Index")]
+      if index_entry && index_entry.is_a?(Pdfbox::Cos::Array)
+        index_entry.items.each do |item|
+          unless item.is_a?(Pdfbox::Cos::Integer)
+            raise SyntaxError.new("/Index array element is not an integer")
+          end
+          index_array << item.value
+        end
+      else
+        # Default: [0, Size]
+        index_array = [0_i64, size]
+      end
+
+      puts "DEBUG parse_xref_stream: Index array = #{index_array}, Size = #{size}"
+      puts "DEBUG parse_xref_stream: stream data size = #{stream.data.size} bytes"
+      if stream.data.size > 0
+        puts "DEBUG parse_xref_stream: first 20 bytes of stream data: #{stream.data[0, Math.min(20, stream.data.size)].hexstring}"
+      end
+
+      # Decode stream data if compressed
+      data = stream.data
+      filter_entry = dict[Pdfbox::Cos::Name.new("Filter")]
+      if filter_entry
+        puts "DEBUG parse_xref_stream: filter entry = #{filter_entry.inspect}"
+        # For now, assume FlateDecode (single filter)
+        if filter_entry.is_a?(Pdfbox::Cos::Name) && filter_entry.value == "FlateDecode"
+          # Decompress using Deflate (raw deflate) first, fallback to Zlib
+          io = ::IO::Memory.new(data)
+          begin
+            reader = Compress::Deflate::Reader.new(io)
+            decompressed = reader.gets_to_end
+            reader.close
+            data = decompressed.to_slice
+            puts "DEBUG parse_xref_stream: decompressed with Deflate, size = #{data.size} bytes"
+          rescue ex
+            puts "DEBUG parse_xref_stream: Deflate decompression failed: #{ex.class}: #{ex.message}"
+            # Try Zlib instead
+            io.rewind
+            begin
+              reader = Compress::Zlib::Reader.new(io)
+              decompressed = reader.gets_to_end
+              reader.close
+              data = decompressed.to_slice
+              puts "DEBUG parse_xref_stream: decompressed with Zlib, size = #{data.size} bytes"
+            rescue ex2
+              puts "DEBUG parse_xref_stream: Zlib decompression also failed: #{ex2.class}: #{ex2.message}"
+              # Use raw data as fallback (maybe already uncompressed)
+              puts "DEBUG parse_xref_stream: using raw data without decompression"
+            end
+          end
+          if data.size > 0
+            puts "DEBUG parse_xref_stream: first 20 bytes of decompressed data: #{data[0, Math.min(20, data.size)].hexstring}"
+          end
+        else
+          raise SyntaxError.new("Unsupported filter: #{filter_entry.inspect}")
+        end
+      end
+
+      # Parse stream data according to /W array
+      puts "DEBUG parse_xref_stream: starting to parse data, size=#{data.size}, w=#{w}, total_entry_width=#{w.sum}"
+      xref = XRef.new
+
+      # Helper to parse big-endian integer from bytes
+      parse_be = ->(bytes : Bytes) : Int64 {
+        value = 0_i64
+        bytes.each do |byte|
+          value = (value << 8) | byte.to_i64
+        end
+        value
+      }
+
+      total_entry_width = w.sum
+      if total_entry_width == 0
+        raise SyntaxError.new("Total width of entries is 0")
+      end
+
+      # Process index array pairs
+      if index_array.size % 2 != 0
+        raise SyntaxError.new("/Index array must have even number of elements, got #{index_array.size}")
+      end
+      index_array.each_slice(2) do |pair|
+        start, count = pair[0], pair[1]
+        puts "DEBUG parse_xref_stream: processing index range start=#{start}, count=#{count}"
+        count.to_i64.times do |i|
+          # Calculate position in data
+          entry_index = i.to_i64
+          pos = entry_index * total_entry_width
+          if pos + total_entry_width > data.size
+            raise SyntaxError.new("Stream data truncated: need #{total_entry_width} bytes at position #{pos} but only #{data.size} available")
+          end
+
+          # Read fields
+          type = w[0] == 0 ? 1_i64 : parse_be.call(data[pos, w[0]])
+          field2 = w[1] == 0 ? 0_i64 : parse_be.call(data[pos + w[0], w[1]])
+          field3 = w[2] == 0 ? 0_i64 : parse_be.call(data[pos + w[0] + w[1], w[2]])
+
+          obj_num = start + i
+
+          case type
+          when 0
+            # Free entry, skip
+            puts "DEBUG parse_xref_stream: free entry for object #{obj_num}"
+            next
+          when 1
+            # In-use entry
+            offset = field2
+            generation = field3
+            puts "DEBUG parse_xref_stream: in-use entry obj #{obj_num}: offset=#{offset}, gen=#{generation}"
+            xref[obj_num] = XRefEntry.new(offset, generation, :in_use)
+          when 2
+            # Compressed entry
+            obj_stream_number = field2
+            index_in_stream = field3
+            puts "DEBUG parse_xref_stream: compressed entry obj #{obj_num}: obj_stream=#{obj_stream_number}, index=#{index_in_stream}"
+            # Store with type :compressed (offset stores obj_stream_number, generation stores index)
+            xref[obj_num] = XRefEntry.new(obj_stream_number, index_in_stream, :compressed)
+          else
+            raise SyntaxError.new("Invalid entry type #{type} for object #{obj_num}")
+          end
+        end
+      end
+
+      puts "DEBUG parse_xref_stream: parsed #{xref.size} entries"
+      STDOUT.flush
+      xref
+    end
+
     # Parse an indirect object at given offset
     def parse_indirect_object_at_offset(offset : Int64) : Pdfbox::Cos::Base
       @source.seek(offset)
@@ -138,7 +322,7 @@ module Pdfbox::Pdfparser
         raise SyntaxError.new("Expected 'obj' at position #{scanner.position}")
       end
       scanner.skip_whitespace
-      puts "DEBUG parse_indirect_object_at_offset: after 'obj', scanner.rest first 200 chars: #{scanner.rest[0..200].inspect}"
+      puts "DEBUG parse_indirect_object_at_offset: after 'obj', scanner.rest first 500 chars: #{scanner.rest[0..500].inspect}"
 
       # Parse the object using ObjectParser (starting at current position)
       object_parser = ObjectParser.new(scanner)
@@ -156,15 +340,53 @@ module Pdfbox::Pdfparser
       if object.is_a?(Pdfbox::Cos::Dictionary)
         scanner.skip_whitespace
         if scanner.scanner.scan(/stream/)
-          # Skip stream data until we find endstream
-          # TODO: Properly parse stream data using Length from dictionary
-          # For now, skip until endstream
-          while !scanner.scanner.eos?
-            if scanner.scanner.scan(/endstream/)
-              break
-            end
-            scanner.scanner.scan(/./) rescue break
+          # Handle optional newline after "stream"
+          # According to PDF spec, "stream" must be followed by EOL marker (CR, LF, or CRLF)
+          # before the stream data begins
+          puts "DEBUG parse_indirect_object_at_offset: found 'stream' at scanner pos #{scanner.position}"
+
+          # Get Length from dictionary
+          length_entry = object[Pdfbox::Cos::Name.new("Length")]
+          unless length_entry && length_entry.is_a?(Pdfbox::Cos::Integer)
+            raise SyntaxError.new("Stream missing /Length entry")
           end
+          length = length_entry.value.to_i64
+          puts "DEBUG parse_indirect_object_at_offset: stream length = #{length}"
+
+          # Skip whitespace (EOL marker) after "stream"
+          scanner.skip_whitespace
+
+          # Read stream data from scanner's buffer
+          # The scanner has the remaining data in its string buffer
+          # We need to read 'length' bytes starting from current scanner position
+          scanner_str = scanner.scanner
+          current_offset = scanner_str.offset
+          string = scanner_str.string
+
+          # Check if we have enough data
+          if current_offset + length > string.bytesize
+            raise SyntaxError.new("Stream data truncated: need #{length} bytes but only #{string.bytesize - current_offset} available")
+          end
+
+          # Get byteslice from string (ISO-8859-1 preserves byte values)
+          byte_slice = string.byte_slice(current_offset, length)
+          data = byte_slice.to_slice
+
+          puts "DEBUG parse_indirect_object_at_offset: read #{data.size} bytes of stream data"
+
+          # Advance scanner past the stream data
+          scanner_str.offset = (current_offset + length).to_i32
+
+          # Create Stream object with data
+          stream_obj = Pdfbox::Cos::Stream.new(object.entries, data)
+
+          # Skip "endstream"
+          scanner.skip_whitespace
+          unless scanner.scanner.scan(/endstream/)
+            raise SyntaxError.new("Expected 'endstream' after stream data at position #{scanner.position}")
+          end
+
+          object = stream_obj
         end
       end
 
@@ -294,12 +516,31 @@ module Pdfbox::Pdfparser
 
             # Merge trailer dictionaries (later overrides earlier)
             if trailer
-              # Copy entries from section_trailer to trailer
+              # Copy entries from section_trailer to trailer only if not already present
+              # (older trailers should not override newer ones)
               section_trailer.entries.each do |key, value|
-                trailer[key] = value
+                trailer[key] = value unless trailer.has_key?(key)
               end
             else
               trailer = section_trailer
+            end
+
+            # Check for XRefStm (cross-reference stream) in trailer
+            xref_stm_ref = section_trailer[Pdfbox::Cos::Name.new("XRefStm")]
+            if xref_stm_ref && xref_stm_ref.is_a?(Pdfbox::Cos::Integer)
+              xref_stm_offset = xref_stm_ref.value.to_i64
+              puts "DEBUG: Found XRefStm at offset #{xref_stm_offset}, parsing xref stream"
+              begin
+                xref_stream = parse_xref_stream(xref_stm_offset)
+                # Merge xref stream entries with main xref table
+                xref_stream.entries.each do |obj_num, entry|
+                  xref[obj_num] = entry
+                end
+                puts "DEBUG: Merged #{xref_stream.size} entries from xref stream"
+              rescue ex
+                puts "DEBUG: Failed to parse xref stream at offset #{xref_stm_offset}: #{ex.message}"
+                puts "DEBUG: Backtrace: #{ex.backtrace?.try(&.join("\n"))}"
+              end
             end
 
             # Get next Prev link from current section trailer
@@ -317,7 +558,19 @@ module Pdfbox::Pdfparser
 
         @trailer = trailer
         puts "DEBUG: final xref entries: #{xref.size}"
+        # Debug: print xref entries for objects around 17 and PageLabels objects
+        puts "DEBUG: checking xref entries for objects 15-20 and PageLabels objects:"
+        STDOUT.flush
+        [15, 16, 17, 18, 19, 20, 1350, 1352, 1358, 1360].each do |obj_num|
+          if entry = xref[obj_num.to_i64]
+            puts "  object #{obj_num}: offset #{entry.offset}, type: #{entry.type}"
+          else
+            puts "  object #{obj_num}: not found in xref"
+          end
+          STDOUT.flush
+        end
         puts "DEBUG: trailer: #{trailer.inspect}"
+        puts "DEBUG: reached point B"
 
         if trailer
           root_ref = trailer[Pdfbox::Cos::Name.new("Root")]
@@ -331,11 +584,13 @@ module Pdfbox::Pdfparser
                        end
 
           if obj_number && (xref_entry = xref[obj_number])
-            puts "DEBUG: xref entry found: offset #{xref_entry.offset}"
+            puts "DEBUG: xref entry found for object #{obj_number}: offset #{xref_entry.offset}"
             catalog_obj = parse_indirect_object_at_offset(xref_entry.offset)
             puts "DEBUG: catalog_obj type: #{catalog_obj.class}"
             if catalog_obj.is_a?(Pdfbox::Cos::Dictionary)
               catalog_dict = catalog_obj
+              puts "DEBUG: catalog dict keys: #{catalog_dict.entries.keys.map(&.value)}"
+              STDOUT.flush
 
               # Parse pages from catalog
               pages_ref = catalog_dict[Pdfbox::Cos::Name.new("Pages")]
@@ -567,6 +822,10 @@ module Pdfbox::Pdfparser
 
     def in_use? : Bool
       @type == :in_use
+    end
+
+    def compressed? : Bool
+      @type == :compressed
     end
   end
 

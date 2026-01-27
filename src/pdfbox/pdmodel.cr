@@ -248,14 +248,34 @@ module Pdfbox::Pdmodel
 
     # Get page labels
     def page_labels : PageLabels?
-      nil
+      puts "DEBUG DocumentCatalog.page_labels: catalog dict entries:"
+      @cos_dict.entries.each do |key, value|
+        puts "  #{key.value}: #{value.class} #{value.inspect}"
+      end
+
+      # Check for PageLabels entry
+      page_labels_dict = @cos_dict[Cos::Name.new("PageLabels")]
+      puts "DEBUG DocumentCatalog.page_labels: PageLabels entry: #{page_labels_dict.inspect}"
+
+      return unless page_labels_dict
+
+      # Create PageLabels object
+      PageLabels.new(page_labels_dict)
     end
   end
 
   # Page labels class
   class PageLabels
+    @cos_dict : Cos::Base
+
+    def initialize(@cos_dict : Cos::Base)
+      puts "DEBUG PageLabels.initialize: cos_dict type: #{@cos_dict.class}, value: #{@cos_dict.inspect}"
+    end
+
     # Get labels by page indices
     def labels_by_page_indices : Array(String)
+      puts "DEBUG PageLabels.labels_by_page_indices: called"
+      # TODO: Implement proper parsing of page labels number tree
       [] of String
     end
   end
