@@ -73,16 +73,6 @@ module Pdfbox::Pdfparser
       scanner.skip_whitespace
       puts "DEBUG parse_xref: after 'xref', rest first 50 chars: #{scanner.scanner.rest[0..50].inspect}"
 
-      # Debug: check remaining
-      # raise "Remaining: #{scanner.scanner.rest.inspect}"
-      # Check peek
-      # raise "Peek: #{scanner.peek.inspect}, rest: #{scanner.scanner.rest.inspect}"
-      # Try scanning number manually
-      # match = scanner.scanner.scan(/[+-]?\d+(?:\.\d+)?/)
-      # raise "Match: #{match.inspect}"
-      # Debug before read_number
-      # raise "Before read_number: rest=#{scanner.scanner.rest.inspect}, offset=#{scanner.scanner.offset}, pos=#{scanner.position}, string length=#{scanner.scanner.string.bytesize}"
-
       # Parse subsections until we hit "trailer" or other keyword
       loop do
         scanner.skip_whitespace
@@ -129,6 +119,10 @@ module Pdfbox::Pdfparser
         end
       end
 
+      # Update source position to where scanner stopped
+      final_pos = scanner.position
+      puts "DEBUG parse_xref: final scanner.position=#{final_pos}, source.position=#{@source.position}"
+      @source.seek(final_pos)
       xref
     end
 
@@ -144,12 +138,18 @@ module Pdfbox::Pdfparser
         raise SyntaxError.new("Expected 'obj' at position #{scanner.position}")
       end
       scanner.skip_whitespace
+      puts "DEBUG parse_indirect_object_at_offset: after 'obj', scanner.rest first 200 chars: #{scanner.rest[0..200].inspect}"
 
       # Parse the object using ObjectParser (starting at current position)
-      object_parser = ObjectParser.new(@source)
-      object = object_parser.parse_object
+      object_parser = ObjectParser.new(scanner)
+      # Try parsing as dictionary first (most common)
+      object = object_parser.parse_dictionary
       unless object
-        raise SyntaxError.new("Failed to parse object at position #{scanner.position}")
+        # Fall back to generic object parsing
+        object = object_parser.parse_object
+        unless object
+          raise SyntaxError.new("Failed to parse object at position #{scanner.position}")
+        end
       end
 
       # Handle streams (dictionary followed by stream keyword)
@@ -169,6 +169,7 @@ module Pdfbox::Pdfparser
       end
 
       scanner.skip_whitespace
+      puts "DEBUG parse_indirect_object_at_offset: before endobj, scanner.rest first 50 chars: #{scanner.rest[0..50].inspect}, position: #{scanner.position}"
       unless scanner.scanner.scan(/endobj/)
         raise SyntaxError.new("Expected 'endobj' at position #{scanner.position}")
       end
@@ -290,11 +291,19 @@ module Pdfbox::Pdfparser
           # Parse trailer after xref section
           if section_trailer = parse_trailer
             puts "DEBUG: got section_trailer"
-            trailer = section_trailer
-            @trailer = trailer
 
-            # Get next Prev link
-            next_prev_ref = trailer[Pdfbox::Cos::Name.new("Prev")]
+            # Merge trailer dictionaries (later overrides earlier)
+            if trailer
+              # Copy entries from section_trailer to trailer
+              section_trailer.entries.each do |key, value|
+                trailer[key] = value
+              end
+            else
+              trailer = section_trailer
+            end
+
+            # Get next Prev link from current section trailer
+            next_prev_ref = section_trailer[Pdfbox::Cos::Name.new("Prev")]
             if next_prev_ref.is_a?(Pdfbox::Cos::Integer)
               prev = next_prev_ref.value.to_i64
               puts "DEBUG: next prev offset: #{prev}"
@@ -306,30 +315,36 @@ module Pdfbox::Pdfparser
           end
         end
 
+        @trailer = trailer
         puts "DEBUG: final xref entries: #{xref.size}"
         puts "DEBUG: trailer: #{trailer.inspect}"
 
         if trailer
           root_ref = trailer[Pdfbox::Cos::Name.new("Root")]
           puts "DEBUG: root_ref: #{root_ref.inspect}"
-          if root_ref.is_a?(Pdfbox::Cos::Object)
-            puts "DEBUG: root_ref is object, obj_number: #{root_ref.obj_number}"
-            if xref_entry = xref[root_ref.obj_number]
-              puts "DEBUG: xref entry found: offset #{xref_entry.offset}"
-              catalog_obj = parse_indirect_object_at_offset(xref_entry.offset)
-              puts "DEBUG: catalog_obj type: #{catalog_obj.class}"
-              if catalog_obj.is_a?(Pdfbox::Cos::Dictionary)
-                catalog_dict = catalog_obj
+          obj_number = if root_ref.is_a?(Pdfbox::Cos::Object)
+                         puts "DEBUG: root_ref is object, obj_number: #{root_ref.obj_number}"
+                         root_ref.obj_number
+                       elsif root_ref.is_a?(Pdfbox::Cos::Integer)
+                         puts "DEBUG: root_ref is integer, treating as object number: #{root_ref.value}"
+                         root_ref.value
+                       end
 
-                # Parse pages from catalog
-                pages_ref = catalog_dict[Pdfbox::Cos::Name.new("Pages")]
-                if pages_ref
-                  resolved_pages = resolve_object(pages_ref, xref)
-                  if resolved_pages.is_a?(Pdfbox::Cos::Dictionary)
-                    page_dicts = parse_pages_tree(resolved_pages, xref)
-                    page_dicts.each do |page_dict|
-                      pages << Pdfbox::Pdmodel::Page.new(page_dict)
-                    end
+          if obj_number && (xref_entry = xref[obj_number])
+            puts "DEBUG: xref entry found: offset #{xref_entry.offset}"
+            catalog_obj = parse_indirect_object_at_offset(xref_entry.offset)
+            puts "DEBUG: catalog_obj type: #{catalog_obj.class}"
+            if catalog_obj.is_a?(Pdfbox::Cos::Dictionary)
+              catalog_dict = catalog_obj
+
+              # Parse pages from catalog
+              pages_ref = catalog_dict[Pdfbox::Cos::Name.new("Pages")]
+              if pages_ref
+                resolved_pages = resolve_object(pages_ref, xref)
+                if resolved_pages.is_a?(Pdfbox::Cos::Dictionary)
+                  page_dicts = parse_pages_tree(resolved_pages, xref)
+                  page_dicts.each do |page_dict|
+                    pages << Pdfbox::Pdmodel::Page.new(page_dict)
                   end
                 end
               end
@@ -587,11 +602,17 @@ module Pdfbox::Pdfparser
       @scanner = PDFScanner.new(source)
     end
 
+    def initialize(scanner : PDFScanner)
+      @scanner = scanner
+    end
+
     # Parse a COS object from the stream
     def parse_object : Pdfbox::Cos::Base?
       @scanner.skip_whitespace
+      puts "DEBUG ObjectParser.parse_object: rest first 100 chars: #{@scanner.rest[0..100].inspect}"
 
       char = @scanner.peek
+      puts "DEBUG ObjectParser.parse_object: peek char: #{char.inspect}"
       return if char.nil?
 
       case char
@@ -612,7 +633,9 @@ module Pdfbox::Pdfparser
         # Could be end of dictionary or malformed
         nil
       when '0'..'9', '+', '-', '.'
-        parse_number
+        # Try to parse as indirect reference first (obj gen R)
+        ref = parse_reference
+        ref ? ref : parse_number
       when 't', 'f'
         parse_boolean
       when 'n'
@@ -625,31 +648,46 @@ module Pdfbox::Pdfparser
     # Parse a COS dictionary
     def parse_dictionary : Pdfbox::Cos::Dictionary?
       @scanner.skip_whitespace
+      puts "DEBUG ObjectParser.parse_dictionary: rest first 100 chars: #{@scanner.rest[0..100].inspect}"
 
       # Dictionary starts with '<<'
       unless @scanner.rest.starts_with?("<<")
+        puts "DEBUG ObjectParser.parse_dictionary: does not start with '<<'"
         return
       end
 
-      @scanner.scanner.scan("<<") rescue nil
+      scanned = @scanner.scanner.scan("<<")
+      puts "DEBUG ObjectParser.parse_dictionary: scanned '<<': #{scanned.inspect}, pos: #{@scanner.position}"
       dict = Pdfbox::Cos::Dictionary.new
 
       loop do
         @scanner.skip_whitespace
-        break if @scanner.rest.starts_with?(">>")
+        if @scanner.rest.starts_with?(">>")
+          puts "DEBUG ObjectParser.parse_dictionary: found '>>', breaking loop"
+          break
+        end
 
         # Parse key (must be a name)
         key = parse_name
-        break unless key
+        unless key
+          puts "DEBUG ObjectParser.parse_dictionary: failed to parse key, breaking"
+          break
+        end
+        puts "DEBUG ObjectParser.parse_dictionary: parsed key: #{key.inspect}"
 
         # Parse value
         value = parse_object
-        break unless value
+        unless value
+          puts "DEBUG ObjectParser.parse_dictionary: failed to parse value for key #{key}, breaking"
+          break
+        end
+        puts "DEBUG ObjectParser.parse_dictionary: parsed value: #{value.class} #{value.inspect}"
 
         dict[key] = value
       end
 
-      @scanner.scanner.scan(">>") rescue nil
+      scanned_end = @scanner.scanner.scan(">>")
+      puts "DEBUG ObjectParser.parse_dictionary: scanned '>>': #{scanned_end.inspect}, pos after: #{@scanner.position}"
       dict
     end
 
@@ -706,8 +744,10 @@ module Pdfbox::Pdfparser
     # Parse a COS number (integer or float)
     def parse_number : Pdfbox::Cos::Base?
       @scanner.skip_whitespace
+      puts "DEBUG ObjectParser.parse_number: rest first 50 chars: #{@scanner.rest[0..50].inspect}"
 
       number = @scanner.read_number rescue nil
+      puts "DEBUG ObjectParser.parse_number: number=#{number.inspect}"
       return unless number
 
       case number
@@ -719,6 +759,53 @@ module Pdfbox::Pdfparser
         # Should never happen since number is Float64 | Int64
         nil
       end
+    end
+
+    # Parse a COS indirect object reference (obj gen R)
+    def parse_reference : Pdfbox::Cos::Object?
+      @scanner.skip_whitespace
+      puts "DEBUG ObjectParser.parse_reference: rest first 50 chars: #{@scanner.rest[0..50].inspect}"
+
+      # Save scanner position in case we need to rollback
+      saved_pos = @scanner.scanner.offset
+
+      # Try to read first integer
+      first = @scanner.scanner.scan(/[+-]?\d+/) rescue nil
+      puts "DEBUG ObjectParser.parse_reference: first=#{first.inspect}"
+      unless first
+        @scanner.scanner.offset = saved_pos
+        return
+      end
+
+      # Must have whitespace after first integer
+      @scanner.skip_whitespace
+
+      # Try to read second integer
+      second = @scanner.scanner.scan(/[+-]?\d+/) rescue nil
+      puts "DEBUG ObjectParser.parse_reference: second=#{second.inspect}"
+      unless second
+        @scanner.scanner.offset = saved_pos
+        return
+      end
+
+      # Must have whitespace before 'R'
+      @scanner.skip_whitespace
+
+      # Try to read 'R'
+      r = @scanner.scanner.scan('R') rescue nil
+      puts "DEBUG ObjectParser.parse_reference: r=#{r.inspect}"
+      unless r
+        # Not a reference, rollback
+        @scanner.scanner.offset = saved_pos
+        puts "DEBUG ObjectParser.parse_reference: rollback, not a reference"
+        return
+      end
+
+      # Success - create reference object
+      obj_num = first.to_i64
+      gen_num = second.to_i64
+      puts "DEBUG ObjectParser.parse_reference: success #{obj_num} #{gen_num} R"
+      Pdfbox::Cos::Object.new(obj_num, gen_num)
     end
 
     # Parse a COS boolean
@@ -769,7 +856,7 @@ module Pdfbox::Pdfparser
       @source.read(data)
       @buffer_pos = @source.position - data.size
       puts "DEBUG PDFScanner.read_remaining_as_string: read #{data.size} bytes, buffer_pos=#{@buffer_pos}"
-      String.new(data)
+      String.new(data, "ISO-8859-1")
     end
 
     # Get current absolute position in source
