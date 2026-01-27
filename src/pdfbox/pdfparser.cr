@@ -211,126 +211,10 @@ module Pdfbox::Pdfparser
       end
 
       # Decode stream data if compressed
-      data = stream.data
-      filter_entry = dict[Pdfbox::Cos::Name.new("Filter")]
-      if filter_entry
-        puts "DEBUG parse_xref_stream: filter entry = #{filter_entry.inspect}"
-        # For now, assume FlateDecode (single filter)
-        if filter_entry.is_a?(Pdfbox::Cos::Name) && filter_entry.value == "FlateDecode"
-          # Decompress using Deflate (raw deflate) first, fallback to Zlib
-          io = ::IO::Memory.new(data)
-          begin
-            reader = Compress::Deflate::Reader.new(io)
-            decompressed = reader.gets_to_end
-            reader.close
-            data = decompressed.to_slice
-            puts "DEBUG parse_xref_stream: decompressed with Deflate, size = #{data.size} bytes"
-          rescue ex
-            puts "DEBUG parse_xref_stream: Deflate decompression failed: #{ex.class}: #{ex.message}"
-            # Try Zlib instead
-            io.rewind
-            begin
-              reader = Compress::Zlib::Reader.new(io)
-              decompressed = reader.gets_to_end
-              reader.close
-              data = decompressed.to_slice
-              puts "DEBUG parse_xref_stream: decompressed with Zlib, size = #{data.size} bytes"
-            rescue ex2
-              puts "DEBUG parse_xref_stream: Zlib decompression also failed: #{ex2.class}: #{ex2.message}"
-              # Use raw data as fallback (maybe already uncompressed)
-              puts "DEBUG parse_xref_stream: using raw data without decompression"
-            end
-          end
-          if data.size > 0
-            puts "DEBUG parse_xref_stream: first 20 bytes of decompressed data: #{data[0, Math.min(20, data.size)].hexstring}"
-          end
-        else
-          raise SyntaxError.new("Unsupported filter: #{filter_entry.inspect}")
-        end
-      end
-
-      # Helper for PNG predictor decoding
-      apply_png_predictor = ->(input : Bytes, columns : Int32, _predictor : Int32) : Bytes {
-        # PNG predictor: each row has filter byte (0-4) followed by columns bytes
-        row_length = columns + 1
-        return input if input.size % row_length != 0
-        row_count = input.size // row_length
-        output = Bytes.new(row_count * columns)
-        previous_row = Bytes.new(columns, 0)
-        (0...row_count).each do |row|
-          row_start = row * row_length
-          filter_type = input[row_start]
-          row_data = input[row_start + 1, columns]
-          case filter_type
-          when 0 # None
-            # Just copy
-            output[row * columns, columns].copy_from(row_data)
-            previous_row = output[row * columns, columns]
-          when 1 # Sub
-            (0...columns).each do |col|
-              left = col > 0 ? output[row * columns + col - 1] : 0
-              decoded = (row_data[col] + left) & 0xFF
-              output[row * columns + col] = decoded.to_u8
-            end
-            previous_row = output[row * columns, columns]
-          when 2 # Up
-            (0...columns).each do |col|
-              up = previous_row[col]
-              decoded = (row_data[col] + up) & 0xFF
-              output[row * columns + col] = decoded.to_u8
-            end
-            previous_row = output[row * columns, columns]
-          when 3 # Average
-            (0...columns).each do |col|
-              left = col > 0 ? output[row * columns + col - 1] : 0
-              up = previous_row[col]
-              decoded = (row_data[col] + ((left + up) // 2)) & 0xFF
-              output[row * columns + col] = decoded.to_u8
-            end
-            previous_row = output[row * columns, columns]
-          when 4 # Paeth
-            (0...columns).each do |col|
-              left = col > 0 ? output[row * columns + col - 1] : 0
-              up = previous_row[col]
-              up_left = col > 0 ? previous_row[col - 1] : 0
-              # Paeth predictor
-              p = left + up - up_left
-              pa = (p - left).abs
-              pb = (p - up).abs
-              pc = (p - up_left).abs
-              pr = if pa <= pb && pa <= pc
-                     left
-                   elsif pb <= pc
-                     up
-                   else
-                     up_left
-                   end
-              decoded = (row_data[col] + pr) & 0xFF
-              output[row * columns + col] = decoded.to_u8
-            end
-            previous_row = output[row * columns, columns]
-          else
-            raise SyntaxError.new("Unsupported PNG filter type #{filter_type}")
-          end
-        end
-        output
-      }
-
-      # Apply predictor if present
-      decode_parms_entry = dict[Pdfbox::Cos::Name.new("DecodeParms")]
-      if decode_parms_entry && decode_parms_entry.is_a?(Pdfbox::Cos::Dictionary)
-        predictor = decode_parms_entry[Pdfbox::Cos::Name.new("Predictor")]
-        columns = decode_parms_entry[Pdfbox::Cos::Name.new("Columns")]
-        if predictor && predictor.is_a?(Pdfbox::Cos::Integer) && predictor.value >= 10 &&
-           columns && columns.is_a?(Pdfbox::Cos::Integer)
-          # PNG prediction
-          puts "DEBUG parse_xref_stream: applying PNG predictor, columns=#{columns.value}, predictor=#{predictor.value}"
-          data = apply_png_predictor.call(data, columns.value.to_i, predictor.value.to_i)
-          puts "DEBUG parse_xref_stream: after predictor, size=#{data.size} bytes"
-          if data.size > 0
-            puts "DEBUG parse_xref_stream: first 20 bytes after predictor: #{data[0, Math.min(20, data.size)].hexstring}"
-          end
-        end
+      data = decode_stream_data(stream)
+      puts "DEBUG parse_xref_stream: after decoding, size = #{data.size} bytes"
+      if data.size > 0
+        puts "DEBUG parse_xref_stream: first 20 bytes after decoding: #{data[0, Math.min(20, data.size)].hexstring}"
       end
 
       # Parse stream data according to /W array
@@ -525,13 +409,236 @@ module Pdfbox::Pdfparser
     private def resolve_object(obj : Cos::Base, xref : XRef) : Cos::Base
       if obj.is_a?(Cos::Object)
         if xref_entry = xref[obj.obj_number]
-          parse_indirect_object_at_offset(xref_entry.offset)
+          if xref_entry.compressed?
+            # Object is compressed in an object stream
+            parse_object_from_stream(xref_entry.offset, xref_entry.generation, xref)
+          else
+            parse_indirect_object_at_offset(xref_entry.offset)
+          end
         else
           raise SyntaxError.new("Object #{obj.obj_number} not found in xref")
         end
       else
         obj
       end
+    end
+
+    # Parse an object from an object stream
+    private def parse_object_from_stream(obj_stream_number : Int64, index_in_stream : Int64, xref : XRef) : Cos::Base
+      puts "DEBUG parse_object_from_stream: parsing object #{obj_stream_number}:#{index_in_stream}"
+      # First, we need to parse the object stream itself
+      obj_stream_xref_entry = xref[obj_stream_number]
+      unless obj_stream_xref_entry
+        raise SyntaxError.new("Object stream #{obj_stream_number} not found in xref")
+      end
+
+      unless obj_stream_xref_entry.in_use?
+        raise SyntaxError.new("Object stream #{obj_stream_number} is not an in-use entry")
+      end
+
+      # Parse the object stream
+      obj_stream = parse_indirect_object_at_offset(obj_stream_xref_entry.offset)
+      unless obj_stream.is_a?(Cos::Stream)
+        raise SyntaxError.new("Object #{obj_stream_number} is not a stream")
+      end
+
+      # Parse the object stream contents
+      parse_object_stream_contents(obj_stream, index_in_stream)
+    end
+
+    private def decode_stream_data(stream : Cos::Stream) : Bytes
+      data = stream.data
+      dict = stream
+
+      filter_entry = dict[Cos::Name.new("Filter")]
+      if filter_entry
+        if filter_entry.is_a?(Cos::Name) && filter_entry.value == "FlateDecode"
+          io = ::IO::Memory.new(data)
+          begin
+            reader = Compress::Deflate::Reader.new(io)
+            decompressed = reader.gets_to_end
+            reader.close
+            data = decompressed.to_slice
+          rescue ex
+            io.rewind
+            begin
+              reader = Compress::Zlib::Reader.new(io)
+              decompressed = reader.gets_to_end
+              reader.close
+              data = decompressed.to_slice
+            rescue ex2
+              # Use raw data as fallback (maybe already uncompressed)
+            end
+          end
+        else
+          raise SyntaxError.new("Unsupported filter: #{filter_entry.inspect}")
+        end
+      end
+
+      decode_parms_entry = dict[Cos::Name.new("DecodeParms")]
+      if decode_parms_entry && decode_parms_entry.is_a?(Cos::Dictionary)
+        predictor = decode_parms_entry[Cos::Name.new("Predictor")]
+        columns = decode_parms_entry[Cos::Name.new("Columns")]
+        if predictor && predictor.is_a?(Cos::Integer) && predictor.value >= 10 &&
+           columns && columns.is_a?(Cos::Integer)
+          # PNG prediction
+          data = apply_png_predictor(data, columns.value.to_i, predictor.value.to_i)
+        end
+      end
+
+      data
+    end
+
+    private def apply_png_predictor(input : Bytes, columns : Int32, predictor : Int32) : Bytes
+      # PNG predictor: each row has filter byte (0-4) followed by columns bytes
+      row_length = columns + 1
+      return input if input.size % row_length != 0
+      row_count = input.size // row_length
+      output_size = row_count.to_i64 * columns
+      raise RuntimeError.new("PNG predictor output size overflow") if output_size > Int32::MAX || output_size < 0
+      output = Bytes.new(output_size.to_i32)
+      previous_row = Bytes.new(columns, 0)
+      (0...row_count).each do |row|
+        row_start = (row.to_i64 * (columns + 1)).to_i32
+        row_cols = (row.to_i64 * columns).to_i32
+        filter_type = input[row_start]
+        row_data = input[row_start + 1, columns]
+        case filter_type
+        when 0 # None
+          output[row_cols, columns].copy_from(row_data)
+          previous_row = output[row_cols, columns]
+        when 1 # Sub
+          (0...columns).each do |col|
+            left = col > 0 ? output[row_cols + col - 1] : 0
+            decoded = (row_data[col] + left) & 0xFF
+            output[row_cols + col] = decoded.to_u8
+          end
+          previous_row = output[row_cols, columns]
+        when 2 # Up
+          (0...columns).each do |col|
+            up = previous_row[col]
+            decoded = (row_data[col] + up) & 0xFF
+            output[row_cols + col] = decoded.to_u8
+          end
+          previous_row = output[row_cols, columns]
+        when 3 # Average
+          (0...columns).each do |col|
+            left = col > 0 ? output[row_cols + col - 1] : 0
+            up = previous_row[col]
+            decoded = (row_data[col] + ((left + up) // 2)) & 0xFF
+            output[row_cols + col] = decoded.to_u8
+          end
+          previous_row = output[row_cols, columns]
+        when 4 # Paeth
+          (0...columns).each do |col|
+            left = col > 0 ? output[row_cols + col - 1] : 0
+            up = previous_row[col]
+            up_left = col > 0 ? previous_row[col - 1] : 0
+            # Paeth predictor
+            p = left + up - up_left
+            pa = (p - left).abs
+            pb = (p - up).abs
+            pc = (p - up_left).abs
+            pr = if pa <= pb && pa <= pc
+                   left
+                 elsif pb <= pc
+                   up
+                 else
+                   up_left
+                 end
+            decoded = (row_data[col] + pr) & 0xFF
+            output[row_cols + col] = decoded.to_u8
+          end
+          previous_row = output[row_cols, columns]
+        else
+          raise SyntaxError.new("Unsupported PNG filter type #{filter_type}")
+        end
+      end
+      output
+    end
+
+    # Parse object from object stream
+    private def parse_object_stream_contents(obj_stream : Cos::Stream, index_in_stream : Int64) : Cos::Base
+      puts "DEBUG parse_object_stream_contents: parsing object at index #{index_in_stream} from stream"
+
+      # Get stream dictionary
+      dict = obj_stream
+
+      # Check type
+      type_entry = dict[Cos::Name.new("Type")]
+      unless type_entry.is_a?(Cos::Name) && type_entry.value == "ObjStm"
+        raise SyntaxError.new("Not an object stream (Type should be ObjStm)")
+      end
+
+      # Get number of objects
+      n_entry = dict[Cos::Name.new("N")]
+      unless n_entry.is_a?(Cos::Integer)
+        raise SyntaxError.new("/N entry missing or invalid in object stream")
+      end
+      n = n_entry.value.to_i
+
+      # Get offset of first object
+      first_entry = dict[Cos::Name.new("First")]
+      unless first_entry.is_a?(Cos::Integer)
+        raise SyntaxError.new("/First entry missing or invalid in object stream")
+      end
+      first = first_entry.value.to_i
+
+      puts "DEBUG parse_object_stream_contents: N=#{n}, First=#{first}"
+
+      # Get stream data (decompressed and decoded)
+      data = decode_stream_data(obj_stream)
+      puts "DEBUG parse_object_stream_contents: stream data size = #{data.size}"
+
+      # Parse object number/offset pairs
+      # Each pair: object number (integer), offset (integer)
+      # Offsets are relative to first byte after object number/offset pairs
+      # Actually offsets are relative to the byte after the object number/offset pairs
+      # The pairs occupy first 'first' bytes of the uncompressed stream
+
+      # Create RandomAccessRead from stream data
+      memory_io = Pdfbox::IO::MemoryRandomAccessRead.new(data)
+      scanner = PDFScanner.new(memory_io)
+
+      # Read object number/offset pairs
+      object_offsets = {} of Int64 => Int64
+      n.times do
+        obj_num = scanner.read_number.to_i64
+        offset = scanner.read_number.to_i64
+        object_offsets[obj_num] = offset
+        puts "DEBUG parse_object_stream_contents: obj_num=#{obj_num}, offset=#{offset}"
+      end
+
+      # Now find the object with the given index
+      # Actually index_in_stream is the object number, not index
+      # In xref stream, third field for type 2 entries is the object number within the stream
+      # Wait, looking at PDFBox: for type 2 entries, third field is "index within the object stream"
+      # But in PDF spec, it's the object number within the stream
+      # Let's search for object number = index_in_stream
+      target_offset = object_offsets[index_in_stream]?
+      unless target_offset
+        raise SyntaxError.new("Object #{index_in_stream} not found in object stream")
+      end
+
+      # Position in stream data: after the pairs (first bytes) + target_offset
+      absolute_pos = first + target_offset
+      if absolute_pos >= data.size
+        raise SyntaxError.new("Object offset #{absolute_pos} exceeds stream data size #{data.size}")
+      end
+
+      # Seek to object position and create new scanner
+      memory_io.seek(absolute_pos)
+      scanner = PDFScanner.new(memory_io)
+
+      # Parse the object
+      object_parser = ObjectParser.new(scanner)
+      object = object_parser.parse_object
+      unless object
+        raise SyntaxError.new("Failed to parse object at offset #{absolute_pos}")
+      end
+
+      puts "DEBUG parse_object_stream_contents: successfully parsed object #{index_in_stream}"
+      object
     end
 
     # Parse pages tree recursively
