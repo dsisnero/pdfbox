@@ -142,6 +142,14 @@ module Pdfbox::Pdfparser
       stream = stream_obj
       dict = stream
       puts "DEBUG parse_xref_stream: stream dict keys: #{dict.entries.keys.map(&.value)}"
+      if dict.has_key?(Pdfbox::Cos::Name.new("Filter"))
+        filter_entry = dict[Pdfbox::Cos::Name.new("Filter")]
+        puts "DEBUG parse_xref_stream: Filter = #{filter_entry.inspect}"
+      end
+      if dict.has_key?(Pdfbox::Cos::Name.new("DecodeParms"))
+        decode_entry = dict[Pdfbox::Cos::Name.new("DecodeParms")]
+        puts "DEBUG parse_xref_stream: DecodeParms = #{decode_entry.inspect}"
+      end
 
       # Check if it's actually an xref stream
       type_entry = dict[Pdfbox::Cos::Name.new("Type")]
@@ -238,6 +246,90 @@ module Pdfbox::Pdfparser
           end
         else
           raise SyntaxError.new("Unsupported filter: #{filter_entry.inspect}")
+        end
+      end
+
+      # Helper for PNG predictor decoding
+      apply_png_predictor = ->(input : Bytes, columns : Int32, _predictor : Int32) : Bytes {
+        # PNG predictor: each row has filter byte (0-4) followed by columns bytes
+        row_length = columns + 1
+        return input if input.size % row_length != 0
+        row_count = input.size // row_length
+        output = Bytes.new(row_count * columns)
+        previous_row = Bytes.new(columns, 0)
+        (0...row_count).each do |row|
+          row_start = row * row_length
+          filter_type = input[row_start]
+          row_data = input[row_start + 1, columns]
+          case filter_type
+          when 0 # None
+            # Just copy
+            output[row * columns, columns].copy_from(row_data)
+            previous_row = output[row * columns, columns]
+          when 1 # Sub
+            (0...columns).each do |col|
+              left = col > 0 ? output[row * columns + col - 1] : 0
+              decoded = (row_data[col] + left) & 0xFF
+              output[row * columns + col] = decoded.to_u8
+            end
+            previous_row = output[row * columns, columns]
+          when 2 # Up
+            (0...columns).each do |col|
+              up = previous_row[col]
+              decoded = (row_data[col] + up) & 0xFF
+              output[row * columns + col] = decoded.to_u8
+            end
+            previous_row = output[row * columns, columns]
+          when 3 # Average
+            (0...columns).each do |col|
+              left = col > 0 ? output[row * columns + col - 1] : 0
+              up = previous_row[col]
+              decoded = (row_data[col] + ((left + up) // 2)) & 0xFF
+              output[row * columns + col] = decoded.to_u8
+            end
+            previous_row = output[row * columns, columns]
+          when 4 # Paeth
+            (0...columns).each do |col|
+              left = col > 0 ? output[row * columns + col - 1] : 0
+              up = previous_row[col]
+              up_left = col > 0 ? previous_row[col - 1] : 0
+              # Paeth predictor
+              p = left + up - up_left
+              pa = (p - left).abs
+              pb = (p - up).abs
+              pc = (p - up_left).abs
+              pr = if pa <= pb && pa <= pc
+                     left
+                   elsif pb <= pc
+                     up
+                   else
+                     up_left
+                   end
+              decoded = (row_data[col] + pr) & 0xFF
+              output[row * columns + col] = decoded.to_u8
+            end
+            previous_row = output[row * columns, columns]
+          else
+            raise SyntaxError.new("Unsupported PNG filter type #{filter_type}")
+          end
+        end
+        output
+      }
+
+      # Apply predictor if present
+      decode_parms_entry = dict[Pdfbox::Cos::Name.new("DecodeParms")]
+      if decode_parms_entry && decode_parms_entry.is_a?(Pdfbox::Cos::Dictionary)
+        predictor = decode_parms_entry[Pdfbox::Cos::Name.new("Predictor")]
+        columns = decode_parms_entry[Pdfbox::Cos::Name.new("Columns")]
+        if predictor && predictor.is_a?(Pdfbox::Cos::Integer) && predictor.value >= 10 &&
+           columns && columns.is_a?(Pdfbox::Cos::Integer)
+          # PNG prediction
+          puts "DEBUG parse_xref_stream: applying PNG predictor, columns=#{columns.value}, predictor=#{predictor.value}"
+          data = apply_png_predictor.call(data, columns.value.to_i, predictor.value.to_i)
+          puts "DEBUG parse_xref_stream: after predictor, size=#{data.size} bytes"
+          if data.size > 0
+            puts "DEBUG parse_xref_stream: first 20 bytes after predictor: #{data[0, Math.min(20, data.size)].hexstring}"
+          end
         end
       end
 
@@ -356,26 +448,9 @@ module Pdfbox::Pdfparser
           # Skip whitespace (EOL marker) after "stream"
           scanner.skip_whitespace
 
-          # Read stream data from scanner's buffer
-          # The scanner has the remaining data in its string buffer
-          # We need to read 'length' bytes starting from current scanner position
-          scanner_str = scanner.scanner
-          current_offset = scanner_str.offset
-          string = scanner_str.string
-
-          # Check if we have enough data
-          if current_offset + length > string.bytesize
-            raise SyntaxError.new("Stream data truncated: need #{length} bytes but only #{string.bytesize - current_offset} available")
-          end
-
-          # Get byteslice from string (ISO-8859-1 preserves byte values)
-          byte_slice = string.byte_slice(current_offset, length)
-          data = byte_slice.to_slice
-
+          # Read stream data as raw bytes
+          data = scanner.read_raw_bytes(length)
           puts "DEBUG parse_indirect_object_at_offset: read #{data.size} bytes of stream data"
-
-          # Advance scanner past the stream data
-          scanner_str.offset = (current_offset + length).to_i32
 
           # Create Stream object with data
           stream_obj = Pdfbox::Cos::Stream.new(object.entries, data)
@@ -1098,9 +1173,11 @@ module Pdfbox::Pdfparser
     @scanner : StringScanner
     @source : Pdfbox::IO::RandomAccessRead
     @buffer_pos : Int64 = 0
+    @raw_buffer : Bytes = Bytes.empty
 
     getter scanner : StringScanner
     getter buffer_pos : Int64
+    getter raw_buffer : Bytes
 
     def initialize(@source : Pdfbox::IO::RandomAccessRead)
       # Read remaining data as string for scanning
@@ -1111,16 +1188,32 @@ module Pdfbox::Pdfparser
     private def read_remaining_as_string : String
       bytes_to_read = @source.length - @source.position
       puts "DEBUG PDFScanner.read_remaining_as_string: source.length=#{@source.length}, source.position=#{@source.position}, bytes_to_read=#{bytes_to_read}"
-      data = Bytes.new(bytes_to_read)
-      @source.read(data)
-      @buffer_pos = @source.position - data.size
-      puts "DEBUG PDFScanner.read_remaining_as_string: read #{data.size} bytes, buffer_pos=#{@buffer_pos}"
-      String.new(data, "ISO-8859-1")
+      @raw_buffer = Bytes.new(bytes_to_read)
+      @source.read(@raw_buffer)
+      @buffer_pos = @source.position - @raw_buffer.size
+      puts "DEBUG PDFScanner.read_remaining_as_string: read #{@raw_buffer.size} bytes, buffer_pos=#{@buffer_pos}"
+      String.new(@raw_buffer, "ISO-8859-1")
     end
 
     # Get current absolute position in source
     def position : Int64
       @buffer_pos + @scanner.offset
+    end
+
+    # Read raw bytes from buffer at current position
+    def read_raw_bytes(length : Int64) : Bytes
+      offset_in_buffer = @scanner.offset
+      if offset_in_buffer + length > @raw_buffer.size
+        raise SyntaxError.new("Requested #{length} bytes at offset #{offset_in_buffer} but buffer only has #{@raw_buffer.size} bytes")
+      end
+
+      # Get slice of raw buffer
+      slice = @raw_buffer[offset_in_buffer, length]
+
+      # Advance scanner position
+      @scanner.offset = (offset_in_buffer + length).to_i32
+
+      slice
     end
 
     # Set absolute position in source
