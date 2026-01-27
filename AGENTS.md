@@ -4,13 +4,16 @@ This project is a **Crystal port of Apache PDFBox** - a library for working with
 
 **Apache PDFBox Source:** The original Java source code is available in the `./apache_pdfbox/` directory. Use this as the reference implementation when porting features.
 
-**Crystal Idioms & Standard Library:** Prefer Crystal idioms and standard library over Java patterns. Adapt Java APIs to fit Crystal's type system and conventions (e.g., use `Enumerable`, `IO`, Crystal's exception hierarchy).
-
 **Test-Driven Development (TDD):**
 - **Port tests first** before implementing functionality
 - Reference test files in `./apache_pdfbox/pdfbox/src/test/` for expected behavior
 - Write Crystal specs that match the behavior of the original Java tests
 - Ensure tests fail appropriately before implementation (red-green-refactor)
+
+**Use Apache PDFBox Source** when porting the code over.  When ever you start to port a method understand how the Java source code implements it first.  Whenever you run into questions, look at the Java source file for how they do it.
+
+**Crystal Idioms & Standard Library:** Prefer Crystal idioms and standard library over Java patterns. Adapt Java APIs to fit Crystal's type system and conventions (e.g., use `Enumerable`, `IO`, Crystal's exception hierarchy).
+
 
 ## Issue Tracking
 

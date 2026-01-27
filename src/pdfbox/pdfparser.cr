@@ -61,6 +61,7 @@ module Pdfbox::Pdfparser
       xref = XRef.new
       # Skip whitespace/comments before "xref"
       scanner = PDFScanner.new(@source)
+      puts "DEBUG parse_xref: scanner string length: #{scanner.scanner.string.bytesize}, start pos: #{scanner.position}"
       scanner.skip_whitespace
 
       # Expect "xref" keyword
@@ -70,6 +71,7 @@ module Pdfbox::Pdfparser
 
       # Skip whitespace after keyword
       scanner.skip_whitespace
+      puts "DEBUG parse_xref: after 'xref', rest first 50 chars: #{scanner.scanner.rest[0..50].inspect}"
 
       # Debug: check remaining
       # raise "Remaining: #{scanner.scanner.rest.inspect}"
@@ -150,6 +152,22 @@ module Pdfbox::Pdfparser
         raise SyntaxError.new("Failed to parse object at position #{scanner.position}")
       end
 
+      # Handle streams (dictionary followed by stream keyword)
+      if object.is_a?(Pdfbox::Cos::Dictionary)
+        scanner.skip_whitespace
+        if scanner.scanner.scan(/stream/)
+          # Skip stream data until we find endstream
+          # TODO: Properly parse stream data using Length from dictionary
+          # For now, skip until endstream
+          while !scanner.scanner.eos?
+            if scanner.scanner.scan(/endstream/)
+              break
+            end
+            scanner.scanner.scan(/./) rescue break
+          end
+        end
+      end
+
       scanner.skip_whitespace
       unless scanner.scanner.scan(/endobj/)
         raise SyntaxError.new("Expected 'endobj' at position #{scanner.position}")
@@ -205,41 +223,132 @@ module Pdfbox::Pdfparser
       page_count
     end
 
+    # Resolve a COS object, handling indirect references
+    private def resolve_object(obj : Cos::Base, xref : XRef) : Cos::Base
+      if obj.is_a?(Cos::Object)
+        if xref_entry = xref[obj.obj_number]
+          parse_indirect_object_at_offset(xref_entry.offset)
+        else
+          raise SyntaxError.new("Object #{obj.obj_number} not found in xref")
+        end
+      else
+        obj
+      end
+    end
+
+    # Parse pages tree recursively
+    private def parse_pages_tree(pages_dict : Cos::Dictionary, xref : XRef) : Array(Cos::Dictionary)
+      result = [] of Cos::Dictionary
+
+      # Get Type to verify this is a Pages node
+      type_obj = pages_dict[Cos::Name.new("Type")]
+      if type_obj.is_a?(Cos::Name) && type_obj.value == "Page"
+        # Leaf page
+        result << pages_dict
+        return result
+      end
+
+      # Should be Type "Pages" or missing (assume Pages)
+      kids_obj = pages_dict[Cos::Name.new("Kids")]
+      if kids_obj.is_a?(Cos::Array)
+        kids_obj.items.each do |kid|
+          resolved_kid = resolve_object(kid, xref)
+          if resolved_kid.is_a?(Cos::Dictionary)
+            result.concat(parse_pages_tree(resolved_kid, xref))
+          end
+        end
+      end
+
+      result
+    end
+
     # Parse the PDF document
     def parse : Pdfbox::Pdmodel::Document
       version = parse_header
 
-      page_count = 0
       catalog_dict = nil
+      pages = [] of Pdfbox::Pdmodel::Page
       xref_offset = locate_xref_offset
-      if xref_offset
-        @source.seek(xref_offset)
-        xref = parse_xref
-        page_count = parse_page_count_from_xref(xref)
+      puts "DEBUG: xref_offset: #{xref_offset}"
 
-        # Parse trailer dictionary
-        if trailer = parse_trailer
-          @trailer = trailer
+      if xref_offset
+        xref = XRef.new
+        trailer = nil
+        prev : Int64 = xref_offset.not_nil!.to_i64
+
+        while prev > 0
+          puts "DEBUG: parsing xref at offset #{prev}"
+          @source.seek(prev)
+          section_xref = parse_xref
+          puts "DEBUG: section_xref entries: #{section_xref.size}"
+
+          # Merge xref entries (later sections override earlier ones)
+          section_xref.entries.each do |obj_num, entry|
+            xref[obj_num] = entry
+          end
+
+          # Parse trailer after xref section
+          if section_trailer = parse_trailer
+            puts "DEBUG: got section_trailer"
+            trailer = section_trailer
+            @trailer = trailer
+
+            # Get next Prev link
+            next_prev_ref = trailer[Pdfbox::Cos::Name.new("Prev")]
+            if next_prev_ref.is_a?(Pdfbox::Cos::Integer)
+              prev = next_prev_ref.value.to_i64
+              puts "DEBUG: next prev offset: #{prev}"
+            else
+              prev = 0.to_i64.to_i64
+            end
+          else
+            prev = 0
+          end
+        end
+
+        puts "DEBUG: final xref entries: #{xref.size}"
+        puts "DEBUG: trailer: #{trailer.inspect}"
+
+        if trailer
           root_ref = trailer[Pdfbox::Cos::Name.new("Root")]
+          puts "DEBUG: root_ref: #{root_ref.inspect}"
           if root_ref.is_a?(Pdfbox::Cos::Object)
+            puts "DEBUG: root_ref is object, obj_number: #{root_ref.obj_number}"
             if xref_entry = xref[root_ref.obj_number]
+              puts "DEBUG: xref entry found: offset #{xref_entry.offset}"
               catalog_obj = parse_indirect_object_at_offset(xref_entry.offset)
+              puts "DEBUG: catalog_obj type: #{catalog_obj.class}"
               if catalog_obj.is_a?(Pdfbox::Cos::Dictionary)
                 catalog_dict = catalog_obj
+
+                # Parse pages from catalog
+                pages_ref = catalog_dict[Pdfbox::Cos::Name.new("Pages")]
+                if pages_ref
+                  resolved_pages = resolve_object(pages_ref, xref)
+                  if resolved_pages.is_a?(Pdfbox::Cos::Dictionary)
+                    page_dicts = parse_pages_tree(resolved_pages, xref)
+                    page_dicts.each do |page_dict|
+                      pages << Pdfbox::Pdmodel::Page.new(page_dict)
+                    end
+                  end
+                end
               end
             end
           end
         end
       else
-        # Simple format with comments
+        # Simple format with comments - use old counting logic
         page_count = parse_simple_page_count
+        page_count.times do
+          pages << Pdfbox::Pdmodel::Page.new
+        end
       end
 
       doc = Pdfbox::Pdmodel::Document.new(catalog_dict, version)
 
-      # Add pages to document
-      page_count.times do
-        doc.add_page(Pdfbox::Pdmodel::Page.new)
+      # Add parsed pages to document
+      pages.each do |page|
+        doc.add_page(page)
       end
 
       doc
@@ -266,14 +375,56 @@ module Pdfbox::Pdfparser
 
     # Parse trailer dictionary after xref table
     private def parse_trailer : Pdfbox::Cos::Dictionary?
-      scanner = PDFScanner.new(@source)
-      scanner.skip_whitespace
-      if scanner.scanner.scan(/trailer/i)
-        scanner.skip_whitespace
-        @source.seek(scanner.position)
-        object_parser = ObjectParser.new(@source)
-        object_parser.parse_dictionary
+      # Save current position
+      start_pos = @source.position
+      puts "DEBUG parse_trailer: starting at position #{start_pos}"
+
+      # Skip whitespace/comments
+      loop do
+        byte = @source.peek
+        break unless byte
+        ch = byte.chr
+        if ch == '%'
+          # Comment, skip to end of line
+          while byte = @source.read
+            break if byte.chr == '\n'
+          end
+        elsif ch.ascii_whitespace?
+          @source.read # skip whitespace
+        else
+          break
+        end
       end
+
+      # Check for "trailer" keyword
+      # Read next 7 bytes to check
+      @source.seek(start_pos) # reset to start
+      line = read_line
+      puts "DEBUG parse_trailer: first line: #{line.inspect}"
+
+      # Try to find "trailer" in line
+      if line.includes?("trailer")
+        # Position after "trailer"
+        trailer_index = line.index("trailer")
+        if trailer_index
+          # Skip to after "trailer"
+          @source.seek(start_pos + trailer_index + "trailer".size)
+          # Skip whitespace
+          while byte = @source.peek
+            break unless byte.chr.ascii_whitespace?
+            @source.read
+          end
+          # Now parse dictionary
+          object_parser = ObjectParser.new(@source)
+          dict = object_parser.parse_dictionary
+          puts "DEBUG parse_trailer: parsed dictionary: #{dict.inspect}"
+          return dict
+        end
+      end
+
+      puts "DEBUG parse_trailer: 'trailer' not found in line"
+      @source.seek(start_pos) # restore position
+      nil
     end
 
     private def parse_xref_from_scanner(scanner : PDFScanner) : XRef
@@ -603,6 +754,7 @@ module Pdfbox::Pdfparser
     @buffer_pos : Int64 = 0
 
     getter scanner : StringScanner
+    getter buffer_pos : Int64
 
     def initialize(@source : Pdfbox::IO::RandomAccessRead)
       # Read remaining data as string for scanning
@@ -611,9 +763,12 @@ module Pdfbox::Pdfparser
 
     # Read remaining data from source as ASCII string
     private def read_remaining_as_string : String
-      data = Bytes.new(@source.length - @source.position)
+      bytes_to_read = @source.length - @source.position
+      puts "DEBUG PDFScanner.read_remaining_as_string: source.length=#{@source.length}, source.position=#{@source.position}, bytes_to_read=#{bytes_to_read}"
+      data = Bytes.new(bytes_to_read)
       @source.read(data)
       @buffer_pos = @source.position - data.size
+      puts "DEBUG PDFScanner.read_remaining_as_string: read #{data.size} bytes, buffer_pos=#{@buffer_pos}"
       String.new(data)
     end
 

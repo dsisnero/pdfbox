@@ -1,0 +1,15 @@
+[2m2026-01-27T00:03:05.748256Z[0m [32m INFO[0m [2msimple_completion_language_server::snippets::config[0m[2m:[0m Try load snippets from: "/Users/dominic/.config/helix/snippets/ruby.toml" for scope: Some(["ruby"])
+[2m2026-01-27T00:03:05.749332Z[0m [31mERROR[0m [2msimple_completion_language_server::snippets::config[0m[2m:[0m On read snippets from "/Users/dominic/.config/helix/snippets/ruby.toml": TOML parse error at line 1, column 1
+  |
+1 | [[snippet]]
+  | ^
+missing field `snippets`
+
+[2m2026-01-27T00:03:05.749619Z[0m [32m INFO[0m [2msimple_completion_language_server::snippets::config[0m[2m:[0m Try read config from: "/Users/dominic/.config/helix/external-snippets.toml"
+[2m2026-01-27T00:03:05.750262Z[0m [32m INFO[0m [2msimple_completion_language_server::snippets::config[0m[2m:[0m Try load snippets from: "/Users/dominic/.config/helix/external-snippets/github.com/rafamadriz/friendly-snippets.git/snippets/python/python.json" for scope: Some(["python"])
+[2m2026-01-27T00:03:05.750723Z[0m [32m INFO[0m [2msimple_completion_language_server::snippets::config[0m[2m:[0m Try load snippets from: "/Users/dominic/.config/helix/external-snippets/github.com/rafamadriz/friendly-snippets.git/snippets/ruby/ruby.json" for scope: Some(["ruby"])
+[2m2026-01-27T00:03:05.751239Z[0m [32m INFO[0m [2msimple_completion_language_server::snippets::config[0m[2m:[0m Try load snippets from: "/Users/dominic/.config/helix/external-snippets/github.com/rafamadriz/friendly-snippets.git/snippets/asciidoc.json" for scope: Some(["asciidoc"])
+[2m2026-01-27T00:03:05.751839Z[0m [32m INFO[0m [2msimple_completion_language_server::snippets::config[0m[2m:[0m Try load snippets from: "/Users/dominic/.config/helix/external-snippets/github.com/rafamadriz/friendly-snippets.git/snippets/markdown.json" for scope: Some(["markdown"])
+[2m2026-01-27T00:03:05.752101Z[0m [31mERROR[0m [2msimple_completion_language_server::snippets::config[0m[2m:[0m On read dir "/Users/dominic/.config/helix/unicode-input": No such file or directory (os error 2)
+[2m2026-01-27T00:03:05.755604Z[0m [32m INFO[0m [2msimple_completion_language_server::server[0m[2m:[0m server initialized!
+[2m2026-01-27T00:03:05.755730Z[0m [32m INFO[0m [2msimple_completion_language_server::server[0m[2m:[0m Did change configuration: DidChangeConfigurationParams { settings: Object {"feature_paths": Bool(true), "feature_snippets": Bool(true), "feature_unicode_input": Bool(true), "feature_words": Bool(true), "max_completion_items": Number(20), "snippets_first": Bool(true)} }

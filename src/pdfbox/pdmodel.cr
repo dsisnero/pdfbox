@@ -8,9 +8,11 @@ module Pdfbox::Pdmodel
     @cos_document : Cos::Dictionary?
     @version : String
     @pages : Array(Page)
+    @catalog : DocumentCatalog?
 
     def initialize(@cos_document : Cos::Dictionary? = nil, @version : String = "1.4")
       @pages = [] of Page
+      @catalog = @cos_document ? DocumentCatalog.new(@cos_document.not_nil!) : nil
     end
 
     # Get PDF version (e.g., "1.4")
@@ -81,7 +83,7 @@ module Pdfbox::Pdmodel
 
     # Get the document catalog
     def document_catalog : DocumentCatalog?
-      nil
+      @catalog
     end
 
     # Get a page by index (0-based)
