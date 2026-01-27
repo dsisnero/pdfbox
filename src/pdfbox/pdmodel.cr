@@ -12,7 +12,7 @@ module Pdfbox::Pdmodel
 
     def initialize(@cos_document : Cos::Dictionary? = nil, @version : String = "1.4")
       @pages = [] of Page
-      @catalog = @cos_document ? DocumentCatalog.new(@cos_document.not_nil!) : nil
+      @catalog = @cos_document ? DocumentCatalog.new(@cos_document.as(Cos::Dictionary)) : nil
     end
 
     # Get PDF version (e.g., "1.4")
