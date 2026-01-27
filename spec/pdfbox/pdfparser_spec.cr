@@ -168,8 +168,12 @@ end
 
 describe Pdfbox::Pdfparser::Parser do
   pending "test PDF parser missing catalog" do
-    # TODO: Port testPDFParserMissingCatalog
     # Test loading MissingCatalog.pdf
+    # pdf_path = File.expand_path("../resources/pdfbox/pdparser/MissingCatalog.pdf", __DIR__)
+    # # Should load without raising an exception
+    # doc = Pdfbox::Pdmodel::Document.load(pdf_path)
+    # doc.should_not be_nil
+    # doc.close if doc.responds_to?(:close)
   end
 
   pending "test PDFBOX-3208" do
@@ -188,18 +192,30 @@ describe Pdfbox::Pdfparser::Parser do
   end
 
   pending "test PDFBOX-3947" do
-    # TODO: Port testPDFBox3947
     # Test parsing file with broken object stream
+    # pdf_path = File.expand_path("../resources/pdfbox/pdparser/PDFBOX-3947-670064.pdf", __DIR__)
+    # # Should load without raising an exception
+    # doc = Pdfbox::Pdmodel::Document.load(pdf_path)
+    # doc.should_not be_nil
+    # doc.close if doc.responds_to?(:close)
   end
 
   pending "test PDFBOX-3948" do
-    # TODO: Port testPDFBox3948
     # Test parsing file with object stream containing unexpected newlines
+    # pdf_path = File.expand_path("../resources/pdfbox/pdparser/PDFBOX-3948-EUWO6SQS5TM4VGOMRD3FLXZHU35V2CP2.pdf", __DIR__)
+    # # Should load without raising an exception
+    # doc = Pdfbox::Pdmodel::Document.load(pdf_path)
+    # doc.should_not be_nil
+    # doc.close if doc.responds_to?(:close)
   end
 
   pending "test PDFBOX-3949" do
-    # TODO: Port testPDFBox3949
     # Test parsing file with incomplete object stream
+    # pdf_path = File.expand_path("../resources/pdfbox/pdparser/PDFBOX-3949-MKFYUGZWS3OPXLLVU2Z4LWCTVA5WNOGF.pdf", __DIR__)
+    # # Should load without raising an exception
+    # doc = Pdfbox::Pdmodel::Document.load(pdf_path)
+    # doc.should_not be_nil
+    # doc.close if doc.responds_to?(:close)
   end
 
   pending "test PDFBOX-3950" do

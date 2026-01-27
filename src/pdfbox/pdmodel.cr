@@ -418,40 +418,49 @@ module Pdfbox::Pdmodel
       return labels unless dict.is_a?(Cos::Dictionary)
       Log.debug { "parse_number_tree: dict is Cos::Dictionary, entries: #{dict.entries.keys.map(&.value)}" }
 
-      # Check for /Nums array
-      nums = dict[Cos::Name.new("Nums")]
-      Log.debug { "parse_number_tree: nums value: #{nums.inspect}, class: #{nums.class}" }
-      return labels unless nums.is_a?(Cos::Array)
-
-      items = nums.items
-      Log.debug { "parse_number_tree: nums array size: #{items.size}" }
-      i = 0
-      while i + 1 < items.size
-        key = items[i]
-        value = items[i + 1]
-        Log.debug { "parse_number_tree: pair #{i}: key=#{key.inspect}, value=#{value.inspect}" }
-
-        if key.is_a?(Cos::Integer)
-          # Resolve value if it's an object reference
-          label_dict = value
-          if label_dict.is_a?(Cos::Object)
-            Log.debug { "parse_number_tree: value is Cos::Object, object: #{label_dict.object.inspect}" }
-            dict_obj = label_dict.object
-            label_dict = dict_obj if dict_obj.is_a?(Cos::Dictionary)
-          end
-
-          if label_dict.is_a?(Cos::Dictionary)
-            start_page = key.value.to_i32
-            Log.debug { "parse_number_tree: adding label range start_page=#{start_page}, dict=#{label_dict.entries.keys.map(&.value)}" }
-            labels[start_page] = PageLabelRange.new(label_dict)
-          end
+      # Create NumberTreeNode to parse the number tree
+      node = NumberTreeNode(PageLabelRange).new(dict) do |cos|
+        # Converter proc: Convert Cos::Base to PageLabelRange
+        # cos could be Cos::Object (reference) or Cos::Dictionary
+        dict_to_use = cos
+        if dict_to_use.is_a?(Cos::Object)
+          obj = dict_to_use.object
+          dict_to_use = obj if obj.is_a?(Cos::Dictionary)
         end
 
-        i += 2
+        unless dict_to_use.is_a?(Cos::Dictionary)
+          Log.error { "parse_number_tree: expected Cos::Dictionary for PageLabelRange, got #{dict_to_use.class}" }
+          raise Pdfbox::PDFError.new("Expected dictionary for PageLabelRange, got #{dict_to_use.class}")
+        end
+
+        PageLabelRange.new(dict_to_use)
       end
+
+      # Recursively collect labels from the number tree
+      find_labels(node, labels)
 
       Log.debug { "parse_number_tree: found #{labels.size} label ranges" }
       labels
+    end
+
+    private def find_labels(node : NumberTreeNode(PageLabelRange), labels : Hash(Int32, PageLabelRange)) : Nil
+      # Check kids first (recursive traversal)
+      kids = node.kids
+      if kids
+        kids.each do |kid|
+          find_labels(kid, labels)
+        end
+      else
+        # Leaf node: get numbers
+        numbers = node.numbers
+        if numbers
+          numbers.each do |key, value|
+            if key >= 0
+              labels[key] = value
+            end
+          end
+        end
+      end
     end
 
     private def generate_label(range : PageLabelRange, offset : Int32) : String
@@ -593,7 +602,7 @@ module Pdfbox::Pdmodel
     # Get value for a given index
     def get_value(index : Int32) : T?
       # Check local numbers first
-      numbers = get_numbers
+      numbers = self.numbers
       if numbers && numbers.has_key?(index)
         return numbers[index]
       end
@@ -602,8 +611,9 @@ module Pdfbox::Pdmodel
       kids_list = kids
       if kids_list
         kids_list.each do |child|
-          if child.lower_limit && child.upper_limit &&
-             child.lower_limit.not_nil! <= index && child.upper_limit.not_nil! >= index
+          lower = child.lower_limit
+          upper = child.upper_limit
+          if lower && upper && lower <= index && upper >= index
             return child.get_value(index)
           end
         end
@@ -613,7 +623,7 @@ module Pdfbox::Pdmodel
     end
 
     # Get numbers map from this node
-    def get_numbers : Hash(Int32, T)?
+    def numbers : Hash(Int32, T)?
       nums_array = @node[Cos::Name.new("Nums")]
       return unless nums_array.is_a?(Cos::Array)
 
