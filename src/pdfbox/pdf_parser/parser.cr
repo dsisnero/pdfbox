@@ -7,6 +7,10 @@ module Pdfbox::Pdfparser
   # Main PDF parser class
   class Parser < Pdfbox::Cos::ICOSParser
     Log = ::Log.for(self)
+
+    # Safety limits to prevent infinite loops with malformed PDFs
+    MAX_OBJECTS_PER_STREAM =    10_000
+    MAX_XREF_ENTRIES       = 1_000_000
     @source : Pdfbox::IO::RandomAccessRead
     @trailer : Pdfbox::Cos::Dictionary?
     @xref : XRef?
@@ -240,6 +244,7 @@ module Pdfbox::Pdfparser
     end
 
     private def parse_xref_stream_entries(data : Bytes, w : Array(Int32), index_array : Array(Int64)) : XRef
+      Log.debug { "parse_xref_stream_entries: START, data size=#{data.size}, w=#{w}, index_array=#{index_array}" }
       xref = XRef.new
       total_entry_width = w.sum
       if total_entry_width == 0
@@ -258,6 +263,10 @@ module Pdfbox::Pdfparser
       # Process index array pairs
       if index_array.size % 2 != 0
         raise SyntaxError.new("/Index array must have even number of elements, got #{index_array.size}")
+      end
+      total_entries = index_array.each_slice(2).sum { |pair| pair[1] }
+      if total_entries > MAX_XREF_ENTRIES
+        raise SyntaxError.new("XRef stream claims #{total_entries} entries, exceeding limit #{MAX_XREF_ENTRIES}")
       end
       index_array.each_slice(2) do |pair|
         start, count = pair[0], pair[1]
@@ -715,6 +724,9 @@ module Pdfbox::Pdfparser
       if n < 0
         raise SyntaxError.new("Illegal /N entry in object stream: #{n}")
       end
+      if n > MAX_OBJECTS_PER_STREAM
+        raise SyntaxError.new("Object stream /N too large: #{n} > #{MAX_OBJECTS_PER_STREAM}")
+      end
 
       # Get offset of first object
       first_entry = dict[Cos::Name.new("First")]
@@ -895,17 +907,21 @@ module Pdfbox::Pdfparser
     end
 
     private def collect_xref_sections(xref_offset : Int64) : Array(Tuple(Int64, XRef, Pdfbox::Cos::Dictionary?))
+      Log.debug { "collect_xref_sections: start with xref_offset=#{xref_offset}" }
       sections = [] of Tuple(Int64, XRef, Pdfbox::Cos::Dictionary?)
       prev : Int64 = xref_offset.to_i64
 
       while prev > 0
-        Log.debug { "parsing xref at offset #{prev}" }
+        Log.debug { "collect_xref_sections: parsing xref at offset #{prev}" }
         @source.seek(prev)
         section_xref = parse_xref
-        Log.debug { "section_xref entries: #{section_xref.size}" }
+        Log.debug { "collect_xref_sections: section_xref entries: #{section_xref.size}" }
 
         section_trailer = parse_trailer
-        Log.debug { "got section_trailer: #{section_trailer != nil}" }
+        Log.debug { "collect_xref_sections: got section_trailer: #{section_trailer != nil}" }
+        if section_trailer
+          Log.debug { "collect_xref_sections: trailer keys: #{section_trailer.entries.keys.map(&.value)}" }
+        end
 
         sections << {prev, section_xref, section_trailer}
 
@@ -914,7 +930,7 @@ module Pdfbox::Pdfparser
           next_prev_ref = section_trailer[Pdfbox::Cos::Name.new("Prev")]
           if next_prev_ref.is_a?(Pdfbox::Cos::Integer)
             prev = next_prev_ref.value.to_i64
-            Log.debug { "next prev offset: #{prev}" }
+            Log.debug { "collect_xref_sections: next prev offset: #{prev}" }
           else
             prev = 0_i64
           end
@@ -923,17 +939,22 @@ module Pdfbox::Pdfparser
         end
       end
 
+      Log.debug { "collect_xref_sections: collected #{sections.size} sections" }
       sections
     end
 
     private def merge_xref_sections(sections : Array(Tuple(Int64, XRef, Pdfbox::Cos::Dictionary?))) : Tuple(XRef, Pdfbox::Cos::Dictionary?)
+      Log.debug { "merge_xref_sections: start with #{sections.size} sections" }
       xref = XRef.new
       trailer = nil
 
       # Process sections from OLDEST to NEWEST (reverse of collection order)
       # so newer entries override older ones
       sections.reverse.each do |offset_val, xref_section, trailer_section|
-        Log.debug { "applying xref section from offset #{offset_val} (#{xref_section.size} entries)" }
+        Log.debug { "merge_xref_sections: applying xref section from offset #{offset_val} (#{xref_section.size} entries)" }
+        if trailer_section
+          Log.debug { "merge_xref_sections: trailer_section keys: #{trailer_section.entries.keys.map(&.value)}" }
+        end
 
         # Combine traditional xref entries with XRefStm entries for this section
         # Traditional entries take precedence over XRefStm entries within same section
@@ -960,19 +981,19 @@ module Pdfbox::Pdfparser
           xref_stm_ref = trailer_section[Pdfbox::Cos::Name.new("XRefStm")]
           if xref_stm_ref && xref_stm_ref.is_a?(Pdfbox::Cos::Integer)
             xref_stm_offset = xref_stm_ref.value.to_i64
-            Log.debug { "Found XRefStm at offset #{xref_stm_offset}, parsing xref stream" }
+            Log.debug { "merge_xref_sections: Found XRefStm at offset #{xref_stm_offset}, parsing xref stream" }
             begin
               xref_stream = parse_xref_stream(xref_stm_offset)
-              Log.debug { "xref_stream size before merging: #{xref_stream.size}" }
+              Log.debug { "merge_xref_sections: xref_stream size before merging: #{xref_stream.size}" }
 
               # Merge xref stream entries with section entries
               # Don't overwrite existing entries (traditional xref takes precedence)
               xref_stream.entries.each do |obj_num, entry|
                 section_entries[obj_num] = entry unless section_entries.has_key?(obj_num)
               end
-              Log.debug { "Merged #{xref_stream.size} entries from xref stream" }
+              Log.debug { "merge_xref_sections: Merged #{xref_stream.size} entries from xref stream" }
             rescue ex
-              Log.debug { "Failed to parse xref stream at offset #{xref_stm_offset}: #{ex.message}" }
+              Log.debug { "merge_xref_sections: Failed to parse xref stream at offset #{xref_stm_offset}: #{ex.message}" }
               Log.debug(exception: ex) { "xref stream parsing error" }
             end
           end
@@ -1034,6 +1055,7 @@ module Pdfbox::Pdfparser
     end
 
     private def parse_pages_from_catalog(catalog_dict : Pdfbox::Cos::Dictionary, xref : XRef) : Array(Pdfbox::Pdmodel::Page)
+      Log.debug { "PARSER: parse_pages_from_catalog start" }
       pages = [] of Pdfbox::Pdmodel::Page
 
       pages_ref = catalog_dict[Pdfbox::Cos::Name.new("Pages")]
@@ -1052,6 +1074,7 @@ module Pdfbox::Pdfparser
 
     # Parse the PDF document
     def parse : Pdfbox::Pdmodel::Document
+      Log.debug { "PARSER: START parsing PDF document" }
       version = parse_header
       pages = [] of Pdfbox::Pdmodel::Page
 

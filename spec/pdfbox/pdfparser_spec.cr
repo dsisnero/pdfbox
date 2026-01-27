@@ -191,13 +191,13 @@ describe Pdfbox::Pdfparser::Parser do
     # Test truncated file with several revisions has correct page count
   end
 
-  pending "test PDFBOX-3947" do
+  it "test PDFBOX-3947" do
     # Test parsing file with broken object stream
-    # pdf_path = File.expand_path("../resources/pdfbox/pdparser/PDFBOX-3947-670064.pdf", __DIR__)
-    # # Should load without raising an exception
-    # doc = Pdfbox::Pdmodel::Document.load(pdf_path)
-    # doc.should_not be_nil
-    # doc.close if doc.responds_to?(:close)
+    pdf_path = File.expand_path("../resources/pdfbox/pdparser/PDFBOX-3947-670064.pdf", __DIR__)
+    # Should load without raising an exception
+    doc = Pdfbox::Pdmodel::Document.load(pdf_path)
+    doc.should_not be_nil
+    doc.close if doc.responds_to?(:close)
   end
 
   it "test PDFBOX-3948" do
