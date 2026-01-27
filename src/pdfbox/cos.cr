@@ -408,52 +408,127 @@ module Pdfbox::Cos
     def_hash @data
   end
 
-  # Object reference (indirect object)
+  # Object reference (indirect object) - corresponds to COSObject in Apache PDFBox
   class Object < Base
-    @object_number : Int64
-    @generation_number : Int64
-    @object : Base?
+    Log = ::Log.for(self)
 
-    def initialize(@object_number : Int64, @generation_number : Int64 = 0, @object : Base? = nil)
+    @base_object : Base?
+    @parser : ICOSParser?
+    @is_dereferenced = false
+    @key : ObjectKey?
+
+    # Constructor for already dereferenced object
+    def initialize(object : Base)
+      @base_object = object
+      @parser = nil
+      @is_dereferenced = true
+      @key = nil
+    end
+
+    # Constructor for object with parser reference for lazy resolution
+    def initialize(key : ObjectKey, parser : ICOSParser)
+      @base_object = nil
+      @parser = parser
+      @is_dereferenced = false
+      @key = key
+    end
+
+    # Constructor for object with object number/generation and parser
+    def initialize(object_number : Int64, generation_number : Int64, parser : ICOSParser)
+      @base_object = nil
+      @parser = parser
+      @is_dereferenced = false
+      @key = ObjectKey.new(object_number, generation_number)
+    end
+
+    # Legacy constructor for compatibility
+    def initialize(object_number : Int64, generation_number : Int64 = 0, object : Base? = nil)
+      @base_object = object
+      @parser = nil
+      @is_dereferenced = object != nil
+      @key = ObjectKey.new(object_number, generation_number)
     end
 
     def object_number : Int64
-      @object_number
+      key = @key
+      return 0_i64 unless key
+      key.number
     end
 
     def generation_number : Int64
-      @generation_number
+      key = @key
+      return 0_i64 unless key
+      key.generation
     end
 
     def obj_number : Int64
-      @object_number
+      object_number
     end
 
     def gen_number : Int64
-      @generation_number
+      generation_number
     end
 
+    # Get the encapsulated object, dereferencing if needed
     def object : Base?
-      @object
+      if !@is_dereferenced && (parser = @parser)
+        begin
+          # Mark as dereferenced to avoid endless recursions
+          @is_dereferenced = true
+          @base_object = parser.dereference_object(self)
+          @parser = nil
+        rescue ex
+          Log.error { "Can't dereference #{self}: #{ex.message}" }
+          # Return nil on error
+          return
+        end
+      end
+      @base_object
     end
 
-    def object=(@object : Base?) : Base?
-      @object
+    def object=(object : Base?) : Base?
+      @base_object = object
+      @is_dereferenced = object != nil
+      @parser = nil
+      object
+    end
+
+    def object_null? : Bool
+      @base_object.nil?
+    end
+
+    def key : ObjectKey?
+      @key
+    end
+
+    def key=(key : ObjectKey?) : ObjectKey?
+      @key = key
     end
 
     # Write this object reference in PDF format to the given IO
     def write_pdf(io : ::IO) : Nil
-      io << @object_number << ' ' << @generation_number << " R"
+      io << object_number << ' ' << generation_number << " R"
     end
 
     def ==(other : self) : Bool
-      @object_number == other.@object_number && @generation_number == other.@generation_number
+      key1 = @key
+      key2 = other.@key
+      return false unless key1 && key2
+      key1 == key2
     end
 
     def ==(other) : Bool
       false
     end
 
-    def_hash @object_number, @generation_number
+    def_hash @key
+
+    def to_s(io : IO) : Nil
+      if key = @key
+        io << "COSObject{" << key << "}"
+      else
+        io << "COSObject{unknown}"
+      end
+    end
   end
 end

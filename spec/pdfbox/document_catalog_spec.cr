@@ -9,10 +9,11 @@ describe Pdfbox::Pdmodel::DocumentCatalog do
       catalog = doc.document_catalog
       catalog.should_not be_nil
 
-      page_labels = catalog.not_nil!.page_labels
+      catalog.should_not be_nil
+      page_labels = catalog.as(Pdfbox::Pdmodel::DocumentCatalog).page_labels
       page_labels.should_not be_nil
 
-      labels = page_labels.not_nil!.labels_by_page_indices
+      labels = page_labels.as(Pdfbox::Pdmodel::PageLabels).labels_by_page_indices
       labels.size.should eq(12)
       labels[0].should eq("A1")
       labels[1].should eq("A2")
@@ -36,7 +37,7 @@ describe Pdfbox::Pdmodel::DocumentCatalog do
       catalog = doc.document_catalog
       catalog.should_not be_nil
 
-      page_labels = catalog.not_nil!.page_labels
+      page_labels = catalog.as(Pdfbox::Pdmodel::DocumentCatalog).page_labels
       # Should not raise exception when called
       if page_labels
         labels = page_labels.labels_by_page_indices

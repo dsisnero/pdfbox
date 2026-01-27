@@ -79,6 +79,11 @@ module Pdfbox::IO
       read(buffer)
       buffer
     end
+
+    # Create a view of a portion of this RandomAccessRead
+    def create_view(start_position : Int64, stream_length : Int64) : RandomAccessRead
+      RandomAccessReadView.new(self, start_position, stream_length)
+    end
   end
 
   # Random access read implementation using ::IO::Memory
@@ -162,6 +167,77 @@ module Pdfbox::IO
 
     def finalize
       @file.close
+    end
+  end
+
+  # Random access read view that provides a window into another RandomAccessRead
+  # Similar to RandomAccessReadView in Apache PDFBox
+  class RandomAccessReadView < RandomAccessRead
+    @source : RandomAccessRead
+    @start_position : Int64
+    @stream_length : Int64
+    @current_position : Int64 = 0
+
+    def initialize(@source : RandomAccessRead, @start_position : Int64, @stream_length : Int64)
+    end
+
+    def position : Int64
+      @current_position
+    end
+
+    def length : Int64
+      @stream_length
+    end
+
+    def seek(position : Int64) : Nil
+      if position < 0
+        raise "Invalid position #{position}"
+      end
+      # Seek within the view bounds
+      actual_position = @start_position + Math.min(position, @stream_length)
+      @source.seek(actual_position)
+      @current_position = Math.min(position, @stream_length)
+    end
+
+    def read : UInt8?
+      if eof?
+        return
+      end
+      # Ensure we're at the correct position in the source
+      @source.seek(@start_position + @current_position)
+      byte = @source.read
+      if byte
+        @current_position += 1
+      end
+      byte
+    end
+
+    def read(buffer : Bytes) : Int32
+      if eof?
+        return 0
+      end
+      # Calculate max bytes we can read
+      max_bytes = (@stream_length - @current_position).to_i32
+      return 0 if max_bytes <= 0
+
+      bytes_to_read = Math.min(buffer.size, max_bytes)
+      # Seek to correct position in source
+      @source.seek(@start_position + @current_position)
+      bytes_read = @source.read(buffer[0, bytes_to_read])
+      @current_position += bytes_read if bytes_read > 0
+      bytes_read
+    end
+
+    def peek : UInt8?
+      if eof?
+        return
+      end
+      @source.seek(@start_position + @current_position)
+      @source.peek
+    end
+
+    def eof? : Bool
+      @current_position >= @stream_length
     end
   end
 end

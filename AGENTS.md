@@ -14,11 +14,17 @@ This project is a **Crystal port of Apache PDFBox** - a library for working with
 
 **Crystal Idioms & Standard Library:** Prefer Crystal idioms and standard library over Java patterns. Adapt Java APIs to fit Crystal's type system and conventions (e.g., use `Enumerable`, `IO`, Crystal's exception hierarchy).
 
-
+**Critical: Follow Apache PDFBox Logic Exactly:** When porting methods, maintain the same logic, algorithms, and architecture as the Apache PDFBox Java source. The goal is to create a faithful port, not a reimplementation. When debugging or implementing features:
+1. Study the corresponding Java source code thoroughly before writing Crystal code
+2. Understand how objects are resolved, parsed, and cached in the Java implementation
+3. Map Java patterns to Crystal idioms while preserving the underlying logic
+4. Pay special attention to lazy resolution patterns, object pools, and caching mechanisms used in Apache PDFBox
+5. **do not simplify** There are no time constraints or other reasons to simplify.  Port the method so the same logic applies
 ## Issue Tracking
 
 This project uses **bd (beads)** for ALL issue tracking and task management.
-**DO NOT use todo lists** - use beads issues with proper tags and labels instead.
+**DO NOT use todo tool** - use beads issues with proper tags and labels and status instead.
+**DO NOT use task tool** - use beads issues with proper tags and labels , and status instead
 
 Run `bd prime` for workflow context, or install hooks (`bd hooks install`) for auto-injection.
 
