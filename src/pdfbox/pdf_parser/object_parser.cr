@@ -94,8 +94,8 @@ module Pdfbox::Pdfparser
         dict[key] = value
       end
 
-      scanned_end = @scanner.scanner.scan(">>")
-      # puts "DEBUG ObjectParser.parse_dictionary: scanned '>>': #{scanned_end.inspect}, pos after: #{@scanner.position}"
+      _scanned_end = @scanner.scanner.scan(">>")
+      # puts "DEBUG ObjectParser.parse_dictionary: scanned '>>': #{_scanned_end.inspect}, pos after: #{@scanner.position}"
       dict
     end
 

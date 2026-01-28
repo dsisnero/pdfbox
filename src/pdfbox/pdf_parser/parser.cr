@@ -80,52 +80,70 @@ module Pdfbox::Pdfparser
 
     # Parse cross-reference table
     def parse_xref : XRef
-      puts "DEBUG: parse_xref called" if @lenient
+      # puts "DEBUG: parse_xref called" if @lenient
       xref = XRef.new
       # Skip whitespace/comments before "xref"
       scanner = PDFScanner.new(@source)
       Log.debug { "parse_xref: scanner string length: #{scanner.scanner.string.bytesize}, start pos: #{scanner.position}" }
-      puts "DEBUG: parse_xref scanner created, string length: #{scanner.scanner.string.bytesize}" if @lenient
-      puts "DEBUG: first 100 chars: #{scanner.scanner.string[0..100].inspect}" if @lenient
+      # puts "DEBUG: parse_xref scanner created, string length: #{scanner.scanner.string.bytesize}" if @lenient
+      # puts "DEBUG: first 100 chars: #{scanner.scanner.string[0..100].inspect}" if @lenient
       scanner.skip_whitespace
-      puts "DEBUG: after skip_whitespace, pos: #{scanner.position}" if @lenient
+      # puts "DEBUG: after skip_whitespace, pos: #{scanner.position}" if @lenient
 
       # Expect "xref" keyword
-      puts "DEBUG: scanning for /xref/ regex at pos #{scanner.scanner.offset}" if @lenient
+      # puts "DEBUG: scanning for /xref/ regex at pos #{scanner.scanner.offset}" if @lenient
       unless scanner.scanner.scan(/xref/)
-        puts "DEBUG: /xref/ not matched, rest: #{scanner.scanner.rest[0..50].inspect}" if @lenient
+        # puts "DEBUG: /xref/ not matched, rest: #{scanner.scanner.rest[0..50].inspect}" if @lenient
         raise SyntaxError.new("Expected 'xref' keyword at position #{scanner.position}")
       end
-      puts "DEBUG: /xref/ matched, new pos: #{scanner.scanner.offset}" if @lenient
+      # puts "DEBUG: /xref/ matched, new pos: #{scanner.scanner.offset}" if @lenient
 
       # Skip whitespace after keyword
       scanner.skip_whitespace
       Log.debug { "parse_xref: after 'xref', rest first 50 chars: #{scanner.scanner.rest[0..50].inspect}" }
-      puts "DEBUG: after 'xref', rest: #{scanner.scanner.rest[0..100].inspect}" if @lenient
+      # puts "DEBUG: after 'xref', rest: #{scanner.scanner.rest[0..100].inspect}" if @lenient
 
       # Parse subsections until we hit "trailer" or other keyword
-      puts "DEBUG: entering xref subsection loop" if @lenient
+      # puts "DEBUG: entering xref subsection loop" if @lenient
       loop do
         scanner.skip_whitespace
         # Check for next keyword (trailer, startxref) or end of input
-        puts "DEBUG: checking eos or trailer/startxref" if @lenient
+        # puts "DEBUG: checking eos or trailer/startxref" if @lenient
         break if scanner.scanner.eos? || scanner.scanner.check(/trailer|startxref/i)
 
         # Read starting object number and count
-        puts "DEBUG: reading start_obj and count" if @lenient
+        # puts "DEBUG: reading start_obj and count" if @lenient
         start_obj = scanner.read_number
         count = scanner.read_number
-        puts "DEBUG: start_obj=#{start_obj}, count=#{count}" if @lenient
+        # puts "DEBUG: start_obj=#{start_obj}, count=#{count}" if @lenient
 
         # Ensure they are integers
         start_obj = start_obj.to_i64
         count = count.to_i64
 
         # Parse count entries
+        # puts "DEBUG: parsing #{count} entries, start_obj=#{start_obj}" if @lenient
+        last_pos = scanner.position
+        same_pos_count = 0
         count.times do |i|
+          # puts "DEBUG: parsing xref entry #{i}/#{count}" if @lenient && i % 100 == 0
           scanner.skip_whitespace
+          # Safety check: if scanner isn't advancing, we're stuck
+          current_pos = scanner.position
+          if current_pos == last_pos
+            same_pos_count += 1
+            if same_pos_count > 10
+              # puts "DEBUG: STUCK at position #{current_pos}, aborting xref parsing" if @lenient
+              raise SyntaxError.new("Parser stuck at position #{current_pos} while parsing xref entries")
+            end
+          else
+            same_pos_count = 0
+            last_pos = current_pos
+          end
+          # puts "DEBUG: before scanning offset at entry #{i}, rest first 30: #{scanner.scanner.rest[0..30].inspect}" if @lenient && i < 5
           offset_str = scanner.scanner.scan(/\d{10}/)
           unless offset_str
+            # puts "DEBUG: offset not found at entry #{i}, rest: #{scanner.scanner.rest[0..50].inspect}" if @lenient
             raise SyntaxError.new("Expected 10-digit offset at position #{scanner.position}")
           end
           offset = offset_str.to_i64
@@ -156,7 +174,7 @@ module Pdfbox::Pdfparser
       # Update source position to where scanner stopped
       final_pos = scanner.position
       Log.debug { "parse_xref: final scanner.position=#{final_pos}, source.position=#{@source.position}" }
-      puts "DEBUG: parse_xref returning, final_pos=#{final_pos}, xref entries=#{xref.size}" if @lenient
+      # puts "DEBUG: parse_xref returning, final_pos=#{final_pos}, xref entries=#{xref.size}" if @lenient
       @source.seek(final_pos)
       xref
     end
@@ -450,45 +468,45 @@ module Pdfbox::Pdfparser
 
     # Locate xref table offset using startxref pointer
     def locate_xref_offset : Int64?
-      puts "DEBUG: locate_xref_offset called" if @lenient
+      # puts "DEBUG: locate_xref_offset called" if @lenient
       # Save current position
       original_pos = @source.position
       begin
         file_size = @source.length
-        puts "DEBUG: file_size=#{file_size}" if @lenient
+        # puts "DEBUG: file_size=#{file_size}" if @lenient
         read_size = 1024
         start = file_size - read_size
         start = 0_i64 if start < 0
-        puts "DEBUG: reading from offset #{start}" if @lenient
+        # puts "DEBUG: reading from offset #{start}" if @lenient
         @source.seek(start)
         data = @source.read_all
-        puts "DEBUG: read #{data.size} bytes" if @lenient
+        # puts "DEBUG: read #{data.size} bytes" if @lenient
         # Find "startxref" from end
-        puts "DEBUG: converting bytes to string" if @lenient
+        # puts "DEBUG: converting bytes to string" if @lenient
         str = String.new(data, "ISO-8859-1")
-        puts "DEBUG: string created, length=#{str.size}" if @lenient
-        puts "DEBUG: searching for 'startxref' in string" if @lenient
+        # puts "DEBUG: string created, length=#{str.size}" if @lenient
+        # puts "DEBUG: searching for 'startxref' in string" if @lenient
         if idx = str.index("startxref")
-          puts "DEBUG: found 'startxref' at index #{idx}" if @lenient
+          # puts "DEBUG: found 'startxref' at index #{idx}" if @lenient
           idx += 9 # length of "startxref"
-          puts "DEBUG: after 'startxref', idx=#{idx}" if @lenient
+          # puts "DEBUG: after 'startxref', idx=#{idx}" if @lenient
           # Skip whitespace
           while idx < str.size && str[idx].ascii_whitespace?
             idx += 1
           end
-          puts "DEBUG: after whitespace, idx=#{idx}" if @lenient
+          # puts "DEBUG: after whitespace, idx=#{idx}" if @lenient
           # Parse digits
           start_idx = idx
           while idx < str.size && str[idx].ascii_number?
             idx += 1
           end
-          puts "DEBUG: after digits, idx=#{idx}, start_idx=#{start_idx}" if @lenient
+          # puts "DEBUG: after digits, idx=#{idx}, start_idx=#{start_idx}" if @lenient
           if start_idx < idx
             digits = str[start_idx...idx]
-            puts "DEBUG: digits='#{digits}', returning offset #{digits.to_i64}" if @lenient
+            # puts "DEBUG: digits='#{digits}', returning offset #{digits.to_i64}" if @lenient
             return digits.to_i64
           else
-            puts "DEBUG: no digits found after startxref" if @lenient
+            # puts "DEBUG: no digits found after startxref" if @lenient
           end
         end
       ensure
@@ -971,7 +989,7 @@ module Pdfbox::Pdfparser
 
     private def collect_xref_sections(xref_offset : Int64) : Array(Tuple(Int64, XRef, Pdfbox::Cos::Dictionary?))
       Log.debug { "collect_xref_sections: start with xref_offset=#{xref_offset}" }
-      puts "DEBUG: collect_xref_sections called with offset #{xref_offset}" if @lenient
+      # puts "DEBUG: collect_xref_sections called with offset #{xref_offset}" if @lenient
       sections = [] of Tuple(Int64, XRef, Pdfbox::Cos::Dictionary?)
       prev : Int64 = xref_offset.to_i64
 
@@ -1145,7 +1163,7 @@ module Pdfbox::Pdfparser
     # Parse the PDF document
     def parse : Pdfbox::Pdmodel::Document
       Log.debug { "PARSER: START parsing PDF document" }
-      puts "DEBUG: Parser.parse started (lenient=#{@lenient})" if @lenient
+      # puts "DEBUG: Parser.parse started (lenient=#{@lenient})" if @lenient
       version = parse_header
       pages = [] of Pdfbox::Pdmodel::Page
 
@@ -1210,17 +1228,17 @@ module Pdfbox::Pdfparser
       # Save current position
       start_pos = @source.position
       Log.debug { "parse_trailer: starting at position #{start_pos}" }
-      puts "DEBUG: parse_trailer start_pos=#{start_pos}" if @lenient
+      # puts "DEBUG: parse_trailer start_pos=#{start_pos}" if @lenient
 
       # Skip whitespace/comments
-      puts "DEBUG: parse_trailer skipping whitespace/comments" if @lenient
+      # puts "DEBUG: parse_trailer skipping whitespace/comments" if @lenient
       loop do
         byte = @source.peek
-        puts "DEBUG: parse_trailer peek byte=#{byte}, pos=#{@source.position}" if @lenient && @source.position % 100 == 0
+        # puts "DEBUG: parse_trailer peek byte=#{byte}, pos=#{@source.position}" if @lenient && @source.position % 100 == 0
         break unless byte
         ch = byte.chr
         if ch == '%'
-          puts "DEBUG: parse_trailer found comment at pos #{@source.position}" if @lenient
+          # puts "DEBUG: parse_trailer found comment at pos #{@source.position}" if @lenient
           # Comment, skip to end of line
           while byte = @source.read
             break if byte.chr == '\n'
@@ -1228,11 +1246,11 @@ module Pdfbox::Pdfparser
         elsif ch.ascii_whitespace?
           @source.read # skip whitespace
         else
-          puts "DEBUG: parse_trailer non-whitespace char '#{ch}' at pos #{@source.position}, breaking" if @lenient
+          # puts "DEBUG: parse_trailer non-whitespace char '#{ch}' at pos #{@source.position}, breaking" if @lenient
           break
         end
       end
-      puts "DEBUG: parse_trailer after whitespace loop, pos=#{@source.position}" if @lenient
+      # puts "DEBUG: parse_trailer after whitespace loop, pos=#{@source.position}" if @lenient
 
       # Check for "trailer" keyword
       # Read next 7 bytes to check

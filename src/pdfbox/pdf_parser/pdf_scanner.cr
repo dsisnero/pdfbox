@@ -20,12 +20,12 @@ module Pdfbox::Pdfparser
     # Read remaining data from source as ASCII string
     private def read_remaining_as_string : String
       bytes_to_read = @source.length - @source.position
-      puts "PDFScanner DEBUG: source.length=#{@source.length}, source.position=#{@source.position}, bytes_to_read=#{bytes_to_read}"
+      # puts "PDFScanner DEBUG: source.length=#{@source.length}, source.position=#{@source.position}, bytes_to_read=#{bytes_to_read}"
       Log.debug { "PDFScanner.read_remaining_as_string: source.length=#{@source.length}, source.position=#{@source.position}, bytes_to_read=#{bytes_to_read}" }
       @raw_buffer = Bytes.new(bytes_to_read)
       @source.read(@raw_buffer)
       @buffer_pos = @source.position - @raw_buffer.size
-      puts "PDFScanner DEBUG: read #{@raw_buffer.size} bytes, buffer_pos=#{@buffer_pos}"
+      # puts "PDFScanner DEBUG: read #{@raw_buffer.size} bytes, buffer_pos=#{@buffer_pos}"
       Log.debug { "PDFScanner.read_remaining_as_string: read #{@raw_buffer.size} bytes, buffer_pos=#{@buffer_pos}" }
       String.new(@raw_buffer, "ISO-8859-1")
     end
@@ -64,10 +64,23 @@ module Pdfbox::Pdfparser
 
     # Skip whitespace and comments
     def skip_whitespace : Nil
+      max_iterations = 1000
+      iteration = 0
       loop do
+        iteration += 1
+        if iteration > max_iterations
+          # puts "PDFScanner WARNING: skip_whitespace stuck in infinite loop at offset #{@scanner.offset}, string size #{@scanner.string.bytesize}"
+          break
+        end
+
         @scanner.skip(/\s+/)
         if @scanner.check('%')
-          @scanner.skip_until(/\r?\n/)
+          # Skip comment to end of line
+          if @scanner.skip_until(/\r?\n/).nil?
+            # No newline found, skip to end of string
+            @scanner.offset = @scanner.string.bytesize
+            break
+          end
         else
           break
         end
