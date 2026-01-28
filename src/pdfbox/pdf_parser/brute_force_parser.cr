@@ -1,5 +1,6 @@
 require "log"
 require "../cos"
+require "../io"
 require "./pdf_scanner"
 require "./object_parser"
 
@@ -46,61 +47,88 @@ module Pdfbox::Pdfparser
     end
 
     # Brute force search for every object in the pdf.
+    # ameba:disable Metrics/CyclomaticComplexity
     private def bf_search_for_objects : Nil
       Log.warn { "BruteForceParser.bf_search_for_objects: START" }
       last_eof_marker = bf_search_for_last_eof_marker
       origin_offset = @source.position
-      current_offset = MINIMUM_SEARCH_OFFSET
-      last_object_id = Int64::MIN
-      last_gen_id = Int64::MIN
-      last_obj_offset = Int64::MIN
-      end_of_obj_found = false
+
+      # Read the search range into memory for faster scanning
+      start_offset = MINIMUM_SEARCH_OFFSET
+      range_size = last_eof_marker - start_offset
+      if range_size <= 0
+        @source.seek(origin_offset)
+        Log.warn { "BruteForceParser.bf_search_for_objects: empty range" }
+        return
+      end
+
+      @source.seek(start_offset)
+      data = @source.read_all
+      @source.seek(origin_offset)
+
+      # Create memory-based RandomAccessRead for the range
+      memory_source = Pdfbox::IO::MemoryRandomAccessRead.new(data)
+      original_source = @source
 
       iteration_count = 0
       max_iterations = 3_000_000 # safety limit for ~3MB file
 
       begin
-        while current_offset < last_eof_marker && !@source.eof? && iteration_count < max_iterations
-          iteration_count += 1
-          if iteration_count % 100_000 == 0
-            Log.warn { "BruteForceParser.bf_search_for_objects: iteration #{iteration_count}, offset #{current_offset}" }
-          end
-          @source.seek(current_offset)
-          next_char = @source.read
-          current_offset += 1
-          break if next_char.nil?
+        @source = memory_source
+        # Run original scanning algorithm on memory source
+        # Offsets in memory source are 0-based, we'll add start_offset when storing
 
-          ch = next_char.chr
-          if whitespace?(ch) && string?(OBJ_MARKER)
-            if result = handle_object_marker(current_offset, last_object_id, last_gen_id, last_obj_offset)
-              new_current_offset, object_id, gen_id, obj_offset = result
-              last_object_id = object_id
-              last_gen_id = gen_id
-              last_obj_offset = obj_offset
-              current_offset = new_current_offset
-              end_of_obj_found = false
+        current_offset = 0_i64 # MINIMUM_SEARCH_OFFSET relative to memory source
+        last_object_id = Int64::MIN
+        last_gen_id = Int64::MIN
+        last_obj_offset = Int64::MIN
+        end_of_obj_found = false
+
+        begin
+          while current_offset < range_size && !@source.eof? && iteration_count < max_iterations
+            iteration_count += 1
+            if iteration_count % 100_000 == 0
+              Log.warn { "BruteForceParser.bf_search_for_objects: iteration #{iteration_count}, offset #{current_offset}" }
             end
-          elsif ch == 'e' && string?(ENDOBJ_STRING)
-            new_current_offset, found = parse_endobj_marker(current_offset)
-            current_offset = new_current_offset
-            end_of_obj_found = found
+            @source.seek(current_offset)
+            next_char = @source.read
+            current_offset += 1
+            break if next_char.nil?
+
+            ch = next_char.chr
+            if whitespace?(ch) && string?(OBJ_MARKER)
+              if result = handle_object_marker(current_offset, last_object_id, last_gen_id, last_obj_offset)
+                new_current_offset, object_id, gen_id, obj_offset = result
+                last_object_id = object_id
+                last_gen_id = gen_id
+                # Convert memory offset back to file offset
+                last_obj_offset = obj_offset + start_offset
+                current_offset = new_current_offset
+                end_of_obj_found = false
+              end
+            elsif ch == 'e' && string?(ENDOBJ_STRING)
+              new_current_offset, found = parse_endobj_marker(current_offset)
+              current_offset = new_current_offset
+              end_of_obj_found = found
+            end
           end
+        rescue ex
+          Log.debug(exception: ex) { "Exception during brute force search for objects" }
         end
-      rescue ex
-        Log.debug(exception: ex) { "Exception during brute force search for objects" }
+
+        if iteration_count >= max_iterations
+          Log.warn { "BruteForceParser.bf_search_for_objects: hit iteration limit #{max_iterations}" }
+        end
+
+        if (last_eof_marker < Int64::MAX || end_of_obj_found) && last_obj_offset > 0
+          # if the pdf wasn't cut off in the middle or if the last object ends with a "endobj" marker
+          # the last object id has to be added here so that it can't get lost as there isn't any subsequent object id
+          @bf_search_cos_object_key_offsets[Cos::ObjectKey.new(last_object_id, last_gen_id)] = last_obj_offset
+        end
+      ensure
+        @source = original_source
       end
 
-      if iteration_count >= max_iterations
-        Log.warn { "BruteForceParser.bf_search_for_objects: hit iteration limit #{max_iterations}" }
-      end
-
-      if (last_eof_marker < Int64::MAX || end_of_obj_found) && last_obj_offset > 0
-        # if the pdf wasn't cut off in the middle or if the last object ends with a "endobj" marker
-        # the last object id has to be added here so that it can't get lost as there isn't any subsequent object id
-        @bf_search_cos_object_key_offsets[Cos::ObjectKey.new(last_object_id, last_gen_id)] = last_obj_offset
-      end
-      # reestablish origin position
-      @source.seek(origin_offset)
       Log.warn { "BruteForceParser.bf_search_for_objects: END, found #{@bf_search_cos_object_key_offsets.size} objects, iterations: #{iteration_count}" }
     end
 
@@ -111,6 +139,11 @@ module Pdfbox::Pdfparser
 
     private def digit?(ch : Char) : Bool
       ch.ascii_number?
+    end
+
+    private def min_search_offset : Int64
+      # When using memory source (brute force search in memory), we can search from offset 0
+      @source.is_a?(Pdfbox::IO::MemoryRandomAccessRead) ? 0_i64 : MINIMUM_SEARCH_OFFSET
     end
 
     private def string?(chars : Array(Char)) : Bool
@@ -148,14 +181,14 @@ module Pdfbox::Pdfparser
       return unless peek_byte && whitespace?(peek_byte.chr)
 
       # skip whitespace backwards
-      while temp_offset > MINIMUM_SEARCH_OFFSET
+      while temp_offset > min_search_offset
         peek_byte = @source.peek
         break unless peek_byte && whitespace?(peek_byte.chr)
         @source.seek(temp_offset -= 1)
       end
 
       object_id_found = false
-      while temp_offset > MINIMUM_SEARCH_OFFSET
+      while temp_offset > min_search_offset
         peek_byte = @source.peek
         break unless peek_byte && digit?(peek_byte.chr)
         @source.seek(temp_offset -= 1)
@@ -342,10 +375,10 @@ module Pdfbox::Pdfparser
       object_offsets = bf_cos_object_offsets
       Log.debug { "bf_search_for_obj_streams: brute force objects count: #{object_offsets.size}" }
 
-      # log warning about skipped stream
+      # log debug about skipped stream (common in corrupted PDFs)
       offsets_map.each do |offset, key|
         if object_offsets[key]?.nil?
-          Log.warn { "Skipped incomplete object stream:#{key} at #{offset}" }
+          Log.debug { "Skipped incomplete object stream:#{key} at #{offset}" }
         end
       end
 
@@ -670,6 +703,7 @@ module Pdfbox::Pdfparser
     end
 
     # Brute force search for trailer dictionary
+    # ameba:disable Metrics/CyclomaticComplexity
     private def bf_search_for_trailer(trailer : Cos::Dictionary) : Bool
       Log.warn { "BruteForceParser.bf_search_for_trailer: START" }
       origin_offset = @source.position

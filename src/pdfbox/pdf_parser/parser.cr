@@ -79,6 +79,7 @@ module Pdfbox::Pdfparser
     end
 
     # Parse cross-reference table
+    # ameba:disable Metrics/CyclomaticComplexity
     def parse_xref : XRef
       # puts "DEBUG: parse_xref called" if @lenient
       xref = XRef.new
@@ -123,52 +124,120 @@ module Pdfbox::Pdfparser
 
         # Parse count entries
         # puts "DEBUG: parsing #{count} entries, start_obj=#{start_obj}" if @lenient
-        last_pos = scanner.position
-        same_pos_count = 0
+
+        # Get direct access to scanner string for faster parsing
+        scanner_str = scanner.scanner.string
+        scanner_offset = scanner.scanner.offset
+
         count.times do |i|
-          # puts "DEBUG: parsing xref entry #{i}/#{count}" if @lenient && i % 100 == 0
-          scanner.skip_whitespace
-          # Safety check: if scanner isn't advancing, we're stuck
-          current_pos = scanner.position
-          if current_pos == last_pos
-            same_pos_count += 1
-            if same_pos_count > 10
-              # puts "DEBUG: STUCK at position #{current_pos}, aborting xref parsing" if @lenient
-              raise SyntaxError.new("Parser stuck at position #{current_pos} while parsing xref entries")
+          # puts "DEBUG: parsing xref entry #{i}/#{count}" if @lenient && i % 1000 == 0
+
+          # Skip whitespace and comments - manually for speed
+          while scanner_offset < scanner_str.bytesize
+            ch = scanner_str[scanner_offset]
+            if ch == '%'
+              # Skip comment to end of line
+              while scanner_offset < scanner_str.bytesize && scanner_str[scanner_offset] != '\n' && scanner_str[scanner_offset] != '\r'
+                scanner_offset += 1
+              end
+              # Skip the newline character(s)
+              while scanner_offset < scanner_str.bytesize && (scanner_str[scanner_offset] == '\n' || scanner_str[scanner_offset] == '\r')
+                scanner_offset += 1
+              end
+            elsif ch.ascii_whitespace?
+              scanner_offset += 1
+            else
+              break
             end
-          else
-            same_pos_count = 0
-            last_pos = current_pos
           end
-          # puts "DEBUG: before scanning offset at entry #{i}, rest first 30: #{scanner.scanner.rest[0..30].inspect}" if @lenient && i < 5
-          offset_str = scanner.scanner.scan(/\d{10}/)
-          unless offset_str
-            # puts "DEBUG: offset not found at entry #{i}, rest: #{scanner.scanner.rest[0..50].inspect}" if @lenient
-            raise SyntaxError.new("Expected 10-digit offset at position #{scanner.position}")
-          end
-          offset = offset_str.to_i64
 
-          scanner.scanner.scan(/\s+/)
-          gen_str = scanner.scanner.scan(/\d{5}/)
-          unless gen_str
-            raise SyntaxError.new("Expected 5-digit generation at position #{scanner.position}")
+          # Parse 10-digit offset directly from string
+          if scanner_offset + 10 > scanner_str.bytesize
+            position = scanner.buffer_pos + scanner_offset
+            raise SyntaxError.new("Incomplete offset field at position #{position}")
           end
-          generation = gen_str.to_i64
+          offset = 0_i64
+          10.times do |j|
+            ch = scanner_str[scanner_offset + j]
+            unless '0' <= ch <= '9'
+              position = scanner.buffer_pos + scanner_offset + j
+              raise SyntaxError.new("Expected digit in offset at position #{position}")
+            end
+            offset = offset * 10 + (ch - '0').to_i64
+          end
+          scanner_offset += 10
 
-          scanner.scanner.scan(/\s+/)
-          type_char = scanner.scanner.scan(/[nf]/)
-          unless type_char
-            raise SyntaxError.new("Expected 'n' or 'f' at position #{scanner.position}")
+          # Skip whitespace (one or more spaces/tabs)
+          if scanner_offset >= scanner_str.bytesize
+            position = scanner.buffer_pos + scanner_offset
+            raise SyntaxError.new("Expected whitespace after offset at position #{position}")
           end
-          type = type_char == "n" ? :in_use : :free
+          ch = scanner_str[scanner_offset]
+          unless ch.ascii_whitespace?
+            position = scanner.buffer_pos + scanner_offset
+            raise SyntaxError.new("Expected whitespace after offset at position #{position}")
+          end
+          scanner_offset += 1
+          # Skip additional whitespace
+          while scanner_offset < scanner_str.bytesize && scanner_str[scanner_offset].ascii_whitespace?
+            scanner_offset += 1
+          end
+
+          # Parse 5-digit generation
+          if scanner_offset + 5 > scanner_str.bytesize
+            position = scanner.buffer_pos + scanner_offset
+            raise SyntaxError.new("Incomplete generation field at position #{position}")
+          end
+          generation = 0_i64
+          5.times do |j|
+            ch = scanner_str[scanner_offset + j]
+            unless '0' <= ch <= '9'
+              position = scanner.buffer_pos + scanner_offset + j
+              raise SyntaxError.new("Expected digit in generation at position #{position}")
+            end
+            generation = generation * 10 + (ch - '0').to_i64
+          end
+          scanner_offset += 5
+
+          # Skip whitespace (one or more spaces/tabs)
+          if scanner_offset >= scanner_str.bytesize
+            position = scanner.buffer_pos + scanner_offset
+            raise SyntaxError.new("Expected whitespace after generation at position #{position}")
+          end
+          ch = scanner_str[scanner_offset]
+          unless ch.ascii_whitespace?
+            position = scanner.buffer_pos + scanner_offset
+            raise SyntaxError.new("Expected whitespace after generation at position #{position}")
+          end
+          scanner_offset += 1
+          # Skip additional whitespace
+          while scanner_offset < scanner_str.bytesize && scanner_str[scanner_offset].ascii_whitespace?
+            scanner_offset += 1
+          end
+
+          # Parse type character
+          if scanner_offset >= scanner_str.bytesize
+            position = scanner.buffer_pos + scanner_offset
+            raise SyntaxError.new("Missing type character at position #{position}")
+          end
+          type_char = scanner_str[scanner_offset]
+          unless type_char == 'n' || type_char == 'f'
+            position = scanner.buffer_pos + scanner_offset
+            raise SyntaxError.new("Expected 'n' or 'f' at position #{position}")
+          end
+          scanner_offset += 1
+          type = type_char == 'n' ? :in_use : :free
 
           # Add entry to xref table
           obj_num = start_obj + i
           xref[obj_num] = XRefEntry.new(offset, generation, type)
 
-          # Skip optional whitespace/newline
-          scanner.skip_whitespace
+          # Skip optional whitespace/newline for next iteration
+          # This will be handled at top of loop
         end
+
+        # Update scanner position after batch processing
+        scanner.scanner.offset = scanner_offset
       end
 
       # Update source position to where scanner stopped
