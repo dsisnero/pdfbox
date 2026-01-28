@@ -1,0 +1,620 @@
+require "log"
+require "../cos"
+require "./pdf_scanner"
+require "./object_parser"
+
+module Pdfbox::Pdfparser
+  # Brute force parser to be used as last resort if a malformed pdf can't be read.
+  # Corresponds to BruteForceParser in Apache PDFBox.
+  class BruteForceParser
+    Log = ::Log.for(self)
+
+    private XREF_TABLE              = "xref".chars
+    private XREF_STREAM             = "/XRef".chars
+    private MINIMUM_SEARCH_OFFSET   = 6_i64
+    private EOF_MARKER              = "%%EOF".chars
+    private OBJ_MARKER              = "obj".chars
+    private TRAILER_MARKER          = "trailer".chars
+    private OBJ_STREAM              = "/ObjStm".chars
+    private ENDOBJ_STRING           = "ndo".chars
+    private ENDOBJ_REMAINING_STRING = "bj".chars
+
+    # Contains all found objects of a brute force search.
+    @bf_search_cos_object_key_offsets = {} of Cos::ObjectKey => Int64
+
+    @bf_search_triggered = false
+    @parser : Parser
+    @source : Pdfbox::IO::RandomAccessRead
+
+    # Constructor. Triggers a brute force search for all objects of the document.
+    def initialize(@parser : Parser)
+      @source = parser.source
+    end
+
+    # Indicates whether the brute force search for objects was triggered.
+    def bf_search_triggered? : Bool
+      @bf_search_triggered
+    end
+
+    # Returns all found objects of a brute force search.
+    def bf_cos_object_offsets : Hash(Cos::ObjectKey, Int64)
+      unless @bf_search_triggered
+        @bf_search_triggered = true
+        bf_search_for_objects
+      end
+      @bf_search_cos_object_key_offsets
+    end
+
+    # Brute force search for every object in the pdf.
+    private def bf_search_for_objects : Nil
+      Log.warn { "BruteForceParser.bf_search_for_objects: START" }
+      last_eof_marker = bf_search_for_last_eof_marker
+      origin_offset = @source.position
+      current_offset = MINIMUM_SEARCH_OFFSET
+      last_object_id = Int64::MIN
+      last_gen_id = Int64::MIN
+      last_obj_offset = Int64::MIN
+      end_of_obj_found = false
+
+      iteration_count = 0
+      max_iterations = 3_000_000 # safety limit for ~3MB file
+
+      begin
+        while current_offset < last_eof_marker && !@source.eof? && iteration_count < max_iterations
+          iteration_count += 1
+          if iteration_count % 100_000 == 0
+            Log.warn { "BruteForceParser.bf_search_for_objects: iteration #{iteration_count}, offset #{current_offset}" }
+          end
+          @source.seek(current_offset)
+          next_char = @source.read
+          current_offset += 1
+          break if next_char.nil?
+
+          ch = next_char.chr
+          if whitespace?(ch) && string?(OBJ_MARKER)
+            if result = handle_object_marker(current_offset, last_object_id, last_gen_id, last_obj_offset)
+              new_current_offset, object_id, gen_id, obj_offset = result
+              last_object_id = object_id
+              last_gen_id = gen_id
+              last_obj_offset = obj_offset
+              current_offset = new_current_offset
+              end_of_obj_found = false
+            end
+          elsif ch == 'e' && string?(ENDOBJ_STRING)
+            new_current_offset, found = parse_endobj_marker(current_offset)
+            current_offset = new_current_offset
+            end_of_obj_found = found
+          end
+        end
+      rescue ex
+        Log.debug(exception: ex) { "Exception during brute force search for objects" }
+      end
+
+      if iteration_count >= max_iterations
+        Log.warn { "BruteForceParser.bf_search_for_objects: hit iteration limit #{max_iterations}" }
+      end
+
+      if (last_eof_marker < Int64::MAX || end_of_obj_found) && last_obj_offset > 0
+        # if the pdf wasn't cut off in the middle or if the last object ends with a "endobj" marker
+        # the last object id has to be added here so that it can't get lost as there isn't any subsequent object id
+        @bf_search_cos_object_key_offsets[Cos::ObjectKey.new(last_object_id, last_gen_id)] = last_obj_offset
+      end
+      # reestablish origin position
+      @source.seek(origin_offset)
+      Log.warn { "BruteForceParser.bf_search_for_objects: END, found #{@bf_search_cos_object_key_offsets.size} objects, iterations: #{iteration_count}" }
+    end
+
+    # Helper methods from BaseParser/PDFScanner
+    private def whitespace?(ch : Char) : Bool
+      ch.ascii_whitespace?
+    end
+
+    private def digit?(ch : Char) : Bool
+      ch.ascii_number?
+    end
+
+    private def string?(chars : Array(Char)) : Bool
+      saved_pos = @source.position
+      chars.each do |char|
+        byte = @source.read
+        unless byte && byte.chr == char
+          @source.seek(saved_pos)
+          return false
+        end
+      end
+      @source.seek(saved_pos)
+      true
+    end
+
+    private def read_object_number(start_offset : Int64) : Int64
+      @source.seek(start_offset)
+      scanner = PDFScanner.new(@source)
+      scanner.read_number.to_i64
+    end
+
+    # Attempt to parse object ID and generation number at given offset.
+    # Returns tuple (object_id, gen_id, obj_offset) if successful, nil otherwise.
+    private def try_parse_object_id_and_gen(temp_offset : Int64) : Tuple(Int64, Int64, Int64)?
+      @source.seek(temp_offset)
+      gen_id_byte = @source.peek
+      return unless gen_id_byte && digit?(gen_id_byte.chr)
+
+      gen_id = gen_id_byte.chr.to_i
+      temp_offset -= 1
+      @source.seek(temp_offset)
+      peek_byte = @source.peek
+      return unless peek_byte && whitespace?(peek_byte.chr)
+
+      # skip whitespace backwards
+      while temp_offset > MINIMUM_SEARCH_OFFSET
+        peek_byte = @source.peek
+        break unless peek_byte && whitespace?(peek_byte.chr)
+        @source.seek(temp_offset -= 1)
+      end
+
+      object_id_found = false
+      while temp_offset > MINIMUM_SEARCH_OFFSET
+        peek_byte = @source.peek
+        break unless peek_byte && digit?(peek_byte.chr)
+        @source.seek(temp_offset -= 1)
+        object_id_found = true
+      end
+
+      return unless object_id_found
+
+      @source.read # consume digit
+      object_id = read_object_number(temp_offset + 1)
+      {object_id, gen_id.to_i64, temp_offset + 1}
+    end
+
+    # Process object marker at current_offset (position after whitespace char).
+    # Returns tuple (object_id, gen_id, obj_offset, new_current_offset) if successful, nil otherwise.
+    private def parse_object_marker(current_offset : Int64) : Tuple(Int64, Int64, Int64, Int64)?
+      temp_offset = current_offset - 2
+      if parsed = try_parse_object_id_and_gen(temp_offset)
+        object_id, gen_id, obj_offset = parsed
+        new_current_offset = current_offset + OBJ_MARKER.size - 1
+        {object_id, gen_id, obj_offset, new_current_offset}
+      end
+    end
+
+    # Process endobj marker at current_offset (position after 'e' char).
+    # Returns tuple (new_current_offset, end_of_obj_found).
+    private def parse_endobj_marker(current_offset : Int64) : Tuple(Int64, Bool)
+      current_offset += ENDOBJ_STRING.size
+      @source.seek(current_offset)
+      if @source.eof?
+        {current_offset, true}
+      elsif string?(ENDOBJ_REMAINING_STRING)
+        current_offset += ENDOBJ_REMAINING_STRING.size
+        {current_offset, true}
+      else
+        {current_offset, false}
+      end
+    end
+
+    # Handle object marker at current_offset.
+    # Returns tuple (new_current_offset, object_id, gen_id, obj_offset) if successful, nil otherwise.
+    # Also updates @bf_search_cos_object_key_offsets with previous object if applicable.
+    private def handle_object_marker(current_offset : Int64, last_object_id : Int64, last_gen_id : Int64, last_obj_offset : Int64) : Tuple(Int64, Int64, Int64, Int64)?
+      if parsed = parse_object_marker(current_offset)
+        object_id, gen_id, obj_offset, new_current_offset = parsed
+        if last_obj_offset > 0
+          @bf_search_cos_object_key_offsets[Cos::ObjectKey.new(last_object_id, last_gen_id)] = last_obj_offset
+        end
+        {new_current_offset, object_id, gen_id, obj_offset}
+      end
+    end
+
+    # Search for the offset of the given xref table/stream among those found by a brute force search.
+    def bf_search_for_xref(xref_offset : Int64) : Int64
+      new_offset = -1_i64
+
+      # initialize bf_search_xref_tables_offsets -> not null
+      bf_search_xref_tables_offsets = bf_search_for_xref_tables
+      # initialize bf_search_xref_streams_offsets -> not null
+      bf_search_xref_streams_offsets = bf_search_for_xref_streams
+
+      # TODO to be optimized, this won't work in every case
+      new_offset_table = search_nearest_value(bf_search_xref_tables_offsets, xref_offset)
+
+      # TODO to be optimized, this won't work in every case
+      new_offset_stream = search_nearest_value(bf_search_xref_streams_offsets, xref_offset)
+
+      # choose the nearest value
+      if new_offset_table > -1 && new_offset_stream > -1
+        difference_table = xref_offset - new_offset_table
+        difference_stream = xref_offset - new_offset_stream
+        if difference_table.abs > difference_stream.abs
+          new_offset = new_offset_stream
+          bf_search_xref_streams_offsets.delete(new_offset_stream)
+        else
+          new_offset = new_offset_table
+          bf_search_xref_tables_offsets.delete(new_offset_table)
+        end
+      elsif new_offset_table > -1
+        new_offset = new_offset_table
+        bf_search_xref_tables_offsets.delete(new_offset_table)
+      elsif new_offset_stream > -1
+        new_offset = new_offset_stream
+        bf_search_xref_streams_offsets.delete(new_offset_stream)
+      end
+      new_offset
+    end
+
+    private def search_nearest_value(values : Array(Int64), offset : Int64) : Int64
+      new_value = -1_i64
+      current_difference = nil
+      current_offset_index = -1
+      values.each_with_index do |value, i|
+        new_difference = offset - value
+        # find the nearest offset
+        if current_difference.nil? || (current_difference.abs > new_difference.abs)
+          current_difference = new_difference
+          current_offset_index = i
+        end
+      end
+      if current_offset_index > -1
+        new_value = values[current_offset_index]
+      end
+      new_value
+    end
+
+    # Search backwards from start_offset for " obj" pattern and return object start offset if found.
+    # Returns -1 if not found.
+    private def find_object_start_offset(start_offset : Int64) : Int64
+      obj_string = " obj".chars
+      (1..40).each do |i|
+        current_offset = start_offset - (i * 10)
+        next unless current_offset > 0
+
+        @source.seek(current_offset)
+        10.times do
+          if string?(obj_string)
+            temp_offset = current_offset - 1
+            @source.seek(temp_offset)
+            peek_byte = @source.peek
+            return -1 unless peek_byte && digit?(peek_byte.chr)
+
+            temp_offset -= 1
+            @source.seek(temp_offset)
+            peek_byte2 = @source.peek
+            return -1 unless peek_byte2 && whitespace?(peek_byte2.chr)
+
+            length = 0
+            @source.seek(temp_offset -= 1)
+            while temp_offset > MINIMUM_SEARCH_OFFSET
+              peek_byte3 = @source.peek
+              break unless peek_byte3 && digit?(peek_byte3.chr)
+              @source.seek(temp_offset -= 1)
+              length += 1
+            end
+            return current_offset if length > 0
+          else
+            current_offset += 1
+            @source.read
+          end
+        end
+      end
+      -1
+    end
+
+    # Parse object key at given offset (where " obj" pattern starts).
+    # Returns Cos::ObjectKey or nil if parsing fails.
+    private def parse_object_key_at_offset(offset : Int64) : Cos::ObjectKey?
+      temp_offset = offset - 1
+      @source.seek(temp_offset)
+      peek_byte = @source.peek
+      return unless peek_byte && digit?(peek_byte.chr)
+
+      temp_offset -= 1
+      @source.seek(temp_offset)
+      peek_byte2 = @source.peek
+      return unless peek_byte2 && whitespace?(peek_byte2.chr)
+
+      length = 0
+      @source.seek(temp_offset -= 1)
+      while temp_offset > MINIMUM_SEARCH_OFFSET
+        peek_byte3 = @source.peek
+        break unless peek_byte3 && digit?(peek_byte3.chr)
+        @source.seek(temp_offset -= 1)
+        length += 1
+      end
+      return unless length > 0
+
+      @source.read # consume digit
+      obj_number = read_object_number(@source.position)
+      gen_number = read_generation_number(@source.position + obj_number.to_s.size + 1) # approximation
+      Cos::ObjectKey.new(obj_number, gen_number)
+    end
+
+    # Brute force search for all objects streams of a pdf.
+    def bf_search_for_obj_streams(xref_table : Hash(Cos::ObjectKey, Int64)) : Nil
+      Log.debug { "bf_search_for_obj_streams: START" }
+      # save origin offset
+      origin_offset = @source.position
+      original_xref_size = xref_table.size
+
+      offsets_map = bf_search_for_obj_stream_offsets
+      Log.debug { "bf_search_for_obj_streams: found #{offsets_map.size} potential object streams" }
+      object_offsets = bf_cos_object_offsets
+      Log.debug { "bf_search_for_obj_streams: brute force objects count: #{object_offsets.size}" }
+
+      # log warning about skipped stream
+      offsets_map.each do |offset, key|
+        if object_offsets[key]?.nil?
+          Log.warn { "Skipped incomplete object stream:#{key} at #{offset}" }
+        end
+      end
+
+      # collect all stream offsets where the stream object itself was found
+      obj_stream_offsets = [] of Tuple(Int64, Cos::ObjectKey)
+      offsets_map.each do |offset, key|
+        if object_offsets[key]? && offset == object_offsets[key]
+          obj_stream_offsets << {offset, key}
+        end
+      end
+      Log.debug { "bf_search_for_obj_streams: valid object streams count: #{obj_stream_offsets.size}" }
+
+      # add all found compressed objects to the brute force search result
+      obj_stream_offsets.each_with_index do |(offset, key), i|
+        Log.debug { "bf_search_for_obj_streams: processing stream #{i + 1}/#{obj_stream_offsets.size} at offset #{offset}, key #{key}" }
+        begin
+          # Parse the object stream at offset
+          stream = parse_object_stream_at_offset(offset)
+          # Log.debug { "bf_search_for_obj_streams: parsed stream, object count: #{stream["N"]?}" }
+          # stream is a Cos::Stream
+          # Get object numbers from stream
+          objects = @parser.parse_object_stream(stream)
+          Log.debug { "bf_search_for_obj_streams: extracted #{objects.size} objects from stream" }
+          stm_obj_number = key.number
+          # For each object found in stream, add compressed entry
+          objects.each do |obj_key, _|
+            # obj_key has object number and generation (should be 0 for compressed objects)
+            # Add to bf_cos_object_offsets with negative offset (compressed indicator)
+            # In PDFBox, compressed objects are stored with negative offset = -stm_obj_number
+            object_offsets[obj_key] = -stm_obj_number
+            # Also add to xref_table (passed parameter)
+            xref_table[obj_key] = -stm_obj_number
+          end
+        rescue ex
+          Log.debug { "Skipped corrupt stream at offset #{offset}: #{ex.message}" }
+        end
+      end
+      Log.debug { "bf_search_for_obj_streams: END, added #{xref_table.size - original_xref_size} compressed entries" }
+      # restore origin offset
+      @source.seek(origin_offset)
+    end
+
+    private def parse_object_stream_at_offset(offset : Int64) : Cos::Stream
+      # Use parser to parse indirect object at offset
+      obj = @parser.parse_indirect_object_at_offset(offset)
+      unless obj.is_a?(Cos::Stream)
+        raise "Object at offset #{offset} is not a stream"
+      end
+      obj
+    end
+
+    # Brute force search for object streams updating XRef directly
+    def bf_search_for_obj_streams_xref(xref : XRef) : Nil
+      Log.warn { "BruteForceParser.bf_search_for_obj_streams_xref: START" }
+      # Convert xref to hash, call existing method, then update back
+      hash = xref.to_hash
+      bf_search_for_obj_streams(hash)
+      xref.update_from_hash(hash)
+      Log.warn { "BruteForceParser.bf_search_for_obj_streams_xref: END" }
+    end
+
+    private def read_generation_number(offset : Int64) : Int64
+      @source.seek(offset)
+      scanner = PDFScanner.new(@source)
+      scanner.read_number.to_i64
+    end
+
+    # Brute force search for the last EOF marker.
+    private def bf_search_for_last_eof_marker : Int64
+      last_eof_marker = -1_i64
+      origin_offset = @source.position
+      @source.seek(MINIMUM_SEARCH_OFFSET)
+      temp_marker = find_string(EOF_MARKER)
+      while temp_marker != -1
+        begin
+          # check if the following data is some valid pdf content
+          # which most likely indicates that the pdf is linearized,
+          # updated or just cut off somewhere in the middle
+          skip_spaces
+          unless string?(XREF_TABLE)
+            read_object_number(@source.position)
+            read_generation_number(@source.position)
+          end
+        rescue ex
+          # save the EOF marker as the following data is most likely some garbage
+          Log.debug(exception: ex) { "An exception occurred during brute force for last EOF - ignoring" }
+          last_eof_marker = temp_marker
+        end
+        temp_marker = find_string(EOF_MARKER)
+      end
+      @source.seek(origin_offset)
+      # no EOF marker found
+      if last_eof_marker == -1
+        last_eof_marker = Int64::MAX
+      end
+      last_eof_marker
+    end
+
+    private def skip_spaces : Nil
+      while byte = @source.peek
+        break unless byte.chr.ascii_whitespace?
+        @source.read
+      end
+    end
+
+    # Find object stream start offset and key for a given OBJ_STREAM marker position.
+    # Returns tuple (offset, key) or nil if not found.
+    private def find_object_stream_start(position_obj_stream : Int64) : Tuple(Int64, Cos::ObjectKey)?
+      obj_string = " obj".chars
+      (1..40).each do |i|
+        current_offset = position_obj_stream - (i * 10)
+        next unless current_offset > 0
+
+        @source.seek(current_offset)
+        10.times do
+          if string?(obj_string)
+            temp_offset = current_offset - 1
+            @source.seek(temp_offset)
+            peek_byte = @source.peek
+            next unless peek_byte && digit?(peek_byte.chr)
+
+            temp_offset -= 1
+            @source.seek(temp_offset)
+            peek_byte2 = @source.peek
+            next unless peek_byte2 && whitespace?(peek_byte2.chr)
+
+            length = 0
+            @source.seek(temp_offset -= 1)
+            while temp_offset > MINIMUM_SEARCH_OFFSET
+              peek_byte3 = @source.peek
+              break unless peek_byte3 && digit?(peek_byte3.chr)
+              @source.seek(temp_offset -= 1)
+              length += 1
+            end
+            if length > 0
+              @source.read # consume digit
+              new_offset = @source.position
+              obj_number = read_object_number(new_offset)
+              gen_number = read_generation_number(new_offset + obj_number.to_s.size + 1) # approximation
+              stream_object_key = Cos::ObjectKey.new(obj_number, gen_number)
+              return {new_offset, stream_object_key}
+            end
+          else
+            current_offset += 1
+            @source.read
+          end
+        end
+      end
+      nil
+    end
+
+    # Search for all offsets of object streams within the given pdf
+    private def bf_search_for_obj_stream_offsets : Hash(Int64, Cos::ObjectKey)
+      bf_search_obj_streams_offsets = {} of Int64 => Cos::ObjectKey
+      @source.seek(MINIMUM_SEARCH_OFFSET)
+      position_obj_stream = find_string(OBJ_STREAM)
+      while position_obj_stream != -1
+        if result = find_object_stream_start(position_obj_stream)
+          offset, key = result
+          bf_search_obj_streams_offsets[offset] = key
+          Log.debug { "Dictionary start for object stream -> #{offset}" }
+        end
+        @source.seek(position_obj_stream + OBJ_STREAM.size)
+        position_obj_stream = find_string(OBJ_STREAM)
+      end
+      bf_search_obj_streams_offsets
+    end
+
+    # Brute force search for all xref entries (tables).
+    private def bf_search_for_xref_tables : Array(Int64)
+      bf_search_xref_tables_offsets = [] of Int64
+      # a pdf may contain more than one xref entry
+      @source.seek(MINIMUM_SEARCH_OFFSET)
+      # search for xref tables
+      new_offset = find_string(XREF_TABLE)
+      while new_offset != -1
+        @source.seek(new_offset - 1)
+        # ensure that we don't read "startxref" instead of "xref"
+        peek_byte = @source.peek
+        if peek_byte && whitespace?(peek_byte.chr)
+          bf_search_xref_tables_offsets << new_offset
+        end
+        @source.seek(new_offset + 4)
+        new_offset = find_string(XREF_TABLE)
+      end
+      bf_search_xref_tables_offsets
+    end
+
+    # Find xref stream start offset for a given XREF_STREAM marker position.
+    # Returns offset or -1 if not found.
+    private def find_xref_stream_start(position_xref_stream : Int64) : Int64
+      obj_string = " obj".chars
+      (1..40).each do |i|
+        current_offset = position_xref_stream - (i * 10)
+        next unless current_offset > 0
+
+        @source.seek(current_offset)
+        10.times do
+          if string?(obj_string)
+            temp_offset = current_offset - 1
+            @source.seek(temp_offset)
+            peek_byte = @source.peek
+            next unless peek_byte && digit?(peek_byte.chr)
+
+            temp_offset -= 1
+            @source.seek(temp_offset)
+            peek_byte2 = @source.peek
+            next unless peek_byte2 && whitespace?(peek_byte2.chr)
+
+            length = 0
+            @source.seek(temp_offset -= 1)
+            while temp_offset > MINIMUM_SEARCH_OFFSET
+              peek_byte3 = @source.peek
+              break unless peek_byte3 && digit?(peek_byte3.chr)
+              @source.seek(temp_offset -= 1)
+              length += 1
+            end
+            if length > 0
+              @source.read # consume digit
+              return @source.position
+            end
+          else
+            current_offset += 1
+            @source.read
+          end
+        end
+      end
+      -1
+    end
+
+    # Brute force search for all /XRef entries (streams).
+    private def bf_search_for_xref_streams : Array(Int64)
+      bf_search_xref_streams_offsets = [] of Int64
+      @source.seek(MINIMUM_SEARCH_OFFSET)
+      xref_offset = find_string(XREF_STREAM)
+      while xref_offset != -1
+        new_offset = find_xref_stream_start(xref_offset)
+        if new_offset > -1
+          bf_search_xref_streams_offsets << new_offset
+          Log.debug { "Fixed reference for xref stream #{xref_offset} -> #{new_offset}" }
+        end
+        @source.seek(xref_offset + 5)
+        xref_offset = find_string(XREF_STREAM)
+      end
+      bf_search_xref_streams_offsets
+    end
+
+    # Search for the given string. The search starts at the current position and returns the start position if the
+    # string was found. -1 is returned if there isn't any further occurrence of the given string. After returning the
+    # current position is either the end of the string or the end of the input.
+    private def find_string(chars : Array(Char)) : Int64
+      position = -1_i64
+      string_length = chars.size
+      counter = 0
+      while byte = @source.read
+        read_char = byte.chr
+        if read_char == chars[counter]
+          if counter == 0
+            position = @source.position - 1
+          end
+          counter += 1
+          if counter == string_length
+            return position
+          end
+        elsif counter > 0
+          counter = 0
+          position = -1_i64
+          next
+        end
+      end
+      position
+    end
+  end
+end

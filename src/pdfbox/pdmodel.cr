@@ -26,17 +26,25 @@ module Pdfbox::Pdmodel
     end
 
     # Load a PDF document from a file
-    def self.load(filename : String) : Document
+    def self.load(filename : String, lenient : Bool = false) : Document
       File.open(filename) do |file|
-        load(file)
+        load(file, lenient: lenient)
       end
     end
 
     # Load a PDF document from an IO stream
-    def self.load(io : ::IO) : Document
+    def self.load(io : ::IO, lenient : Bool = false) : Document
       # Use parser to read PDF
-      source = Pdfbox::IO::MemoryRandomAccessRead.new(io.gets_to_end.to_slice)
+      # Read all bytes as binary data
+      file_size = io.size
+      if file_size > Int32::MAX
+        raise "File too large: #{file_size} bytes"
+      end
+      bytes = Bytes.new(file_size.to_i32)
+      io.read_fully(bytes)
+      source = Pdfbox::IO::MemoryRandomAccessRead.new(bytes)
       parser = Pdfbox::Pdfparser::Parser.new(source)
+      parser.lenient = lenient
       parser.parse
     end
 

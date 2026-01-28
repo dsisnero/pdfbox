@@ -2,6 +2,7 @@ require "log"
 require "../cos"
 require "../cos/icosparser"
 require "../cos/object_key"
+require "./brute_force_parser"
 
 module Pdfbox::Pdfparser
   # Main PDF parser class
@@ -16,6 +17,8 @@ module Pdfbox::Pdfparser
     @xref : XRef?
     @object_pool : Hash(Cos::ObjectKey, Cos::Object)
     @decompressed_objects : Hash(Int64, Hash(Cos::ObjectKey, Cos::Base))
+    @brute_force_parser : BruteForceParser?
+    @lenient : Bool
 
     def initialize(source : Pdfbox::IO::RandomAccessRead)
       @source = source
@@ -23,12 +26,19 @@ module Pdfbox::Pdfparser
       @xref = nil
       @object_pool = Hash(Cos::ObjectKey, Cos::Object).new
       @decompressed_objects = Hash(Int64, Hash(Cos::ObjectKey, Cos::Base)).new
+      @brute_force_parser = nil
+      @lenient = false
     end
 
     getter source
     getter xref
     getter object_pool
     getter decompressed_objects
+    property lenient
+
+    protected def get_brute_force_parser : BruteForceParser
+      @brute_force_parser ||= BruteForceParser.new(self)
+    end
 
     # Get object from pool or create a new proxy object for lazy resolution
     def get_object_from_pool(key : Cos::ObjectKey) : Cos::Object
@@ -476,20 +486,13 @@ module Pdfbox::Pdfparser
     private def resolve_object(obj : Cos::Base, xref : XRef) : Cos::Base
       if obj.is_a?(Cos::Object)
         # Handle case where Cos::Object is just a wrapper around already dereferenced object
-        if obj.key.nil?
-          # Object is already dereferenced wrapper, return the underlying object
-          dereferenced = obj.object
-          return dereferenced if dereferenced
-          raise SyntaxError.new("Cos::Object has nil key and nil object")
-        end
-
-        obj_num = obj.obj_number
-        # Debug logging for PageLabels objects
-        if [1350_i64, 1352_i64, 1358_i64, 1360_i64].includes?(obj_num)
-          Log.debug { "resolve_object: resolving PageLabels object #{obj_num}" }
-        end
-        if xref_entry = xref[obj_num]
-          if key = obj.key
+        if key = obj.key
+          obj_num = key.number
+          # Debug logging for PageLabels objects
+          if [1350_i64, 1352_i64, 1358_i64, 1360_i64].includes?(obj_num)
+            Log.debug { "resolve_object: resolving PageLabels object #{obj_num}" }
+          end
+          if xref_entry = xref[obj_num]
             Log.debug { "resolve_object: obj #{obj_num}, type=#{xref_entry.type}, compressed?=#{xref_entry.compressed?}, offset=#{xref_entry.offset}, generation=#{xref_entry.generation}" }
             if xref_entry.compressed?
               # Object is compressed in an object stream
@@ -498,10 +501,37 @@ module Pdfbox::Pdfparser
               parse_indirect_object_at_offset(xref_entry.offset, key)
             end
           else
-            raise SyntaxError.new("Cos::Object has nil key")
+            if @lenient
+              # Try brute-force search for missing object
+              bf_offsets = get_brute_force_parser.bf_cos_object_offsets
+              if bf_offset = bf_offsets[key]?
+                Log.debug { "resolve_object: found missing object #{obj_num} via brute-force at offset #{bf_offset}" }
+                # Add to xref table for future reference
+                if bf_offset < 0
+                  # compressed entry: negative offset indicates object stream number
+                  xref[obj_num] = XRefEntry.new(-bf_offset, key.generation, :compressed)
+                else
+                  xref[obj_num] = XRefEntry.new(bf_offset, key.generation, :in_use)
+                end
+                # Now retry with updated xref entry
+                xref_entry = xref[obj_num].as(XRefEntry)
+                if xref_entry.compressed?
+                  parse_object_from_stream(xref_entry.offset, key, xref_entry.generation, xref)
+                else
+                  parse_indirect_object_at_offset(xref_entry.offset, key)
+                end
+              else
+                raise SyntaxError.new("Object #{obj_num} not found in xref")
+              end
+            else
+              raise SyntaxError.new("Object #{obj_num} not found in xref")
+            end
           end
         else
-          raise SyntaxError.new("Object #{obj_num} not found in xref")
+          # Object is already dereferenced wrapper, return the underlying object
+          dereferenced = obj.object
+          return dereferenced if dereferenced
+          raise SyntaxError.new("Cos::Object has nil key and nil object")
         end
       else
         obj
@@ -808,7 +838,8 @@ module Pdfbox::Pdfparser
 
     # Parse all objects from object stream and return map of object keys to objects
     private def parse_all_objects_from_stream(obj_stream : Cos::Stream) : Hash(Cos::ObjectKey, Cos::Base)
-      Log.debug { "parse_all_objects_from_stream: parsing all objects from stream" }
+      Log.debug { "parse_all_objects_from_stream: START parsing all objects from stream" }
+      Log.debug { "parse_all_objects_from_stream: stream class: #{obj_stream.class}" }
 
       # Get stream dictionary
       dict = obj_stream
@@ -861,6 +892,11 @@ module Pdfbox::Pdfparser
       all_objects
     end
 
+    # Public wrapper for parse_all_objects_from_stream (used by BruteForceParser)
+    def parse_object_stream(obj_stream : Cos::Stream) : Hash(Cos::ObjectKey, Cos::Base)
+      parse_all_objects_from_stream(obj_stream)
+    end
+
     # Parse pages tree recursively
     private def parse_pages_tree(pages_dict : Cos::Dictionary, xref : XRef) : Array(Cos::Dictionary)
       result = [] of Cos::Dictionary
@@ -911,7 +947,10 @@ module Pdfbox::Pdfparser
       sections = [] of Tuple(Int64, XRef, Pdfbox::Cos::Dictionary?)
       prev : Int64 = xref_offset.to_i64
 
-      while prev > 0
+      seen = Set(Int64).new
+      max_sections = 100
+      while prev > 0 && sections.size < max_sections && !seen.includes?(prev)
+        seen << prev
         Log.debug { "collect_xref_sections: parsing xref at offset #{prev}" }
         @source.seek(prev)
         section_xref = parse_xref
@@ -937,6 +976,9 @@ module Pdfbox::Pdfparser
         else
           prev = 0_i64
         end
+      end
+      if prev > 0 && sections.size >= max_sections
+        Log.warn { "collect_xref_sections: exceeded max sections (#{max_sections}), possible cycle" }
       end
 
       Log.debug { "collect_xref_sections: collected #{sections.size} sections" }
@@ -1082,11 +1124,19 @@ module Pdfbox::Pdfparser
       Log.debug { "xref_offset: #{xref_offset}" }
 
       catalog_dict = if xref_offset
+                       Log.debug { "Before collect_xref_sections, xref_offset=#{xref_offset}" }
                        sections = collect_xref_sections(xref_offset)
                        xref, trailer = merge_xref_sections(sections)
 
                        @trailer = trailer
                        @xref = xref
+
+                       # Brute-force search for object streams in lenient mode
+                       if @lenient
+                         Log.debug { "Parser lenient mode enabled, performing brute-force search for object streams" }
+                         get_brute_force_parser.bf_search_for_obj_streams_xref(xref)
+                         Log.debug { "After brute-force search, xref entries: #{xref.size}" }
+                       end
 
                        # Debug logging for compressed entries
                        Log.debug { "final xref entries: #{xref.size}" }
