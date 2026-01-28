@@ -364,23 +364,151 @@ module Pdfbox::Pdfparser
     end
 
     # Brute force search for all objects streams of a pdf.
-    def bf_search_for_obj_streams(xref_table : Hash(Cos::ObjectKey, Int64)) : Nil
-      Log.debug { "bf_search_for_obj_streams: START" }
-      # save origin offset
+    private def bf_search_for_obj_stream_offsets : Hash(Int64, Cos::ObjectKey)
+      start_time = Time.instant
+      bf_search_obj_streams_offsets = {} of Int64 => Cos::ObjectKey
+
+      # Load the entire file (from MINIMUM_SEARCH_OFFSET to end) into memory for faster scanning
       origin_offset = @source.position
-      original_xref_size = xref_table.size
+      file_size = @source.length
+      start_offset = MINIMUM_SEARCH_OFFSET
+      range_size = file_size - start_offset
 
-      offsets_map = bf_search_for_obj_stream_offsets
-      Log.debug { "bf_search_for_obj_streams: found #{offsets_map.size} potential object streams" }
-      object_offsets = bf_cos_object_offsets
-      Log.debug { "bf_search_for_obj_streams: brute force objects count: #{object_offsets.size}" }
-
-      # log debug about skipped stream (common in corrupted PDFs)
-      offsets_map.each do |offset, key|
-        if object_offsets[key]?.nil?
-          Log.debug { "Skipped incomplete object stream:#{key} at #{offset}" }
-        end
+      if range_size <= 0
+        @source.seek(origin_offset)
+        Log.debug { "bf_search_for_obj_stream_offsets: empty range" }
+        return bf_search_obj_streams_offsets
       end
+
+      @source.seek(start_offset)
+      data = @source.read_all
+      @source.seek(origin_offset)
+
+      Log.debug { "bf_search_for_obj_stream_offsets: loaded #{data.size} bytes into memory" }
+
+      # Convert patterns to bytes
+      pattern_bytes = OBJ_STREAM.map(&.ord.to_u8)
+      pattern_size = pattern_bytes.size
+      data_size = data.size
+
+      # Helper functions for byte classification
+      is_digit = ->(b : UInt8) { b >= 0x30 && b <= 0x39 }
+      is_whitespace = ->(b : UInt8) { b == 0x20 || b == 0x09 || b == 0x0A || b == 0x0D || b == 0x00 }
+
+      # " obj" pattern in bytes (space + 'o' + 'b' + 'j')
+      obj_pattern = [0x20_u8, 0x6F_u8, 0x62_u8, 0x6A_u8]
+      obj_pattern_size = obj_pattern.size
+
+      # Use pointers for fast scanning
+      data_ptr = data.to_unsafe
+      pattern_ptr = pattern_bytes.to_unsafe
+
+      i = 0
+      max_i = data_size - pattern_size
+      positions_found = 0
+
+      # For statistics
+      total_matches = 0
+
+      while i <= max_i
+        # Fast first character check
+        if data_ptr[i] == pattern_ptr[0] # '/'
+          # Compare remaining bytes
+          j = 1
+          while j < pattern_size && data_ptr[i + j] == pattern_ptr[j]
+            j += 1
+          end
+
+          if j == pattern_size
+            total_matches += 1
+
+            # Found "/ObjStm" at memory offset i (relative to start_offset)
+            # Search backward up to 400 bytes for " obj" pattern
+            search_back_start = i - 1
+            search_back_limit = Math.max(0, i - 400)
+            obj_found = false
+            back_pos = search_back_start
+
+            while back_pos >= search_back_limit && !obj_found
+              # Check for " obj" pattern at back_pos (back_pos is end of "obj")
+              if back_pos >= obj_pattern_size - 1
+                pattern_match = true
+                (0...obj_pattern_size).each do |k|
+                  if data_ptr[back_pos - (obj_pattern_size - 1) + k] != obj_pattern[k]
+                    pattern_match = false
+                    break
+                  end
+                end
+
+                if pattern_match
+                  # Found " obj" at position: start = back_pos - (obj_pattern_size - 1)
+                  obj_start = back_pos - (obj_pattern_size - 1)
+
+                  # Check character before " obj" is digit (generation number)
+                  if obj_start > 0 && is_digit.call(data_ptr[obj_start - 1])
+                    # Check character before digit is whitespace
+                    if obj_start > 1 && is_whitespace.call(data_ptr[obj_start - 2])
+                      # Parse generation number (digits before " obj")
+                      gen_end = obj_start - 1 # last digit of generation
+                      gen_start = gen_end
+                      while gen_start > 0 && is_digit.call(data_ptr[gen_start - 1])
+                        gen_start -= 1
+                      end
+
+                      # Parse generation number
+                      gen_number = 0_i64
+                      (gen_start..gen_end).each do |pos|
+                        gen_number = gen_number * 10 + (data_ptr[pos] - 0x30).to_i64
+                      end
+
+                      # Parse object number (digits before whitespace that's before generation)
+                      # The whitespace at obj_start - 2 separates object number from generation
+                      obj_num_end = obj_start - 3 # last digit of object number (before whitespace)
+                      next if obj_num_end < 0     # Not enough space for object number
+
+                      obj_num_start = obj_num_end
+                      while obj_num_start > 0 && is_digit.call(data_ptr[obj_num_start - 1])
+                        obj_num_start -= 1
+                      end
+
+                      # Parse object number
+                      obj_number = 0_i64
+                      (obj_num_start..obj_num_end).each do |pos|
+                        obj_number = obj_number * 10 + (data_ptr[pos] - 0x30).to_i64
+                      end
+
+                      # Calculate file offset for object start
+                      file_offset = start_offset + obj_num_start
+                      stream_object_key = Cos::ObjectKey.new(obj_number, gen_number)
+                      bf_search_obj_streams_offsets[file_offset] = stream_object_key
+                      Log.debug { "Dictionary start for object stream -> #{file_offset}, key #{stream_object_key}" }
+                      positions_found += 1
+                      obj_found = true
+
+                      # Skip over this pattern for next search
+                      i += pattern_size
+                      next
+                    end
+                  end
+                end
+              end
+              back_pos -= 1
+            end
+          end
+        end
+        i += 1
+      end
+
+      elapsed = Time.instant - start_time
+      Log.warn { "bf_search_for_obj_stream_offsets: scanned #{data_size} bytes, found #{total_matches} pattern matches, parsed #{positions_found} streams in #{elapsed.total_milliseconds.round(2)}ms" }
+      bf_search_obj_streams_offsets
+    end
+
+    private def bf_search_for_obj_streams(xref_table : Hash(Cos::ObjectKey, Int64)) : Nil
+      origin_offset = @source.position
+      offsets_map = bf_search_for_obj_stream_offsets
+      object_offsets = bf_cos_object_offsets
+      original_xref_size = xref_table.size
 
       # collect all stream offsets where the stream object itself was found
       obj_stream_offsets = [] of Tuple(Int64, Cos::ObjectKey)
@@ -528,23 +656,6 @@ module Pdfbox::Pdfparser
         end
       end
       nil
-    end
-
-    # Search for all offsets of object streams within the given pdf
-    private def bf_search_for_obj_stream_offsets : Hash(Int64, Cos::ObjectKey)
-      bf_search_obj_streams_offsets = {} of Int64 => Cos::ObjectKey
-      @source.seek(MINIMUM_SEARCH_OFFSET)
-      position_obj_stream = find_string(OBJ_STREAM)
-      while position_obj_stream != -1
-        if result = find_object_stream_start(position_obj_stream)
-          offset, key = result
-          bf_search_obj_streams_offsets[offset] = key
-          Log.debug { "Dictionary start for object stream -> #{offset}" }
-        end
-        @source.seek(position_obj_stream + OBJ_STREAM.size)
-        position_obj_stream = find_string(OBJ_STREAM)
-      end
-      bf_search_obj_streams_offsets
     end
 
     # Brute force search for all xref entries (tables).
