@@ -841,6 +841,16 @@ module Pdfbox::Pdfparser
 
     private def apply_png_predictor(input : Bytes, columns : Int32, predictor : Int32) : Bytes
       start_time = Time.instant
+
+      # Try optimized path for common case: UP filter (type 2) which is predictor 12
+      if predictor == 12
+        # Optimized UP filter implementation
+        output = apply_png_predictor_up_fast(input, columns)
+        elapsed = Time.instant - start_time
+        Log.warn { "apply_png_predictor: optimized UP filter, rows=#{input.size // (columns + 1)}, columns=#{columns}, took #{elapsed.total_milliseconds.round(2)}ms" }
+        return output
+      end
+
       # PNG predictor: each row has filter byte (0-4) followed by columns bytes
       row_length = columns + 1
       return input if input.size % row_length != 0
@@ -872,6 +882,90 @@ module Pdfbox::Pdfparser
       end
       elapsed = Time.instant - start_time
       Log.warn { "apply_png_predictor: took #{elapsed.total_milliseconds.round(2)}ms" }
+      output
+    end
+
+    # Optimized UP filter (type 2) implementation using pointers
+    private def apply_png_predictor_up_fast(input : Bytes, columns : Int32) : Bytes
+      row_length = columns + 1
+      row_count = input.size // row_length
+      output = Bytes.new(row_count * columns)
+
+      input_ptr = input.to_unsafe
+      output_ptr = output.to_unsafe
+
+      # First row: filter byte should be 2 (UP), but we handle generally
+      # Initialize previous_row to zeros
+      previous_row = Pointer(UInt8).malloc(columns, 0_u8)
+
+      row_count.times do |row|
+        row_start = row * row_length
+        filter_type = input_ptr[row_start]
+
+        if filter_type == 2 # UP filter
+          # Process UP filter with pointers
+          columns.times do |col|
+            filtered = input_ptr[row_start + 1 + col]
+            up = previous_row[col]
+            decoded = filtered &+ up # Use wrapping addition
+            output_ptr[row * columns + col] = decoded
+            previous_row[col] = decoded
+          end
+        elsif filter_type == 0 # None filter
+          columns.times do |col|
+            value = input_ptr[row_start + 1 + col]
+            output_ptr[row * columns + col] = value
+            previous_row[col] = value
+          end
+        else
+          # Fall back to regular implementation for other filters
+          # This shouldn't happen for predictor=12
+          row_data = input[row_start + 1, columns]
+          case filter_type
+          when 1 # Sub
+            columns.times do |col|
+              left = col > 0 ? output_ptr[row * columns + col - 1] : 0_u8
+              decoded = row_data[col] &+ left
+              output_ptr[row * columns + col] = decoded
+              previous_row[col] = decoded
+            end
+          when 3 # Average
+            columns.times do |col|
+              left = col > 0 ? output_ptr[row * columns + col - 1] : 0_u8
+              up = previous_row[col]
+              decoded = row_data[col] &+ ((left &+ up) // 2)
+              output_ptr[row * columns + col] = decoded
+              previous_row[col] = decoded
+            end
+          when 4 # Paeth
+            columns.times do |col|
+              left = col > 0 ? output_ptr[row * columns + col - 1] : 0_u8
+              up = previous_row[col]
+              up_left = col > 0 ? previous_row[col - 1] : 0_u8
+
+              p = left.to_i16 &+ up.to_i16 &- up_left.to_i16
+              pa_left = (p - left).abs
+              pa_up = (p - up).abs
+              pa_up_left = (p - up_left).abs
+
+              predictor_val = if pa_left <= pa_up && pa_left <= pa_up_left
+                                left
+                              elsif pa_up <= pa_up_left
+                                up
+                              else
+                                up_left
+                              end
+
+              decoded = row_data[col] &+ predictor_val
+              output_ptr[row * columns + col] = decoded
+              previous_row[col] = decoded
+            end
+          else
+            raise SyntaxError.new("Unsupported PNG filter type #{filter_type}")
+          end
+        end
+      end
+
       output
     end
 
