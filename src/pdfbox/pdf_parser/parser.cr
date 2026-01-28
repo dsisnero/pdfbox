@@ -82,6 +82,7 @@ module Pdfbox::Pdfparser
     # ameba:disable Metrics/CyclomaticComplexity
     def parse_xref : XRef
       # puts "DEBUG: parse_xref called" if @lenient
+      start_time = Time.instant
       xref = XRef.new
       # Skip whitespace/comments before "xref"
       scanner = PDFScanner.new(@source)
@@ -245,6 +246,8 @@ module Pdfbox::Pdfparser
       Log.debug { "parse_xref: final scanner.position=#{final_pos}, source.position=#{@source.position}" }
       # puts "DEBUG: parse_xref returning, final_pos=#{final_pos}, xref entries=#{xref.size}" if @lenient
       @source.seek(final_pos)
+      elapsed = Time.instant - start_time
+      Log.warn { "parse_xref: parsed #{xref.size} entries in #{elapsed.total_milliseconds.round(2)}ms" }
       xref
     end
 
