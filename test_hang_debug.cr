@@ -11,14 +11,22 @@ begin
   # Try to load with lenient mode (enables brute-force parser)
   puts "Attempting to load PDF with lenient mode (brute-force fallback)..."
   start_time = Time.instant
-  doc = Pdfbox::Pdmodel::Document.load(pdf_path, lenient: true)
+
+  # Use timeout
+  require "timeout"
+  doc = nil
+  Timeout.timeout(30.seconds) do
+    doc = Pdfbox::Pdmodel::Document.load(pdf_path, lenient: true)
+  end
+
   elapsed = Time.instant - start_time
   puts "Success! Loaded PDF in #{elapsed.total_seconds.round(2)} seconds"
-
   puts "Document version: #{doc.version}"
   puts "Page count: #{doc.page_count}"
-
   doc.close if doc.responds_to?(:close)
+rescue Timeout::Error
+  puts "TIMEOUT: PDF loading took more than 30 seconds"
+  puts "Last logs may indicate where it's stuck"
 rescue ex
   puts "Exception: #{ex.class}: #{ex.message}"
   ex.backtrace.each { |line| puts "  #{line}" }

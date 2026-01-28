@@ -115,14 +115,16 @@ module Pdfbox::Pdfparser
 
     private def string?(chars : Array(Char)) : Bool
       saved_pos = @source.position
-      chars.each do |char|
-        byte = @source.read
-        unless byte && byte.chr == char
-          @source.seek(saved_pos)
-          return false
-        end
-      end
+      # Read all needed bytes at once
+      bytes = Bytes.new(chars.size)
+      bytes_read = @source.read(bytes)
       @source.seek(saved_pos)
+
+      return false unless bytes_read == chars.size
+
+      chars.each_with_index do |char, i|
+        return false unless bytes[i] == char.ord
+      end
       true
     end
 
@@ -615,6 +617,211 @@ module Pdfbox::Pdfparser
         end
       end
       position
+    end
+
+    # Check if dictionary is an info dictionary
+    private def info?(dictionary : Cos::Dictionary) : Bool
+      # These keys indicate it's NOT an info dictionary
+      if dictionary.has_key?(Cos::Name.new("Parent")) ||
+         dictionary.has_key?(Cos::Name.new("A")) ||
+         dictionary.has_key?(Cos::Name.new("Dest"))
+        return false
+      end
+
+      # These keys indicate it IS an info dictionary
+      dictionary.has_key?(Cos::Name.new("ModDate")) ||
+        dictionary.has_key?(Cos::Name.new("Title")) ||
+        dictionary.has_key?(Cos::Name.new("Author")) ||
+        dictionary.has_key?(Cos::Name.new("Subject")) ||
+        dictionary.has_key?(Cos::Name.new("Keywords")) ||
+        dictionary.has_key?(Cos::Name.new("Creator")) ||
+        dictionary.has_key?(Cos::Name.new("Producer")) ||
+        dictionary.has_key?(Cos::Name.new("CreationDate"))
+    end
+
+    # Check if dictionary is a PDF or FDF catalog
+    private def catalog?(dictionary : Cos::Dictionary) : Bool
+      type_entry = dictionary[Cos::Name.new("Type")]
+      return false unless type_entry.is_a?(Cos::Name)
+
+      type_entry.value == "Catalog" || dictionary.has_key?(Cos::Name.new("FDF"))
+    end
+
+    # Compare COS objects to determine which is newer
+    private def compare_cos_objects(new_object : Cos::Object, new_offset : Int64, current_object : Cos::Object?) : Cos::Object?
+      return new_object unless current_object
+
+      if current_key = current_object.key
+        new_key = new_object.key
+        return new_object unless new_key
+
+        # Check if the current object is an updated version of the previous found object
+        if current_key.number == new_key.number
+          return current_key.generation < new_key.generation ? new_object : current_object
+        end
+
+        # Most likely the object with the bigger offset is the newer one
+        # In Java: document.getXrefTable().get(currentKey) but we don't have direct access
+        # For now, assume newer object is better
+        return new_object
+      end
+
+      new_object
+    end
+
+    # Brute force search for trailer dictionary
+    private def bf_search_for_trailer(trailer : Cos::Dictionary) : Bool
+      Log.warn { "BruteForceParser.bf_search_for_trailer: START" }
+      origin_offset = @source.position
+      @source.seek(MINIMUM_SEARCH_OFFSET)
+
+      trailer_offset = find_string(TRAILER_MARKER)
+      while trailer_offset != -1
+        begin
+          root_found = false
+          info_found = false
+
+          # Skip whitespace and parse dictionary
+          @source.seek(trailer_offset + TRAILER_MARKER.size)
+          scanner = PDFScanner.new(@source)
+          scanner.skip_whitespace
+
+          object_parser = ObjectParser.new(scanner, @parser)
+          trailer_dict = object_parser.parse_dictionary
+          next unless trailer_dict.is_a?(Cos::Dictionary)
+
+          # Check for Root entry
+          root_obj = trailer_dict[Cos::Name.new("Root")]
+          if root_obj.is_a?(Cos::Object)
+            # Try to dereference and check if it's a catalog
+            begin
+              resolved_root = @parser.resolve(root_obj)
+              if resolved_root.is_a?(Cos::Dictionary) && catalog?(resolved_root)
+                root_found = true
+              end
+            rescue
+              # Ignore dereference errors
+            end
+          end
+
+          # Check for Info entry
+          info_obj = trailer_dict[Cos::Name.new("Info")]
+          if info_obj.is_a?(Cos::Object)
+            # Try to dereference and check if it's an info dictionary
+            begin
+              resolved_info = @parser.resolve(info_obj)
+              if resolved_info.is_a?(Cos::Dictionary) && info?(resolved_info)
+                info_found = true
+              end
+            rescue
+              # Ignore dereference errors
+            end
+          end
+
+          if root_found && info_found
+            # Copy entries to trailer dictionary
+            trailer[Cos::Name.new("Root")] = root_obj if root_obj
+            trailer[Cos::Name.new("Info")] = info_obj if info_obj
+
+            # Copy encryption if present
+            enc_obj = trailer_dict[Cos::Name.new("Encrypt")]
+            if enc_obj.is_a?(Cos::Object)
+              begin
+                resolved_enc = @parser.resolve(enc_obj)
+                if resolved_enc.is_a?(Cos::Dictionary)
+                  trailer[Cos::Name.new("Encrypt")] = enc_obj
+                end
+              rescue
+                # Ignore
+              end
+            end
+
+            # Copy ID if present
+            id_obj = trailer_dict[Cos::Name.new("ID")]
+            if id_obj.is_a?(Cos::Array)
+              trailer[Cos::Name.new("ID")] = id_obj
+            end
+
+            @source.seek(origin_offset)
+            Log.warn { "BruteForceParser.bf_search_for_trailer: FOUND valid trailer" }
+            return true
+          end
+        rescue ex
+          Log.debug { "Exception during brute force search for trailer: #{ex.message}" }
+        end
+
+        # Search for next trailer marker
+        @source.seek(trailer_offset + TRAILER_MARKER.size)
+        trailer_offset = find_string(TRAILER_MARKER)
+      end
+
+      @source.seek(origin_offset)
+      Log.warn { "BruteForceParser.bf_search_for_trailer: NOT FOUND" }
+      false
+    end
+
+    # Search for the different parts of the trailer dictionary
+    private def search_for_trailer_items(trailer : Cos::Dictionary) : Bool
+      Log.warn { "BruteForceParser.search_for_trailer_items: START" }
+      root_object : Cos::Object? = nil
+      info_object : Cos::Object? = nil
+
+      object_offsets = bf_cos_object_offsets
+      object_offsets.each do |key, offset|
+        begin
+          # Get object from parser's pool
+          cos_object = @parser.get_object_from_pool(key)
+          base_object = cos_object.object
+          next unless base_object.is_a?(Cos::Dictionary)
+
+          dictionary = base_object
+
+          # Check if it's a document catalog
+          if catalog?(dictionary)
+            root_object = compare_cos_objects(cos_object, offset, root_object).as(Cos::Object?)
+            # Check if it's an info dictionary
+          elsif info?(dictionary)
+            info_object = compare_cos_objects(cos_object, offset, info_object).as(Cos::Object?)
+          end
+        rescue ex
+          Log.debug { "Error processing object #{key}: #{ex.message}" }
+        end
+      end
+
+      found_root = false
+      if root_object
+        trailer[Cos::Name.new("Root")] = root_object
+        found_root = true
+        Log.warn { "BruteForceParser.search_for_trailer_items: found Root" }
+      end
+
+      if info_object
+        trailer[Cos::Name.new("Info")] = info_object
+        Log.warn { "BruteForceParser.search_for_trailer_items: found Info" }
+      end
+
+      Log.warn { "BruteForceParser.search_for_trailer_items: END, root_found=#{found_root}" }
+      found_root
+    end
+
+    # Public method to find trailer using brute force
+    def bf_find_trailer(trailer : Cos::Dictionary) : Bool
+      Log.warn { "BruteForceParser.bf_find_trailer: START" }
+
+      # First try direct trailer search
+      if bf_search_for_trailer(trailer)
+        Log.warn { "BruteForceParser.bf_find_trailer: found via direct search" }
+        return true
+      end
+
+      # Fall back to searching individual items
+      if search_for_trailer_items(trailer)
+        Log.warn { "BruteForceParser.bf_find_trailer: found via item search" }
+        return true
+      end
+
+      Log.warn { "BruteForceParser.bf_find_trailer: NOT FOUND" }
+      false
     end
   end
 end

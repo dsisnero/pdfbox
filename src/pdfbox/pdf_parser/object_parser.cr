@@ -64,7 +64,7 @@ module Pdfbox::Pdfparser
         return
       end
 
-      scanned = @scanner.scanner.scan("<<")
+      @scanner.scanner.scan("<<")
       # puts "DEBUG ObjectParser.parse_dictionary: scanned '<<': #{scanned.inspect}, pos: #{@scanner.position}"
       dict = Pdfbox::Cos::Dictionary.new
 
