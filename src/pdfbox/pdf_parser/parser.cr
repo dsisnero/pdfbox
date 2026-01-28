@@ -516,10 +516,13 @@ module Pdfbox::Pdfparser
     # Parse an indirect object at given offset
     def parse_indirect_object_at_offset(offset : Int64, key : Cos::ObjectKey? = nil) : Pdfbox::Cos::Base
       # Get object from pool if key provided
+      start_time = Time.instant
       cos_object = key ? get_object_from_pool(key) : nil
 
       # Check if already dereferenced
       if cos_object && (obj = cos_object.object)
+        elapsed = Time.instant - start_time
+        Log.warn { "parse_indirect_object_at_offset: cached object #{obj.inspect} took #{elapsed.total_milliseconds.round(2)}ms" }
         return obj
       end
 
@@ -535,6 +538,8 @@ module Pdfbox::Pdfparser
         cos_object.object = object
       end
 
+      elapsed = Time.instant - start_time
+      Log.warn { "parse_indirect_object_at_offset: parsed object #{object.inspect} took #{elapsed.total_milliseconds.round(2)}ms" }
       object
     end
 
@@ -658,6 +663,7 @@ module Pdfbox::Pdfparser
     # Parse an object from an object stream (similar to Apache PDFBox parseObjectStreamObject)
     private def parse_object_from_stream(obj_stream_number : Int64, key : Cos::ObjectKey, index_in_stream : Int64, xref : XRef) : Cos::Base
       Log.debug { "parse_object_from_stream: parsing object #{key.number} from stream #{obj_stream_number} at index #{index_in_stream}" }
+      start_time = Time.instant
 
       # Get or create cache for this object stream
       stream_objects = @decompressed_objects[obj_stream_number] ||= Hash(Cos::ObjectKey, Cos::Base).new
@@ -666,6 +672,8 @@ module Pdfbox::Pdfparser
       cached_object = stream_objects.delete(key)
       if cached_object
         Log.debug { "parse_object_from_stream: found object #{key.number} in cache" }
+        elapsed = Time.instant - start_time
+        Log.warn { "parse_object_from_stream: cached object #{key.number} took #{elapsed.total_milliseconds.round(2)}ms" }
         return cached_object
       end
 
@@ -715,31 +723,38 @@ module Pdfbox::Pdfparser
       end
 
       Log.debug { "parse_object_from_stream: cached #{all_objects.size} remaining objects" }
+      elapsed = Time.instant - start_time
+      Log.warn { "parse_object_from_stream: parsed object #{key.number} from stream #{obj_stream_number} took #{elapsed.total_milliseconds.round(2)}ms" }
       requested_object
     end
 
     private def decompress_flate(data : Bytes) : Bytes
+      start_time = Time.instant
       io = ::IO::Memory.new(data)
       begin
         reader = Compress::Deflate::Reader.new(io)
         decompressed = reader.gets_to_end
         reader.close
-        decompressed.to_slice
+        result = decompressed.to_slice
       rescue ex
         io.rewind
         begin
           reader = Compress::Zlib::Reader.new(io)
           decompressed = reader.gets_to_end
           reader.close
-          decompressed.to_slice
+          result = decompressed.to_slice
         rescue ex
           # Use raw data as fallback (maybe already uncompressed)
-          data
+          result = data
         end
       end
+      elapsed = Time.instant - start_time
+      Log.warn { "decompress_flate: took #{elapsed.total_milliseconds.round(2)}ms, input #{data.size} -> #{result.size}" }
+      result
     end
 
     private def decode_stream_data(stream : Pdfbox::Cos::Stream) : Bytes
+      start_time = Time.instant
       data = stream.data
       dict = stream
 
@@ -763,6 +778,8 @@ module Pdfbox::Pdfparser
         end
       end
 
+      elapsed = Time.instant - start_time
+      Log.warn { "decode_stream_data: took #{elapsed.total_milliseconds.round(2)}ms, size #{data.size}" }
       data
     end
 
@@ -823,10 +840,12 @@ module Pdfbox::Pdfparser
     end
 
     private def apply_png_predictor(input : Bytes, columns : Int32, predictor : Int32) : Bytes
+      start_time = Time.instant
       # PNG predictor: each row has filter byte (0-4) followed by columns bytes
       row_length = columns + 1
       return input if input.size % row_length != 0
       row_count = input.size // row_length
+      Log.warn { "apply_png_predictor: rows=#{row_count}, columns=#{columns}, predictor=#{predictor}" }
       output_size = row_count.to_i64 * columns
       raise RuntimeError.new("PNG predictor output size overflow") if output_size > Int32::MAX || output_size < 0
       output = Bytes.new(output_size.to_i32)
@@ -851,6 +870,8 @@ module Pdfbox::Pdfparser
           raise SyntaxError.new("Unsupported PNG filter type #{filter_type}")
         end
       end
+      elapsed = Time.instant - start_time
+      Log.warn { "apply_png_predictor: took #{elapsed.total_milliseconds.round(2)}ms" }
       output
     end
 
@@ -957,6 +978,7 @@ module Pdfbox::Pdfparser
     private def parse_all_objects_from_stream(obj_stream : Cos::Stream) : Hash(Cos::ObjectKey, Cos::Base)
       Log.debug { "parse_all_objects_from_stream: START parsing all objects from stream" }
       Log.debug { "parse_all_objects_from_stream: stream class: #{obj_stream.class}" }
+      start_time = Time.instant
 
       # Get stream dictionary
       dict = obj_stream
@@ -1006,6 +1028,8 @@ module Pdfbox::Pdfparser
       )
 
       Log.debug { "parse_all_objects_from_stream: successfully parsed #{all_objects.size} objects" }
+      elapsed = Time.instant - start_time
+      Log.warn { "parse_all_objects_from_stream: parsed #{all_objects.size} objects took #{elapsed.total_milliseconds.round(2)}ms" }
       all_objects
     end
 
