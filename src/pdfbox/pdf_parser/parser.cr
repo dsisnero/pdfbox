@@ -4,6 +4,7 @@ require "../cos/icosparser"
 require "../cos/object_key"
 require "./brute_force_parser"
 require "./base_parser"
+require "./incremental_object_parser"
 
 module Pdfbox::Pdfparser
   # Main PDF parser class
@@ -12,9 +13,9 @@ module Pdfbox::Pdfparser
     Log = ::Log.for(self)
 
     # Safety limits to prevent infinite loops with malformed PDFs
-    MAX_OBJECTS_PER_STREAM =     10_000
-    MAX_XREF_ENTRIES       =  1_000_000
-    MAX_OBJECT_PARSE_SIZE  = 65_536_i64 # 64KB
+    MAX_OBJECTS_PER_STREAM =    10_000
+    MAX_XREF_ENTRIES       = 1_000_000
+    MAX_OBJECT_PARSE_SIZE  = 4_096_i64 # 4KB
     @source : Pdfbox::IO::RandomAccessRead
     @trailer : Pdfbox::Cos::Dictionary?
     @xref : XRef?
@@ -22,6 +23,8 @@ module Pdfbox::Pdfparser
     @decompressed_objects : Hash(Int64, Hash(Cos::ObjectKey, Cos::Base))
     @brute_force_parser : BruteForceParser?
     @lenient : Bool
+    @pdf_scanner : PDFScanner?
+    @use_incremental_parsing : Bool
 
     def initialize(source : Pdfbox::IO::RandomAccessRead)
       @source = source
@@ -32,6 +35,8 @@ module Pdfbox::Pdfparser
       @decompressed_objects = Hash(Int64, Hash(Cos::ObjectKey, Cos::Base)).new
       @brute_force_parser = nil
       @lenient = false
+      @pdf_scanner = nil
+      @use_incremental_parsing = false
     end
 
     getter source
@@ -89,7 +94,7 @@ module Pdfbox::Pdfparser
       start_time = Time.instant
       xref = XRef.new
       # Skip whitespace/comments before "xref"
-      scanner = PDFScanner.new(@source)
+      scanner = PDFScanner.new(@source) # read remaining file for xref
       Log.debug { "parse_xref: scanner string length: #{scanner.scanner.string.bytesize}, start pos: #{scanner.position}" }
       # puts "DEBUG: parse_xref scanner created, string length: #{scanner.scanner.string.bytesize}" if @lenient
       # puts "DEBUG: first 100 chars: #{scanner.scanner.string[0..100].inspect}" if @lenient
@@ -453,6 +458,23 @@ module Pdfbox::Pdfparser
       scanner
     end
 
+    # Parse object header using BaseParser (incremental)
+    private def parse_object_header_incremental(offset : Int64, key : Cos::ObjectKey?) : Int64
+      @source.seek(offset)
+      skip_spaces
+      obj_num = read_number.to_i64
+      gen_num = read_number.to_i64
+      skip_spaces
+      read_expected_string("obj")
+
+      # Verify object number/generation matches key if provided
+      if key && (obj_num != key.number || gen_num != key.generation)
+        raise SyntaxError.new("Object at offset #{offset} has number/generation #{obj_num}/#{gen_num}, expected #{key.number}/#{key.generation}")
+      end
+
+      position
+    end
+
     # Parse object body (actual COS object)
     private def parse_object_body(scanner : PDFScanner) : Pdfbox::Cos::Base
       start_time = Time.instant
@@ -524,6 +546,10 @@ module Pdfbox::Pdfparser
 
     # Parse an indirect object at given offset
     def parse_indirect_object_at_offset(offset : Int64, key : Cos::ObjectKey? = nil) : Pdfbox::Cos::Base
+      if @use_incremental_parsing
+        return parse_indirect_object_at_offset_incremental(offset, key)
+      end
+
       # Get object from pool if key provided
       start_time = Time.instant
       cos_object = key ? get_object_from_pool(key) : nil
@@ -550,6 +576,99 @@ module Pdfbox::Pdfparser
       elapsed = Time.instant - start_time
       Log.warn { "parse_indirect_object_at_offset: parsed object #{object.inspect} took #{elapsed.total_milliseconds.round(2)}ms" }
       object
+    end
+
+    # Parse indirect object using incremental parsing (no PDFScanner)
+    private def parse_indirect_object_at_offset_incremental(offset : Int64, key : Cos::ObjectKey? = nil) : Pdfbox::Cos::Base
+      # Get object from pool if key provided
+      start_time = Time.instant
+      cos_object = key ? get_object_from_pool(key) : nil
+
+      # Check if already dereferenced
+      if cos_object && (obj = cos_object.object)
+        elapsed = Time.instant - start_time
+        Log.warn { "parse_indirect_object_at_offset_incremental: cached object #{obj.inspect} took #{elapsed.total_milliseconds.round(2)}ms" }
+        return obj
+      end
+
+      # Parse header using BaseParser
+      after_header_pos = parse_object_header_incremental(offset, key)
+
+      # Parse object body using IncrementalObjectParser
+      object_parser = IncrementalObjectParser.new(@source, self)
+      # The source is already positioned after "obj"
+      object = object_parser.parse_object
+      unless object
+        raise SyntaxError.new("Failed to parse object at position #{@source.position}")
+      end
+
+      # Handle stream if object is a dictionary
+      object = handle_stream_incremental(object)
+
+      # Check for endobj
+      check_endobj_incremental
+
+      # Set the parsed object on the Cos::Object from pool
+      if cos_object
+        cos_object.object = object
+      end
+
+      elapsed = Time.instant - start_time
+      Log.warn { "parse_indirect_object_at_offset_incremental: parsed object #{object.inspect} took #{elapsed.total_milliseconds.round(2)}ms" }
+      object
+    end
+
+    # Handle stream incrementally
+    private def handle_stream_incremental(object : Pdfbox::Cos::Base) : Pdfbox::Cos::Base
+      return object unless object.is_a?(Pdfbox::Cos::Dictionary)
+
+      skip_spaces
+
+      # Check for "stream" keyword
+      saved_pos = position
+      begin
+        read_expected_string("stream")
+      rescue
+        seek(saved_pos)
+        return object
+      end
+
+      # Get Length from dictionary
+      length_entry = object[Pdfbox::Cos::Name.new("Length")]
+      unless length_entry && length_entry.is_a?(Pdfbox::Cos::Integer)
+        raise SyntaxError.new("Stream missing /Length entry")
+      end
+      length = length_entry.value.to_i64
+
+      # Skip whitespace (EOL marker) after "stream"
+      skip_spaces
+
+      # Read stream data as raw bytes
+      data = Bytes.new(length)
+      @source.read(data)
+
+      # Create Stream object with data
+      stream_obj = Pdfbox::Cos::Stream.new(object.entries, data)
+
+      # Skip "endstream"
+      skip_spaces
+      begin
+        read_expected_string("endstream")
+      rescue
+        raise SyntaxError.new("Expected 'endstream' after stream data at position #{position}")
+      end
+
+      stream_obj
+    end
+
+    # Check for endobj incrementally
+    private def check_endobj_incremental : Nil
+      skip_spaces
+      begin
+        read_expected_string("endobj")
+      rescue
+        raise SyntaxError.new("Expected 'endobj' at position #{position}")
+      end
     end
 
     # Locate xref table offset using startxref pointer

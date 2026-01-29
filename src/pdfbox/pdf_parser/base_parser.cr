@@ -65,11 +65,11 @@ module Pdfbox::Pdfparser
       loop do
         c = @source.peek
         break unless c
-        break if space?(c) || delimiter?(c.chr)
+        break if space?(c.not_nil!.to_i32) || delimiter?(c.not_nil!.chr)
 
-        byte = c.as(Int32)
+        byte = c.not_nil!
         @source.read # consume
-        buffer.write_byte(byte)
+        buffer.write_byte(byte.to_u8)
       end
 
       buffer.to_s
@@ -94,27 +94,27 @@ module Pdfbox::Pdfparser
       return 0_i64 unless c
 
       # Optional sign
-      if c.as(Int32).chr == '+' || c.as(Int32).chr == '-'
-        buffer.write_byte(c.as(Int32))
+      if c.not_nil!.chr == '+' || c.not_nil!.chr == '-'
+        buffer.write_byte(c.not_nil!)
         @source.read # consume
         c = @source.peek
       end
 
       # Digits before decimal
       while c && digit?(c)
-        buffer.write_byte(c.as(Int32))
+        buffer.write_byte(c.not_nil!)
         @source.read # consume
         c = @source.peek
       end
 
       # Optional decimal point and digits
-      if c && c.as(Int32).chr == '.'
-        buffer.write_byte(c.as(Int32))
+      if c && c.not_nil!.chr == '.'
+        buffer.write_byte(c.not_nil!)
         @source.read # consume
         c = @source.peek
 
         while c && digit?(c)
-          buffer.write_byte(c.as(Int32))
+          buffer.write_byte(c.not_nil!)
           @source.read # consume
           c = @source.peek
         end
@@ -143,11 +143,11 @@ module Pdfbox::Pdfparser
         c = @source.peek
         break unless c
 
-        ch = c.as(Int32).chr
+        ch = c.not_nil!.chr
         # Names can contain any characters except delimiters and whitespace
-        break if space?(c) || delimiter?(ch)
+        break if space?(c.not_nil!.to_i32) || delimiter?(ch)
 
-        buffer.write_byte(c.as(Int32))
+        buffer.write_byte(c.not_nil!)
         @source.read # consume
       end
 
@@ -241,7 +241,7 @@ module Pdfbox::Pdfparser
       when 'f'
         buffer << '\f'
       when '(', ')', '\\'
-        buffer.write_byte(c)
+        buffer.write_byte(c.to_u8)
       when '\n', '\r'
         # Line continuation - skip
         skip_spaces
@@ -249,7 +249,7 @@ module Pdfbox::Pdfparser
         # Octal sequence
         handle_octal_sequence(c.chr, buffer)
       else
-        buffer.write_byte(c)
+        buffer.write_byte(c.to_u8)
       end
     end
 
@@ -259,8 +259,8 @@ module Pdfbox::Pdfparser
 
       2.times do
         c = @source.peek
-        break unless c && '0' <= c.as(Int32).chr <= '7'
-        digits.write_byte(c.as(Int32))
+        break unless c && '0' <= c.not_nil!.chr <= '7'
+        digits.write_byte(c.not_nil!)
         @source.read # consume
       end
 
@@ -284,11 +284,11 @@ module Pdfbox::Pdfparser
         c = @source.peek
         break unless c
 
-        if c.as(Int32).chr == '>'
+        if c.not_nil!.chr == '>'
           @source.read # consume '>'
           break
-        elsif c.as(Int32).chr.ascii_hexnumber?
-          hex_chars += c.as(Int32).chr
+        elsif c.not_nil!.chr =~ /[0-9A-Fa-f]/
+          hex_chars += c.not_nil!.chr
           @source.read # consume
           if hex_chars.size == 2
             buffer << hex_chars.to_i(16).chr
