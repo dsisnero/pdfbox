@@ -3,15 +3,18 @@ require "../cos"
 require "../cos/icosparser"
 require "../cos/object_key"
 require "./brute_force_parser"
+require "./base_parser"
 
 module Pdfbox::Pdfparser
   # Main PDF parser class
   class Parser < Pdfbox::Cos::ICOSParser
+    include BaseParser
     Log = ::Log.for(self)
 
     # Safety limits to prevent infinite loops with malformed PDFs
-    MAX_OBJECTS_PER_STREAM =    10_000
-    MAX_XREF_ENTRIES       = 1_000_000
+    MAX_OBJECTS_PER_STREAM =     10_000
+    MAX_XREF_ENTRIES       =  1_000_000
+    MAX_OBJECT_PARSE_SIZE  = 65_536_i64 # 64KB
     @source : Pdfbox::IO::RandomAccessRead
     @trailer : Pdfbox::Cos::Dictionary?
     @xref : XRef?
@@ -22,6 +25,7 @@ module Pdfbox::Pdfparser
 
     def initialize(source : Pdfbox::IO::RandomAccessRead)
       @source = source
+      initialize_base_parser(source)
       @trailer = nil
       @xref = nil
       @object_pool = Hash(Cos::ObjectKey, Cos::Object).new
@@ -432,7 +436,7 @@ module Pdfbox::Pdfparser
     # Parse object header (obj number, generation, "obj")
     private def parse_object_header(offset : Int64, key : Cos::ObjectKey?) : PDFScanner
       @source.seek(offset)
-      scanner = PDFScanner.new(@source)
+      scanner = PDFScanner.new(@source, MAX_OBJECT_PARSE_SIZE)
       scanner.skip_whitespace
       obj_num = scanner.read_number.to_i64
       gen_num = scanner.read_number.to_i64
@@ -451,6 +455,7 @@ module Pdfbox::Pdfparser
 
     # Parse object body (actual COS object)
     private def parse_object_body(scanner : PDFScanner) : Pdfbox::Cos::Base
+      start_time = Time.instant
       # Parse the object using ObjectParser (starting at current position)
       object_parser = ObjectParser.new(scanner, self)
       # Try parsing as dictionary first (most common)
@@ -461,6 +466,10 @@ module Pdfbox::Pdfparser
         unless object
           raise SyntaxError.new("Failed to parse object at position #{scanner.position}")
         end
+      end
+      elapsed = Time.instant - start_time
+      if elapsed.total_milliseconds > 10
+        Log.warn { "parse_object_body took #{elapsed.total_milliseconds.round(2)}ms" }
       end
       object
     end
@@ -615,7 +624,7 @@ module Pdfbox::Pdfparser
             Log.debug { "resolve_object: resolving PageLabels object #{obj_num}" }
           end
           if xref_entry = xref[obj_num]
-            Log.debug { "resolve_object: obj #{obj_num}, type=#{xref_entry.type}, compressed?=#{xref_entry.compressed?}, offset=#{xref_entry.offset}, generation=#{xref_entry.generation}" }
+            Log.warn { "resolve_object: obj #{obj_num}, type=#{xref_entry.type}, compressed?=#{xref_entry.compressed?}, offset=#{xref_entry.offset}, generation=#{xref_entry.generation}" }
             if xref_entry.compressed?
               # Object is compressed in an object stream
               parse_object_from_stream(xref_entry.offset, key, xref_entry.generation, xref)
@@ -662,7 +671,7 @@ module Pdfbox::Pdfparser
 
     # Parse an object from an object stream (similar to Apache PDFBox parseObjectStreamObject)
     private def parse_object_from_stream(obj_stream_number : Int64, key : Cos::ObjectKey, index_in_stream : Int64, xref : XRef) : Cos::Base
-      Log.debug { "parse_object_from_stream: parsing object #{key.number} from stream #{obj_stream_number} at index #{index_in_stream}" }
+      Log.warn { "parse_object_from_stream: parsing object #{key.number} from stream #{obj_stream_number} at index #{index_in_stream}" }
       start_time = Time.instant
 
       # Get or create cache for this object stream
@@ -1031,10 +1040,13 @@ module Pdfbox::Pdfparser
       first : Int32,
       index_needed : Bool,
     ) : Hash(Cos::ObjectKey, Cos::Base)
+      start_time = Time.instant
       all_objects = Hash(Cos::ObjectKey, Cos::Base).new
       index = 0
+      total_objects = sorted_offsets.size
 
       sorted_offsets.each do |offset|
+        obj_start_time = Time.instant
         obj_num = offset_to_obj_num[offset]
         final_position = first + offset
 
@@ -1061,16 +1073,23 @@ module Pdfbox::Pdfparser
         key = Cos::ObjectKey.new(obj_num, 0, stream_index)
         all_objects[key] = object
 
+        if total_objects > 100 && index % 1000 == 0
+          obj_elapsed = Time.instant - obj_start_time
+          Log.warn { "parse_objects_from_sorted_offsets: parsed object #{index + 1}/#{total_objects} (#{obj_num}) at offset #{offset} took #{obj_elapsed.total_milliseconds.round(2)}ms" }
+        end
+
         Log.debug { "parse_objects_from_sorted_offsets: parsed object #{obj_num} at offset #{offset}, key=#{key}" }
         index += 1
       end
 
+      elapsed = Time.instant - start_time
+      Log.warn { "parse_objects_from_sorted_offsets: parsed #{total_objects} objects took #{elapsed.total_milliseconds.round(2)}ms" }
       all_objects
     end
 
     # Parse all objects from object stream and return map of object keys to objects
     private def parse_all_objects_from_stream(obj_stream : Cos::Stream) : Hash(Cos::ObjectKey, Cos::Base)
-      Log.debug { "parse_all_objects_from_stream: START parsing all objects from stream" }
+      Log.warn { "parse_all_objects_from_stream: START parsing all objects from stream" }
       Log.debug { "parse_all_objects_from_stream: stream class: #{obj_stream.class}" }
       start_time = Time.instant
 
@@ -1082,7 +1101,7 @@ module Pdfbox::Pdfparser
 
       # Get stream data (decompressed and decoded)
       data = decode_stream_data(obj_stream)
-      Log.debug { "parse_all_objects_from_stream: stream data size = #{data.size}" }
+      Log.warn { "parse_all_objects_from_stream: stream data size = #{data.size}" }
 
       # Validate first offset
       if first > data.size
@@ -1332,6 +1351,20 @@ module Pdfbox::Pdfparser
       catalog_dict
     end
 
+    # Rebuild trailer using brute force when startxref missing or trailer incomplete
+    private def rebuild_trailer_with_brute_force : Tuple(XRef, Cos::Dictionary?)?
+      Log.warn { "Parser.rebuild_trailer_with_brute_force: START" }
+      xref = XRef.new
+      trailer = get_brute_force_parser.rebuild_trailer(xref)
+      if trailer
+        Log.warn { "Parser.rebuild_trailer_with_brute_force: SUCCESS, xref entries: #{xref.size}" }
+        {xref, trailer}
+      else
+        Log.error { "Parser.rebuild_trailer_with_brute_force: FAILED" }
+        nil
+      end
+    end
+
     private def parse_pages_from_catalog(catalog_dict : Pdfbox::Cos::Dictionary, xref : XRef) : Array(Pdfbox::Pdmodel::Page)
       Log.debug { "PARSER: parse_pages_from_catalog start" }
       pages = [] of Pdfbox::Pdmodel::Page
@@ -1373,6 +1406,17 @@ module Pdfbox::Pdfparser
                          Log.warn { "Parser lenient mode enabled, performing brute-force search for object streams" }
                          get_brute_force_parser.bf_search_for_obj_streams_xref(xref)
                          Log.warn { "After brute-force search, xref entries: #{xref.size}" }
+
+                         # If trailer missing Root, try brute force to find it
+                         if trailer.nil? || !trailer.has_key?(Pdfbox::Cos::Name.new("Root"))
+                           Log.warn { "Trailer missing Root, attempting brute-force trailer search" }
+                           if get_brute_force_parser.bf_find_trailer(trailer ||= Pdfbox::Cos::Dictionary.new)
+                             Log.warn { "Brute-force trailer search succeeded" }
+                             @trailer = trailer
+                           else
+                             Log.warn { "Brute-force trailer search failed" }
+                           end
+                         end
                        end
 
                        # Debug logging for compressed entries
@@ -1401,6 +1445,23 @@ module Pdfbox::Pdfparser
                          pages = parse_pages_from_catalog(found_catalog_dict, xref)
                        end
                        found_catalog_dict
+                     else
+                       # No startxref found, use brute force to rebuild trailer
+                       Log.warn { "No startxref found, attempting brute-force trailer reconstruction" }
+                       xref = XRef.new
+                       trailer = get_brute_force_parser.rebuild_trailer(xref)
+                       if trailer
+                         @trailer = trailer
+                         @xref = xref
+                         found_catalog_dict = parse_catalog_from_trailer(trailer, xref)
+                         if found_catalog_dict
+                           pages = parse_pages_from_catalog(found_catalog_dict, xref)
+                         end
+                         found_catalog_dict
+                       else
+                         Log.error { "Failed to reconstruct trailer using brute force" }
+                         nil
+                       end
                      end
 
       Log.debug { "catalog_dict = #{catalog_dict.inspect}" }

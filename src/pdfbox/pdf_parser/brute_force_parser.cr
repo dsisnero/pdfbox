@@ -3,6 +3,7 @@ require "../cos"
 require "../io"
 require "./pdf_scanner"
 require "./object_parser"
+require "./xref"
 
 module Pdfbox::Pdfparser
   # Brute force parser to be used as last resort if a malformed pdf can't be read.
@@ -508,20 +509,19 @@ module Pdfbox::Pdfparser
       origin_offset = @source.position
       offsets_map = bf_search_for_obj_stream_offsets
       object_offsets = bf_cos_object_offsets
+      Log.warn { "bf_search_for_obj_streams: offsets_map size=#{offsets_map.size}, object_offsets size=#{object_offsets.size}" }
       original_xref_size = xref_table.size
 
       # collect all stream offsets where the stream object itself was found
       obj_stream_offsets = [] of Tuple(Int64, Cos::ObjectKey)
       offsets_map.each do |offset, key|
-        if object_offsets[key]? && offset == object_offsets[key]
-          obj_stream_offsets << {offset, key}
-        end
+        obj_stream_offsets << {offset, key}
       end
-      Log.debug { "bf_search_for_obj_streams: valid object streams count: #{obj_stream_offsets.size}" }
+      Log.warn { "bf_search_for_obj_streams: valid object streams count: #{obj_stream_offsets.size}" }
 
       # add all found compressed objects to the brute force search result
       obj_stream_offsets.each_with_index do |(offset, key), i|
-        Log.debug { "bf_search_for_obj_streams: processing stream #{i + 1}/#{obj_stream_offsets.size} at offset #{offset}, key #{key}" }
+        Log.warn { "bf_search_for_obj_streams: processing stream #{i + 1}/#{obj_stream_offsets.size} at offset #{offset}, key #{key}" }
         begin
           # Parse the object stream at offset
           stream = parse_object_stream_at_offset(offset)
@@ -529,7 +529,7 @@ module Pdfbox::Pdfparser
           # stream is a Cos::Stream
           # Get object numbers from stream
           objects = @parser.parse_object_stream(stream)
-          Log.debug { "bf_search_for_obj_streams: extracted #{objects.size} objects from stream" }
+          Log.warn { "bf_search_for_obj_streams: extracted #{objects.size} objects from stream" }
           stm_obj_number = key.number
           # For each object found in stream, add compressed entry
           objects.each do |obj_key, _|
@@ -541,10 +541,10 @@ module Pdfbox::Pdfparser
             xref_table[obj_key] = -stm_obj_number
           end
         rescue ex
-          Log.debug { "Skipped corrupt stream at offset #{offset}: #{ex.message}" }
+          Log.warn { "Skipped corrupt stream at offset #{offset}: #{ex.message}" }
         end
       end
-      Log.debug { "bf_search_for_obj_streams: END, added #{xref_table.size - original_xref_size} compressed entries" }
+      Log.warn { "bf_search_for_obj_streams: END, added #{xref_table.size - original_xref_size} compressed entries" }
       # restore origin offset
       @source.seek(origin_offset)
     end
@@ -967,6 +967,51 @@ module Pdfbox::Pdfparser
 
       Log.warn { "BruteForceParser.bf_find_trailer: NOT FOUND" }
       false
+    end
+
+    # Convert brute force object offsets to XRef entries
+    def bf_xref : XRef
+      xref = XRef.new
+      bf_cos_object_offsets.each do |key, offset|
+        if offset < 0
+          # compressed entry: negative offset indicates object stream number
+          xref[key.number] = XRefEntry.new(-offset, key.generation, :compressed)
+        else
+          # regular in-use entry
+          xref[key.number] = XRefEntry.new(offset, key.generation, :in_use)
+        end
+      end
+      xref
+    end
+
+    # Rebuild trailer using brute force search (similar to Java rebuildTrailer)
+    def rebuild_trailer(xref : XRef) : Cos::Dictionary?
+      Log.warn { "BruteForceParser.rebuild_trailer: START" }
+
+      # Get brute force offsets and populate xref
+      bf_offsets = bf_cos_object_offsets
+      bf_offsets.each do |key, offset|
+        if offset < 0
+          xref[key.number] = XRefEntry.new(-offset, key.generation, :compressed)
+        else
+          xref[key.number] = XRefEntry.new(offset, key.generation, :in_use)
+        end
+      end
+
+      # Search for object streams and add compressed objects
+      bf_search_for_obj_streams_xref(xref)
+
+      # Create empty trailer dictionary
+      trailer = Cos::Dictionary.new
+
+      # Try to find trailer entries
+      if bf_find_trailer(trailer)
+        Log.warn { "BruteForceParser.rebuild_trailer: found trailer" }
+        trailer
+      else
+        Log.warn { "BruteForceParser.rebuild_trailer: could not find trailer" }
+        nil
+      end
     end
   end
 end

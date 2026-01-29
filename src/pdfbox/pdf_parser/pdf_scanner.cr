@@ -12,16 +12,19 @@ module Pdfbox::Pdfparser
     getter buffer_pos : Int64
     getter raw_buffer : Bytes
 
-    def initialize(@source : Pdfbox::IO::RandomAccessRead)
-      # Read remaining data as string for scanning
-      @scanner = StringScanner.new(read_remaining_as_string)
+    def initialize(@source : Pdfbox::IO::RandomAccessRead, max_bytes : Int64? = nil)
+      # Read remaining data as string for scanning, optionally limited
+      @scanner = StringScanner.new(read_remaining_as_string(max_bytes))
     end
 
     # Read remaining data from source as ASCII string
-    private def read_remaining_as_string : String
+    private def read_remaining_as_string(max_bytes : Int64? = nil) : String
       bytes_to_read = @source.length - @source.position
+      if max_bytes && max_bytes < bytes_to_read
+        bytes_to_read = max_bytes
+      end
       # puts "PDFScanner DEBUG: source.length=#{@source.length}, source.position=#{@source.position}, bytes_to_read=#{bytes_to_read}"
-      Log.debug { "PDFScanner.read_remaining_as_string: source.length=#{@source.length}, source.position=#{@source.position}, bytes_to_read=#{bytes_to_read}" }
+      Log.debug { "PDFScanner.read_remaining_as_string: source.length=#{@source.length}, source.position=#{@source.position}, bytes_to_read=#{bytes_to_read}, max_bytes=#{max_bytes}" }
       @raw_buffer = Bytes.new(bytes_to_read)
       @source.read(@raw_buffer)
       @buffer_pos = @source.position - @raw_buffer.size
