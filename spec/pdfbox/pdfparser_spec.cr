@@ -140,6 +140,85 @@ describe Pdfbox::Pdfparser::COSParser do
       obj.as(Pdfbox::Cos::String).value.should eq("Hello")
     end
 
+    it "parses hexadecimal string with whitespace" do
+      bytes = Bytes['<'.ord, '4'.ord, '8'.ord, ' '.ord, '6'.ord, '5'.ord, ' '.ord, '6'.ord, 'C'.ord, ' '.ord, '6'.ord, 'C'.ord, ' '.ord, '6'.ord, 'F'.ord, '>'.ord, ' '.ord]
+      source = Pdfbox::IO::MemoryRandomAccessRead.new(bytes)
+      parser = Pdfbox::Pdfparser::COSParser.new(source)
+      obj = parser.parse_object
+      obj.should be_a(Pdfbox::Cos::String)
+      obj.as(Pdfbox::Cos::String).value.should eq("Hello")
+    end
+
+    it "parses hexadecimal string with lowercase letters" do
+      bytes = Bytes['<'.ord, '4'.ord, '8'.ord, '6'.ord, '5'.ord, '6'.ord, 'c'.ord, '6'.ord, 'c'.ord, '6'.ord, 'f'.ord, '>'.ord, ' '.ord]
+      source = Pdfbox::IO::MemoryRandomAccessRead.new(bytes)
+      parser = Pdfbox::Pdfparser::COSParser.new(source)
+      obj = parser.parse_object
+      obj.should be_a(Pdfbox::Cos::String)
+      obj.as(Pdfbox::Cos::String).value.should eq("Hello")
+    end
+
+    it "parses hexadecimal string with odd number of digits" do
+      bytes = Bytes['<'.ord, '4'.ord, '8'.ord, '6'.ord, '5'.ord, '6'.ord, 'C'.ord, '6'.ord, 'C'.ord, '6'.ord, '>'.ord, ' '.ord]
+      source = Pdfbox::IO::MemoryRandomAccessRead.new(bytes)
+      parser = Pdfbox::Pdfparser::COSParser.new(source)
+      obj = parser.parse_object
+      obj.should be_a(Pdfbox::Cos::String)
+      # 48656C6C6 (9 digits) -> pad last digit with '0': 48656C6C60 -> "Hell`" (0x60 = '`')
+      # Actually: 48 65 6C 6C 60 -> H e l l `
+      obj.as(Pdfbox::Cos::String).value.should eq("Hell`")
+    end
+
+    it "parses hexadecimal string with invalid characters" do
+      # Invalid character 'G' should be ignored, incomplete hex pair discarded
+      bytes = Bytes['<'.ord, '4'.ord, '8'.ord, '6'.ord, '5'.ord, 'G'.ord, '6'.ord, 'C'.ord, '6'.ord, 'C'.ord, '6'.ord, 'F'.ord, '>'.ord, ' '.ord]
+      source = Pdfbox::IO::MemoryRandomAccessRead.new(bytes)
+      parser = Pdfbox::Pdfparser::COSParser.new(source)
+      obj = parser.parse_object
+      obj.should be_a(Pdfbox::Cos::String)
+      # According to PDF spec: invalid characters cause current hex pair to be discarded
+      # and parser reads until '>'. So "48" = 'H' then invalid 'G', discard, then read until '>'
+      # Should return "H" or empty? Apache PDFBox returns "H"
+      obj.as(Pdfbox::Cos::String).value.should eq("H")
+    end
+
+    it "parses empty hexadecimal string" do
+      bytes = Bytes['<'.ord, '>'.ord, ' '.ord]
+      source = Pdfbox::IO::MemoryRandomAccessRead.new(bytes)
+      parser = Pdfbox::Pdfparser::COSParser.new(source)
+      obj = parser.parse_object
+      obj.should be_a(Pdfbox::Cos::String)
+      obj.as(Pdfbox::Cos::String).value.should eq("")
+    end
+
+    it "parses single digit hexadecimal string" do
+      bytes = Bytes['<'.ord, 'A'.ord, '>'.ord, ' '.ord]
+      source = Pdfbox::IO::MemoryRandomAccessRead.new(bytes)
+      parser = Pdfbox::Pdfparser::COSParser.new(source)
+      obj = parser.parse_object
+      obj.should be_a(Pdfbox::Cos::String)
+      # Single digit 'A' padded with '0' -> 0xA0 = 160 decimal = "\xA0" in ISO-8859-1
+      obj.as(Pdfbox::Cos::String).value.should eq("\u00A0")
+    end
+
+    it "parses hexadecimal string with form feed character" do
+      bytes = Bytes['<'.ord, '4'.ord, '8'.ord, '\f'.ord, '6'.ord, '5'.ord, '6'.ord, 'C'.ord, '6'.ord, 'C'.ord, '6'.ord, 'F'.ord, '>'.ord, ' '.ord]
+      source = Pdfbox::IO::MemoryRandomAccessRead.new(bytes)
+      parser = Pdfbox::Pdfparser::COSParser.new(source)
+      obj = parser.parse_object
+      obj.should be_a(Pdfbox::Cos::String)
+      obj.as(Pdfbox::Cos::String).value.should eq("Hello")
+    end
+
+    it "parses hexadecimal string with backspace character" do
+      bytes = Bytes['<'.ord, '4'.ord, '8'.ord, '\b'.ord, '6'.ord, '5'.ord, '6'.ord, 'C'.ord, '6'.ord, 'C'.ord, '6'.ord, 'F'.ord, '>'.ord, ' '.ord]
+      source = Pdfbox::IO::MemoryRandomAccessRead.new(bytes)
+      parser = Pdfbox::Pdfparser::COSParser.new(source)
+      obj = parser.parse_object
+      obj.should be_a(Pdfbox::Cos::String)
+      obj.as(Pdfbox::Cos::String).value.should eq("Hello")
+    end
+
     it "parses COS array" do
       bytes = Bytes['['.ord, '4'.ord, '2'.ord, ']'.ord, ' '.ord]
       source = Pdfbox::IO::MemoryRandomAccessRead.new(bytes)

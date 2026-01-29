@@ -4,8 +4,8 @@ module Pdfbox::Pdfparser
     # Read a PDF string (literal or hexadecimal)
     def self.read_string(io : ::IO) : String
       if io.is_a?(Pdfbox::IO::RandomAccessRead)
-        scanner = PDFScanner.new(io)
-        scanner.read_string
+        parser = COSParser.new(io)
+        parser.parse_string.try(&.value) || ""
       else
         # Fallback for generic IO
         # TODO: Implement basic string reading
@@ -16,8 +16,8 @@ module Pdfbox::Pdfparser
     # Read a PDF name
     def self.read_name(io : ::IO) : String
       if io.is_a?(Pdfbox::IO::RandomAccessRead)
-        scanner = PDFScanner.new(io)
-        scanner.read_name
+        parser = COSParser.new(io)
+        parser.parse_name.try(&.value) || ""
       else
         # Fallback for generic IO
         ""
@@ -27,8 +27,15 @@ module Pdfbox::Pdfparser
     # Read a PDF number
     def self.read_number(io : ::IO) : Float64 | Int64
       if io.is_a?(Pdfbox::IO::RandomAccessRead)
-        scanner = PDFScanner.new(io)
-        scanner.read_number
+        parser = COSParser.new(io)
+        case num = parser.parse_number
+        when Pdfbox::Cos::Integer
+          num.value
+        when Pdfbox::Cos::Float
+          num.value
+        else
+          read_number_generic_io(io)
+        end
       else
         # Fallback for generic IO
         read_number_generic_io(io)
@@ -82,11 +89,137 @@ module Pdfbox::Pdfparser
       end
     end
 
+    private def self.parse_date_from_random_access_read(io : Pdfbox::IO::RandomAccessRead) : Time?
+      parser = COSParser.new(io)
+      parser.skip_spaces
+
+      # Check for "D:" prefix
+      saved_pos = parser.position
+      begin
+        parser.read_expected_string("D:")
+      rescue
+        parser.seek(saved_pos)
+        return
+      end
+
+      # Read year (4 digits)
+      year_str = ""
+      4.times do
+        c = parser.source.peek
+        break unless c && parser.digit?(c)
+        year_str << parser.source.read.chr
+      end
+      return if year_str.empty?
+      year = year_str.to_i
+
+      # Read month (2 digits, optional)
+      month_str = ""
+      2.times do
+        c = parser.source.peek
+        break unless c && parser.digit?(c)
+        month_str << parser.source.read.chr
+      end
+      month = month_str.empty? ? 1 : month_str.to_i
+
+      # Read day (2 digits, optional)
+      day_str = ""
+      2.times do
+        c = parser.source.peek
+        break unless c && parser.digit?(c)
+        day_str << parser.source.read.chr
+      end
+      day = day_str.empty? ? 1 : day_str.to_i
+
+      # Read hour (2 digits, optional)
+      hour_str = ""
+      2.times do
+        c = parser.source.peek
+        break unless c && parser.digit?(c)
+        hour_str << parser.source.read.chr
+      end
+      hour = hour_str.empty? ? 0 : hour_str.to_i
+
+      # Read minute (2 digits, optional)
+      minute_str = ""
+      2.times do
+        c = parser.source.peek
+        break unless c && parser.digit?(c)
+        minute_str << parser.source.read.chr
+      end
+      minute = minute_str.empty? ? 0 : minute_str.to_i
+
+      # Read second (2 digits, optional)
+      second_str = ""
+      2.times do
+        c = parser.source.peek
+        break unless c && parser.digit?(c)
+        second_str << parser.source.read.chr
+      end
+      second = second_str.empty? ? 0 : second_str.to_i
+
+      # Read timezone (O HH ' mm ')
+      c = parser.source.peek
+      return Time.utc(year, month, day, hour, minute, second) unless c
+
+      tz_char = parser.source.read.chr
+      case tz_char
+      when 'Z', 'z'
+        # UTC
+        Time.utc(year, month, day, hour, minute, second)
+      when '+', '-'
+        # Timezone offset
+        # Read HH (2 digits)
+        tz_hour_str = ""
+        2.times do
+          c = parser.source.peek
+          break unless c && parser.digit?(c)
+          tz_hour_str << parser.source.read.chr
+        end
+        return Time.utc(year, month, day, hour, minute, second) if tz_hour_str.empty?
+        tz_hour = tz_hour_str.to_i
+
+        # Check for "'" separator
+        c = parser.source.peek
+        if c && c.chr == '\''
+          parser.source.read # consume '
+        else
+          return Time.utc(year, month, day, hour, minute, second)
+        end
+
+        # Read mm (2 digits)
+        tz_minute_str = ""
+        2.times do
+          c = parser.source.peek
+          break unless c && parser.digit?(c)
+          tz_minute_str << parser.source.read.chr
+        end
+        tz_minute = tz_minute_str.empty? ? 0 : tz_minute_str.to_i
+
+        # Check for "'" separator
+        c = parser.source.peek
+        if c && c.chr == '\''
+          parser.source.read # consume '
+        end
+
+        # Calculate offset in seconds
+        offset_seconds = tz_hour * 3600 + tz_minute * 60
+        offset_seconds = -offset_seconds if tz_char == '-'
+
+        # Return time with offset (PDF times are local times)
+        # We'll convert to UTC
+        Time.local(year, month, day, hour, minute, second, nanosecond: 0).shift(seconds: -offset_seconds)
+      else
+        # Unknown timezone marker, treat as local time
+        parser.source.rewind(1) # put back char
+        Time.local(year, month, day, hour, minute, second)
+      end
+    end
+
     # Skip whitespace and comments
     def self.skip_whitespace(io : ::IO) : Nil
       if io.is_a?(Pdfbox::IO::RandomAccessRead)
-        scanner = PDFScanner.new(io)
-        scanner.skip_whitespace
+        parser = COSParser.new(io)
+        parser.skip_spaces
       else
         # Fallback for generic IO
         loop do
@@ -116,8 +249,9 @@ module Pdfbox::Pdfparser
     # Peek next non-whitespace character
     def self.peek(io : ::IO) : Char?
       if io.is_a?(Pdfbox::IO::RandomAccessRead)
-        scanner = PDFScanner.new(io)
-        scanner.peek
+        parser = COSParser.new(io)
+        parser.skip_spaces
+        parser.peek_char
       else
         # Fallback for generic IO
         skip_whitespace(io)
@@ -135,8 +269,7 @@ module Pdfbox::Pdfparser
     # Read PDF date string
     def self.read_date(io : ::IO) : Time?
       if io.is_a?(Pdfbox::IO::RandomAccessRead)
-        scanner = PDFScanner.new(io)
-        scanner.read_date
+        parse_date_from_random_access_read(io)
       end
     end
   end

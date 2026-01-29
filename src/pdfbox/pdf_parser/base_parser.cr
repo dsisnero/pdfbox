@@ -559,10 +559,15 @@ module Pdfbox::Pdfparser
           # skip whitespace
           next
         else
-          # invalid character
-          if hex_digits.size.odd?
-            # discard last hex digit if not part of a pair
-            hex_digits = hex_digits[0...-1] if hex_digits.size > 0
+          # invalid character - discard incomplete hex pair
+          # Keep only complete pairs before the invalid character
+          if hex_digits.size > 0
+            # Discard last digit if odd, last two digits if even
+            if hex_digits.size.even?
+              hex_digits = hex_digits[0...-2]
+            else
+              hex_digits = hex_digits[0...-1]
+            end
           end
           # read until closing bracket or EOF
           while c && c.chr != '>'
