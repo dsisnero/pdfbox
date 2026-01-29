@@ -24,6 +24,7 @@ module Pdfbox::Pdfparser
     @brute_force_parser : BruteForceParser?
     @lenient : Bool
     @pdf_scanner : PDFScanner?
+    @pdf_scanner_max_bytes : Int64?
     @use_incremental_parsing : Bool
 
     def initialize(source : Pdfbox::IO::RandomAccessRead)
@@ -36,7 +37,8 @@ module Pdfbox::Pdfparser
       @brute_force_parser = nil
       @lenient = false
       @pdf_scanner = nil
-      @use_incremental_parsing = false
+      @pdf_scanner_max_bytes = nil
+      @use_incremental_parsing = true
     end
 
     getter source
@@ -47,6 +49,25 @@ module Pdfbox::Pdfparser
 
     protected def get_brute_force_parser : BruteForceParser
       @brute_force_parser ||= BruteForceParser.new(self)
+    end
+
+    # Get a reusable PDFScanner, seeking to the given position if provided
+    private def get_scanner(position : Int64? = nil, max_bytes : Int64? = MAX_OBJECT_PARSE_SIZE) : PDFScanner
+      # Check if we need new scanner (different max_bytes)
+      if @pdf_scanner && @pdf_scanner_max_bytes != max_bytes
+        @pdf_scanner = nil
+        @pdf_scanner_max_bytes = nil
+      end
+
+      scanner = @pdf_scanner
+      if scanner.nil?
+        scanner = PDFScanner.new(@source, max_bytes)
+        @pdf_scanner = scanner
+        @pdf_scanner_max_bytes = max_bytes
+      elsif position
+        scanner.position = position
+      end
+      scanner
     end
 
     # Get object from pool or create a new proxy object for lazy resolution
@@ -440,8 +461,7 @@ module Pdfbox::Pdfparser
 
     # Parse object header (obj number, generation, "obj")
     private def parse_object_header(offset : Int64, key : Cos::ObjectKey?) : PDFScanner
-      @source.seek(offset)
-      scanner = PDFScanner.new(@source, MAX_OBJECT_PARSE_SIZE)
+      scanner = get_scanner(position: offset, max_bytes: MAX_OBJECT_PARSE_SIZE)
       scanner.skip_whitespace
       obj_num = scanner.read_number.to_i64
       gen_num = scanner.read_number.to_i64

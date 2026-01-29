@@ -51,6 +51,18 @@ module Pdfbox::Pdfparser
       c ? c.chr : nil
     end
 
+    # Peek character at offset (0 = next character)
+    def peek_char(offset : Int32 = 0) : Char?
+      saved_pos = @source.position
+      offset.times do
+        c = @source.read
+        break unless c
+      end
+      c = @source.peek
+      @source.seek(saved_pos)
+      c ? c.chr : nil
+    end
+
     # Read next character and consume it
     def read_char : Char?
       c = @source.read
@@ -62,14 +74,12 @@ module Pdfbox::Pdfparser
       skip_spaces
       buffer = String::Builder.new
 
-      loop do
-        c = @source.peek
-        break unless c
-        break if space?(c.not_nil!.to_i32) || delimiter?(c.not_nil!.chr)
+      while c = @source.peek
+        ch = c.chr
+        break if space?(c) || delimiter?(ch)
 
-        byte = c.not_nil!
         @source.read # consume
-        buffer.write_byte(byte.to_u8)
+        buffer.write_byte(c.to_u8)
       end
 
       buffer.to_s
@@ -94,27 +104,28 @@ module Pdfbox::Pdfparser
       return 0_i64 unless c
 
       # Optional sign
-      if c.not_nil!.chr == '+' || c.not_nil!.chr == '-'
-        buffer.write_byte(c.not_nil!)
+      ch = c.chr
+      if ch == '+' || ch == '-'
+        buffer.write_byte(c)
         @source.read # consume
         c = @source.peek
       end
 
       # Digits before decimal
       while c && digit?(c)
-        buffer.write_byte(c.not_nil!)
+        buffer.write_byte(c)
         @source.read # consume
         c = @source.peek
       end
 
       # Optional decimal point and digits
-      if c && c.not_nil!.chr == '.'
-        buffer.write_byte(c.not_nil!)
+      if c && c.chr == '.'
+        buffer.write_byte(c)
         @source.read # consume
         c = @source.peek
 
         while c && digit?(c)
-          buffer.write_byte(c.not_nil!)
+          buffer.write_byte(c)
           @source.read # consume
           c = @source.peek
         end
@@ -139,15 +150,12 @@ module Pdfbox::Pdfparser
       end
 
       buffer = String::Builder.new
-      loop do
-        c = @source.peek
-        break unless c
-
-        ch = c.not_nil!.chr
+      while c = @source.peek
+        ch = c.chr
         # Names can contain any characters except delimiters and whitespace
-        break if space?(c.not_nil!.to_i32) || delimiter?(ch)
+        break if space?(c) || delimiter?(ch)
 
-        buffer.write_byte(c.not_nil!)
+        buffer.write_byte(c)
         @source.read # consume
       end
 

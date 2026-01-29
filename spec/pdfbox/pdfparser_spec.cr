@@ -167,28 +167,54 @@ describe Pdfbox::Pdfparser::ObjectParser do
 end
 
 describe Pdfbox::Pdfparser::Parser do
-  pending "test PDF parser missing catalog" do
-    # Test loading MissingCatalog.pdf
-    # pdf_path = File.expand_path("../resources/pdfbox/pdparser/MissingCatalog.pdf", __DIR__)
-    # # Should load without raising an exception
-    # doc = Pdfbox::Pdmodel::Document.load(pdf_path)
-    # doc.should_not be_nil
-    # doc.close if doc.responds_to?(:close)
+  it "test PDF parser missing catalog" do
+    # PDFBOX-3060
+    pdf_path = File.expand_path("../resources/pdfbox/pdparser/MissingCatalog.pdf", __DIR__)
+    # Should load without raising an exception
+    doc = Pdfbox::Pdmodel::Document.load(pdf_path)
+    doc.should_not be_nil
+    doc.close if doc.responds_to?(:close)
   end
 
-  pending "test PDFBOX-3208" do
-    # TODO: Port testPDFBox3208
-    # Test /Info dictionary retrieval
+  it "test PDFBOX-3208" do
+    # Test /Info dictionary retrieval when rebuilding trailer of corrupt file
+    pdf_path = File.expand_path("../resources/pdfbox/pdparser/PDFBOX-3208-L33MUTT2SVCWGCS6UIYL5TH3PNPXHIS6.pdf", __DIR__)
+    doc = Pdfbox::Pdmodel::Document.load(pdf_path)
+    doc.should_not be_nil
+
+    # Check document information if available
+    # TODO: Add proper document information checks when implemented
+    # Expected values from Apache PDFBox test:
+    # Author: "Liquent Enterprise Services"
+    # Creator: "Liquent services server"
+    # Producer: "Amyuni PDF Converter version 4.0.0.9"
+    # Keywords: ""
+    # Subject: ""
+    # Title: "892B77DE781B4E71A1BEFB81A51A5ABC_20140326022424.docx"
+
+    doc.close if doc.responds_to?(:close)
   end
 
-  pending "test PDFBOX-3783" do
-    # TODO: Port testPDFBox3783
-    # Test parsing file with trash after %%EOF
+  it "test PDFBOX-3783" do
+    # PDFBOX-3783: test parsing of file with trash after %%EOF
+    pdf_path = File.expand_path("../resources/pdfbox/pdparser/PDFBOX-3783-72GLBIGUC6LB46ELZFBARRJTLN4RBSQM.pdf", __DIR__)
+    # Should load without raising an exception
+    doc = Pdfbox::Pdmodel::Document.load(pdf_path)
+    doc.should_not be_nil
+    doc.close if doc.responds_to?(:close)
   end
 
-  pending "test PDFBOX-3785" do
-    # TODO: Port testPDFBox3785
-    # Test truncated file with several revisions has correct page count
+  it "test PDFBOX-3785" do
+    # PDFBOX-3785: Test whether truncated file with several revisions has correct page count
+    pdf_path = File.expand_path("../resources/pdfbox/pdparser/PDFBOX-3785-202097.pdf", __DIR__)
+    doc = Pdfbox::Pdmodel::Document.load(pdf_path)
+    doc.should_not be_nil
+
+    # Check page count if available
+    # TODO: Add page count check when implemented
+    # Expected: 1 page (from Apache PDFBox test)
+
+    doc.close if doc.responds_to?(:close)
   end
 
   it "test PDFBOX-3947" do
@@ -219,50 +245,106 @@ describe Pdfbox::Pdfparser::Parser do
     doc.close if doc.responds_to?(:close)
   end
 
+  it "test PDFBOX-3940" do
+    # Test /Info dictionary retrieval when missing modification date
+    pdf_path = File.expand_path("../resources/pdfbox/pdparser/PDFBOX-3940-079977.pdf", __DIR__)
+    doc = Pdfbox::Pdmodel::Document.load(pdf_path, lenient: true)
+    doc.should_not be_nil
+
+    # Check document information if available
+    # TODO: Add proper document information checks when implemented
+    # Expected values from Apache PDFBox test:
+    # Author: "Unknown"
+    # Creator: "C:REGULA~1IREGSFR_EQ_EM.WP"
+    # Producer: "Acrobat PDFWriter 3.02 for Windows"
+    # Keywords: ""
+    # Subject: ""
+    # Title: "C:REGULA~1IREGSFR_EQ_EM.PDF"
+
+    doc.close if doc.responds_to?(:close)
+  end
+
   pending "test PDFBOX-3950" do
     # TODO: Port testPDFBox3950
     # Test parsing and rendering of truncated file with missing pages
   end
 
-  pending "test PDFBOX-3951" do
-    # TODO: Port testPDFBox3951
+  it "test PDFBOX-3951" do
     # Test parsing of truncated file
+    pdf_path = File.expand_path("../resources/pdfbox/pdparser/PDFBOX-3951-FIHUZWDDL2VGPOE34N6YHWSIGSH5LVGZ.pdf", __DIR__)
+    doc = Pdfbox::Pdmodel::Document.load(pdf_path)
+    doc.should_not be_nil
+    # TODO: Add page count check when implemented
+    # Expected: 143 pages
+    doc.close if doc.responds_to?(:close)
   end
 
-  pending "test PDFBOX-3964" do
-    # TODO: Port testPDFBox3964
+  it "test PDFBOX-3964" do
     # Test parsing of broken file
+    pdf_path = File.expand_path("../resources/pdfbox/pdparser/PDFBOX-3964-c687766d68ac766be3f02aaec5e0d713_2.pdf", __DIR__)
+    doc = Pdfbox::Pdmodel::Document.load(pdf_path)
+    doc.should_not be_nil
+    doc.close if doc.responds_to?(:close)
   end
 
-  pending "test PDFBOX-3977" do
-    # TODO: Port testPDFBox3977
+  it "test PDFBOX-3977" do
     # Test /Info dictionary retrieval in brute force search
+    pdf_path = File.expand_path("../resources/pdfbox/pdparser/PDFBOX-3977-63NGFQRI44HQNPIPEJH5W2TBM6DJZWMI.pdf", __DIR__)
+    doc = Pdfbox::Pdmodel::Document.load(pdf_path)
+    doc.should_not be_nil
+    # TODO: Add document information checks when implemented
+    doc.close if doc.responds_to?(:close)
   end
 
-  pending "test parse genko file" do
-    # TODO: Port testParseGenko
+  it "test parse genko file" do
+    pdf_path = File.expand_path("../resources/pdfbox/pdparser/genko_oc_shiryo1.pdf", __DIR__)
+    # Should load without raising an exception
+    doc = Pdfbox::Pdmodel::Document.load(pdf_path, lenient: true)
+    doc.should_not be_nil
+    doc.close if doc.responds_to?(:close)
   end
 
-  pending "test PDFBOX-4338" do
-    # TODO: Port testPDFBox4338
+  it "test PDFBOX-4338" do
+    pdf_path = File.expand_path("../resources/pdfbox/pdparser/PDFBOX-4338.pdf", __DIR__)
+    # Should load without raising an exception
+    doc = Pdfbox::Pdmodel::Document.load(pdf_path)
+    doc.should_not be_nil
+    doc.close if doc.responds_to?(:close)
   end
 
-  pending "test PDFBOX-4339" do
-    # TODO: Port testPDFBox4339
+  it "test PDFBOX-4339" do
+    pdf_path = File.expand_path("../resources/pdfbox/pdparser/PDFBOX-4339.pdf", __DIR__)
+    # Should load without raising an exception
+    doc = Pdfbox::Pdmodel::Document.load(pdf_path)
+    doc.should_not be_nil
+    doc.close if doc.responds_to?(:close)
   end
 
-  pending "test PDFBOX-4153" do
-    # TODO: Port testPDFBox4153
-    # Test parsing file with outline
+  it "test PDFBOX-4153" do
+    pdf_path = File.expand_path("../resources/pdfbox/pdparser/PDFBOX-4153-WXMDXCYRWFDCMOSFQJ5OAJIAFXYRZ5OA.pdf", __DIR__)
+    # Should load without raising an exception
+    doc = Pdfbox::Pdmodel::Document.load(pdf_path)
+    doc.should_not be_nil
+    # TODO: Add outline check when implemented
+    # Expected: First outline item title "Main Menu"
+    doc.close if doc.responds_to?(:close)
   end
 
-  pending "test PDFBOX-4490" do
-    # TODO: Port testPDFBox4490
-    # Test page count
+  it "test PDFBOX-4490" do
+    # Test that PDFBOX-4490 has 3 pages
+    pdf_path = File.expand_path("../resources/pdfbox/pdparser/PDFBOX-4490.pdf", __DIR__)
+    doc = Pdfbox::Pdmodel::Document.load(pdf_path)
+    doc.should_not be_nil
+    # TODO: Add page count check when implemented
+    # Expected: 3 pages
+    doc.close if doc.responds_to?(:close)
   end
 
-  pending "test PDFBOX-5025" do
-    # TODO: Port testPDFBox5025
-    # Test for "74191endobj"
+  it "test PDFBOX-5025" do
+    pdf_path = File.expand_path("../resources/pdfbox/pdparser/PDFBOX-5025.pdf", __DIR__)
+    # Should load without raising an exception
+    doc = Pdfbox::Pdmodel::Document.load(pdf_path)
+    doc.should_not be_nil
+    doc.close if doc.responds_to?(:close)
   end
 end

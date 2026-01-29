@@ -7,27 +7,28 @@ module Pdfbox::Pdfparser
   class IncrementalObjectParser
     include BaseParser
 
+    @parser : Pdfbox::Pdfparser::Parser?
+
     def initialize(source : Pdfbox::IO::RandomAccessRead, parser : Pdfbox::Pdfparser::Parser? = nil)
       @source = source
       @parser = parser
       @recursion_depth = 0
     end
 
-    # Parse a COS object from the stream
-    def parse_object : Pdfbox::Cos::Base?
-      skip_spaces
+    # Parse a COS object from the stream (similar to Apache PDFBox parseDirObject)
+    def parse_dir_object : Pdfbox::Cos::Base?
+      @recursion_depth += 1
+      if @recursion_depth > MAX_RECURSION_DEPTH
+        raise SyntaxError.new("Maximum recursion depth #{MAX_RECURSION_DEPTH} exceeded")
+      end
 
+      skip_spaces
       char = peek_char
       return if char.nil?
 
       case char
-      when '/'
-        parse_name
-      when '('
-        parse_string
       when '<'
-        # Could be string (<...>) or dictionary (<<...>>)
-        # Need to peek next character
+        # Could be dictionary (<<) or hex string (<)
         saved_pos = position
         read_char # consume '<'
         next_char = peek_char
@@ -40,21 +41,55 @@ module Pdfbox::Pdfparser
         end
       when '['
         parse_array
-      when '>'
-        # Could be end of dictionary or malformed
-        nil
+      when '('
+        parse_string
+      when '/'
+        parse_name
+      when 'n'
+        # null
+        read_expected_string("null", case_sensitive: false)
+        Pdfbox::Cos::Null.instance
+      when 't'
+        # true
+        read_expected_string("true", case_sensitive: false)
+        Pdfbox::Cos::Boolean::TRUE
+      when 'f'
+        # false
+        read_expected_string("false", case_sensitive: false)
+        Pdfbox::Cos::Boolean::FALSE
+      when 'R'
+        # Indirect object reference in content stream
+        read_char                     # consume 'R'
+        Pdfbox::Cos::Object.new(0, 0) # placeholder, will be resolved later
       when '0'..'9', '+', '-', '.'
         # Try to parse as indirect reference first (obj gen R)
         ref = parse_reference
         ref ? ref : parse_number
-      when 't', 'f'
-        parse_boolean
-      when 'n'
-        parse_null
       else
-        # Unknown token, return nil
-        nil
+        # Unknown token - read string and check for endobj/endstream
+        saved_pos = position
+        str = read_string rescue ""
+        if str.empty?
+          # EOF or error
+          return
+        end
+
+        # If it's endobj or endstream, rewind so caller can see it
+        if str == "endobj" || str == "endstream"
+          seek(saved_pos)
+        else
+          # Skip unexpected token in lenient mode
+          # Return null like Apache PDFBox does
+          Pdfbox::Cos::Null.instance
+        end
       end
+    ensure
+      @recursion_depth -= 1
+    end
+
+    # Alias for backward compatibility
+    def parse_object : Pdfbox::Cos::Base?
+      parse_dir_object
     end
 
     # Parse a COS dictionary
@@ -75,18 +110,14 @@ module Pdfbox::Pdfparser
 
       loop do
         skip_spaces
-        # Check for '>>'
-        saved_pos2 = position
-        begin
-          c1 = read_char
-          c2 = peek_char
-          if c1 == '>' && c2 == '>'
-            read_char # consume second '>'
-            break
-          end
-        rescue
-          # Restore and continue parsing
-          seek(saved_pos2)
+        # Check for '>>' using peek
+        c1 = peek_char
+        c2 = peek_char(1)
+        if c1 == '>' && c2 == '>'
+          # Consume both '>>'
+          read_char
+          read_char
+          break
         end
 
         # Parse key (must be a name)
@@ -309,7 +340,7 @@ module Pdfbox::Pdfparser
       # Try "false"
       begin
         read_expected_string("false", case_sensitive: false)
-        return Pdfbox::Cos::Boolean::FALSE
+        Pdfbox::Cos::Boolean::FALSE
       rescue
         seek(saved_pos)
         return
@@ -323,7 +354,7 @@ module Pdfbox::Pdfparser
       saved_pos = position
       begin
         read_expected_string("null", case_sensitive: false)
-        return Pdfbox::Cos::Null.instance
+        Pdfbox::Cos::Null.instance
       rescue
         seek(saved_pos)
         return

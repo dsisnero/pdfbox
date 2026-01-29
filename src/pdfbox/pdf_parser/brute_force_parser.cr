@@ -27,10 +27,23 @@ module Pdfbox::Pdfparser
     @bf_search_triggered = false
     @parser : Parser
     @source : Pdfbox::IO::RandomAccessRead
+    @scanner : PDFScanner? = nil
 
     # Constructor. Triggers a brute force search for all objects of the document.
     def initialize(@parser : Parser)
       @source = parser.source
+    end
+
+    # Get a reusable PDFScanner, seeking to the given position if provided
+    private def get_scanner(position : Int64? = nil, max_bytes : Int64? = nil) : PDFScanner
+      scanner = @scanner
+      if scanner.nil?
+        scanner = PDFScanner.new(@source, max_bytes)
+        @scanner = scanner
+      elsif position
+        scanner.position = position
+      end
+      scanner
     end
 
     # Indicates whether the brute force search for objects was triggered.
@@ -75,6 +88,7 @@ module Pdfbox::Pdfparser
       max_iterations = 3_000_000 # safety limit for ~3MB file
 
       begin
+        @scanner = nil
         @source = memory_source
         # Run original scanning algorithm on memory source
         # Offsets in memory source are 0-based, we'll add start_offset when storing
@@ -127,6 +141,7 @@ module Pdfbox::Pdfparser
           @bf_search_cos_object_key_offsets[Cos::ObjectKey.new(last_object_id, last_gen_id)] = last_obj_offset
         end
       ensure
+        @scanner = nil
         @source = original_source
       end
 
@@ -163,8 +178,7 @@ module Pdfbox::Pdfparser
     end
 
     private def read_object_number(start_offset : Int64) : Int64
-      @source.seek(start_offset)
-      scanner = PDFScanner.new(@source)
+      scanner = get_scanner(position: start_offset)
       scanner.read_number.to_i64
     end
 
@@ -569,8 +583,7 @@ module Pdfbox::Pdfparser
     end
 
     private def read_generation_number(offset : Int64) : Int64
-      @source.seek(offset)
-      scanner = PDFScanner.new(@source)
+      scanner = get_scanner(position: offset)
       scanner.read_number.to_i64
     end
 
@@ -827,8 +840,7 @@ module Pdfbox::Pdfparser
           info_found = false
 
           # Skip whitespace and parse dictionary
-          @source.seek(trailer_offset + TRAILER_MARKER.size)
-          scanner = PDFScanner.new(@source)
+          scanner = get_scanner(position: trailer_offset + TRAILER_MARKER.size)
           scanner.skip_whitespace
 
           object_parser = ObjectParser.new(scanner, @parser)
