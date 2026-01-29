@@ -379,6 +379,7 @@ module Pdfbox::Pdfparser
     end
 
     # Brute force search for all objects streams of a pdf.
+    # ameba:disable Metrics/CyclomaticComplexity
     private def bf_search_for_obj_stream_offsets : Hash(Int64, Cos::ObjectKey)
       start_time = Time.instant
       bf_search_obj_streams_offsets = {} of Int64 => Cos::ObjectKey

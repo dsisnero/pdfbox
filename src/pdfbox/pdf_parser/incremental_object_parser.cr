@@ -4,18 +4,20 @@ require "../io"
 module Pdfbox::Pdfparser
   # PDF object parser for individual COS objects using incremental byte reading
   # Similar to Apache PDFBox COSParser
-  class IncrementalObjectParser
-    include BaseParser
+  class IncrementalObjectParser < BaseParser
+    # Maximum recursion depth for parsing nested objects
+    MAX_RECURSION_DEPTH = 500
 
     @parser : Pdfbox::Pdfparser::Parser?
 
     def initialize(source : Pdfbox::IO::RandomAccessRead, parser : Pdfbox::Pdfparser::Parser? = nil)
-      @source = source
+      super(source)
       @parser = parser
       @recursion_depth = 0
     end
 
     # Parse a COS object from the stream (similar to Apache PDFBox parseDirObject)
+    # ameba:disable Metrics/CyclomaticComplexity
     def parse_dir_object : Pdfbox::Cos::Base?
       @recursion_depth += 1
       if @recursion_depth > MAX_RECURSION_DEPTH
@@ -200,11 +202,9 @@ module Pdfbox::Pdfparser
       string =
         case char
         when '('
-          read_literal_string rescue nil
+          read_literal_string_as_string rescue nil
         when '<'
           read_hexadecimal_string rescue nil
-        else
-          nil
         end
 
       return unless string
@@ -300,21 +300,22 @@ module Pdfbox::Pdfparser
       skip_spaces
 
       buffer = String::Builder.new
-      c = @source.peek
+      c = source.peek
       return unless c
 
       # Optional sign
-      if c.not_nil!.chr == '+' || c.not_nil!.chr == '-'
-        buffer.write_byte(c.not_nil!)
-        @source.read # consume
-        c = @source.peek
+      c_val = c.as(UInt8).to_i32
+      if c_val.chr == '+' || c_val.chr == '-'
+        buffer.write_byte(c_val.to_u8)
+        source.read # consume
+        c = source.peek
       end
 
       # Digits
-      while c && digit?(c)
-        buffer.write_byte(c.not_nil!)
-        @source.read # consume
-        c = @source.peek
+      while c && digit?(c.as(UInt8).to_i32)
+        buffer.write_byte(c.as(UInt8))
+        source.read # consume
+        c = source.peek
       end
 
       str = buffer.to_s

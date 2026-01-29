@@ -1,138 +1,501 @@
+require "../io"
+
 module Pdfbox::Pdfparser
-  # Base parser module providing low-level parsing methods on RandomAccessRead
+  # This class is used to contain parsing logic that will be used by all parsers.
   # Similar to Apache PDFBox BaseParser
-  module BaseParser
-    macro included
-      @source : Pdfbox::IO::RandomAccessRead
-      @recursion_depth : Int32 = 0
-      MAX_RECURSION_DEPTH = 1000
+  abstract class BaseParser
+    MAX_LENGTH_LONG = Long::MAX.to_s.size
+
+    # ASCII code for Null.
+    ASCII_NULL = 0_u8
+    # ASCII code for horizontal tab.
+    ASCII_TAB = 9_u8
+    # ASCII code for line feed.
+    ASCII_LF = 10_u8
+    # ASCII code for form feed.
+    ASCII_FF = 12_u8
+    # ASCII code for carriage return.
+    ASCII_CR    = 13_u8
+    ASCII_ZERO  = 48_u8
+    ASCII_NINE  = 57_u8
+    ASCII_SPACE = 32_u8
+
+    # This is the stream that will be read from.
+    protected getter source : Pdfbox::IO::RandomAccessRead
+
+    # Default constructor.
+    def initialize(@source : Pdfbox::IO::RandomAccessRead)
     end
 
-    def initialize_base_parser(@source : Pdfbox::IO::RandomAccessRead)
+    # Skip the upcoming CRLF or LF which are supposed to follow a stream. Trailing spaces are removed as well.
+    protected def skip_white_spaces : Nil
+      # PDF Ref 3.2.7 A stream must be followed by either
+      # a CRLF or LF but nothing else.
+      whitespace = source.read
+      return unless whitespace
+
+      # see brother_scan_cover.pdf, it adds whitespaces
+      # after the stream but before the start of the
+      # data, so just read those first
+      while whitespace && space?(whitespace)
+        whitespace = source.read
+      end
+
+      return unless whitespace
+
+      unless skip_linebreak_byte(whitespace)
+        source.rewind(1)
+      end
     end
 
-    # Check if character is whitespace (space, tab, CR, LF, FF)
-    def space?(c : Int32) : Bool
-      c == 32 || c == 9 || c == 10 || c == 12 || c == 13 || c == 0
+    # Skip one line break, such as CR, LF or CRLF.
+    protected def skip_linebreak : Bool
+      # a line break is a CR, or LF or CRLF
+      linebreak = source.read
+      return false unless linebreak
+
+      unless skip_linebreak_byte(linebreak)
+        source.rewind(1)
+        return false
+      end
+      true
     end
 
-    # Check if character is end of line (CR or LF)
-    def eol?(c : Int32) : Bool
-      c == 10 || c == 13
-    end
-
-    # Check if character is digit
-    def digit?(c : Int32) : Bool
-      '0'.ord <= c <= '9'.ord
-    end
-
-    # Skip whitespace and comments
-    def skip_spaces : Nil
-      loop do
-        c = @source.peek
-        break unless c
-
-        if c == '%'.ord
-          # Skip comment until end of line
-          while c = @source.read
-            break if eol?(c)
-          end
-        elsif space?(c)
-          @source.read # consume whitespace
-        else
-          break
+    # Skip one line break, such as CR, LF or CRLF.
+    private def skip_linebreak_byte(linebreak : Int32) : Bool
+      # a line break is a CR, or LF or CRLF
+      if cr?(linebreak)
+        next_byte = source.read
+        unless lf?(next_byte)
+          source.rewind(1) if next_byte
         end
+      elsif !lf?(linebreak)
+        return false
       end
+      true
     end
 
-    # Read next character without consuming it
-    def peek_char : Char?
-      c = @source.peek
-      c ? c.chr : nil
-    end
+    # This is really a bug in the Document creators code, but it caused a crash in PDFBox, the first bug was in this
+    # format: /Title ( (5) /Creator which was patched in 1 place.
+    # However it missed the case where the number of opening and closing parenthesis isn't balanced
+    # The second bug was in this format /Title (c:\) /Producer
+    private def check_for_end_of_string(braces_parameter : Int32) : Int32
+      return 0 if braces_parameter == 0
 
-    # Peek character at offset (0 = next character)
-    def peek_char(offset : Int32 = 0) : Char?
-      saved_pos = @source.position
-      offset.times do
-        c = @source.read
-        break unless c
-      end
-      c = @source.peek
-      @source.seek(saved_pos)
-      c ? c.chr : nil
-    end
-
-    # Read next character and consume it
-    def read_char : Char?
-      c = @source.read
-      c ? c.chr : nil
-    end
-
-    # Read a string until whitespace or delimiter
-    def read_string : String
-      skip_spaces
-      buffer = String::Builder.new
-
-      while c = @source.peek
-        ch = c.chr
-        break if space?(c) || delimiter?(ch)
-
-        @source.read # consume
-        buffer.write_byte(c.to_u8)
+      # Check the next 3 bytes if available
+      next_three_bytes = Bytes.new(3)
+      amount_read = source.read(next_three_bytes)
+      if amount_read > 0
+        source.rewind(amount_read)
       end
 
-      buffer.to_s
+      if amount_read < 3
+        return braces_parameter
+      end
+
+      # The following cases are valid indicators for the end of the string
+      # 1. Next line contains another COSObject: CR + LF + '/'
+      # 2. COSDictionary ends in the next line: CR + LF + '>'
+      # 3. Next line contains another COSObject: LF + '/'
+      # 4. COSDictionary ends in the next line: LF + '>'
+      # 5. Next line contains another COSObject: CR + '/'
+      # 6. COSDictionary ends in the next line: CR + '>'
+      if ((cr?(next_three_bytes[0]) || lf?(next_three_bytes[0])) &&
+         (next_three_bytes[1] == '/'.ord || next_three_bytes[1] == '>'.ord)) ||
+         (cr?(next_three_bytes[0]) && lf?(next_three_bytes[1]) &&
+         (next_three_bytes[2] == '/'.ord || next_three_bytes[2] == '>'.ord))
+        return 0
+      end
+
+      braces_parameter
     end
 
-    # Check if character is a delimiter
-    private def delimiter?(c : Char) : Bool
-      case c
-      when '(', ')', '<', '>', '[', ']', '{', '}', '/', '%'
+    # Determine if a character terminates a PDF name.
+    # ameba:disable Metrics/CyclomaticComplexity
+    protected def end_of_name?(ch : Int32) : Bool
+      case ch
+      when ASCII_SPACE
+        true
+      when ASCII_CR
+        true
+      when ASCII_LF
+        true
+      when ASCII_TAB
+        true
+      when '>'.ord
+        true
+      when '<'.ord
+        true
+      when '['.ord
+        true
+      when '/'.ord
+        true
+      when ']'.ord
+        true
+      when ')'.ord
+        true
+      when '('.ord
+        true
+      when ASCII_NULL
+        true
+      when '\f'.ord
+        true
+      when '%'.ord
+        true
+      when -1
         true
       else
         false
       end
     end
 
+    # This will read the next string from the stream.
+    protected def read_string : String
+      skip_spaces
+      buffer = String::Builder.new
+
+      c = source.read
+      while c && !end_of_name?(c)
+        buffer << c.chr
+        c = source.read
+      end
+
+      if c
+        source.rewind(1)
+      end
+
+      buffer.to_s
+    end
+
+    # This will parse a PDF string.
+    # ameba:disable Metrics/CyclomaticComplexity
+    protected def read_literal_string : Bytes
+      read_expected_char('(')
+
+      out = ::IO::Memory.new
+      # This is the number of braces read
+      braces = 1
+
+      c = source.read
+      while braces > 0 && c
+        ch = c.chr
+        nextc = -2 # not yet read
+
+        if ch == ')'
+          braces -= 1
+          braces = check_for_end_of_string(braces)
+          if braces != 0
+            out.write_byte(ch.ord.to_u8)
+          end
+        elsif ch == '('
+          braces += 1
+          out.write_byte(ch.ord.to_u8)
+        elsif ch == '\\'
+          # patched by ram
+          next_byte = source.read
+          break unless next_byte
+          next_char = next_byte.chr
+
+          case next_char
+          when 'n'
+            out.write_byte('\n'.ord.to_u8)
+          when 'r'
+            out.write_byte('\r'.ord.to_u8)
+          when 't'
+            out.write_byte('\t'.ord.to_u8)
+          when 'b'
+            out.write_byte('\b'.ord.to_u8)
+          when 'f'
+            out.write_byte('\f'.ord.to_u8)
+          when ')'
+            # PDFBox 276 /Title (c:\)
+            braces = check_for_end_of_string(braces)
+            if braces != 0
+              out.write_byte(next_char.ord.to_u8)
+            else
+              out.write_byte('\\'.ord.to_u8)
+            end
+          when '('
+          when '\\'
+            out.write_byte(next_char.ord.to_u8)
+          when ASCII_LF.chr
+          when ASCII_CR.chr
+            # this is a break in the line so ignore it and the newline and continue
+            c = source.read
+            while c && eol?(c)
+              c = source.read
+            end
+            nextc = c || -2
+          when '0', '1', '2', '3', '4', '5', '6', '7'
+            octal = String::Builder.new
+            octal << next_char
+
+            c = source.read
+            if c
+              digit = c.chr
+              if digit >= '0' && digit <= '7'
+                octal << digit
+                c = source.read
+                if c
+                  digit = c.chr
+                  if digit >= '0' && digit <= '7'
+                    octal << digit
+                  else
+                    nextc = c
+                  end
+                end
+              else
+                nextc = c
+              end
+            end
+
+            character = 0
+            begin
+              character = octal.to_s.to_i(8)
+            rescue
+              raise SyntaxError.new("Error: Expected octal character, actual='#{octal}'")
+            end
+
+            out.write_byte(character.to_u8)
+          else
+            # dropping the backslash
+            # see 7.3.4.2 Literal Strings for further information
+            out.write_byte(next_char.ord.to_u8)
+          end
+        else
+          out.write_byte(ch.ord.to_u8)
+        end
+
+        if nextc != -2
+          c = nextc
+        else
+          c = source.read
+        end
+      end
+
+      if c
+        source.rewind(1)
+      end
+
+      out.to_slice
+    end
+
+    # Reads given pattern from source. Skipping whitespace at start and end if wanted.
+    protected def read_expected_string(expected_string : Array(Char), skip_spaces : Bool = true) : Nil
+      self.self.skip_spaces if skip_spaces
+
+      expected_string.each do |char|
+        read_byte = source.read
+        unless read_byte && read_byte.chr == char
+          raise SyntaxError.new("Expected string '#{expected_string}' but missed at character '#{char}' at offset #{source.position}")
+        end
+      end
+
+      self.skip_spaces if skip_spaces
+    end
+
+    # Overload for String parameter
+    protected def read_expected_string(expected_string : String, skip_spaces : Bool = true, case_sensitive : Bool = true) : Nil
+      self.skip_spaces if skip_spaces
+
+      expected_string.each_char do |char|
+        read_byte = source.read
+        unless read_byte && (case_sensitive ? read_byte.chr == char : read_byte.chr.downcase == char.downcase)
+          raise SyntaxError.new("Expected string '#{expected_string}' but missed at character '#{char}' at offset #{source.position}")
+        end
+      end
+
+      self.skip_spaces if skip_spaces
+    end
+
+    # Read one char and throw an exception if it is not the expected value.
+    protected def read_expected_char(ec : Char) : Nil
+      c = source.read
+      unless c && c.chr == ec
+        raise SyntaxError.new("expected='#{ec}' actual='#{c ? c.chr : "EOF"}' at offset #{source.position}")
+      end
+    end
+
+    # Read next character without consuming it
+    protected def peek_char : Char?
+      c = source.peek
+      c ? c.chr : nil
+    end
+
+    # Peek character at offset (0 = next character)
+    protected def peek_char(offset : Int32 = 0) : Char?
+      saved_pos = source.position
+      offset.times do
+        c = source.read
+        break unless c
+      end
+      c = source.peek
+      source.seek(saved_pos)
+      c ? c.chr : nil
+    end
+
+    # Read next character and consume it
+    protected def read_char : Char?
+      c = source.read
+      c ? c.chr : nil
+    end
+
+    # This will tell if the end of the data is reached.
+    protected def eof? : Bool
+      source.eof?
+    end
+
+    # This will tell if the next byte to be read is an end of line byte.
+    protected def eol?(c : Int32) : Bool
+      lf?(c) || cr?(c)
+    end
+
+    # This will tell if the next byte to be read is a line feed.
+    protected def lf?(c : Int32) : Bool
+      ASCII_LF == c
+    end
+
+    # This will tell if the next byte to be read is a carriage return.
+    protected def cr?(c : Int32) : Bool
+      ASCII_CR == c
+    end
+
+    # This will tell if the next byte is whitespace or not.
+    protected def whitespace? : Bool
+      c = source.peek
+      c ? whitespace?(c) : false
+    end
+
+    # This will tell if a character is whitespace or not. These values are
+    # specified in table 1 (page 12) of ISO 32000-1:2008.
+    protected def whitespace?(c : Int32) : Bool
+      case c
+      when ASCII_NULL
+        true
+      when ASCII_TAB
+        true
+      when ASCII_FF
+        true
+      when ASCII_LF
+        true
+      when ASCII_CR
+        true
+      when ASCII_SPACE
+        true
+      else
+        false
+      end
+    end
+
+    # This will tell if the next byte is a space or not.
+    protected def space? : Bool
+      c = source.peek
+      c ? space?(c) : false
+    end
+
+    # This will tell if the given value is a space or not.
+    private def space?(c : Int32) : Bool
+      ASCII_SPACE == c
+    end
+
+    # This will tell if the next byte is a digit or not.
+    protected def digit? : Bool
+      c = source.peek
+      c ? digit?(c) : false
+    end
+
+    # This will tell if the given value is a digit or not.
+    protected def digit?(c : Int32) : Bool
+      ASCII_ZERO <= c <= ASCII_NINE
+    end
+
+    # This will skip all spaces and comments that are present.
+    protected def skip_spaces : Nil
+      c = source.read
+      # 37 is the % character, a comment
+      while c && (whitespace?(c) || c == 37)
+        if c == 37
+          # skip past the comment section
+          c = source.read
+          while c && !eol?(c)
+            c = source.read
+          end
+        else
+          c = source.read
+        end
+      end
+
+      if c
+        source.rewind(1)
+      end
+    end
+
+    # This will read an integer from the stream.
+    protected def read_int : Int32
+      skip_spaces
+      int_buffer = read_string_number
+
+      begin
+        int_buffer.to_s.to_i32
+      rescue
+        source.rewind(int_buffer.to_s.bytesize)
+        raise SyntaxError.new("Error: Expected an integer type at offset #{source.position}, instead got '#{int_buffer}'")
+      end
+    end
+
+    # This will read a long from the stream.
+    protected def read_long : Int64
+      skip_spaces
+      long_buffer = read_string_number
+
+      begin
+        long_buffer.to_s.to_i64
+      rescue
+        source.rewind(long_buffer.to_s.bytesize)
+        raise SyntaxError.new("Error: Expected a long type at offset #{source.position}, instead got '#{long_buffer}'")
+      end
+    end
+
     # Read a PDF number (integer or float)
-    def read_number : Float64 | Int64
+    protected def read_number : Float64 | Int64
       skip_spaces
 
       buffer = String::Builder.new
-      c = @source.peek
+      c = source.peek
       return 0_i64 unless c
 
       # Optional sign
       ch = c.chr
       if ch == '+' || ch == '-'
         buffer.write_byte(c)
-        @source.read # consume
-        c = @source.peek
+        source.read # consume
+        c = source.peek
       end
 
       # Digits before decimal
       while c && digit?(c)
         buffer.write_byte(c)
-        @source.read # consume
-        c = @source.peek
+        source.read # consume
+        c = source.peek
       end
 
       # Optional decimal point and digits
       if c && c.chr == '.'
         buffer.write_byte(c)
-        @source.read # consume
-        c = @source.peek
+        source.read # consume
+        c = source.peek
 
         while c && digit?(c)
           buffer.write_byte(c)
-          @source.read # consume
-          c = @source.peek
+          source.read # consume
+          c = source.peek
         end
       end
 
       str = buffer.to_s
-      if str.includes?('.')
+      if str.empty?
+        raise SyntaxError.new("Expected number at position #{source.position}")
+      elsif str.includes?('.')
         str.to_f64
       else
         str.to_i64
@@ -140,146 +503,38 @@ module Pdfbox::Pdfparser
     end
 
     # Read a PDF name
-    def read_name : String
+    protected def read_name : String
       skip_spaces
 
       # Names start with '/'
-      c = @source.read
+      c = source.read
       unless c && c.chr == '/'
         raise SyntaxError.new("Expected '/' for name")
       end
 
       buffer = String::Builder.new
-      while c = @source.peek
-        ch = c.chr
+      while c = source.peek
         # Names can contain any characters except delimiters and whitespace
-        break if space?(c) || delimiter?(ch)
+        break if whitespace?(c) || end_of_name?(c)
 
         buffer.write_byte(c)
-        @source.read # consume
+        source.read # consume
       end
 
       buffer.to_s
     end
 
-    # Read a PDF literal string
-    def read_literal_string : String
-      skip_spaces
-
-      c = @source.read
-      unless c && c.chr == '('
-        raise SyntaxError.new("Expected '(' for literal string")
-      end
-
-      buffer = String::Builder.new
-      braces = 1
-
-      while braces > 0
-        c = @source.read
-        break unless c
-
-        ch = c.chr
-        case ch
-        when '('
-          braces += 1
-          buffer << ch
-        when ')'
-          braces -= 1
-          braces = check_for_end_of_string(braces)
-          buffer << ch unless braces == 0
-        when '\\'
-          handle_escape_sequence(buffer)
-        else
-          buffer << ch
-        end
-      end
-
-      buffer.to_s
-    end
-
-    # Check if we've reached end of string based on lookahead
-    private def check_for_end_of_string(braces : Int32) : Int32
-      return 0 if braces == 0
-
-      # Save position
-      saved_pos = @source.position
-
-      # Peek next bytes
-      bytes = [] of UInt8
-      3.times do
-        c = @source.read
-        break unless c
-        bytes << c
-      end
-
-      # Restore position
-      @source.seek(saved_pos)
-
-      # Check patterns:
-      # 1. CR or LF followed by '/' or '>'
-      # 2. CR followed by LF followed by '/' or '>'
-      if bytes.size >= 2
-        if (bytes[0] == '\r'.ord || bytes[0] == '\n'.ord) && (bytes[1] == '/'.ord || bytes[1] == '>'.ord)
-          return 0
-        end
-      end
-
-      if bytes.size >= 3
-        if bytes[0] == '\r'.ord && bytes[1] == '\n'.ord && (bytes[2] == '/'.ord || bytes[2] == '>'.ord)
-          return 0
-        end
-      end
-
-      braces
-    end
-
-    private def handle_escape_sequence(buffer : String::Builder) : Nil
-      c = @source.read
-      return unless c
-
-      case c.chr
-      when 'n'
-        buffer << '\n'
-      when 'r'
-        buffer << '\r'
-      when 't'
-        buffer << '\t'
-      when 'b'
-        buffer << '\b'
-      when 'f'
-        buffer << '\f'
-      when '(', ')', '\\'
-        buffer.write_byte(c.to_u8)
-      when '\n', '\r'
-        # Line continuation - skip
-        skip_spaces
-      when '0'..'7'
-        # Octal sequence
-        handle_octal_sequence(c.chr, buffer)
-      else
-        buffer.write_byte(c.to_u8)
-      end
-    end
-
-    private def handle_octal_sequence(first_digit : Char, buffer : String::Builder) : Nil
-      digits = String::Builder.new
-      digits << first_digit
-
-      2.times do
-        c = @source.peek
-        break unless c && '0' <= c.not_nil!.chr <= '7'
-        digits.write_byte(c.not_nil!)
-        @source.read # consume
-      end
-
-      buffer << digits.to_s.to_i(8).chr
+    # Read a PDF literal string as String (convenience method)
+    protected def read_literal_string_as_string : String
+      bytes = read_literal_string
+      String.new(bytes, "ISO-8859-1")
     end
 
     # Read a PDF hexadecimal string
-    def read_hexadecimal_string : String
+    protected def read_hexadecimal_string : String
       skip_spaces
 
-      c = @source.read
+      c = source.read
       unless c && c.chr == '<'
         raise SyntaxError.new("Expected '<' for hexadecimal string")
       end
@@ -289,21 +544,21 @@ module Pdfbox::Pdfparser
 
       loop do
         skip_spaces
-        c = @source.peek
+        c = source.peek
         break unless c
 
-        if c.not_nil!.chr == '>'
-          @source.read # consume '>'
+        if c.chr == '>'
+          source.read # consume '>'
           break
-        elsif c.not_nil!.chr =~ /[0-9A-Fa-f]/
-          hex_chars += c.not_nil!.chr
-          @source.read # consume
+        elsif c.chr =~ /[0-9A-Fa-f]/
+          hex_chars += c.chr
+          source.read # consume
           if hex_chars.size == 2
             buffer << hex_chars.to_i(16).chr
             hex_chars = ""
           end
         else
-          @source.read # skip invalid character
+          source.read # skip invalid character
         end
       end
 
@@ -315,32 +570,40 @@ module Pdfbox::Pdfparser
       buffer.to_s
     end
 
-    # Read expected string
-    def read_expected_string(expected : String, case_sensitive : Bool = true) : Nil
-      expected.each_char do |char|
-        c = @source.read
-        unless c && (case_sensitive ? c.chr == char : c.chr.downcase == char.downcase)
-          raise SyntaxError.new("Expected '#{expected}'")
-        end
-      end
+    # Check if character is whitespace (space, tab, CR, LF, FF)
+    protected def space?(c : Int32) : Bool
+      whitespace?(c)
     end
 
-    # Read expected character
-    def read_expected_char(expected : Char) : Nil
-      c = @source.read
-      unless c && c.chr == expected
-        raise SyntaxError.new("Expected '#{expected}'")
+    # This method is used to read a token by the read_int and the read_long method. Valid
+    # delimiters are any non digit values.
+    protected def read_string_number : String
+      last_byte = source.read
+      buffer = String::Builder.new
+
+      while last_byte && digit?(last_byte)
+        buffer << last_byte.chr
+        if buffer.size > MAX_LENGTH_LONG
+          raise SyntaxError.new("Number '#{buffer}' is getting too long, stop reading at offset #{source.position}")
+        end
+        last_byte = source.read
       end
+
+      if last_byte
+        source.rewind(1)
+      end
+
+      buffer.to_s
     end
 
     # Get current position
     def position : Int64
-      @source.position
+      source.position
     end
 
     # Seek to position
     def seek(position : Int64) : Nil
-      @source.seek(position)
+      source.seek(position)
     end
   end
 end

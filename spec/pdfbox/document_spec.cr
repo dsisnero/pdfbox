@@ -161,7 +161,7 @@ describe Pdfbox::Pdmodel::Document do
       xref_offset.should_not be_nil
 
       # Parse xref table
-      parser.source.seek(xref_offset.as(Int64))
+      parser.seek(xref_offset.as(Int64))
       xref = parser.parse_xref
 
       # Get catalog object (object 1)
@@ -196,7 +196,7 @@ describe Pdfbox::Pdmodel::Document do
       xref_offset = parser.locate_xref_offset
       xref_offset.should_not be_nil
 
-      parser.source.seek(xref_offset.as(Int64))
+      parser.seek(xref_offset.as(Int64))
       xref = parser.parse_xref
 
       # Get pages object (object 2)

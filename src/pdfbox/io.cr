@@ -73,6 +73,11 @@ module Pdfbox::IO
       seek(0)
     end
 
+    # Seek backwards the given number of bytes
+    def rewind(bytes : Int32) : Nil
+      seek(position - bytes)
+    end
+
     # Read all remaining bytes
     def read_all : Bytes
       buffer = Bytes.new(length - position)

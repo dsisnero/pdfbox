@@ -2,7 +2,7 @@
 # Corresponds to ICOSParser in Apache PDFBox
 module Pdfbox::Cos
   # Interface for parser that can dereference objects lazily
-  abstract class ICOSParser
+  module ICOSParser
     # Dereference the COS object which is referenced by the given Object
     abstract def dereference_object(obj : Object) : Base
 

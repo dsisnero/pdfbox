@@ -8,15 +8,14 @@ require "./incremental_object_parser"
 
 module Pdfbox::Pdfparser
   # Main PDF parser class
-  class Parser < Pdfbox::Cos::ICOSParser
-    include BaseParser
+  class Parser < BaseParser
+    include Pdfbox::Cos::ICOSParser
     Log = ::Log.for(self)
 
     # Safety limits to prevent infinite loops with malformed PDFs
     MAX_OBJECTS_PER_STREAM =    10_000
     MAX_XREF_ENTRIES       = 1_000_000
     MAX_OBJECT_PARSE_SIZE  = 4_096_i64 # 4KB
-    @source : Pdfbox::IO::RandomAccessRead
     @trailer : Pdfbox::Cos::Dictionary?
     @xref : XRef?
     @object_pool : Hash(Cos::ObjectKey, Cos::Object)
@@ -28,8 +27,7 @@ module Pdfbox::Pdfparser
     @use_incremental_parsing : Bool
 
     def initialize(source : Pdfbox::IO::RandomAccessRead)
-      @source = source
-      initialize_base_parser(source)
+      super(source)
       @trailer = nil
       @xref = nil
       @object_pool = Hash(Cos::ObjectKey, Cos::Object).new
@@ -41,7 +39,6 @@ module Pdfbox::Pdfparser
       @use_incremental_parsing = true
     end
 
-    getter source
     getter xref
     getter object_pool
     getter decompressed_objects
@@ -61,7 +58,7 @@ module Pdfbox::Pdfparser
 
       scanner = @pdf_scanner
       if scanner.nil?
-        scanner = PDFScanner.new(@source, max_bytes)
+        scanner = PDFScanner.new(source, max_bytes)
         @pdf_scanner = scanner
         @pdf_scanner_max_bytes = max_bytes
       elsif position
@@ -92,7 +89,7 @@ module Pdfbox::Pdfparser
       version = line[5..]
       # Optional: read binary comment line (second line starting with %)
       # Check if next byte is '%' (binary comment)
-      if @source.peek == '%'.ord
+      if source.peek == '%'.ord
         read_line # skip binary comment line
       end
       version
@@ -100,7 +97,7 @@ module Pdfbox::Pdfparser
 
     private def read_line : String
       builder = String::Builder.new
-      while byte = @source.read
+      while byte = source.read
         ch = byte.chr
         break if ch == '\n'
         builder << ch
@@ -115,20 +112,59 @@ module Pdfbox::Pdfparser
       start_time = Time.instant
       xref = XRef.new
       # Skip whitespace/comments before "xref"
-      scanner = PDFScanner.new(@source) # read remaining file for xref
-      Log.debug { "parse_xref: scanner string length: #{scanner.scanner.string.bytesize}, start pos: #{scanner.position}" }
-      # puts "DEBUG: parse_xref scanner created, string length: #{scanner.scanner.string.bytesize}" if @lenient
-      # puts "DEBUG: first 100 chars: #{scanner.scanner.string[0..100].inspect}" if @lenient
-      scanner.skip_whitespace
-      # puts "DEBUG: after skip_whitespace, pos: #{scanner.position}" if @lenient
+      puts "DEBUG parse_xref: source.position=#{source.position}, source.length=#{source.length}" if @lenient
 
-      # Expect "xref" keyword
-      # puts "DEBUG: scanning for /xref/ regex at pos #{scanner.scanner.offset}" if @lenient
-      unless scanner.scanner.scan(/xref/)
-        # puts "DEBUG: /xref/ not matched, rest: #{scanner.scanner.rest[0..50].inspect}" if @lenient
-        raise SyntaxError.new("Expected 'xref' keyword at position #{scanner.position}")
+      # Some PDFs have incorrect startxref offsets. Try to find "xref" by seeking back a bit.
+      original_pos = source.position
+
+      # First check if we're at an xref stream (object number)
+      source.seek(original_pos)
+      test_scanner = PDFScanner.new(source)
+      test_scanner.skip_whitespace
+      if test_scanner.scanner.check(/\d/)
+        # Might be an xref stream (object header). Try parsing as xref stream.
+        begin
+          return parse_xref_stream(original_pos)
+        rescue ex : SyntaxError
+          # Not an xref stream, fall back to searching for "xref"
+          Log.debug { "parse_xref: failed to parse xref stream at #{original_pos}: #{ex.message}" }
+        end
       end
-      # puts "DEBUG: /xref/ matched, new pos: #{scanner.scanner.offset}" if @lenient
+
+      max_seek_back = 1024_i64
+      seek_back = Math.min(original_pos, max_seek_back)
+
+      # Try seeking back incrementally to find "xref"
+      found_pos = nil
+      scanner = nil
+
+      (0..seek_back).step(1).each do |offset|
+        test_pos = original_pos - offset
+        source.seek(test_pos)
+        test_scanner = PDFScanner.new(source) # read remaining file from test_pos
+        test_scanner.skip_whitespace
+        if test_scanner.scanner.scan(/xref/)
+          puts "DEBUG parse_xref: found 'xref' at position #{test_pos + test_scanner.scanner.offset - 4} (offset #{offset} bytes before original)" if @lenient
+          found_pos = test_pos
+          scanner = test_scanner
+          break
+        end
+      end
+
+      unless scanner
+        # Restore original position and try (will likely fail for malformed PDFs)
+        source.seek(original_pos)
+        scanner = PDFScanner.new(source)
+        scanner.skip_whitespace
+        unless scanner.scanner.scan(/xref/)
+          raise SyntaxError.new("Expected 'xref' keyword at position #{scanner.position}")
+        end
+      end
+
+      Log.debug { "parse_xref: scanner string length: #{scanner.scanner.string.bytesize}, start pos: #{scanner.position}" }
+      puts "DEBUG parse_xref: scanner created, string length: #{scanner.scanner.string.bytesize}, scanner.position=#{scanner.position}" if @lenient
+      puts "DEBUG parse_xref: first 50 chars: #{scanner.scanner.rest[0..50].inspect}" if @lenient
+      # puts "DEBUG: first 100 chars: #{scanner.scanner.string[0..100].inspect}" if @lenient
 
       # Skip whitespace after keyword
       scanner.skip_whitespace
@@ -273,9 +309,9 @@ module Pdfbox::Pdfparser
 
       # Update source position to where scanner stopped
       final_pos = scanner.position
-      Log.debug { "parse_xref: final scanner.position=#{final_pos}, source.position=#{@source.position}" }
+      Log.debug { "parse_xref: final scanner.position=#{final_pos}, source.position=#{source.position}" }
       # puts "DEBUG: parse_xref returning, final_pos=#{final_pos}, xref entries=#{xref.size}" if @lenient
-      @source.seek(final_pos)
+      source.seek(final_pos)
       elapsed = Time.instant - start_time
       Log.warn { "parse_xref: parsed #{xref.size} entries in #{elapsed.total_milliseconds.round(2)}ms" }
       xref
@@ -478,12 +514,104 @@ module Pdfbox::Pdfparser
       scanner
     end
 
+    # Find object header near given offset (max_distance bytes) matching key if provided
+    private def find_object_header_near(start_offset : Int64, key : Cos::ObjectKey? = nil, max_distance : Int64 = 2048) : Int64?
+      window_start = start_offset - max_distance
+      window_start = 0_i64 if window_start < 0
+      window_end = start_offset + max_distance
+      file_size = source.length
+      window_end = file_size if window_end > file_size
+      window_size = window_end - window_start
+      return if window_size <= 0
+
+      # Save current position
+      saved_pos = source.position
+      begin
+        source.seek(window_start)
+        # Read window into memory
+        window_data = Bytes.new(window_size)
+        source.read(window_data)
+
+        # Convert to string for regex scanning (ISO-8859-1 preserves bytes)
+        window_str = String.new(window_data, "ISO-8859-1")
+
+        # Search for pattern: digits, whitespace, digits, whitespace, "obj"
+        regex = /\d+\s+\d+\s+obj/
+        matches = [] of {Int32, Int32, Int64} # start index, end index, object number
+        window_str.scan(regex) do |match|
+          match_str = match[0]
+          # Parse object number from match (first number)
+          if num_match = match_str.match(/^\d+/)
+            obj_num = num_match[0].to_i64
+            matches << {match.begin, match.end, obj_num}
+          end
+        end
+
+        # If key provided, find match with matching object number (and optionally generation)
+        if key
+          matches.each do |start_idx, _, obj_num|
+            if obj_num == key.number
+              # We could also verify generation, but skip for now
+              return window_start + start_idx
+            end
+          end
+        end
+
+        # No matching key, return the match closest to start_offset
+        if matches.empty?
+          return
+        end
+
+        # Find match with start closest to start_offset
+        best_match = matches.min_by do |start_idx, _, _|
+          (window_start + start_idx - start_offset).abs
+        end
+        window_start + best_match[0]
+      ensure
+        source.seek(saved_pos)
+      end
+    end
+
     # Parse object header using BaseParser (incremental)
+    # ameba:disable Metrics/CyclomaticComplexity
     private def parse_object_header_incremental(offset : Int64, key : Cos::ObjectKey?) : Int64
-      @source.seek(offset)
+      puts "DEBUG parse_object_header_incremental: offset=#{offset}, source.position=#{source.position}" if @lenient
+      source.seek(offset)
+      puts "DEBUG parse_object_header_incremental: after seek, source.position=#{source.position}, peek_char=#{source.peek.try(&.chr).inspect}" if @lenient
       skip_spaces
+      puts "DEBUG parse_object_header_incremental: after skip_spaces, source.position=#{source.position}, peek_char=#{source.peek.try(&.chr).inspect}" if @lenient
+
+      # If key is provided, try to find matching object header nearby
+      if key
+        corrected_offset = find_object_header_near(source.position, key, 2048)
+        if corrected_offset && corrected_offset != source.position
+          puts "DEBUG parse_object_header_incremental: key-based corrected offset #{source.position} -> #{corrected_offset}" if @lenient
+          source.seek(corrected_offset)
+          skip_spaces
+        end
+      end
+
+      # Check if we're at a digit, sign, or decimal point
+      c = source.peek
+      unless c && (c.chr.ascii_number? || c.chr == '+' || c.chr == '-' || c.chr == '.')
+        # Not a number, try to find any object header nearby
+        corrected_offset = find_object_header_near(source.position, nil, 1024)
+        if corrected_offset
+          puts "DEBUG parse_object_header_incremental: corrected offset #{source.position} -> #{corrected_offset}" if @lenient
+          source.seek(corrected_offset)
+          skip_spaces
+        else
+          # Fall back to PDFScanner method
+          puts "DEBUG parse_object_header_incremental: falling back to PDFScanner" if @lenient
+          scanner = parse_object_header(offset, key)
+          return scanner.position
+        end
+      end
+
       obj_num = read_number.to_i64
+      puts "DEBUG parse_object_header_incremental: obj_num=#{obj_num}, source.position=#{source.position}" if @lenient
       gen_num = read_number.to_i64
+      puts "DEBUG parse_object_header_incremental: gen_num=#{gen_num}, source.position=#{source.position}" if @lenient
       skip_spaces
       read_expected_string("obj")
 
@@ -612,14 +740,14 @@ module Pdfbox::Pdfparser
       end
 
       # Parse header using BaseParser
-      after_header_pos = parse_object_header_incremental(offset, key)
+      parse_object_header_incremental(offset, key)
 
       # Parse object body using IncrementalObjectParser
-      object_parser = IncrementalObjectParser.new(@source, self)
+      object_parser = IncrementalObjectParser.new(source, self)
       # The source is already positioned after "obj"
       object = object_parser.parse_object
       unless object
-        raise SyntaxError.new("Failed to parse object at position #{@source.position}")
+        raise SyntaxError.new("Failed to parse object at position #{source.position}")
       end
 
       # Handle stream if object is a dictionary
@@ -665,7 +793,7 @@ module Pdfbox::Pdfparser
 
       # Read stream data as raw bytes
       data = Bytes.new(length)
-      @source.read(data)
+      source.read(data)
 
       # Create Stream object with data
       stream_obj = Pdfbox::Cos::Stream.new(object.entries, data)
@@ -695,16 +823,16 @@ module Pdfbox::Pdfparser
     def locate_xref_offset : Int64?
       # puts "DEBUG: locate_xref_offset called" if @lenient
       # Save current position
-      original_pos = @source.position
+      original_pos = source.position
       begin
-        file_size = @source.length
+        file_size = source.length
         # puts "DEBUG: file_size=#{file_size}" if @lenient
         read_size = 1024
         start = file_size - read_size
         start = 0_i64 if start < 0
         # puts "DEBUG: reading from offset #{start}" if @lenient
-        @source.seek(start)
-        data = @source.read_all
+        source.seek(start)
+        data = source.read_all
         # puts "DEBUG: read #{data.size} bytes" if @lenient
         # Find "startxref" from end
         # puts "DEBUG: converting bytes to string" if @lenient
@@ -735,7 +863,7 @@ module Pdfbox::Pdfparser
           end
         end
       ensure
-        @source.seek(original_pos)
+        source.seek(original_pos)
       end
       nil
     end
@@ -1034,6 +1162,7 @@ module Pdfbox::Pdfparser
     end
 
     # Optimized UP filter (type 2) implementation using pointers
+    # ameba:disable Metrics/CyclomaticComplexity
     private def apply_png_predictor_up_fast(input : Bytes, columns : Int32) : Bytes
       row_length = columns + 1
       row_count = input.size // row_length
@@ -1332,7 +1461,7 @@ module Pdfbox::Pdfparser
 
     # Creates a random access read view starting at the given position with the given length
     def create_random_access_read_view(start_position : Int64, stream_length : Int64) : Pdfbox::IO::RandomAccessRead
-      @source.create_view(start_position, stream_length)
+      source.create_view(start_position, stream_length)
     end
 
     private def collect_xref_sections(xref_offset : Int64) : Array(Tuple(Int64, XRef, Pdfbox::Cos::Dictionary?))
@@ -1346,7 +1475,7 @@ module Pdfbox::Pdfparser
       while prev > 0 && sections.size < max_sections && !seen.includes?(prev)
         seen << prev
         Log.debug { "collect_xref_sections: parsing xref at offset #{prev}" }
-        @source.seek(prev)
+        source.seek(prev)
         section_xref = parse_xref
         Log.debug { "collect_xref_sections: section_xref entries: #{section_xref.size}" }
 
@@ -1616,35 +1745,35 @@ module Pdfbox::Pdfparser
 
     private def parse_trailer : Pdfbox::Cos::Dictionary?
       # Save current position
-      start_pos = @source.position
+      start_pos = source.position
       Log.debug { "parse_trailer: starting at position #{start_pos}" }
       # puts "DEBUG: parse_trailer start_pos=#{start_pos}" if @lenient
 
       # Skip whitespace/comments
       # puts "DEBUG: parse_trailer skipping whitespace/comments" if @lenient
       loop do
-        byte = @source.peek
-        # puts "DEBUG: parse_trailer peek byte=#{byte}, pos=#{@source.position}" if @lenient && @source.position % 100 == 0
+        byte = source.peek
+        # puts "DEBUG: parse_trailer peek byte=#{byte}, pos=#{source.position}" if @lenient && source.position % 100 == 0
         break unless byte
         ch = byte.chr
         if ch == '%'
-          # puts "DEBUG: parse_trailer found comment at pos #{@source.position}" if @lenient
+          # puts "DEBUG: parse_trailer found comment at pos #{source.position}" if @lenient
           # Comment, skip to end of line
-          while byte = @source.read
+          while byte = source.read
             break if byte.chr == '\n'
           end
         elsif ch.ascii_whitespace?
-          @source.read # skip whitespace
+          source.read # skip whitespace
         else
-          # puts "DEBUG: parse_trailer non-whitespace char '#{ch}' at pos #{@source.position}, breaking" if @lenient
+          # puts "DEBUG: parse_trailer non-whitespace char '#{ch}' at pos #{source.position}, breaking" if @lenient
           break
         end
       end
-      # puts "DEBUG: parse_trailer after whitespace loop, pos=#{@source.position}" if @lenient
+      # puts "DEBUG: parse_trailer after whitespace loop, pos=#{source.position}" if @lenient
 
       # Check for "trailer" keyword
       # Read next 7 bytes to check
-      @source.seek(start_pos) # reset to start
+      source.seek(start_pos) # reset to start
       line = read_line
       Log.debug { "parse_trailer: first line: #{line.inspect}" }
 
@@ -1654,14 +1783,14 @@ module Pdfbox::Pdfparser
         trailer_index = line.index("trailer")
         if trailer_index
           # Skip to after "trailer"
-          @source.seek(start_pos + trailer_index + "trailer".size)
+          source.seek(start_pos + trailer_index + "trailer".size)
           # Skip whitespace
-          while byte = @source.peek
+          while byte = source.peek
             break unless byte.chr.ascii_whitespace?
-            @source.read
+            source.read
           end
           # Now parse dictionary
-          object_parser = ObjectParser.new(@source, self)
+          object_parser = ObjectParser.new(source, self)
           dict = object_parser.parse_dictionary
           Log.debug { "parse_trailer: parsed dictionary: #{dict.inspect}" }
           return dict
@@ -1669,7 +1798,7 @@ module Pdfbox::Pdfparser
       end
 
       Log.debug { "parse_trailer: 'trailer' not found in line" }
-      @source.seek(start_pos) # restore position
+      source.seek(start_pos) # restore position
       nil
     end
 
@@ -1731,10 +1860,10 @@ module Pdfbox::Pdfparser
 
     private def parse_simple_page_count : Int32
       # Save current position
-      original_pos = @source.position
+      original_pos = source.position
       begin
         page_count = 0
-        while !@source.eof?
+        while !source.eof?
           line = read_line
           break if line == "%%EOF"
 
@@ -1744,7 +1873,7 @@ module Pdfbox::Pdfparser
         end
         page_count
       ensure
-        @source.seek(original_pos)
+        source.seek(original_pos)
       end
     end
 
