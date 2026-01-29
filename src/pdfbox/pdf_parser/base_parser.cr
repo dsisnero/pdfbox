@@ -409,6 +409,11 @@ module Pdfbox::Pdfparser
       ASCII_ZERO <= c <= ASCII_NINE
     end
 
+    # This will tell if the given value is a hex digit (0-9, A-F, a-f) or not.
+    protected def hex_digit?(c : Int32) : Bool
+      digit?(c) || ('A'.ord <= c <= 'F'.ord) || ('a'.ord <= c <= 'f'.ord)
+    end
+
     # This will skip all spaces and comments that are present.
     protected def skip_spaces : Nil
       c = source.read
@@ -531,6 +536,7 @@ module Pdfbox::Pdfparser
     end
 
     # Read a PDF hexadecimal string
+    # ameba:disable Metrics/CyclomaticComplexity
     protected def read_hexadecimal_string : String
       skip_spaces
 
@@ -539,35 +545,48 @@ module Pdfbox::Pdfparser
         raise SyntaxError.new("Expected '<' for hexadecimal string")
       end
 
-      buffer = String::Builder.new
-      hex_chars = ""
+      hex_digits = ""
 
       loop do
-        skip_spaces
-        c = source.peek
+        c = source.read
         break unless c
 
-        if c.chr == '>'
-          source.read # consume '>'
+        if hex_digit?(c)
+          hex_digits += c.chr
+        elsif c.chr == '>'
           break
-        elsif c.chr =~ /[0-9A-Fa-f]/
-          hex_chars += c.chr
-          source.read # consume
-          if hex_chars.size == 2
-            buffer << hex_chars.to_i(16).chr
-            hex_chars = ""
-          end
+        elsif whitespace?(c) || c == '\b'.ord || c == '\f'.ord
+          # skip whitespace
+          next
         else
-          source.read # skip invalid character
+          # invalid character
+          if hex_digits.size.odd?
+            # discard last hex digit if not part of a pair
+            hex_digits = hex_digits[0...-1] if hex_digits.size > 0
+          end
+          # read until closing bracket or EOF
+          while c && c.chr != '>'
+            c = source.read
+          end
+          break
         end
       end
 
-      # Handle leftover single hex digit
-      if hex_chars.size == 1
-        buffer << (hex_chars + "0").to_i(16).chr
+      # Convert hex string to actual string
+      result = String::Builder.new
+      i = 0
+      while i + 1 < hex_digits.size
+        byte = hex_digits[i, 2].to_i(16)
+        result << byte.chr
+        i += 2
+      end
+      # Handle leftover single hex digit (pad with '0' per spec)
+      if i < hex_digits.size
+        byte = (hex_digits[i].to_s + "0").to_i(16)
+        result << byte.chr
       end
 
-      buffer.to_s
+      result.to_s
     end
 
     # Check if character is whitespace (space, tab, CR, LF, FF)
