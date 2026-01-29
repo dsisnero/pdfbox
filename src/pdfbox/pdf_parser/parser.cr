@@ -4,11 +4,11 @@ require "../cos/icosparser"
 require "../cos/object_key"
 require "./brute_force_parser"
 require "./base_parser"
-require "./incremental_object_parser"
+require "./cos_parser"
 
 module Pdfbox::Pdfparser
   # Main PDF parser class
-  class Parser < BaseParser
+  class Parser < COSParser
     include Pdfbox::Cos::ICOSParser
     Log = ::Log.for(self)
 
@@ -626,8 +626,10 @@ module Pdfbox::Pdfparser
     # Parse object body (actual COS object)
     private def parse_object_body(scanner : PDFScanner) : Pdfbox::Cos::Base
       start_time = Time.instant
-      # Parse the object using ObjectParser (starting at current position)
-      object_parser = ObjectParser.new(scanner, self)
+      # Parse the object using COSParser (starting at current position)
+      # Seek source to scanner's current position
+      source.seek(scanner.position)
+      object_parser = COSParser.new(source, self)
       # Try parsing as dictionary first (most common)
       object = object_parser.parse_dictionary
       unless object
@@ -637,6 +639,8 @@ module Pdfbox::Pdfparser
           raise SyntaxError.new("Failed to parse object at position #{scanner.position}")
         end
       end
+      # Update scanner position to match source position
+      scanner.position = source.position
       elapsed = Time.instant - start_time
       if elapsed.total_milliseconds > 10
         Log.warn { "parse_object_body took #{elapsed.total_milliseconds.round(2)}ms" }
@@ -742,8 +746,8 @@ module Pdfbox::Pdfparser
       # Parse header using BaseParser
       parse_object_header_incremental(offset, key)
 
-      # Parse object body using IncrementalObjectParser
-      object_parser = IncrementalObjectParser.new(source, self)
+      # Parse object body using COSParser
+      object_parser = COSParser.new(source, self)
       # The source is already positioned after "obj"
       object = object_parser.parse_object
       unless object
@@ -1318,19 +1322,15 @@ module Pdfbox::Pdfparser
         obj_num = offset_to_obj_num[offset]
         final_position = first + offset
 
-        # Create scanner for current position
-        scanner = PDFScanner.new(memory_io)
-        current_position = scanner.position
-
-        # Skip to object position if needed
+        # Get current position and seek if needed
+        current_position = memory_io.position
         if final_position > 0 && current_position < final_position
           # jump to the offset of the object to be parsed
           memory_io.seek(final_position)
-          scanner = PDFScanner.new(memory_io)
         end
 
-        # Parse the object
-        object_parser = ObjectParser.new(scanner, self)
+        # Parse the object using incremental parser
+        object_parser = COSParser.new(memory_io, self)
         object = object_parser.parse_object
         unless object
           raise SyntaxError.new("Failed to parse object at offset #{final_position}")
@@ -1790,7 +1790,7 @@ module Pdfbox::Pdfparser
             source.read
           end
           # Now parse dictionary
-          object_parser = ObjectParser.new(source, self)
+          object_parser = COSParser.new(source, self)
           dict = object_parser.parse_dictionary
           Log.debug { "parse_trailer: parsed dictionary: #{dict.inspect}" }
           return dict

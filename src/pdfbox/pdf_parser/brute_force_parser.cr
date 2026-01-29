@@ -2,7 +2,7 @@ require "log"
 require "../cos"
 require "../io"
 require "./pdf_scanner"
-require "./object_parser"
+require "./cos_parser"
 require "./xref"
 
 module Pdfbox::Pdfparser
@@ -844,7 +844,10 @@ module Pdfbox::Pdfparser
           scanner = get_scanner(position: trailer_offset + TRAILER_MARKER.size)
           scanner.skip_whitespace
 
-          object_parser = ObjectParser.new(scanner, @parser)
+          # Use COSParser instead of ObjectParser
+          source = scanner.source
+          source.seek(scanner.position)
+          object_parser = COSParser.new(source, @parser)
           trailer_dict = object_parser.parse_dictionary
           next unless trailer_dict.is_a?(Cos::Dictionary)
 

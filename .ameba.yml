@@ -2,4 +2,5 @@
 
 # Exclude spec files from all checks
 exclude:
-  - "spec/**"
+  - "spec"
+  - "lib"

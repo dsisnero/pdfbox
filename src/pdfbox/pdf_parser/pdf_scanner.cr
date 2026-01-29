@@ -11,6 +11,7 @@ module Pdfbox::Pdfparser
     getter scanner : StringScanner
     getter buffer_pos : Int64
     getter raw_buffer : Bytes
+    getter source : Pdfbox::IO::RandomAccessRead
 
     def initialize(@source : Pdfbox::IO::RandomAccessRead, max_bytes : Int64? = nil)
       # Read remaining data as string for scanning, optionally limited
