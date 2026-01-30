@@ -5,6 +5,7 @@ require "../cos/object_key"
 require "./brute_force_parser"
 require "./base_parser"
 require "./cos_parser"
+require "./pdf_object_stream_parser"
 
 module Pdfbox::Pdfparser
   # Main PDF parser class
@@ -823,6 +824,34 @@ module Pdfbox::Pdfparser
       requested_object
     end
 
+    # Parse object from object stream (similar to Apache PDFBox COSParser.parseObjectStreamObject)
+    protected def parse_object_stream_object(objstm_obj_nr : Int64, key : Cos::ObjectKey) : Cos::Base?
+      # Get or create cache for this object stream
+      stream_objects = @decompressed_objects[objstm_obj_nr] ||= Hash(Cos::ObjectKey, Cos::Base).new
+
+      # Check if object is already in cache
+      cached_object = stream_objects.delete(key)
+      return cached_object if cached_object
+
+      # Object not in cache, need to parse the object stream
+      obj_stream_key = Cos::ObjectKey.new(objstm_obj_nr, 0)
+      obj_stream_base = get_object_from_pool(obj_stream_key).object
+      return unless obj_stream_base.is_a?(Cos::Stream)
+
+      # Use PDFObjectStreamParser to parse all objects
+      pdf_object_stream_parser = PDFObjectStreamParser.new(obj_stream_base, self)
+      all_objects = pdf_object_stream_parser.parse_all_objects
+
+      # Find the requested object
+      requested_object = all_objects.delete(key)
+      # Cache remaining objects
+      all_objects.each do |obj_key, obj|
+        stream_objects[obj_key] = obj
+      end
+
+      requested_object
+    end
+
     private def decompress_flate(data : Bytes) : Bytes
       start_time = Time.instant
       io = ::IO::Memory.new(data)
@@ -848,7 +877,7 @@ module Pdfbox::Pdfparser
       result
     end
 
-    private def decode_stream_data(stream : Pdfbox::Cos::Stream) : Bytes
+    protected def decode_stream_data(stream : Pdfbox::Cos::Stream) : Bytes
       start_time = Time.instant
       data = stream.data
       dict = stream
@@ -1176,53 +1205,9 @@ module Pdfbox::Pdfparser
       Log.debug { "parse_all_objects_from_stream: stream class: #{obj_stream.class}" }
       start_time = Time.instant
 
-      # Get stream dictionary
-      dict = obj_stream
-
-      # Validate dictionary and get N and First
-      n, first = validate_object_stream_dict(dict)
-
-      # Get stream data (decompressed and decoded)
-      data = decode_stream_data(obj_stream)
-      Log.warn { "parse_all_objects_from_stream: stream data size = #{data.size}" }
-
-      # Validate first offset
-      if first > data.size
-        raise SyntaxError.new("/First offset #{first} exceeds stream data size #{data.size}")
-      end
-
-      # Create RandomAccessRead from stream data
-      memory_io = Pdfbox::IO::MemoryRandomAccessRead.new(data)
-      # Create parser for reading object number/offset pairs
-      pair_parser = COSParser.new(memory_io, self)
-
-      # Read object number/offset pairs
-      offset_to_obj_num = read_object_offset_pairs(pair_parser, first, n)
-
-      # Sort offsets (TreeMap in Java automatically sorts)
-      sorted_offsets = offset_to_obj_num.keys.sort!
-      Log.debug { "parse_all_objects_from_stream: read #{offset_to_obj_num.size} object pairs, sorted #{sorted_offsets.size} offsets" }
-
-      # Count unique object numbers to determine if index is needed
-      unique_obj_numbers = offset_to_obj_num.values.uniq!.size
-      index_needed = offset_to_obj_num.size > unique_obj_numbers
-      Log.debug { "parse_all_objects_from_stream: index_needed=#{index_needed} (total=#{offset_to_obj_num.size}, unique=#{unique_obj_numbers})" }
-
-      # Jump to start of object data (after the pairs)
-      current_position = pair_parser.position
-      if first > 0 && current_position < first
-        # Skip to first object position
-        memory_io.seek(first)
-      end
-
-      # Parse objects in offset order
-      all_objects = parse_objects_from_sorted_offsets(
-        memory_io,
-        offset_to_obj_num,
-        sorted_offsets,
-        first,
-        index_needed
-      )
+      # Use PDFObjectStreamParser for parsing object streams
+      parser = PDFObjectStreamParser.new(obj_stream, self)
+      all_objects = parser.parse_all_objects
 
       Log.debug { "parse_all_objects_from_stream: successfully parsed #{all_objects.size} objects" }
       elapsed = Time.instant - start_time

@@ -56,6 +56,11 @@ module Pdfbox::IO
     # Seek to position
     abstract def seek(position : Int64) : Nil
 
+    # Skip forward n bytes (positive) or backward (negative)
+    def skip(n : Int64) : Nil
+      seek(position + n)
+    end
+
     # Read byte at current position and advance
     abstract def read : UInt8?
 
@@ -67,6 +72,11 @@ module Pdfbox::IO
 
     # Check if at end of stream
     abstract def eof? : Bool
+
+    # Close the resource (if needed)
+    def close : Nil
+      # Default implementation does nothing
+    end
 
     # Rewind to beginning
     def rewind : Nil
@@ -128,6 +138,10 @@ module Pdfbox::IO
     def eof? : Bool
       @io.pos >= @io.size
     end
+
+    def close : Nil
+      @io.close
+    end
   end
 
   # Random access read implementation using ::File
@@ -168,6 +182,10 @@ module Pdfbox::IO
 
     def eof? : Bool
       @file.pos >= @file.size
+    end
+
+    def close : Nil
+      @file.close
     end
 
     def finalize

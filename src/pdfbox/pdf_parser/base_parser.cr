@@ -4,7 +4,7 @@ module Pdfbox::Pdfparser
   # This class is used to contain parsing logic that will be used by all parsers.
   # Similar to Apache PDFBox BaseParser
   abstract class BaseParser
-    MAX_LENGTH_LONG = Long::MAX.to_s.size
+    MAX_LENGTH_LONG = Int64::MAX.to_s.size
 
     # ASCII code for Null.
     ASCII_NULL = 0_u8
@@ -616,7 +616,7 @@ module Pdfbox::Pdfparser
 
       while last_byte && digit?(last_byte)
         buffer << last_byte.chr
-        if buffer.size > MAX_LENGTH_LONG
+        if buffer.bytesize > MAX_LENGTH_LONG
           raise SyntaxError.new("Number '#{buffer}' is getting too long, stop reading at offset #{source.position}")
         end
         last_byte = source.read

@@ -23,12 +23,14 @@ module Pdfbox::Pdfparser
     STRMBUFLEN = 2048
 
     # Header constants (similar to Apache PDFBox COSParser)
-    PDF_HEADER          = "%PDF-"
-    FDF_HEADER          = "%FDF-"
-    PDF_DEFAULT_VERSION = "1.4"
-    FDF_DEFAULT_VERSION = "1.0"
-    EOF_MARKER          = Bytes[0x25, 0x25, 0x45, 0x4F, 0x46] # '%%EOF'
-    OBJ_MARKER          = Bytes[0x6F, 0x62, 0x6A]             # 'obj'
+    PDF_HEADER                  = "%PDF-"
+    FDF_HEADER                  = "%FDF-"
+    PDF_DEFAULT_VERSION         = "1.4"
+    FDF_DEFAULT_VERSION         = "1.0"
+    EOF_MARKER                  = Bytes[0x25, 0x25, 0x45, 0x4F, 0x46] # '%%EOF'
+    OBJ_MARKER                  = Bytes[0x6F, 0x62, 0x6A]             # 'obj'
+    OBJECT_NUMBER_THRESHOLD     = 10_000_000_000_i64                  # 10 digits
+    GENERATION_NUMBER_THRESHOLD =         65_535_i64                  # 5 digits
 
     # ASCII byte values for keyword matching
     private E = 0x65_u8
@@ -690,7 +692,7 @@ module Pdfbox::Pdfparser
         length_obj = length_base_obj.as(Pdfbox::Cos::Object)
         length = length_obj.object
         if length.nil?
-          raise IO::Error.new("Length object content was not read.")
+          raise ::IO::Error.new("Length object content was not read.")
         end
         if length.is_a?(Pdfbox::Cos::Null)
           Log.warn { "Length object (#{length_obj.key}) not found" }
@@ -699,9 +701,9 @@ module Pdfbox::Pdfparser
         if length.is_a?(Pdfbox::Cos::Number)
           return length
         end
-        raise IO::Error.new("Wrong type of referenced length object #{length_obj}: #{length.class}")
+        raise ::IO::Error.new("Wrong type of referenced length object #{length_obj}: #{length.class}")
       end
-      raise IO::Error.new("Wrong type of length object: #{length_base_obj.class}")
+      raise ::IO::Error.new("Wrong type of length object: #{length_base_obj.class}")
     end
 
     private def string?(bytes : Bytes) : Bool
@@ -840,7 +842,7 @@ module Pdfbox::Pdfparser
             "The stream doesn't provide any stream length, using fallback readUntilEnd, at offset #{position}"
           end
         else
-          raise IO::Error.new("Missing length for stream.")
+          raise ::IO::Error.new("Missing length for stream.")
         end
       end
       stream_start_position = position
@@ -866,7 +868,7 @@ module Pdfbox::Pdfparser
         # unread the "extra" bytes
         source.rewind(end_stream[9..-1].bytesize)
       elsif end_stream != ENDSTREAM_STRING
-        raise IO::Error.new("Error reading stream, expected='endstream' actual='#{end_stream}' at offset #{position}")
+        raise ::IO::Error.new("Error reading stream, expected='endstream' actual='#{end_stream}' at offset #{position}")
       end
       # TODO: create COSStream with dictionary and position/length
       # For now, read the data and create a stream with bytes
@@ -936,6 +938,31 @@ module Pdfbox::Pdfparser
       end
 
       true
+    end
+
+    protected def read_object_number : Int64
+      retval = read_long
+      if retval < 0 || retval >= OBJECT_NUMBER_THRESHOLD
+        raise ::IO::Error.new("Object Number '#{retval}' has more than 10 digits or is negative")
+      end
+      retval
+    end
+
+    protected def read_generation_number : Int64
+      retval = read_int.to_i64
+      if retval < 0 || retval > GENERATION_NUMBER_THRESHOLD
+        raise ::IO::Error.new("Generation Number '#{retval}' has more than 5 digits or is negative")
+      end
+      retval
+    end
+
+    protected def parse_object_stream_object(objstm_obj_nr : Int64, key : Cos::ObjectKey) : Cos::Base?
+      parser = @parser
+      if parser
+        parser.parse_object_stream_object(objstm_obj_nr, key)
+      else
+        raise "No parser available to parse object stream"
+      end
     end
   end
 end
