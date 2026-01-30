@@ -852,6 +852,15 @@ module Pdfbox::Pdfparser
       requested_object
     end
 
+    # Parse object dynamically using COSParser (similar to Apache PDFBox parseObjectDynamically)
+    protected def parse_object_dynamically(key : Cos::ObjectKey, require_existing_not_compressed_obj : Bool) : Cos::Base
+      # Create COSParser instance to handle object parsing
+      cos_parser = COSParser.new(source, self)
+      result = cos_parser.parse_object_dynamically(key, require_existing_not_compressed_obj)
+      # parse_object_dynamically should never return nil (returns Cos::Null.instance instead)
+      result || Cos::Null.instance
+    end
+
     private def decompress_flate(data : Bytes) : Bytes
       start_time = Time.instant
       io = ::IO::Memory.new(data)
@@ -1255,9 +1264,26 @@ module Pdfbox::Pdfparser
 
     # Dereference the COS object which is referenced by the given Object
     def dereference_object(obj : Cos::Object) : Cos::Base
-      xref = @xref
-      raise "XRef table not available" unless xref
-      resolve_object(obj, xref)
+      key = obj.key
+      unless key
+        raise "Object has no key and cannot be dereferenced"
+      end
+
+      # Save current position (similar to Apache PDFBox dereferenceCOSObject)
+      current_pos = source.position
+      result = parse_object_dynamically(key, false)
+
+      if result
+        result.set_direct(false)
+        result.key = key
+      end
+
+      # Restore position
+      if current_pos > 0
+        source.seek(current_pos)
+      end
+
+      result
     end
 
     # Creates a random access read view starting at the given position with the given length

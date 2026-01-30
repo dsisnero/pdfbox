@@ -227,7 +227,7 @@ module Pdfbox::Pdfparser
       read_expected_char('<')
       skip_spaces
       dict = Pdfbox::Cos::Dictionary.new
-      # TODO: setDirect(is_direct) when Cos::Dictionary supports it
+      dict.set_direct(is_direct)
 
       loop do
         skip_spaces
@@ -275,7 +275,7 @@ module Pdfbox::Pdfparser
         Log.warn { "Skipped out of range number value at offset #{position}" }
       else
         # label this item as direct, to avoid signature problems.
-        # value.setDirect(true) when supported
+        value.try(&.set_direct(true))
         if key
           dict[key] = value
         end
@@ -668,7 +668,7 @@ module Pdfbox::Pdfparser
     end
 
     # Get object from pool by object key
-    protected def get_object_from_pool(key : Pdfbox::Cos::ObjectKey) : Pdfbox::Cos::Base?
+    protected def get_object_from_pool(key : Pdfbox::Cos::ObjectKey) : Pdfbox::Cos::Object
       parser = @parser
       if parser.nil?
         raise SyntaxError.new("object reference #{key} at offset #{position} in content stream")
@@ -854,7 +854,7 @@ module Pdfbox::Pdfparser
       read_string
       skip_spaces
       # This needs to be dic.getItem because when we are parsing, the underlying object might still be null.
-      stream_length_obj = get_length(dic[Pdfbox::Cos::Name.new("Length")]?)
+      stream_length_obj = get_length(dic[Pdfbox::Cos::Name.new("Length")])
       if stream_length_obj.nil?
         if lenient?
           Log.warn do
@@ -995,7 +995,7 @@ module Pdfbox::Pdfparser
       return unless xref
 
       # Get xref entry for object number
-      entry = xref[key.number]?
+      entry = xref[key.number]
       if entry && entry.generation == key.generation
         # Entry found with matching generation
         offset_or_objstm = entry.compressed? ? -entry.offset : entry.offset
@@ -1048,8 +1048,8 @@ module Pdfbox::Pdfparser
       skip_spaces
       parsed_object = parse_dir_object
       if parsed_object
-        # parsed_object.set_direct(false) when supported
-        # parsed_object.set_key(key) when supported
+        parsed_object.set_direct(false)
+        parsed_object.key = key
       end
 
       end_object_key = read_string
@@ -1073,10 +1073,9 @@ module Pdfbox::Pdfparser
 
     # Parse object dynamically (similar to Apache PDFBox COSParser.parseObjectDynamically)
     # This is the main method for resolving indirect references
-    private def parse_object_dynamically(key : Cos::ObjectKey, require_existing_not_compressed_obj : Bool) : Cos::Base?
+    protected def parse_object_dynamically(key : Cos::ObjectKey, require_existing_not_compressed_obj : Bool) : Cos::Base?
       # Get object from pool (creates proxy if not exists)
       pdf_object = get_object_from_pool(key)
-      return pdf_object unless pdf_object.is_a?(Cos::Object)
 
       # Check if object is already resolved
       unless pdf_object.object.nil?
@@ -1100,8 +1099,7 @@ module Pdfbox::Pdfparser
         # not defined object -> NULL object (Spec. 1.7, chap. 3.2.9)
         # or some other issue with dereferencing
         # remove parser to avoid endless recursion
-        # pdf_object.set_to_null when supported
-        return Cos::Null.instance
+        pdf_object.object = Cos::Null.instance
       end
 
       referenced_object
@@ -1109,6 +1107,7 @@ module Pdfbox::Pdfparser
 
     # Read object marker ('obj')
     private def read_object_marker : Nil
+      skip_spaces
       read_expected_char('o')
       read_expected_char('b')
       read_expected_char('j')

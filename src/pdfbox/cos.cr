@@ -8,8 +8,33 @@ module Pdfbox::Cos
 
   # Base class for all COS objects
   abstract class Base
+    @direct : Bool = true
+    @key : ObjectKey?
+
     # Write this object in PDF format to the given IO
     abstract def write_pdf(io : ::IO) : Nil
+
+    # If the state is set true, the dictionary will be written direct into the called object.
+    # This means, no indirect object will be created.
+    def direct? : Bool
+      @direct
+    end
+
+    # Set the state true, if the dictionary should be written as a direct object and not indirect.
+    # ameba:disable Naming/AccessorMethodName
+    def set_direct(direct : Bool) : Nil
+      @direct = direct
+    end
+
+    # This will return the ObjectKey of an indirect object.
+    def key : ObjectKey?
+      @key
+    end
+
+    # Set the ObjectKey of an indirect object.
+    def key=(key : ObjectKey?) : Nil
+      @key = key
+    end
   end
 
   # Marker for null values in PDF
