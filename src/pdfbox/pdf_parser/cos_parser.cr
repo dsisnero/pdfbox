@@ -507,6 +507,25 @@ module Pdfbox::Pdfparser
       end
     end
 
+    # Parse a number or indirect reference (obj gen R)
+    # Similar to Apache PDFBox parseCOSNumberOrReference
+    def parse_number_or_reference : Pdfbox::Cos::Base?
+      skip_spaces
+
+      # Save position in case we need to rollback
+      saved_pos = position
+
+      # Try to parse as reference first
+      ref = parse_reference
+      if ref
+        return ref
+      end
+
+      # Not a reference, parse as regular number
+      seek(saved_pos)
+      parse_number
+    end
+
     # Parse a COS indirect object reference (obj gen R)
     def parse_reference : Pdfbox::Cos::Object?
       skip_spaces
@@ -963,6 +982,137 @@ module Pdfbox::Pdfparser
       else
         raise "No parser available to parse object stream"
       end
+    end
+
+    # Get offset or object stream number for given object key
+    # Returns positive value for file offset, negative for object stream number, nil if not found
+    # Similar to Apache PDFBox COSParser.getObjectOffset
+    private def get_object_offset(key : Cos::ObjectKey, require_existing_not_compressed_obj : Bool) : Int64?
+      parser = @parser
+      return unless parser
+
+      xref = parser.xref
+      return unless xref
+
+      # Get xref entry for object number
+      entry = xref[key.number]?
+      if entry && entry.generation == key.generation
+        # Entry found with matching generation
+        offset_or_objstm = entry.compressed? ? -entry.offset : entry.offset
+      else
+        # Not found in xref
+        offset_or_objstm = nil
+      end
+
+      # Try brute force search if not found and lenient
+      if offset_or_objstm.nil? && parser.lenient
+        bf_parser = parser.get_brute_force_parser
+        bf_offsets = bf_parser.bf_cos_object_offsets
+        if bf_offset = bf_offsets[key]?
+          Log.debug { "Set missing offset #{bf_offset} for object #{key}" }
+          # Update xref table
+          if bf_offset < 0
+            # compressed entry: negative offset indicates object stream number
+            xref[key.number] = XRefEntry.new(-bf_offset, key.generation, :compressed)
+          else
+            xref[key.number] = XRefEntry.new(bf_offset, key.generation, :in_use)
+          end
+          offset_or_objstm = bf_offset
+        end
+      end
+
+      # Test to circumvent loops with broken documents
+      if require_existing_not_compressed_obj && (offset_or_objstm.nil? || offset_or_objstm <= 0)
+        raise ::IO::Error.new("Object must be defined and must not be compressed object: #{key.number}:#{key.generation}")
+      end
+
+      offset_or_objstm
+    end
+
+    # Parse file object at given offset
+    # Similar to Apache PDFBox COSParser.parseFileObject
+    private def parse_file_object(obj_offset : Int64, key : Cos::ObjectKey) : Cos::Base?
+      # jump to the object start
+      seek(obj_offset)
+
+      # an indirect object starts with the object number/generation number
+      read_obj_nr = read_object_number
+      read_obj_gen = read_generation_number
+      read_object_marker
+
+      # consistency check
+      if read_obj_nr != key.number || read_obj_gen != key.generation
+        raise ::IO::Error.new("XREF for #{key.number}:#{key.generation} points to wrong object: #{read_obj_nr}:#{read_obj_gen} at offset #{obj_offset}")
+      end
+
+      skip_spaces
+      parsed_object = parse_dir_object
+      if parsed_object
+        # parsed_object.set_direct(false) when supported
+        # parsed_object.set_key(key) when supported
+      end
+
+      end_object_key = read_string
+
+      if end_object_key == STREAM_STRING
+        # object is a stream
+        unless parsed_object.is_a?(Pdfbox::Cos::Dictionary)
+          raise ::IO::Error.new("Expected dictionary for stream at offset #{obj_offset}")
+        end
+        parsed_object = parse_cos_stream(parsed_object.as(Pdfbox::Cos::Dictionary))
+      elsif end_object_key != ENDOBJ_STRING
+        if lenient?
+          Log.warn { "Object (#{key.number}:#{key.generation}) at offset #{obj_offset} does not end with 'endobj' but with '#{end_object_key}'" }
+        else
+          raise ::IO::Error.new("Object (#{key.number}:#{key.generation}) at offset #{obj_offset} does not end with 'endobj' but with '#{end_object_key}'")
+        end
+      end
+
+      parsed_object
+    end
+
+    # Parse object dynamically (similar to Apache PDFBox COSParser.parseObjectDynamically)
+    # This is the main method for resolving indirect references
+    private def parse_object_dynamically(key : Cos::ObjectKey, require_existing_not_compressed_obj : Bool) : Cos::Base?
+      # Get object from pool (creates proxy if not exists)
+      pdf_object = get_object_from_pool(key)
+      return pdf_object unless pdf_object.is_a?(Cos::Object)
+
+      # Check if object is already resolved
+      unless pdf_object.object.nil?
+        return pdf_object.object
+      end
+
+      offset_or_objstm = get_object_offset(key, require_existing_not_compressed_obj)
+      referenced_object = nil
+
+      if offset_or_objstm
+        if offset_or_objstm > 0
+          referenced_object = parse_file_object(offset_or_objstm, key)
+        else
+          # xref value is object nr of object stream containing object to be parsed
+          # since our object was not found it means object stream was not parsed so far
+          referenced_object = parse_object_stream_object(-offset_or_objstm, key)
+        end
+      end
+
+      if referenced_object.nil? || referenced_object.is_a?(Cos::Null)
+        # not defined object -> NULL object (Spec. 1.7, chap. 3.2.9)
+        # or some other issue with dereferencing
+        # remove parser to avoid endless recursion
+        # pdf_object.set_to_null when supported
+        return Cos::Null.instance
+      end
+
+      referenced_object
+    end
+
+    # Read object marker ('obj')
+    private def read_object_marker : Nil
+      read_expected_char('o')
+      read_expected_char('b')
+      read_expected_char('j')
+      skip_spaces
     end
   end
 end
