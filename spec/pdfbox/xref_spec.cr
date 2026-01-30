@@ -26,15 +26,20 @@ describe Pdfbox::Pdfparser::XRef do
   end
 
   describe "#entries" do
-    it "returns all entries" do
+    it "returns all entries as ObjectKey->Int64 mapping" do
       xref = Pdfbox::Pdfparser::XRef.new
       entry1 = Pdfbox::Pdfparser::XRefEntry.new(100_i64, 0_i64, :in_use)
       entry2 = Pdfbox::Pdfparser::XRefEntry.new(200_i64, 1_i64, :free)
       xref[1] = entry1
       xref[2] = entry2
       entries = xref.entries
-      entries[1].should eq(entry1)
-      entries[2].should eq(entry2)
+      entries.should be_a(Hash(Pdfbox::Cos::ObjectKey, Int64))
+      entries.size.should eq(2)
+      # Check that offsets are stored correctly
+      key1 = Pdfbox::Cos::ObjectKey.new(1_i64, 0_i64)
+      key2 = Pdfbox::Cos::ObjectKey.new(2_i64, 1_i64)
+      entries[key1].should eq(100_i64)
+      entries[key2].should eq(200_i64)
     end
   end
 end

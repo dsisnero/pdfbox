@@ -994,14 +994,18 @@ module Pdfbox::Pdfparser
       xref = parser.xref
       return unless xref
 
-      # Get xref entry for object number
-      entry = xref[key.number]
-      if entry && entry.generation == key.generation
-        # Entry found with matching generation
-        offset_or_objstm = entry.compressed? ? -entry.offset : entry.offset
-      else
-        # Not found in xref
-        offset_or_objstm = nil
+      # Get offset for object key (new XRef structure uses ObjectKey as key)
+      offset_or_objstm = xref[key]?
+
+      # If not found with exact key, try to find entry with matching number and generation
+      # but different stream_index (for backward compatibility)
+      if offset_or_objstm.nil?
+        xref.entries.each do |xref_key, offset|
+          if xref_key.number == key.number && xref_key.generation == key.generation
+            offset_or_objstm = offset
+            break
+          end
+        end
       end
 
       # Try brute force search if not found and lenient
@@ -1011,12 +1015,7 @@ module Pdfbox::Pdfparser
         if bf_offset = bf_offsets[key]?
           Log.debug { "Set missing offset #{bf_offset} for object #{key}" }
           # Update xref table
-          if bf_offset < 0
-            # compressed entry: negative offset indicates object stream number
-            xref[key.number] = XRefEntry.new(-bf_offset, key.generation, :compressed)
-          else
-            xref[key.number] = XRefEntry.new(bf_offset, key.generation, :in_use)
-          end
+          xref[key] = bf_offset
           offset_or_objstm = bf_offset
         end
       end

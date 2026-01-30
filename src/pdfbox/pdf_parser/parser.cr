@@ -247,10 +247,13 @@ module Pdfbox::Pdfparser
             if entry_parts.last == "n"
               # skip 0 offsets for in-use entries (corrupt)
               if curr_offset > 0
-                xref[curr_obj_id + i] = XRefEntry.new(curr_offset, curr_gen_id.to_i64, :in_use)
+                key = Cos::ObjectKey.new(curr_obj_id + i, curr_gen_id.to_i64)
+                xref[key] = curr_offset
               end
             elsif entry_parts[2] == "f"
-              xref[curr_obj_id + i] = XRefEntry.new(curr_offset, curr_gen_id.to_i64, :free)
+              # Free entry: store offset 0
+              key = Cos::ObjectKey.new(curr_obj_id + i, curr_gen_id.to_i64)
+              xref[key] = 0
             else
               raise SyntaxError.new("Invalid xref entry type: #{entry_line}")
             end
@@ -427,14 +430,17 @@ module Pdfbox::Pdfparser
             offset = field2
             generation = field3
             Log.debug { "parse_xref_stream: in-use entry obj #{obj_num}: offset=#{offset}, gen=#{generation}" }
-            xref[obj_num] = XRefEntry.new(offset, generation, :in_use)
+            key = Cos::ObjectKey.new(obj_num, generation)
+            xref[key] = offset
           when 2
             # Compressed entry
             obj_stream_number = field2
             index_in_stream = field3
             Log.debug { "parse_xref_stream: compressed entry obj #{obj_num}: obj_stream=#{obj_stream_number}, index=#{index_in_stream}" }
-            # Store with type :compressed (offset stores obj_stream_number, generation stores index)
-            xref[obj_num] = XRefEntry.new(obj_stream_number, index_in_stream, :compressed)
+            # Compressed objects have generation 0, index_in_stream is stream_index
+            key = Cos::ObjectKey.new(obj_num, 0_i64, index_in_stream.to_i32)
+            # Store negative offset to indicate compressed entry (object stream number)
+            xref[key] = -obj_stream_number
           else
             raise SyntaxError.new("Invalid entry type #{type} for object #{obj_num}")
           end
@@ -692,8 +698,8 @@ module Pdfbox::Pdfparser
     private def parse_page_count_from_xref(xref : XRef) : Int32
       # Count objects with object number >= 3 that are in-use (page objects)
       page_count = 0
-      xref.entries.each do |obj_num, entry|
-        if obj_num >= 3 && entry.in_use?
+      xref.entries.each do |key, offset|
+        if key.number >= 3 && offset > 0
           page_count += 1
         end
       end
@@ -732,11 +738,13 @@ module Pdfbox::Pdfparser
                   xref[obj_num] = XRefEntry.new(bf_offset, key.generation, :in_use)
                 end
                 # Now retry with updated xref entry
-                xref_entry = xref[obj_num].as(XRefEntry)
-                if xref_entry.compressed?
+                xref_entry = xref[obj_num]
+                if xref_entry && xref_entry.compressed?
                   parse_object_from_stream(xref_entry.offset, key, xref_entry.generation, xref)
-                else
+                elsif xref_entry
                   parse_indirect_object_at_offset(xref_entry.offset, key)
+                else
+                  raise SyntaxError.new("Object #{obj_num} not found in xref after adding")
                 end
               else
                 raise SyntaxError.new("Object #{obj_num} not found in xref")
@@ -1350,11 +1358,11 @@ module Pdfbox::Pdfparser
 
         # Combine traditional xref entries with XRefStm entries for this section
         # Traditional entries take precedence over XRefStm entries within same section
-        section_entries = {} of Int64 => XRefEntry
+        section_entries = {} of Cos::ObjectKey => Int64
 
         # Add traditional xref entries
-        xref_section.entries.each do |obj_num, entry|
-          section_entries[obj_num] = entry
+        xref_section.entries.each do |key, offset|
+          section_entries[key] = offset
         end
 
         # Merge trailer dictionaries (newer overrides older)
@@ -1380,8 +1388,8 @@ module Pdfbox::Pdfparser
 
               # Merge xref stream entries with section entries
               # Don't overwrite existing entries (traditional xref takes precedence)
-              xref_stream.entries.each do |obj_num, entry|
-                section_entries[obj_num] = entry unless section_entries.has_key?(obj_num)
+              xref_stream.entries.each do |key, offset|
+                section_entries[key] = offset unless section_entries.has_key?(key)
               end
               Log.debug { "merge_xref_sections: Merged #{xref_stream.size} entries from xref stream" }
             rescue ex
@@ -1392,8 +1400,8 @@ module Pdfbox::Pdfparser
         end
 
         # Merge combined section entries into final xref (newer sections override older ones)
-        section_entries.each do |obj_num, entry|
-          xref[obj_num] = entry
+        section_entries.each do |key, offset|
+          xref[key] = offset
         end
       end
 
@@ -1416,12 +1424,23 @@ module Pdfbox::Pdfparser
 
       return unless obj_number
 
-      xref_entry = xref[obj_number]
-      return unless xref_entry
+      # Determine generation and get offset
+      generation = if root_ref.is_a?(Pdfbox::Cos::Object)
+                     root_ref.generation
+                   else
+                     # Find entry by object number to get generation
+                     entry = xref.get_entry_by_number(obj_number)
+                     entry ? entry.generation : 0_i64
+                   end
 
-      Log.debug { "xref entry found for object #{obj_number}: offset #{xref_entry.offset}" }
-      catalog_key = Pdfbox::Cos::ObjectKey.new(obj_number, xref_entry.generation)
-      catalog_obj = parse_indirect_object_at_offset(xref_entry.offset, catalog_key)
+      # Get offset using key (for compressed entries, stream_index = -1)
+      key = Cos::ObjectKey.new(obj_number, generation)
+      offset = xref[key]?
+      return unless offset && offset > 0
+
+      Log.debug { "xref entry found for object #{obj_number}: offset #{offset}" }
+      catalog_key = Cos::ObjectKey.new(obj_number, generation)
+      catalog_obj = parse_indirect_object_at_offset(offset, catalog_key)
       Log.debug { "catalog_obj type: #{catalog_obj.class}" }
 
       return unless catalog_obj.is_a?(Pdfbox::Cos::Dictionary)
@@ -1516,9 +1535,9 @@ module Pdfbox::Pdfparser
 
                        # Debug logging for compressed entries
                        Log.debug { "final xref entries: #{xref.size}" }
-                       compressed_count = xref.entries.count { |_, entry| entry.compressed? }
+                       compressed_count = xref.entries.count { |_, offset| offset < 0 }
                        Log.debug { "compressed xref entries (count: #{compressed_count}):" }
-                       xref.entries.each do |obj_num, entry|
+                       xref.each_entry do |obj_num, entry|
                          if entry.compressed?
                            Log.debug { "  object #{obj_num}: obj_stream=#{entry.offset}, index=#{entry.generation}" }
                          end

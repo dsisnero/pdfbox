@@ -506,6 +506,10 @@ module Pdfbox::Cos
       key.generation
     end
 
+    def generation : Int64
+      generation_number
+    end
+
     def obj_number : Int64
       object_number
     end

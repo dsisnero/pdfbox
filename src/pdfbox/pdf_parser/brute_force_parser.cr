@@ -1014,13 +1014,7 @@ module Pdfbox::Pdfparser
     def bf_xref : XRef
       xref = XRef.new
       bf_cos_object_offsets.each do |key, offset|
-        if offset < 0
-          # compressed entry: negative offset indicates object stream number
-          xref[key.number] = XRefEntry.new(-offset, key.generation, :compressed)
-        else
-          # regular in-use entry
-          xref[key.number] = XRefEntry.new(offset, key.generation, :in_use)
-        end
+        xref[key] = offset
       end
       xref
     end
@@ -1032,11 +1026,7 @@ module Pdfbox::Pdfparser
       # Get brute force offsets and populate xref
       bf_offsets = bf_cos_object_offsets
       bf_offsets.each do |key, offset|
-        if offset < 0
-          xref[key.number] = XRefEntry.new(-offset, key.generation, :compressed)
-        else
-          xref[key.number] = XRefEntry.new(offset, key.generation, :in_use)
-        end
+        xref[key] = offset
       end
 
       # Search for object streams and add compressed objects
