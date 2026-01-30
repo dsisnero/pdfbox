@@ -23,6 +23,14 @@ module Pdfbox::Pdfparser
     # This is the stream that will be read from.
     protected getter source : Pdfbox::IO::RandomAccessRead
 
+    # Lenient parsing mode (similar to Apache PDFBox isLenient)
+    protected property? lenient = false
+
+    # Java-compatible method names
+    protected def set_lenient(lenient : Bool) : Nil
+      @lenient = lenient
+    end
+
     # Default constructor.
     def initialize(@source : Pdfbox::IO::RandomAccessRead)
     end

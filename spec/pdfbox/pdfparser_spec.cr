@@ -68,6 +68,12 @@ describe Pdfbox::Pdfparser::COSParser do
 end
 
 describe Pdfbox::Pdfparser::COSParser do
+  pending "#parse_cos_stream" do
+    # TODO: Port tests from Apache PDFBox EndstreamFilterStreamTest.java and TestCOSParser.java
+  end
+end
+
+describe Pdfbox::Pdfparser::COSParser do
   describe "#parse_object" do
     it "parses COS name" do
       bytes = Bytes['/'.ord, 'F'.ord, 'o'.ord, 'n'.ord, 't'.ord, ' '.ord]

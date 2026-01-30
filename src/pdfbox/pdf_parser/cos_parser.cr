@@ -17,15 +17,114 @@ module Pdfbox::Pdfparser
     FALSE                   = ['f', 'a', 'l', 's', 'e']
     MAX_RECURSION_DEPTH_MSG = "Reached maximum recursion depth #{MAX_RECURSION_DEPTH}"
 
+    # Byte array constants for keyword matching (similar to Apache PDFBox)
+    ENDSTREAM  = Bytes[0x65, 0x6E, 0x64, 0x73, 0x74, 0x72, 0x65, 0x61, 0x6D] # 'endstream'
+    ENDOBJ     = Bytes[0x65, 0x6E, 0x64, 0x6F, 0x62, 0x6A]                   # 'endobj'
+    STRMBUFLEN = 2048
+
+    # ASCII byte values for keyword matching
+    private E = 0x65_u8
+    private N = 0x6E_u8
+    private D = 0x64_u8
+    private S = 0x73_u8
+    private T = 0x74_u8
+    private R = 0x72_u8
+    private A = 0x61_u8
+    private M = 0x6D_u8
+    private O = 0x6F_u8
+    private B = 0x62_u8
+    private J = 0x6A_u8
+
     # Maximum recursion depth for parsing nested objects
     MAX_RECURSION_DEPTH = 500
 
+    # Inner class for filtering endstream detection (similar to Apache PDFBox EndstreamFilterStream)
+    private class EndstreamFilterStream
+      @has_cr = false
+      @has_lf = false
+      @pos = 0
+      @must_filter = true
+      @length = 0_i64
+
+      # Write CR and/or LF that were kept, then writes len bytes from the
+      # specified byte array starting at offset off to this output stream,
+      # except trailing CR, CR LF, or LF. No filtering will be done for the
+      # entire stream if the beginning is assumed to be ASCII.
+      def filter(b : Bytes, off : Int32, len : Int32) : Nil
+        if @pos == 0 && len > 10
+          # PDFBOX-2120 Don't filter if ASCII, i.e. keep a final CR LF or LF
+          @must_filter = false
+          (0...10).each do |i|
+            # Heuristic approach, taken from PDFStreamParser, PDFBOX-1164
+            byte = b[off + i]
+            if (byte < 0x09) || ((byte > 0x0a) && (byte < 0x20) && (byte != 0x0d))
+              # control character or > 0x7f -> we have binary data
+              @must_filter = true
+              break
+            end
+          end
+        end
+        if @must_filter
+          # first write what we kept last time
+          if @has_cr
+            # previous buffer ended with CR
+            @has_cr = false
+            if !@has_lf && len == 1 && b[off] == '\n'.ord.to_u8
+              # actual buffer contains only LF so it will be the last one
+              # => we're done
+              # reset has_cr done too to avoid CR getting written in the flush
+              return
+            end
+            @length += 1
+          end
+          if @has_lf
+            @length += 1
+            @has_lf = false
+          end
+          # don't write CR, LF, or CR LF if at the end of the buffer
+          if len > 0
+            if b[off + len - 1] == '\r'.ord.to_u8
+              @has_cr = true
+              len -= 1
+            elsif b[off + len - 1] == '\n'.ord.to_u8
+              @has_lf = true
+              len -= 1
+              if len > 0 && b[off + len - 1] == '\r'.ord.to_u8
+                @has_cr = true
+                len -= 1
+              end
+            end
+          end
+        end
+        @length += len
+        @pos += len
+      end
+
+      # write out a single CR if one was kept. Don't write kept CR LF or LF,
+      # and then call the base method to flush.
+      def calculate_length : Int64
+        # if there is only a CR and no LF, write it
+        if @has_cr && !@has_lf
+          @length += 1
+          @pos += 1
+        end
+        @has_cr = false
+        @has_lf = false
+        @length
+      end
+    end
+
     @parser : Pdfbox::Pdfparser::Parser?
+    @file_len : Int64
+    @strm_buf : Bytes
+    @recursion_depth : Int32
 
     def initialize(source : Pdfbox::IO::RandomAccessRead, parser : Pdfbox::Pdfparser::Parser? = nil)
       super(source)
       @parser = parser
       @recursion_depth = 0
+      @file_len = source.length
+      @strm_buf = Bytes.new(STRMBUFLEN)
     end
 
     # Parse a COS object from the stream (similar to Apache PDFBox parseDirObject)
@@ -331,13 +430,56 @@ module Pdfbox::Pdfparser
     end
 
     # Parse a COS name
-    def parse_name : Pdfbox::Cos::Name?
-      skip_spaces
+    def parse_name : Pdfbox::Cos::Name
+      read_expected_char('/')
 
-      name = read_name rescue nil
-      return unless name
+      buffer = Array(UInt8).new
+      c = source.read
 
-      Pdfbox::Cos::Name.new(name)
+      while c && !end_of_name?(c)
+        ch = c
+        if ch.chr == '#'
+          # Read two hex digits for escape sequence
+          ch1 = source.read
+          ch2 = source.read
+
+          # Check for premature EOF
+          if ch1.nil? || ch2.nil?
+            Log.error { "Premature EOF in BaseParser#parseCOSName" }
+            c = nil
+            break
+          end
+
+          # Check if both are valid hex digits
+          if hex_digit?(ch1) && hex_digit?(ch2)
+            hex = ch1.chr.to_s + ch2.chr.to_s
+            begin
+              byte_val = hex.to_i(16).to_u8
+              buffer << byte_val
+            rescue
+              raise SyntaxError.new("Error: expected hex digit, actual='#{hex}'")
+            end
+            c = source.read
+          else
+            # Not valid hex digits, treat '#' as literal
+            source.rewind(1) # put back ch2
+            c = ch1
+            buffer << '#'.ord.to_u8
+            # Continue loop with c = ch1
+          end
+        else
+          buffer << ch.to_u8
+          c = source.read
+        end
+      end
+
+      # Rewind the last character if not EOF (nil)
+      if c
+        source.rewind(1)
+      end
+
+      name_str = decode_buffer(Slice.new(buffer.to_unsafe, buffer.size))
+      Pdfbox::Cos::Name.new(name_str)
     end
 
     # Parse a COS number (integer or float)
@@ -480,6 +622,16 @@ module Pdfbox::Pdfparser
       end
     end
 
+    # Decode buffer with UTF-8, fallback to ISO-8859-1
+    private def decode_buffer(bytes : Bytes) : String
+      # Try UTF-8 first
+      String.new(bytes, "UTF-8")
+    rescue
+      # Fallback to ISO-8859-1 (Latin-1)
+      Log.debug { "Buffer could not be decoded using UTF-8 - trying ISO-8859-1" }
+      String.new(bytes, "ISO-8859-1")
+    end
+
     # Get object key for given number and generation
     protected def get_object_key(num : Int64, gen : Int64) : Pdfbox::Cos::ObjectKey
       # TODO: Implement proper caching like Java version
@@ -516,6 +668,207 @@ module Pdfbox::Pdfparser
       end
 
       buffer.to_s
+    end
+
+    # Returns length value referred to or defined in given object.
+    private def get_length(length_base_obj : Pdfbox::Cos::Base?) : Pdfbox::Cos::Base?
+      return if length_base_obj.nil?
+      # maybe length was given directly
+      if length_base_obj.is_a?(Pdfbox::Cos::Number)
+        return length_base_obj
+      end
+      # length in referenced object
+      if length_base_obj.is_a?(Pdfbox::Cos::Object)
+        length_obj = length_base_obj.as(Pdfbox::Cos::Object)
+        length = length_obj.object
+        if length.nil?
+          raise IO::Error.new("Length object content was not read.")
+        end
+        if length.is_a?(Pdfbox::Cos::Null)
+          Log.warn { "Length object (#{length_obj.key}) not found" }
+          return
+        end
+        if length.is_a?(Pdfbox::Cos::Number)
+          return length
+        end
+        raise IO::Error.new("Wrong type of referenced length object #{length_obj}: #{length.class}")
+      end
+      raise IO::Error.new("Wrong type of length object: #{length_base_obj.class}")
+    end
+
+    private def string?(bytes : Bytes) : Bool
+      saved_pos = position
+      bytes.each do |byte|
+        read_byte = source.read
+        if read_byte.nil? || read_byte != byte
+          seek(saved_pos)
+          return false
+        end
+      end
+      seek(saved_pos)
+      true
+    end
+
+    private def validate_stream_length(stream_length : Int64) : Bool
+      origin_offset = position
+      if stream_length == 0
+        # This may be valid (PDFBOX-5954), or not (PDFBOX-5880)
+        Log.debug { "Suspicious stream length 0, start position: #{origin_offset}" }
+        return false
+      elsif stream_length < 0
+        Log.warn { "Invalid stream length: #{stream_length}, start position: #{origin_offset}" }
+        return false
+      end
+      expected_end_of_stream = origin_offset + stream_length
+      if expected_end_of_stream > @file_len
+        Log.warn do
+          "The end of the stream is out of range, using workaround to read the stream, " \
+          "stream start position: #{origin_offset}, length: #{stream_length}, " \
+          "expected end position: #{expected_end_of_stream}"
+        end
+        return false
+      end
+      seek(expected_end_of_stream)
+      skip_spaces
+      end_stream_found = string?(ENDSTREAM)
+      seek(origin_offset)
+      unless end_stream_found
+        Log.warn do
+          "The end of the stream doesn't point to the correct offset, using workaround to read the stream, " \
+          "stream start position: #{origin_offset}, length: #{stream_length}, " \
+          "expected end position: #{expected_end_of_stream}"
+        end
+        return false
+      end
+      true
+    end
+
+    private def read_until_end_stream(filter_stream : EndstreamFilterStream) : Int64
+      buf_size = 0
+      char_match_count = 0
+      keyw = ENDSTREAM
+      # last character position of shortest keyword ('endobj')
+      quick_test_offset = 5
+      # read next chunk into buffer; already matched chars are added to beginning of buffer
+      while (buf_size = source.read(@strm_buf[char_match_count, STRMBUFLEN - char_match_count])) > 0
+        buf_size += char_match_count
+        b_idx = char_match_count
+        max_quicktest_idx = buf_size - quick_test_offset
+        # iterate over buffer, trying to find keyword match
+        while b_idx < buf_size
+          # reduce compare operations by first test last character we would have to
+          # match if current one matches; if it is not a character from keywords
+          # we can move behind the test character; this shortcut is inspired by the
+          # Boyer-Moore string search algorithm and can reduce parsing time by approx. 20%
+          quick_test_idx = b_idx + quick_test_offset
+          if char_match_count == 0 && quick_test_idx < max_quicktest_idx
+            ch = @strm_buf[quick_test_idx]
+            if (ch > 't'.ord.to_u8) || (ch < 'a'.ord.to_u8)
+              # last character we would have to match if current character would match
+              # is not a character from keywords -> jump behind and start over
+              b_idx = quick_test_idx
+              next
+            end
+          end
+          ch = @strm_buf[b_idx]
+          if ch == keyw[char_match_count]
+            char_match_count += 1
+            if char_match_count == keyw.size
+              # match found
+              b_idx += 1
+              break
+            end
+          else
+            if char_match_count == 3 && ch == ENDOBJ[char_match_count]
+              # maybe ENDSTREAM is missing but we could have ENDOBJ
+              keyw = ENDOBJ
+              char_match_count += 1
+            else
+              # no match; incrementing match start by 1 would be dumb since we already know
+              # matched chars depending on current char read we may already have beginning
+              # of a new match: 'e': first char matched; 'n': if we are at match position
+              # idx 7 we already read 'e' thus 2 chars matched for each other char we have
+              # to start matching first keyword char beginning with next read position
+              char_match_count = if ch == E
+                                   1
+                                 elsif (ch == N) && (char_match_count == 7)
+                                   2
+                                 else
+                                   0
+                                 end
+              # search again for 'endstream'
+              keyw = ENDSTREAM
+            end
+          end
+          b_idx += 1
+        end
+        content_bytes = Math.max(0, b_idx - char_match_count)
+        # write buffer content until first matched char to output stream
+        if content_bytes > 0
+          filter_stream.filter(@strm_buf, 0, content_bytes)
+        end
+        if char_match_count == keyw.size
+          # keyword matched; unread matched keyword (endstream/endobj) and following buffered content
+          source.rewind(buf_size - content_bytes)
+          break
+        else
+          # copy matched chars at start of buffer
+          keyw[0, char_match_count].copy_to(@strm_buf[0, char_match_count])
+        end
+      end
+      # this writes a lonely CR or drops trailing CR LF and LF
+      filter_stream.calculate_length
+    end
+
+    protected def parse_cos_stream(dic : Pdfbox::Cos::Dictionary) : Pdfbox::Cos::Stream
+      # read 'stream'; this was already tested in parseObjectsDynamically()
+      read_string
+      skip_spaces
+      # This needs to be dic.getItem because when we are parsing, the underlying object might still be null.
+      stream_length_obj = get_length(dic[Pdfbox::Cos::Name.new("Length")]?)
+      if stream_length_obj.nil?
+        if lenient?
+          Log.warn do
+            "The stream doesn't provide any stream length, using fallback readUntilEnd, at offset #{position}"
+          end
+        else
+          raise IO::Error.new("Missing length for stream.")
+        end
+      end
+      stream_start_position = position
+      stream_length = 0_i64
+      if !stream_length_obj.nil? && validate_stream_length(stream_length_obj.as(Pdfbox::Cos::Number).value.to_i64)
+        stream_length = stream_length_obj.as(Pdfbox::Cos::Number).value.to_i64
+        # skip stream
+        seek(position + stream_length_obj.as(Pdfbox::Cos::Number).value.to_i64)
+      else
+        stream_length = read_until_end_stream(EndstreamFilterStream.new)
+        if stream_length_obj.nil? || stream_length_obj.as(Pdfbox::Cos::Number).value.to_i64 != stream_length
+          # Update length in dictionary
+          dic[Pdfbox::Cos::Name.new("Length")] = Pdfbox::Cos::Integer.new(stream_length)
+        end
+      end
+      end_stream = read_string
+      if end_stream == ENDOBJ_STRING && lenient?
+        Log.warn { "stream ends with 'endobj' instead of 'endstream' at offset #{position}" }
+        # avoid follow-up warning about missing endobj
+        source.rewind(ENDOBJ.size)
+      elsif end_stream.size > 9 && lenient? && end_stream.starts_with?(ENDSTREAM_STRING)
+        Log.warn { "stream ends with '#{end_stream}' instead of 'endstream' at offset #{position}" }
+        # unread the "extra" bytes
+        source.rewind(end_stream[9..-1].bytesize)
+      elsif end_stream != ENDSTREAM_STRING
+        raise IO::Error.new("Error reading stream, expected='endstream' actual='#{end_stream}' at offset #{position}")
+      end
+      # TODO: create COSStream with dictionary and position/length
+      # For now, read the data and create a stream with bytes
+      data_start = stream_start_position
+      saved_pos = position
+      seek(data_start)
+      data = Bytes.new(stream_length)
+      source.read(data)
+      seek(saved_pos)
+      Pdfbox::Cos::Stream.new(dic.entries, data)
     end
   end
 end

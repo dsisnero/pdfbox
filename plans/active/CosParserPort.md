@@ -41,21 +41,21 @@ Port Apache PDFBox `COSParser.java` to Crystal `src/pdfbox/pdf_parser/cos_parser
 - [ ] `AccessPermission getAccessPermission() throws IOException`
 - [ ] `void prepareDecryption() throws IOException`
 - [ ] `SecurityHandler<ProtectionPolicy> getSecurityHandler()`
-- [ ] `COSName parseCOSName() throws IOException`
+- [x] `COSName parseCOSName() throws IOException`
 - [x] `COSString parseCOSLiteralString() throws IOException`
 - [x] `COSString parseCOSHexString() throws IOException`
-- [ ] `COSObjectKey getObjectKey(long num, int gen)`
+- [x] `COSObjectKey getObjectKey(long num, int gen)`
 
 ### Private Methods (Important)
 - [ ] `void init(StreamCacheCreateFunction streamCacheCreateFunction)`
 - [ ] `Long getObjectOffset(COSObjectKey objKey, boolean requireExistingNotCompressedObj) throws IOException`
 - [ ] `COSBase parseFileObject(Long objOffset, COSObjectKey objKey) throws IOException`
 - [ ] `COSNumber getLength(COSBase lengthBaseObj) throws IOException`
-- [ ] `boolean parseCOSDictionaryNameValuePair(COSDictionary obj) throws IOException`
+- [x] `boolean parseCOSDictionaryNameValuePair(COSDictionary obj) throws IOException`
 - [x] `COSNumber parseCOSNumber() throws IOException`
-- [ ] `COSBase parseCOSDictionaryValue() throws IOException`
-- [ ] `boolean readUntilEndOfCOSDictionary() throws IOException`
-- [ ] `COSBase getObjectFromPool(COSObjectKey key) throws IOException`
+- [x] `COSBase parseCOSDictionaryValue() throws IOException`
+- [x] `boolean readUntilEndOfCOSDictionary() throws IOException`
+- [x] `COSBase getObjectFromPool(COSObjectKey key) throws IOException`
 - [ ] `long readUntilEndStream(EndstreamFilterStream out) throws IOException`
 - [ ] `boolean validateStreamLength(long streamLength) throws IOException`
 - [ ] `int lastIndexOf(char[] pattern, byte[] buf, int endOff)`
@@ -74,7 +74,7 @@ File: `src/pdfbox/pdf_parser/cos_parser.cr`
 - [x] `parse_array` (similar to Java `parseCOSArray`)
 - [x] `parse_cos_literal_string` (similar to Java `parseCOSLiteralString`)
 - [x] `parse_string` (handles both literal and hex strings)
-- [~] `parse_name` (similar to Java `parseCOSName`)
+- [x] `parse_name` (similar to Java `parseCOSName`)
 - [x] `parse_number`
 - [x] `parse_reference`
 - [x] `parse_boolean`

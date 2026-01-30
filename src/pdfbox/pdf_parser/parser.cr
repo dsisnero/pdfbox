@@ -22,9 +22,6 @@ module Pdfbox::Pdfparser
     @decompressed_objects : Hash(Int64, Hash(Cos::ObjectKey, Cos::Base))
     @brute_force_parser : BruteForceParser?
     @lenient : Bool
-    @pdf_scanner : PDFScanner?
-    @pdf_scanner_max_bytes : Int64?
-    @use_incremental_parsing : Bool
 
     def initialize(source : Pdfbox::IO::RandomAccessRead)
       super(source)
@@ -34,9 +31,6 @@ module Pdfbox::Pdfparser
       @decompressed_objects = Hash(Int64, Hash(Cos::ObjectKey, Cos::Base)).new
       @brute_force_parser = nil
       @lenient = false
-      @pdf_scanner = nil
-      @pdf_scanner_max_bytes = nil
-      @use_incremental_parsing = true
     end
 
     getter xref
@@ -46,25 +40,6 @@ module Pdfbox::Pdfparser
 
     protected def get_brute_force_parser : BruteForceParser
       @brute_force_parser ||= BruteForceParser.new(self)
-    end
-
-    # Get a reusable PDFScanner, seeking to the given position if provided
-    private def get_scanner(position : Int64? = nil, max_bytes : Int64? = MAX_OBJECT_PARSE_SIZE) : PDFScanner
-      # Check if we need new scanner (different max_bytes)
-      if @pdf_scanner && @pdf_scanner_max_bytes != max_bytes
-        @pdf_scanner = nil
-        @pdf_scanner_max_bytes = nil
-      end
-
-      scanner = @pdf_scanner
-      if scanner.nil?
-        scanner = PDFScanner.new(source, max_bytes)
-        @pdf_scanner = scanner
-        @pdf_scanner_max_bytes = max_bytes
-      elsif position
-        scanner.position = position
-      end
-      scanner
     end
 
     # Get object from pool or create a new proxy object for lazy resolution
@@ -118,9 +93,9 @@ module Pdfbox::Pdfparser
 
       # First check if we're at an xref stream (object number)
       source.seek(original_pos)
-      test_scanner = PDFScanner.new(source)
-      test_scanner.skip_whitespace
-      if test_scanner.scanner.check(/\d/)
+      skip_spaces
+      c = source.peek
+      if c && digit?(c)
         # Might be an xref stream (object header). Try parsing as xref stream.
         begin
           return parse_xref_stream(original_pos)
@@ -129,207 +104,76 @@ module Pdfbox::Pdfparser
           Log.debug { "parse_xref: failed to parse xref stream at #{original_pos}: #{ex.message}" }
         end
       end
+      # Reset position for xref table search
+      source.seek(original_pos)
 
       max_seek_back = 1024_i64
       seek_back = Math.min(original_pos, max_seek_back)
 
-      # Try seeking back incrementally to find "xref"
+      # Try seeking back incrementally to find "xref" using incremental parsing
       found_pos = nil
-      scanner = nil
 
       (0..seek_back).step(1).each do |offset|
         test_pos = original_pos - offset
         source.seek(test_pos)
-        test_scanner = PDFScanner.new(source) # read remaining file from test_pos
-        test_scanner.skip_whitespace
-        if test_scanner.scanner.scan(/xref/)
-          found_pos = test_pos
-          scanner = test_scanner
+
+        # Skip whitespace and comments at test position (similar to skip_spaces but track position)
+        current_pos = test_pos
+        loop do
+          c = source.peek
+          break unless c
+
+          if c == 37    # '%' - comment
+            source.read # consume '%'
+            current_pos += 1
+            # Skip to end of line
+            loop do
+              c2 = source.read
+              break unless c2
+              current_pos += 1
+              break if eol?(c2)
+            end
+          elsif whitespace?(c)
+            source.read # consume whitespace
+            current_pos += 1
+          else
+            break
+          end
+        end
+
+        # Now check if next 4 characters are "xref"
+        source.seek(current_pos)
+        found = true
+        4.times do |i|
+          c = source.read
+          unless c && c.chr == "xref"[i]
+            found = false
+            break
+          end
+        end
+
+        if found
+          found_pos = current_pos
           break
         end
       end
 
-      unless scanner
-        # Restore original position and try (will likely fail for malformed PDFs)
+      # Seek to found position or original position
+      if found_pos
+        source.seek(found_pos)
+      else
         source.seek(original_pos)
-        scanner = PDFScanner.new(source)
-        scanner.skip_whitespace
-        unless scanner.scanner.scan(/xref/)
-          raise SyntaxError.new("Expected 'xref' keyword at position #{scanner.position}")
-        end
       end
 
-      Log.debug { "parse_xref: scanner string length: #{scanner.scanner.string.bytesize}, start pos: #{scanner.position}" }
-
-      # puts "DEBUG: first 100 chars: #{scanner.scanner.string[0..100].inspect}" if @lenient
-
-      # Skip whitespace after keyword
-      scanner.skip_whitespace
-      Log.debug { "parse_xref: after 'xref', rest first 50 chars: #{scanner.scanner.rest[0..50].inspect}" }
-      # puts "DEBUG: after 'xref', rest: #{scanner.scanner.rest[0..100].inspect}" if @lenient
-
-      # Parse subsections until we hit "trailer" or other keyword
-      # puts "DEBUG: entering xref subsection loop" if @lenient
-      loop do
-        scanner.skip_whitespace
-        # Check for next keyword (trailer, startxref) or end of input
-        # puts "DEBUG: checking eos or trailer/startxref" if @lenient
-        break if scanner.scanner.eos? || scanner.scanner.check(/trailer|startxref/i)
-
-        # Read starting object number and count
-        # puts "DEBUG: reading start_obj and count" if @lenient
-        start_obj = scanner.read_number
-        count = scanner.read_number
-        # puts "DEBUG: start_obj=#{start_obj}, count=#{count}" if @lenient
-
-        # Ensure they are integers
-        start_obj = start_obj.to_i64
-        count = count.to_i64
-
-        # Parse count entries
-        # puts "DEBUG: parsing #{count} entries, start_obj=#{start_obj}" if @lenient
-
-        # Get direct access to scanner string for faster parsing
-        scanner_str = scanner.scanner.string
-        scanner_offset = scanner.scanner.offset
-
-        count.times do |i|
-          # puts "DEBUG: parsing xref entry #{i}/#{count}" if @lenient && i % 1000 == 0
-
-          # Skip whitespace and comments - manually for speed
-          while scanner_offset < scanner_str.bytesize
-            ch = scanner_str[scanner_offset]
-            if ch == '%'
-              # Skip comment to end of line
-              while scanner_offset < scanner_str.bytesize && scanner_str[scanner_offset] != '\n' && scanner_str[scanner_offset] != '\r'
-                scanner_offset += 1
-              end
-              # Skip the newline character(s)
-              while scanner_offset < scanner_str.bytesize && (scanner_str[scanner_offset] == '\n' || scanner_str[scanner_offset] == '\r')
-                scanner_offset += 1
-              end
-            elsif ch.ascii_whitespace?
-              scanner_offset += 1
-            else
-              break
-            end
-          end
-
-          # Parse 10-digit offset directly from string
-          if scanner_offset + 10 > scanner_str.bytesize
-            position = scanner.buffer_pos + scanner_offset
-            raise SyntaxError.new("Incomplete offset field at position #{position}")
-          end
-          offset = 0_i64
-          10.times do |j|
-            ch = scanner_str[scanner_offset + j]
-            unless '0' <= ch <= '9'
-              position = scanner.buffer_pos + scanner_offset + j
-              raise SyntaxError.new("Expected digit in offset at position #{position}")
-            end
-            offset = offset * 10 + (ch - '0').to_i64
-          end
-          scanner_offset += 10
-
-          # Skip whitespace (one or more spaces/tabs)
-          if scanner_offset >= scanner_str.bytesize
-            position = scanner.buffer_pos + scanner_offset
-            raise SyntaxError.new("Expected whitespace after offset at position #{position}")
-          end
-          ch = scanner_str[scanner_offset]
-          unless ch.ascii_whitespace?
-            position = scanner.buffer_pos + scanner_offset
-            raise SyntaxError.new("Expected whitespace after offset at position #{position}")
-          end
-          scanner_offset += 1
-          # Skip additional whitespace
-          while scanner_offset < scanner_str.bytesize && scanner_str[scanner_offset].ascii_whitespace?
-            scanner_offset += 1
-          end
-
-          # Parse 5-digit generation
-          if scanner_offset + 5 > scanner_str.bytesize
-            position = scanner.buffer_pos + scanner_offset
-            raise SyntaxError.new("Incomplete generation field at position #{position}")
-          end
-          generation = 0_i64
-          5.times do |j|
-            ch = scanner_str[scanner_offset + j]
-            unless '0' <= ch <= '9'
-              position = scanner.buffer_pos + scanner_offset + j
-              raise SyntaxError.new("Expected digit in generation at position #{position}")
-            end
-            generation = generation * 10 + (ch - '0').to_i64
-          end
-          scanner_offset += 5
-
-          # Skip whitespace (one or more spaces/tabs)
-          if scanner_offset >= scanner_str.bytesize
-            position = scanner.buffer_pos + scanner_offset
-            raise SyntaxError.new("Expected whitespace after generation at position #{position}")
-          end
-          ch = scanner_str[scanner_offset]
-          unless ch.ascii_whitespace?
-            position = scanner.buffer_pos + scanner_offset
-            raise SyntaxError.new("Expected whitespace after generation at position #{position}")
-          end
-          scanner_offset += 1
-          # Skip additional whitespace
-          while scanner_offset < scanner_str.bytesize && scanner_str[scanner_offset].ascii_whitespace?
-            scanner_offset += 1
-          end
-
-          # Parse type character
-          if scanner_offset >= scanner_str.bytesize
-            position = scanner.buffer_pos + scanner_offset
-            raise SyntaxError.new("Missing type character at position #{position}")
-          end
-          type_char = scanner_str[scanner_offset]
-          unless type_char == 'n' || type_char == 'f'
-            position = scanner.buffer_pos + scanner_offset
-            raise SyntaxError.new("Expected 'n' or 'f' at position #{position}")
-          end
-          scanner_offset += 1
-          type = type_char == 'n' ? :in_use : :free
-
-          # Add entry to xref table
-          obj_num = start_obj + i
-          xref[obj_num] = XRefEntry.new(offset, generation, type)
-
-          # Skip optional whitespace/newline for next iteration
-          # This will be handled at top of loop
-        end
-
-        # Update scanner position after batch processing
-        scanner.scanner.offset = scanner_offset
-      end
-
-      # Update source position to where scanner stopped
-      final_pos = scanner.position
-      Log.debug { "parse_xref: final scanner.position=#{final_pos}, source.position=#{source.position}" }
-      # puts "DEBUG: parse_xref returning, final_pos=#{final_pos}, xref entries=#{xref.size}" if @lenient
-      source.seek(final_pos)
-      elapsed = Time.instant - start_time
-      Log.warn { "parse_xref: parsed #{xref.size} entries in #{elapsed.total_milliseconds.round(2)}ms" }
-      xref
-    end
-
-    # Parse cross-reference table using incremental parsing (no PDFScanner)
-    private def parse_xref_incremental : XRef
-      start_time = Time.instant
-      xref = XRef.new
-
-      # Check if we're at 'x' character
-      c = source.peek
-      unless c && c.chr == 'x'
-        raise SyntaxError.new("Expected 'x' character at position #{source.position}")
-      end
-
-      # Read "xref" keyword
-      xref_str = read_string
-      unless xref_str.trim == "xref"
+      # Skip whitespace and read "xref" keyword
+      skip_spaces
+      begin
+        read_expected_string("xref")
+      rescue ex : SyntaxError
         raise SyntaxError.new("Expected 'xref' keyword at position #{source.position}")
       end
+
+      Log.debug { "parse_xref: parsing xref table at position #{source.position}" }
 
       # Check for trailer after xref (empty xref table)
       next_str = read_string
@@ -338,6 +182,8 @@ module Pdfbox::Pdfparser
 
       if next_str.starts_with?("trailer")
         Log.warn { "skipping empty xref table" }
+        elapsed = Time.instant - start_time
+        Log.warn { "parse_xref: parsed #{xref.size} entries in #{elapsed.total_milliseconds.round(2)}ms" }
         return xref
       end
 
@@ -353,7 +199,7 @@ module Pdfbox::Pdfparser
 
         # Read line with start object id and count
         line = read_line
-        split_string = line.split(/\s+/)
+        split_string = line.strip.split(/\s+/)
         if split_string.size != 2
           raise SyntaxError.new("Unexpected XRefTable Entry: #{line}")
         end
@@ -387,34 +233,34 @@ module Pdfbox::Pdfparser
 
           # Read xref entry line
           entry_line = read_line
-          entry_parts = entry_line.split(/\s+/)
+          entry_parts = entry_line.strip.split(/\s+/)
           if entry_parts.size < 3
             Log.warn { "invalid xref line: #{entry_line}" }
             break
           end
 
           # This supports the corrupt table as reported in PDFBOX-474 (XXXX XXX XX n)
-          if entry_parts.last == "n"
-            begin
-              curr_offset = entry_parts[0].to_i64
-              # skip 0 offsets
+          begin
+            curr_offset = entry_parts[0].to_i64
+            curr_gen_id = entry_parts[1].to_i32
+            if entry_parts.last == "n"
+              # skip 0 offsets for in-use entries (corrupt)
               if curr_offset > 0
-                curr_gen_id = entry_parts[1].to_i32
-                # TODO: Need to add to xref table - need XRefEntry
                 xref[curr_obj_id + i] = XRefEntry.new(curr_offset, curr_gen_id.to_i64, :in_use)
               end
-            rescue
-              raise SyntaxError.new("Invalid xref entry: #{entry_line}")
+            elsif entry_parts[2] == "f"
+              xref[curr_obj_id + i] = XRefEntry.new(curr_offset, curr_gen_id.to_i64, :free)
+            else
+              raise SyntaxError.new("Invalid xref entry type: #{entry_line}")
             end
-          elsif entry_parts[2] != "f"
-            raise SyntaxError.new("Invalid xref entry type: #{entry_line}")
+          rescue
+            raise SyntaxError.new("Invalid xref entry: #{entry_line}")
           end
-          # Free entry ('f') is skipped
         end
       end
 
       elapsed = Time.instant - start_time
-      Log.warn { "parse_xref_incremental: parsed #{xref.size} entries in #{elapsed.total_milliseconds.round(2)}ms" }
+      Log.warn { "parse_xref: parsed #{xref.size} entries in #{elapsed.total_milliseconds.round(2)}ms" }
       xref
     end
 
@@ -596,25 +442,6 @@ module Pdfbox::Pdfparser
       xref
     end
 
-    # Parse object header (obj number, generation, "obj")
-    private def parse_object_header(offset : Int64, key : Cos::ObjectKey?) : PDFScanner
-      scanner = get_scanner(position: offset, max_bytes: MAX_OBJECT_PARSE_SIZE)
-      scanner.skip_whitespace
-      obj_num = scanner.read_number.to_i64
-      gen_num = scanner.read_number.to_i64
-      scanner.skip_whitespace
-      unless scanner.scanner.scan(/obj/)
-        raise SyntaxError.new("Expected 'obj' at position #{scanner.position}")
-      end
-
-      # Verify object number/generation matches key if provided
-      if key && (obj_num != key.number || gen_num != key.generation)
-        raise SyntaxError.new("Object at offset #{offset} has number/generation #{obj_num}/#{gen_num}, expected #{key.number}/#{key.generation}")
-      end
-
-      scanner
-    end
-
     # Find object header near given offset (max_distance bytes) matching key if provided
     private def find_object_header_near(start_offset : Int64, key : Cos::ObjectKey? = nil, max_distance : Int64 = 2048) : Int64?
       window_start = start_offset - max_distance
@@ -698,10 +525,8 @@ module Pdfbox::Pdfparser
           source.seek(corrected_offset)
           skip_spaces
         else
-          # Fall back to PDFScanner method
-
-          scanner = parse_object_header(offset, key)
-          return scanner.position
+          # No object header found
+          raise SyntaxError.new("Expected object header at position #{source.position}")
         end
       end
 
@@ -720,85 +545,8 @@ module Pdfbox::Pdfparser
       position
     end
 
-    # Parse object body (actual COS object)
-    private def parse_object_body(scanner : PDFScanner) : Pdfbox::Cos::Base
-      start_time = Time.instant
-      # Parse the object using COSParser (starting at current position)
-      # Seek source to scanner's current position
-      source.seek(scanner.position)
-      object_parser = COSParser.new(source, self)
-      # Try parsing as dictionary first (most common)
-      object = object_parser.parse_dictionary
-      unless object
-        # Fall back to generic object parsing
-        object = object_parser.parse_object
-        unless object
-          raise SyntaxError.new("Failed to parse object at position #{scanner.position}")
-        end
-      end
-      # Update scanner position to match source position
-      scanner.position = source.position
-      elapsed = Time.instant - start_time
-      if elapsed.total_milliseconds > 10
-        Log.warn { "parse_object_body took #{elapsed.total_milliseconds.round(2)}ms" }
-      end
-      object
-    end
-
-    # Handle stream if object is a dictionary followed by stream keyword
-    private def handle_stream(scanner : PDFScanner, object : Pdfbox::Cos::Base) : Pdfbox::Cos::Base
-      return object unless object.is_a?(Pdfbox::Cos::Dictionary)
-
-      scanner.skip_whitespace
-      return object unless scanner.scanner.scan(/stream/)
-
-      # Handle optional newline after "stream"
-      # According to PDF spec, "stream" must be followed by EOL marker (CR, LF, or CRLF)
-      # before the stream data begins
-      Log.debug { "handle_stream: found 'stream' at scanner pos #{scanner.position}" }
-
-      # Get Length from dictionary
-      length_entry = object[Pdfbox::Cos::Name.new("Length")]
-      unless length_entry && length_entry.is_a?(Pdfbox::Cos::Integer)
-        raise SyntaxError.new("Stream missing /Length entry")
-      end
-      length = length_entry.value.to_i64
-      Log.debug { "handle_stream: stream length = #{length}" }
-
-      # Skip whitespace (EOL marker) after "stream"
-      scanner.skip_whitespace
-
-      # Read stream data as raw bytes
-      data = scanner.read_raw_bytes(length)
-      Log.debug { "handle_stream: read #{data.size} bytes of stream data" }
-
-      # Create Stream object with data
-      stream_obj = Pdfbox::Cos::Stream.new(object.entries, data)
-
-      # Skip "endstream"
-      scanner.skip_whitespace
-      unless scanner.scanner.scan(/endstream/)
-        raise SyntaxError.new("Expected 'endstream' after stream data at position #{scanner.position}")
-      end
-
-      stream_obj
-    end
-
-    # Check for endobj marker
-    private def check_endobj(scanner : PDFScanner) : Nil
-      scanner.skip_whitespace
-      Log.debug { "check_endobj: before endobj, scanner.rest first 50 chars: #{scanner.rest[0..50].inspect}, position: #{scanner.position}" }
-      unless scanner.scanner.scan(/endobj/)
-        raise SyntaxError.new("Expected 'endobj' at position #{scanner.position}")
-      end
-    end
-
     # Parse an indirect object at given offset
     def parse_indirect_object_at_offset(offset : Int64, key : Cos::ObjectKey? = nil) : Pdfbox::Cos::Base
-      if @use_incremental_parsing
-        return parse_indirect_object_at_offset_incremental(offset, key)
-      end
-
       # Get object from pool if key provided
       start_time = Time.instant
       cos_object = key ? get_object_from_pool(key) : nil
@@ -807,36 +555,6 @@ module Pdfbox::Pdfparser
       if cos_object && (obj = cos_object.object)
         elapsed = Time.instant - start_time
         Log.warn { "parse_indirect_object_at_offset: cached object #{obj.inspect} took #{elapsed.total_milliseconds.round(2)}ms" }
-        return obj
-      end
-
-      scanner = parse_object_header(offset, key)
-      Log.debug { "parse_indirect_object_at_offset: after 'obj', scanner.rest first 1000 chars: #{scanner.rest[0..1000].inspect}" }
-
-      object = parse_object_body(scanner)
-      object = handle_stream(scanner, object)
-      check_endobj(scanner)
-
-      # Set the parsed object on the Cos::Object from pool
-      if cos_object
-        cos_object.object = object
-      end
-
-      elapsed = Time.instant - start_time
-      Log.warn { "parse_indirect_object_at_offset: parsed object #{object.inspect} took #{elapsed.total_milliseconds.round(2)}ms" }
-      object
-    end
-
-    # Parse indirect object using incremental parsing (no PDFScanner)
-    private def parse_indirect_object_at_offset_incremental(offset : Int64, key : Cos::ObjectKey? = nil) : Pdfbox::Cos::Base
-      # Get object from pool if key provided
-      start_time = Time.instant
-      cos_object = key ? get_object_from_pool(key) : nil
-
-      # Check if already dereferenced
-      if cos_object && (obj = cos_object.object)
-        elapsed = Time.instant - start_time
-        Log.warn { "parse_indirect_object_at_offset_incremental: cached object #{obj.inspect} took #{elapsed.total_milliseconds.round(2)}ms" }
         return obj
       end
 
@@ -863,7 +581,7 @@ module Pdfbox::Pdfparser
       end
 
       elapsed = Time.instant - start_time
-      Log.warn { "parse_indirect_object_at_offset_incremental: parsed object #{object.inspect} took #{elapsed.total_milliseconds.round(2)}ms" }
+      Log.warn { "parse_indirect_object_at_offset: parsed object #{object.inspect} took #{elapsed.total_milliseconds.round(2)}ms" }
       object
     end
 
@@ -1383,18 +1101,18 @@ module Pdfbox::Pdfparser
     end
 
     # Read object number/offset pairs from object stream data
-    private def read_object_offset_pairs(scanner : PDFScanner, first : Int32, n : Int32) : Hash(Int32, Int64)
+    private def read_object_offset_pairs(parser : BaseParser, first : Int32, n : Int32) : Hash(Int32, Int64)
       offset_to_obj_num = Hash(Int32, Int64).new
-      first_object_position = scanner.position + first - 1
+      first_object_position = parser.position + first - 1
       n.times do |i|
         # Stop if we've consumed first bytes (position is 0-based)
         # Don't read beyond the part of the stream reserved for the object numbers
-        if scanner.position >= first_object_position
-          Log.debug { "read_object_offset_pairs: reached first byte limit at pair #{i}, stopping (position=#{scanner.position}, first_object_position=#{first_object_position})" }
+        if parser.position >= first_object_position
+          Log.debug { "read_object_offset_pairs: reached first byte limit at pair #{i}, stopping (position=#{parser.position}, first_object_position=#{first_object_position})" }
           break
         end
-        obj_num = scanner.read_number.to_i64
-        offset = scanner.read_number.to_i64.to_i32
+        obj_num = parser.read_number.to_i64
+        offset = parser.read_number.to_i64.to_i32
         offset_to_obj_num[offset] = obj_num
         Log.debug { "read_object_offset_pairs: obj_num=#{obj_num}, offset=#{offset}" }
       end
@@ -1475,10 +1193,11 @@ module Pdfbox::Pdfparser
 
       # Create RandomAccessRead from stream data
       memory_io = Pdfbox::IO::MemoryRandomAccessRead.new(data)
-      scanner = PDFScanner.new(memory_io)
+      # Create parser for reading object number/offset pairs
+      pair_parser = COSParser.new(memory_io, self)
 
       # Read object number/offset pairs
-      offset_to_obj_num = read_object_offset_pairs(scanner, first, n)
+      offset_to_obj_num = read_object_offset_pairs(pair_parser, first, n)
 
       # Sort offsets (TreeMap in Java automatically sorts)
       sorted_offsets = offset_to_obj_num.keys.sort!
@@ -1490,7 +1209,7 @@ module Pdfbox::Pdfparser
       Log.debug { "parse_all_objects_from_stream: index_needed=#{index_needed} (total=#{offset_to_obj_num.size}, unique=#{unique_obj_numbers})" }
 
       # Jump to start of object data (after the pairs)
-      current_position = scanner.position
+      current_position = pair_parser.position
       if first > 0 && current_position < first
         # Skip to first object position
         memory_io.seek(first)
@@ -1897,62 +1616,6 @@ module Pdfbox::Pdfparser
       Log.debug { "parse_trailer: 'trailer' not found in line" }
       source.seek(start_pos) # restore position
       nil
-    end
-
-    private def parse_xref_from_scanner(scanner : PDFScanner) : XRef
-      # Expect "xref" keyword (already checked)
-      scanner.scanner.scan(/xref/)
-      scanner.skip_whitespace
-
-      xref = XRef.new
-
-      # Parse subsections until we hit "trailer" or other keyword
-      loop do
-        scanner.skip_whitespace
-        # Check for next keyword (trailer, startxref) or end of input
-        break if scanner.scanner.eos? || scanner.scanner.check(/trailer|startxref/i)
-
-        # Read starting object number and count
-        start_obj = scanner.read_number
-        count = scanner.read_number
-
-        # Ensure they are integers
-        start_obj = start_obj.to_i64
-        count = count.to_i64
-
-        # Parse count entries
-        count.times do |i|
-          scanner.skip_whitespace
-          offset_str = scanner.scanner.scan(/\d{10}/)
-          unless offset_str
-            raise SyntaxError.new("Expected 10-digit offset at position #{scanner.position}")
-          end
-          offset = offset_str.to_i64
-
-          scanner.scanner.scan(/\s+/)
-          gen_str = scanner.scanner.scan(/\d{5}/)
-          unless gen_str
-            raise SyntaxError.new("Expected 5-digit generation at position #{scanner.position}")
-          end
-          generation = gen_str.to_i64
-
-          scanner.scanner.scan(/\s+/)
-          type_char = scanner.scanner.scan(/[nf]/)
-          unless type_char
-            raise SyntaxError.new("Expected 'n' or 'f' at position #{scanner.position}")
-          end
-          type = type_char == "n" ? :in_use : :free
-
-          # Add entry to xref table
-          obj_num = start_obj + i
-          xref[obj_num] = XRefEntry.new(offset, generation, type)
-
-          # Skip optional whitespace/newline
-          scanner.skip_whitespace
-        end
-      end
-
-      xref
     end
 
     private def parse_simple_page_count : Int32

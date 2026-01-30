@@ -1,7 +1,7 @@
 require "log"
 require "../cos"
 require "../io"
-require "./pdf_scanner"
+
 require "./cos_parser"
 require "./xref"
 
@@ -27,23 +27,10 @@ module Pdfbox::Pdfparser
     @bf_search_triggered = false
     @parser : Parser
     @source : Pdfbox::IO::RandomAccessRead
-    @scanner : PDFScanner? = nil
 
     # Constructor. Triggers a brute force search for all objects of the document.
     def initialize(@parser : Parser)
       @source = parser.source
-    end
-
-    # Get a reusable PDFScanner, seeking to the given position if provided
-    private def get_scanner(position : Int64? = nil, max_bytes : Int64? = nil) : PDFScanner
-      scanner = @scanner
-      if scanner.nil?
-        scanner = PDFScanner.new(@source, max_bytes)
-        @scanner = scanner
-      elsif position
-        scanner.position = position
-      end
-      scanner
     end
 
     # Indicates whether the brute force search for objects was triggered.
@@ -88,7 +75,6 @@ module Pdfbox::Pdfparser
       max_iterations = 3_000_000 # safety limit for ~3MB file
 
       begin
-        @scanner = nil
         @source = memory_source
         # Run original scanning algorithm on memory source
         # Offsets in memory source are 0-based, we'll add start_offset when storing
@@ -141,14 +127,13 @@ module Pdfbox::Pdfparser
           @bf_search_cos_object_key_offsets[Cos::ObjectKey.new(last_object_id, last_gen_id)] = last_obj_offset
         end
       ensure
-        @scanner = nil
         @source = original_source
       end
 
       Log.warn { "BruteForceParser.bf_search_for_objects: END, found #{@bf_search_cos_object_key_offsets.size} objects, iterations: #{iteration_count}" }
     end
 
-    # Helper methods from BaseParser/PDFScanner
+    # Helper methods from BaseParser
     private def whitespace?(ch : Char) : Bool
       ch.ascii_whitespace?
     end
@@ -178,8 +163,27 @@ module Pdfbox::Pdfparser
     end
 
     private def read_object_number(start_offset : Int64) : Int64
-      scanner = get_scanner(position: start_offset)
-      scanner.read_number.to_i64
+      # Save current position
+      saved_pos = @source.position
+      begin
+        @source.seek(start_offset)
+        # Skip whitespace
+        while byte = @source.peek
+          break unless byte.chr.ascii_whitespace?
+          @source.read
+        end
+        # Read digits
+        value = 0_i64
+        while byte = @source.peek
+          ch = byte.chr
+          break unless ch.ascii_number?
+          value = value * 10 + (ch - '0').to_i64
+          @source.read
+        end
+        value
+      ensure
+        @source.seek(saved_pos)
+      end
     end
 
     # Attempt to parse object ID and generation number at given offset.
@@ -584,8 +588,27 @@ module Pdfbox::Pdfparser
     end
 
     private def read_generation_number(offset : Int64) : Int64
-      scanner = get_scanner(position: offset)
-      scanner.read_number.to_i64
+      # Save current position
+      saved_pos = @source.position
+      begin
+        @source.seek(offset)
+        # Skip whitespace
+        while byte = @source.peek
+          break unless byte.chr.ascii_whitespace?
+          @source.read
+        end
+        # Read digits
+        value = 0_i64
+        while byte = @source.peek
+          ch = byte.chr
+          break unless ch.ascii_number?
+          value = value * 10 + (ch - '0').to_i64
+          @source.read
+        end
+        value
+      ensure
+        @source.seek(saved_pos)
+      end
     end
 
     # Brute force search for the last EOF marker.
@@ -841,13 +864,15 @@ module Pdfbox::Pdfparser
           info_found = false
 
           # Skip whitespace and parse dictionary
-          scanner = get_scanner(position: trailer_offset + TRAILER_MARKER.size)
-          scanner.skip_whitespace
-
+          pos = trailer_offset + TRAILER_MARKER.size
+          @source.seek(pos)
+          # Skip whitespace
+          while byte = @source.peek
+            break unless byte.chr.ascii_whitespace?
+            @source.read
+          end
           # Use COSParser instead of ObjectParser
-          source = scanner.source
-          source.seek(scanner.position)
-          object_parser = COSParser.new(source, @parser)
+          object_parser = COSParser.new(@source, @parser)
           trailer_dict = object_parser.parse_dictionary
           next unless trailer_dict.is_a?(Cos::Dictionary)
 
