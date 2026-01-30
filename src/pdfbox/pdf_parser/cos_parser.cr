@@ -1,3 +1,4 @@
+require "log"
 require "./base_parser"
 require "../io"
 
@@ -5,6 +6,17 @@ module Pdfbox::Pdfparser
   # PDF object parser for individual COS objects using incremental byte reading
   # Similar to Apache PDFBox COSParser
   class COSParser < BaseParser
+    Log = ::Log.for(self)
+
+    # Constants matching Apache PDFBox COSParser
+    ENDOBJ_STRING           = "endobj"
+    ENDSTREAM_STRING        = "endstream"
+    STREAM_STRING           = "stream"
+    NULL                    = ['n', 'u', 'l', 'l']
+    TRUE                    = ['t', 'r', 'u', 'e']
+    FALSE                   = ['f', 'a', 'l', 's', 'e']
+    MAX_RECURSION_DEPTH_MSG = "Reached maximum recursion depth #{MAX_RECURSION_DEPTH}"
+
     # Maximum recursion depth for parsing nested objects
     MAX_RECURSION_DEPTH = 500
 
@@ -21,7 +33,7 @@ module Pdfbox::Pdfparser
     def parse_dir_object : Pdfbox::Cos::Base?
       @recursion_depth += 1
       if @recursion_depth > MAX_RECURSION_DEPTH
-        raise SyntaxError.new("Maximum recursion depth #{MAX_RECURSION_DEPTH} exceeded")
+        raise SyntaxError.new(MAX_RECURSION_DEPTH_MSG)
       end
 
       skip_spaces
@@ -37,7 +49,7 @@ module Pdfbox::Pdfparser
         seek(saved_pos) # restore
 
         if next_char == '<'
-          parse_dictionary
+          parse_dictionary(true)
         else
           parse_string
         end
@@ -49,39 +61,40 @@ module Pdfbox::Pdfparser
         parse_name
       when 'n'
         # null
-        read_expected_string("null", case_sensitive: false)
+        read_expected_string(NULL, skip_spaces: false)
         Pdfbox::Cos::Null.instance
       when 't'
         # true
-        read_expected_string("true", case_sensitive: false)
+        read_expected_string(TRUE, skip_spaces: false)
         Pdfbox::Cos::Boolean::TRUE
       when 'f'
         # false
-        read_expected_string("false", case_sensitive: false)
+        read_expected_string(FALSE, skip_spaces: false)
         Pdfbox::Cos::Boolean::FALSE
       when 'R'
         # Indirect object reference in content stream
-        read_char                     # consume 'R'
-        Pdfbox::Cos::Object.new(0, 0) # placeholder, will be resolved later
+        read_char                          # consume 'R'
+        Pdfbox::Cos::Object.new(0, 0, nil) # placeholder, will be resolved later
       when '0'..'9', '+', '-', '.'
-        # Try to parse as indirect reference first (obj gen R)
-        ref = parse_reference
-        ref ? ref : parse_number
+        # Java line 1102: if (isDigit(c) || c == '-' || c == '+' || c == '.') return parseCOSNumber()
+        parse_number
       else
-        # Unknown token - read string and check for endobj/endstream
-        saved_pos = position
-        str = read_string rescue ""
-        if str.empty?
-          # EOF or error
-          return
+        # This is not suppose to happen, but we will allow for it
+        # so we are more compatible with POS writers that don't follow the spec
+        start_offset = position
+        bad_string = read_string
+        if bad_string.empty?
+          # we can end up in an infinite loop otherwise
+          peek = source.peek
+          raise SyntaxError.new("Unknown dir object c='#{char}' cInt=#{char.ord} peek='#{peek ? peek.chr : "EOF"}' peekInt=#{peek || -1} at offset #{position} (start offset: #{start_offset})")
         end
 
-        # If it's endobj or endstream, rewind so caller can see it
-        if str == "endobj" || str == "endstream"
-          seek(saved_pos)
+        # if it's an endstream/endobj, we want to put it back so the caller will see it
+        if bad_string == ENDOBJ_STRING || bad_string == ENDSTREAM_STRING
+          source.rewind(bad_string.bytesize)
         else
-          # Skip unexpected token in lenient mode
-          # Return null like Apache PDFBox does
+          Log.warn { "Skipped unexpected dir object = '#{bad_string}' at offset #{position} (start offset: #{start_offset})" }
+          # Return null like Apache PDFBox does (we're not PDFStreamParser)
           Pdfbox::Cos::Null.instance
         end
       end
@@ -95,100 +108,198 @@ module Pdfbox::Pdfparser
     end
 
     # Parse a COS dictionary
-    def parse_dictionary : Pdfbox::Cos::Dictionary?
-      skip_spaces
-
-      # Dictionary starts with '<<'
-      saved_pos = position
-      begin
-        read_expected_char('<')
-        read_expected_char('<')
-      rescue ex
-        seek(saved_pos)
-        return
+    def parse_dictionary(is_direct : Bool = true) : Pdfbox::Cos::Dictionary
+      @recursion_depth += 1
+      if @recursion_depth > MAX_RECURSION_DEPTH
+        raise SyntaxError.new(MAX_RECURSION_DEPTH_MSG)
       end
 
+      read_expected_char('<')
+      read_expected_char('<')
+      skip_spaces
       dict = Pdfbox::Cos::Dictionary.new
+      # TODO: setDirect(is_direct) when Cos::Dictionary supports it
 
       loop do
         skip_spaces
-        # Check for '>>' using peek
-        c1 = peek_char
-        c2 = peek_char(1)
-        if c1 == '>' && c2 == '>'
-          # Consume both '>>'
-          read_char
-          read_char
-          break
-        end
+        c = peek_char
+        break if c == '>'
 
-        # Parse key (must be a name)
-        key = parse_name
-        unless key
-          break
+        if c == '/'
+          # something went wrong, most likely the dictionary is corrupted
+          # stop immediately and return everything read so far
+          unless parse_cos_dictionary_name_value_pair(dict)
+            return dict
+          end
+        else
+          # invalid dictionary, we were expecting a /Name, read until the end or until we can recover
+          Log.warn { "Invalid dictionary, found: '#{c}' but expected: '/' at offset #{position}" }
+          if read_until_end_of_cos_dictionary
+            # we couldn't recover
+            return dict
+          end
         end
-
-        # Parse value
-        value = parse_object
-        unless value
-          break
-        end
-
-        dict[key] = value
       end
 
+      begin
+        read_expected_char('>')
+        read_expected_char('>')
+      rescue ex
+        Log.warn { "Invalid dictionary, can't find end of dictionary at offset #{position}" }
+      end
       dict
+    ensure
+      @recursion_depth -= 1
+    end
+
+    private def parse_cos_dictionary_name_value_pair(dict : Pdfbox::Cos::Dictionary) : Bool
+      key = parse_name
+      if key.nil? || key.value.empty?
+        Log.warn { "Empty COSName at offset #{position}" }
+      end
+      value = parse_cos_dictionary_value
+      skip_spaces
+      if value.nil?
+        Log.warn { "Bad dictionary declaration at offset #{position}" }
+        return false
+      elsif value.is_a?(Pdfbox::Cos::Integer) && !value.valid?
+        Log.warn { "Skipped out of range number value at offset #{position}" }
+      else
+        # label this item as direct, to avoid signature problems.
+        # value.setDirect(true) when supported
+        if key
+          dict[key] = value
+        end
+      end
+      true
+    end
+
+    private def parse_cos_dictionary_value : Pdfbox::Cos::Base?
+      num_offset = position
+      value = parse_dir_object
+      skip_spaces
+      # proceed if the given object is a number and the following is a number as well
+      return value unless value.is_a?(Pdfbox::Cos::Number) && digit?
+
+      # read the remaining information of the object number
+      gen_offset = position
+      generation_number = parse_dir_object
+      skip_spaces
+      read_expected_char('R')
+      unless value.is_a?(Pdfbox::Cos::Integer)
+        Log.error { "expected number, actual=#{value} at offset #{num_offset}" }
+        return Pdfbox::Cos::Null.instance
+      end
+      unless generation_number.is_a?(Pdfbox::Cos::Integer)
+        Log.error { "expected number, actual=#{generation_number} at offset #{gen_offset}" }
+        return Pdfbox::Cos::Null.instance
+      end
+      obj_number = value.as(Pdfbox::Cos::Integer).value.to_i64
+      if obj_number <= 0
+        Log.warn { "invalid object number value =#{obj_number} at offset #{num_offset}" }
+        return Pdfbox::Cos::Null.instance
+      end
+      gen_number = generation_number.as(Pdfbox::Cos::Integer).value.to_i64
+      if gen_number < 0
+        Log.error { "invalid generation number value =#{gen_number} at offset #{num_offset}" }
+        return Pdfbox::Cos::Null.instance
+      end
+      # dereference the object
+      get_object_from_pool(get_object_key(obj_number, gen_number))
+    end
+
+    private def read_until_end_of_cos_dictionary : Bool
+      c = read_char
+      while c && c != '/' && c != '>'
+        # in addition to stopping when we find / or >, we also want
+        # to stop when we find endstream or endobj.
+        if c == 'E'
+          c = read_char
+          if c == 'N'
+            c = read_char
+            if c == 'D'
+              c = read_char
+              is_stream = c == 'S' && read_char == 'T' && read_char == 'R' && read_char == 'E' && read_char == 'A' && read_char == 'M'
+              is_obj = !is_stream && c == 'O' && read_char == 'B' && read_char == 'J'
+              if is_stream || is_obj
+                # we're done reading this object!
+                return true
+              end
+            end
+          end
+        end
+        c = read_char
+      end
+      if c.nil?
+        return true
+      end
+      source.rewind(1)
+      false
     end
 
     # Parse a COS array
-    def parse_array : Pdfbox::Cos::Array?
-      skip_spaces
-
-      # Array starts with '['
-      saved_pos = position
-      begin
-        read_expected_char('[')
-      rescue ex
-        seek(saved_pos)
-        return
+    def parse_array : Pdfbox::Cos::Array
+      @recursion_depth += 1
+      if @recursion_depth > MAX_RECURSION_DEPTH
+        raise SyntaxError.new(MAX_RECURSION_DEPTH_MSG)
       end
 
+      start_position = position
+      read_expected_char('[')
       array = Pdfbox::Cos::Array.new
 
       loop do
         skip_spaces
+        break if peek_char == ']'
 
-        # Check for ']'
-        saved_pos2 = position
-        begin
-          if peek_char == ']'
-            read_char # consume ']'
-            break
+        value = parse_dir_object
+        if value.is_a?(Pdfbox::Cos::Object)
+          # the current empty COSObject is replaced with the correct one
+          value = nil
+          # We have to check if the expected values are there or not PDFBOX-385
+          if array.size > 1 && array[array.size - 1].is_a?(Pdfbox::Cos::Integer)
+            gen_number = array.delete_at(array.size - 1).as(Pdfbox::Cos::Integer)
+            if array.size > 0 && array[array.size - 1].is_a?(Pdfbox::Cos::Integer)
+              number = array.delete_at(array.size - 1).as(Pdfbox::Cos::Integer)
+              if number.value >= 0 && gen_number.value >= 0
+                key = get_object_key(number.value.to_i64, gen_number.value.to_i64)
+                value = get_object_from_pool(key)
+              else
+                Log.warn { "Invalid value(s) for an object key #{number.value} #{gen_number.value}" }
+              end
+            end
           end
-        rescue
-          seek(saved_pos2)
         end
 
-        value = parse_object
-        break unless value
-
-        array.add(value)
+        # something went wrong
+        if value.nil?
+          # it could be a bad object in the array which is just skipped
+          Log.warn { "Corrupt array element at offset #{position}, start offset: #{start_position}" }
+          is_this_the_end = read_string
+          # return immediately if a corrupt element is followed by another array
+          # to avoid a possible infinite recursion as most likely the whole array is corrupted
+          if is_this_the_end.empty? && peek_char == '['
+            return array
+          end
+          source.rewind(is_this_the_end.bytesize)
+          # This could also be an "endobj" or "endstream" which means we can assume that
+          # the array has ended.
+          if is_this_the_end == ENDOBJ_STRING || is_this_the_end == ENDSTREAM_STRING
+            return array
+          end
+        else
+          array.add(value)
+        end
 
         skip_spaces
-        # Check for ']' again
-        saved_pos3 = position
-        begin
-          if peek_char == ']'
-            read_char # consume ']'
-            break
-          end
-        rescue
-          seek(saved_pos3)
-        end
-        # Arrays can have spaces between elements
       end
 
+      # read ']'
+      read_char
+      skip_spaces
       array
+    ensure
+      @recursion_depth -= 1
     end
 
     # Parse a COS literal string (for testing compatibility)
@@ -367,6 +478,44 @@ module Pdfbox::Pdfparser
         seek(saved_pos)
         return
       end
+    end
+
+    # Get object key for given number and generation
+    protected def get_object_key(num : Int64, gen : Int64) : Pdfbox::Cos::ObjectKey
+      # TODO: Implement proper caching like Java version
+      Pdfbox::Cos::ObjectKey.new(num, gen)
+    end
+
+    # Get object from pool by object key
+    protected def get_object_from_pool(key : Pdfbox::Cos::ObjectKey) : Pdfbox::Cos::Base?
+      parser = @parser
+      if parser.nil?
+        raise SyntaxError.new("object reference #{key} at offset #{position} in content stream")
+      end
+      parser.get_object_from_pool(key)
+    end
+
+    # Read a line from the source stream (similar to Apache PDFBox readLine)
+    # Reads until CR or LF, handles CR+LF
+    protected def read_line : String
+      if source.eof?
+        raise SyntaxError.new("Error: End-of-File, expected line at offset #{source.position}")
+      end
+
+      buffer = String::Builder.new
+
+      c = source.read
+      while c && !eol?(c)
+        buffer << c.chr
+        c = source.read
+      end
+
+      # CR+LF is also a valid EOL
+      if c && cr?(c) && lf?(source.peek)
+        source.read # consume the LF
+      end
+
+      buffer.to_s
     end
   end
 end

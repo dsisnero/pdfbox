@@ -64,8 +64,13 @@ module Pdfbox::Cos
     end
   end
 
+  # Marker module for numeric types (Integer and Float)
+  module Number
+  end
+
   # Integer value in PDF document
   class Integer < Base
+    include Number
     @value : Int64
 
     def initialize(@value : Int64)
@@ -77,6 +82,11 @@ module Pdfbox::Cos
 
     def value_as_object : Int64
       @value
+    end
+
+    # Check if integer is within valid PDF range (signed 32-bit)
+    def valid? : Bool
+      @value >= Int32::MIN.to_i64 && @value <= Int32::MAX.to_i64
     end
 
     # Write this integer in PDF format to the given IO
@@ -97,6 +107,7 @@ module Pdfbox::Cos
 
   # Floating point value in PDF document
   class Float < Base
+    include Number
     @value : Float64
 
     def initialize(@value : Float64)
@@ -297,6 +308,11 @@ module Pdfbox::Cos
 
     def size : Int32
       @items.size
+    end
+
+    # Remove element at index and return it
+    def delete_at(index : Int) : Base
+      @items.delete_at(index)
     end
 
     # Write this array in PDF format to the given IO

@@ -314,6 +314,110 @@ module Pdfbox::Pdfparser
       xref
     end
 
+    # Parse cross-reference table using incremental parsing (no PDFScanner)
+    private def parse_xref_incremental : XRef
+      start_time = Time.instant
+      xref = XRef.new
+
+      # Check if we're at 'x' character
+      c = source.peek
+      unless c && c.chr == 'x'
+        raise SyntaxError.new("Expected 'x' character at position #{source.position}")
+      end
+
+      # Read "xref" keyword
+      xref_str = read_string
+      unless xref_str.trim == "xref"
+        raise SyntaxError.new("Expected 'xref' keyword at position #{source.position}")
+      end
+
+      # Check for trailer after xref (empty xref table)
+      next_str = read_string
+      # Rewind to before the string we just read
+      source.rewind(next_str.bytesize)
+
+      if next_str.starts_with?("trailer")
+        Log.warn { "skipping empty xref table" }
+        return xref
+      end
+
+      # Xref tables can have multiple sections. Each starts with a starting object id and a count.
+      loop do
+        skip_spaces
+
+        # Check for next keyword (trailer, startxref) or end of input
+        c = source.peek
+        break unless c
+        ch = c.chr
+        break if ch == 't' || ch == 's' || end_of_name?(c)
+
+        # Read line with start object id and count
+        line = read_line
+        split_string = line.split(/\s+/)
+        if split_string.size != 2
+          raise SyntaxError.new("Unexpected XRefTable Entry: #{line}")
+        end
+
+        # First obj id
+        begin
+          curr_obj_id = split_string[0].to_i64
+        rescue
+          raise SyntaxError.new("XRefTable: invalid ID for the first object: #{line}")
+        end
+
+        # The number of objects in the xref table
+        begin
+          count = split_string[1].to_i32
+        rescue
+          raise SyntaxError.new("XRefTable: invalid number of objects: #{line}")
+        end
+
+        skip_spaces
+
+        count.times do |i|
+          if eof?
+            break
+          end
+
+          next_char = source.peek
+          break unless next_char
+          if next_char.chr == 't' || end_of_name?(next_char)
+            break
+          end
+
+          # Read xref entry line
+          entry_line = read_line
+          entry_parts = entry_line.split(/\s+/)
+          if entry_parts.size < 3
+            Log.warn { "invalid xref line: #{entry_line}" }
+            break
+          end
+
+          # This supports the corrupt table as reported in PDFBOX-474 (XXXX XXX XX n)
+          if entry_parts.last == "n"
+            begin
+              curr_offset = entry_parts[0].to_i64
+              # skip 0 offsets
+              if curr_offset > 0
+                curr_gen_id = entry_parts[1].to_i32
+                # TODO: Need to add to xref table - need XRefEntry
+                xref[curr_obj_id + i] = XRefEntry.new(curr_offset, curr_gen_id.to_i64, :in_use)
+              end
+            rescue
+              raise SyntaxError.new("Invalid xref entry: #{entry_line}")
+            end
+          elsif entry_parts[2] != "f"
+            raise SyntaxError.new("Invalid xref entry type: #{entry_line}")
+          end
+          # Free entry ('f') is skipped
+        end
+      end
+
+      elapsed = Time.instant - start_time
+      Log.warn { "parse_xref_incremental: parsed #{xref.size} entries in #{elapsed.total_milliseconds.round(2)}ms" }
+      xref
+    end
+
     # Parse an xref stream
     def parse_xref_stream(offset : Int64) : XRef
       Log.debug { "parse_xref_stream: START parsing xref stream at offset #{offset}" }

@@ -282,7 +282,7 @@ module Pdfbox::Pdfparser
 
     # Reads given pattern from source. Skipping whitespace at start and end if wanted.
     protected def read_expected_string(expected_string : Array(Char), skip_spaces : Bool = true) : Nil
-      self.self.skip_spaces if skip_spaces
+      self.skip_spaces if skip_spaces
 
       expected_string.each do |char|
         read_byte = source.read
@@ -311,8 +311,9 @@ module Pdfbox::Pdfparser
     # Read one char and throw an exception if it is not the expected value.
     protected def read_expected_char(ec : Char) : Nil
       c = source.read
-      unless c && c.chr == ec
-        raise SyntaxError.new("expected='#{ec}' actual='#{c ? c.chr : "EOF"}' at offset #{source.position}")
+      if c.nil? || c.chr != ec
+        actual_char = c ? c.chr : '\uffff'
+        raise SyntaxError.new("expected='#{ec}' actual='#{actual_char}' at offset #{source.position}")
       end
     end
 
@@ -592,11 +593,6 @@ module Pdfbox::Pdfparser
       end
 
       result.to_s
-    end
-
-    # Check if character is whitespace (space, tab, CR, LF, FF)
-    protected def space?(c : Int32) : Bool
-      whitespace?(c)
     end
 
     # This method is used to read a token by the read_int and the read_long method. Valid
