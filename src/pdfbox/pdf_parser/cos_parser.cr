@@ -22,6 +22,14 @@ module Pdfbox::Pdfparser
     ENDOBJ     = Bytes[0x65, 0x6E, 0x64, 0x6F, 0x62, 0x6A]                   # 'endobj'
     STRMBUFLEN = 2048
 
+    # Header constants (similar to Apache PDFBox COSParser)
+    PDF_HEADER          = "%PDF-"
+    FDF_HEADER          = "%FDF-"
+    PDF_DEFAULT_VERSION = "1.4"
+    FDF_DEFAULT_VERSION = "1.0"
+    EOF_MARKER          = Bytes[0x25, 0x25, 0x45, 0x4F, 0x46] # '%%EOF'
+    OBJ_MARKER          = Bytes[0x6F, 0x62, 0x6A]             # 'obj'
+
     # ASCII byte values for keyword matching
     private E = 0x65_u8
     private N = 0x6E_u8
@@ -869,6 +877,65 @@ module Pdfbox::Pdfparser
       source.read(data)
       seek(saved_pos)
       Pdfbox::Cos::Stream.new(dic.entries, data)
+    end
+
+    # Parse the header of a PDF.
+    # @return true if a PDF header was found
+    protected def parse_pdf_header : Bool
+      parse_header(PDF_HEADER, PDF_DEFAULT_VERSION)
+    end
+
+    # Parse the header of a FDF.
+    # @return true if a FDF header was found
+    protected def parse_fdf_header : Bool
+      parse_header(FDF_HEADER, FDF_DEFAULT_VERSION)
+    end
+
+    private def parse_header(header_marker : String, default_version : String) : Bool
+      # read first line
+      header = read_line
+      # some pdf-documents are broken and the pdf-version is in one of the following lines
+      unless header.includes?(header_marker)
+        header = read_line
+        while !header.includes?(header_marker)
+          # if a line starts with a digit, it has to be the first one with data in it
+          if !header.empty? && header[0].digit?
+            break
+          end
+          header = read_line
+        end
+      end
+
+      # nothing found
+      unless header.includes?(header_marker)
+        source.seek(0)
+        return false
+      end
+
+      # sometimes there is some garbage in the header before the header
+      # actually starts, so lets try to find the header first.
+      header_start = header.index(header_marker)
+
+      # greater than zero because if it is zero then there is no point of trimming
+      if header_start && header_start > 0
+        # trim off any leading characters
+        header = header[header_start..-1]
+      end
+
+      # This is used if there is garbage after the header on the same line
+      if header.starts_with?(header_marker) && !header.matches?(/#{Regex.escape(header_marker)}\\d\\.\\d/)
+        if header.size < header_marker.size + 3
+          # No version number at all, set to 1.4 as default
+          header = header_marker + default_version
+          Log.debug { "No version found, set to #{default_version} as default." }
+        else
+          header_garbage = header[header_marker.size + 3..-1] + "\n"
+          # put the garbage back
+          source.rewind(header_garbage.bytesize)
+        end
+      end
+
+      true
     end
   end
 end
