@@ -112,7 +112,6 @@ module Pdfbox::Pdfparser
       start_time = Time.instant
       xref = XRef.new
       # Skip whitespace/comments before "xref"
-      puts "DEBUG parse_xref: source.position=#{source.position}, source.length=#{source.length}" if @lenient
 
       # Some PDFs have incorrect startxref offsets. Try to find "xref" by seeking back a bit.
       original_pos = source.position
@@ -144,7 +143,6 @@ module Pdfbox::Pdfparser
         test_scanner = PDFScanner.new(source) # read remaining file from test_pos
         test_scanner.skip_whitespace
         if test_scanner.scanner.scan(/xref/)
-          puts "DEBUG parse_xref: found 'xref' at position #{test_pos + test_scanner.scanner.offset - 4} (offset #{offset} bytes before original)" if @lenient
           found_pos = test_pos
           scanner = test_scanner
           break
@@ -162,8 +160,7 @@ module Pdfbox::Pdfparser
       end
 
       Log.debug { "parse_xref: scanner string length: #{scanner.scanner.string.bytesize}, start pos: #{scanner.position}" }
-      puts "DEBUG parse_xref: scanner created, string length: #{scanner.scanner.string.bytesize}, scanner.position=#{scanner.position}" if @lenient
-      puts "DEBUG parse_xref: first 50 chars: #{scanner.scanner.rest[0..50].inspect}" if @lenient
+
       # puts "DEBUG: first 100 chars: #{scanner.scanner.string[0..100].inspect}" if @lenient
 
       # Skip whitespace after keyword
@@ -575,17 +572,14 @@ module Pdfbox::Pdfparser
     # Parse object header using BaseParser (incremental)
     # ameba:disable Metrics/CyclomaticComplexity
     private def parse_object_header_incremental(offset : Int64, key : Cos::ObjectKey?) : Int64
-      puts "DEBUG parse_object_header_incremental: offset=#{offset}, source.position=#{source.position}" if @lenient
       source.seek(offset)
-      puts "DEBUG parse_object_header_incremental: after seek, source.position=#{source.position}, peek_char=#{source.peek.try(&.chr).inspect}" if @lenient
+
       skip_spaces
-      puts "DEBUG parse_object_header_incremental: after skip_spaces, source.position=#{source.position}, peek_char=#{source.peek.try(&.chr).inspect}" if @lenient
 
       # If key is provided, try to find matching object header nearby
       if key
         corrected_offset = find_object_header_near(source.position, key, 2048)
         if corrected_offset && corrected_offset != source.position
-          puts "DEBUG parse_object_header_incremental: key-based corrected offset #{source.position} -> #{corrected_offset}" if @lenient
           source.seek(corrected_offset)
           skip_spaces
         end
@@ -597,21 +591,20 @@ module Pdfbox::Pdfparser
         # Not a number, try to find any object header nearby
         corrected_offset = find_object_header_near(source.position, nil, 1024)
         if corrected_offset
-          puts "DEBUG parse_object_header_incremental: corrected offset #{source.position} -> #{corrected_offset}" if @lenient
           source.seek(corrected_offset)
           skip_spaces
         else
           # Fall back to PDFScanner method
-          puts "DEBUG parse_object_header_incremental: falling back to PDFScanner" if @lenient
+
           scanner = parse_object_header(offset, key)
           return scanner.position
         end
       end
 
       obj_num = read_number.to_i64
-      puts "DEBUG parse_object_header_incremental: obj_num=#{obj_num}, source.position=#{source.position}" if @lenient
+
       gen_num = read_number.to_i64
-      puts "DEBUG parse_object_header_incremental: gen_num=#{gen_num}, source.position=#{source.position}" if @lenient
+
       skip_spaces
       read_expected_string("obj")
 

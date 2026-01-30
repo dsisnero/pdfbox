@@ -24,12 +24,10 @@ module Pdfbox::Pdfparser
       if max_bytes && max_bytes < bytes_to_read
         bytes_to_read = max_bytes
       end
-      # puts "PDFScanner DEBUG: source.length=#{@source.length}, source.position=#{@source.position}, bytes_to_read=#{bytes_to_read}"
       Log.debug { "PDFScanner.read_remaining_as_string: source.length=#{@source.length}, source.position=#{@source.position}, bytes_to_read=#{bytes_to_read}, max_bytes=#{max_bytes}" }
       @raw_buffer = Bytes.new(bytes_to_read)
       @source.read(@raw_buffer)
       @buffer_pos = @source.position - @raw_buffer.size
-      # puts "PDFScanner DEBUG: read #{@raw_buffer.size} bytes, buffer_pos=#{@buffer_pos}"
       Log.debug { "PDFScanner.read_remaining_as_string: read #{@raw_buffer.size} bytes, buffer_pos=#{@buffer_pos}" }
       String.new(@raw_buffer, "ISO-8859-1")
     end
