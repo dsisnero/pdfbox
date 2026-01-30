@@ -467,41 +467,46 @@ module Pdfbox::Pdfparser
       skip_spaces
 
       buffer = String::Builder.new
-      c = source.peek
+
+      # Read first character
+      c = source.read
       return 0_i64 unless c
 
-      # Optional sign
       ch = c.chr
-      if ch == '+' || ch == '-'
-        buffer.write_byte(c)
-        source.read # consume
-        c = source.peek
+      # Check if first character could be part of number
+      unless digit?(c) || ch == '-' || ch == '+' || ch == '.' || ch == 'E' || ch == 'e'
+        source.rewind(1)
+        raise SyntaxError.new("Expected number at position #{source.position}")
       end
 
-      # Digits before decimal
-      while c && digit?(c)
-        buffer.write_byte(c)
-        source.read # consume
-        c = source.peek
-      end
+      buffer.write_byte(c)
 
-      # Optional decimal point and digits
-      if c && c.chr == '.'
-        buffer.write_byte(c)
-        source.read # consume
+      # Continue reading while character is part of number
+      loop do
         c = source.peek
-
-        while c && digit?(c)
-          buffer.write_byte(c)
-          source.read # consume
-          c = source.peek
+        break unless c
+        ch = c.chr
+        unless digit?(c) || ch == '-' || ch == '+' || ch == '.' || ch == 'E' || ch == 'e'
+          break
         end
+        buffer.write_byte(c)
+        source.read # consume
       end
 
+      # PDFBOX-5025: catch "74191endobj" - if last character is 'e' or 'E', remove it
       str = buffer.to_s
+      last_char = str[-1] if str.size > 0
+      if last_char == 'e' || last_char == 'E'
+        # Remove trailing 'e'/'E' and rewind source by 1 byte
+        str = str[0...-1]
+        source.rewind(1)
+      end
+
       if str.empty?
         raise SyntaxError.new("Expected number at position #{source.position}")
-      elsif str.includes?('.')
+      elsif str.includes?('.') || str.downcase.includes?('e')
+        # Handle scientific notation: "1.23e+4" or "1.23E-4"
+        # Crystal's to_f handles scientific notation
         str.to_f64
       else
         str.to_i64
