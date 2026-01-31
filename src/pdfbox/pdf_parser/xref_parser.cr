@@ -194,6 +194,15 @@ module Pdfbox::Pdfparser
       0
     end
 
+    # Get the parser as a Parser instance (since @parser is actually a Parser)
+    private def parser_as_parser : Parser
+      parser = @parser.as?(Parser)
+      unless parser
+        raise "XrefParser requires a Parser instance, got #{@parser.class}"
+      end
+      parser
+    end
+
     # Parse xref table from stream and add it to the state
     private def parse_xref_table(start_byte_offset : Int64) : Bool
       if @source.peek != X.ord
@@ -337,13 +346,37 @@ module Pdfbox::Pdfparser
 
     # Parse xref object stream
     private def parse_xref_obj_stream(obj_byte_offset : Int64, is_standalone : Bool) : Int64
-      # TODO: implement similar to Java parseXrefObjStream
-      0_i64
+      saved_pos = @source.position
+      begin
+        @source.seek(obj_byte_offset)
+        @parser.skip_spaces
+        # Parse indirect object head
+        @parser.read_object_number
+        @parser.read_generation_number
+        @parser.read_object_marker
+        # Parse dictionary
+        dict = @parser.parse_dictionary(false)
+        # Get prev value if present
+        prev_entry = dict[Cos::Name.new("Prev")]?
+        prev = if prev_entry.is_a?(Cos::Integer)
+                 prev_entry.value.to_i64
+               else
+                 0_i64
+               end
+        Log.warn { "Xref stream at offset #{obj_byte_offset} partially parsed (stream data not processed), prev=#{prev}" }
+        prev
+      rescue ex
+        Log.error { "Failed to parse xref stream at offset #{obj_byte_offset}: #{ex.message}" }
+        0_i64
+      ensure
+        @source.seek(saved_pos)
+      end
     end
 
     # Check offsets of all referenced objects
     private def check_xref_offsets : Nil
       # TODO: implement similar to Java checkXrefOffsets
+      Log.debug { "check_xref_offsets not yet implemented" }
     end
 
     # Returns the resulting cross reference table.
