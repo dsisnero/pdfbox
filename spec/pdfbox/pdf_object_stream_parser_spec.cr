@@ -63,5 +63,90 @@ describe Pdfbox::Pdfparser::PDFObjectStreamParser do
       all_objects[Pdfbox::Cos::ObjectKey.new(6, 0)].should eq(Pdfbox::Cos::Boolean::TRUE)
       all_objects[Pdfbox::Cos::ObjectKey.new(4, 0)].should eq(Pdfbox::Cos::Boolean::FALSE)
     end
+
+    it "parses all objects with duplicate object numbers using stream_index" do
+      stream = Pdfbox::Cos::Stream.new
+      stream[Pdfbox::Cos::Name.new("N")] = Pdfbox::Cos::Integer.new(3)
+      stream[Pdfbox::Cos::Name.new("First")] = Pdfbox::Cos::Integer.new(13)
+      stream.data = "6 0 4 5 4 11 true false true".to_slice
+
+      source = Pdfbox::IO::MemoryRandomAccessRead.new(Bytes.empty)
+      parser = Pdfbox::Pdfparser::Parser.new(source)
+      parser.lenient = true
+
+      # Create xref entries with stream_index
+      xref = Pdfbox::Pdfparser::XRef.new
+      # For object 6, stream_index 0 (first object)
+      xref[Pdfbox::Cos::ObjectKey.new(6, 0, 0)] = -1_i64 # compressed entry
+      # For object 4, stream_index 2 (third object, index 2)
+      xref[Pdfbox::Cos::ObjectKey.new(4, 0, 2)] = -1_i64
+      parser.xref = xref
+
+      object_stream_parser = Pdfbox::Pdfparser::PDFObjectStreamParser.new(stream, parser)
+      all_objects = object_stream_parser.parse_all_objects
+      all_objects.size.should eq(2)
+      all_objects[Pdfbox::Cos::ObjectKey.new(6, 0)].should eq(Pdfbox::Cos::Boolean::TRUE)
+      all_objects[Pdfbox::Cos::ObjectKey.new(4, 0)].should eq(Pdfbox::Cos::Boolean::TRUE)
+
+      # Now test with stream_index 1 for object 4 (should get false)
+      xref = Pdfbox::Pdfparser::XRef.new
+      xref[Pdfbox::Cos::ObjectKey.new(6, 0, 0)] = -1_i64
+      xref[Pdfbox::Cos::ObjectKey.new(4, 0, 1)] = -1_i64
+      parser.xref = xref
+
+      object_stream_parser = Pdfbox::Pdfparser::PDFObjectStreamParser.new(stream, parser)
+      all_objects = object_stream_parser.parse_all_objects
+      all_objects.size.should eq(2)
+      all_objects[Pdfbox::Cos::ObjectKey.new(6, 0)].should eq(Pdfbox::Cos::Boolean::TRUE)
+      all_objects[Pdfbox::Cos::ObjectKey.new(4, 0)].should eq(Pdfbox::Cos::Boolean::FALSE)
+    end
+
+    it "skips malformed index when object numbers are unique" do
+      stream = Pdfbox::Cos::Stream.new
+      stream[Pdfbox::Cos::Name.new("N")] = Pdfbox::Cos::Integer.new(3)
+      stream[Pdfbox::Cos::Name.new("First")] = Pdfbox::Cos::Integer.new(13)
+      stream.data = "6 0 4 5 5 11 true false true".to_slice
+
+      source = Pdfbox::IO::MemoryRandomAccessRead.new(Bytes.empty)
+      parser = Pdfbox::Pdfparser::Parser.new(source)
+      parser.lenient = true
+
+      xref = Pdfbox::Pdfparser::XRef.new
+      # Add malformed indices that don't match stream indices
+      xref[Pdfbox::Cos::ObjectKey.new(6, 0, 10)] = -1_i64
+      xref[Pdfbox::Cos::ObjectKey.new(4, 0, 11)] = -1_i64
+      xref[Pdfbox::Cos::ObjectKey.new(5, 0, 12)] = -1_i64
+      parser.xref = xref
+
+      object_stream_parser = Pdfbox::Pdfparser::PDFObjectStreamParser.new(stream, parser)
+      all_objects = object_stream_parser.parse_all_objects
+      # Since object numbers are unique, indices are ignored, all objects parsed
+      all_objects.size.should eq(3)
+      all_objects[Pdfbox::Cos::ObjectKey.new(6, 0)].should eq(Pdfbox::Cos::Boolean::TRUE)
+      all_objects[Pdfbox::Cos::ObjectKey.new(4, 0)].should eq(Pdfbox::Cos::Boolean::FALSE)
+      all_objects[Pdfbox::Cos::ObjectKey.new(5, 0)].should eq(Pdfbox::Cos::Boolean::TRUE)
+    end
+
+    it "uses malformed index when object numbers are duplicated" do
+      stream = Pdfbox::Cos::Stream.new
+      stream[Pdfbox::Cos::Name.new("N")] = Pdfbox::Cos::Integer.new(3)
+      stream[Pdfbox::Cos::Name.new("First")] = Pdfbox::Cos::Integer.new(13)
+      stream.data = "6 0 4 5 4 11 true false true".to_slice
+
+      source = Pdfbox::IO::MemoryRandomAccessRead.new(Bytes.empty)
+      parser = Pdfbox::Pdfparser::Parser.new(source)
+      parser.lenient = true
+
+      xref = Pdfbox::Pdfparser::XRef.new
+      # Add malformed indices that don't match stream indices
+      xref[Pdfbox::Cos::ObjectKey.new(6, 0, 10)] = -1_i64
+      xref[Pdfbox::Cos::ObjectKey.new(4, 0, 11)] = -1_i64
+      parser.xref = xref
+
+      object_stream_parser = Pdfbox::Pdfparser::PDFObjectStreamParser.new(stream, parser)
+      all_objects = object_stream_parser.parse_all_objects
+      # Since object numbers are duplicated and indices don't match, all objects are dropped
+      all_objects.size.should eq(0)
+    end
   end
 end

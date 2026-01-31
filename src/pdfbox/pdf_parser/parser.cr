@@ -34,7 +34,7 @@ module Pdfbox::Pdfparser
       @lenient = false
     end
 
-    getter xref
+    property xref
     getter object_pool
     getter decompressed_objects
     property lenient
