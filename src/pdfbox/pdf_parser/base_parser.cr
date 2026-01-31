@@ -74,7 +74,8 @@ module Pdfbox::Pdfparser
       # a line break is a CR, or LF or CRLF
       if cr?(linebreak)
         next_byte = source.read
-        unless lf?(next_byte)
+        next_byte_int = next_byte ? next_byte.to_i32 : -1
+        unless lf?(next_byte_int)
           source.rewind(1) if next_byte
         end
       elsif !lf?(linebreak)

@@ -47,6 +47,8 @@ module Pdfbox::IO
 
   # Random access read interface (similar to Java RandomAccessRead)
   abstract class RandomAccessRead
+    @closed = false
+
     # Get current position
     abstract def position : Int64
 
@@ -67,15 +69,27 @@ module Pdfbox::IO
     # Read bytes into buffer
     abstract def read(buffer : Bytes) : Int32
 
+    # Read bytes into buffer at offset (similar to Java RandomAccessRead.read(byte[], int, int))
+    def read(buffer : Bytes, offset : Int32, length : Int32) : Int32
+      raise "Invalid offset #{offset} or length #{length} for buffer size #{buffer.size}" if offset < 0 || length < 0 || offset + length > buffer.size
+      slice = buffer[offset, length]
+      read(slice)
+    end
+
     # Read byte at position without advancing
     abstract def peek : UInt8?
 
     # Check if at end of stream
     abstract def eof? : Bool
 
+    # Check if the resource is closed
+    def closed? : Bool
+      @closed
+    end
+
     # Close the resource (if needed)
     def close : Nil
-      # Default implementation does nothing
+      @closed = true
     end
 
     # Rewind to beginning
@@ -140,6 +154,7 @@ module Pdfbox::IO
     end
 
     def close : Nil
+      super
       @io.close
     end
   end
@@ -185,6 +200,7 @@ module Pdfbox::IO
     end
 
     def close : Nil
+      super
       @file.close
     end
 
@@ -261,6 +277,10 @@ module Pdfbox::IO
 
     def eof? : Bool
       @current_position >= @stream_length
+    end
+
+    def close : Nil
+      super
     end
   end
 end

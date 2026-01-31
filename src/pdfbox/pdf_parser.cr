@@ -9,6 +9,7 @@ require "./pdf_parser/xref"
 
 require "./pdf_parser/pdf_io"
 require "./pdf_parser/cos_parser"
+require "./pdf_parser/pdf_stream_parser"
 
 module Pdfbox::Pdfparser
 end
