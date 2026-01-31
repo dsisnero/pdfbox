@@ -319,14 +319,18 @@ module Pdfbox::Pdfparser
         break if next_char_int == '/'.ord
         break if next_char_int == '%'.ord
         break if next_char_int >= '0'.ord && next_char_int <= '9'.ord
-        # ameba:disable Lint/NotNil
-        current_char = read_char.not_nil!
-        next_char = source.peek
-        buffer << current_char
-        # Type3 Glyph description has operators with a number in the name
-        if current_char == 'd' && next_char && (next_char == '0'.ord || next_char == '1'.ord)
-          buffer << read_char.not_nil!
+        if current_char = read_char
           next_char = source.peek
+          buffer << current_char
+          # Type3 Glyph description has operators with a number in the name
+          if current_char == 'd' && next_char && (next_char == '0'.ord || next_char == '1'.ord)
+            if extra_char = read_char
+              buffer << extra_char
+              next_char = source.peek
+            end
+          end
+        else
+          break
         end
       end
       buffer.to_s

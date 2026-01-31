@@ -1054,9 +1054,9 @@ module Pdfbox::Pdfparser
     protected def string?(expected : Array(Char)) : Bool
       saved_pos = position
       matched = true
-      expected.each do |ch|
+      expected.each do |char|
         read_byte = source.read
-        unless read_byte && read_byte.chr == ch
+        unless read_byte && read_byte.chr == char
           matched = false
           break
         end
@@ -1070,9 +1070,9 @@ module Pdfbox::Pdfparser
     protected def string?(expected : String) : Bool
       saved_pos = position
       matched = true
-      expected.each_char do |ch|
+      expected.each_char do |char|
         read_byte = source.read
-        unless read_byte && read_byte.chr == ch
+        unless read_byte && read_byte.chr == char
           matched = false
           break
         end
