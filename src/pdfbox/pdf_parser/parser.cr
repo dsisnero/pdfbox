@@ -281,7 +281,7 @@ module Pdfbox::Pdfparser
     end
 
     # Parse an xref stream
-    def parse_xref_stream(offset : Int64, standalone : Bool = false) : XRef
+    def parse_xref_stream(offset : Int64, standalone : Bool = false, resolver : XrefTrailerResolver? = nil) : XRef
       Log.debug { "parse_xref_stream: START parsing xref stream at offset #{offset}, standalone=#{standalone}" }
       # Parse the stream object
       stream_obj = parse_indirect_object_at_offset(offset)
@@ -309,8 +309,8 @@ module Pdfbox::Pdfparser
 
       # Signal new xref object to resolver if standalone
       if standalone
-        xref_resolver.next_xref_obj(offset, XRefType::Stream)
-        xref_resolver.current_trailer = dict
+        (resolver || xref_resolver).next_xref_obj(offset, XRefType::Stream)
+        (resolver || xref_resolver).current_trailer = dict
       end
 
       # Get /W array (required)
@@ -336,13 +336,13 @@ module Pdfbox::Pdfparser
 
       # Parse stream data according to /W array
       Log.debug { "parse_xref_stream: starting to parse data, size=#{data.size}, w=#{w}, total_entry_width=#{w.sum}" }
-      xref = parse_xref_stream_entries(data, w, index_array)
+      xref = parse_xref_stream_entries(data, w, index_array, resolver)
 
       Log.debug { "parse_xref_stream: parsed #{xref.size} entries" }
       xref
     end
 
-    private def parse_w_array_from_dict(dict : Pdfbox::Cos::Dictionary) : Array(Int32)
+    protected def parse_w_array_from_dict(dict : Pdfbox::Cos::Dictionary) : Array(Int32)
       w_entry = dict[Pdfbox::Cos::Name.new("W")]
       unless w_entry && w_entry.is_a?(Pdfbox::Cos::Array) && w_entry.size == 3
         raise SyntaxError.new("/W array missing or invalid in XRef stream")
@@ -368,7 +368,7 @@ module Pdfbox::Pdfparser
       w
     end
 
-    private def parse_index_array_from_dict(dict : Pdfbox::Cos::Dictionary) : Tuple(Array(Int64), Int64)
+    protected def parse_index_array_from_dict(dict : Pdfbox::Cos::Dictionary) : Tuple(Array(Int64), Int64)
       size_entry = dict[Pdfbox::Cos::Name.new("Size")]
       unless size_entry && size_entry.is_a?(Pdfbox::Cos::Integer)
         raise SyntaxError.new("/Size missing in XRef stream")
@@ -391,7 +391,7 @@ module Pdfbox::Pdfparser
       {index_array, size}
     end
 
-    private def parse_xref_stream_entries(data : Bytes, w : Array(Int32), index_array : Array(Int64)) : XRef
+    protected def parse_xref_stream_entries(data : Bytes, w : Array(Int32), index_array : Array(Int64), resolver : XrefTrailerResolver? = nil) : XRef
       Log.debug { "parse_xref_stream_entries: START, data size=#{data.size}, w=#{w}, index_array=#{index_array}" }
       xref = XRef.new
       total_entry_width = w.sum
@@ -450,7 +450,7 @@ module Pdfbox::Pdfparser
             Log.debug { "parse_xref_stream: in-use entry obj #{obj_num}: offset=#{offset}, gen=#{generation}" }
             key = Cos::ObjectKey.new(obj_num, generation)
             xref[key] = offset
-            xref_resolver.add_xref(key, offset)
+            (resolver || xref_resolver).add_xref(key, offset)
           when 2
             # Compressed entry
             obj_stream_number = field2
@@ -460,7 +460,7 @@ module Pdfbox::Pdfparser
             key = Cos::ObjectKey.new(obj_num, 0_i64, index_in_stream.to_i32)
             # Store negative offset to indicate compressed entry (object stream number)
             xref[key] = -obj_stream_number
-            xref_resolver.add_xref(key, -obj_stream_number)
+            (resolver || xref_resolver).add_xref(key, -obj_stream_number)
           else
             raise SyntaxError.new("Invalid entry type #{type} for object #{obj_num}")
           end

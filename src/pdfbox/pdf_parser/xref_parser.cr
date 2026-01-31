@@ -356,6 +356,26 @@ module Pdfbox::Pdfparser
         @parser.read_object_marker
         # Parse dictionary
         dict = @parser.parse_dictionary(false)
+
+        # Check if it's actually an xref stream
+        type_entry = dict[Cos::Name.new("Type")]
+        unless type_entry && type_entry.is_a?(Cos::Name) && type_entry.value == "XRef"
+          Log.error { "Not an XRef stream at offset #{obj_byte_offset}" }
+          return 0_i64
+        end
+
+        # Signal new xref object to resolver if standalone
+        if is_standalone
+          @xref_trailer_resolver.next_xref_obj(obj_byte_offset, XRefType::Stream)
+          @xref_trailer_resolver.current_trailer = dict
+        end
+
+        # Parse the stream
+        stream = @parser.parse_cos_stream(dict)
+
+        # Parse xref stream data
+        parse_xref_stream_data(dict, stream, obj_byte_offset)
+
         # Get prev value if present
         prev_entry = dict[Cos::Name.new("Prev")]?
         prev = if prev_entry.is_a?(Cos::Integer)
@@ -363,7 +383,7 @@ module Pdfbox::Pdfparser
                else
                  0_i64
                end
-        Log.warn { "Xref stream at offset #{obj_byte_offset} partially parsed (stream data not processed), prev=#{prev}" }
+        Log.debug { "Xref stream at offset #{obj_byte_offset} parsed, prev=#{prev}" }
         prev
       rescue ex
         Log.error { "Failed to parse xref stream at offset #{obj_byte_offset}: #{ex.message}" }
@@ -371,6 +391,14 @@ module Pdfbox::Pdfparser
       ensure
         @source.seek(saved_pos)
       end
+    end
+
+    # Parse xref stream data and add entries to resolver
+    private def parse_xref_stream_data(dict : Cos::Dictionary, stream : Cos::Stream, offset : Int64) : Nil
+      parser = parser_as_parser
+      # Use parser's parse_xref_stream with our resolver
+      # We ignore the returned XRef because entries are already added via resolver
+      parser.parse_xref_stream(offset, standalone: false, resolver: @xref_trailer_resolver)
     end
 
     # Check offsets of all referenced objects
