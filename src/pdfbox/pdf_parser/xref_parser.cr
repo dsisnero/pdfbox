@@ -123,7 +123,7 @@ module Pdfbox::Pdfparser
     # Parse startxref keyword and offset
     private def parse_startxref : Int64
       start_xref = -1_i64
-      if @parser.is_string(STARTXREF)
+      if @parser.string?(STARTXREF)
         @parser.read_string
         @parser.skip_spaces
         # This integer is the byte offset of the first object referenced by the xref or xref stream
@@ -136,7 +136,7 @@ module Pdfbox::Pdfparser
     private def check_xref_offset(start_xref_offset : Int64) : Int64
       @source.seek(start_xref_offset)
       @parser.skip_spaces
-      if @parser.is_string(XREF_TABLE)
+      if @parser.string?(XREF_TABLE)
         return start_xref_offset
       end
       if start_xref_offset > 0

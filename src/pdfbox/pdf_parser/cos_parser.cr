@@ -1051,7 +1051,7 @@ module Pdfbox::Pdfparser
 
     # Checks if the given string can be found at the current offset.
     # Similar to Apache PDFBox COSParser.isString(char[])
-    protected def is_string(expected : Array(Char)) : Bool
+    protected def string?(expected : Array(Char)) : Bool
       saved_pos = position
       matched = true
       expected.each do |ch|
@@ -1067,28 +1067,12 @@ module Pdfbox::Pdfparser
 
     # Checks if the given string can be found at the current offset.
     # Similar to Apache PDFBox COSParser.isString(char[])
-    protected def is_string(expected : String) : Bool
+    protected def string?(expected : String) : Bool
       saved_pos = position
       matched = true
       expected.each_char do |ch|
         read_byte = source.read
         unless read_byte && read_byte.chr == ch
-          matched = false
-          break
-        end
-      end
-      seek(saved_pos)
-      matched
-    end
-
-    # Checks if the given bytes can be found at the current offset.
-    # Similar to Apache PDFBox COSParser.isString(byte[])
-    protected def is_string(expected : Bytes) : Bool
-      saved_pos = position
-      matched = true
-      expected.each do |byte|
-        read_byte = source.read
-        unless read_byte && read_byte == byte
           matched = false
           break
         end
