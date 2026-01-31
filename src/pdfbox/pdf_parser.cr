@@ -6,6 +6,7 @@
 require "./pdf_parser/errors"
 require "./pdf_parser/parser"
 require "./pdf_parser/xref"
+require "./pdf_parser/xref_trailer_resolver"
 
 require "./pdf_parser/pdf_io"
 require "./pdf_parser/cos_parser"

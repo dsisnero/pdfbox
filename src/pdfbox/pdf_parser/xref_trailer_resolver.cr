@@ -1,0 +1,256 @@
+# XrefTrailerResolver collects all XRef/trailer objects and creates correct
+# xref/trailer information after all objects are read using startxref
+# and 'Prev' information (unused XRef/trailer objects are discarded).
+#
+# In case of missing startxref or wrong startxref pointer all
+# XRef/trailer objects are used to create xref table / trailer dictionary
+# in order they occur.
+#
+# For each new xref object/XRef stream method #next_xref_obj must be called
+# with start byte position. All following calls to #set_xref or #set_trailer
+# will add the data for this byte position.
+#
+# After all objects are parsed the startxref position must be provided
+# using #set_startxref. This is used to build the chain of active xref/trailer
+# objects used for creating document trailer and xref table.
+require "../cos"
+
+module Pdfbox::Pdfparser
+  Log = ::Log.for(self)
+
+  # The XRefType of a trailer.
+  enum XRefType
+    # XRef table type
+    Table
+    # XRef stream type
+    Stream
+  end
+
+  class XrefTrailerResolver
+    # A class which represents a xref/trailer object.
+    private class XrefTrailerObj
+      property trailer : Cos::Dictionary?
+      property xref_type : XRefType
+      @xref_table : Hash(Cos::ObjectKey, Int64)
+
+      # Default constructor.
+      def initialize
+        @xref_type = XRefType::Table
+        @xref_table = Hash(Cos::ObjectKey, Int64).new
+        @trailer = nil
+      end
+
+      def reset : Nil
+        @xref_table.clear
+      end
+    end
+
+    @byte_pos_to_xref_map : Hash(Int64, XrefTrailerObj)
+    @cur_xref_trailer_obj : XrefTrailerObj?
+    @resolved_xref_trailer : XrefTrailerObj?
+
+    # Log instance.
+    Log = ::Log.for(self)
+
+    def initialize
+      @byte_pos_to_xref_map = Hash(Int64, XrefTrailerObj).new
+      @cur_xref_trailer_obj = nil
+      @resolved_xref_trailer = nil
+    end
+
+    # Returns the first trailer if at least one exists.
+    def first_trailer : Cos::Dictionary?
+      return nil if @byte_pos_to_xref_map.empty?
+      offsets = @byte_pos_to_xref_map.keys
+      sorted_offset = offsets.sort
+      @byte_pos_to_xref_map[sorted_offset.first].trailer
+    end
+
+    # Returns the last trailer if at least one exists.
+    def last_trailer : Cos::Dictionary?
+      return nil if @byte_pos_to_xref_map.empty?
+      offsets = @byte_pos_to_xref_map.keys
+      sorted_offset = offsets.sort
+      @byte_pos_to_xref_map[sorted_offset.last].trailer
+    end
+
+    # Returns the count of trailers.
+    def trailer_count : Int32
+      @byte_pos_to_xref_map.size
+    end
+
+    # Signals that a new XRef object (table or stream) starts.
+    # @param start_byte_pos the offset to start at
+    # @param type the type of the Xref object
+    def next_xref_obj(start_byte_pos : Int64, type : XRefType) : Nil
+      @cur_xref_trailer_obj = XrefTrailerObj.new
+      @byte_pos_to_xref_map[start_byte_pos] = @cur_xref_trailer_obj
+      @cur_xref_trailer_obj.xref_type = type
+    end
+
+    # Returns the XRefType of the resolved trailer.
+    def xref_type : XRefType?
+      @resolved_xref_trailer.try &.xref_type
+    end
+
+    # Populate XRef HashMap of current XRef object.
+    # Will add an Xreftable entry that maps ObjectKeys to byte offsets in the file.
+    # @param obj_key The objkey, with id and gen numbers
+    # @param offset The byte offset in this file
+    def set_xref(obj_key : Cos::ObjectKey, offset : Int64) : Nil
+      cur_obj = @cur_xref_trailer_obj
+      if cur_obj.nil?
+        # should not happen...
+        Log.warn { "Cannot add XRef entry for '#{obj_key.number}' because XRef start was not signalled." }
+        return
+      end
+      # PDFBOX-3506 check before adding to the map, to avoid entries from the table being
+      # overwritten by obsolete entries in hybrid files (/XRefStm entry)
+      unless cur_obj.xref_table.has_key?(obj_key)
+        cur_obj.xref_table[obj_key] = offset
+      end
+    end
+
+    # Adds trailer information for current XRef object.
+    #
+    # @param trailer the current document trailer dictionary
+    def set_trailer(trailer : Cos::Dictionary) : Nil
+      cur_obj = @cur_xref_trailer_obj
+      if cur_obj.nil?
+        # should not happen...
+        Log.warn { "Cannot add trailer because XRef start was not signalled." }
+        return
+      end
+      cur_obj.trailer = trailer
+    end
+
+    # Returns the trailer last set by #set_trailer.
+    def current_trailer : Cos::Dictionary?
+      @cur_xref_trailer_obj.try &.trailer
+    end
+
+    # Sets the byte position of the first XRef
+    # (has to be called after very last startxref was read).
+    # This is used to resolve chain of active XRef/trailer.
+    #
+    # In case startxref position is not found we output a
+    # warning and use all XRef/trailer objects combined
+    # in byte position order.
+    # Thus for incomplete PDF documents with missing
+    # startxref one could call this method with parameter value -1.
+    #
+    # @param startxref_byte_pos_value starting position of the first XRef
+    def set_startxref(startxref_byte_pos_value : Int64) : Nil
+      if @resolved_xref_trailer
+        Log.warn { "Method must be called only ones with last startxref value." }
+        return
+      end
+
+      @resolved_xref_trailer = XrefTrailerObj.new
+      @resolved_xref_trailer.trailer = Cos::Dictionary.new
+
+      cur_obj = @byte_pos_to_xref_map[startxref_byte_pos_value]?
+      xref_seq_byte_pos = [] of Int64
+
+      if cur_obj.nil?
+        # no XRef at given position
+        Log.warn { "Did not found XRef object at specified startxref position #{startxref_byte_pos_value}" }
+
+        # use all objects in byte position order (last entries overwrite previous ones)
+        xref_seq_byte_pos.concat(@byte_pos_to_xref_map.keys)
+        xref_seq_byte_pos.sort!
+      else
+        # copy xref type
+        @resolved_xref_trailer.xref_type = cur_obj.xref_type
+        # found starting Xref object
+        # add this and follow chain defined by 'Prev' keys
+        xref_seq_byte_pos << startxref_byte_pos_value
+        while cur_obj.trailer
+          prev_entry = cur_obj.trailer.as(Cos::Dictionary)[Cos::Name.new("Prev")]?
+          prev_byte_pos = if prev_entry && prev_entry.is_a?(Cos::Number)
+                            prev_entry.to_i64
+                          else
+                            -1_i64
+                          end
+          if prev_byte_pos == -1
+            break
+          end
+
+          cur_obj = @byte_pos_to_xref_map[prev_byte_pos]?
+          if cur_obj.nil?
+            Log.warn { "Did not found XRef object pointed to by 'Prev' key at position #{prev_byte_pos}" }
+            break
+          end
+          xref_seq_byte_pos << prev_byte_pos
+
+          # prevent infinite loops
+          if xref_seq_byte_pos.size >= @byte_pos_to_xref_map.size
+            break
+          end
+        end
+        # have to reverse order so that later XRefs will overwrite previous ones
+        xref_seq_byte_pos.reverse!
+      end
+
+      # merge used and sorted XRef/trailer
+      xref_seq_byte_pos.each do |b_pos|
+        cur_obj = @byte_pos_to_xref_map[b_pos]
+        if trailer = cur_obj.trailer
+          resolved_trailer = @resolved_xref_trailer.trailer.as(Cos::Dictionary)
+          trailer.entries.each do |key, value|
+            resolved_trailer[key] = value
+          end
+        end
+        cur_obj.xref_table.each do |key, offset|
+          @resolved_xref_trailer.xref_table[key] = offset
+        end
+      end
+    end
+
+    # Gets the resolved trailer. Might return nil in case
+    # #set_startxref was not called before.
+    def trailer : Cos::Dictionary?
+      @resolved_xref_trailer.try &.trailer
+    end
+
+    # Gets the resolved xref table. Might return nil in case
+    # #set_startxref was not called before.
+    def xref_table : Hash(Cos::ObjectKey, Int64)?
+      @resolved_xref_trailer.try &.xref_table
+    end
+
+    # Returns object numbers which are referenced as contained
+    # in object stream with specified object number.
+    #
+    # This will scan resolved xref table for all entries having negated
+    # stream object number as value.
+    #
+    # @param objstm_obj_nr object number of object stream for which contained object numbers
+    #                     should be returned
+    #
+    # @return set of object numbers referenced for given object stream
+    #         or nil if #set_startxref was not called before so that no resolved xref table exists
+    def contained_object_numbers(objstm_obj_nr : Int32) : Set(Int64)?
+      resolved = @resolved_xref_trailer
+      return nil if resolved.nil?
+      ref_obj_nrs = Set(Int64).new
+      cmp_val = -objstm_obj_nr
+
+      resolved.xref_table.each do |key, value|
+        if value == cmp_val
+          ref_obj_nrs.add(key.number)
+        end
+      end
+      ref_obj_nrs
+    end
+
+    # Reset all data so that it can be used to rebuild the trailer.
+    protected def reset : Nil
+      @byte_pos_to_xref_map.each_value do |trailer_obj|
+        trailer_obj.reset
+      end
+      @cur_xref_trailer_obj = nil
+      @resolved_xref_trailer = nil
+    end
+  end
+end
