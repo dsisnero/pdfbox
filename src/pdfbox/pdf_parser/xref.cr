@@ -136,7 +136,7 @@ module Pdfbox::Pdfparser
     end
 
     # Iterate over all entries (object number -> XRefEntry)
-    def each_entry(&block : Int64, XRefEntry ->) : Nil
+    def each_entry(& : Int64, XRefEntry ->) : Nil
       @key_to_offset.each do |key, offset|
         type = if offset == 0 && key.generation == 65535
                  :free
@@ -148,6 +148,11 @@ module Pdfbox::Pdfparser
         entry = XRefEntry.new(offset, key.generation, type)
         yield key.number, entry
       end
+    end
+
+    # Get entry by object number (alias for #[])
+    def get_entry_by_number(obj_num : Int64) : XRefEntry?
+      self[obj_num]
     end
   end
 end

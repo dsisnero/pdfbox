@@ -6,6 +6,7 @@ require "./brute_force_parser"
 require "./base_parser"
 require "./cos_parser"
 require "./pdf_object_stream_parser"
+require "./xref_trailer_resolver"
 
 module Pdfbox::Pdfparser
   # Main PDF parser class
@@ -19,6 +20,7 @@ module Pdfbox::Pdfparser
     MAX_OBJECT_PARSE_SIZE  = 4_096_i64 # 4KB
     @trailer : Pdfbox::Cos::Dictionary?
     @xref : XRef?
+    @xref_trailer_resolver : XrefTrailerResolver?
     @object_pool : Hash(Cos::ObjectKey, Cos::Object)
     @decompressed_objects : Hash(Int64, Hash(Cos::ObjectKey, Cos::Base))
     @brute_force_parser : BruteForceParser?
@@ -28,6 +30,7 @@ module Pdfbox::Pdfparser
       super(source)
       @trailer = nil
       @xref = nil
+      @xref_trailer_resolver = nil
       @object_pool = Hash(Cos::ObjectKey, Cos::Object).new
       @decompressed_objects = Hash(Int64, Hash(Cos::ObjectKey, Cos::Base)).new
       @brute_force_parser = nil
@@ -38,6 +41,10 @@ module Pdfbox::Pdfparser
     getter object_pool
     getter decompressed_objects
     property lenient
+
+    private def xref_resolver : XrefTrailerResolver
+      @xref_trailer_resolver ||= XrefTrailerResolver.new
+    end
 
     protected def get_brute_force_parser : BruteForceParser
       @brute_force_parser ||= BruteForceParser.new(self)
@@ -83,7 +90,7 @@ module Pdfbox::Pdfparser
 
     # Parse cross-reference table
     # ameba:disable Metrics/CyclomaticComplexity
-    def parse_xref : XRef
+    def parse_xref(start_byte_pos : Int64? = nil) : XRef
       # puts "DEBUG: parse_xref called" if @lenient
       start_time = Time.instant
       xref = XRef.new
@@ -99,7 +106,7 @@ module Pdfbox::Pdfparser
       if c && digit?(c)
         # Might be an xref stream (object header). Try parsing as xref stream.
         begin
-          return parse_xref_stream(original_pos)
+          return parse_xref_stream(original_pos, standalone: false)
         rescue ex : SyntaxError
           # Not an xref stream, fall back to searching for "xref"
           Log.debug { "parse_xref: failed to parse xref stream at #{original_pos}: #{ex.message}" }
@@ -168,13 +175,17 @@ module Pdfbox::Pdfparser
 
       # Skip whitespace and read "xref" keyword
       skip_spaces
+      xref_start_pos = source.position
       begin
         read_expected_string("xref")
       rescue ex : SyntaxError
         raise SyntaxError.new("Expected 'xref' keyword at position #{source.position}")
       end
 
-      Log.debug { "parse_xref: parsing xref table at position #{source.position}" }
+      Log.debug { "parse_xref: parsing xref table at position #{xref_start_pos}" }
+
+      # Signal new xref object to resolver
+      xref_resolver.next_xref_obj(xref_start_pos, XRefType::Table)
 
       # Check for trailer after xref (empty xref table)
       next_str = read_string
@@ -249,6 +260,7 @@ module Pdfbox::Pdfparser
               if curr_offset > 0
                 key = Cos::ObjectKey.new(curr_obj_id + i, curr_gen_id.to_i64)
                 xref[key] = curr_offset
+                xref_resolver.add_xref(key, curr_offset)
               end
             elsif entry_parts[2] == "f"
               # Free entry: store offset 0
@@ -269,8 +281,8 @@ module Pdfbox::Pdfparser
     end
 
     # Parse an xref stream
-    def parse_xref_stream(offset : Int64) : XRef
-      Log.debug { "parse_xref_stream: START parsing xref stream at offset #{offset}" }
+    def parse_xref_stream(offset : Int64, standalone : Bool = false) : XRef
+      Log.debug { "parse_xref_stream: START parsing xref stream at offset #{offset}, standalone=#{standalone}" }
       # Parse the stream object
       stream_obj = parse_indirect_object_at_offset(offset)
       unless stream_obj.is_a?(Pdfbox::Cos::Stream)
@@ -293,6 +305,12 @@ module Pdfbox::Pdfparser
       type_entry = dict[Pdfbox::Cos::Name.new("Type")]
       unless type_entry && type_entry.is_a?(Pdfbox::Cos::Name) && type_entry.value == "XRef"
         raise SyntaxError.new("Not an XRef stream at offset #{offset}")
+      end
+
+      # Signal new xref object to resolver if standalone
+      if standalone
+        xref_resolver.next_xref_obj(offset, XRefType::Stream)
+        xref_resolver.current_trailer = dict
       end
 
       # Get /W array (required)
@@ -432,6 +450,7 @@ module Pdfbox::Pdfparser
             Log.debug { "parse_xref_stream: in-use entry obj #{obj_num}: offset=#{offset}, gen=#{generation}" }
             key = Cos::ObjectKey.new(obj_num, generation)
             xref[key] = offset
+            xref_resolver.add_xref(key, offset)
           when 2
             # Compressed entry
             obj_stream_number = field2
@@ -441,6 +460,7 @@ module Pdfbox::Pdfparser
             key = Cos::ObjectKey.new(obj_num, 0_i64, index_in_stream.to_i32)
             # Store negative offset to indicate compressed entry (object stream number)
             xref[key] = -obj_stream_number
+            xref_resolver.add_xref(key, -obj_stream_number)
           else
             raise SyntaxError.new("Invalid entry type #{type} for object #{obj_num}")
           end
@@ -1340,6 +1360,8 @@ module Pdfbox::Pdfparser
       end
 
       Log.debug { "collect_xref_sections: collected #{sections.size} sections" }
+      # Resolve xref/trailer chain using startxref pointer
+      xref_resolver.startxref = xref_offset
       sections
     end
 
@@ -1383,7 +1405,7 @@ module Pdfbox::Pdfparser
             xref_stm_offset = xref_stm_ref.value.to_i64
             Log.debug { "merge_xref_sections: Found XRefStm at offset #{xref_stm_offset}, parsing xref stream" }
             begin
-              xref_stream = parse_xref_stream(xref_stm_offset)
+              xref_stream = parse_xref_stream(xref_stm_offset, standalone: false)
               Log.debug { "merge_xref_sections: xref_stream size before merging: #{xref_stream.size}" }
 
               # Merge xref stream entries with section entries
@@ -1510,7 +1532,19 @@ module Pdfbox::Pdfparser
       catalog_dict = if xref_offset
                        Log.debug { "Before collect_xref_sections, xref_offset=#{xref_offset}" }
                        sections = collect_xref_sections(xref_offset)
-                       xref, trailer = merge_xref_sections(sections)
+
+                       # Try to use resolver's results first
+                       resolver_xref_table = xref_resolver.xref_table
+                       resolver_trailer = xref_resolver.trailer
+                       if resolver_xref_table && resolver_trailer
+                         xref = XRef.new
+                         xref.update_from_hash(resolver_xref_table)
+                         trailer = resolver_trailer
+                         Log.debug { "Using resolver xref table with #{xref.size} entries" }
+                       else
+                         xref, trailer = merge_xref_sections(sections)
+                         Log.debug { "Using merged xref sections with #{xref.size} entries" }
+                       end
 
                        @trailer = trailer
                        @xref = xref
@@ -1639,6 +1673,8 @@ module Pdfbox::Pdfparser
           object_parser = COSParser.new(source, self)
           dict = object_parser.parse_dictionary
           Log.debug { "parse_trailer: parsed dictionary: #{dict.inspect}" }
+          # Set trailer in resolver
+          xref_resolver.current_trailer = dict
           return dict
         end
       end

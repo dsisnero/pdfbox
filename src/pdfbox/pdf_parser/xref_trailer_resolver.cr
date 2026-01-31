@@ -7,11 +7,11 @@
 # in order they occur.
 #
 # For each new xref object/XRef stream method #next_xref_obj must be called
-# with start byte position. All following calls to #set_xref or #set_trailer
+# with start byte position. All following calls to #add_xref or #current_trailer=
 # will add the data for this byte position.
 #
 # After all objects are parsed the startxref position must be provided
-# using #set_startxref. This is used to build the chain of active xref/trailer
+# using #startxref=. This is used to build the chain of active xref/trailer
 # objects used for creating document trailer and xref table.
 require "../cos"
 
@@ -31,7 +31,7 @@ module Pdfbox::Pdfparser
     private class XrefTrailerObj
       property trailer : Cos::Dictionary?
       property xref_type : XRefType
-      @xref_table : Hash(Cos::ObjectKey, Int64)
+      getter xref_table : Hash(Cos::ObjectKey, Int64)
 
       # Default constructor.
       def initialize
@@ -60,7 +60,7 @@ module Pdfbox::Pdfparser
 
     # Returns the first trailer if at least one exists.
     def first_trailer : Cos::Dictionary?
-      return nil if @byte_pos_to_xref_map.empty?
+      return if @byte_pos_to_xref_map.empty?
       offsets = @byte_pos_to_xref_map.keys
       sorted_offset = offsets.sort
       @byte_pos_to_xref_map[sorted_offset.first].trailer
@@ -68,7 +68,7 @@ module Pdfbox::Pdfparser
 
     # Returns the last trailer if at least one exists.
     def last_trailer : Cos::Dictionary?
-      return nil if @byte_pos_to_xref_map.empty?
+      return if @byte_pos_to_xref_map.empty?
       offsets = @byte_pos_to_xref_map.keys
       sorted_offset = offsets.sort
       @byte_pos_to_xref_map[sorted_offset.last].trailer
@@ -83,9 +83,10 @@ module Pdfbox::Pdfparser
     # @param start_byte_pos the offset to start at
     # @param type the type of the Xref object
     def next_xref_obj(start_byte_pos : Int64, type : XRefType) : Nil
-      @cur_xref_trailer_obj = XrefTrailerObj.new
-      @byte_pos_to_xref_map[start_byte_pos] = @cur_xref_trailer_obj
-      @cur_xref_trailer_obj.xref_type = type
+      obj = XrefTrailerObj.new
+      @cur_xref_trailer_obj = obj
+      @byte_pos_to_xref_map[start_byte_pos] = obj
+      obj.xref_type = type
     end
 
     # Returns the XRefType of the resolved trailer.
@@ -97,7 +98,7 @@ module Pdfbox::Pdfparser
     # Will add an Xreftable entry that maps ObjectKeys to byte offsets in the file.
     # @param obj_key The objkey, with id and gen numbers
     # @param offset The byte offset in this file
-    def set_xref(obj_key : Cos::ObjectKey, offset : Int64) : Nil
+    def add_xref(obj_key : Cos::ObjectKey, offset : Int64) : Nil
       cur_obj = @cur_xref_trailer_obj
       if cur_obj.nil?
         # should not happen...
@@ -114,7 +115,7 @@ module Pdfbox::Pdfparser
     # Adds trailer information for current XRef object.
     #
     # @param trailer the current document trailer dictionary
-    def set_trailer(trailer : Cos::Dictionary) : Nil
+    def current_trailer=(trailer : Cos::Dictionary) : Nil
       cur_obj = @cur_xref_trailer_obj
       if cur_obj.nil?
         # should not happen...
@@ -124,7 +125,7 @@ module Pdfbox::Pdfparser
       cur_obj.trailer = trailer
     end
 
-    # Returns the trailer last set by #set_trailer.
+    # Returns the trailer last set by #current_trailer=.
     def current_trailer : Cos::Dictionary?
       @cur_xref_trailer_obj.try &.trailer
     end
@@ -140,14 +141,15 @@ module Pdfbox::Pdfparser
     # startxref one could call this method with parameter value -1.
     #
     # @param startxref_byte_pos_value starting position of the first XRef
-    def set_startxref(startxref_byte_pos_value : Int64) : Nil
+    def startxref=(startxref_byte_pos_value : Int64) : Nil
       if @resolved_xref_trailer
         Log.warn { "Method must be called only ones with last startxref value." }
         return
       end
 
-      @resolved_xref_trailer = XrefTrailerObj.new
-      @resolved_xref_trailer.trailer = Cos::Dictionary.new
+      resolved = XrefTrailerObj.new
+      resolved.trailer = Cos::Dictionary.new
+      @resolved_xref_trailer = resolved
 
       cur_obj = @byte_pos_to_xref_map[startxref_byte_pos_value]?
       xref_seq_byte_pos = [] of Int64
@@ -161,14 +163,20 @@ module Pdfbox::Pdfparser
         xref_seq_byte_pos.sort!
       else
         # copy xref type
-        @resolved_xref_trailer.xref_type = cur_obj.xref_type
+        resolved.xref_type = cur_obj.xref_type
         # found starting Xref object
         # add this and follow chain defined by 'Prev' keys
         xref_seq_byte_pos << startxref_byte_pos_value
         while cur_obj.trailer
-          prev_entry = cur_obj.trailer.as(Cos::Dictionary)[Cos::Name.new("Prev")]?
+          prev_entry = cur_obj.trailer.as(Cos::Dictionary)[Cos::Name.new("Prev")]
           prev_byte_pos = if prev_entry && prev_entry.is_a?(Cos::Number)
-                            prev_entry.to_i64
+                            if prev_entry.is_a?(Cos::Integer)
+                              prev_entry.value
+                            elsif prev_entry.is_a?(Cos::Float)
+                              prev_entry.value.to_i64
+                            else
+                              -1_i64
+                            end
                           else
                             -1_i64
                           end
@@ -196,13 +204,13 @@ module Pdfbox::Pdfparser
       xref_seq_byte_pos.each do |b_pos|
         cur_obj = @byte_pos_to_xref_map[b_pos]
         if trailer = cur_obj.trailer
-          resolved_trailer = @resolved_xref_trailer.trailer.as(Cos::Dictionary)
+          resolved_trailer = resolved.trailer.as(Cos::Dictionary)
           trailer.entries.each do |key, value|
             resolved_trailer[key] = value
           end
         end
         cur_obj.xref_table.each do |key, offset|
-          @resolved_xref_trailer.xref_table[key] = offset
+          resolved.xref_table[key] = offset
         end
       end
     end
@@ -232,7 +240,7 @@ module Pdfbox::Pdfparser
     #         or nil if #set_startxref was not called before so that no resolved xref table exists
     def contained_object_numbers(objstm_obj_nr : Int32) : Set(Int64)?
       resolved = @resolved_xref_trailer
-      return nil if resolved.nil?
+      return if resolved.nil?
       ref_obj_nrs = Set(Int64).new
       cmp_val = -objstm_obj_nr
 
