@@ -7,6 +7,7 @@ require "./base_parser"
 require "./cos_parser"
 require "./pdf_object_stream_parser"
 require "./xref_trailer_resolver"
+require "./xref_parser"
 
 module Pdfbox::Pdfparser
   # Main PDF parser class
@@ -1321,52 +1322,41 @@ module Pdfbox::Pdfparser
 
     private def collect_xref_sections(xref_offset : Int64) : Array(Tuple(Int64, XRef, Pdfbox::Cos::Dictionary?))
       Log.debug { "collect_xref_sections: start with xref_offset=#{xref_offset}" }
-      # puts "DEBUG: collect_xref_sections called with offset #{xref_offset}" if @lenient
-      sections = [] of Tuple(Int64, XRef, Pdfbox::Cos::Dictionary?)
-      prev : Int64 = xref_offset.to_i64
 
-      seen = Set(Int64).new
-      max_sections = 100
-      while prev > 0 && sections.size < max_sections && !seen.includes?(prev)
-        seen << prev
-        Log.debug { "collect_xref_sections: parsing xref at offset #{prev}" }
-        source.seek(prev)
-        section_xref = parse_xref
-        Log.debug { "collect_xref_sections: section_xref entries: #{section_xref.size}" }
+      # Use XrefParser to parse the entire xref chain
+      xref_parser = XrefParser.new(self)
+      trailer = xref_parser.parse_xref(xref_offset)
+      xref_table = xref_parser.xref_table
 
-        section_trailer = parse_trailer
-        Log.debug { "collect_xref_sections: got section_trailer: #{section_trailer != nil}" }
-        if section_trailer
-          Log.debug { "collect_xref_sections: trailer keys: #{section_trailer.entries.keys.map(&.value)}" }
-        end
-
-        sections << {prev, section_xref, section_trailer}
-
-        # Get next Prev link from current section trailer
-        if section_trailer
-          next_prev_ref = section_trailer[Pdfbox::Cos::Name.new("Prev")]
-          if next_prev_ref.is_a?(Pdfbox::Cos::Integer)
-            prev = next_prev_ref.value.to_i64
-            Log.debug { "collect_xref_sections: next prev offset: #{prev}" }
-          else
-            prev = 0_i64
-          end
-        else
-          prev = 0_i64
-        end
-      end
-      if prev > 0 && sections.size >= max_sections
-        Log.warn { "collect_xref_sections: exceeded max sections (#{max_sections}), possible cycle" }
-      end
-
-      Log.debug { "collect_xref_sections: collected #{sections.size} sections" }
-      # Resolve xref/trailer chain using startxref pointer
+      # Update our xref_resolver with the results from XrefParser
       xref_resolver.startxref = xref_offset
+      # Clear existing entries and add all from xref_table
+      resolver_table = xref_resolver.xref_table
+      if resolver_table
+        resolver_table.clear
+        resolver_table.merge!(xref_table)
+      end
+      xref_resolver.current_trailer = trailer
+
+      # Return a single section with merged results for compatibility
+      sections = [] of Tuple(Int64, XRef, Pdfbox::Cos::Dictionary?)
+      sections << {xref_offset, xref_table, trailer}
+
+      Log.debug { "collect_xref_sections: collected 1 section via XrefParser, xref entries: #{xref_table.size}" }
       sections
     end
 
     private def merge_xref_sections(sections : Array(Tuple(Int64, XRef, Pdfbox::Cos::Dictionary?))) : Tuple(XRef, Pdfbox::Cos::Dictionary?)
       Log.debug { "merge_xref_sections: start with #{sections.size} sections" }
+
+      # If we have only one section (from XrefParser), return it directly
+      if sections.size == 1
+        offset_val, xref_section, trailer_section = sections[0]
+        Log.debug { "merge_xref_sections: single section from XrefParser, returning directly" }
+        return {xref_section, trailer_section}
+      end
+
+      # Fallback for multiple sections (should not happen with XrefParser but kept for compatibility)
       xref = XRef.new
       trailer = nil
 

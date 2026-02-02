@@ -52,6 +52,8 @@ module Pdfbox::Pdfparser
     # Log instance.
     Log = ::Log.for(self)
 
+    PREV = Cos::Name.new("Prev")
+
     def initialize
       @byte_pos_to_xref_map = Hash(Int64, XrefTrailerObj).new
       @cur_xref_trailer_obj = nil
@@ -168,18 +170,7 @@ module Pdfbox::Pdfparser
         # add this and follow chain defined by 'Prev' keys
         xref_seq_byte_pos << startxref_byte_pos_value
         while cur_obj.trailer
-          prev_entry = cur_obj.trailer.as(Cos::Dictionary)[Cos::Name.new("Prev")]
-          prev_byte_pos = if prev_entry && prev_entry.is_a?(Cos::Number)
-                            if prev_entry.is_a?(Cos::Integer)
-                              prev_entry.value
-                            elsif prev_entry.is_a?(Cos::Float)
-                              prev_entry.value.to_i64
-                            else
-                              -1_i64
-                            end
-                          else
-                            -1_i64
-                          end
+          prev_byte_pos = get_long(cur_obj.trailer.as(Cos::Dictionary), PREV, -1_i64)
           if prev_byte_pos == -1
             break
           end
@@ -250,6 +241,19 @@ module Pdfbox::Pdfparser
         end
       end
       ref_obj_nrs
+    end
+
+    # Returns the long value for the given key in the dictionary, or default if missing/not a number.
+    private def get_long(dict : Cos::Dictionary, key : Cos::Name, default : Int64 = -1_i64) : Int64
+      value = dict[key]?
+      case value
+      when Cos::Integer
+        value.value
+      when Cos::Float
+        value.value.to_i64
+      else
+        default
+      end
     end
 
     # Reset all data so that it can be used to rebuild the trailer.

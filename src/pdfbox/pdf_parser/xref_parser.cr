@@ -401,10 +401,126 @@ module Pdfbox::Pdfparser
       parser.parse_xref_stream(offset, standalone: false, resolver: @xref_trailer_resolver)
     end
 
+    # Check if the given object can be found at the given offset. Returns the provided object key if everything is ok.
+    # If the generation number differs it will be fixed and a new object key is returned.
+    private def find_object_key(object_key : Cos::ObjectKey, offset : Int64, xref_offset : Hash(Cos::ObjectKey, Int64)) : Cos::ObjectKey?
+      # there can't be any object at the very beginning of a pdf
+      if offset < MINIMUM_SEARCH_OFFSET
+        return
+      end
+
+      begin
+        @source.seek(offset)
+        @parser.skip_spaces
+        if @source.position == offset
+          # ensure that at least one whitespace is skipped in front of the object number
+          @source.seek(offset - 1)
+          if @source.position < offset
+            if !@parser.digit?
+              # anything else but a digit may be some garbage of the previous object -> just ignore it
+              @source.read
+            else
+              current = @source.position
+              # Move back one position to check if we're at a digit
+              if current > 0
+                @source.seek(current - 1)
+                # Scan backwards while we find digits
+                while @parser.digit? && @source.position > 0
+                  @source.seek(@source.position - 1)
+                end
+              end
+              new_obj_num = @parser.read_object_number
+              new_gen_num = @parser.read_generation_number
+              new_obj_key = Cos::ObjectKey.new(new_obj_num, new_gen_num)
+              existing_offset = xref_offset[new_obj_key]?
+              # the found object number belongs to another uncompressed object at the same or nearby offset
+              # something has to be wrong
+              if existing_offset && existing_offset > 0 && (offset - existing_offset).abs < 10
+                Log.debug { "Found the object #{new_obj_key} instead of #{object_key} at offset #{offset} - ignoring" }
+                return
+              end
+              # something seems to be wrong but it's hard to determine what exactly -> simply continue
+              @source.seek(offset)
+            end
+          end
+        end
+
+        # try to read the given object/generation number
+        found_object_number = @parser.read_object_number
+        if object_key.number != found_object_number
+          Log.warn { "found wrong object number. expected [#{object_key.number}] found [#{found_object_number}]" }
+          object_key = Cos::ObjectKey.new(found_object_number, object_key.generation)
+        end
+
+        gen_number = @parser.read_generation_number
+        # finally try to read the object marker
+        @parser.read_object_marker
+        if gen_number == object_key.generation
+          return object_key
+        elsif gen_number > object_key.generation
+          return Cos::ObjectKey.new(object_key.number, gen_number)
+        end
+      rescue ex : ::IO::Error
+        # Swallow the exception, obviously there isn't any valid object number
+        Log.debug { "No valid object at given location #{offset} - ignoring: #{ex.message}" }
+      end
+      nil
+    end
+
+    # Validate xref offsets by checking if objects can be found at their offsets
+    private def validate_xref_offsets(xref_offset : Hash(Cos::ObjectKey, Int64)) : Bool
+      return true if xref_offset.empty?
+
+      corrected_keys = {} of Cos::ObjectKey => Cos::ObjectKey
+      valid_keys = Set(Cos::ObjectKey).new
+
+      xref_offset.each do |object_key, object_offset|
+        # a negative offset number represents an object number itself (type 2 entry in xref stream)
+        if object_offset >= 0
+          found_object_key = find_object_key(object_key, object_offset, xref_offset)
+          if found_object_key.nil?
+            Log.debug { "Stop checking xref offsets as at least one (#{object_key}) couldn't be dereferenced" }
+            return false
+          elsif found_object_key != object_key
+            # Generation was fixed - need to update map later, after iteration
+            corrected_keys[object_key] = found_object_key
+          else
+            valid_keys.add(object_key)
+          end
+        end
+      end
+
+      corrected_pointers = {} of Cos::ObjectKey => Int64
+      corrected_keys.each do |old_key, new_key|
+         if !valid_keys.includes?(new_key)
+           # Only replace entries, if the original entry does not point to a valid object
+           corrected_pointers[new_key] = xref_offset[old_key]
+         end
+      end
+
+      # remove old invalid, as some might not be replaced
+      corrected_keys.each_key do |key|
+        xref_offset.delete(key)
+      end
+      xref_offset.merge!(corrected_pointers)
+
+      true
+    end
+
     # Check offsets of all referenced objects
     private def check_xref_offsets : Nil
-      # TODO: implement similar to Java checkXrefOffsets
-      Log.debug { "check_xref_offsets not yet implemented" }
+      xref_offset = @xref_trailer_resolver.xref_table
+      return if xref_offset.nil? || xref_offset.empty?
+
+      unless validate_xref_offsets(xref_offset)
+        parser = parser_as_parser
+        bf_cos_object_offsets = parser.get_brute_force_parser.bf_cos_object_offsets
+        unless bf_cos_object_offsets.empty?
+          Log.debug { "Replaced read xref table with the results of a brute force search" }
+          xref_offset.clear
+          xref_offset.merge!(bf_cos_object_offsets)
+        end
+      end
     end
 
     # Returns the resulting cross reference table.
