@@ -267,6 +267,7 @@ module Pdfbox::Pdfparser
               # Free entry: store offset 0
               key = Cos::ObjectKey.new(curr_obj_id + i, curr_gen_id.to_i64)
               xref[key] = 0
+              xref_resolver.add_xref(key, 0_i64)
             else
               raise SyntaxError.new("Invalid xref entry type: #{entry_line}")
             end
@@ -441,8 +442,12 @@ module Pdfbox::Pdfparser
 
           case type
           when 0
-            # Free entry, skip
-            Log.debug { "parse_xref_stream: free entry for object #{obj_num}" }
+            # Free entry
+            generation = field3
+            Log.debug { "parse_xref_stream: free entry for object #{obj_num}, gen=#{generation}" }
+            key = Cos::ObjectKey.new(obj_num, generation)
+            xref[key] = 0_i64
+            (resolver || xref_resolver).add_xref(key, 0_i64)
             next
           when 1
             # In-use entry
@@ -1351,7 +1356,7 @@ module Pdfbox::Pdfparser
 
       # If we have only one section (from XrefParser), return it directly
       if sections.size == 1
-        offset_val, xref_section, trailer_section = sections[0]
+        _offset_val, xref_section, trailer_section = sections[0]
         Log.debug { "merge_xref_sections: single section from XrefParser, returning directly" }
         return {xref_section, trailer_section}
       end

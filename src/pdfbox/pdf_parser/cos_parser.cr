@@ -1082,7 +1082,7 @@ module Pdfbox::Pdfparser
     end
 
     # Read object marker ('obj')
-    private def read_object_marker : Nil
+    def read_object_marker : Nil
       skip_spaces
       read_expected_char('o')
       read_expected_char('b')

@@ -492,10 +492,10 @@ module Pdfbox::Pdfparser
 
       corrected_pointers = {} of Cos::ObjectKey => Int64
       corrected_keys.each do |old_key, new_key|
-         if !valid_keys.includes?(new_key)
-           # Only replace entries, if the original entry does not point to a valid object
-           corrected_pointers[new_key] = xref_offset[old_key]
-         end
+        if !valid_keys.includes?(new_key)
+          # Only replace entries, if the original entry does not point to a valid object
+          corrected_pointers[new_key] = xref_offset[old_key]
+        end
       end
 
       # remove old invalid, as some might not be replaced
