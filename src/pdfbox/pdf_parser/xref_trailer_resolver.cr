@@ -245,7 +245,7 @@ module Pdfbox::Pdfparser
 
     # Returns the long value for the given key in the dictionary, or default if missing/not a number.
     private def get_long(dict : Cos::Dictionary, key : Cos::Name, default : Int64 = -1_i64) : Int64
-      value = dict[key]?
+      value = dict[key]
       case value
       when Cos::Integer
         value.value

@@ -85,7 +85,7 @@ module Pdfbox::Pdfparser
               Log.error { "Skipped XRef stream due to a corrupt offset: #{stream_offset}" }
             end
           end
-          prev = trailer.try(&.[]?(Cos::Name.new("Prev"))).try(&.as?(Cos::Integer)).try(&.value.to_i64) || 0_i64
+          prev = trailer.try(&.[](Cos::Name.new("Prev"))).try(&.as?(Cos::Integer)).try(&.value.to_i64) || 0_i64
         else
           # parse xref stream
           prev = parse_xref_obj_stream(prev, true)
@@ -170,7 +170,7 @@ module Pdfbox::Pdfparser
             # check the dictionary to avoid false positives
             dict = @parser.parse_dictionary(false)
             @source.seek(start_xref_offset)
-            type_name = dict[Cos::Name.new("Type")]?
+            type_name = dict[Cos::Name.new("Type")]
             if type_name.is_a?(Cos::Name) && type_name.value == "XRef"
               return true
             end
@@ -186,12 +186,12 @@ module Pdfbox::Pdfparser
     private def calculate_xref_fixed_offset(object_offset : Int64) : Int64
       if object_offset < 0
         Log.error { "Invalid object offset #{object_offset} when searching for a xref table/stream" }
-        return 0
+        return 0_i64
       end
       # TODO: implement brute force search
       # For now, return 0 (not found)
       Log.error { "Can't find the object xref table/stream at offset #{object_offset}" }
-      0
+      0_i64
     end
 
     # Get the parser as a Parser instance (since @parser is actually a Parser)
@@ -229,7 +229,7 @@ module Pdfbox::Pdfparser
 
       # Xref tables can have multiple sections. Each starts with a starting object id and a count.
       loop do
-        current_line = @parser.read_line
+        current_line = parser_as_parser.read_line
         split_string = current_line.strip.split(/\s+/)
         if split_string.size != 2
           Log.warn { "Unexpected XRefTable Entry: #{current_line}" }
@@ -262,7 +262,7 @@ module Pdfbox::Pdfparser
           end
 
           # Read xref entry line
-          entry_line = @parser.read_line
+          entry_line = parser_as_parser.read_line
           entry_parts = entry_line.strip.split(/\s+/)
           if entry_parts.size < 3
             Log.warn { "invalid xref line: #{entry_line}" }
@@ -303,20 +303,20 @@ module Pdfbox::Pdfparser
       trailer_offset = @source.position
       # PDFBOX-1739 skip extra xref entries in RegisSTAR documents
       next_character = @source.peek
-      while next_character != 't'.ord && @parser.digit?(next_character)
+      while next_character && next_character != 't'.ord && @parser.digit?(next_character.to_i32)
         if @source.position == trailer_offset
           # warn only the first time
           Log.warn { "Expected trailer object at offset #{trailer_offset}, keep trying" }
         end
-        @parser.read_line
+        parser_as_parser.read_line
         next_character = @source.peek
       end
-      if @source.peek != 't'.ord
+      if (char = @source.peek) != 't'.ord
         return false
       end
       # read "trailer"
       current_offset = @source.position
-      next_line = @parser.read_line
+      next_line = parser_as_parser.read_line
       unless next_line.strip == "trailer"
         # in some cases the EOL is missing and the trailer immediately
         # continues with "<<" or with a blank character
@@ -338,7 +338,9 @@ module Pdfbox::Pdfparser
       @parser.skip_spaces
 
       parsed_trailer = @parser.parse_dictionary(true)
-      @xref_trailer_resolver.current_trailer = parsed_trailer
+      if parsed_trailer
+        @xref_trailer_resolver.current_trailer = parsed_trailer
+      end
 
       @parser.skip_spaces
       true
@@ -367,7 +369,7 @@ module Pdfbox::Pdfparser
         # Signal new xref object to resolver if standalone
         if is_standalone
           @xref_trailer_resolver.next_xref_obj(obj_byte_offset, XRefType::Stream)
-          @xref_trailer_resolver.current_trailer = dict
+          @xref_trailer_resolver.current_trailer = dict.as(Cos::Dictionary)
         end
 
         # Parse the stream
@@ -377,7 +379,7 @@ module Pdfbox::Pdfparser
         parse_xref_stream_data(dict, stream, obj_byte_offset)
 
         # Get prev value if present
-        prev_entry = dict[Cos::Name.new("Prev")]?
+        prev_entry = dict[Cos::Name.new("Prev")]
         prev = if prev_entry.is_a?(Cos::Integer)
                  prev_entry.value.to_i64
                else

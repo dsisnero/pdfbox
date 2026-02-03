@@ -79,7 +79,7 @@ module Pdfbox::Pdfparser
       version
     end
 
-    private def read_line : String
+    protected def read_line : String
       builder = String::Builder.new
       while byte = source.read
         ch = byte.chr
@@ -1341,7 +1341,9 @@ module Pdfbox::Pdfparser
         resolver_table.clear
         resolver_table.merge!(xref_table)
       end
-      xref_resolver.current_trailer = trailer
+      if trailer
+        xref_resolver.current_trailer = trailer
+      end
 
       # Return a single section with merged results for compatibility
       sections = [] of Tuple(Int64, XRef, Pdfbox::Cos::Dictionary?)
