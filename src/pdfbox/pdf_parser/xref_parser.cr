@@ -229,9 +229,16 @@ module Pdfbox::Pdfparser
 
       # Xref tables can have multiple sections. Each starts with a starting object id and a count.
       loop do
+        saved_pos = @source.position
         current_line = parser_as_parser.read_line
         split_string = current_line.strip.split(/\s+/)
         if split_string.size != 2
+          # Check if we've reached the trailer
+          if split_string.size == 1 && split_string[0] == "trailer"
+            # Rewind to before the trailer line
+            @source.seek(saved_pos)
+            break
+          end
           Log.warn { "Unexpected XRefTable Entry: #{current_line}" }
           return false
         end
@@ -311,7 +318,8 @@ module Pdfbox::Pdfparser
         parser_as_parser.read_line
         next_character = @source.peek
       end
-      if (char = @source.peek) != 't'.ord
+      char = @source.peek
+      if char.nil? || char != 't'.ord
         return false
       end
       # read "trailer"

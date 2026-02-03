@@ -691,28 +691,10 @@ module Pdfbox::Pdfparser
         str = String.new(data, "ISO-8859-1")
         # puts "DEBUG: string created, length=#{str.size}" if @lenient
         # puts "DEBUG: searching for 'startxref' in string" if @lenient
-        if idx = str.index("startxref")
-          # puts "DEBUG: found 'startxref' at index #{idx}" if @lenient
-          idx += 9 # length of "startxref"
-          # puts "DEBUG: after 'startxref', idx=#{idx}" if @lenient
-          # Skip whitespace
-          while idx < str.size && str[idx].ascii_whitespace?
-            idx += 1
-          end
-          # puts "DEBUG: after whitespace, idx=#{idx}" if @lenient
-          # Parse digits
-          start_idx = idx
-          while idx < str.size && str[idx].ascii_number?
-            idx += 1
-          end
-          # puts "DEBUG: after digits, idx=#{idx}, start_idx=#{start_idx}" if @lenient
-          if start_idx < idx
-            digits = str[start_idx...idx]
-            # puts "DEBUG: digits='#{digits}', returning offset #{digits.to_i64}" if @lenient
-            return digits.to_i64
-          else
-            # puts "DEBUG: no digits found after startxref" if @lenient
-          end
+        if startxref_idx = str.index("startxref")
+          # puts "DEBUG: found 'startxref' at index #{startxref_idx}" if @lenient
+          # Return offset of "startxref" keyword (XrefParser expects this)
+          return start + startxref_idx
         end
       ensure
         source.seek(original_pos)
@@ -1334,7 +1316,8 @@ module Pdfbox::Pdfparser
       xref_table = xref_parser.xref_table
 
       # Update our xref_resolver with the results from XrefParser
-      xref_resolver.startxref = xref_offset
+      # startxref already set by XrefParser, do not overwrite
+      # xref_resolver.startxref = xref_offset
       # Clear existing entries and add all from xref_table
       resolver_table = xref_resolver.xref_table
       if resolver_table
@@ -1347,7 +1330,10 @@ module Pdfbox::Pdfparser
 
       # Return a single section with merged results for compatibility
       sections = [] of Tuple(Int64, XRef, Pdfbox::Cos::Dictionary?)
-      sections << {xref_offset, xref_table, trailer}
+      # Convert hash to XRef object
+      xref_obj = XRef.new
+      xref_obj.update_from_hash(xref_table)
+      sections << {xref_offset, xref_obj, trailer}
 
       Log.debug { "collect_xref_sections: collected 1 section via XrefParser, xref entries: #{xref_table.size}" }
       sections
