@@ -728,7 +728,8 @@ module Pdfbox::Pdfparser
             Log.warn { "resolve_object: obj #{obj_num}, type=#{xref_entry.type}, compressed?=#{xref_entry.compressed?}, offset=#{xref_entry.offset}, generation=#{xref_entry.generation}" }
             if xref_entry.compressed?
               # Object is compressed in an object stream
-              parse_object_from_stream(xref_entry.offset, key, xref_entry.generation, xref)
+              # offset is negative object stream number, generation is 0, index is stored in key.stream_index
+              parse_object_from_stream(-xref_entry.offset, key, key.stream_index.to_i64, xref)
             else
               parse_indirect_object_at_offset(xref_entry.offset, key)
             end
@@ -790,10 +791,17 @@ module Pdfbox::Pdfparser
       end
 
       # Object not in cache, need to parse the object stream
+      puts "parse_object_from_stream: looking up object stream #{obj_stream_number} in xref (size #{xref.size})"
+      xref.each_entry do |obj_num, entry|
+        if obj_num == obj_stream_number
+          puts "  found entry: offset #{entry.offset}, generation #{entry.generation}, type #{entry.type}"
+        end
+      end
       obj_stream_xref_entry = xref[obj_stream_number]
       unless obj_stream_xref_entry
         raise SyntaxError.new("Object stream #{obj_stream_number} not found in xref")
       end
+      puts "parse_object_from_stream: obj_stream_xref_entry offset=#{obj_stream_xref_entry.offset}, generation=#{obj_stream_xref_entry.generation}, type=#{obj_stream_xref_entry.type}"
 
       unless obj_stream_xref_entry.in_use?
         raise SyntaxError.new("Object stream #{obj_stream_number} is not an in-use entry")
@@ -881,20 +889,27 @@ module Pdfbox::Pdfparser
       start_time = Time.instant
       io = ::IO::Memory.new(data)
       begin
+        Log.debug { "decompress_flate: trying Deflate" }
         reader = Compress::Deflate::Reader.new(io)
         decompressed = reader.gets_to_end
         reader.close
         result = decompressed.to_slice
+        Log.debug { "decompress_flate: Deflate succeeded, decompressed #{result.size} bytes" }
       rescue ex
+        Log.debug { "decompress_flate: Deflate failed: #{ex.message}" }
         io.rewind
         begin
+          Log.debug { "decompress_flate: trying Zlib" }
           reader = Compress::Zlib::Reader.new(io)
           decompressed = reader.gets_to_end
           reader.close
           result = decompressed.to_slice
+          Log.debug { "decompress_flate: Zlib succeeded, decompressed #{result.size} bytes" }
         rescue ex
+          Log.debug { "decompress_flate: Zlib failed: #{ex.message}" }
           # Use raw data as fallback (maybe already uncompressed)
           result = data
+          Log.debug { "decompress_flate: using raw data size #{result.size}" }
         end
       end
       elapsed = Time.instant - start_time
@@ -906,14 +921,21 @@ module Pdfbox::Pdfparser
       start_time = Time.instant
       data = stream.data
       dict = stream
-
+      Log.debug { "decode_stream_data: input size #{data.size}" }
       filter_entry = dict[Pdfbox::Cos::Name.new("Filter")]
+      Log.debug { "decode_stream_data: filter_entry = #{filter_entry.inspect}" }
       if filter_entry
         if filter_entry.is_a?(Pdfbox::Cos::Name) && filter_entry.value == "FlateDecode"
           data = decompress_flate(data)
+          Log.debug { "decode_stream_data: after decompression size #{data.size}" }
+        elsif filter_entry.is_a?(Pdfbox::Cos::Array)
+          # TODO: handle multiple filters
+          raise SyntaxError.new("Multiple filters not yet supported")
         else
           raise SyntaxError.new("Unsupported filter: #{filter_entry.inspect}")
         end
+      else
+        Log.debug { "decode_stream_data: no filter" }
       end
 
       decode_parms_entry = dict[Pdfbox::Cos::Name.new("DecodeParms")]
@@ -923,6 +945,7 @@ module Pdfbox::Pdfparser
         if predictor && predictor.is_a?(Pdfbox::Cos::Integer) && predictor.value >= 10 &&
            columns && columns.is_a?(Pdfbox::Cos::Integer)
           # PNG prediction
+          Log.debug { "decode_stream_data: applying PNG predictor" }
           data = apply_png_predictor(data, columns.value.to_i, predictor.value.to_i)
         end
       end
@@ -1313,7 +1336,41 @@ module Pdfbox::Pdfparser
       # Use XrefParser to parse the entire xref chain
       xref_parser = XrefParser.new(self)
       trailer = xref_parser.parse_xref(xref_offset)
+
+      if trailer
+      end
       xref_table = xref_parser.xref_table
+      Log.debug { "collect_xref_sections: xref_table size = #{xref_table.size}" }
+      # Debug: list first 10 object numbers
+      count = 0
+      xref_table.each do |key, offset|
+        if count < 10
+          Log.debug { "collect_xref_sections: entry #{count}: obj #{key.number}, offset #{offset}, gen #{key.generation}, stream #{key.stream_index}" }
+          count += 1
+        end
+      end
+      # Debug: check for object 141
+      found = false
+      xref_table.each do |key, offset|
+        if key.number == 141
+          Log.debug { "collect_xref_sections: found object 141 in xref_table: offset #{offset}, generation #{key.generation}, stream_index=#{key.stream_index}" }
+          found = true
+        end
+      end
+      unless found
+        Log.debug { "collect_xref_sections: object 141 NOT FOUND in xref_table" }
+      end
+      # Debug: count compressed entries
+      compressed_count = 0
+      xref_table.each do |key, offset|
+        if offset < 0
+          compressed_count += 1
+          if key.number == 141
+            Log.debug { "collect_xref_sections: compressed object 141 found!" }
+          end
+        end
+      end
+      Log.debug { "collect_xref_sections: total compressed entries = #{compressed_count}" }
 
       # Update our xref_resolver with the results from XrefParser
       # startxref already set by XrefParser, do not overwrite
@@ -1325,7 +1382,16 @@ module Pdfbox::Pdfparser
         resolver_table.merge!(xref_table)
       end
       if trailer
-        xref_resolver.current_trailer = trailer
+        # Merge trailer entries into resolved trailer
+        resolved_trailer = xref_resolver.trailer
+        if resolved_trailer
+          trailer.entries.each do |key, value|
+            resolved_trailer[key] = value
+          end
+        else
+          # Should not happen if startxref= was called
+          Log.warn { "Resolved trailer is nil, cannot merge trailer" }
+        end
       end
 
       # Return a single section with merged results for compatibility
@@ -1417,7 +1483,6 @@ module Pdfbox::Pdfparser
       return unless trailer
 
       root_ref = trailer[Pdfbox::Cos::Name.new("Root")]
-      Log.debug { "root_ref: #{root_ref.inspect}" }
 
       obj_number = if root_ref.is_a?(Pdfbox::Cos::Object)
                      Log.debug { "root_ref is object, obj_number: #{root_ref.obj_number}" }
@@ -1519,13 +1584,25 @@ module Pdfbox::Pdfparser
                        # Try to use resolver's results first
                        resolver_xref_table = xref_resolver.xref_table
                        resolver_trailer = xref_resolver.trailer
-                       if resolver_xref_table && resolver_trailer
+                       Log.debug { "resolver_xref_table size: #{resolver_xref_table.try(&.size) || 0}, resolver_trailer keys: #{resolver_trailer.try(&.entries).try(&.keys).try(&.map(&.value)) || [] of String}" }
+
+                       if resolver_xref_table && resolver_trailer && resolver_trailer.has_key?(Pdfbox::Cos::Name.new("Root"))
                          xref = XRef.new
                          xref.update_from_hash(resolver_xref_table)
                          trailer = resolver_trailer
+
                          Log.debug { "Using resolver xref table with #{xref.size} entries" }
+                         # Debug: check for object 141
+                         if resolver_xref_table
+                           resolver_xref_table.each do |key, offset|
+                             if key.number == 141
+                               Log.debug { "Found object 141 in resolver xref table: offset #{offset}, generation #{key.generation}" }
+                             end
+                           end
+                         end
                        else
                          xref, trailer = merge_xref_sections(sections)
+
                          Log.debug { "Using merged xref sections with #{xref.size} entries" }
                        end
 

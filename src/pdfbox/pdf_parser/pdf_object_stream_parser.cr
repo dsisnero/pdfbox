@@ -17,7 +17,9 @@ module Pdfbox::Pdfparser
     # @param parser The main parser (provides object pool and xref table)
     def initialize(stream : Pdfbox::Cos::Stream, parser : Parser)
       # Create a view of the decoded stream data
+      Log.debug { "PDFObjectStreamParser initialize: stream.data size = #{stream.data.size}" }
       data = parser.decode_stream_data(stream)
+      Log.debug { "PDFObjectStreamParser initialize: decoded data size = #{data.size}" }
       source = Pdfbox::IO::MemoryRandomAccessRead.new(data)
       super(source, parser)
 

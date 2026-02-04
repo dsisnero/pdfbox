@@ -308,6 +308,7 @@ module Pdfbox::Pdfparser
     private def parse_trailer : Bool
       # parse the last trailer.
       trailer_offset = @source.position
+
       # PDFBOX-1739 skip extra xref entries in RegisSTAR documents
       next_character = @source.peek
       while next_character && next_character != 't'.ord && @parser.digit?(next_character.to_i32)
@@ -346,6 +347,7 @@ module Pdfbox::Pdfparser
       @parser.skip_spaces
 
       parsed_trailer = @parser.parse_dictionary(true)
+
       if parsed_trailer
         @xref_trailer_resolver.current_trailer = parsed_trailer
       end
@@ -527,15 +529,30 @@ module Pdfbox::Pdfparser
         bf_cos_object_offsets = parser.get_brute_force_parser.bf_cos_object_offsets
         unless bf_cos_object_offsets.empty?
           Log.debug { "Replaced read xref table with the results of a brute force search" }
+          # Preserve compressed entries (negative offsets) from original xref table
+          compressed_entries = xref_offset.select { |_key, offset| offset < 0 }
           xref_offset.clear
           xref_offset.merge!(bf_cos_object_offsets)
+          # Add back compressed entries (overwrite any conflicts with brute force results)
+          compressed_entries.each do |key, offset|
+            xref_offset[key] = offset
+          end
+          Log.debug { "After merging compressed entries: xref_offset size=#{xref_offset.size}, compressed=#{compressed_entries.size}" }
         end
       end
     end
 
     # Returns the resulting cross reference table.
     def xref_table : Hash(Cos::ObjectKey, Int64)
-      @xref_trailer_resolver.xref_table || Hash(Cos::ObjectKey, Int64).new
+      table = @xref_trailer_resolver.xref_table
+      if table
+        compressed = table.count { |_key, offset| offset < 0 }
+        Log.debug { "XrefParser.xref_table: returning resolved table size=#{table.size}, compressed=#{compressed}" }
+        table
+      else
+        Log.debug { "XrefParser.xref_table: resolved table is nil, returning empty hash" }
+        Hash(Cos::ObjectKey, Int64).new
+      end
     end
 
     # Returns the resolved trailer dictionary.
