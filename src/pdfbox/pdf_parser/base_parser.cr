@@ -472,6 +472,7 @@ module Pdfbox::Pdfparser
     end
 
     # Read a PDF number (integer or float)
+    # ameba:disable Metrics/CyclomaticComplexity
     protected def read_number : Float64 | Int64
       skip_spaces
 

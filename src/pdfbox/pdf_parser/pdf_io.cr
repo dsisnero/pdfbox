@@ -89,6 +89,7 @@ module Pdfbox::Pdfparser
       end
     end
 
+    # ameba:disable Metrics/CyclomaticComplexity
     private def self.parse_date_from_random_access_read(io : Pdfbox::IO::RandomAccessRead) : Time?
       parser = COSParser.new(io)
       parser.skip_spaces

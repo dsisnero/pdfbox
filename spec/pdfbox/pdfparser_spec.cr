@@ -343,9 +343,14 @@ describe Pdfbox::Pdfparser::Parser do
     doc.close if doc.responds_to?(:close)
   end
 
-  pending "test PDFBOX-3950" do
-    # TODO: Port testPDFBox3950
+  it "test PDFBOX-3950" do
     # Test parsing and rendering of truncated file with missing pages
+    pdf_path = File.expand_path("../resources/pdfbox/pdparser/PDFBOX-3950-23EGDHXSBBYQLKYOKGZUOVYVNE675PRD.pdf", __DIR__)
+    doc = Pdfbox::Pdmodel::Document.load(pdf_path, lenient: true)
+    doc.should_not be_nil
+    # Expected: 4 pages (per Apache PDFBox test)
+    doc.page_count.should eq(4)
+    doc.close if doc.responds_to?(:close)
   end
 
   it "test PDFBOX-3951" do

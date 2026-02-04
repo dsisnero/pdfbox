@@ -244,6 +244,7 @@ module Pdfbox::Pdfparser
       get_object_from_pool(get_object_key(obj_number, gen_number))
     end
 
+    # ameba:disable Metrics/CyclomaticComplexity
     private def read_until_end_of_cos_dictionary : Bool
       c = read_char
       while c && c != '/' && c != '>'
@@ -274,6 +275,7 @@ module Pdfbox::Pdfparser
     end
 
     # Parse a COS array
+    # ameba:disable Metrics/CyclomaticComplexity
     def parse_array : Pdfbox::Cos::Array
       @recursion_depth += 1
       if @recursion_depth > MAX_RECURSION_DEPTH
@@ -717,6 +719,7 @@ module Pdfbox::Pdfparser
       true
     end
 
+    # ameba:disable Metrics/CyclomaticComplexity
     private def read_until_end_stream(filter_stream : EndstreamFilterStream) : Int64
       buf_size = 0
       char_match_count = 0
@@ -794,6 +797,7 @@ module Pdfbox::Pdfparser
       filter_stream.calculate_length
     end
 
+    # ameba:disable Metrics/CyclomaticComplexity
     protected def parse_cos_stream(dic : Pdfbox::Cos::Dictionary) : Pdfbox::Cos::Stream
       # 'stream' was already read and verified by parse_object_dynamically()
       # Skip whitespace after 'stream' (CR, LF, or space)

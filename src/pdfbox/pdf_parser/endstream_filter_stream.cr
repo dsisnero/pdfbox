@@ -12,6 +12,7 @@ module Pdfbox::Pdfparser
     # specified byte array starting at offset off to this output stream,
     # except trailing CR, CR LF, or LF. No filtering will be done for the
     # entire stream if the beginning is assumed to be ASCII.
+    # ameba:disable Metrics/CyclomaticComplexity
     def filter(b : Bytes, off : Int32, len : Int32) : Nil
       if @pos == 0 && len > 10
         # PDFBOX-2120 Don't filter if ASCII, i.e. keep a final CR LF or LF

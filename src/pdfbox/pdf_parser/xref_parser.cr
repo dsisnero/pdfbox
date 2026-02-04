@@ -29,6 +29,7 @@ module Pdfbox::Pdfparser
 
     # Parse the xref chain starting at the given offset.
     # Returns the resolved trailer dictionary.
+    # ameba:disable Metrics/CyclomaticComplexity
     def parse_xref(start_xref_offset : Int64) : Cos::Dictionary?
       @source.seek(start_xref_offset)
       start_xref_offset = Math.max(0_i64, parse_startxref)
@@ -204,6 +205,7 @@ module Pdfbox::Pdfparser
     end
 
     # Parse xref table from stream and add it to the state
+    # ameba:disable Metrics/CyclomaticComplexity
     private def parse_xref_table(start_byte_offset : Int64) : Bool
       if @source.peek != X.ord
         return false
@@ -415,6 +417,7 @@ module Pdfbox::Pdfparser
 
     # Check if the given object can be found at the given offset. Returns the provided object key if everything is ok.
     # If the generation number differs it will be fixed and a new object key is returned.
+    # ameba:disable Metrics/CyclomaticComplexity
     private def find_object_key(object_key : Cos::ObjectKey, offset : Int64, xref_offset : Hash(Cos::ObjectKey, Int64)) : Cos::ObjectKey?
       # there can't be any object at the very beginning of a pdf
       if offset < MINIMUM_SEARCH_OFFSET

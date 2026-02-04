@@ -17,10 +17,9 @@ module Pdfbox::Pdfparser
       op1.should be_a(Pdfbox::ContentStream::Operator)
       op1 = op1.as(Pdfbox::ContentStream::Operator)
       op1.name.should eq(Pdfbox::ContentStream::OperatorName::BEGIN_INLINE_IMAGE_DATA)
-      image_data = op1.image_data
-      image_data.should_not be_nil
-      image_data.not_nil!.size.should eq(image_data_string.bytesize)
-      String.new(image_data.not_nil!).should eq(image_data_string)
+      image_data = op1.image_data || raise "Expected image data"
+      image_data.size.should eq(image_data_string.bytesize)
+      String.new(image_data).should eq(image_data_string)
 
       op2 = tokens[1]
       op2.should be_a(Pdfbox::ContentStream::Operator)
@@ -37,10 +36,9 @@ module Pdfbox::Pdfparser
       op.should be_a(Pdfbox::ContentStream::Operator)
       op = op.as(Pdfbox::ContentStream::Operator)
       op.name.should eq(Pdfbox::ContentStream::OperatorName::BEGIN_INLINE_IMAGE_DATA)
-      image_data = op.image_data
-      image_data.should_not be_nil
-      image_data.not_nil!.size.should eq(image_data_string.bytesize)
-      String.new(image_data.not_nil!).should eq(image_data_string)
+      image_data = op.image_data || raise "Expected image data"
+      image_data.size.should eq(image_data_string.bytesize)
+      String.new(image_data).should eq(image_data_string)
     end
   end
 

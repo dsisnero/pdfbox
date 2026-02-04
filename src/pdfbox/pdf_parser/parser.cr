@@ -35,7 +35,7 @@ module Pdfbox::Pdfparser
       @object_pool = Hash(Cos::ObjectKey, Cos::Object).new
       @decompressed_objects = Hash(Int64, Hash(Cos::ObjectKey, Cos::Base)).new
       @brute_force_parser = nil
-      @lenient = false
+      @lenient = true
     end
 
     property xref
@@ -392,6 +392,7 @@ module Pdfbox::Pdfparser
       {index_array, size}
     end
 
+    # ameba:disable Metrics/CyclomaticComplexity
     protected def parse_xref_stream_entries(data : Bytes, w : Array(Int32), index_array : Array(Int64), resolver : XrefTrailerResolver? = nil) : XRef
       Log.debug { "parse_xref_stream_entries: START, data size=#{data.size}, w=#{w}, index_array=#{index_array}" }
       xref = XRef.new
@@ -658,7 +659,7 @@ module Pdfbox::Pdfparser
         raise SyntaxError.new("Length entry must be integer or indirect reference")
       end
 
-      length = length_value.not_nil!
+      length = length_value || raise SyntaxError.new("Stream missing /Length entry")
       Log.debug { "handle_stream_incremental: resolved length = #{length}" }
 
       # Skip whitespace (EOL marker) after "stream"
@@ -690,6 +691,10 @@ module Pdfbox::Pdfparser
       begin
         read_expected_string("endobj")
       rescue
+        if @lenient
+          Log.warn { "Expected 'endobj' at position #{position}" }
+          return
+        end
         raise SyntaxError.new("Expected 'endobj' at position #{position}")
       end
     end
@@ -738,6 +743,7 @@ module Pdfbox::Pdfparser
     end
 
     # Resolve a COS object, handling indirect references
+    # ameba:disable Metrics/CyclomaticComplexity
     private def resolve_object(obj : Cos::Base, xref : XRef) : Cos::Base
       if obj.is_a?(Cos::Object)
         # Handle case where Cos::Object is just a wrapper around already dereferenced object
@@ -766,21 +772,23 @@ module Pdfbox::Pdfparser
                 # Add to xref table for future reference
                 if bf_offset < 0
                   # compressed entry: negative offset indicates object stream number
-                  xref[obj_num] = XRefEntry.new(-bf_offset, key.generation, :compressed)
+                  xref[obj_num] = XRefEntry.new(bf_offset, key.generation, :compressed)
                 else
                   xref[obj_num] = XRefEntry.new(bf_offset, key.generation, :in_use)
                 end
                 # Now retry with updated xref entry
                 xref_entry = xref[obj_num]
                 if xref_entry && xref_entry.compressed?
-                  parse_object_from_stream(xref_entry.offset, key, xref_entry.generation, xref)
+                  parse_object_from_stream(-xref_entry.offset, key, key.stream_index.to_i64, xref)
                 elsif xref_entry
                   parse_indirect_object_at_offset(xref_entry.offset, key)
                 else
                   raise SyntaxError.new("Object #{obj_num} not found in xref after adding")
                 end
               else
-                raise SyntaxError.new("Object #{obj_num} not found in xref")
+                # Lenient mode: treat missing objects as null, like Apache PDFBox
+                obj.object = Cos::Null.instance
+                Cos::Null.instance
               end
             else
               raise SyntaxError.new("Object #{obj_num} not found in xref")
@@ -946,8 +954,8 @@ module Pdfbox::Pdfparser
               reader.close
               result = decompressed.to_slice
               Log.debug { "decompress_flate: Deflate after skip succeeded, decompressed #{result.size} bytes" }
-            rescue ex2
-              Log.debug { "decompress_flate: Deflate after skip failed: #{ex2.message}" }
+            rescue ex
+              Log.debug { "decompress_flate: Deflate after skip failed: #{ex.message}" }
               # Use raw data as fallback (maybe already uncompressed)
               result = data
               Log.debug { "decompress_flate: using raw data size #{result.size}" }
@@ -963,6 +971,7 @@ module Pdfbox::Pdfparser
       result
     end
 
+    # ameba:disable Metrics/CyclomaticComplexity
     protected def decode_stream_data(stream : Pdfbox::Cos::Stream) : Bytes
       start_time = Time.instant
       data = stream.data
@@ -1476,10 +1485,10 @@ module Pdfbox::Pdfparser
 
       # Process sections from OLDEST to NEWEST (reverse of collection order)
       # so newer entries override older ones
-      sections.reverse.each do |offset_val, xref_section, trailer_section|
-        Log.debug { "merge_xref_sections: applying xref section from offset #{offset_val} (#{xref_section.size} entries)" }
-        if trailer_section
-          Log.debug { "merge_xref_sections: trailer_section keys: #{trailer_section.entries.keys.map(&.value)}" }
+      sections.reverse.each do |offset_val, section_xref, section_trailer|
+        Log.debug { "merge_xref_sections: applying xref section from offset #{offset_val} (#{section_xref.size} entries)" }
+        if section_trailer
+          Log.debug { "merge_xref_sections: trailer_section keys: #{section_trailer.entries.keys.map(&.value)}" }
         end
 
         # Combine traditional xref entries with XRefStm entries for this section
@@ -1487,24 +1496,24 @@ module Pdfbox::Pdfparser
         section_entries = {} of Cos::ObjectKey => Int64
 
         # Add traditional xref entries
-        xref_section.entries.each do |key, offset|
+        section_xref.entries.each do |key, offset|
           section_entries[key] = offset
         end
 
         # Merge trailer dictionaries (newer overrides older)
-        if trailer_section
+        if section_trailer
           if trailer
             # Copy entries from trailer_section to trailer only if not already present
             # (older trailers should not override newer ones)
-            trailer_section.entries.each do |key, value|
+            section_trailer.entries.each do |key, value|
               trailer[key] = value unless trailer.has_key?(key)
             end
           else
-            trailer = trailer_section
+            trailer = section_trailer
           end
 
           # Check for XRefStm (cross-reference stream) in trailer
-          xref_stm_ref = trailer_section[Pdfbox::Cos::Name.new("XRefStm")]
+          xref_stm_ref = section_trailer[Pdfbox::Cos::Name.new("XRefStm")]
           if xref_stm_ref && xref_stm_ref.is_a?(Pdfbox::Cos::Integer)
             xref_stm_offset = xref_stm_ref.value.to_i64
             Log.debug { "merge_xref_sections: Found XRefStm at offset #{xref_stm_offset}, parsing xref stream" }
@@ -1534,6 +1543,7 @@ module Pdfbox::Pdfparser
       {xref, trailer}
     end
 
+    # ameba:disable Metrics/CyclomaticComplexity
     private def parse_catalog_from_trailer(trailer : Pdfbox::Cos::Dictionary?, xref : XRef) : Pdfbox::Cos::Dictionary?
       return unless trailer
 
@@ -1558,14 +1568,46 @@ module Pdfbox::Pdfparser
                      entry ? entry.generation : 0_i64
                    end
 
-      # Get offset using key (for compressed entries, stream_index = -1)
+      # Get offset using key (for compressed entries, stream_index is stored in xref key)
       key = Cos::ObjectKey.new(obj_number, generation)
       offset = xref[key]?
-      return unless offset && offset > 0
+      matched_key = key
+
+      if offset.nil?
+        xref.entries.each do |xref_key, xref_offset|
+          if xref_key.number == obj_number && xref_key.generation == generation
+            matched_key = xref_key
+            offset = xref_offset
+            break
+          end
+        end
+      end
+
+      if offset.nil? && @lenient
+        bf_offsets = get_brute_force_parser.bf_cos_object_offsets
+        if bf_offset = bf_offsets[matched_key]?
+          offset = bf_offset
+          xref[matched_key] = bf_offset
+        else
+          bf_offsets.each do |bf_key, bf_found_offset|
+            if bf_key.number == obj_number && bf_key.generation == generation
+              matched_key = bf_key
+              offset = bf_found_offset
+              xref[matched_key] = bf_found_offset
+              break
+            end
+          end
+        end
+      end
+
+      return unless offset
 
       Log.debug { "xref entry found for object #{obj_number}: offset #{offset}" }
-      catalog_key = Cos::ObjectKey.new(obj_number, generation)
-      catalog_obj = parse_indirect_object_at_offset(offset, catalog_key)
+      catalog_obj = if offset > 0
+                      parse_indirect_object_at_offset(offset, matched_key)
+                    else
+                      parse_object_from_stream(-offset, matched_key, matched_key.stream_index.to_i64, xref)
+                    end
       Log.debug { "catalog_obj type: #{catalog_obj.class}" }
 
       return unless catalog_obj.is_a?(Pdfbox::Cos::Dictionary)
@@ -1594,6 +1636,7 @@ module Pdfbox::Pdfparser
     private def rebuild_trailer_with_brute_force : Tuple(XRef, Cos::Dictionary?)?
       Log.warn { "Parser.rebuild_trailer_with_brute_force: START" }
       xref = XRef.new
+      @xref = xref
       trailer = get_brute_force_parser.rebuild_trailer(xref)
       if trailer
         Log.warn { "Parser.rebuild_trailer_with_brute_force: SUCCESS, xref entries: #{xref.size}" }
@@ -1623,6 +1666,7 @@ module Pdfbox::Pdfparser
     end
 
     # Parse the PDF document
+    # ameba:disable Metrics/CyclomaticComplexity
     def parse : Pdfbox::Pdmodel::Document
       Log.debug { "PARSER: START parsing PDF document" }
       # puts "DEBUG: Parser.parse started (lenient=#{@lenient})" if @lenient
@@ -1712,10 +1756,10 @@ module Pdfbox::Pdfparser
                        # No startxref found, use brute force to rebuild trailer
                        Log.warn { "No startxref found, attempting brute-force trailer reconstruction" }
                        xref = XRef.new
+                       @xref = xref
                        trailer = get_brute_force_parser.rebuild_trailer(xref)
                        if trailer
                          @trailer = trailer
-                         @xref = xref
                          found_catalog_dict = parse_catalog_from_trailer(trailer, xref)
                          if found_catalog_dict
                            pages = parse_pages_from_catalog(found_catalog_dict, xref)

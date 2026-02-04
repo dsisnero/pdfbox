@@ -26,14 +26,14 @@ module Pdfbox::Pdmodel
     end
 
     # Load a PDF document from a file
-    def self.load(filename : String, lenient : Bool = false) : Document
+    def self.load(filename : String, lenient : Bool = true) : Document
       File.open(filename) do |file|
         load(file, lenient: lenient)
       end
     end
 
     # Load a PDF document from an IO stream
-    def self.load(io : ::IO, lenient : Bool = false) : Document
+    def self.load(io : ::IO, lenient : Bool = true) : Document
       # Use parser to read PDF
       # Read all bytes as binary data
       file_size = io.size

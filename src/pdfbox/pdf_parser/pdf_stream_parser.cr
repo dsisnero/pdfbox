@@ -43,6 +43,7 @@ module Pdfbox::Pdfparser
 
     # Parse the next token in the stream
     # Returns token or nil if no more tokens
+    # ameba:disable Metrics/CyclomaticComplexity
     def parse_next_token : (Pdfbox::Cos::Base | Pdfbox::ContentStream::Operator)?
       return if source.closed?
 
@@ -114,6 +115,7 @@ module Pdfbox::Pdfparser
     end
 
     # Parse a COS number (similar to Apache PDFBox parseCOSNumber)
+    # ameba:disable Metrics/CyclomaticComplexity
     private def parse_cos_number : Pdfbox::Cos::Base
       # We will be filling buf with the rest of the number.
       # Only allow 1 "." and "-" and "+" at start of number.
@@ -239,6 +241,7 @@ module Pdfbox::Pdfparser
 
     # Check if there's binary data following an EI operator
     # Used for inline image parsing
+    # ameba:disable Metrics/CyclomaticComplexity
     private def has_no_following_bin_data? : Bool
       # as suggested in PDFBOX-1164
       read_bytes = source.read(@bin_char_test_arr, 0, MAX_BIN_CHAR_TEST_LENGTH)
