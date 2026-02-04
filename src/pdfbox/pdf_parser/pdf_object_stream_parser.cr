@@ -18,8 +18,18 @@ module Pdfbox::Pdfparser
     def initialize(stream : Pdfbox::Cos::Stream, parser : Parser)
       # Create a view of the decoded stream data
       Log.debug { "PDFObjectStreamParser initialize: stream.data size = #{stream.data.size}" }
+      Log.debug { "PDFObjectStreamParser initialize: stream dictionary keys: #{stream.entries.keys.map(&.value)}" }
+      if stream.has_key?(Pdfbox::Cos::Name.new("Filter"))
+        filter_entry = stream[Pdfbox::Cos::Name.new("Filter")]
+        Log.debug { "PDFObjectStreamParser initialize: Filter = #{filter_entry.inspect}" }
+      end
+      if stream.has_key?(Pdfbox::Cos::Name.new("DecodeParms"))
+        decode_entry = stream[Pdfbox::Cos::Name.new("DecodeParms")]
+        Log.debug { "PDFObjectStreamParser initialize: DecodeParms = #{decode_entry.inspect}" }
+      end
       data = parser.decode_stream_data(stream)
       Log.debug { "PDFObjectStreamParser initialize: decoded data size = #{data.size}" }
+      Log.debug { "PDFObjectStreamParser initialize: first 20 bytes of decoded data: #{data[0, Math.min(20, data.size)].hexstring}" } if data.size > 0
       source = Pdfbox::IO::MemoryRandomAccessRead.new(data)
       super(source, parser)
 
@@ -135,16 +145,22 @@ module Pdfbox::Pdfparser
       # according to the pdf spec the offsets shall be sorted ascending
       # but we can't rely on that, so we have to sort the offsets
       # as the sequential parsers relies on it
+      Log.debug { "private_read_object_offsets: START, number_of_objects=#{@number_of_objects}, first_object=#{@first_object}, source.position=#{source.position}" }
       object_offsets = {} of Int32 => Int64
       first_object_position = source.position + @first_object - 1
-      @number_of_objects.times do |_|
+      Log.debug { "private_read_object_offsets: first_object_position=#{first_object_position}" }
+      @number_of_objects.times do |i|
         break if source.position >= first_object_position
+        Log.debug { "private_read_object_offsets: iteration #{i}, position before read=#{source.position}" }
         object_number = read_object_number
+        Log.debug { "private_read_object_offsets: read object_number=#{object_number}" }
         offset = read_long.to_i32
+        Log.debug { "private_read_object_offsets: read offset=#{offset}" }
         object_offsets[offset] = object_number
       end
       # sort by offset (key)
       sorted = object_offsets.to_a.sort_by { |offset, _| offset }
+      Log.debug { "private_read_object_offsets: read #{object_offsets.size} object offsets" }
       Hash(Int32, Int64).new.tap do |hash|
         sorted.each { |offset, obj| hash[offset] = obj }
       end

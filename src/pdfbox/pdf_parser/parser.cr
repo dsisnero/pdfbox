@@ -638,13 +638,16 @@ module Pdfbox::Pdfparser
         raise SyntaxError.new("Stream missing /Length entry")
       end
       length = length_entry.value.to_i64
+      Log.debug { "handle_stream_incremental: length entry value = #{length_entry.value}" }
 
       # Skip whitespace (EOL marker) after "stream"
       skip_spaces
+      Log.debug { "handle_stream_incremental: after skip_spaces, position=#{position}" }
 
       # Read stream data as raw bytes
       data = Bytes.new(length)
       source.read(data)
+      Log.debug { "handle_stream_incremental: read #{data.size} bytes, first 10: #{data[0, Math.min(10, data.size)].hexstring}" }
 
       # Create Stream object with data
       stream_obj = Pdfbox::Cos::Stream.new(object.entries, data)
@@ -809,7 +812,9 @@ module Pdfbox::Pdfparser
 
       # Parse the object stream
       obj_stream_key = Pdfbox::Cos::ObjectKey.new(obj_stream_number, obj_stream_xref_entry.generation)
+      Log.debug { "parse_object_from_stream: calling parse_indirect_object_at_offset with offset #{obj_stream_xref_entry.offset}, key #{obj_stream_key}" }
       obj_stream = parse_indirect_object_at_offset(obj_stream_xref_entry.offset, obj_stream_key)
+      Log.debug { "parse_object_from_stream: parse_indirect_object_at_offset returned #{obj_stream.class}" }
       unless obj_stream.is_a?(Cos::Stream)
         raise SyntaxError.new("Object #{obj_stream_number} is not a stream")
       end
@@ -887,6 +892,8 @@ module Pdfbox::Pdfparser
 
     private def decompress_flate(data : Bytes) : Bytes
       start_time = Time.instant
+      Log.debug { "decompress_flate: input first 10 bytes: #{data[0, Math.min(10, data.size)].hexstring}" }
+      Log.debug { "decompress_flate: input last 10 bytes: #{data[Math.max(0, data.size - 10), Math.min(10, data.size)].hexstring}" }
       io = ::IO::Memory.new(data)
       begin
         Log.debug { "decompress_flate: trying Deflate" }
@@ -907,9 +914,27 @@ module Pdfbox::Pdfparser
           Log.debug { "decompress_flate: Zlib succeeded, decompressed #{result.size} bytes" }
         rescue ex
           Log.debug { "decompress_flate: Zlib failed: #{ex.message}" }
-          # Use raw data as fallback (maybe already uncompressed)
-          result = data
-          Log.debug { "decompress_flate: using raw data size #{result.size}" }
+          # Try skipping two bytes (zlib header) and treat as raw deflate
+          if data.size >= 2
+            io.rewind
+            io.skip(2)
+            begin
+              Log.debug { "decompress_flate: trying Deflate after skipping 2 bytes" }
+              reader = Compress::Deflate::Reader.new(io)
+              decompressed = reader.gets_to_end
+              reader.close
+              result = decompressed.to_slice
+              Log.debug { "decompress_flate: Deflate after skip succeeded, decompressed #{result.size} bytes" }
+            rescue ex2
+              Log.debug { "decompress_flate: Deflate after skip failed: #{ex2.message}" }
+              # Use raw data as fallback (maybe already uncompressed)
+              result = data
+              Log.debug { "decompress_flate: using raw data size #{result.size}" }
+            end
+          else
+            result = data
+            Log.debug { "decompress_flate: using raw data size #{result.size}" }
+          end
         end
       end
       elapsed = Time.instant - start_time
@@ -922,12 +947,14 @@ module Pdfbox::Pdfparser
       data = stream.data
       dict = stream
       Log.debug { "decode_stream_data: input size #{data.size}" }
+      Log.debug { "decode_stream_data: stream dict keys: #{dict.entries.keys.map(&.value)}" }
       filter_entry = dict[Pdfbox::Cos::Name.new("Filter")]
       Log.debug { "decode_stream_data: filter_entry = #{filter_entry.inspect}" }
       if filter_entry
         if filter_entry.is_a?(Pdfbox::Cos::Name) && filter_entry.value == "FlateDecode"
           data = decompress_flate(data)
           Log.debug { "decode_stream_data: after decompression size #{data.size}" }
+          Log.debug { "decode_stream_data: first 20 bytes after decompression: #{data[0, Math.min(20, data.size)].hexstring}" } if data.size > 0
         elsif filter_entry.is_a?(Pdfbox::Cos::Array)
           # TODO: handle multiple filters
           raise SyntaxError.new("Multiple filters not yet supported")
@@ -939,13 +966,14 @@ module Pdfbox::Pdfparser
       end
 
       decode_parms_entry = dict[Pdfbox::Cos::Name.new("DecodeParms")]
+      Log.debug { "decode_stream_data: decode_parms_entry = #{decode_parms_entry.inspect}" }
       if decode_parms_entry && decode_parms_entry.is_a?(Pdfbox::Cos::Dictionary)
         predictor = decode_parms_entry[Pdfbox::Cos::Name.new("Predictor")]
         columns = decode_parms_entry[Pdfbox::Cos::Name.new("Columns")]
         if predictor && predictor.is_a?(Pdfbox::Cos::Integer) && predictor.value >= 10 &&
            columns && columns.is_a?(Pdfbox::Cos::Integer)
           # PNG prediction
-          Log.debug { "decode_stream_data: applying PNG predictor" }
+          Log.debug { "decode_stream_data: applying PNG predictor, columns=#{columns.value}, predictor=#{predictor.value}" }
           data = apply_png_predictor(data, columns.value.to_i, predictor.value.to_i)
         end
       end
@@ -1254,8 +1282,14 @@ module Pdfbox::Pdfparser
       start_time = Time.instant
 
       # Use PDFObjectStreamParser for parsing object streams
-      parser = PDFObjectStreamParser.new(obj_stream, self)
-      all_objects = parser.parse_all_objects
+      begin
+        parser = PDFObjectStreamParser.new(obj_stream, self)
+        all_objects = parser.parse_all_objects
+      rescue ex
+        Log.error { "parse_all_objects_from_stream: failed to parse object stream: #{ex.message}" }
+        Log.error { ex.backtrace.join("\n") }
+        raise ex
+      end
 
       Log.debug { "parse_all_objects_from_stream: successfully parsed #{all_objects.size} objects" }
       elapsed = Time.instant - start_time
