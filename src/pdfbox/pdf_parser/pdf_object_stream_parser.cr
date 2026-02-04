@@ -30,6 +30,9 @@ module Pdfbox::Pdfparser
       data = parser.decode_stream_data(stream)
       Log.debug { "PDFObjectStreamParser initialize: decoded data size = #{data.size}" }
       Log.debug { "PDFObjectStreamParser initialize: first 20 bytes of decoded data: #{data[0, Math.min(20, data.size)].hexstring}" } if data.size > 0
+      if data.size == 0
+        Log.error { "PDFObjectStreamParser initialize: DECODED DATA IS EMPTY!" }
+      end
       source = Pdfbox::IO::MemoryRandomAccessRead.new(data)
       super(source, parser)
 

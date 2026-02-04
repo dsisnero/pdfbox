@@ -579,6 +579,7 @@ module Pdfbox::Pdfparser
 
     # Parse an indirect object at given offset
     def parse_indirect_object_at_offset(offset : Int64, key : Cos::ObjectKey? = nil) : Pdfbox::Cos::Base
+      Log.debug { "parse_indirect_object_at_offset: offset=#{offset}, key=#{key}" }
       # Get object from pool if key provided
       start_time = Time.instant
       cos_object = key ? get_object_from_pool(key) : nil
@@ -621,6 +622,7 @@ module Pdfbox::Pdfparser
     private def handle_stream_incremental(object : Pdfbox::Cos::Base) : Pdfbox::Cos::Base
       return object unless object.is_a?(Pdfbox::Cos::Dictionary)
 
+      Log.debug { "handle_stream_incremental: called, position=#{position}" }
       skip_spaces
 
       # Check for "stream" keyword
@@ -634,11 +636,30 @@ module Pdfbox::Pdfparser
 
       # Get Length from dictionary
       length_entry = object[Pdfbox::Cos::Name.new("Length")]
-      unless length_entry && length_entry.is_a?(Pdfbox::Cos::Integer)
+      Log.debug { "handle_stream_incremental: length_entry type = #{length_entry.class}, value = #{length_entry.inspect}" }
+      unless length_entry
         raise SyntaxError.new("Stream missing /Length entry")
       end
-      length = length_entry.value.to_i64
-      Log.debug { "handle_stream_incremental: length entry value = #{length_entry.value}" }
+
+      # Resolve length (could be direct integer or indirect reference)
+      length_value : Int64? = nil
+      case length_entry
+      when Pdfbox::Cos::Integer
+        length_value = length_entry.value.to_i64
+      when Pdfbox::Cos::Object
+        # Dereference the object
+        obj = length_entry.object
+        if obj.is_a?(Pdfbox::Cos::Integer)
+          length_value = obj.value.to_i64
+        else
+          raise SyntaxError.new("Length object does not contain an integer")
+        end
+      else
+        raise SyntaxError.new("Length entry must be integer or indirect reference")
+      end
+
+      length = length_value.not_nil!
+      Log.debug { "handle_stream_incremental: resolved length = #{length}" }
 
       # Skip whitespace (EOL marker) after "stream"
       skip_spaces

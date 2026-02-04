@@ -795,8 +795,8 @@ module Pdfbox::Pdfparser
     end
 
     protected def parse_cos_stream(dic : Pdfbox::Cos::Dictionary) : Pdfbox::Cos::Stream
-      # read 'stream'; this was already tested in parseObjectsDynamically()
-      read_string
+      # 'stream' was already read and verified by parse_object_dynamically()
+      # Skip whitespace after 'stream' (CR, LF, or space)
       skip_spaces
       # This needs to be dic.getItem because when we are parsing, the underlying object might still be null.
       stream_length_obj = get_length(dic[Pdfbox::Cos::Name.new("Length")])
