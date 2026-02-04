@@ -317,7 +317,6 @@ module Pdfbox::Pdfparser
 
       # Get /W array (required)
       w = parse_w_array_from_dict(dict)
-
       Log.debug { "parse_xref_stream: W array = #{w}" }
 
       # Get /Index array or default to [0, Size]
@@ -724,6 +723,7 @@ module Pdfbox::Pdfparser
           if [1350_i64, 1352_i64, 1358_i64, 1360_i64].includes?(obj_num)
             Log.debug { "resolve_object: resolving PageLabels object #{obj_num}" }
           end
+
           if xref_entry = xref[obj_num]
             Log.warn { "resolve_object: obj #{obj_num}, type=#{xref_entry.type}, compressed?=#{xref_entry.compressed?}, offset=#{xref_entry.offset}, generation=#{xref_entry.generation}" }
             if xref_entry.compressed?
@@ -1317,7 +1317,7 @@ module Pdfbox::Pdfparser
 
       # Update our xref_resolver with the results from XrefParser
       # startxref already set by XrefParser, do not overwrite
-      # xref_resolver.startxref = xref_offset
+      xref_resolver.startxref = xref_offset
       # Clear existing entries and add all from xref_table
       resolver_table = xref_resolver.xref_table
       if resolver_table
