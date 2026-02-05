@@ -58,7 +58,7 @@ module Pdfbox::Pdfparser
     @strm_buf : Bytes
     @recursion_depth : Int32
     @key_cache : Hash(Int64, Pdfbox::Cos::ObjectKey)
-    @access_permission : Nil
+    @access_permission : Pdfbox::Pdmodel::Encryption::AccessPermission?
     @key_store_input_stream : ::IO?
     @password : String
     @key_alias : String?
@@ -66,10 +66,10 @@ module Pdfbox::Pdfparser
     @initial_parse_done : Bool
     @trailer_was_rebuild : Bool
     @brute_force_parser : BruteForceParser?
-    @encryption : Nil
+    @encryption : Pdfbox::Pdmodel::Encryption::PDEncryption?
     @xref_table : Hash(Pdfbox::Cos::ObjectKey, Int64)
     @decompressed_objects : Hash(Int64, Hash(Pdfbox::Cos::ObjectKey, Pdfbox::Cos::Base))
-    @security_handler : Nil
+    @security_handler : Pdfbox::Pdmodel::Encryption::SecurityHandler?
     @document : Nil
     @utf8_decoder : Nil
 
@@ -94,6 +94,223 @@ module Pdfbox::Pdfparser
       @security_handler = nil
       @document = nil
       @utf8_decoder = nil
+    end
+
+    # Return true if parser is lenient. Meaning auto healing capacity of the parser are used.
+    def lenient? : Bool
+      @lenient
+    end
+
+    # Change the parser leniency flag.
+    # This method can only be called before the parsing of the file.
+    protected def set_lenient(lenient : Bool) : Nil
+      if @initial_parse_done
+        raise ArgumentError.new("Cannot change leniency after parsing")
+      end
+      @lenient = lenient
+    end
+
+    # Sets how many trailing bytes of PDF file are searched for EOF marker and 'startxref' marker.
+    # ameba:disable Naming/AccessorMethodName
+    def set_eof_lookup_range(byte_count : Int32) : Nil
+      if byte_count > 15
+        @read_trail_bytes = byte_count
+      end
+    end
+
+    # Read the trailer information and provide a COSDictionary containing the trailer information.
+    protected def retrieve_trailer : Pdfbox::Cos::Dictionary?
+      trailer = nil
+      rebuild_trailer = false
+
+      parser = self.as?(Parser)
+      raise ::IO::Error.new("retrieve_trailer requires Parser instance") unless parser
+
+      begin
+        # parse startxref
+        start_xref_offset = get_startxref_offset
+        if start_xref_offset > -1
+          xref_parser = XrefParser.new(parser)
+          trailer = xref_parser.parse_xref(start_xref_offset)
+          @xref_table = xref_parser.xref_table
+        else
+          rebuild_trailer = lenient?
+        end
+      rescue ex
+        if lenient?
+          rebuild_trailer = true
+        else
+          raise ex
+        end
+      end
+
+      # check if the trailer contains a Root object
+      if trailer && trailer[Pdfbox::Cos::Name.new("Root")].nil?
+        rebuild_trailer = lenient?
+      end
+
+      if rebuild_trailer
+        @xref_table.clear
+        xref = XRef.new
+        trailer = get_brute_force_parser.rebuild_trailer(xref)
+        @xref_table = xref.entries
+        @trailer_was_rebuild = true
+      else
+        prepare_decryption
+        if (bf_parser = @brute_force_parser) && bf_parser.bf_search_triggered?
+          xref = XRef.new
+          xref.update_from_hash(@xref_table)
+          get_brute_force_parser.bf_search_for_obj_streams_xref(xref)
+          @xref_table = xref.entries
+        end
+      end
+
+      trailer
+    end
+
+    # Looks for and parses startxref. We first look for last '%%EOF' marker.
+    private def get_startxref_offset : Int64
+      buf = Bytes.empty
+      skip_bytes = 0_i64
+
+      begin
+        trail_byte_count = @file_len < @read_trail_bytes ? @file_len.to_i32 : @read_trail_bytes
+        buf = Bytes.new(trail_byte_count)
+        skip_bytes = @file_len - trail_byte_count
+        source.seek(skip_bytes)
+        off = 0
+        while off < trail_byte_count
+          read_bytes = source.read(buf, off, trail_byte_count - off)
+          if read_bytes < 1
+            raise ::IO::Error.new("No more bytes to read for trailing buffer, but expected: #{trail_byte_count - off}")
+          end
+          off += read_bytes
+        end
+      ensure
+        source.seek(0)
+      end
+
+      # find last '%%EOF'
+      buf_off = last_index_of(EOF_MARKER, buf, buf.size)
+      if buf_off < 0
+        if lenient?
+          # in lenient mode the '%%EOF' isn't needed
+          buf_off = buf.size
+          Log.debug { "Missing end of file marker '#{String.new(EOF_MARKER)}'" }
+        else
+          raise ::IO::Error.new("Missing end of file marker '#{String.new(EOF_MARKER)}'")
+        end
+      end
+
+      startxref_bytes = Bytes.new(STARTXREF.size)
+      STARTXREF.each_with_index do |char, idx|
+        startxref_bytes[idx] = char.ord.to_u8
+      end
+
+      buf_off = last_index_of(startxref_bytes, buf, buf_off)
+      if buf_off < 0
+        raise ::IO::Error.new("Missing 'startxref' marker.")
+      else
+        skip_bytes + buf_off
+      end
+    end
+
+    # Searches last appearance of pattern within buffer.
+    private def last_index_of(pattern : Bytes, buf : Bytes, end_off : Int32) : Int32
+      last_pattern_idx = pattern.size - 1
+      buf_off = end_off
+      pat_off = last_pattern_idx
+      lookup_ch = pattern[pat_off]
+
+      while (buf_off -= 1) >= 0
+        if buf[buf_off] == lookup_ch
+          pat_off -= 1
+          return buf_off if pat_off < 0
+          lookup_ch = pattern[pat_off]
+        elsif pat_off < last_pattern_idx
+          pat_off = last_pattern_idx
+          lookup_ch = pattern[pat_off]
+        end
+      end
+      -1
+    end
+
+    protected def get_brute_force_parser : BruteForceParser
+      parser = self.as?(Parser)
+      raise ::IO::Error.new("BruteForceParser requires Parser instance") unless parser
+      @brute_force_parser ||= BruteForceParser.new(parser)
+    end
+
+    # Check if all entries of the pages dictionary are present. Those which can't be dereferenced are removed.
+    protected def check_pages(root : Pdfbox::Cos::Dictionary) : Nil
+      if @trailer_was_rebuild
+        pages = root[Pdfbox::Cos::Name.new("Pages")]
+        if pages.is_a?(Pdfbox::Cos::Dictionary)
+          check_pages_dictionary(pages, Set(Pdfbox::Cos::Object).new)
+        end
+      end
+
+      unless root[Pdfbox::Cos::Name.new("Pages")].is_a?(Pdfbox::Cos::Dictionary)
+        raise ::IO::Error.new("Page tree root must be a dictionary")
+      end
+    end
+
+    private def check_pages_dictionary(pages_dict : Pdfbox::Cos::Dictionary, set : Set(Pdfbox::Cos::Object)) : Int32
+      kids = pages_dict[Pdfbox::Cos::Name.new("Kids")]
+      number_of_pages = 0
+
+      if kids.is_a?(Pdfbox::Cos::Array)
+        idx = 0
+        while idx < kids.items.size
+          kid = kids.items[idx]
+          if !kid.is_a?(Pdfbox::Cos::Object) || set.includes?(kid)
+            kids.delete_at(idx)
+            next
+          end
+
+          kid_object = kid.as(Pdfbox::Cos::Object)
+          kid_base_object = kid_object.object
+
+          if kid_base_object.nil? || kid_base_object.is_a?(Pdfbox::Cos::Null)
+            Log.warn { "Removed null object #{kid} from pages dictionary" }
+            kids.delete_at(idx)
+            next
+          elsif kid_base_object.is_a?(Pdfbox::Cos::Dictionary)
+            kid_dict = kid_base_object
+            type = kid_dict[Pdfbox::Cos::Name.new("Type")]
+            if type.is_a?(Pdfbox::Cos::Name) && type.value == "Pages"
+              set.add(kid_object)
+              number_of_pages += check_pages_dictionary(kid_dict, set)
+            elsif type.is_a?(Pdfbox::Cos::Name) && type.value == "Page"
+              number_of_pages += 1
+            end
+          end
+          idx += 1
+        end
+      end
+
+      pages_dict[Pdfbox::Cos::Name.new("Count")] = Pdfbox::Cos::Integer.new(number_of_pages.to_i64)
+      number_of_pages
+    end
+
+    # Get the encryption dictionary. The document must be parsed before this is called.
+    def encryption : Pdfbox::Pdmodel::Encryption::PDEncryption?
+      raise ::IO::Error.new("You must parse the document first before calling get_encryption()") unless @initial_parse_done
+      @encryption
+    end
+
+    # Get access permission. The document must be parsed before this is called.
+    def access_permission : Pdfbox::Pdmodel::Encryption::AccessPermission?
+      raise ::IO::Error.new("You must parse the document first before calling get_access_permission()") unless @initial_parse_done
+      @access_permission
+    end
+
+    protected def prepare_decryption : Nil
+      # TODO: implement decryption support
+    end
+
+    protected def security_handler
+      @security_handler
     end
 
     # Parse a COS object from the stream (similar to Apache PDFBox parseDirObject)
@@ -390,9 +607,9 @@ module Pdfbox::Pdfparser
       string =
         case char
         when '('
-          read_literal_string_as_string rescue nil
+          read_literal_string_as_string
         when '<'
-          read_hexadecimal_string rescue nil
+          read_hexadecimal_string
         end
 
       return unless string
@@ -617,9 +834,14 @@ module Pdfbox::Pdfparser
       # Try UTF-8 first
       String.new(bytes, "UTF-8")
     rescue
-      # Fallback to ISO-8859-1 (Latin-1)
-      Log.debug { "Buffer could not be decoded using UTF-8 - trying ISO-8859-1" }
-      String.new(bytes, "ISO-8859-1")
+      # Fallback to Windows-1252, and then ISO-8859-1 if unsupported
+      Log.debug { "Buffer could not be decoded using UTF-8 - trying #{ALTERNATIVE_CHARSET}" }
+      begin
+        String.new(bytes, ALTERNATIVE_CHARSET)
+      rescue
+        Log.debug { "Buffer could not be decoded using #{ALTERNATIVE_CHARSET} - trying ISO-8859-1" }
+        String.new(bytes, "ISO-8859-1")
+      end
     end
 
     # Get object key for given number and generation
@@ -671,7 +893,7 @@ module Pdfbox::Pdfparser
       end
 
       # CR+LF is also a valid EOL
-      if c && cr?(c) && lf?(source.peek)
+      if c && cr?(c) && (peek = source.peek) && lf?(peek)
         source.read # consume the LF
       end
 
@@ -831,9 +1053,10 @@ module Pdfbox::Pdfparser
 
     # ameba:disable Metrics/CyclomaticComplexity
     protected def parse_cos_stream(dic : Pdfbox::Cos::Dictionary) : Pdfbox::Cos::Stream
-      # 'stream' was already read and verified by parse_object_dynamically()
-      # Skip whitespace after 'stream' (CR, LF, or space)
-      skip_spaces
+      # read 'stream'; this was already tested in parse_object_dynamically()
+      read_string
+      # Skip the upcoming CRLF/LF following the stream keyword
+      skip_white_spaces
       # This needs to be dic.getItem because when we are parsing, the underlying object might still be null.
       stream_length_obj = get_length(dic[Pdfbox::Cos::Name.new("Length")])
       if stream_length_obj.nil?
@@ -1011,6 +1234,7 @@ module Pdfbox::Pdfparser
 
     # Parse file object at given offset
     # Similar to Apache PDFBox COSParser.parseFileObject
+    # ameba:disable Metrics/CyclomaticComplexity
     private def parse_file_object(obj_offset : Int64, key : Cos::ObjectKey) : Cos::Base?
       # jump to the object start
       seek(obj_offset)
@@ -1039,8 +1263,30 @@ module Pdfbox::Pdfparser
         unless parsed_object.is_a?(Pdfbox::Cos::Dictionary)
           raise ::IO::Error.new("Expected dictionary for stream at offset #{obj_offset}")
         end
+        source.rewind(end_object_key.bytesize)
         parsed_object = parse_cos_stream(parsed_object.as(Pdfbox::Cos::Dictionary))
-      elsif end_object_key != ENDOBJ_STRING
+
+        if security_handler = @security_handler
+          security_handler.decrypt_stream(parsed_object.as(Pdfbox::Cos::Stream), key.number, key.generation)
+        end
+        skip_spaces
+        end_object_key = read_line
+
+        # we have case with a second 'endstream' before endobj
+        if !end_object_key.starts_with?(ENDOBJ_STRING) && end_object_key.starts_with?(ENDSTREAM_STRING)
+          end_object_key = end_object_key[9..-1].strip
+          if end_object_key.empty?
+            # no other characters in extra endstream line
+            # read next line
+            end_object_key = read_line
+          end
+        end
+      elsif security_handler = @security_handler
+        parsed_object = security_handler.decrypt(parsed_object, key.number, key.generation)
+        parsed_object.try(&.key=(key))
+      end
+
+      unless end_object_key.starts_with?(ENDOBJ_STRING)
         if lenient?
           Log.warn { "Object (#{key.number}:#{key.generation}) at offset #{obj_offset} does not end with 'endobj' but with '#{end_object_key}'" }
         else

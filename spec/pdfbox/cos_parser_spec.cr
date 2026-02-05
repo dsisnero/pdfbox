@@ -54,3 +54,26 @@ describe Pdfbox::Pdfparser::COSParser do
     end
   end
 end
+
+class SpecCOSParser < Pdfbox::Pdfparser::COSParser
+  def parse_stream_for_spec(dict : Pdfbox::Cos::Dictionary) : Pdfbox::Cos::Stream
+    parse_cos_stream(dict)
+  end
+end
+
+describe Pdfbox::Pdfparser::COSParser do
+  describe "#parse_cos_stream" do
+    it "reads stream keyword and data" do
+      bytes = Bytes['s'.ord, 't'.ord, 'r'.ord, 'e'.ord, 'a'.ord, 'm'.ord, '\n'.ord,
+        'a'.ord, 'b'.ord, 'c'.ord, '\n'.ord,
+        'e'.ord, 'n'.ord, 'd'.ord, 's'.ord, 't'.ord, 'r'.ord, 'e'.ord, 'a'.ord, 'm'.ord]
+      source = Pdfbox::IO::MemoryRandomAccessRead.new(bytes)
+      parser = SpecCOSParser.new(source)
+      dict = Pdfbox::Cos::Dictionary.new
+      dict[Pdfbox::Cos::Name.new("Length")] = Pdfbox::Cos::Integer.new(3_i64)
+
+      stream = parser.parse_stream_for_spec(dict)
+      stream.data.should eq(Bytes['a'.ord, 'b'.ord, 'c'.ord])
+    end
+  end
+end

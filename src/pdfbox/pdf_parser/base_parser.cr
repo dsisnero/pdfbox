@@ -565,7 +565,9 @@ module Pdfbox::Pdfparser
 
       loop do
         c = source.read
-        break unless c
+        if c.nil?
+          raise SyntaxError.new("Missing closing bracket for hex string. Reached EOS.")
+        end
 
         if hex_digit?(c)
           hex_digits += c.chr
@@ -575,35 +577,32 @@ module Pdfbox::Pdfparser
           # skip whitespace
           next
         else
-          # invalid character - discard incomplete hex pair
-          # Keep only complete pairs before the invalid character
-          if hex_digits.size > 0
-            # Discard last digit if odd, last two digits if even
-            if hex_digits.size.even?
-              hex_digits = hex_digits[0...-2]
-            else
-              hex_digits = hex_digits[0...-1]
-            end
+          # invalid character - discard last hex digit if odd
+          if (hex_digits.size % 2) != 0
+            hex_digits = hex_digits[0...-1]
           end
-          # read until closing bracket or EOF
-          while c && c.chr != '>'
+          # read until closing bracket
+          loop do
             c = source.read
+            break if c.nil? || c.chr == '>'
           end
+          raise SyntaxError.new("Missing closing bracket for hex string. Reached EOS.") if c.nil?
           break
         end
       end
 
       # Convert hex string to actual string
+      hex_str = hex_digits
       result = String::Builder.new
       i = 0
-      while i + 1 < hex_digits.size
-        byte = hex_digits[i, 2].to_i(16)
+      while i + 1 < hex_str.size
+        byte = hex_str[i, 2].to_i(16)
         result << byte.chr
         i += 2
       end
       # Handle leftover single hex digit (pad with '0' per spec)
-      if i < hex_digits.size
-        byte = (hex_digits[i].to_s + "0").to_i(16)
+      if i < hex_str.size
+        byte = (hex_str[i].to_s + "0").to_i(16)
         result << byte.chr
       end
 

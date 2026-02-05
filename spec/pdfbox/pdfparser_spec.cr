@@ -178,8 +178,17 @@ describe Pdfbox::Pdfparser::COSParser do
       obj.should be_a(Pdfbox::Cos::String)
       # According to PDF spec: invalid characters cause current hex pair to be discarded
       # and parser reads until '>'. So "48" = 'H' then invalid 'G', discard, then read until '>'
-      # Should return "H" or empty? Apache PDFBox returns "H"
-      obj.as(Pdfbox::Cos::String).value.should eq("H")
+      # Apache PDFBox returns "He"
+      obj.as(Pdfbox::Cos::String).value.should eq("He")
+    end
+
+    it "raises on unterminated hexadecimal string" do
+      bytes = Bytes['<'.ord, '4'.ord]
+      source = Pdfbox::IO::MemoryRandomAccessRead.new(bytes)
+      parser = Pdfbox::Pdfparser::COSParser.new(source)
+      expect_raises(Exception) do
+        parser.parse_object
+      end
     end
 
     it "parses empty hexadecimal string" do
