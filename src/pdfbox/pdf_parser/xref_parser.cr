@@ -77,7 +77,7 @@ module Pdfbox::Pdfparser
               @source.seek(stream_offset)
               @parser.skip_spaces
               begin
-                parse_xref_obj_stream(prev, false)
+                parse_xref_obj_stream(stream_offset, false)
                 # document.setHasHybridXRef() # TODO
               rescue ex
                 Log.error { "Failed to parse /XRefStm at offset #{stream_offset}: #{ex.message}" }
