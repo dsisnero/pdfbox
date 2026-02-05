@@ -254,7 +254,42 @@ describe Pdfbox::Pdfparser::COSParser do
   end
 end
 
+class DecryptionTestingParser < Pdfbox::Pdfparser::Parser
+  def mark_initial_parse_done : Nil
+    @initial_parse_done = true
+  end
+
+  def call_prepare_decryption : Nil
+    prepare_decryption
+  end
+end
+
 describe Pdfbox::Pdfparser::Parser do
+  describe "#prepare_decryption" do
+    it "is a no-op when the trailer has no Encrypt entry" do
+      source = Pdfbox::IO::MemoryRandomAccessRead.new(Bytes.empty)
+      parser = DecryptionTestingParser.new(source)
+      parser.mark_initial_parse_done
+      parser.trailer = Pdfbox::Cos::Dictionary.new
+      parser.call_prepare_decryption
+      parser.encryption.should be_nil
+    end
+
+    it "creates a PDEncryption when the trailer defines an Encrypt dictionary" do
+      source = Pdfbox::IO::MemoryRandomAccessRead.new(Bytes.empty)
+      parser = DecryptionTestingParser.new(source)
+      parser.mark_initial_parse_done
+      encrypt_dict = Pdfbox::Cos::Dictionary.new
+      encrypt_dict[Pdfbox::Cos::Name.new("Filter")] = Pdfbox::Cos::Name.new("Standard")
+      trailer = Pdfbox::Cos::Dictionary.new
+      parser.trailer = trailer
+      trailer[Pdfbox::Cos::Name.new("Encrypt")] = encrypt_dict
+      parser.call_prepare_decryption
+      parser.encryption.should_not be_nil
+      parser.access_permission.should_not be_nil
+    end
+  end
+
   it "test PDF parser missing catalog" do
     # PDFBOX-3060
     pdf_path = File.expand_path("../resources/pdfbox/pdparser/MissingCatalog.pdf", __DIR__)

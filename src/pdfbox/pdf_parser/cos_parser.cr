@@ -70,10 +70,10 @@ module Pdfbox::Pdfparser
     @xref_table : Hash(Pdfbox::Cos::ObjectKey, Int64)
     @decompressed_objects : Hash(Int64, Hash(Pdfbox::Cos::ObjectKey, Pdfbox::Cos::Base))
     @security_handler : Pdfbox::Pdmodel::Encryption::SecurityHandler?
-    @document : Nil
     @utf8_decoder : Nil
 
-    def initialize(source : Pdfbox::IO::RandomAccessRead, parser : Pdfbox::Pdfparser::Parser? = nil)
+    def initialize(source : Pdfbox::IO::RandomAccessRead, parser : Pdfbox::Pdfparser::Parser? = nil,
+                   password : String = "", key_store_input_stream : ::IO? = nil, key_alias : String? = nil)
       super(source)
       @parser = parser
       @recursion_depth = 0
@@ -81,9 +81,9 @@ module Pdfbox::Pdfparser
       @strm_buf = Bytes.new(STRMBUFLEN)
       @key_cache = Hash(Int64, Pdfbox::Cos::ObjectKey).new
       @access_permission = nil
-      @key_store_input_stream = nil
-      @password = ""
-      @key_alias = nil
+      @key_store_input_stream = key_store_input_stream
+      @password = password
+      @key_alias = key_alias
       @read_trail_bytes = DEFAULT_TRAIL_BYTECOUNT
       @initial_parse_done = false
       @trailer_was_rebuild = false
@@ -92,7 +92,6 @@ module Pdfbox::Pdfparser
       @xref_table = Hash(Pdfbox::Cos::ObjectKey, Int64).new
       @decompressed_objects = Hash(Int64, Hash(Pdfbox::Cos::ObjectKey, Pdfbox::Cos::Base)).new
       @security_handler = nil
-      @document = nil
       @utf8_decoder = nil
     end
 
@@ -306,7 +305,60 @@ module Pdfbox::Pdfparser
     end
 
     protected def prepare_decryption : Nil
-      # TODO: implement decryption support
+      return if @encryption
+      parser = self.as?(Parser)
+      return unless parser
+      trailer = parser.trailer
+      return unless trailer
+
+      encrypt_entry = trailer[Pdfbox::Cos::Name.new("Encrypt")]
+      encryption_dict =
+        case encrypt_entry
+        when Pdfbox::Cos::Dictionary
+          encrypt_entry
+        when Pdfbox::Cos::Object
+          resolved = parser.dereference_object(encrypt_entry.as(Pdfbox::Cos::Object))
+          resolved.try(&.as?(Pdfbox::Cos::Dictionary))
+        end
+      return unless encryption_dict
+
+      begin
+        @encryption = Pdfbox::Pdmodel::Encryption::PDEncryption.new(encryption_dict)
+        unless encryption = @encryption
+          return
+        end
+        handler = encryption.security_handler
+        return unless handler
+
+        material =
+          if key_store_input_stream = @key_store_input_stream
+            Pdfbox::Pdmodel::Encryption::PublicKeyDecryptionMaterial.new(key_store_input_stream, @key_alias, @password)
+          else
+            Pdfbox::Pdmodel::Encryption::StandardDecryptionMaterial.new(@password)
+          end
+
+        document_id = document_id_bytes(trailer[Pdfbox::Cos::Name.new("ID")])
+        handler.prepare_for_decryption(encryption, document_id, material)
+        @access_permission = handler.current_access_permission
+        @security_handler = handler
+      rescue ex
+        if lenient?
+          Log.warn { "prepare_decryption failed: #{ex.message}" }
+        else
+          raise ex
+        end
+      ensure
+        Pdfbox::IO::Utils.close_quietly(@key_store_input_stream)
+        @key_store_input_stream = nil
+      end
+    end
+
+    private def document_id_bytes(entry : Pdfbox::Cos::Base?) : Bytes?
+      return unless entry.is_a?(Pdfbox::Cos::Array)
+      first = entry[0]
+      if first.is_a?(Pdfbox::Cos::String)
+        first.bytes
+      end
     end
 
     protected def security_handler

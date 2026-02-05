@@ -42,6 +42,7 @@ module Pdfbox::Pdfparser
     getter object_pool
     getter decompressed_objects
     property lenient
+    property trailer
 
     private def xref_resolver : XrefTrailerResolver
       @xref_trailer_resolver ||= XrefTrailerResolver.new
