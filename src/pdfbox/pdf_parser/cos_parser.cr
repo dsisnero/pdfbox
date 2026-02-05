@@ -21,6 +21,7 @@ module Pdfbox::Pdfparser
     # Byte array constants for keyword matching (similar to Apache PDFBox)
     ENDSTREAM  = Bytes[0x65, 0x6E, 0x64, 0x73, 0x74, 0x72, 0x65, 0x61, 0x6D] # 'endstream'
     ENDOBJ     = Bytes[0x65, 0x6E, 0x64, 0x6F, 0x62, 0x6A]                   # 'endobj'
+    STARTXREF  = ['s', 't', 'a', 'r', 't', 'x', 'r', 'e', 'f']
     STRMBUFLEN = 2048
 
     # Header constants (similar to Apache PDFBox COSParser)
@@ -32,6 +33,9 @@ module Pdfbox::Pdfparser
     OBJ_MARKER                  = Bytes[0x6F, 0x62, 0x6A]             # 'obj'
     OBJECT_NUMBER_THRESHOLD     = 10_000_000_000_i64                  # 10 digits
     GENERATION_NUMBER_THRESHOLD =         65_535_i64                  # 5 digits
+    SYSPROP_EOFLOOKUPRANGE      = "org.apache.pdfbox.pdfparser.nonSequentialPDFParser.eofLookupRange"
+    DEFAULT_TRAIL_BYTECOUNT     = 2048
+    ALTERNATIVE_CHARSET         = "Windows-1252"
 
     # ASCII byte values for keyword matching
     private E = 0x65_u8
@@ -54,6 +58,20 @@ module Pdfbox::Pdfparser
     @strm_buf : Bytes
     @recursion_depth : Int32
     @key_cache : Hash(Int64, Pdfbox::Cos::ObjectKey)
+    @access_permission : Nil
+    @key_store_input_stream : ::IO?
+    @password : String
+    @key_alias : String?
+    @read_trail_bytes : Int32
+    @initial_parse_done : Bool
+    @trailer_was_rebuild : Bool
+    @brute_force_parser : BruteForceParser?
+    @encryption : Nil
+    @xref_table : Hash(Pdfbox::Cos::ObjectKey, Int64)
+    @decompressed_objects : Hash(Int64, Hash(Pdfbox::Cos::ObjectKey, Pdfbox::Cos::Base))
+    @security_handler : Nil
+    @document : Nil
+    @utf8_decoder : Nil
 
     def initialize(source : Pdfbox::IO::RandomAccessRead, parser : Pdfbox::Pdfparser::Parser? = nil)
       super(source)
@@ -62,6 +80,20 @@ module Pdfbox::Pdfparser
       @file_len = source.length
       @strm_buf = Bytes.new(STRMBUFLEN)
       @key_cache = Hash(Int64, Pdfbox::Cos::ObjectKey).new
+      @access_permission = nil
+      @key_store_input_stream = nil
+      @password = ""
+      @key_alias = nil
+      @read_trail_bytes = DEFAULT_TRAIL_BYTECOUNT
+      @initial_parse_done = false
+      @trailer_was_rebuild = false
+      @brute_force_parser = nil
+      @encryption = nil
+      @xref_table = Hash(Pdfbox::Cos::ObjectKey, Int64).new
+      @decompressed_objects = Hash(Int64, Hash(Pdfbox::Cos::ObjectKey, Pdfbox::Cos::Base)).new
+      @security_handler = nil
+      @document = nil
+      @utf8_decoder = nil
     end
 
     # Parse a COS object from the stream (similar to Apache PDFBox parseDirObject)
