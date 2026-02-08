@@ -498,31 +498,31 @@ describe Pdfbox::Pdfparser::Parser do
     # Should load without raising an exception
     doc = Pdfbox::Pdmodel::Document.load(pdf_path)
     doc.should_not be_nil
-    
+
     # From Apache PDFBox test:
     # assertEquals(1, doc.getNumberOfPages());
     # PDFont font = doc.getPage(0).getResources().getFont(COSName.getPDFName("F1"));
     # int length1 = font.getFontDescriptor().getFontFile2().getCOSObject().getInt(COSName.LENGTH1);
     # assertEquals(74191, length1);
-    
+
     doc.page_count.should eq(1)
-    
+
     page = doc.get_page(0)
     page.should_not be_nil
-    
+
     resources = page.not_nil!.resources
     resources.should_not be_nil
-    
+
     font = resources.not_nil!.get_font(Pdfbox::Cos::Name.new("F1"))
     font.should_not be_nil
-    
+
     font_descriptor = font.not_nil!.font_descriptor
     font_descriptor.should_not be_nil
-    
+
     length1 = font_descriptor.not_nil!.length1
     length1.should_not be_nil
     length1.should eq(74191)
-    
+
     doc.close if doc.responds_to?(:close)
   end
 
