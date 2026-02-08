@@ -8,6 +8,7 @@ require "./cos_parser"
 require "./pdf_object_stream_parser"
 require "./xref_trailer_resolver"
 require "./xref_parser"
+require "./pdf_xref_stream_parser"
 
 module Pdfbox::Pdfparser
   # Main PDF parser class
@@ -24,6 +25,7 @@ module Pdfbox::Pdfparser
     @xref_trailer_resolver : XrefTrailerResolver?
     @object_pool : Hash(Cos::ObjectKey, Cos::Object)
     @decompressed_objects : Hash(Int64, Hash(Cos::ObjectKey, Cos::Base))
+    @xref_entries : Array(Xref::XReferenceEntry)
     @brute_force_parser : BruteForceParser?
     @lenient : Bool
 
@@ -34,6 +36,7 @@ module Pdfbox::Pdfparser
       @xref_trailer_resolver = nil
       @object_pool = Hash(Cos::ObjectKey, Cos::Object).new
       @decompressed_objects = Hash(Int64, Hash(Cos::ObjectKey, Cos::Base)).new
+      @xref_entries = [] of Xref::XReferenceEntry
       @brute_force_parser = nil
       @lenient = true
     end
@@ -41,6 +44,7 @@ module Pdfbox::Pdfparser
     property xref
     getter object_pool
     getter decompressed_objects
+    getter xref_entries
     property lenient
     property trailer
 
@@ -336,11 +340,18 @@ module Pdfbox::Pdfparser
         Log.debug { "parse_xref_stream: first 20 bytes after decoding: #{data[0, Math.min(20, data.size)].hexstring}" }
       end
 
-      # Parse stream data according to /W array
+      # Parse stream data according to /W array using PDFXrefStreamParser
       Log.debug { "parse_xref_stream: starting to parse data, size=#{data.size}, w=#{w}, total_entry_width=#{w.sum}" }
-      xref = parse_xref_stream_entries(data, w, index_array, resolver)
 
-      Log.debug { "parse_xref_stream: parsed #{xref.size} entries" }
+      # Use PDFXrefStreamParser to parse the stream
+      xref_parser = PDFXrefStreamParser.new(stream, data)
+      entries = xref_parser.parse(resolver || xref_resolver)
+      @xref_entries.concat(entries)
+
+      # Build XRef from entries for backward compatibility
+      xref = build_xref_from_entries(entries)
+
+      Log.debug { "parse_xref_stream: parsed #{xref.size} entries, created #{entries.size} XReferenceEntry objects" }
       xref
     end
 
@@ -393,84 +404,20 @@ module Pdfbox::Pdfparser
       {index_array, size}
     end
 
-    # ameba:disable Metrics/CyclomaticComplexity
-    protected def parse_xref_stream_entries(data : Bytes, w : Array(Int32), index_array : Array(Int64), resolver : XrefTrailerResolver? = nil) : XRef
-      Log.debug { "parse_xref_stream_entries: START, data size=#{data.size}, w=#{w}, index_array=#{index_array}" }
+    # Build XRef from XReferenceEntry objects
+    protected def build_xref_from_entries(entries : Array(Xref::XReferenceEntry)) : XRef
       xref = XRef.new
-      total_entry_width = w.sum
-      if total_entry_width == 0
-        raise SyntaxError.new("Total width of entries is 0")
-      end
-
-      # Helper to parse big-endian integer from bytes
-      parse_be = ->(bytes : Bytes) : Int64 {
-        value = 0_i64
-        bytes.each do |byte|
-          value = (value << 8) | byte.to_i64
-        end
-        value
-      }
-
-      # Process index array pairs
-      if index_array.size % 2 != 0
-        raise SyntaxError.new("/Index array must have even number of elements, got #{index_array.size}")
-      end
-      total_entries = index_array.each_slice(2).sum { |pair| pair[1] }
-      if total_entries > MAX_XREF_ENTRIES
-        raise SyntaxError.new("XRef stream claims #{total_entries} entries, exceeding limit #{MAX_XREF_ENTRIES}")
-      end
-      entries_processed = 0_i64
-      index_array.each_slice(2) do |pair|
-        start, count = pair[0], pair[1]
-        Log.debug { "parse_xref_stream: processing index range start=#{start}, count=#{count}" }
-        count.to_i64.times do |i|
-          # Calculate position in data (cumulative across all slices)
-          pos = (entries_processed + i) * total_entry_width
-          if pos + total_entry_width > data.size
-            raise SyntaxError.new("Stream data truncated: need #{total_entry_width} bytes at position #{pos} but only #{data.size} available")
-          end
-
-          # Read fields
-          type = w[0] == 0 ? 1_i64 : parse_be.call(data[pos, w[0]])
-          field2 = w[1] == 0 ? 0_i64 : parse_be.call(data[pos + w[0], w[1]])
-          field3 = w[2] == 0 ? 0_i64 : parse_be.call(data[pos + w[0] + w[1], w[2]])
-
-          obj_num = start + i
-
-          if [1350_i64, 1352_i64, 1358_i64, 1360_i64].includes?(obj_num)
-            Log.debug { "parse_xref_stream: FOUND PageLabels object #{obj_num}, type=#{type}" }
-          end
-
-          case type
-          when 0
-            # Free entry
-            generation = field3
-            Log.debug { "parse_xref_stream: free entry for object #{obj_num}, gen=#{generation}" }
-            key = Cos::ObjectKey.new(obj_num, generation)
-            xref[key] = 0_i64
-            (resolver || xref_resolver).add_xref(key, 0_i64)
-            next
-          when 1
-            # In-use entry
-            offset = field2
-            generation = field3
-            Log.debug { "parse_xref_stream: in-use entry obj #{obj_num}: offset=#{offset}, gen=#{generation}" }
-            key = Cos::ObjectKey.new(obj_num, generation)
-            xref[key] = offset
-            (resolver || xref_resolver).add_xref(key, offset)
-          when 2
-            # Compressed entry
-            obj_stream_number = field2
-            index_in_stream = field3
-            Log.debug { "parse_xref_stream: compressed entry obj #{obj_num}: obj_stream=#{obj_stream_number}, index=#{index_in_stream}" }
-            # Compressed objects have generation 0, index_in_stream is stream_index
-            key = Cos::ObjectKey.new(obj_num, 0_i64, index_in_stream.to_i32)
-            # Store negative offset to indicate compressed entry (object stream number)
-            xref[key] = -obj_stream_number
-            (resolver || xref_resolver).add_xref(key, -obj_stream_number)
-          else
-            raise SyntaxError.new("Invalid entry type #{type} for object #{obj_num}")
-          end
+      entries.each do |entry|
+        case entry
+        when Xref::FreeXReference
+          # Free entries have offset 0
+          xref[entry.referenced_key] = 0_i64
+        when Xref::NormalXReference
+          # Normal entries store byte offset
+          xref[entry.referenced_key] = entry.byte_offset
+        when Xref::ObjectStreamXReference
+          # Compressed entries store negative parent object stream number
+          xref[entry.referenced_key] = -entry.parent_key.number
         end
       end
       xref
