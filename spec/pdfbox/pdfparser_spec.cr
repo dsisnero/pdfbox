@@ -316,6 +316,9 @@ describe Pdfbox::Pdfparser::Parser do
     info.as(Pdfbox::Pdmodel::DocumentInformation).keywords.should eq("")
     info.as(Pdfbox::Pdmodel::DocumentInformation).subject.should eq("")
     info.as(Pdfbox::Pdmodel::DocumentInformation).title.should eq("892B77DE781B4E71A1BEFB81A51A5ABC_20140326022424.docx")
+    # Check dates
+    info.as(Pdfbox::Pdmodel::DocumentInformation).creation_date.should eq("D:20140326142505-02'00'")
+    info.as(Pdfbox::Pdmodel::DocumentInformation).modification_date.should eq("D:20140326172513Z")
 
     doc.close if doc.responds_to?(:close)
   end
@@ -387,6 +390,9 @@ describe Pdfbox::Pdfparser::Parser do
     info.as(Pdfbox::Pdmodel::DocumentInformation).keywords.should eq("")
     info.as(Pdfbox::Pdmodel::DocumentInformation).subject.should eq("")
     info.as(Pdfbox::Pdmodel::DocumentInformation).title.should eq("C:REGULA~1IREGSFR_EQ_EM.PDF")
+    # Check date (non-standard format)
+    info.as(Pdfbox::Pdmodel::DocumentInformation).creation_date.should eq("Tuesday, July 28, 1998 4:00:09 PM")
+    info.as(Pdfbox::Pdmodel::DocumentInformation).modification_date.should be_nil
 
     doc.close if doc.responds_to?(:close)
   end
@@ -434,6 +440,9 @@ describe Pdfbox::Pdfparser::Parser do
     info.as(Pdfbox::Pdmodel::DocumentInformation).creator.should eq("QuarkXPress(tm) 6.52")
     info.as(Pdfbox::Pdmodel::DocumentInformation).producer.should eq("Acrobat Distiller 7.0 pour Macintosh")
     info.as(Pdfbox::Pdmodel::DocumentInformation).title.should eq("Fich sal Fabr corr1 (Page 6)")
+    # Check dates
+    info.as(Pdfbox::Pdmodel::DocumentInformation).creation_date.should eq("D:20070608151915+02'00'")
+    info.as(Pdfbox::Pdmodel::DocumentInformation).modification_date.should eq("D:20080604152122+02'00'")
 
     doc.close if doc.responds_to?(:close)
   end
@@ -509,16 +518,12 @@ describe Pdfbox::Pdfparser::Parser do
 
     page = doc.get_page(0)
     page.should_not be_nil
-
     resources = page.not_nil!.resources
     resources.should_not be_nil
-
     font = resources.not_nil!.get_font(Pdfbox::Cos::Name.new("F1"))
     font.should_not be_nil
-
     font_descriptor = font.not_nil!.font_descriptor
     font_descriptor.should_not be_nil
-
     length1 = font_descriptor.not_nil!.length1
     length1.should_not be_nil
     length1.should eq(74191)
