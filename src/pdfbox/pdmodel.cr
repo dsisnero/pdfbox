@@ -9,8 +9,9 @@ module Pdfbox::Pdmodel
     @version : String
     @pages : Array(Page)
     @catalog : DocumentCatalog?
+    @trailer : Cos::Dictionary?
 
-    def initialize(@cos_document : Cos::Dictionary? = nil, @version : String = "1.4")
+    def initialize(@cos_document : Cos::Dictionary? = nil, @version : String = "1.4", @trailer : Cos::Dictionary? = nil)
       @pages = [] of Page
       @catalog = @cos_document ? DocumentCatalog.new(@cos_document.as(Cos::Dictionary), self) : nil
     end
@@ -107,6 +108,30 @@ module Pdfbox::Pdmodel
     # Remove a page by index
     def remove_page(index : Int) : Bool
       !!@pages.delete_at?(index)
+    end
+
+    # Get the document trailer dictionary
+    def trailer : Cos::Dictionary?
+      @trailer
+    end
+
+    # Get document information (metadata)
+    def document_information : DocumentInformation?
+      trailer = @trailer
+      return unless trailer
+
+      # Get /Info dictionary from trailer
+      info_dict = trailer[Cos::Name.new("Info")]
+      return unless info_dict
+
+      # Handle indirect references
+      if info_dict.is_a?(Cos::Object)
+        info_dict = info_dict.object
+      end
+
+      return unless info_dict.is_a?(Cos::Dictionary)
+
+      DocumentInformation.new(info_dict)
     end
 
     # Close the document and release resources
@@ -735,6 +760,141 @@ module Pdfbox::Pdmodel
         @node[Cos::Name.new("Limits")] = limits
       end
       limits
+    end
+  end
+
+  # PDF document information (metadata)
+  # Corresponds to PDDocumentInformation in Apache PDFBox
+  class DocumentInformation
+    @info_dict : Cos::Dictionary
+
+    # Create a new empty document information object
+    def initialize
+      @info_dict = Cos::Dictionary.new
+    end
+
+    # Create from existing COS dictionary (typically from trailer)
+    def initialize(@info_dict : Cos::Dictionary)
+    end
+
+    # Get the underlying COS dictionary
+    def cos_object : Cos::Dictionary
+      @info_dict
+    end
+
+    # Get the title of the document
+    def title : String?
+      get_string(Cos::Name.new("Title"))
+    end
+
+    # Set the title of the document
+    def title=(title : String?) : Nil
+      set_string(Cos::Name.new("Title"), title)
+    end
+
+    # Get the author of the document
+    def author : String?
+      get_string(Cos::Name.new("Author"))
+    end
+
+    # Set the author of the document
+    def author=(author : String?) : Nil
+      set_string(Cos::Name.new("Author"), author)
+    end
+
+    # Get the subject of the document
+    def subject : String?
+      get_string(Cos::Name.new("Subject"))
+    end
+
+    # Set the subject of the document
+    def subject=(subject : String?) : Nil
+      set_string(Cos::Name.new("Subject"), subject)
+    end
+
+    # Get keywords for the document
+    def keywords : String?
+      get_string(Cos::Name.new("Keywords"))
+    end
+
+    # Set keywords for the document
+    def keywords=(keywords : String?) : Nil
+      set_string(Cos::Name.new("Keywords"), keywords)
+    end
+
+    # Get the creator of the document
+    def creator : String?
+      get_string(Cos::Name.new("Creator"))
+    end
+
+    # Set the creator of the document
+    def creator=(creator : String?) : Nil
+      set_string(Cos::Name.new("Creator"), creator)
+    end
+
+    # Get the producer of the document
+    def producer : String?
+      get_string(Cos::Name.new("Producer"))
+    end
+
+    # Set the producer of the document
+    def producer=(producer : String?) : Nil
+      set_string(Cos::Name.new("Producer"), producer)
+    end
+
+    # Get the creation date as a string (PDF date format)
+    def creation_date : String?
+      get_string(Cos::Name.new("CreationDate"))
+    end
+
+    # Set the creation date (PDF date format string)
+    def creation_date=(date : String?) : Nil
+      set_string(Cos::Name.new("CreationDate"), date)
+    end
+
+    # Get the modification date as a string (PDF date format)
+    def modification_date : String?
+      get_string(Cos::Name.new("ModDate"))
+    end
+
+    # Set the modification date (PDF date format string)
+    def modification_date=(date : String?) : Nil
+      set_string(Cos::Name.new("ModDate"), date)
+    end
+
+    # Get the trapped value
+    def trapped : String?
+      get_string(Cos::Name.new("Trapped"))
+    end
+
+    # Set the trapped value
+    def trapped=(trapped : String?) : Nil
+      set_string(Cos::Name.new("Trapped"), trapped)
+    end
+
+    private def get_string(name : Cos::Name) : String?
+      value = @info_dict[name]
+      return unless value
+
+      # Handle indirect references
+      if value.is_a?(Cos::Object)
+        value = value.object
+      end
+
+      if value.is_a?(Cos::String)
+        value.value
+      else
+        # Try to convert to string (some PDFs have incorrect types)
+        value.to_s
+      end
+    end
+
+    private def set_string(name : Cos::Name, value : String?) : Nil
+      if value
+        @info_dict[name] = Cos::String.new(value)
+      else
+        @info_dict.delete(name)
+      end
     end
   end
 end

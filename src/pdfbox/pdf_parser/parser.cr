@@ -1734,7 +1734,7 @@ module Pdfbox::Pdfparser
                      end
 
       Log.debug { "catalog_dict = #{catalog_dict.inspect}" }
-      doc = Pdfbox::Pdmodel::Document.new(catalog_dict, version)
+      doc = Pdfbox::Pdmodel::Document.new(catalog_dict, version, @trailer)
 
       # Add parsed pages to document
       pages.each do |page|

@@ -305,15 +305,17 @@ describe Pdfbox::Pdfparser::Parser do
     doc = Pdfbox::Pdmodel::Document.load(pdf_path)
     doc.should_not be_nil
 
-    # Check document information if available
-    # TODO: Add proper document information checks when implemented
+    # Check document information
+    info = doc.document_information
+    info.should_not be_nil
+
     # Expected values from Apache PDFBox test:
-    # Author: "Liquent Enterprise Services"
-    # Creator: "Liquent services server"
-    # Producer: "Amyuni PDF Converter version 4.0.0.9"
-    # Keywords: ""
-    # Subject: ""
-    # Title: "892B77DE781B4E71A1BEFB81A51A5ABC_20140326022424.docx"
+    info.as(Pdfbox::Pdmodel::DocumentInformation).author.should eq("Liquent Enterprise Services")
+    info.as(Pdfbox::Pdmodel::DocumentInformation).creator.should eq("Liquent services server")
+    info.as(Pdfbox::Pdmodel::DocumentInformation).producer.should eq("Amyuni PDF Converter version 4.0.0.9")
+    info.as(Pdfbox::Pdmodel::DocumentInformation).keywords.should eq("")
+    info.as(Pdfbox::Pdmodel::DocumentInformation).subject.should eq("")
+    info.as(Pdfbox::Pdmodel::DocumentInformation).title.should eq("892B77DE781B4E71A1BEFB81A51A5ABC_20140326022424.docx")
 
     doc.close if doc.responds_to?(:close)
   end
@@ -333,9 +335,9 @@ describe Pdfbox::Pdfparser::Parser do
     doc = Pdfbox::Pdmodel::Document.load(pdf_path)
     doc.should_not be_nil
 
-    # Check page count if available
-    # TODO: Add page count check when implemented
-    # Expected: 1 page (from Apache PDFBox test)
+    # Check page count
+    # Expected: 11 pages (from Apache PDFBox test)
+    doc.page_count.should eq(11)
 
     doc.close if doc.responds_to?(:close)
   end
@@ -374,15 +376,17 @@ describe Pdfbox::Pdfparser::Parser do
     doc = Pdfbox::Pdmodel::Document.load(pdf_path, lenient: true)
     doc.should_not be_nil
 
-    # Check document information if available
-    # TODO: Add proper document information checks when implemented
+    # Check document information
+    info = doc.document_information
+    info.should_not be_nil
+
     # Expected values from Apache PDFBox test:
-    # Author: "Unknown"
-    # Creator: "C:REGULA~1IREGSFR_EQ_EM.WP"
-    # Producer: "Acrobat PDFWriter 3.02 for Windows"
-    # Keywords: ""
-    # Subject: ""
-    # Title: "C:REGULA~1IREGSFR_EQ_EM.PDF"
+    info.as(Pdfbox::Pdmodel::DocumentInformation).author.should eq("Unknown")
+    info.as(Pdfbox::Pdmodel::DocumentInformation).creator.should eq("C:REGULA~1IREGSFR_EQ_EM.WP")
+    info.as(Pdfbox::Pdmodel::DocumentInformation).producer.should eq("Acrobat PDFWriter 3.02 for Windows")
+    info.as(Pdfbox::Pdmodel::DocumentInformation).keywords.should eq("")
+    info.as(Pdfbox::Pdmodel::DocumentInformation).subject.should eq("")
+    info.as(Pdfbox::Pdmodel::DocumentInformation).title.should eq("C:REGULA~1IREGSFR_EQ_EM.PDF")
 
     doc.close if doc.responds_to?(:close)
   end
@@ -402,8 +406,9 @@ describe Pdfbox::Pdfparser::Parser do
     pdf_path = File.expand_path("../resources/pdfbox/pdparser/PDFBOX-3951-FIHUZWDDL2VGPOE34N6YHWSIGSH5LVGZ.pdf", __DIR__)
     doc = Pdfbox::Pdmodel::Document.load(pdf_path)
     doc.should_not be_nil
-    # TODO: Add page count check when implemented
+    # Check page count
     # Expected: 143 pages
+    doc.page_count.should eq(143)
     doc.close if doc.responds_to?(:close)
   end
 
@@ -420,7 +425,16 @@ describe Pdfbox::Pdfparser::Parser do
     pdf_path = File.expand_path("../resources/pdfbox/pdparser/PDFBOX-3977-63NGFQRI44HQNPIPEJH5W2TBM6DJZWMI.pdf", __DIR__)
     doc = Pdfbox::Pdmodel::Document.load(pdf_path)
     doc.should_not be_nil
-    # TODO: Add document information checks when implemented
+
+    # Check document information
+    info = doc.document_information
+    info.should_not be_nil
+
+    # Expected values from Apache PDFBox test:
+    info.as(Pdfbox::Pdmodel::DocumentInformation).creator.should eq("QuarkXPress(tm) 6.52")
+    info.as(Pdfbox::Pdmodel::DocumentInformation).producer.should eq("Acrobat Distiller 7.0 pour Macintosh")
+    info.as(Pdfbox::Pdmodel::DocumentInformation).title.should eq("Fich sal Fabr corr1 (Page 6)")
+
     doc.close if doc.responds_to?(:close)
   end
 
@@ -463,8 +477,9 @@ describe Pdfbox::Pdfparser::Parser do
     pdf_path = File.expand_path("../resources/pdfbox/pdparser/PDFBOX-4490.pdf", __DIR__)
     doc = Pdfbox::Pdmodel::Document.load(pdf_path)
     doc.should_not be_nil
-    # TODO: Add page count check when implemented
+    # Check page count
     # Expected: 3 pages
+    doc.page_count.should eq(3)
     doc.close if doc.responds_to?(:close)
   end
 

@@ -225,6 +225,7 @@ module Pdfbox::Pdfparser
               out.write_byte('\\'.ord.to_u8)
             end
           when '('
+            out.write_byte(next_char.ord.to_u8)
           when '\\'
             out.write_byte(next_char.ord.to_u8)
           when ASCII_LF.chr
