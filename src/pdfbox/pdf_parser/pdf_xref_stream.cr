@@ -84,7 +84,7 @@ module Pdfbox::Pdfparser
     end
 
     # Set the size of the XRef stream
-    def set_size(stream_size : Int64) : Nil
+    def size=(stream_size : Int64) : Nil
       @size = stream_size
     end
 

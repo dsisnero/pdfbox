@@ -79,7 +79,7 @@ module Pdfbox::Pdfparser
     # @return Array of XReferenceEntry objects created during parsing
     def parse(resolver : XrefTrailerResolver) : Array(Xref::XReferenceEntry)
       curr_line = Bytes.new(@w[0] + @w[1] + @w[2])
-      object_numbers = @object_numbers.not_nil!
+      object_numbers = @object_numbers.as(ObjectNumbers)
       data_pos = 0
       total_entry_width = @w.sum
       entries = [] of Xref::XReferenceEntry
