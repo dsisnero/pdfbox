@@ -467,8 +467,18 @@ describe Pdfbox::Pdfparser::Parser do
     # Should load without raising an exception
     doc = Pdfbox::Pdmodel::Document.load(pdf_path)
     doc.should_not be_nil
-    # TODO: Add outline check when implemented
-    # Expected: First outline item title "Main Menu"
+
+    # Check document catalog and outline
+    catalog = doc.document_catalog
+    catalog.should_not be_nil
+
+    outline = catalog.as(Pdfbox::Pdmodel::DocumentCatalog).document_outline
+    outline.should_not be_nil
+
+    first_child = outline.as(Pdfbox::Pdmodel::DocumentOutline).first_child
+    first_child.should_not be_nil
+    first_child.as(Pdfbox::Pdmodel::OutlineItem).title.should eq("Main Menu")
+
     doc.close if doc.responds_to?(:close)
   end
 

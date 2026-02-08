@@ -308,6 +308,21 @@ module Pdfbox::Pdmodel
         0
       end
     end
+
+    # Get document outline (bookmarks)
+    def document_outline : DocumentOutline?
+      outlines_dict = @cos_dict[Cos::Name.new("Outlines")]
+      return unless outlines_dict
+
+      # Handle indirect references
+      if outlines_dict.is_a?(Cos::Object)
+        outlines_dict = outlines_dict.object
+      end
+
+      return unless outlines_dict.is_a?(Cos::Dictionary)
+
+      DocumentOutline.new(outlines_dict)
+    end
   end
 
   # Page label range class
@@ -760,6 +775,121 @@ module Pdfbox::Pdmodel
         @node[Cos::Name.new("Limits")] = limits
       end
       limits
+    end
+  end
+
+  # PDF document outline (bookmarks)
+  # Corresponds to PDDocumentOutline in Apache PDFBox
+  class DocumentOutline
+    Log = ::Log.for(self)
+
+    @cos_dict : Cos::Dictionary
+
+    def initialize(@cos_dict : Cos::Dictionary)
+    end
+
+    # Get the first child outline item
+    def first_child : OutlineItem?
+      first_dict = @cos_dict[Cos::Name.new("First")]
+      return unless first_dict
+
+      # Handle indirect references
+      if first_dict.is_a?(Cos::Object)
+        first_dict = first_dict.object
+      end
+
+      return unless first_dict.is_a?(Cos::Dictionary)
+
+      OutlineItem.new(first_dict)
+    end
+  end
+
+  # Individual outline item (bookmark)
+  # Corresponds to PDOutlineItem in Apache PDFBox
+  class OutlineItem
+    Log = ::Log.for(self)
+
+    @cos_dict : Cos::Dictionary
+
+    def initialize(@cos_dict : Cos::Dictionary)
+    end
+
+    # Get the title of this outline item
+    def title : String?
+      title_value = @cos_dict[Cos::Name.new("Title")]
+      return unless title_value
+
+      # Handle indirect references
+      if title_value.is_a?(Cos::Object)
+        title_value = title_value.object
+      end
+
+      if title_value.is_a?(Cos::String)
+        title_value.value
+      else
+        # Try to convert to string (some PDFs have incorrect types)
+        title_value.to_s
+      end
+    end
+
+    # Get the next sibling outline item
+    def next_sibling : OutlineItem?
+      next_dict = @cos_dict[Cos::Name.new("Next")]
+      return unless next_dict
+
+      # Handle indirect references
+      if next_dict.is_a?(Cos::Object)
+        next_dict = next_dict.object
+      end
+
+      return unless next_dict.is_a?(Cos::Dictionary)
+
+      OutlineItem.new(next_dict)
+    end
+
+    # Get the previous sibling outline item
+    def previous_sibling : OutlineItem?
+      prev_dict = @cos_dict[Cos::Name.new("Prev")]
+      return unless prev_dict
+
+      # Handle indirect references
+      if prev_dict.is_a?(Cos::Object)
+        prev_dict = prev_dict.object
+      end
+
+      return unless prev_dict.is_a?(Cos::Dictionary)
+
+      OutlineItem.new(prev_dict)
+    end
+
+    # Get the first child outline item
+    def first_child : OutlineItem?
+      first_dict = @cos_dict[Cos::Name.new("First")]
+      return unless first_dict
+
+      # Handle indirect references
+      if first_dict.is_a?(Cos::Object)
+        first_dict = first_dict.object
+      end
+
+      return unless first_dict.is_a?(Cos::Dictionary)
+
+      OutlineItem.new(first_dict)
+    end
+
+    # Get the last child outline item
+    def last_child : OutlineItem?
+      last_dict = @cos_dict[Cos::Name.new("Last")]
+      return unless last_dict
+
+      # Handle indirect references
+      if last_dict.is_a?(Cos::Object)
+        last_dict = last_dict.object
+      end
+
+      return unless last_dict.is_a?(Cos::Dictionary)
+
+      OutlineItem.new(last_dict)
     end
   end
 
