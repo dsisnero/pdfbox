@@ -184,10 +184,22 @@ module Pdfbox::Pdmodel
       degrees
     end
 
-    # Get page resources dictionary
-    def resources : Cos::Dictionary?
-      # TODO: Implement resources retrieval
-      nil
+    # Get page resources
+    def resources : Resources?
+      cos_page = @cos_page
+      return unless cos_page
+
+      resources_value = cos_page[Cos::Name.new("Resources")]
+      return unless resources_value
+
+      # Handle indirect references
+      if resources_value.is_a?(Cos::Object)
+        resources_value = resources_value.object
+      end
+
+      return unless resources_value.is_a?(Cos::Dictionary)
+
+      Resources.new(resources_value)
     end
 
     # Get page contents stream
@@ -1025,6 +1037,158 @@ module Pdfbox::Pdmodel
       else
         @info_dict.delete(name)
       end
+    end
+  end
+
+  # PDF font descriptor
+  # Corresponds to PDFontDescriptor in Apache PDFBox
+  class FontDescriptor
+    Log = ::Log.for(self)
+
+    @cos_dict : Cos::Dictionary
+
+    def initialize(@cos_dict : Cos::Dictionary)
+    end
+
+    # Get the underlying COS dictionary
+    def cos_object : Cos::Dictionary
+      @cos_dict
+    end
+
+    # Get FontFile2 entry (embedded TrueType font)
+    def font_file2 : Cos::Stream?
+      font_file2_value = @cos_dict[Cos::Name.new("FontFile2")]
+      return unless font_file2_value
+
+      # Handle indirect references
+      if font_file2_value.is_a?(Cos::Object)
+        font_file2_value = font_file2_value.object
+      end
+
+      font_file2_value.as?(Cos::Stream)
+    end
+
+    # Get Length1 value from FontFile2 stream
+    def length1 : Int32?
+      stream = font_file2
+      return unless stream
+
+      length1_value = stream[Cos::Name.new("Length1")]
+      return unless length1_value
+
+      # Handle indirect references
+      if length1_value.is_a?(Cos::Object)
+        length1_value = length1_value.object
+      end
+
+      case length1_value
+      when Cos::Integer
+        length1_value.value.to_i32
+      when Cos::String
+        length1_value.value.to_i32? rescue nil
+      when Cos::Float
+        length1_value.value.to_i32
+      end
+    end
+  end
+
+  # PDF font base class
+  # Corresponds to PDFont in Apache PDFBox
+  class Font
+    Log = ::Log.for(self)
+
+    @cos_dict : Cos::Dictionary
+
+    def initialize(@cos_dict : Cos::Dictionary)
+    end
+
+    # Get the underlying COS dictionary
+    def cos_object : Cos::Dictionary
+      @cos_dict
+    end
+
+    # Get font descriptor
+    def font_descriptor : FontDescriptor?
+      # Check for direct FontDescriptor entry
+      descriptor_value = @cos_dict[Cos::Name.new("FontDescriptor")]
+      if descriptor_value
+        # Handle indirect references
+        if descriptor_value.is_a?(Cos::Object)
+          descriptor_value = descriptor_value.object
+        end
+
+        return FontDescriptor.new(descriptor_value) if descriptor_value.is_a?(Cos::Dictionary)
+      end
+
+      # Handle Type 0 fonts (composite fonts) which have DescendantFonts
+      subtype_value = @cos_dict[Cos::Name.new("Subtype")]
+      if subtype_value.is_a?(Cos::Name) && subtype_value.value == "Type0"
+        descendant_fonts_value = @cos_dict[Cos::Name.new("DescendantFonts")]
+        return unless descendant_fonts_value
+
+        # Handle indirect references
+        if descendant_fonts_value.is_a?(Cos::Object)
+          descendant_fonts_value = descendant_fonts_value.object
+        end
+
+        return unless descendant_fonts_value.is_a?(Cos::Array)
+        return if descendant_fonts_value.size == 0
+
+        # Get first descendant font
+        first_descendant = descendant_fonts_value[0]
+        # Handle indirect references
+        if first_descendant.is_a?(Cos::Object)
+          first_descendant = first_descendant.object
+        end
+
+        return unless first_descendant.is_a?(Cos::Dictionary)
+
+        # Create a Font instance for the descendant and get its descriptor
+        descendant_font = Font.new(first_descendant)
+        return descendant_font.font_descriptor
+      end
+
+      nil
+    end
+  end
+
+  # Page resources
+  class Resources
+    Log = ::Log.for(self)
+
+    @cos_dict : Cos::Dictionary
+
+    def initialize(@cos_dict : Cos::Dictionary)
+    end
+
+    # Get the underlying COS dictionary
+    def cos_object : Cos::Dictionary
+      @cos_dict
+    end
+
+    # Get font by name
+    def get_font(name : Cos::Name) : Font?
+      fonts_dict = @cos_dict[Cos::Name.new("Font")]
+      return unless fonts_dict
+
+      # Handle indirect references
+      if fonts_dict.is_a?(Cos::Object)
+        fonts_dict = fonts_dict.object
+      end
+
+      return unless fonts_dict.is_a?(Cos::Dictionary)
+
+      font_dict = fonts_dict[name]
+      return unless font_dict
+
+      # Handle indirect references
+      if font_dict.is_a?(Cos::Object)
+        font_dict = font_dict.object
+      end
+
+      return unless font_dict.is_a?(Cos::Dictionary)
+
+      Font.new(font_dict)
     end
   end
 end
