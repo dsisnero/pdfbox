@@ -51,7 +51,19 @@ module Pdfbox::Pdmodel
 
     # Create a new empty PDF document
     def self.create : Document
-      Document.new
+      # Create a minimal catalog dictionary
+      catalog_dict = Cos::Dictionary.new
+      catalog_dict[Cos::Name.new("Type")] = Cos::Name.new("Catalog")
+
+      # Create pages dictionary
+      pages_dict = Cos::Dictionary.new
+      pages_dict[Cos::Name.new("Type")] = Cos::Name.new("Pages")
+      pages_dict[Cos::Name.new("Kids")] = Cos::Array.new
+      pages_dict[Cos::Name.new("Count")] = Cos::Integer.new(0)
+
+      catalog_dict[Cos::Name.new("Pages")] = pages_dict
+
+      Document.new(catalog_dict)
     end
 
     # Save the document to a file
@@ -294,6 +306,11 @@ module Pdfbox::Pdmodel
     def initialize(@cos_dict : Cos::Dictionary, @document : Document? = nil)
     end
 
+    # Get the underlying COS dictionary
+    def cos_object : Cos::Dictionary
+      @cos_dict
+    end
+
     # Get page labels
     def page_labels : PageLabels?
       Log.debug { "catalog dict entries:" }
@@ -349,6 +366,148 @@ module Pdfbox::Pdmodel
       return unless names_dict.is_a?(Cos::Dictionary)
 
       DocumentNameDictionary.new(names_dict, self)
+    end
+
+    # Get output intents
+    def output_intents : Array(OutputIntent)
+      output_intents_value = @cos_dict[Cos::Name.new("OutputIntents")]
+      return [] of OutputIntent unless output_intents_value
+
+      # Handle indirect references
+      if output_intents_value.is_a?(Cos::Object)
+        output_intents_value = output_intents_value.object
+      end
+
+      return [] of OutputIntent unless output_intents_value.is_a?(Cos::Array)
+
+      result = [] of OutputIntent
+      output_intents_value.items.each do |item|
+        dict = item
+        # Handle indirect references
+        if dict.is_a?(Cos::Object)
+          dict = dict.object
+        end
+
+        if dict.is_a?(Cos::Dictionary)
+          result << OutputIntent.new(dict)
+        end
+      end
+      result
+    end
+
+    # Add an output intent to the list
+    def add_output_intent(output_intent : OutputIntent) : Nil
+      output_intents_value = @cos_dict[Cos::Name.new("OutputIntents")]
+
+      if output_intents_value.nil? || !output_intents_value.is_a?(Cos::Array)
+        output_intents_value = Cos::Array.new
+        @cos_dict[Cos::Name.new("OutputIntents")] = output_intents_value
+      end
+
+      output_intents_value.as(Cos::Array).items << output_intent.cos_object
+    end
+
+    # Replace the list of output intents
+    def output_intents=(output_intents : Array(OutputIntent)) : Nil
+      if output_intents.empty?
+        @cos_dict.delete(Cos::Name.new("OutputIntents"))
+      else
+        array = Cos::Array.new
+        output_intents.each do |intent|
+          array.items << intent.cos_object
+        end
+        @cos_dict[Cos::Name.new("OutputIntents")] = array
+      end
+    end
+
+    # Get open action
+    def open_action
+      open_action_value = @cos_dict[Cos::Name.new("OpenAction")]
+      return unless open_action_value
+
+      # Handle indirect references
+      if open_action_value.is_a?(Cos::Object)
+        open_action_value = open_action_value.object
+      end
+
+      # Return nil for boolean values (e.g., false) as per PDF spec
+      return if open_action_value.is_a?(Cos::Boolean)
+
+      # TODO: Implement proper action/destination parsing
+      # For now, just return the raw value
+      open_action_value
+    end
+  end
+
+  # Output intent class for color reproduction characteristics
+  class OutputIntent
+    Log = ::Log.for(self)
+
+    @cos_dict : Cos::Dictionary
+
+    def initialize(@cos_dict : Cos::Dictionary)
+    end
+
+    # Create a new output intent with ICC profile
+    def self.create(document : Document, icc_profile_data : Bytes) : self
+      dict = Cos::Dictionary.new
+      dict[Cos::Name.new("Type")] = Cos::Name.new("OutputIntent")
+      dict[Cos::Name.new("S")] = Cos::Name.new("GTS_PDFA1")
+
+      # Create a stream for the ICC profile
+      stream = Cos::Stream.new(data: icc_profile_data)
+      dict[Cos::Name.new("DestOutputProfile")] = stream
+
+      new(dict)
+    end
+
+    # Get the underlying COS dictionary
+    def cos_object : Cos::Dictionary
+      @cos_dict
+    end
+
+    # Get info
+    def info : String?
+      value = @cos_dict[Cos::Name.new("Info")]
+      value.as?(Cos::String).try(&.value)
+    end
+
+    # Set info
+    def info=(info : String) : Nil
+      @cos_dict[Cos::Name.new("Info")] = Cos::String.new(info)
+    end
+
+    # Get output condition
+    def output_condition : String?
+      value = @cos_dict[Cos::Name.new("OutputCondition")]
+      value.as?(Cos::String).try(&.value)
+    end
+
+    # Set output condition
+    def output_condition=(output_condition : String) : Nil
+      @cos_dict[Cos::Name.new("OutputCondition")] = Cos::String.new(output_condition)
+    end
+
+    # Get output condition identifier
+    def output_condition_identifier : String?
+      value = @cos_dict[Cos::Name.new("OutputConditionIdentifier")]
+      value.as?(Cos::String).try(&.value)
+    end
+
+    # Set output condition identifier
+    def output_condition_identifier=(output_condition_identifier : String) : Nil
+      @cos_dict[Cos::Name.new("OutputConditionIdentifier")] = Cos::String.new(output_condition_identifier)
+    end
+
+    # Get registry name
+    def registry_name : String?
+      value = @cos_dict[Cos::Name.new("RegistryName")]
+      value.as?(Cos::String).try(&.value)
+    end
+
+    # Set registry name
+    def registry_name=(registry_name : String) : Nil
+      @cos_dict[Cos::Name.new("RegistryName")] = Cos::String.new(registry_name)
     end
   end
 
