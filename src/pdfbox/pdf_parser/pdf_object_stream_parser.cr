@@ -102,11 +102,20 @@ module Pdfbox::Pdfparser
         end
         index = 0
         object_numbers.each do |offset, obj_number|
-          object_key = get_object_key(obj_number, 0_i64)
+          # Try to find key with matching stream index from xref
+          object_key = nil
+          if parser = @parser
+            if xref = parser.xref
+              object_key = xref.find_key(obj_number, index)
+            end
+          end
+          object_key ||= get_object_key(obj_number, 0_i64)
           # skip object if the index doesn't match
-          if index_needed && object_key.stream_index > -1 && object_key.stream_index != index
-            index += 1
-            next
+          if index_needed
+            if object_key.stream_index == -1 || object_key.stream_index != index
+              index += 1
+              next
+            end
           end
           final_position = @first_object + offset
           current_position = source.position

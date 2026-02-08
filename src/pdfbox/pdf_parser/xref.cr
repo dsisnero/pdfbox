@@ -108,6 +108,14 @@ module Pdfbox::Pdfparser
       self[key]
     end
 
+    # Find key by object number and stream index
+    def find_key(obj_num : Int64, stream_index : Int32) : Cos::ObjectKey?
+      @key_to_offset.each_key do |key|
+        return key if key.number == obj_num && key.stream_index == stream_index
+      end
+      nil
+    end
+
     # Set offset by object key (used by parser)
     def []=(key : Cos::ObjectKey, offset : Int64) : Int64
       Log.debug { "XRef[#{key}] = #{offset}" }

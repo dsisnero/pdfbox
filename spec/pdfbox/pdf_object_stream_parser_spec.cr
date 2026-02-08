@@ -85,8 +85,8 @@ describe Pdfbox::Pdfparser::PDFObjectStreamParser do
       object_stream_parser = Pdfbox::Pdfparser::PDFObjectStreamParser.new(stream, parser)
       all_objects = object_stream_parser.parse_all_objects
       all_objects.size.should eq(2)
-      all_objects[Pdfbox::Cos::ObjectKey.new(6, 0)].should eq(Pdfbox::Cos::Boolean::TRUE)
-      all_objects[Pdfbox::Cos::ObjectKey.new(4, 0)].should eq(Pdfbox::Cos::Boolean::TRUE)
+      all_objects[Pdfbox::Cos::ObjectKey.new(6, 0, 0)].should eq(Pdfbox::Cos::Boolean::TRUE)
+      all_objects[Pdfbox::Cos::ObjectKey.new(4, 0, 2)].should eq(Pdfbox::Cos::Boolean::TRUE)
 
       # Now test with stream_index 1 for object 4 (should get false)
       xref = Pdfbox::Pdfparser::XRef.new
@@ -97,8 +97,8 @@ describe Pdfbox::Pdfparser::PDFObjectStreamParser do
       object_stream_parser = Pdfbox::Pdfparser::PDFObjectStreamParser.new(stream, parser)
       all_objects = object_stream_parser.parse_all_objects
       all_objects.size.should eq(2)
-      all_objects[Pdfbox::Cos::ObjectKey.new(6, 0)].should eq(Pdfbox::Cos::Boolean::TRUE)
-      all_objects[Pdfbox::Cos::ObjectKey.new(4, 0)].should eq(Pdfbox::Cos::Boolean::FALSE)
+      all_objects[Pdfbox::Cos::ObjectKey.new(6, 0, 0)].should eq(Pdfbox::Cos::Boolean::TRUE)
+      all_objects[Pdfbox::Cos::ObjectKey.new(4, 0, 1)].should eq(Pdfbox::Cos::Boolean::FALSE)
     end
 
     it "skips malformed index when object numbers are unique" do

@@ -40,10 +40,10 @@ module Pdfbox::Cos
     end
 
     def ==(other : self) : Bool
-      @number_and_generation == other.@number_and_generation
+      @number_and_generation == other.@number_and_generation && @stream_index == other.@stream_index
     end
 
-    def_hash @number_and_generation
+    def_hash @number_and_generation, @stream_index
 
     def to_s(io : IO) : Nil
       io << number << " " << generation << " R"

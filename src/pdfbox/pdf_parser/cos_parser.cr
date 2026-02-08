@@ -57,7 +57,7 @@ module Pdfbox::Pdfparser
     @file_len : Int64
     @strm_buf : Bytes
     @recursion_depth : Int32
-    @key_cache : Hash(Int64, Pdfbox::Cos::ObjectKey)
+    @key_cache : Hash(Tuple(Int64, Int32), Pdfbox::Cos::ObjectKey)
     @access_permission : Pdfbox::Pdmodel::Encryption::AccessPermission?
     @key_store_input_stream : ::IO?
     @password : String
@@ -79,7 +79,7 @@ module Pdfbox::Pdfparser
       @recursion_depth = 0
       @file_len = source.length
       @strm_buf = Bytes.new(STRMBUFLEN)
-      @key_cache = Hash(Int64, Pdfbox::Cos::ObjectKey).new
+      @key_cache = Hash(Tuple(Int64, Int32), Pdfbox::Cos::ObjectKey).new
       @access_permission = nil
       @key_store_input_stream = key_store_input_stream
       @password = password
@@ -896,28 +896,29 @@ module Pdfbox::Pdfparser
       end
     end
 
-    # Get object key for given number and generation
-    protected def get_object_key(num : Int64, gen : Int64) : Pdfbox::Cos::ObjectKey
+    # Get object key for given number and generation and optional stream index
+    protected def get_object_key(num : Int64, gen : Int64, stream_index : Int32 = -1) : Pdfbox::Cos::ObjectKey
       parser = @parser
-      return Pdfbox::Cos::ObjectKey.new(num, gen) if parser.nil?
+      return Pdfbox::Cos::ObjectKey.new(num, gen, stream_index) if parser.nil?
 
       xref = parser.xref
-      return Pdfbox::Cos::ObjectKey.new(num, gen) if xref.nil?
+      return Pdfbox::Cos::ObjectKey.new(num, gen, stream_index) if xref.nil?
 
       # use a cache to get the COSObjectKey as iterating over the xref-table-map gets slow for big pdfs
       # in the long run we have to overhaul the object pool or even better remove it
       if xref.size > @key_cache.size
         xref.entries.each_key do |key|
-          internal_hash = key.internal_hash
-          @key_cache[internal_hash] = key unless @key_cache.has_key?(internal_hash)
+          cache_key = {key.internal_hash, key.stream_index}
+          @key_cache[cache_key] = key unless @key_cache.has_key?(cache_key)
         end
       end
 
       internal_hash = Pdfbox::Cos::ObjectKey.compute_internal_hash(num, gen)
-      found_key = @key_cache[internal_hash]?
+      cache_key = {internal_hash, stream_index}
+      found_key = @key_cache[cache_key]?
       return found_key if found_key
 
-      Pdfbox::Cos::ObjectKey.new(num, gen)
+      Pdfbox::Cos::ObjectKey.new(num, gen, stream_index)
     end
 
     # Get object from pool by object key
