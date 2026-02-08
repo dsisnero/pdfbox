@@ -9,6 +9,7 @@ require "./pdf_object_stream_parser"
 require "./xref_trailer_resolver"
 require "./xref_parser"
 require "./pdf_xref_stream_parser"
+require "./xref"
 
 module Pdfbox::Pdfparser
   # Main PDF parser class
@@ -26,6 +27,7 @@ module Pdfbox::Pdfparser
     @object_pool : Hash(Cos::ObjectKey, Cos::Object)
     @decompressed_objects : Hash(Int64, Hash(Cos::ObjectKey, Cos::Base))
     @xref_entries : Array(Xref::XReferenceEntry)
+    @xref_object_numbers : Set(Int64)
     @brute_force_parser : BruteForceParser?
     @lenient : Bool
 
@@ -37,6 +39,7 @@ module Pdfbox::Pdfparser
       @object_pool = Hash(Cos::ObjectKey, Cos::Object).new
       @decompressed_objects = Hash(Int64, Hash(Cos::ObjectKey, Cos::Base)).new
       @xref_entries = [] of Xref::XReferenceEntry
+      @xref_object_numbers = Set(Int64).new
       @brute_force_parser = nil
       @lenient = true
     end
@@ -267,12 +270,16 @@ module Pdfbox::Pdfparser
                 key = Cos::ObjectKey.new(curr_obj_id + i, curr_gen_id.to_i64)
                 xref[key] = curr_offset
                 xref_resolver.add_xref(key, curr_offset)
+                # Create NormalXReference entry
+                add_xreference_entry(Xref::NormalXReference.new(curr_offset, key, nil))
               end
             elsif entry_parts[2] == "f"
               # Free entry: store offset 0
               key = Cos::ObjectKey.new(curr_obj_id + i, curr_gen_id.to_i64)
               xref[key] = 0
               xref_resolver.add_xref(key, 0_i64)
+              # Create FreeXReference entry (curr_offset is next free object number)
+              add_xreference_entry(Xref::FreeXReference.new(key, curr_offset))
             else
               raise SyntaxError.new("Invalid xref entry type: #{entry_line}")
             end
@@ -346,7 +353,7 @@ module Pdfbox::Pdfparser
       # Use PDFXrefStreamParser to parse the stream
       xref_parser = PDFXrefStreamParser.new(stream, data)
       entries = xref_parser.parse(resolver || xref_resolver)
-      @xref_entries.concat(entries)
+      entries.each { |entry| add_xreference_entry(entry) }
 
       # Build XRef from entries for backward compatibility
       xref = build_xref_from_entries(entries)
@@ -421,6 +428,13 @@ module Pdfbox::Pdfparser
         end
       end
       xref
+    end
+
+    private def add_xreference_entry(entry : Xref::XReferenceEntry) : Nil
+      obj_num = entry.referenced_key.number
+      return if @xref_object_numbers.includes?(obj_num)
+      @xref_object_numbers.add(obj_num)
+      @xref_entries << entry
     end
 
     # Find object header near given offset (max_distance bytes) matching key if provided

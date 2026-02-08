@@ -328,12 +328,12 @@ module Pdfbox::Pdfparser
             temp_offset = current_offset - 1
             @source.seek(temp_offset)
             peek_byte = @source.peek
-            return -1 unless peek_byte && digit?(peek_byte.chr)
+            return -1_i64 unless peek_byte && digit?(peek_byte.chr)
 
             temp_offset -= 1
             @source.seek(temp_offset)
             peek_byte2 = @source.peek
-            return -1 unless peek_byte2 && whitespace?(peek_byte2.chr)
+            return -1_i64 unless peek_byte2 && whitespace?(peek_byte2.chr)
 
             length = 0
             @source.seek(temp_offset -= 1)
@@ -350,7 +350,7 @@ module Pdfbox::Pdfparser
           end
         end
       end
-      -1
+      -1_i64
     end
 
     # Parse object key at given offset (where " obj" pattern starts).
@@ -754,7 +754,7 @@ module Pdfbox::Pdfparser
           end
         end
       end
-      -1
+      -1_i64
     end
 
     # Brute force search for all /XRef entries (streams).

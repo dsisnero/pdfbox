@@ -1,6 +1,7 @@
 # XrefParser - Parser to read the cross reference table of a PDF
 # Similar to Apache PDFBox XrefParser
 require "./xref_trailer_resolver"
+require "./pdf_xref_stream_parser"
 
 module Pdfbox::Pdfparser
   class XrefParser
@@ -189,8 +190,12 @@ module Pdfbox::Pdfparser
         Log.error { "Invalid object offset #{object_offset} when searching for a xref table/stream" }
         return 0_i64
       end
-      # TODO: implement brute force search
-      # For now, return 0 (not found)
+      # search for the offset of the given xref table/stream among those found by a brute force search.
+      new_offset = parser_as_parser.get_brute_force_parser.bf_search_for_xref(object_offset)
+      if new_offset > -1
+        Log.debug { "Fixed reference for xref table/stream #{object_offset} -> #{new_offset}" }
+        return new_offset
+      end
       Log.error { "Can't find the object xref table/stream at offset #{object_offset}" }
       0_i64
     end
@@ -387,8 +392,14 @@ module Pdfbox::Pdfparser
         # Parse the stream
         stream = @parser.parse_cos_stream(dict)
 
-        # Parse xref stream data
-        parse_xref_stream_data(dict, stream, obj_byte_offset)
+        # Parse xref stream data using PDFXrefStreamParser (like Java version)
+        # Get decoded stream data
+        parser_instance = parser_as_parser
+        decoded_data = parser_instance.decode_stream_data(stream)
+
+        # Create PDFXrefStreamParser and parse entries
+        xref_stream_parser = PDFXrefStreamParser.new(stream, decoded_data)
+        xref_stream_parser.parse(@xref_trailer_resolver)
 
         # Get prev value if present
         prev_entry = dict[Cos::Name.new("Prev")]
@@ -405,14 +416,6 @@ module Pdfbox::Pdfparser
       ensure
         @source.seek(saved_pos)
       end
-    end
-
-    # Parse xref stream data and add entries to resolver
-    private def parse_xref_stream_data(dict : Cos::Dictionary, stream : Cos::Stream, offset : Int64) : Nil
-      parser = parser_as_parser
-      # Use parser's parse_xref_stream with our resolver
-      # We ignore the returned XRef because entries are already added via resolver
-      parser.parse_xref_stream(offset, standalone: false, resolver: @xref_trailer_resolver)
     end
 
     # Check if the given object can be found at the given offset. Returns the provided object key if everything is ok.
