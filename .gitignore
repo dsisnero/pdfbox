@@ -11,3 +11,6 @@
 # Test/debug scripts
 test_*.cr
 test_*_release
+
+# Temporary files
+/temp/

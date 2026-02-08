@@ -58,4 +58,6 @@ quality: format lint-fix test
 clean:
 	@echo "Cleaning build artifacts..."
 	rm -rf .crystal lib/.crystal
+	@echo "Cleaning temporary files..."
+	rm -rf temp/*
 	@echo "Clean complete."

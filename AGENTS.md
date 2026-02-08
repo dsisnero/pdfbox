@@ -108,3 +108,16 @@ shards update          # Update dependencies
 - **ALWAYS use beads issues instead of todo lists**
 - **Create beads issues with proper tags and labels for all tasks**
 
+## Temporary Files
+
+- **Use ./temp directory for all temporary files** - Never use /tmp or system temp directories
+- **Makefile clean rule** - `make clean` automatically removes all files in ./temp/
+- **Git ignored** - ./temp/ is already in .gitignore
+- **Examples:** Use `./temp/embedded_block.txt` instead of `/tmp/embedded_block.txt`
+
+This ensures:
+1. Temporary files are project-scoped and don't pollute system temp
+2. Easy cleanup with `make clean`
+3. No accidental commits of temporary files
+4. Consistent location for all agents
+

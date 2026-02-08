@@ -335,6 +335,21 @@ module Pdfbox::Pdmodel
 
       DocumentOutline.new(outlines_dict)
     end
+
+    # Get document names dictionary
+    def names : DocumentNameDictionary?
+      names_dict = @cos_dict[Cos::Name.new("Names")]
+      return unless names_dict
+
+      # Handle indirect references
+      if names_dict.is_a?(Cos::Object)
+        names_dict = names_dict.object
+      end
+
+      return unless names_dict.is_a?(Cos::Dictionary)
+
+      DocumentNameDictionary.new(names_dict, self)
+    end
   end
 
   # Page label range class
@@ -601,6 +616,349 @@ module Pdfbox::Pdmodel
     end
   end
 
+  # Document names dictionary (corresponds to PDDocumentNameDictionary in Apache PDFBox)
+  class DocumentNameDictionary
+    Log = ::Log.for(self)
+
+    @names_dict : Cos::Dictionary
+    @catalog : DocumentCatalog
+
+    def initialize(@names_dict : Cos::Dictionary, @catalog : DocumentCatalog)
+    end
+
+    # Get the underlying COS dictionary
+    def cos_object : Cos::Dictionary
+      @names_dict
+    end
+
+    # Get embedded files name tree
+    def embedded_files : NameTreeNode(ComplexFileSpecification)?
+      embedded_files_value = @names_dict[Cos::Name.new("EmbeddedFiles")]
+      return unless embedded_files_value
+
+      # Handle indirect references
+      if embedded_files_value.is_a?(Cos::Object)
+        embedded_files_value = embedded_files_value.object
+      end
+
+      return unless embedded_files_value.is_a?(Cos::Dictionary)
+
+      # Create converter from COS dictionary to ComplexFileSpecification
+      converter = ->(cos : Cos::Base) {
+        Log.debug { "embedded_files converter: received #{cos.class}" }
+        # cos could be Cos::Object (reference), Cos::Dictionary, or Cos::Null
+        dict_to_use = cos
+        if dict_to_use.is_a?(Cos::Object)
+          obj = dict_to_use.object
+          Log.debug { "embedded_files converter: object points to #{obj.class}" }
+          dict_to_use = obj if obj.is_a?(Cos::Dictionary)
+        end
+
+        # Handle null by creating empty dictionary (PDF may have null entries)
+        if dict_to_use.is_a?(Cos::Null)
+          Log.debug { "embedded_files converter: creating empty dictionary for null entry" }
+          dict_to_use = Cos::Dictionary.new
+        end
+
+        unless dict_to_use.is_a?(Cos::Dictionary)
+          Log.error { "embedded_files converter: expected Cos::Dictionary for ComplexFileSpecification, got #{dict_to_use.class}" }
+          raise Pdfbox::PDFError.new("Expected dictionary for ComplexFileSpecification, got #{dict_to_use.class}")
+        end
+
+        ComplexFileSpecification.new(dict_to_use)
+      }
+      NameTreeNode(ComplexFileSpecification).new(converter, embedded_files_value)
+    end
+  end
+
+  # Name tree node for string keys (corresponds to PDNameTreeNode in Apache PDFBox)
+  class NameTreeNode(T)
+    @node : Cos::Dictionary
+    @converter : Proc(Cos::Base, T)
+
+    # Constructor with converter proc
+    def initialize(@converter : Proc(Cos::Base, T), @node : Cos::Dictionary = Cos::Dictionary.new)
+    end
+
+    # Constructor from existing dictionary
+    def self.new(dict : Cos::Dictionary, &block : Cos::Base -> T) : self
+      new(block, dict)
+    end
+
+    # Get the underlying COS dictionary
+    def cos_object : Cos::Dictionary
+      @node
+    end
+
+    # Return the children of this node
+    def kids : Array(NameTreeNode(T))?
+      kids_array = @node[Cos::Name.new("Kids")]
+      return unless kids_array.is_a?(Cos::Array)
+
+      result = [] of NameTreeNode(T)
+      kids_array.items.each do |item|
+        dict = item
+        # Handle indirect references
+        if dict.is_a?(Cos::Object)
+          obj = dict.object
+          dict = obj if obj.is_a?(Cos::Dictionary)
+        end
+
+        if dict.is_a?(Cos::Dictionary)
+          result << NameTreeNode(T).new(dict) { |cos| @converter.call(cos) }
+        end
+      end
+      result
+    end
+
+    # Get names map from this node
+    def names : Hash(String, T)?
+      names_array = @node[Cos::Name.new("Names")]
+      return unless names_array.is_a?(Cos::Array)
+
+      size = names_array.size
+      return unless size % 2 == 0
+
+      result = {} of String => T
+      i = 0
+      while i < size
+        key_item = names_array[i]
+        value_item = names_array[i + 1]
+        Log.debug { "NameTreeNode.names: key_item=#{key_item.class}, value_item=#{value_item.class}" }
+
+        if key_item.is_a?(Cos::String)
+          key = key_item.value
+          # Convert value using converter (converter handles null)
+          value = @converter.call(value_item)
+          result[key] = value
+        elsif key_item.is_a?(Cos::Name)
+          # Names in name trees can be either strings or names
+          key = key_item.value
+          # Convert value using converter (converter handles null)
+          value = @converter.call(value_item)
+          result[key] = value
+        end
+        i += 2
+      end
+
+      Log.debug { "NameTreeNode.names: returning #{result.size} entries" }
+      result
+    end
+
+    # Get value for a given name
+    def get_value(name : String) : T?
+      # Check local names first
+      local_names = names
+      if local_names && local_names.has_key?(name)
+        return local_names[name]
+      end
+
+      # Check kids recursively
+      kids_list = kids
+      if kids_list
+        kids_list.each do |child|
+          # Name trees don't have limits like number trees
+          # Need to search all kids
+          if value = child.get_value(name)
+            return value
+          end
+        end
+      end
+
+      nil
+    end
+  end
+
+  # Alias for embedded files name tree node
+  alias EmbeddedFilesNameTreeNode = NameTreeNode(ComplexFileSpecification)
+
+  # Complex file specification (corresponds to PDComplexFileSpecification in Apache PDFBox)
+  class ComplexFileSpecification
+    Log = ::Log.for(self)
+
+    @cos_dict : Cos::Dictionary
+
+    def initialize(@cos_dict : Cos::Dictionary)
+      Log.debug { "ComplexFileSpecification: dict keys = #{@cos_dict.entries.keys.map(&.value)}" }
+    end
+
+    # Get the underlying COS dictionary
+    def cos_object : Cos::Dictionary
+      @cos_dict
+    end
+
+    # Get embedded file for general platform
+    def embedded_file : EmbeddedFile?
+      ef_dict = @cos_dict[Cos::Name.new("EF")]
+      return unless ef_dict
+
+      # Handle indirect references
+      if ef_dict.is_a?(Cos::Object)
+        ef_dict = ef_dict.object
+      end
+
+      return unless ef_dict.is_a?(Cos::Dictionary)
+
+      embedded_file_value = ef_dict[Cos::Name.new("F")]
+      return unless embedded_file_value
+
+      # Handle indirect references
+      if embedded_file_value.is_a?(Cos::Object)
+        embedded_file_value = embedded_file_value.object
+      end
+
+      return unless embedded_file_value.is_a?(Cos::Dictionary)
+
+      EmbeddedFile.new(embedded_file_value)
+    end
+
+    # Get embedded file for Mac platform
+    def embedded_file_mac : EmbeddedFile?
+      ef_dict = @cos_dict[Cos::Name.new("EF")]
+      return unless ef_dict
+
+      # Handle indirect references
+      if ef_dict.is_a?(Cos::Object)
+        ef_dict = ef_dict.object
+      end
+
+      return unless ef_dict.is_a?(Cos::Dictionary)
+
+      embedded_file_value = ef_dict[Cos::Name.new("Mac")]
+      return unless embedded_file_value
+
+      # Handle indirect references
+      if embedded_file_value.is_a?(Cos::Object)
+        embedded_file_value = embedded_file_value.object
+      end
+
+      return unless embedded_file_value.is_a?(Cos::Dictionary)
+
+      EmbeddedFile.new(embedded_file_value)
+    end
+
+    # Get embedded file for DOS platform
+    def embedded_file_dos : EmbeddedFile?
+      ef_dict = @cos_dict[Cos::Name.new("EF")]
+      return unless ef_dict
+
+      # Handle indirect references
+      if ef_dict.is_a?(Cos::Object)
+        ef_dict = ef_dict.object
+      end
+
+      return unless ef_dict.is_a?(Cos::Dictionary)
+
+      embedded_file_value = ef_dict[Cos::Name.new("DOS")]
+      return unless embedded_file_value
+
+      # Handle indirect references
+      if embedded_file_value.is_a?(Cos::Object)
+        embedded_file_value = embedded_file_value.object
+      end
+
+      return unless embedded_file_value.is_a?(Cos::Dictionary)
+
+      EmbeddedFile.new(embedded_file_value)
+    end
+
+    # Get embedded file for Unix platform
+    def embedded_file_unix : EmbeddedFile?
+      ef_dict = @cos_dict[Cos::Name.new("EF")]
+      return unless ef_dict
+
+      # Handle indirect references
+      if ef_dict.is_a?(Cos::Object)
+        ef_dict = ef_dict.object
+      end
+
+      return unless ef_dict.is_a?(Cos::Dictionary)
+
+      embedded_file_value = ef_dict[Cos::Name.new("Unix")]
+      return unless embedded_file_value
+
+      # Handle indirect references
+      if embedded_file_value.is_a?(Cos::Object)
+        embedded_file_value = embedded_file_value.object
+      end
+
+      return unless embedded_file_value.is_a?(Cos::Dictionary)
+
+      EmbeddedFile.new(embedded_file_value)
+    end
+
+    # Get file name
+    def file : String?
+      file_value = @cos_dict[Cos::Name.new("UF")] || @cos_dict[Cos::Name.new("F")]
+      return unless file_value
+
+      # Handle indirect references
+      if file_value.is_a?(Cos::Object)
+        file_value = file_value.object
+      end
+
+      if file_value.is_a?(Cos::String)
+        file_value.value
+      end
+    end
+  end
+
+  # Embedded file (corresponds to PDEmbeddedFile in Apache PDFBox)
+  class EmbeddedFile
+    Log = ::Log.for(self)
+
+    @cos_dict : Cos::Dictionary
+
+    def initialize(@cos_dict : Cos::Dictionary)
+    end
+
+    # Get the underlying COS dictionary
+    def cos_object : Cos::Dictionary
+      @cos_dict
+    end
+
+    # Get embedded file stream
+    def stream : Cos::Stream?
+      @cos_dict.as?(Cos::Stream)
+    end
+
+    # Get file length
+    def length : Int32?
+      length_value = @cos_dict[Cos::Name.new("Length")]
+      return unless length_value
+
+      # Handle indirect references
+      if length_value.is_a?(Cos::Object)
+        length_value = length_value.object
+      end
+
+      case length_value
+      when Cos::Integer
+        length_value.value.to_i32
+      when Cos::Float
+        length_value.value.to_i32
+      else
+        nil
+      end
+    end
+
+    # Create input stream for embedded file data
+    def create_input_stream : ::IO?
+      stream = self.stream
+      return unless stream
+
+      IO::Memory.new(stream.data)
+    end
+
+    # Get embedded file data as bytes
+    def to_byte_array : Bytes
+      stream = self.stream
+      return Bytes.empty unless stream
+
+      stream.data
+    end
+  end
+
   # Number tree node class
   # Corresponds to PDNumberTreeNode in Apache PDFBox
   # Represents a PDF Number tree. See the PDF Reference 1.7 section 7.9.7
@@ -629,8 +987,15 @@ module Pdfbox::Pdmodel
 
       result = [] of NumberTreeNode(T)
       kids_array.items.each do |item|
-        if item.is_a?(Cos::Dictionary)
-          result << NumberTreeNode(T).new(item) { |cos| @converter.call(cos) }
+        dict = item
+        # Handle indirect references
+        if dict.is_a?(Cos::Object)
+          obj = dict.object
+          dict = obj if obj.is_a?(Cos::Dictionary)
+        end
+
+        if dict.is_a?(Cos::Dictionary)
+          result << NumberTreeNode(T).new(dict) { |cos| @converter.call(cos) }
         end
       end
       result
