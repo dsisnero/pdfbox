@@ -7,4 +7,5 @@ module Fontbox
 end
 
 require "./fontbox/afm"
+require "./fontbox/cmap"
 require "./fontbox/util"
