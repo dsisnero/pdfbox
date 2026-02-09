@@ -5,6 +5,14 @@ module Fontbox
 
       def initialize(@lower_left_x : Float32, @lower_left_y : Float32, @upper_right_x : Float32, @upper_right_y : Float32)
       end
+
+      def width : Float32
+        @upper_right_x - @lower_left_x
+      end
+
+      def height : Float32
+        @upper_right_y - @lower_left_y
+      end
     end
   end
 end

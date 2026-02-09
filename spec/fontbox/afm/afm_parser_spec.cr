@@ -1,8 +1,6 @@
 require "../../spec_helper"
 
 describe Fontbox::AFM::Parser do
-
-
   describe "#parse" do
     it "raises an error when missing StartFontMetrics" do
       expect_raises(IO::Error) do

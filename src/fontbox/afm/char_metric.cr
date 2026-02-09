@@ -2,7 +2,7 @@ module Fontbox
   module AFM
     class CharMetric
       property character_code, name, wx, w0x, w1x, wy, w0y, w1y,
-                w, w0, w1, vv, bounding_box, ligatures
+        w, w0, w1, vv, bounding_box, ligatures
 
       def initialize
         @character_code = 0
