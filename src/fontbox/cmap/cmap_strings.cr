@@ -4,7 +4,7 @@ module Fontbox
       private ONE_BYTE_MAPPINGS = Array(String).new(256)
       private TWO_BYTE_MAPPINGS = Array(String).new(256 * 256)
 
-      private INDEX_VALUES = Array(Int32).new(256 * 256)
+      private INDEX_VALUES    = Array(Int32).new(256 * 256)
       private ONE_BYTE_VALUES = Array(Bytes).new(256)
       private TWO_BYTE_VALUES = Array(Bytes).new(256 * 256)
 
@@ -46,7 +46,7 @@ module Fontbox
       end
 
       def self.get_mapping(bytes : Bytes | Array(UInt8)) : String?
-        return nil if bytes.size > 2
+        return if bytes.size > 2
         if bytes.size == 1
           ONE_BYTE_MAPPINGS[to_int(bytes)]
         else
@@ -55,12 +55,12 @@ module Fontbox
       end
 
       def self.get_index_value(bytes : Bytes | Array(UInt8)) : Int32?
-        return nil if bytes.size > 2
+        return if bytes.size > 2
         INDEX_VALUES[to_int(bytes)]
       end
 
       def self.get_byte_value(bytes : Bytes | Array(UInt8)) : Bytes?
-        return nil if bytes.size > 2
+        return if bytes.size > 2
         if bytes.size == 1
           ONE_BYTE_VALUES[to_int(bytes)]
         else

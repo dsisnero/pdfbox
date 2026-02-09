@@ -64,7 +64,7 @@ describe Fontbox::CMap::CMapStrings do
     it "returns integer index for two-byte values" do
       Fontbox::CMap::CMapStrings.get_index_value([0_u8, 0_u8]).should eq 0
       Fontbox::CMap::CMapStrings.get_index_value([0xFF_u8, 0xFF_u8]).should eq 0xFFFF
-      Fontbox::CMap::CMapStrings.get_index_value([0x12_u8, 0x34_u8]).should eq (0x12 * 256 + 0x34)
+      Fontbox::CMap::CMapStrings.get_index_value([0x12_u8, 0x34_u8]).should eq(0x12 * 256 + 0x34)
     end
   end
 
