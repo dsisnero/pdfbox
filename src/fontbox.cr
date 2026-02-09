@@ -5,3 +5,6 @@
 module Fontbox
   # TODO: Implement fontbox functionality
 end
+
+require "./fontbox/afm"
+require "./fontbox/util"
