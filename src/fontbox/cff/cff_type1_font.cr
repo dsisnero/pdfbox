@@ -83,6 +83,11 @@ module Fontbox::CFF
       get_type2_char_string(gid, name)
     end
 
+    # Returns the path of the glyph for the given PostScript glyph name.
+    def get_path(name : String) : Fontbox::Util::Path
+      get_type1_char_string(name).path
+    end
+
     # Returns the Type 2 charstring for the given GID.
     def get_type2_char_string(gid : Int32) : Type2CharString
       get_type2_char_string(gid, "GID+" + gid.to_s)

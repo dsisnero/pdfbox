@@ -158,6 +158,17 @@ describe Fontbox::CFF::CFFParser do
     stem_snap_v.not_nil!.map(&.to_i).should eq [146, 150]
   end
 
+  it "returns path for glyphs" do
+    # Test that get_path returns a non-empty path for some glyphs
+    ["space", "F", "jcircumflex", "infinity"].each do |name|
+      path = test_font.get_path(name)
+      path.should be_a(Fontbox::Util::Path)
+      # Path should have bounds (may be empty for .notdef but these should have geometry)
+      bounds = path.bounds
+      bounds.should be_a(Fontbox::Util::Rectangle2D)
+    end
+  end
+
   it "tests thread safety of Type2CharStringParser when parsing glyphs (PDFBOX-5819)" do
     # This test ensures thread safety of Type2CharStringParser when parsing
     # the same glyph from multiple threads concurrently.

@@ -143,6 +143,11 @@ module Fontbox::CFF
       end
     end
 
+    # Returns the path of the glyph for the given CID.
+    def get_path(cid : Int32) : Fontbox::Util::Path
+      get_type2_char_string(cid).path
+    end
+
     # Returns the Type 2 charstring for the given CID.
     def get_type2_char_string(gid : Int32) : CIDKeyedType2CharString
       cid = gid
