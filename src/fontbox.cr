@@ -9,4 +9,6 @@ end
 require "./fontbox/afm"
 require "./fontbox/cmap"
 require "./fontbox/cff"
+require "./fontbox/encoding"
+require "./fontbox/pfb"
 require "./fontbox/util"
