@@ -34,24 +34,28 @@ describe Fontbox::CFF::CFFParser do
   end
 
   it "parses font bbox" do
-    bbox = test_font.font_b_box
-    bbox.should_not be_nil
-    bbox.not_nil!.lower_left_x.should be_close(-231.0, 0.001)
-    bbox.not_nil!.lower_left_y.should be_close(-384.0, 0.001)
-    bbox.not_nil!.upper_right_x.should be_close(1223.0, 0.001)
-    bbox.not_nil!.upper_right_y.should be_close(974.0, 0.001)
+    if bbox = test_font.font_b_box
+      bbox.lower_left_x.should be_close(-231.0, 0.001)
+      bbox.lower_left_y.should be_close(-384.0, 0.001)
+      bbox.upper_right_x.should be_close(1223.0, 0.001)
+      bbox.upper_right_y.should be_close(974.0, 0.001)
+    else
+      fail "Font bbox should not be nil"
+    end
   end
 
   it "parses font matrix" do
-    matrix = test_font.font_matrix
-    matrix.should_not be_nil
-    matrix.not_nil!.size.should eq 6
-    matrix.not_nil![0].should be_close(0.001, 0.000001)
-    matrix.not_nil![1].should be_close(0.0, 0.000001)
-    matrix.not_nil![2].should be_close(0.0, 0.000001)
-    matrix.not_nil![3].should be_close(0.001, 0.000001)
-    matrix.not_nil![4].should be_close(0.0, 0.000001)
-    matrix.not_nil![5].should be_close(0.0, 0.000001)
+    if matrix = test_font.font_matrix
+      matrix.size.should eq 6
+      matrix[0].should be_close(0.001, 0.000001)
+      matrix[1].should be_close(0.0, 0.000001)
+      matrix[2].should be_close(0.0, 0.000001)
+      matrix[3].should be_close(0.001, 0.000001)
+      matrix[4].should be_close(0.0, 0.000001)
+      matrix[5].should be_close(0.0, 0.000001)
+    else
+      fail "Font matrix should not be nil"
+    end
   end
 
   it "parses charset" do
@@ -152,5 +156,49 @@ describe Fontbox::CFF::CFFParser do
     stem_snap_v = private_dict["StemSnapV"]?.as?(Array(Fontbox::CFF::CFFNumber))
     stem_snap_v.should_not be_nil
     stem_snap_v.not_nil!.map(&.to_i).should eq [146, 150]
+  end
+
+  it "tests thread safety of Type2CharStringParser when parsing glyphs (PDFBOX-5819)" do
+    # This test ensures thread safety of Type2CharStringParser when parsing
+    # the same glyph from multiple threads concurrently.
+    exception_channel = Channel(Exception?).new(2)
+    latch = Channel(Nil).new(2)
+
+    # Worker that parses glyphs
+    worker = ->(_id : Int32) do
+      begin
+        latch.receive? # Wait for start signal
+        (33..125).each do |code|
+          name = code.chr.to_s
+          gid = test_font.name_to_gid(name)
+          # Get the charstring - this exercises Type2CharStringParser
+          charstring = test_font.get_type2_char_string(gid)
+          charstring.should be_a(Fontbox::CFF::Type2CharString)
+        end
+        exception_channel.send(nil)
+      rescue e : Exception
+        exception_channel.send(e)
+      end
+    end
+
+    # Spawn two workers
+    spawn { worker.call(1) }
+    spawn { worker.call(2) }
+
+    # Start both workers at the same time
+    latch.send(nil)
+    latch.send(nil)
+
+    # Collect results
+    result1 = exception_channel.receive
+    result2 = exception_channel.receive
+
+    # Ensure no exceptions were raised
+    if result1
+      raise result1
+    end
+    if result2
+      raise result2
+    end
   end
 end
