@@ -16,8 +16,8 @@
 module Fontbox::CFF
   # Represents a Type 2 CharString by converting it into an equivalent Type 1 CharString.
   class Type2CharString < Type1CharString
-    @def_width_x : Float32 = 0.0f32
-    @nominal_width_x : Float32 = 0.0f32
+    @def_width_x : Int32 = 0
+    @nominal_width_x : Int32 = 0
     @path_count = 0
     @gid : Int32
 
@@ -32,8 +32,8 @@ module Fontbox::CFF
     def initialize(font : Type1CharStringReader, font_name : String, glyph_name : String, @gid : Int32,
                    sequence : Array(CharStringCommand | Int32 | Float64), default_width_x : Int32, nom_width_x : Int32)
       super(font, font_name, glyph_name)
-      @def_width_x = default_width_x.to_f32
-      @nominal_width_x = nom_width_x.to_f32
+      @def_width_x = default_width_x
+      @nominal_width_x = nom_width_x
       convert_type1_to_type2(sequence)
     end
 

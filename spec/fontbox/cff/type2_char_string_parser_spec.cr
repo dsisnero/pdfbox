@@ -51,7 +51,7 @@ module Fontbox::CFF
       # Local subr index: for index length 1 (<1240), subroutine 0 in charstring
       # maps to index 107 (107 + 0). So we need 108 entries with our test at index 107.
       local_subrs = Array.new(108) { Bytes.empty }
-      local_subrs[107] = Bytes[21]  # RMOVETO at index 107
+      local_subrs[107] = Bytes[21] # RMOVETO at index 107
       # Bytes: 0 (encoded as 139), CALLSUBR (10)
       bytes = Bytes[139, 10]
       result = parser.parse(bytes, nil, local_subrs)

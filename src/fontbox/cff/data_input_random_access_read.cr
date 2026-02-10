@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require "../../pdfbox/io"
+
 module Fontbox::CFF
   # This class implements the DataInput interface using a RandomAccessRead as source.
   #
