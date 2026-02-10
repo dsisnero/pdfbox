@@ -719,4 +719,19 @@ module Fontbox::CFF
       end
     end
   end
+
+  # Empty charset for Type1 fonts when charset data missing
+  class EmptyCharsetType1 < CharsetType1
+    def initialize
+      super
+    end
+  end
+
+  # Empty charset for CID fonts when charset data missing
+  class EmptyCharsetCID < CharsetCID
+    def initialize(num_glyphs : Int32)
+      super()
+      # TODO: maybe initialize with default CIDs?
+    end
+  end
 end
