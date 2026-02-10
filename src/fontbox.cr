@@ -8,4 +8,5 @@ end
 
 require "./fontbox/afm"
 require "./fontbox/cmap"
+require "./fontbox/cff"
 require "./fontbox/util"
