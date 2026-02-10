@@ -4,6 +4,9 @@
 # corresponding to the fontbox module in Apache PDFBox.
 module Fontbox
   # TODO: Implement fontbox functionality
+
+  # Raised when a font file is corrupted or cannot be parsed
+  class DamagedFontException < Exception; end
 end
 
 require "./fontbox/afm"
@@ -11,4 +14,6 @@ require "./fontbox/cmap"
 require "./fontbox/cff"
 require "./fontbox/encoding"
 require "./fontbox/pfb"
+require "./fontbox/type1"
+require "./fontbox/ttf"
 require "./fontbox/util"
