@@ -84,7 +84,7 @@ describe Fontbox::CFF::CFFParser do
   it "parses encoding" do
     encoding = test_font.encoding
     encoding.should_not be_nil
-    encoding.not_nil!.should be_a(Fontbox::CFF::CFFEncoding)
+    encoding.not_nil!.should be_a(Fontbox::CFF::StandardEncoding)
   end
 
   it "parses char strings bytes" do

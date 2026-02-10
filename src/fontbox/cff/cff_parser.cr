@@ -297,14 +297,13 @@ module Fontbox::CFF
       entry
     end
 
-    private def read_operator(input : DataInput, b0 : Int32) : String
+    private def read_operator(input : DataInput, b0 : Int32) : String?
       if b0 == 12
         b1 = input.read_unsigned_byte
-        name = operator_name(b0, b1)
+        operator_name(b0, b1)
       else
-        name = operator_name(b0)
+        operator_name(b0)
       end
-      name || raise "Unknown operator b0=#{b0}"
     end
 
     private def read_integer_number(input : DataInput, b0 : Int32) : CFFNumber

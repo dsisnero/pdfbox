@@ -22,6 +22,27 @@ module Fontbox::CFF
     @font_dicts = Array(Hash(String, CFFDictValue?)).new
     @priv_dicts = Array(Hash(String, CFFPrivateDictValue?)).new
     @fd_select : FDSelect?
+    @char_string_cache = Hash(Int32, CIDKeyedType2CharString).new
+    @char_string_parser : Type2CharStringParser?
+    @reader : PrivateType1CharStringReader? = nil
+    @char_string_cache_mutex = Thread::Mutex.new
+
+    # Private implementation of Type1CharStringReader, because only CFFType1Font can
+    # expose this publicly, as CIDFonts only support this for legacy 'seac' commands.
+    private class PrivateType1CharStringReader < Type1CharStringReader
+      def initialize(@font : CFFCIDFont)
+      end
+
+      def get_type1_char_string(name : String) : Type1CharString
+        # CIDFonts only support this for legacy 'seac' commands, return .notdef
+        @font.get_type2_char_string(0)
+      end
+    end
+
+    def initialize
+      super
+      @reader = PrivateType1CharStringReader.new(self)
+    end
 
     def cid_font? : Bool
       true
@@ -74,6 +95,91 @@ module Fontbox::CFF
 
     protected def fd_select=(value : FDSelect?)
       @fd_select = value
+    end
+
+    # Returns the defaultWidthX for the given GID.
+    protected def get_default_width_x(gid : Int32) : Int32
+      fd_select = @fd_select
+      return 1000 if fd_select.nil?
+      fd_array_index = fd_select.get_fd_index(gid)
+      return 1000 if fd_array_index == -1 || fd_array_index >= @priv_dicts.size
+      priv_dict_value = @priv_dicts[fd_array_index]["defaultWidthX"]?
+      case priv_dict_value
+      when Int32
+        priv_dict_value
+      when Float64
+        priv_dict_value.to_i
+      else
+        1000
+      end
+    end
+
+    # Returns the nominalWidthX for the given GID.
+    protected def get_nominal_width_x(gid : Int32) : Int32
+      fd_select = @fd_select
+      return 0 if fd_select.nil?
+      fd_array_index = fd_select.get_fd_index(gid)
+      return 0 if fd_array_index == -1 || fd_array_index >= @priv_dicts.size
+      priv_dict_value = @priv_dicts[fd_array_index]["nominalWidthX"]?
+      case priv_dict_value
+      when Int32
+        priv_dict_value
+      when Float64
+        priv_dict_value.to_i
+      else
+        0
+      end
+    end
+
+    # Returns the LocalSubrIndex for the given GID.
+    private def get_local_subr_index(gid : Int32) : Array(Bytes)?
+      fd_select = @fd_select
+      return if fd_select.nil?
+      fd_array_index = fd_select.get_fd_index(gid)
+      return if fd_array_index == -1 || fd_array_index >= @priv_dicts.size
+      priv_dict_value = @priv_dicts[fd_array_index]["Subrs"]?
+      if priv_dict_value.is_a?(Array(Bytes))
+        priv_dict_value
+      end
+    end
+
+    # Returns the Type 2 charstring for the given CID.
+    def get_type2_char_string(gid : Int32) : CIDKeyedType2CharString
+      cid = gid
+      if cached = @char_string_cache[cid]?
+        return cached
+      end
+
+      @char_string_cache_mutex.synchronize do
+        # double-check after acquiring lock
+        if cached = @char_string_cache[cid]?
+          return cached
+        end
+
+        charset = self.charset
+        glyph_id = charset ? charset.get_gid_for_cid(cid) : cid
+        bytes = nil
+        if glyph_id < char_strings.size
+          bytes = char_strings[glyph_id]
+        end
+        if bytes.nil?
+          bytes = char_strings[0] # .notdef
+        end
+        type2seq = get_parser.parse(bytes, global_subr_index, get_local_subr_index(glyph_id))
+        type2 = CIDKeyedType2CharString.new(@reader.not_nil!, name, cid, glyph_id, type2seq,
+          get_default_width_x(glyph_id), get_nominal_width_x(glyph_id))
+        @char_string_cache[cid] = type2
+        type2
+      end
+    end
+
+    private def get_parser : Type2CharStringParser
+      parser = @char_string_parser
+      unless parser
+        parser = Type2CharStringParser.new(name)
+        @char_string_parser = parser
+      end
+      parser
     end
   end
 
