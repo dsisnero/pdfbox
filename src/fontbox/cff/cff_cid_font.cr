@@ -19,8 +19,8 @@ module Fontbox::CFF
     @registry : String = ""
     @ordering : String = ""
     @supplement : Int32 = 0
-    @font_dicts = Array(Hash(String, CFFDictValue)).new
-    @priv_dicts = Array(Hash(String, CFFDictValue)).new
+    @font_dicts = Array(Hash(String, CFFDictValue?)).new
+    @priv_dicts = Array(Hash(String, CFFPrivateDictValue?)).new
     @fd_select : FDSelect?
 
     def cid_font? : Bool
@@ -32,7 +32,7 @@ module Fontbox::CFF
       @registry
     end
 
-    def registry=(value : String)
+    protected def registry=(value : String)
       @registry = value
     end
 
@@ -40,7 +40,7 @@ module Fontbox::CFF
       @ordering
     end
 
-    def ordering=(value : String)
+    protected def ordering=(value : String)
       @ordering = value
     end
 
@@ -48,23 +48,23 @@ module Fontbox::CFF
       @supplement
     end
 
-    def supplement=(value : Int32)
+    protected def supplement=(value : Int32)
       @supplement = value
     end
 
-    def font_dicts : Array(Hash(String, CFFDictValue))
+    def font_dicts : Array(Hash(String, CFFDictValue?))
       @font_dicts
     end
 
-    def font_dicts=(value : Array(Hash(String, CFFDictValue)))
+    protected def font_dicts=(value : Array(Hash(String, CFFDictValue?)))
       @font_dicts = value
     end
 
-    def priv_dicts : Array(Hash(String, CFFDictValue))
+    def priv_dicts : Array(Hash(String, CFFPrivateDictValue?))
       @priv_dicts
     end
 
-    def priv_dicts=(value : Array(Hash(String, CFFDictValue)))
+    protected def priv_dicts=(value : Array(Hash(String, CFFPrivateDictValue?)))
       @priv_dicts = value
     end
 
@@ -72,13 +72,58 @@ module Fontbox::CFF
       @fd_select
     end
 
-    def fd_select=(value : FDSelect?)
+    protected def fd_select=(value : FDSelect?)
       @fd_select = value
     end
   end
 
-  # FDSelect interface (stub)
+  # FDSelect interface
   abstract class FDSelect
     abstract def get_fd_index(gid : Int32) : Int32
+  end
+
+  # Format 0 FDSelect
+  private class Format0FDSelect < FDSelect
+    def initialize(@fds : Array(Int32))
+    end
+
+    def get_fd_index(gid : Int32) : Int32
+      gid < @fds.size ? @fds[gid] : 0
+    end
+  end
+
+  # Format 3 FDSelect Range3 structure
+  private class Range3
+    getter first : Int32
+    getter fd : Int32
+
+    def initialize(@first : Int32, @fd : Int32)
+    end
+  end
+
+  # Format 3 FDSelect
+  private class Format3FDSelect < FDSelect
+    def initialize(@range3 : Array(Range3), @sentinel : Int32)
+    end
+
+    def get_fd_index(gid : Int32) : Int32
+      @range3.each_with_index do |range, i|
+        if range.first <= gid
+          if i + 1 < @range3.size
+            if @range3[i + 1].first > gid
+              return range.fd
+            end
+            # go to next range
+          else
+            # last range reach, the sentinel must be greater than gid
+            if @sentinel > gid
+              return range.fd
+            end
+            return -1
+          end
+        end
+      end
+      0
+    end
   end
 end

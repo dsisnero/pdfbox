@@ -731,7 +731,12 @@ module Fontbox::CFF
   class EmptyCharsetCID < CharsetCID
     def initialize(num_glyphs : Int32)
       super()
-      # TODO: maybe initialize with default CIDs?
+      add_cid(0, 0) # .notdef
+
+      # Adobe Reader treats CID as GID, PDFBOX-2571 p11.
+      (1..num_glyphs).each do |i|
+        add_cid(i, i)
+      end
     end
   end
 end

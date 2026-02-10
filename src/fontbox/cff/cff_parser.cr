@@ -511,7 +511,7 @@ module Fontbox::CFF
 
       # format-specific dictionaries
       if is_cid_font
-        raise "CID fonts not yet implemented"
+        parse_cid_font_dicts(input, top_dict, font.as(CFFCIDFont), char_strings_index.size)
       else
         parse_type1_dicts(input, top_dict, font.as(CFFType1Font), charset)
       end
@@ -644,6 +644,87 @@ module Fontbox::CFF
       end
     end
 
+    private def parse_cid_font_dicts(input : DataInput, top_dict : DictData, font : CFFCIDFont, nr_of_char_strings : Int32)
+      # In a CIDKeyed Font, the Private dictionary isn't in the Top Dict but in the Font dict
+      # which can be accessed by a lookup using FDArray and FDSelect
+      fd_array_entry = top_dict.get_entry("FDArray")
+      if fd_array_entry.nil? || !fd_array_entry.has_operands?
+        raise "FDArray is missing for a CIDKeyed Font."
+      end
+
+      # font dict index
+      font_dict_offset = fd_array_entry.get_number(0).to_i
+      input.position = font_dict_offset
+      fd_index = read_index_data(input)
+      if fd_index.empty?
+        raise "Font dict index is missing for a CIDKeyed Font"
+      end
+
+      private_dictionaries = Array(Hash(String, CFFPrivateDictValue?)).new
+      font_dictionaries = Array(Hash(String, CFFDictValue?)).new
+
+      private_dict_populated = false
+      fd_index.each do |bytes|
+        font_dict_input = DataInputByteArray.new(bytes)
+        font_dict = read_dict_data(font_dict_input)
+
+        # font dict
+        font_dict_map = Hash(String, CFFDictValue?).new
+        font_dict_map["FontName"] = get_string(font_dict, "FontName")
+        font_dict_map["FontType"] = font_dict.get_number("FontType", 0)
+        font_dict_map["FontBBox"] = font_dict.get_array("FontBBox", nil)
+        font_dict_map["FontMatrix"] = font_dict.get_array("FontMatrix", nil)
+        # TODO OD-4 : Add here other keys
+        font_dictionaries << font_dict_map
+
+        # read private dict
+        private_entry = font_dict.get_entry("Private")
+        if private_entry.nil? || private_entry.size < 2
+          # PDFBOX-5843 don't abort here, and don't skip empty bytes entries, because
+          # getLocalSubrIndex() expects subr at a specific index
+          private_dictionaries << Hash(String, CFFPrivateDictValue?).new
+          next
+        end
+
+        private_offset = private_entry.get_number(1).to_i
+        private_size = private_entry.get_number(0).to_i
+        private_dict = read_dict_data(input, private_offset, private_size)
+
+        # populate private dict
+        private_dict_populated = true
+        priv_dict = read_private_dict(private_dict)
+        private_dictionaries << priv_dict
+
+        # local subrs
+        local_subr_offset = private_dict.get_number("Subrs", 0)
+        if local_subr_offset.is_a?(Int32) && local_subr_offset > 0
+          input.position = private_offset + local_subr_offset
+          priv_dict["Subrs"] = read_index_data(input)
+        end
+      end
+
+      if !private_dict_populated
+        raise "Font DICT invalid without \"Private\" entry"
+      end
+
+      # font-dict (FD) select
+      fd_select_entry = top_dict.get_entry("FDSelect")
+      if fd_select_entry.nil? || !fd_select_entry.has_operands?
+        raise "FDSelect is missing or empty"
+      end
+      fd_select_pos = fd_select_entry.get_number(0).to_i
+      input.position = fd_select_pos
+      fd_select = read_fd_select(input, nr_of_char_strings)
+
+      # TODO almost certainly erroneous - CIDFonts do not have a top-level private dict
+      # font.add_value_to_private_dict("defaultWidthX", 1000)
+      # font.add_value_to_private_dict("nominalWidthX", 0)
+
+      font.font_dicts = font_dictionaries
+      font.priv_dicts = private_dictionaries
+      font.fd_select = fd_select
+    end
+
     private def read_dict_data(input : DataInput, offset : Int32, dict_size : Int32) : DictData
       dict = DictData.new
       if dict_size > 0
@@ -676,6 +757,38 @@ module Fontbox::CFF
       priv_dict["defaultWidthX"] = private_dict.get_number("defaultWidthX", 0)
       priv_dict["nominalWidthX"] = private_dict.get_number("nominalWidthX", 0)
       priv_dict
+    end
+
+    private def read_fd_select(data_input : DataInput, n_glyphs : Int32) : FDSelect
+      format = data_input.read_unsigned_byte
+      case format
+      when 0
+        read_format0_fd_select(data_input, n_glyphs)
+      when 3
+        read_format3_fd_select(data_input)
+      else
+        raise "Invalid FDSelect format #{format}"
+      end
+    end
+
+    private def read_format0_fd_select(data_input : DataInput, n_glyphs : Int32) : FDSelect
+      fds = Array(Int32).new(n_glyphs)
+      n_glyphs.times do
+        fds << data_input.read_unsigned_byte
+      end
+      Format0FDSelect.new(fds)
+    end
+
+    private def read_format3_fd_select(data_input : DataInput) : FDSelect
+      nb_ranges = data_input.read_unsigned_short
+      range3 = Array(Range3).new(nb_ranges)
+      nb_ranges.times do
+        first = data_input.read_unsigned_short
+        fd = data_input.read_unsigned_byte
+        range3 << Range3.new(first, fd)
+      end
+      sentinel = data_input.read_unsigned_short
+      Format3FDSelect.new(range3, sentinel)
     end
 
     private def read_encoding(data_input : DataInput, charset : Charset) : CFFEncoding
