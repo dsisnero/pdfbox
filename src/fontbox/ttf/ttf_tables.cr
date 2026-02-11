@@ -860,14 +860,39 @@ module Fontbox::TTF
     # Tag for this table.
     TAG = "CFF "
 
+    @cff_font : Fontbox::CFF::CFFFont?
+
     # This will read the required data from the stream.
     def read(ttf : TrueTypeFont, data : TTFDataStream) : Nil
-      # TODO: Implement CFF table reading
+      bytes = data.read(length.to_i32)
+      parser = Fontbox::CFF::CFFParser.new
+      @cff_font = parser.parse(bytes)[0]?
+      @initialized = true
     end
 
     # This will read required headers from the stream into out_headers.
     def read_headers(ttf : TrueTypeFont, data : TTFDataStream, out_headers : FontHeaders) : Nil
-      # TODO: Implement CFF table header reading
+      sub_reader = data.create_sub_view(length)
+      reader : Pdfbox::IO::RandomAccessRead
+      if sub_reader
+        reader = sub_reader
+      else
+        bytes = data.read(length.to_i32)
+        reader = Pdfbox::IO::RandomAccessReadBuffer.new(bytes)
+      end
+      begin
+        cff_font = Fontbox::CFF::CFFParser.new.parse(reader)[0]?
+        if cff_font.is_a?(Fontbox::CFF::CFFCIDFont)
+          out_headers.set_otf_ros(cff_font.registry, cff_font.ordering, cff_font.supplement)
+        end
+      ensure
+        reader.close
+      end
+    end
+
+    # Returns the parsed CFF font.
+    def get_font : Fontbox::CFF::CFFFont?
+      @cff_font
     end
   end
 
@@ -1325,7 +1350,7 @@ module Fontbox::TTF
     end
 
     private def process_subtype14(data : TTFDataStream, num_glyphs : Int32) : Nil
-      # TODO: Implement format 14 (log warning)
+      # Unicode Variation Sequences (UVS) are ignored, matching Apache PDFBox behavior.
     end
 
     private def new_glyph_id_to_character_code(size : Int32) : Array(Int32)
@@ -1432,9 +1457,679 @@ module Fontbox::TTF
     # Tag for this table.
     TAG = "glyf"
 
+    @glyphs : Array(GlyphData?)? = nil
+    @data_stream : TTFDataStream? = nil
+    @loca : IndexToLocationTable? = nil
+    @num_glyphs : Int32 = 0
+    @cached : Int32 = 0
+    @hmt : HorizontalMetricsTable? = nil
+    @maxp : MaximumProfileTable? = nil
+    @data_lock = Mutex.new
+    @data_lock_owner : Fiber? = nil
+    @data_lock_depth : Int32 = 0
+
+    MAX_CACHE_SIZE    = 5000
+    MAX_CACHED_GLYPHS =  100
+
     # This will read the required data from the stream.
     def read(ttf : TrueTypeFont, data : TTFDataStream) : Nil
-      # TODO: Implement GLYF table reading
+      @loca = ttf.get_index_to_location
+      if @loca.nil?
+        raise IO::EOFError.new("Could not get loca table")
+      end
+      @num_glyphs = ttf.get_number_of_glyphs
+
+      if @num_glyphs < MAX_CACHE_SIZE
+        # don't cache huge fonts to save memory
+        @glyphs = Array.new(@num_glyphs, nil.as(GlyphData?))
+      end
+
+      # Cache table bytes into an independent stream so the source can be closed later.
+      data_bytes = data.read(length.to_i32)
+      read = Pdfbox::IO::RandomAccessReadBuffer.new(data_bytes)
+      @data_stream = RandomAccessReadDataStream.new(read)
+
+      # Read hmtx and maxp references early like Java to avoid future lock-order issues.
+      @hmt = ttf.get_horizontal_metrics
+      @maxp = ttf.get_maximum_profile
+
+      @initialized = true
+    end
+
+    # Sets glyph cache (mostly for tests).
+    def set_glyphs(glyphs_value : Array(GlyphData?)) : Nil
+      @glyphs = glyphs_value
+    end
+
+    # Returns the data for the glyph with the given GID.
+    def get_glyph(gid : Int32) : GlyphData?
+      get_glyph(gid, 0)
+    end
+
+    # Returns the data for the glyph with the given GID at composite resolution level.
+    def get_glyph(gid : Int32, level : Int32) : GlyphData?
+      return if gid < 0 || gid >= @num_glyphs
+
+      if @glyphs && (cached_glyph = @glyphs.not_nil![gid]?)
+        return cached_glyph
+      end
+
+      with_data_lock do
+        offsets = @loca.not_nil!.get_offsets
+        glyph : GlyphData
+        data_stream = @data_stream.not_nil!
+
+        if offsets[gid] == offsets[gid + 1] || offsets[gid] == data_stream.get_original_data_size
+          # No outline. Return an empty glyph, not nil; composite glyphs may reference it.
+          glyph = GlyphData.new
+          glyph.init_empty_data
+        else
+          current_position = data_stream.get_current_position
+          begin
+            data_stream.seek(offsets[gid])
+            glyph = get_glyph_data(gid, level)
+          ensure
+            data_stream.seek(current_position)
+          end
+        end
+
+        if @glyphs && @glyphs.not_nil![gid]?.nil? && @cached < MAX_CACHED_GLYPHS
+          @glyphs.not_nil![gid] = glyph
+          @cached += 1
+        end
+
+        glyph
+      end
+    end
+
+    private def get_glyph_data(gid : Int32, level : Int32) : GlyphData
+      max_component_depth = @maxp.not_nil!.get_max_component_depth.to_i32
+      if level > max_component_depth
+        raise IO::Error.new("composite glyph maximum level (#{max_component_depth}) reached")
+      end
+
+      glyph = GlyphData.new
+      left_side_bearing = @hmt.nil? ? 0 : @hmt.not_nil!.get_left_side_bearing(gid)
+      glyph.init_data(self, @data_stream.not_nil!, left_side_bearing, level)
+
+      # Resolve composite glyphs immediately.
+      if glyph.get_description.is_composite
+        glyph.get_description.resolve
+      end
+      glyph
+    end
+
+    private def with_data_lock(&)
+      current_fiber = Fiber.current
+      if @data_lock_owner == current_fiber
+        @data_lock_depth += 1
+        begin
+          yield
+        ensure
+          @data_lock_depth -= 1
+        end
+      else
+        @data_lock.lock
+        @data_lock_owner = current_fiber
+        @data_lock_depth = 1
+        begin
+          yield
+        ensure
+          @data_lock_depth = 0
+          @data_lock_owner = nil
+          @data_lock.unlock
+        end
+      end
+    end
+  end
+
+  # A component of a composite glyph.
+  #
+  # Ported from Apache PDFBox GlyfCompositeComp.
+  class GlyfCompositeComp
+    # Flags for composite glyphs.
+    ARG_1_AND_2_ARE_WORDS    = 0x0001
+    ARGS_ARE_XY_VALUES       = 0x0002
+    ROUND_XY_TO_GRID         = 0x0004
+    WE_HAVE_A_SCALE          = 0x0008
+    MORE_COMPONENTS          = 0x0020
+    WE_HAVE_AN_X_AND_Y_SCALE = 0x0040
+    WE_HAVE_A_TWO_BY_TWO     = 0x0080
+    WE_HAVE_INSTRUCTIONS     = 0x0100
+    USE_MY_METRICS           = 0x0200
+
+    @first_index : Int32 = 0
+    @first_contour : Int32 = 0
+    @argument1 : Int16
+    @argument2 : Int16
+    @flags : Int16
+    @glyph_index : Int32
+    @xscale : Float64 = 1.0
+    @yscale : Float64 = 1.0
+    @scale01 : Float64 = 0.0
+    @scale10 : Float64 = 0.0
+    @xtranslate : Int32 = 0
+    @ytranslate : Int32 = 0
+    @point1 : Int32 = 0
+    @point2 : Int32 = 0
+
+    def initialize(data : TTFDataStream)
+      @flags = data.read_signed_short
+      @glyph_index = data.read_unsigned_short.to_i32
+
+      if (@flags & ARG_1_AND_2_ARE_WORDS) != 0
+        @argument1 = data.read_signed_short
+        @argument2 = data.read_signed_short
+      else
+        @argument1 = data.read_signed_byte.to_i16
+        @argument2 = data.read_signed_byte.to_i16
+      end
+
+      if (@flags & ARGS_ARE_XY_VALUES) != 0
+        @xtranslate = @argument1.to_i32
+        @ytranslate = @argument2.to_i32
+      else
+        @point1 = @argument1.to_i32
+        @point2 = @argument2.to_i32
+      end
+
+      if (@flags & WE_HAVE_A_SCALE) != 0
+        i = data.read_signed_short
+        @xscale = @yscale = i / 16384.0_f64
+      elsif (@flags & WE_HAVE_AN_X_AND_Y_SCALE) != 0
+        i = data.read_signed_short
+        @xscale = i / 16384.0_f64
+        i = data.read_signed_short
+        @yscale = i / 16384.0_f64
+      elsif (@flags & WE_HAVE_A_TWO_BY_TWO) != 0
+        i = data.read_signed_short
+        @xscale = i / 16384.0_f64
+        i = data.read_signed_short
+        @scale01 = i / 16384.0_f64
+        i = data.read_signed_short
+        @scale10 = i / 16384.0_f64
+        i = data.read_signed_short
+        @yscale = i / 16384.0_f64
+      end
+    end
+
+    def set_first_index(idx : Int32) : Nil
+      @first_index = idx
+    end
+
+    def get_first_index : Int32
+      @first_index
+    end
+
+    def set_first_contour(idx : Int32) : Nil
+      @first_contour = idx
+    end
+
+    def get_first_contour : Int32
+      @first_contour
+    end
+
+    def get_argument1 : Int16
+      @argument1
+    end
+
+    def get_argument2 : Int16
+      @argument2
+    end
+
+    def get_flags : Int16
+      @flags
+    end
+
+    def get_glyph_index : Int32
+      @glyph_index
+    end
+
+    def get_scale01 : Float64
+      @scale01
+    end
+
+    def get_scale10 : Float64
+      @scale10
+    end
+
+    def get_x_scale : Float64
+      @xscale
+    end
+
+    def get_y_scale : Float64
+      @yscale
+    end
+
+    def get_x_translate : Int32
+      @xtranslate
+    end
+
+    def get_y_translate : Int32
+      @ytranslate
+    end
+
+    # Transforms an x-coordinate for this component.
+    def scale_x(x : Int32, y : Int32) : Int32
+      (x * @xscale + y * @scale10).round.to_i32
+    end
+
+    # Transforms a y-coordinate for this component.
+    def scale_y(x : Int32, y : Int32) : Int32
+      (x * @scale01 + y * @yscale).round.to_i32
+    end
+  end
+
+  # Specifies access to glyph description classes, simple and composite.
+  #
+  # Ported from Apache PDFBox GlyphDescription.
+  module GlyphDescription
+    abstract def get_end_pt_of_contours(i : Int32) : Int32
+    abstract def get_flags(i : Int32) : Int32
+    abstract def get_x_coordinate(i : Int32) : Int16
+    abstract def get_y_coordinate(i : Int32) : Int16
+    abstract def is_composite : Bool
+    abstract def get_point_count : Int32
+    abstract def get_contour_count : Int32
+    abstract def resolve : Nil
+  end
+
+  # Base class for glyf descriptions.
+  #
+  # Ported from Apache PDFBox GlyfDescript.
+  abstract class GlyfDescript
+    include GlyphDescription
+
+    ON_CURVE       = 0x01
+    X_SHORT_VECTOR = 0x02
+    Y_SHORT_VECTOR = 0x04
+    REPEAT         = 0x08
+    X_DUAL         = 0x10
+    Y_DUAL         = 0x20
+
+    @instructions : Array(Int32) = [] of Int32
+    @contour_count : Int32
+
+    def initialize(number_of_contours : Int16)
+      @contour_count = number_of_contours.to_i32
+    end
+
+    def resolve : Nil
+      # no-op in base class
+    end
+
+    def get_contour_count : Int32
+      @contour_count
+    end
+
+    def get_instructions : Array(Int32)
+      @instructions
+    end
+
+    protected def read_instructions(data : TTFDataStream, count : Int32) : Nil
+      @instructions = data.read_unsigned_byte_array(count)
+    end
+  end
+
+  # Description for a simple glyf glyph.
+  #
+  # Ported from Apache PDFBox GlyfSimpleDescript.
+  class GlyfSimpleDescript < GlyfDescript
+    @end_pts_of_contours : Array(Int32) = [] of Int32
+    @flags : Array(Int32) = [] of Int32
+    @x_coordinates : Array(Int16) = [] of Int16
+    @y_coordinates : Array(Int16) = [] of Int16
+    @point_count : Int32 = 0
+
+    # Constructor for an empty description.
+    def initialize
+      super(0_i16)
+      @point_count = 0
+    end
+
+    # Constructor from stream data.
+    def initialize(number_of_contours : Int16, data : TTFDataStream, x0 : Int16)
+      super(number_of_contours)
+
+      if number_of_contours == 0
+        @point_count = 0
+        return
+      end
+
+      @end_pts_of_contours = data.read_unsigned_short_array(number_of_contours.to_i32)
+
+      last_end_pt = @end_pts_of_contours[number_of_contours - 1]
+      if number_of_contours == 1 && last_end_pt == 65535
+        # PDFBOX-2939: assume an empty glyph
+        @point_count = 0
+        return
+      end
+
+      @point_count = last_end_pt + 1
+      @flags = Array.new(@point_count, 0)
+      @x_coordinates = Array.new(@point_count, 0_i16)
+      @y_coordinates = Array.new(@point_count, 0_i16)
+
+      instruction_count = data.read_unsigned_short.to_i32
+      read_instructions(data, instruction_count)
+      read_flags(@point_count, data)
+      read_coords(@point_count, data, x0)
+    end
+
+    def get_end_pt_of_contours(i : Int32) : Int32
+      @end_pts_of_contours[i]
+    end
+
+    def get_flags(i : Int32) : Int32
+      @flags[i]
+    end
+
+    def get_x_coordinate(i : Int32) : Int16
+      @x_coordinates[i]
+    end
+
+    def get_y_coordinate(i : Int32) : Int16
+      @y_coordinates[i]
+    end
+
+    def is_composite : Bool
+      false
+    end
+
+    def get_point_count : Int32
+      @point_count
+    end
+
+    # The table is stored as relative values, but we'll store them as absolutes.
+    private def read_coords(count : Int32, data : TTFDataStream, x0 : Int16) : Nil
+      x = x0.to_i32
+      y = 0
+      count.times do |i|
+        if (@flags[i] & X_DUAL) != 0
+          if (@flags[i] & X_SHORT_VECTOR) != 0
+            x += data.read_unsigned_byte
+          end
+        else
+          if (@flags[i] & X_SHORT_VECTOR) != 0
+            x -= data.read_unsigned_byte
+          else
+            x += data.read_signed_short.to_i32
+          end
+        end
+        @x_coordinates[i] = x.to_i16
+      end
+
+      count.times do |i|
+        if (@flags[i] & Y_DUAL) != 0
+          if (@flags[i] & Y_SHORT_VECTOR) != 0
+            y += data.read_unsigned_byte
+          end
+        else
+          if (@flags[i] & Y_SHORT_VECTOR) != 0
+            y -= data.read_unsigned_byte
+          else
+            y += data.read_signed_short.to_i32
+          end
+        end
+        @y_coordinates[i] = y.to_i16
+      end
+    end
+
+    # The flags are run-length encoded.
+    private def read_flags(flag_count : Int32, data : TTFDataStream) : Nil
+      index = 0
+      while index < flag_count
+        @flags[index] = data.read_unsigned_byte
+        if (@flags[index] & REPEAT) != 0
+          repeats = data.read_unsigned_byte
+          (1..repeats).each do |i|
+            if index + i >= @flags.size
+              raise IO::Error.new("repeat count (#{repeats}) higher than remaining space")
+            end
+            @flags[index + i] = @flags[index]
+          end
+          index += repeats
+        end
+        index += 1
+      end
+    end
+  end
+
+  # A glyph data record in the glyf table.
+  #
+  # Ported from Apache PDFBox GlyphData.
+  class GlyphData
+    @x_min : Int16 = 0
+    @y_min : Int16 = 0
+    @x_max : Int16 = 0
+    @y_max : Int16 = 0
+    @bounding_box : Fontbox::Util::BoundingBox? = nil
+    @number_of_contours : Int16 = 0
+    @glyph_description : GlyphDescription? = nil
+
+    # Reads glyph data from the stream.
+    def init_data(glyph_table : GlyphTable, data : TTFDataStream, left_side_bearing : Int32, level : Int32) : Nil
+      @number_of_contours = data.read_signed_short
+      @x_min = data.read_signed_short
+      @y_min = data.read_signed_short
+      @x_max = data.read_signed_short
+      @y_max = data.read_signed_short
+      @bounding_box = Fontbox::Util::BoundingBox.new(@x_min.to_f32, @y_min.to_f32, @x_max.to_f32, @y_max.to_f32)
+
+      if @number_of_contours >= 0
+        x0 = (left_side_bearing - @x_min).to_i16
+        @glyph_description = GlyfSimpleDescript.new(@number_of_contours, data, x0)
+      else
+        @glyph_description = GlyfCompositeDescript.new(data, glyph_table, level + 1)
+      end
+    end
+
+    # Initializes an empty glyph record.
+    def init_empty_data : Nil
+      @glyph_description = GlyfSimpleDescript.new
+      @bounding_box = Fontbox::Util::BoundingBox.new(0_f32, 0_f32, 0_f32, 0_f32)
+    end
+
+    def get_bounding_box : Fontbox::Util::BoundingBox
+      @bounding_box.not_nil!
+    end
+
+    def get_number_of_contours : Int16
+      @number_of_contours
+    end
+
+    def get_description : GlyphDescription
+      @glyph_description.not_nil!
+    end
+
+    def get_x_maximum : Int16
+      @x_max
+    end
+
+    def get_x_minimum : Int16
+      @x_min
+    end
+
+    def get_y_maximum : Int16
+      @y_max
+    end
+
+    def get_y_minimum : Int16
+      @y_min
+    end
+  end
+
+  # Glyph description for composite glyphs.
+  #
+  # Ported from Apache PDFBox GlyfCompositeDescript.
+  class GlyfCompositeDescript < GlyfDescript
+    @components : Array(GlyfCompositeComp) = [] of GlyfCompositeComp
+    @descriptions = Hash(Int32, GlyphDescription).new
+    @glyph_table : GlyphTable
+    @being_resolved : Bool = false
+    @resolved : Bool = false
+    @point_count : Int32 = -1
+    @contour_count : Int32 = -1
+
+    def initialize(data : TTFDataStream, @glyph_table : GlyphTable, level : Int32)
+      super(-1_i16)
+
+      loop do
+        comp = GlyfCompositeComp.new(data)
+        @components << comp
+        break if (comp.get_flags & GlyfCompositeComp::MORE_COMPONENTS) == 0
+      end
+
+      last_comp = @components.last
+      if (last_comp.get_flags & GlyfCompositeComp::WE_HAVE_INSTRUCTIONS) != 0
+        read_instructions(data, data.read_unsigned_short.to_i32)
+      end
+      init_descriptions(level)
+    end
+
+    def resolve : Nil
+      return if @resolved
+      return if @being_resolved
+
+      @being_resolved = true
+      first_index = 0
+      first_contour = 0
+
+      @components.each do |comp|
+        comp.set_first_index(first_index)
+        comp.set_first_contour(first_contour)
+
+        if desc = @descriptions[comp.get_glyph_index]?
+          desc.resolve
+          first_index += desc.get_point_count
+          first_contour += desc.get_contour_count
+        end
+      end
+
+      @resolved = true
+      @being_resolved = false
+    end
+
+    def get_end_pt_of_contours(i : Int32) : Int32
+      if comp = get_composite_comp_end_pt(i)
+        if desc = @descriptions[comp.get_glyph_index]?
+          return desc.get_end_pt_of_contours(i - comp.get_first_contour) + comp.get_first_index
+        end
+      end
+      0
+    end
+
+    def get_flags(i : Int32) : Int32
+      if comp = get_composite_comp(i)
+        if desc = @descriptions[comp.get_glyph_index]?
+          return desc.get_flags(i - comp.get_first_index)
+        end
+      end
+      0
+    end
+
+    def get_x_coordinate(i : Int32) : Int16
+      if comp = get_composite_comp(i)
+        if desc = @descriptions[comp.get_glyph_index]?
+          n = i - comp.get_first_index
+          x = desc.get_x_coordinate(n).to_i32
+          y = desc.get_y_coordinate(n).to_i32
+          return (comp.scale_x(x, y) + comp.get_x_translate).to_i16
+        end
+      end
+      0_i16
+    end
+
+    def get_y_coordinate(i : Int32) : Int16
+      if comp = get_composite_comp(i)
+        if desc = @descriptions[comp.get_glyph_index]?
+          n = i - comp.get_first_index
+          x = desc.get_x_coordinate(n).to_i32
+          y = desc.get_y_coordinate(n).to_i32
+          return (comp.scale_y(x, y) + comp.get_y_translate).to_i16
+        end
+      end
+      0_i16
+    end
+
+    def is_composite : Bool
+      true
+    end
+
+    def get_point_count : Int32
+      if @point_count < 0
+        if comp = @components.last?
+          if desc = @descriptions[comp.get_glyph_index]?
+            @point_count = comp.get_first_index + desc.get_point_count
+          else
+            @point_count = 0
+          end
+        else
+          return 0
+        end
+      end
+      @point_count
+    end
+
+    def get_contour_count : Int32
+      if @contour_count < 0
+        if comp = @components.last?
+          if desc = @descriptions[comp.get_glyph_index]?
+            @contour_count = comp.get_first_contour + desc.get_contour_count
+          else
+            @contour_count = 0
+          end
+        else
+          return 0
+        end
+      end
+      @contour_count
+    end
+
+    def get_component_count : Int32
+      @components.size
+    end
+
+    # Returns a copy to keep the internal list unmodifiable by callers.
+    def get_components : Array(GlyfCompositeComp)
+      @components.dup
+    end
+
+    private def get_composite_comp(i : Int32) : GlyfCompositeComp?
+      @components.each do |comp|
+        desc = @descriptions[comp.get_glyph_index]?
+        next if desc.nil?
+
+        if comp.get_first_index <= i && i < (comp.get_first_index + desc.get_point_count)
+          return comp
+        end
+      end
+      nil
+    end
+
+    private def get_composite_comp_end_pt(i : Int32) : GlyfCompositeComp?
+      @components.each do |comp|
+        desc = @descriptions[comp.get_glyph_index]?
+        next if desc.nil?
+
+        if comp.get_first_contour <= i && i < (comp.get_first_contour + desc.get_contour_count)
+          return comp
+        end
+      end
+      nil
+    end
+
+    private def init_descriptions(level : Int32) : Nil
+      @components.each do |component|
+        begin
+          glyph = @glyph_table.get_glyph(component.get_glyph_index, level)
+          if glyph
+            @descriptions[component.get_glyph_index] = glyph.get_description
+          end
+        rescue IO::Error
+          # Match Java behavior: ignore broken component references and continue.
+        end
+      end
     end
   end
 
@@ -1558,7 +2253,7 @@ module Fontbox::TTF
       end
       num_glyphs = ttf.get_number_of_glyphs
       @offsets = Array(Int64).new(num_glyphs + 1)
-      (num_glyphs + 1).times do |i|
+      (num_glyphs + 1).times do |_|
         if head.get_index_to_loc_format == SHORT_OFFSETS
           @offsets << data.read_unsigned_short.to_i64 * 2
         elsif head.get_index_to_loc_format == LONG_OFFSETS
@@ -1594,7 +2289,8 @@ module Fontbox::TTF
 
     # This will read the required data from the stream.
     def read(ttf : TrueTypeFont, data : TTFDataStream) : Nil
-      # TODO: Implement DSIG table reading
+      # No payload is consumed here in Apache PDFBox; table presence is enough.
+      @initialized = true
     end
   end
 
@@ -1605,9 +2301,192 @@ module Fontbox::TTF
     # Tag for this table.
     TAG = "kern"
 
+    @subtables : Array(KerningSubtable)? = nil
+
     # This will read the required data from the stream.
     def read(ttf : TrueTypeFont, data : TTFDataStream) : Nil
-      # TODO: Implement KERN table reading
+      version = data.read_unsigned_short.to_i32
+      if version != 0
+        version = (version << 16) | data.read_unsigned_short.to_i32
+      end
+      num_subtables = 0
+      case version
+      when 0
+        num_subtables = data.read_unsigned_short.to_i32
+      when 1
+        num_subtables = data.read_unsigned_int.to_i32
+      else
+        # unsupported kerning table version
+      end
+      if num_subtables > 0
+        @subtables = Array.new(num_subtables) { KerningSubtable.new }
+        num_subtables.times do |i|
+          subtable = KerningSubtable.new
+          subtable.read(data, version)
+          @subtables.not_nil![i] = subtable
+        end
+      end
+      @initialized = true
+    end
+
+    # Obtain first subtable that supports non-cross-stream horizontal kerning.
+    def get_horizontal_kerning_subtable(cross : Bool = false) : KerningSubtable?
+      return if @subtables.nil?
+      @subtables.not_nil!.each do |subtable|
+        if subtable.is_horizontal_kerning(cross)
+          return subtable
+        end
+      end
+      nil
+    end
+  end
+
+  # A subtable of a KERN table.
+  #
+  # Ported from Apache PDFBox KerningSubtable.
+  class KerningSubtable
+    private COVERAGE_HORIZONTAL   = 0x0001
+    private COVERAGE_MINIMUMS     = 0x0002
+    private COVERAGE_CROSS_STREAM = 0x0004
+    private COVERAGE_FORMAT       = 0xFF00
+
+    private COVERAGE_HORIZONTAL_SHIFT   = 0
+    private COVERAGE_MINIMUMS_SHIFT     = 1
+    private COVERAGE_CROSS_STREAM_SHIFT = 2
+    private COVERAGE_FORMAT_SHIFT       = 8
+
+    @horizontal : Bool = false
+    @minimums : Bool = false
+    @cross_stream : Bool = false
+    @pairs : PairData? = nil
+
+    def read(data : TTFDataStream, version : Int32) : Nil
+      if version == 0
+        read_subtable0(data)
+      elsif version == 1
+        read_subtable1(data)
+      else
+        raise "Unsupported kerning table version #{version}"
+      end
+    end
+
+    def is_horizontal_kerning(cross : Bool = false) : Bool
+      return false unless @horizontal
+      return false if @minimums
+      cross ? @cross_stream : !@cross_stream
+    end
+
+    # Obtain kerning adjustment for glyph pair {l, r}.
+    def get_kerning(l : Int32, r : Int32) : Int32
+      return 0 if @pairs.nil?
+      @pairs.not_nil!.get_kerning(l, r)
+    end
+
+    # Obtain kerning adjustments for a glyph sequence.
+    def get_kerning(glyphs : Array(Int32)) : Array(Int32)?
+      return if @pairs.nil?
+      ng = glyphs.size
+      kerning = Array.new(ng, 0)
+      ng.times do |i|
+        left = glyphs[i]
+        right = -1
+        (i + 1...ng).each do |k|
+          g = glyphs[k]
+          if g >= 0
+            right = g
+            break
+          end
+        end
+        kerning[i] = get_kerning(left, right)
+      end
+      kerning
+    end
+
+    private def read_subtable0(data : TTFDataStream) : Nil
+      version = data.read_unsigned_short.to_i32
+      return if version != 0
+
+      length = data.read_unsigned_short.to_i32
+      return if length < 6
+
+      coverage = data.read_unsigned_short.to_i32
+      @horizontal = is_bits_set(coverage, COVERAGE_HORIZONTAL, COVERAGE_HORIZONTAL_SHIFT)
+      @minimums = is_bits_set(coverage, COVERAGE_MINIMUMS, COVERAGE_MINIMUMS_SHIFT)
+      @cross_stream = is_bits_set(coverage, COVERAGE_CROSS_STREAM, COVERAGE_CROSS_STREAM_SHIFT)
+      format = get_bits(coverage, COVERAGE_FORMAT, COVERAGE_FORMAT_SHIFT)
+
+      case format
+      when 0
+        read_subtable0_format0(data)
+      when 2
+        read_subtable0_format2(data)
+      else
+        # unsupported format
+      end
+    end
+
+    private def read_subtable0_format0(data : TTFDataStream) : Nil
+      pair_data = PairData0Format0.new
+      pair_data.read(data)
+      @pairs = pair_data
+    end
+
+    private def read_subtable0_format2(data : TTFDataStream) : Nil
+      # not yet supported in Apache PDFBox either
+    end
+
+    private def read_subtable1(data : TTFDataStream) : Nil
+      # not yet supported in Apache PDFBox either
+    end
+
+    private def is_bits_set(bits : Int32, mask : Int32, shift : Int32) : Bool
+      get_bits(bits, mask, shift) != 0
+    end
+
+    private def get_bits(bits : Int32, mask : Int32, shift : Int32) : Int32
+      (bits & mask) >> shift
+    end
+
+    private module PairData
+      abstract def read(data : TTFDataStream) : Nil
+      abstract def get_kerning(l : Int32, r : Int32) : Int32
+    end
+
+    private class PairData0Format0
+      include PairData
+
+      @search_range : Int32 = 0
+      @pairs = [] of Tuple(Int32, Int32, Int32)
+
+      def read(data : TTFDataStream) : Nil
+        num_pairs = data.read_unsigned_short.to_i32
+        @search_range = data.read_unsigned_short.to_i32 // 6
+        _entry_selector = data.read_unsigned_short.to_i32
+        _range_shift = data.read_unsigned_short.to_i32
+        @pairs = Array.new(num_pairs) do
+          left = data.read_unsigned_short.to_i32
+          right = data.read_unsigned_short.to_i32
+          value = data.read_signed_short.to_i32
+          {left, right, value}
+        end
+      end
+
+      def get_kerning(l : Int32, r : Int32) : Int32
+        low = 0
+        high = @pairs.size - 1
+        while low <= high
+          mid = (low + high) // 2
+          left, right, value = @pairs[mid]
+          if left == l && right == r
+            return value
+          elsif (left < l) || (left == l && right < r)
+            low = mid + 1
+          else
+            high = mid - 1
+          end
+        end
+        0
+      end
     end
   end
 

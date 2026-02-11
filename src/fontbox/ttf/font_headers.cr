@@ -91,6 +91,13 @@ module Fontbox::TTF
       @otf_supplement
     end
 
+    # Sets OpenType CFF ROS metadata.
+    def set_otf_ros(registry : String, ordering : String, supplement : Int32) : Nil
+      @otf_registry = registry
+      @otf_ordering = ordering
+      @otf_supplement = supplement
+    end
+
     def set_os2_windows(os2 : OS2WindowsMetricsTable) : Nil
       @os2_windows = os2
     end

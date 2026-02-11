@@ -117,10 +117,22 @@ module Fontbox::CFF
     # @raises Exception If there is an error reading from the stream
     def parse(random_access_read : Pdfbox::IO::RandomAccessRead) : Array(CFFFont)
       # TODO do we need to store the source data of the font? It isn't used at all
-      bytes = Bytes.new(random_access_read.size.to_i32)
-      random_access_read.position = 0
-      random_access_read.read_fully(bytes)
-      random_access_read.position = 0
+      length = random_access_read.length
+      if length > Int32::MAX
+        raise "CFF stream too large to parse into memory: #{length}"
+      end
+      bytes = Bytes.new(length.to_i32)
+      random_access_read.seek(0)
+      total_read = 0
+      while total_read < bytes.size
+        read = random_access_read.read(bytes[total_read, bytes.size - total_read])
+        break if read <= 0
+        total_read += read
+      end
+      random_access_read.seek(0)
+      if total_read != bytes.size
+        raise "Unexpected EOF while reading CFF stream (#{total_read}/#{bytes.size} bytes)"
+      end
       @source = SimpleByteSource.new(bytes)
       parse(bytes)
     end

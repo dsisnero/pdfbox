@@ -81,17 +81,29 @@ module Fontbox::TTF
 
     # Gets the header table.
     def get_header : HeaderTable?
-      get_table(HeaderTable::TAG).as?(HeaderTable)
+      table = get_table(HeaderTable::TAG).as?(HeaderTable)
+      if table && !table.get_initialized
+        read_table(table)
+      end
+      table
     end
 
     # Gets the horizontal header table.
     def get_horizontal_header : HorizontalHeaderTable?
-      get_table(HorizontalHeaderTable::TAG).as?(HorizontalHeaderTable)
+      table = get_table(HorizontalHeaderTable::TAG).as?(HorizontalHeaderTable)
+      if table && !table.get_initialized
+        read_table(table)
+      end
+      table
     end
 
     # Gets the maximum profile table.
     def get_maximum_profile : MaximumProfileTable?
-      get_table(MaximumProfileTable::TAG).as?(MaximumProfileTable)
+      table = get_table(MaximumProfileTable::TAG).as?(MaximumProfileTable)
+      if table && !table.get_initialized
+        read_table(table)
+      end
+      table
     end
 
     # Gets the postscript table.
@@ -112,6 +124,33 @@ module Fontbox::TTF
     # Gets the vertical origin table.
     def get_vertical_origin : VerticalOriginTable?
       get_table(VerticalOriginTable::TAG).as?(VerticalOriginTable)
+    end
+
+    # Gets the horizontal metrics table.
+    def get_horizontal_metrics : HorizontalMetricsTable?
+      table = get_table(HorizontalMetricsTable::TAG).as?(HorizontalMetricsTable)
+      if table && !table.get_initialized
+        read_table(table)
+      end
+      table
+    end
+
+    # Gets the index-to-location table.
+    def get_index_to_location : IndexToLocationTable?
+      table = get_table(IndexToLocationTable::TAG).as?(IndexToLocationTable)
+      if table && !table.get_initialized
+        read_table(table)
+      end
+      table
+    end
+
+    # Gets the glyph table.
+    def get_glyph : GlyphTable?
+      table = get_table(GlyphTable::TAG).as?(GlyphTable)
+      if table && !table.get_initialized
+        read_table(table)
+      end
+      table
     end
 
     # Gets the naming table.
