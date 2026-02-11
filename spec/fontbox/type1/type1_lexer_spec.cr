@@ -2,8 +2,6 @@ require "../../spec_helper"
 
 module Fontbox::Type1
   describe Type1Lexer do
-
-
     it "test real numbers" do
       s = "/FontMatrix [1e-3 0e-3 0e-3 -1E-03 0 0 1.23 -1.23 ] readonly def"
       t1l = Type1Lexer.new(s.to_slice)
