@@ -12,3 +12,4 @@ end
 require "./ttf/wgl4_names"
 require "./ttf/ttf_data_stream"
 require "./ttf/random_access_read_data_stream"
+require "./ttf/true_type_collection"

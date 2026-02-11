@@ -116,11 +116,22 @@ module Pdfbox::IO
   end
 
   # Random access read implementation using ::IO::Memory
-  class MemoryRandomAccessRead < RandomAccessRead
+  # Corresponds to RandomAccessReadBuffer in Apache PDFBox
+  class RandomAccessReadBuffer < RandomAccessRead
     @io : ::IO::Memory
 
     def initialize(data : Bytes | String = Bytes.empty)
       @io = ::IO::Memory.new(data)
+    end
+
+    # Create a RandomAccessReadBuffer from an IO stream, reading all data into memory
+    def initialize(io : ::IO)
+      @io = ::IO::Memory.new(io.gets_to_end.to_slice)
+    end
+
+    # Create a RandomAccessReadBuffer from an IO stream (static factory method)
+    def self.create_buffer_from_stream(io : ::IO) : RandomAccessReadBuffer
+      new(io)
     end
 
     def position : Int64
@@ -159,8 +170,12 @@ module Pdfbox::IO
     end
   end
 
+  # Alias for backward compatibility
+  alias MemoryRandomAccessRead = RandomAccessReadBuffer
+
   # Random access read implementation using ::File
-  class FileRandomAccessRead < RandomAccessRead
+  # Corresponds to RandomAccessReadBufferedFile in Apache PDFBox
+  class RandomAccessReadBufferedFile < RandomAccessRead
     @file : ::File
 
     def initialize(filename : String)
@@ -208,6 +223,9 @@ module Pdfbox::IO
       @file.close
     end
   end
+
+  # Alias for backward compatibility
+  alias FileRandomAccessRead = RandomAccessReadBufferedFile
 
   # Random access read view that provides a window into another RandomAccessRead
   # Similar to RandomAccessReadView in Apache PDFBox
