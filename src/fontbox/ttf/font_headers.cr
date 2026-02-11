@@ -106,5 +106,14 @@ module Fontbox::TTF
     def set_is_otf_and_post_script(value : Bool) : Nil
       @is_otf_and_post_script = value
     end
+
+    def set_name(name : String?) : Nil
+      @name = name
+    end
+
+    def set_font_family(font_family : String?, font_sub_family : String?) : Nil
+      @font_family = font_family
+      @font_sub_family = font_sub_family
+    end
   end
 end

@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# ameba:disable Naming/AccessorMethodName
 module Fontbox::TTF
   # Header table.
   #
@@ -565,6 +566,100 @@ module Fontbox::TTF
     end
   end
 
+  # A name record in the name table.
+  #
+  # Ported from Apache PDFBox NameRecord.
+  class NameRecord
+    # platform ids
+    PLATFORM_UNICODE   = 0
+    PLATFORM_MACINTOSH = 1
+    PLATFORM_ISO       = 2
+    PLATFORM_WINDOWS   = 3
+
+    # Unicode encoding ids
+    ENCODING_UNICODE_1_0      = 0
+    ENCODING_UNICODE_1_1      = 1
+    ENCODING_UNICODE_2_0_BMP  = 3
+    ENCODING_UNICODE_2_0_FULL = 4
+
+    # Unicode encoding ids
+    LANGUAGE_UNICODE = 0
+
+    # Windows encoding ids
+    ENCODING_WINDOWS_SYMBOL       =  0
+    ENCODING_WINDOWS_UNICODE_BMP  =  1
+    ENCODING_WINDOWS_UNICODE_UCS4 = 10
+
+    # Windows language ids
+    LANGUAGE_WINDOWS_EN_US = 0x0409
+
+    # Macintosh encoding ids
+    ENCODING_MACINTOSH_ROMAN = 0
+
+    # Macintosh language ids
+    LANGUAGE_MACINTOSH_ENGLISH = 0
+
+    # name ids
+    NAME_COPYRIGHT            = 0
+    NAME_FONT_FAMILY_NAME     = 1
+    NAME_FONT_SUB_FAMILY_NAME = 2
+    NAME_UNIQUE_FONT_ID       = 3
+    NAME_FULL_FONT_NAME       = 4
+    NAME_VERSION              = 5
+    NAME_POSTSCRIPT_NAME      = 6
+    NAME_TRADEMARK            = 7
+
+    @platform_id : Int32 = 0
+    @platform_encoding_id : Int32 = 0
+    @language_id : Int32 = 0
+    @name_id : Int32 = 0
+    @string_length : Int32 = 0
+    @string_offset : Int32 = 0
+    @string : String? = nil
+
+    # This will read the required data from the stream.
+    def init_data(ttf : TrueTypeFont, data : TTFDataStream) : Nil
+      @platform_id = data.read_unsigned_short.to_i32
+      @platform_encoding_id = data.read_unsigned_short.to_i32
+      @language_id = data.read_unsigned_short.to_i32
+      @name_id = data.read_unsigned_short.to_i32
+      @string_length = data.read_unsigned_short.to_i32
+      @string_offset = data.read_unsigned_short.to_i32
+    end
+
+    def platform_id : Int32
+      @platform_id
+    end
+
+    def platform_encoding_id : Int32
+      @platform_encoding_id
+    end
+
+    def language_id : Int32
+      @language_id
+    end
+
+    def name_id : Int32
+      @name_id
+    end
+
+    def string_length : Int32
+      @string_length
+    end
+
+    def string_offset : Int32
+      @string_offset
+    end
+
+    def string : String?
+      @string
+    end
+
+    def string=(string_value : String)
+      @string = string_value
+    end
+  end
+
   # Naming table.
   #
   # Ported from Apache PDFBox NamingTable.
@@ -572,14 +667,189 @@ module Fontbox::TTF
     # Tag for this table.
     TAG = "name"
 
+    @name_records : Array(NameRecord) = [] of NameRecord
+    @lookup_table : Hash(Int32, Hash(Int32, Hash(Int32, Hash(Int32, String)))) = Hash(Int32, Hash(Int32, Hash(Int32, Hash(Int32, String)))).new
+    @font_family : String? = nil
+    @font_sub_family : String? = nil
+    @ps_name : String? = nil
+
     # This will read the required data from the stream.
     def read(ttf : TrueTypeFont, data : TTFDataStream) : Nil
-      # TODO: Implement naming table reading
+      read_internal(ttf, data, false)
+      @initialized = true
     end
 
     # This will read required headers from the stream into out_headers.
     def read_headers(ttf : TrueTypeFont, data : TTFDataStream, out_headers : FontHeaders) : Nil
-      # TODO: Implement naming table header reading
+      read_internal(ttf, data, true)
+      out_headers.set_name(@ps_name) if @ps_name
+      out_headers.set_font_family(@font_family, @font_sub_family) if @font_family
+    end
+
+    private def read_internal(ttf : TrueTypeFont, data : TTFDataStream, only_headers : Bool) : Nil
+      _format_selector = data.read_unsigned_short.to_i32
+      number_of_name_records = data.read_unsigned_short.to_i32
+      _offset_to_start_of_string_storage = data.read_unsigned_short.to_i32
+
+      @name_records = [] of NameRecord
+      number_of_name_records.times do |_|
+        nr = NameRecord.new
+        nr.init_data(ttf, data)
+        if !only_headers || useful_for_only_headers?(nr)
+          @name_records << nr
+        end
+      end
+
+      @name_records.each do |record|
+        # don't try to read invalid offsets, see PDFBOX-2608
+        if record.string_offset.to_i64 > length
+          record.string = nil
+          next
+        end
+
+        data.seek(offset + (2_i64 * 3) + number_of_name_records.to_i64 * 2_i64 * 6 + record.string_offset.to_i64)
+        charset = get_charset(record)
+        string = data.read_string(record.string_length, charset)
+        record.string = string
+      end
+
+      @lookup_table = Hash(Int32, Hash(Int32, Hash(Int32, Hash(Int32, String)))).new
+      fill_lookup_table
+      read_interesting_strings
+    end
+
+    private def get_charset(nr : NameRecord) : String
+      platform = nr.platform_id
+      encoding = nr.platform_encoding_id
+      charset = "ISO-8859-1" # Default to ISO Latin-1
+
+      if platform == NameRecord::PLATFORM_WINDOWS && (encoding == NameRecord::ENCODING_WINDOWS_SYMBOL || encoding == NameRecord::ENCODING_WINDOWS_UNICODE_BMP)
+        charset = "UTF-16"
+      elsif platform == NameRecord::PLATFORM_UNICODE
+        charset = "UTF-16"
+      elsif platform == NameRecord::PLATFORM_ISO
+        case encoding
+        when 0
+          charset = "US-ASCII"
+        when 1
+          # not sure if this is correct??
+          charset = "UTF-16BE"
+        end
+      end
+      charset
+    end
+
+    private def fill_lookup_table : Nil
+      # build multi-dimensional lookup table
+      @name_records.each do |record|
+        string_value = record.string
+        next if string_value.nil?
+
+        # name id
+        platform_lookup = @lookup_table[record.name_id] ||= Hash(Int32, Hash(Int32, Hash(Int32, String))).new
+        # platform id
+        encoding_lookup = platform_lookup[record.platform_id] ||= Hash(Int32, Hash(Int32, String)).new
+        # encoding id
+        language_lookup = encoding_lookup[record.platform_encoding_id] ||= Hash(Int32, String).new
+        # language id / string
+        language_lookup[record.language_id] = string_value
+      end
+    end
+
+    private def read_interesting_strings : Nil
+      @font_family = get_english_name(NameRecord::NAME_FONT_FAMILY_NAME)
+      @font_sub_family = get_english_name(NameRecord::NAME_FONT_SUB_FAMILY_NAME)
+
+      # extract PostScript name, only these two formats are valid
+      @ps_name = get_name(NameRecord::NAME_POSTSCRIPT_NAME,
+        NameRecord::PLATFORM_MACINTOSH,
+        NameRecord::ENCODING_MACINTOSH_ROMAN,
+        NameRecord::LANGUAGE_MACINTOSH_ENGLISH)
+      if @ps_name.nil?
+        @ps_name = get_name(NameRecord::NAME_POSTSCRIPT_NAME,
+          NameRecord::PLATFORM_WINDOWS,
+          NameRecord::ENCODING_WINDOWS_UNICODE_BMP,
+          NameRecord::LANGUAGE_WINDOWS_EN_US)
+      end
+      if ps = @ps_name
+        @ps_name = ps.strip
+      end
+    end
+
+    private def useful_for_only_headers?(nr : NameRecord) : Bool
+      name_id = nr.name_id
+      # see "psName =" and "getEnglishName()"
+      if name_id == NameRecord::NAME_POSTSCRIPT_NAME ||
+         name_id == NameRecord::NAME_FONT_FAMILY_NAME ||
+         name_id == NameRecord::NAME_FONT_SUB_FAMILY_NAME
+        language_id = nr.language_id
+        return language_id == NameRecord::LANGUAGE_UNICODE ||
+          language_id == NameRecord::LANGUAGE_WINDOWS_EN_US
+      end
+      false
+    end
+
+    # Helper to get English names by best effort.
+    private def get_english_name(name_id : Int32) : String?
+      # Unicode, Full, BMP, 1.1, 1.0
+      (4.downto(0)).each do |i|
+        name_uni = get_name(name_id,
+          NameRecord::PLATFORM_UNICODE,
+          i,
+          NameRecord::LANGUAGE_UNICODE)
+        if !name_uni.nil?
+          return name_uni
+        end
+      end
+
+      # Windows, Unicode BMP, EN-US
+      name_win = get_name(name_id,
+        NameRecord::PLATFORM_WINDOWS,
+        NameRecord::ENCODING_WINDOWS_UNICODE_BMP,
+        NameRecord::LANGUAGE_WINDOWS_EN_US)
+      if !name_win.nil?
+        return name_win
+      end
+
+      # Macintosh, Roman, English
+      get_name(name_id,
+        NameRecord::PLATFORM_MACINTOSH,
+        NameRecord::ENCODING_MACINTOSH_ROMAN,
+        NameRecord::LANGUAGE_MACINTOSH_ENGLISH)
+    end
+
+    # Returns a name from the table, or nil if it does not exist.
+    def get_name(name_id : Int32, platform_id : Int32, encoding_id : Int32, language_id : Int32) : String?
+      platforms = @lookup_table[name_id]?
+      return if platforms.nil?
+
+      encodings = platforms[platform_id]?
+      return if encodings.nil?
+
+      languages = encodings[encoding_id]?
+      return if languages.nil?
+
+      languages[language_id]?
+    end
+
+    # Gets the name records for this naming table.
+    def get_name_records : Array(NameRecord)
+      @name_records
+    end
+
+    # Returns the font family name, in English.
+    def get_font_family : String?
+      @font_family
+    end
+
+    # Returns the font sub family name, in English.
+    def get_font_sub_family : String?
+      @font_sub_family
+    end
+
+    # Returns the PostScript name.
+    def get_postscript_name : String?
+      @ps_name
     end
   end
 
@@ -601,6 +871,485 @@ module Fontbox::TTF
     end
   end
 
+  # A "cmap" subtable.
+  #
+  # Ported from Apache PDFBox CmapSubtable.
+  class CmapSubtable
+    # platform
+    PLATFORM_UNICODE   = 0
+    PLATFORM_MACINTOSH = 1
+    PLATFORM_WINDOWS   = 3
+
+    # Mac encodings
+    ENCODING_MAC_ROMAN = 0
+
+    # Windows encodings
+    ENCODING_WIN_SYMBOL       =  0 # Unicode, non-standard character set
+    ENCODING_WIN_UNICODE_BMP  =  1 # Unicode BMP (UCS-2)
+    ENCODING_WIN_SHIFT_JIS    =  2
+    ENCODING_WIN_BIG5         =  3
+    ENCODING_WIN_PRC          =  4
+    ENCODING_WIN_WANSUNG      =  5
+    ENCODING_WIN_JOHAB        =  6
+    ENCODING_WIN_UNICODE_FULL = 10 # Unicode Full (UCS-4)
+
+    # Unicode encodings
+    ENCODING_UNICODE_1_0      = 0
+    ENCODING_UNICODE_1_1      = 1
+    ENCODING_UNICODE_2_0_BMP  = 3
+    ENCODING_UNICODE_2_0_FULL = 4
+
+    # Surrogate offsets for format 8
+    private LEAD_OFFSET      = 0xD800_u64 - (0x10000_u64 >> 10)
+    private SURROGATE_OFFSET = 0x10000_u64 - (0xD800_u64 << 10) - 0xDC00_u64
+
+    @platform_id : Int32 = 0
+    @platform_encoding_id : Int32 = 0
+    @sub_table_offset : UInt64 = 0
+    @glyph_id_to_character_code : Array(Int32)? = nil
+    @glyph_id_to_character_code_multiple : Hash(Int32, Array(Int32)) = Hash(Int32, Array(Int32)).new
+    @character_code_to_glyph_id : Hash(Int32, Int32) = Hash(Int32, Int32).new
+
+    # This will read the required data from the stream.
+    def init_data(data : TTFDataStream) : Nil
+      @platform_id = data.read_unsigned_short.to_i32
+      @platform_encoding_id = data.read_unsigned_short.to_i32
+      @sub_table_offset = data.read_unsigned_int
+    end
+
+    # This will read the required data from the stream.
+    def init_subtable(cmap : CmapTable, num_glyphs : Int32, data : TTFDataStream) : Nil
+      data.seek(cmap.offset + @sub_table_offset)
+      subtable_format = data.read_unsigned_short
+      length : UInt64
+      version : UInt64
+      if subtable_format < 8
+        length = data.read_unsigned_short.to_u64
+        version = data.read_unsigned_short.to_u64
+      else
+        # read an other UnsignedShort to read a Fixed32
+        data.read_unsigned_short
+        length = data.read_unsigned_int
+        version = data.read_unsigned_int
+      end
+
+      case subtable_format
+      when 0
+        process_subtype0(data)
+      when 2
+        process_subtype2(data, num_glyphs)
+      when 4
+        process_subtype4(data, num_glyphs)
+      when 6
+        process_subtype6(data, num_glyphs)
+      when 8
+        process_subtype8(data, num_glyphs)
+      when 10
+        process_subtype10(data, num_glyphs)
+      when 12
+        process_subtype12(data, num_glyphs)
+      when 13
+        process_subtype13(data, num_glyphs)
+      when 14
+        process_subtype14(data, num_glyphs)
+      else
+        raise IO::EOFError.new("Unknown cmap format:#{subtable_format}")
+      end
+    end
+
+    # Getter methods
+    def platform_id : Int32
+      @platform_id
+    end
+
+    def platform_encoding_id : Int32
+      @platform_encoding_id
+    end
+
+    def sub_table_offset : UInt64
+      @sub_table_offset
+    end
+
+    def glyph_id_to_character_code : Array(Int32)?
+      @glyph_id_to_character_code
+    end
+
+    def character_code_to_glyph_id : Hash(Int32, Int32)
+      @character_code_to_glyph_id
+    end
+
+    # Returns the GlyphId linked with the given character code.
+    def get_glyph_id(character_code : Int32) : Int32
+      glyph_id = @character_code_to_glyph_id[character_code]?
+      glyph_id.nil? ? 0 : glyph_id
+    end
+
+    # Returns all possible character codes for the given gid, or nil if there is none.
+    def get_char_codes(gid : Int32) : Array(Int32)?
+      code = get_char_code(gid)
+      return if code == -1
+      if code == Int32::MIN
+        mapped_values = @glyph_id_to_character_code_multiple[gid]?
+        if mapped_values
+          codes = mapped_values.dup
+          codes.sort!
+          codes
+        end
+      else
+        [code]
+      end
+    end
+
+    private def get_char_code(gid : Int32) : Int32
+      return -1 if gid < 0 || @glyph_id_to_character_code.nil? || gid >= @glyph_id_to_character_code.as(Array(Int32)).size
+      @glyph_id_to_character_code.as(Array(Int32))[gid]
+    end
+
+    # Format-specific processing methods to be implemented
+    private def process_subtype0(data : TTFDataStream) : Nil
+      glyph_mapping = data.read_unsigned_byte_array(256)
+      @glyph_id_to_character_code = new_glyph_id_to_character_code(256)
+      @character_code_to_glyph_id = Hash(Int32, Int32).new
+      glyph_mapping.each_with_index do |glyph_index, i|
+        @glyph_id_to_character_code.as(Array(Int32))[glyph_index] = i
+        @character_code_to_glyph_id[i] = glyph_index
+      end
+    end
+
+    private def process_subtype2(data : TTFDataStream, num_glyphs : Int32) : Nil
+      sub_header_keys = Array(Int32).new(256)
+      max_sub_header_index = 0
+      256.times do |_|
+        key = data.read_unsigned_short
+        sub_header_keys << key
+        max_sub_header_index = Math.max(max_sub_header_index, key // 8)
+      end
+
+      # Read all SubHeaders to avoid useless seek on DataSource
+      sub_headers = Array(SubHeader).new(max_sub_header_index + 1)
+      (max_sub_header_index + 1).times do |i|
+        first_code = data.read_unsigned_short
+        entry_count = data.read_unsigned_short
+        id_delta = data.read_signed_short
+        id_range_offset = data.read_unsigned_short - (max_sub_header_index + 1 - i - 1) * 8 - 2
+        sub_headers << SubHeader.new(first_code, entry_count, id_delta, id_range_offset)
+      end
+      start_glyph_index_offset = data.get_current_position
+      @glyph_id_to_character_code = new_glyph_id_to_character_code(num_glyphs)
+      @character_code_to_glyph_id = Hash(Int32, Int32).new
+      if num_glyphs == 0
+        # TODO: Log warning - subtable has no glyphs
+        # LOG.warn("subtable has no glyphs")
+        return
+      end
+      logged = Set(Int32).new
+      max_logging_reached = false
+      (max_sub_header_index + 1).times do |i|
+        sh = sub_headers[i]
+        first_code = sh.first_code
+        id_range_offset = sh.id_range_offset
+        id_delta = sh.id_delta
+        entry_count = sh.entry_count
+        data.seek(start_glyph_index_offset + id_range_offset)
+        entry_count.times do |j|
+          # Compute the Character Code
+          char_code = i
+          char_code = (char_code << 8) + (first_code + j)
+
+          # Go to the CharacterCode position in the Sub Array of the glyphIndexArray
+          # glyphIndexArray contains Unsigned Short so add (j * 2) bytes at the index position
+          p = data.read_unsigned_short
+          # Compute the glyphIndex
+          if p > 0
+            p = (p + id_delta) % 65536
+            if p < 0
+              p += 65536
+            end
+          end
+
+          if p >= num_glyphs
+            if !max_logging_reached && !logged.includes?(p)
+              # TODO: Log warning
+              # LOG.warn("glyphId #{p} for charcode #{char_code} ignored, numGlyphs is #{num_glyphs}")
+              logged.add(p)
+              if logged.size > 10
+                # TODO: Log warning
+                # LOG.warn("too many bad glyphIds, more won't be reported for this table")
+                max_logging_reached = true
+              end
+            end
+            next
+          end
+
+          @glyph_id_to_character_code.as(Array(Int32))[p] = char_code
+          @character_code_to_glyph_id[char_code] = p
+        end
+      end
+    end
+
+    private def process_subtype4(data : TTFDataStream, num_glyphs : Int32) : Nil
+      seg_count_x2 = data.read_unsigned_short
+      seg_count = seg_count_x2 // 2
+      search_range = data.read_unsigned_short
+      entry_selector = data.read_unsigned_short
+      range_shift = data.read_unsigned_short
+      end_count = data.read_unsigned_short_array(seg_count)
+      reserved_pad = data.read_unsigned_short
+      start_count = data.read_unsigned_short_array(seg_count)
+      id_delta = data.read_unsigned_short_array(seg_count)
+      id_range_offset_position = data.get_current_position
+      id_range_offset = data.read_unsigned_short_array(seg_count)
+
+      @character_code_to_glyph_id = Hash(Int32, Int32).new
+      max_glyph_id = 0
+
+      seg_count.times do |i|
+        start = start_count[i]
+        end_val = end_count[i]
+        if start != 65535 && end_val != 65535
+          delta = id_delta[i]
+          range_offset = id_range_offset[i]
+          segment_range_offset = id_range_offset_position + (i * 2) + range_offset
+          (start..end_val).each do |j|
+            if range_offset == 0
+              glyph_id = (j + delta) & 0xFFFF
+              max_glyph_id = Math.max(glyph_id, max_glyph_id)
+              @character_code_to_glyph_id[j] = glyph_id
+            else
+              glyph_offset = segment_range_offset + ((j - start) * 2)
+              data.seek(glyph_offset)
+              glyph_index = data.read_unsigned_short
+              if glyph_index != 0
+                glyph_index = (glyph_index + delta) & 0xFFFF
+                max_glyph_id = Math.max(glyph_index, max_glyph_id)
+                @character_code_to_glyph_id[j] = glyph_index
+              end
+            end
+          end
+        end
+      end
+
+      if @character_code_to_glyph_id.empty?
+        # TODO: Log warning - cmap format 4 subtable is empty
+        # LOG.warn("cmap format 4 subtable is empty")
+        return
+      end
+      build_glyph_id_to_character_code_lookup(max_glyph_id)
+    end
+
+    private def process_subtype6(data : TTFDataStream, num_glyphs : Int32) : Nil
+      first_code = data.read_unsigned_short
+      entry_count = data.read_unsigned_short
+      # skip empty tables
+      return if entry_count == 0
+      @character_code_to_glyph_id = Hash(Int32, Int32).new
+      glyph_id_array = data.read_unsigned_short_array(entry_count)
+      max_glyph_id = 0
+      entry_count.times do |i|
+        max_glyph_id = Math.max(max_glyph_id, glyph_id_array[i])
+        @character_code_to_glyph_id[first_code + i] = glyph_id_array[i]
+      end
+      build_glyph_id_to_character_code_lookup(max_glyph_id)
+    end
+
+    private def process_subtype8(data : TTFDataStream, num_glyphs : Int32) : Nil
+      # --- is32 is a 65536 BITS array ( = 8192 BYTES)
+      is32 = data.read_unsigned_byte_array(8192)
+      nb_groups = data.read_unsigned_int
+
+      # --- nb_groups shouldn't be greater than 65536
+      if nb_groups > 65536_u64
+        raise IO::EOFError.new("CMap ( Subtype8 ) is invalid")
+      end
+
+      @glyph_id_to_character_code = new_glyph_id_to_character_code(num_glyphs)
+      @character_code_to_glyph_id = Hash(Int32, Int32).new
+      if num_glyphs == 0
+        # TODO: Log warning - subtable has no glyphs
+        # LOG.warn("subtable has no glyphs")
+        return
+      end
+      # -- Read all sub header
+      nb_groups.times do |_|
+        first_code = data.read_unsigned_int
+        end_code = data.read_unsigned_int
+        start_glyph = data.read_unsigned_int
+
+        # -- process simple validation
+        if first_code > end_code || 0 > first_code
+          raise IO::EOFError.new("Range invalid")
+        end
+
+        (first_code..end_code).each do |j|
+          # -- Convert the Character code in decimal
+          if j > Int32::MAX
+            raise IO::EOFError.new("[Sub Format 8] Invalid character code #{j}")
+          end
+          if (j // 8).to_i32 >= is32.size
+            raise IO::EOFError.new("[Sub Format 8] Invalid character code #{j}")
+          end
+
+          current_char_code : Int32
+          if (is32[(j // 8).to_i32] & (1 << (j % 8).to_i32)) == 0
+            current_char_code = j.to_i32
+          else
+            # the character code uses a 32bits format
+            # convert it in decimal : see http://www.unicode.org/faq//utf_bom.html#utf16-4
+            lead = LEAD_OFFSET + (j >> 10)
+            trail = 0xDC00_u64 + (j & 0x3FF_u64)
+
+            codepoint = (lead << 10) + trail + SURROGATE_OFFSET
+            if codepoint > Int32::MAX
+              raise IO::EOFError.new("[Sub Format 8] Invalid character code #{codepoint}")
+            end
+            current_char_code = codepoint.to_i32
+          end
+
+          glyph_index = start_glyph + (j - first_code)
+          if glyph_index > num_glyphs || glyph_index > Int32::MAX
+            raise IO::EOFError.new("CMap contains an invalid glyph index")
+          end
+
+          @glyph_id_to_character_code.as(Array(Int32))[glyph_index.to_i32] = current_char_code
+          @character_code_to_glyph_id[current_char_code] = glyph_index.to_i32
+        end
+      end
+    end
+
+    private def process_subtype10(data : TTFDataStream, num_glyphs : Int32) : Nil
+      start_code = data.read_unsigned_int
+      num_chars = data.read_unsigned_int
+      if num_chars > Int32::MAX
+        raise IO::EOFError.new("Invalid number of Characters")
+      end
+
+      if start_code < 0 || start_code > 0x0010FFFF_u64 || (start_code + num_chars) > 0x0010FFFF_u64 ||
+         ((start_code + num_chars) >= 0x0000D800_u64 && (start_code + num_chars) <= 0x0000DFFF_u64)
+        raise IO::EOFError.new("Invalid character codes, " +
+                               "startCode: 0x#{start_code.to_s(16)}, numChars: #{num_chars}")
+      end
+    end
+
+    private def process_subtype12(data : TTFDataStream, num_glyphs : Int32) : Nil
+      max_glyph_id = 0
+      nb_groups = data.read_unsigned_int
+      @glyph_id_to_character_code = new_glyph_id_to_character_code(num_glyphs)
+      @character_code_to_glyph_id = Hash(Int32, Int32).new
+      if num_glyphs == 0
+        # TODO: Log warning - subtable has no glyphs
+        # LOG.warn("subtable has no glyphs")
+        return
+      end
+      nb_groups.times do |_|
+        first_code = data.read_unsigned_int
+        end_code = data.read_unsigned_int
+        start_glyph = data.read_unsigned_int
+
+        if first_code < 0 || first_code > 0x0010FFFF_u64 ||
+           (first_code >= 0x0000D800_u64 && first_code <= 0x0000DFFF_u64)
+          raise IO::EOFError.new("Invalid character code 0x#{first_code.to_s(16)}")
+        end
+
+        if (end_code > 0 && end_code < first_code) ||
+           end_code > 0x0010FFFF_u64 ||
+           (end_code >= 0x0000D800_u64 && end_code <= 0x0000DFFF_u64)
+          raise IO::EOFError.new("Invalid character code 0x#{end_code.to_s(16)}")
+        end
+
+        (0_u64..(end_code - first_code)).each do |j|
+          glyph_index = start_glyph + j
+          if glyph_index >= num_glyphs
+            # TODO: Log warning
+            # LOG.warn("Format 12 cmap contains an invalid glyph index")
+            break
+          end
+
+          if first_code + j > 0x10FFFF_u64
+            # TODO: Log warning - Format 12 cmap contains character beyond UCS-4
+            # LOG.warn("Format 12 cmap contains character beyond UCS-4")
+          end
+
+          max_glyph_id = Math.max(max_glyph_id, glyph_index.to_i32)
+          @character_code_to_glyph_id[(first_code + j).to_i32] = glyph_index.to_i32
+        end
+      end
+      build_glyph_id_to_character_code_lookup(max_glyph_id)
+    end
+
+    private def process_subtype13(data : TTFDataStream, num_glyphs : Int32) : Nil
+      nb_groups = data.read_unsigned_int
+      @glyph_id_to_character_code = new_glyph_id_to_character_code(num_glyphs)
+      @character_code_to_glyph_id = Hash(Int32, Int32).new
+      if num_glyphs == 0
+        # TODO: Log warning - subtable has no glyphs
+        # LOG.warn("subtable has no glyphs")
+        return
+      end
+      nb_groups.times do |_|
+        first_code = data.read_unsigned_int
+        end_code = data.read_unsigned_int
+        glyph_id = data.read_unsigned_int
+
+        if glyph_id > num_glyphs
+          # TODO: Log warning
+          # LOG.warn("Format 13 cmap contains an invalid glyph index")
+          break
+        end
+
+        if first_code < 0 || first_code > 0x0010FFFF_u64 || (first_code >= 0x0000D800_u64 && first_code <= 0x0000DFFF_u64)
+          raise IO::EOFError.new("Invalid character code 0x#{first_code.to_s(16)}")
+        end
+
+        if (end_code > 0 && end_code < first_code) || end_code > 0x0010FFFF_u64 || (end_code >= 0x0000D800_u64 && end_code <= 0x0000DFFF_u64)
+          raise IO::EOFError.new("Invalid character code 0x#{end_code.to_s(16)}")
+        end
+
+        (0_u64..(end_code - first_code)).each do |j|
+          if first_code + j > Int32::MAX
+            raise IO::EOFError.new("Character Code greater than Integer.MAX_VALUE")
+          end
+
+          if first_code + j > 0x10FFFF_u64
+            # TODO: Log warning - Format 13 cmap contains character beyond UCS-4
+            # LOG.warn("Format 13 cmap contains character beyond UCS-4")
+          end
+
+          @glyph_id_to_character_code.as(Array(Int32))[glyph_id.to_i32] = (first_code + j).to_i32
+          @character_code_to_glyph_id[(first_code + j).to_i32] = glyph_id.to_i32
+        end
+      end
+    end
+
+    private def process_subtype14(data : TTFDataStream, num_glyphs : Int32) : Nil
+      # TODO: Implement format 14 (log warning)
+    end
+
+    private def new_glyph_id_to_character_code(size : Int32) : Array(Int32)
+      Array.new(size, -1)
+    end
+
+    private def build_glyph_id_to_character_code_lookup(max_glyph_id : Int32) : Nil
+      @glyph_id_to_character_code = new_glyph_id_to_character_code(max_glyph_id + 1)
+      @character_code_to_glyph_id.each do |key, value|
+        if @glyph_id_to_character_code.as(Array(Int32))[value] == -1
+          # add new value to the array
+          @glyph_id_to_character_code.as(Array(Int32))[value] = key
+        else
+          # there is already a mapping for the given glyphId
+          mapped_values = @glyph_id_to_character_code_multiple[value]?
+          if mapped_values.nil?
+            mapped_values = [] of Int32
+            @glyph_id_to_character_code_multiple[value] = mapped_values
+            mapped_values << @glyph_id_to_character_code.as(Array(Int32))[value]
+            # mark value as multiple mapping
+            @glyph_id_to_character_code.as(Array(Int32))[value] = Int32::MIN
+          end
+          mapped_values << key
+        end
+      end
+    end
+  end
+
   # CMAP table (Character to Glyph Mapping).
   #
   # Ported from Apache PDFBox CmapTable.
@@ -608,9 +1357,67 @@ module Fontbox::TTF
     # Tag for this table.
     TAG = "cmap"
 
+    # platform
+    PLATFORM_UNICODE   = 0
+    PLATFORM_MACINTOSH = 1
+    PLATFORM_WINDOWS   = 3
+
+    # Mac encodings
+    ENCODING_MAC_ROMAN = 0
+
+    # Windows encodings
+    ENCODING_WIN_SYMBOL       =  0 # Unicode, non-standard character set
+    ENCODING_WIN_UNICODE_BMP  =  1 # Unicode BMP (UCS-2)
+    ENCODING_WIN_SHIFT_JIS    =  2
+    ENCODING_WIN_BIG5         =  3
+    ENCODING_WIN_PRC          =  4
+    ENCODING_WIN_WANSUNG      =  5
+    ENCODING_WIN_JOHAB        =  6
+    ENCODING_WIN_UNICODE_FULL = 10 # Unicode Full (UCS-4)
+
+    # Unicode encodings
+    ENCODING_UNICODE_1_0      = 0
+    ENCODING_UNICODE_1_1      = 1
+    ENCODING_UNICODE_2_0_BMP  = 3
+    ENCODING_UNICODE_2_0_FULL = 4
+
+    @cmaps : Array(CmapSubtable) = [] of CmapSubtable
+
     # This will read the required data from the stream.
     def read(ttf : TrueTypeFont, data : TTFDataStream) : Nil
-      # TODO: Implement CMAP table reading
+      version = data.read_unsigned_short
+      number_of_tables = data.read_unsigned_short
+      @cmaps = Array(CmapSubtable).new(number_of_tables)
+      number_of_tables.times do |i|
+        cmap = CmapSubtable.new
+        cmap.init_data(data)
+        @cmaps[i] = cmap
+      end
+      number_of_glyphs = ttf.get_number_of_glyphs
+      number_of_tables.times do |i|
+        @cmaps[i].init_subtable(self, number_of_glyphs, data)
+      end
+      @initialized = true
+    end
+
+    # Returns the cmaps.
+    def cmaps : Array(CmapSubtable)
+      @cmaps
+    end
+
+    # Sets the cmaps.
+    def cmaps=(cmaps_value : Array(CmapSubtable))
+      @cmaps = cmaps_value
+    end
+
+    # Returns the subtable, if any, for the given platform and encoding.
+    def get_subtable(platform_id : Int32, platform_encoding_id : Int32) : CmapSubtable?
+      @cmaps.each do |cmap|
+        if cmap.platform_id == platform_id && cmap.platform_encoding_id == platform_encoding_id
+          return cmap
+        end
+      end
+      nil
     end
   end
 
