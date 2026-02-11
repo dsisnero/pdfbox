@@ -80,5 +80,73 @@ module Fontbox::TTF
     def close : Nil
       @stream.close
     end
+
+    # Run the callback for each TT font in the collection.
+    #
+    # @param true_type_font_processor the object with the callback method.
+    # @raise IO::Error if something went wrong when parsing any font or calling the TrueTypeFontProcessor
+    def process_all_fonts(true_type_font_processor : TrueTypeFontProcessor) : Nil
+      @num_fonts.times do |i|
+        font = get_font_at_index(i)
+        true_type_font_processor.process(font)
+      end
+    end
+
+    # Run the callback for each TT font in the collection.
+    #
+    # @param true_type_font_processor the object with the callback method.
+    # @raise IO::Error if something went wrong when parsing any font
+    def self.process_all_font_headers(ttc_file : ::File, true_type_font_processor : TrueTypeFontHeadersProcessor) : Nil
+      read = Pdfbox::IO::RandomAccessReadBufferedFile.new(ttc_file.path)
+      stream = RandomAccessReadUnbufferedDataStream.new(read)
+      ttc = new(stream)
+      begin
+        ttc.@num_fonts.times do |i|
+          parser = ttc.create_font_parser_at_index_and_seek(i)
+          headers = parser.parse_table_headers(TTCDataStream.new(ttc.@stream))
+          true_type_font_processor.process(headers)
+        end
+      ensure
+        ttc.close
+      end
+    end
+
+    private def get_font_at_index(idx : Int32) : TrueTypeFont
+      parser = create_font_parser_at_index_and_seek(idx)
+      parser.parse(TTCDataStream.new(@stream))
+    end
+
+    private def create_font_parser_at_index_and_seek(idx : Int32) : TTFParser
+      @stream.seek(@font_offsets[idx])
+      parser = if @stream.read_tag == "OTTO"
+                 # TODO: Implement OTFParser
+                 raise "OTFParser not implemented"
+               else
+                 TTFParser.new(false)
+               end
+      @stream.seek(@font_offsets[idx])
+      parser
+    end
+
+    # Get a TT font from a collection.
+    #
+    # @param name The postscript name of the font.
+    # @return The found font, or nil if none is found.
+    # @raise IO::Error if there is an error reading the font data
+    def get_font_by_name(name : String) : TrueTypeFont?
+      @num_fonts.times do |i|
+        font = get_font_at_index(i)
+        if font.get_name == name
+          return font
+        end
+      end
+      nil
+    end
+
+    # Implement the callback method to call {#process_all_fonts}.
+    alias TrueTypeFontProcessor = Proc(TrueTypeFont, Nil)
+
+    # Implement the callback method to call {.process_all_font_headers}.
+    alias TrueTypeFontHeadersProcessor = Proc(FontHeaders, Nil)
   end
 end
