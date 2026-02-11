@@ -2707,6 +2707,463 @@ module Fontbox::TTF
     end
   end
 
+  # Range record in Coverage format 2.
+  #
+  # Ported from Apache PDFBox RangeRecord.
+  class RangeRecord
+    @start_glyph_id : Int32
+    @end_glyph_id : Int32
+    @start_coverage_index : Int32
+
+    def initialize(start_glyph_id : Int32, end_glyph_id : Int32, start_coverage_index : Int32)
+      @start_glyph_id = start_glyph_id
+      @end_glyph_id = end_glyph_id
+      @start_coverage_index = start_coverage_index
+    end
+
+    def get_start_glyph_id : Int32
+      @start_glyph_id
+    end
+
+    def get_end_glyph_id : Int32
+      @end_glyph_id
+    end
+
+    def get_start_coverage_index : Int32
+      @start_coverage_index
+    end
+  end
+
+  # Coverage table.
+  #
+  # Ported from Apache PDFBox CoverageTable.
+  abstract class CoverageTable
+    @coverage_format : Int32
+
+    def initialize(@coverage_format : Int32)
+    end
+
+    abstract def get_coverage_index(gid : Int32) : Int32
+    abstract def get_glyph_id(index : Int32) : Int32
+    abstract def get_size : Int32
+
+    def get_coverage_format : Int32
+      @coverage_format
+    end
+  end
+
+  # Coverage format 1.
+  #
+  # Ported from Apache PDFBox CoverageTableFormat1.
+  class CoverageTableFormat1 < CoverageTable
+    @glyph_array : Array(Int32)
+
+    def initialize(coverage_format : Int32, @glyph_array : Array(Int32))
+      super(coverage_format)
+    end
+
+    def get_coverage_index(gid : Int32) : Int32
+      @glyph_array.bsearch_index(gid) || -1
+    end
+
+    def get_glyph_id(index : Int32) : Int32
+      @glyph_array[index]
+    end
+
+    def get_size : Int32
+      @glyph_array.size
+    end
+
+    def get_glyph_array : Array(Int32)
+      @glyph_array
+    end
+  end
+
+  # Coverage format 2.
+  #
+  # Ported from Apache PDFBox CoverageTableFormat2.
+  class CoverageTableFormat2 < CoverageTableFormat1
+    @range_records : Array(RangeRecord)
+
+    def initialize(coverage_format : Int32, @range_records : Array(RangeRecord))
+      super(coverage_format, self.class.range_records_as_array(@range_records))
+    end
+
+    def get_range_records : Array(RangeRecord)
+      @range_records
+    end
+
+    private def self.range_records_as_array(range_records : Array(RangeRecord)) : Array(Int32)
+      glyph_ids = [] of Int32
+      range_records.each do |range|
+        (range.get_start_glyph_id..range.get_end_glyph_id).each do |glyph_id|
+          glyph_ids << glyph_id
+        end
+      end
+      glyph_ids
+    end
+  end
+
+  # Language system table.
+  #
+  # Ported from Apache PDFBox LangSysTable.
+  class LangSysTable
+    @lookup_order : Int32
+    @required_feature_index : Int32
+    @feature_index_count : Int32
+    @feature_indices : Array(Int32)
+
+    def initialize(@lookup_order : Int32, @required_feature_index : Int32, @feature_index_count : Int32,
+                   @feature_indices : Array(Int32))
+    end
+
+    def get_lookup_order : Int32
+      @lookup_order
+    end
+
+    def get_required_feature_index : Int32
+      @required_feature_index
+    end
+
+    def get_feature_index_count : Int32
+      @feature_index_count
+    end
+
+    def get_feature_indices : Array(Int32)
+      @feature_indices
+    end
+  end
+
+  # Script table.
+  #
+  # Ported from Apache PDFBox ScriptTable.
+  class ScriptTable
+    @default_lang_sys_table : LangSysTable?
+    @lang_sys_tables : Hash(String, LangSysTable)
+
+    def initialize(@default_lang_sys_table : LangSysTable?, @lang_sys_tables : Hash(String, LangSysTable))
+    end
+
+    def get_default_lang_sys_table : LangSysTable?
+      @default_lang_sys_table
+    end
+
+    def get_lang_sys_tables : Hash(String, LangSysTable)
+      @lang_sys_tables
+    end
+  end
+
+  # Feature table.
+  #
+  # Ported from Apache PDFBox FeatureTable.
+  class FeatureTable
+    @feature_params : Int32
+    @lookup_index_count : Int32
+    @lookup_list_indices : Array(Int32)
+
+    def initialize(@feature_params : Int32, @lookup_index_count : Int32, @lookup_list_indices : Array(Int32))
+    end
+
+    def get_feature_params : Int32
+      @feature_params
+    end
+
+    def get_lookup_index_count : Int32
+      @lookup_index_count
+    end
+
+    def get_lookup_list_indices : Array(Int32)
+      @lookup_list_indices
+    end
+  end
+
+  # Feature record.
+  #
+  # Ported from Apache PDFBox FeatureRecord.
+  class FeatureRecord
+    @feature_tag : String
+    @feature_table : FeatureTable
+
+    def initialize(@feature_tag : String, @feature_table : FeatureTable)
+    end
+
+    def get_feature_tag : String
+      @feature_tag
+    end
+
+    def get_feature_table : FeatureTable
+      @feature_table
+    end
+  end
+
+  # Feature list table.
+  #
+  # Ported from Apache PDFBox FeatureListTable.
+  class FeatureListTable
+    @feature_count : Int32
+    @feature_records : Array(FeatureRecord)
+
+    def initialize(@feature_count : Int32, @feature_records : Array(FeatureRecord))
+    end
+
+    def get_feature_count : Int32
+      @feature_count
+    end
+
+    def get_feature_records : Array(FeatureRecord)
+      @feature_records
+    end
+  end
+
+  # Lookup sub-table.
+  #
+  # Ported from Apache PDFBox LookupSubTable.
+  abstract class LookupSubTable
+    @subst_format : Int32
+    @coverage_table : CoverageTable
+
+    def initialize(@subst_format : Int32, @coverage_table : CoverageTable)
+    end
+
+    abstract def do_substitution(gid : Int32, coverage_index : Int32) : Int32
+
+    def get_subst_format : Int32
+      @subst_format
+    end
+
+    def get_coverage_table : CoverageTable
+      @coverage_table
+    end
+  end
+
+  # Lookup table.
+  #
+  # Ported from Apache PDFBox LookupTable.
+  class LookupTable
+    @lookup_type : Int32
+    @lookup_flag : Int32
+    @mark_filtering_set : Int32
+    @sub_tables : Array(LookupSubTable)
+
+    def initialize(@lookup_type : Int32, @lookup_flag : Int32, @mark_filtering_set : Int32,
+                   @sub_tables : Array(LookupSubTable))
+    end
+
+    def get_lookup_type : Int32
+      @lookup_type
+    end
+
+    def get_lookup_flag : Int32
+      @lookup_flag
+    end
+
+    def get_mark_filtering_set : Int32
+      @mark_filtering_set
+    end
+
+    def get_sub_tables : Array(LookupSubTable)
+      @sub_tables
+    end
+  end
+
+  # Lookup list table.
+  #
+  # Ported from Apache PDFBox LookupListTable.
+  class LookupListTable
+    @lookup_count : Int32
+    @lookups : Array(LookupTable)
+
+    def initialize(@lookup_count : Int32, @lookups : Array(LookupTable))
+    end
+
+    def get_lookup_count : Int32
+      @lookup_count
+    end
+
+    def get_lookups : Array(LookupTable)
+      @lookups
+    end
+  end
+
+  # Sequence table.
+  #
+  # Ported from Apache PDFBox SequenceTable.
+  class SequenceTable
+    @glyph_count : Int32
+    @substitute_glyph_ids : Array(Int32)
+
+    def initialize(@glyph_count : Int32, @substitute_glyph_ids : Array(Int32))
+    end
+
+    def get_glyph_count : Int32
+      @glyph_count
+    end
+
+    def get_substitute_glyph_ids : Array(Int32)
+      @substitute_glyph_ids
+    end
+  end
+
+  # Alternate set table.
+  #
+  # Ported from Apache PDFBox AlternateSetTable.
+  class AlternateSetTable
+    @glyph_count : Int32
+    @alternate_glyph_ids : Array(Int32)
+
+    def initialize(@glyph_count : Int32, @alternate_glyph_ids : Array(Int32))
+    end
+
+    def get_glyph_count : Int32
+      @glyph_count
+    end
+
+    def get_alternate_glyph_ids : Array(Int32)
+      @alternate_glyph_ids
+    end
+  end
+
+  # Ligature set table.
+  #
+  # Ported from Apache PDFBox LigatureSetTable.
+  class LigatureSetTable
+    @ligature_count : Int32
+    @ligature_tables : Array(LigatureTable)
+
+    def initialize(@ligature_count : Int32, @ligature_tables : Array(LigatureTable))
+    end
+
+    def get_ligature_count : Int32
+      @ligature_count
+    end
+
+    def get_ligature_tables : Array(LigatureTable)
+      @ligature_tables
+    end
+  end
+
+  # Ligature table.
+  #
+  # Ported from Apache PDFBox LigatureTable.
+  class LigatureTable
+    @ligature_glyph : Int32
+    @component_count : Int32
+    @component_glyph_ids : Array(Int32)
+
+    def initialize(@ligature_glyph : Int32, @component_count : Int32, @component_glyph_ids : Array(Int32))
+    end
+
+    def get_ligature_glyph : Int32
+      @ligature_glyph
+    end
+
+    def get_component_count : Int32
+      @component_count
+    end
+
+    def get_component_glyph_ids : Array(Int32)
+      @component_glyph_ids
+    end
+  end
+
+  # Lookup type 1 single substitution format 1.
+  #
+  # Ported from Apache PDFBox LookupTypeSingleSubstFormat1.
+  class LookupTypeSingleSubstFormat1 < LookupSubTable
+    @delta_glyph_id : Int16
+
+    def initialize(subst_format : Int32, coverage_table : CoverageTable, @delta_glyph_id : Int16)
+      super(subst_format, coverage_table)
+    end
+
+    def do_substitution(gid : Int32, coverage_index : Int32) : Int32
+      coverage_index < 0 ? gid : gid + @delta_glyph_id.to_i32
+    end
+
+    def get_delta_glyph_id : Int16
+      @delta_glyph_id
+    end
+  end
+
+  # Lookup type 1 single substitution format 2.
+  #
+  # Ported from Apache PDFBox LookupTypeSingleSubstFormat2.
+  class LookupTypeSingleSubstFormat2 < LookupSubTable
+    @substitute_glyph_ids : Array(Int32)
+
+    def initialize(subst_format : Int32, coverage_table : CoverageTable, @substitute_glyph_ids : Array(Int32))
+      super(subst_format, coverage_table)
+    end
+
+    def do_substitution(gid : Int32, coverage_index : Int32) : Int32
+      coverage_index < 0 ? gid : @substitute_glyph_ids[coverage_index]
+    end
+
+    def get_substitute_glyph_ids : Array(Int32)
+      @substitute_glyph_ids
+    end
+  end
+
+  # Lookup type 2 multiple substitution format 1.
+  #
+  # Ported from Apache PDFBox LookupTypeMultipleSubstitutionFormat1.
+  class LookupTypeMultipleSubstitutionFormat1 < LookupSubTable
+    @sequence_tables : Array(SequenceTable)
+
+    def initialize(subst_format : Int32, coverage_table : CoverageTable, @sequence_tables : Array(SequenceTable))
+      super(subst_format, coverage_table)
+    end
+
+    def do_substitution(gid : Int32, coverage_index : Int32) : Int32
+      # TODO: Implement multiple substitution
+      gid
+    end
+
+    def get_sequence_tables : Array(SequenceTable)
+      @sequence_tables
+    end
+  end
+
+  # Lookup type 3 alternate substitution format 1.
+  #
+  # Ported from Apache PDFBox LookupTypeAlternateSubstitutionFormat1.
+  class LookupTypeAlternateSubstitutionFormat1 < LookupSubTable
+    @alternate_set_tables : Array(AlternateSetTable)
+
+    def initialize(subst_format : Int32, coverage_table : CoverageTable, @alternate_set_tables : Array(AlternateSetTable))
+      super(subst_format, coverage_table)
+    end
+
+    def do_substitution(gid : Int32, coverage_index : Int32) : Int32
+      # TODO: Implement alternate substitution
+      gid
+    end
+
+    def get_alternate_set_tables : Array(AlternateSetTable)
+      @alternate_set_tables
+    end
+  end
+
+  # Lookup type 4 ligature substitution format 1.
+  #
+  # Ported from Apache PDFBox LookupTypeLigatureSubstitutionSubstFormat1.
+  class LookupTypeLigatureSubstitutionSubstFormat1 < LookupSubTable
+    @ligature_set_tables : Array(LigatureSetTable)
+
+    def initialize(subst_format : Int32, coverage_table : CoverageTable, @ligature_set_tables : Array(LigatureSetTable))
+      super(subst_format, coverage_table)
+    end
+
+    def do_substitution(gid : Int32, coverage_index : Int32) : Int32
+      # TODO: Implement ligature substitution
+      gid
+    end
+
+    def get_ligature_set_tables : Array(LigatureSetTable)
+      @ligature_set_tables
+    end
+  end
+
   # GSUB table (Glyph Substitution).
   #
   # Ported from Apache PDFBox GlyphSubstitutionTable.
