@@ -902,6 +902,7 @@ module Fontbox::TTF
   #
   # Ported from Apache PDFBox CmapSubtable.
   class CmapSubtable
+    include CmapLookup
     # platform
     PLATFORM_UNICODE   = 0
     PLATFORM_MACINTOSH = 1
@@ -3677,8 +3678,34 @@ module Fontbox::TTF
     end
 
     abstract class ScriptFeature
-      abstract def get_feature_name : String
-      abstract def get_substitution(input_glyphs : Array(Int32)) : Array(Int32)?
+      abstract def get_name : String
+      abstract def get_all_glyph_ids_for_substitution : Set(Array(Int32))
+      abstract def can_replace_glyphs(glyph_ids : Array(Int32)) : Bool
+      abstract def get_replacement_for_glyphs(glyph_ids : Array(Int32)) : Array(Int32)
+    end
+
+    class MapBackedScriptFeature < ScriptFeature
+      def initialize(@name : String, @feature_map : Hash(Array(Int32), Array(Int32)))
+      end
+
+      def get_name : String
+        @name
+      end
+
+      def get_all_glyph_ids_for_substitution : Set(Array(Int32))
+        @feature_map.keys.to_set
+      end
+
+      def can_replace_glyphs(glyph_ids : Array(Int32)) : Bool
+        @feature_map.has_key?(glyph_ids)
+      end
+
+      def get_replacement_for_glyphs(glyph_ids : Array(Int32)) : Array(Int32)
+        unless can_replace_glyphs(glyph_ids)
+          raise "The glyphs #{glyph_ids} cannot be replaced"
+        end
+        @feature_map[glyph_ids]
+      end
     end
 
     class MapBackedGsubData < GsubData
@@ -3698,7 +3725,11 @@ module Fontbox::TTF
       end
 
       def get_feature(feature_name : String) : ScriptFeature
-        raise "Not yet implemented"
+        feature_map = @glyph_substitution_map[feature_name]?
+        if feature_map.nil?
+          raise "Feature #{feature_name} not supported"
+        end
+        MapBackedScriptFeature.new(feature_name, feature_map)
       end
 
       def get_supported_features : Set(String)
