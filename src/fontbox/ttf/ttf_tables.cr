@@ -1441,9 +1441,96 @@ module Fontbox::TTF
     # Tag for this table.
     TAG = "hmtx"
 
+    @advance_width : Array(Int32) = [] of Int32
+    @left_side_bearing : Array(Int16) = [] of Int16
+    @non_horizontal_left_side_bearing : Array(Int16) = [] of Int16
+    @num_h_metrics : Int32 = 0
+
     # This will read the required data from the stream.
     def read(ttf : TrueTypeFont, data : TTFDataStream) : Nil
-      # TODO: Implement HMTX table reading
+      h_header = ttf.get_horizontal_header
+      if h_header.nil?
+        raise IO::EOFError.new("Could not get hmtx table")
+      end
+      @num_h_metrics = h_header.get_number_of_h_metrics.to_i32
+      num_glyphs = ttf.get_number_of_glyphs
+
+      bytes_read = 0
+      @advance_width = Array(Int32).new(@num_h_metrics)
+      @left_side_bearing = Array(Int16).new(@num_h_metrics)
+      @num_h_metrics.times do |_|
+        @advance_width << data.read_unsigned_short.to_i32
+        @left_side_bearing << data.read_signed_short
+        bytes_read += 4
+      end
+
+      number_non_horizontal = num_glyphs - @num_h_metrics
+
+      # handle bad fonts with too many hmetrics
+      if number_non_horizontal < 0
+        number_non_horizontal = num_glyphs
+      end
+
+      # make sure that table is never null and correct size, even with bad fonts that have no
+      # "leftSideBearing" table, although they should
+      @non_horizontal_left_side_bearing = Array(Int16).new(number_non_horizontal)
+
+      if bytes_read < length
+        number_non_horizontal.times do |_|
+          if bytes_read < length
+            @non_horizontal_left_side_bearing << data.read_signed_short
+            bytes_read += 2
+          end
+        end
+      end
+
+      @initialized = true
+    end
+
+    # Returns the advance width for the given GID.
+    def get_advance_width(gid : Int32) : Int32
+      if @advance_width.empty?
+        return 250
+      end
+      if gid < @num_h_metrics
+        @advance_width[gid]
+      else
+        # monospaced fonts may not have a width for every glyph
+        # the last one is for subsequent glyphs
+        @advance_width[@advance_width.size - 1]
+      end
+    end
+
+    # Returns the left side bearing for the given GID.
+    def get_left_side_bearing(gid : Int32) : Int32
+      if @left_side_bearing.empty?
+        return 0
+      end
+      if gid < @num_h_metrics
+        @left_side_bearing[gid].to_i32
+      else
+        @non_horizontal_left_side_bearing[gid - @num_h_metrics].to_i32
+      end
+    end
+
+    # Gets the advance width array.
+    def get_advance_width_array : Array(Int32)
+      @advance_width
+    end
+
+    # Gets the left side bearing array.
+    def get_left_side_bearing_array : Array(Int16)
+      @left_side_bearing
+    end
+
+    # Gets the non-horizontal left side bearing array.
+    def get_non_horizontal_left_side_bearing_array : Array(Int16)
+      @non_horizontal_left_side_bearing
+    end
+
+    # Gets the number of horizontal metrics.
+    def get_num_h_metrics : Int32
+      @num_h_metrics
     end
   end
 
@@ -1454,9 +1541,43 @@ module Fontbox::TTF
     # Tag for this table.
     TAG = "loca"
 
+    SHORT_OFFSETS = 0
+    LONG_OFFSETS  = 1
+
+    @offsets : Array(Int64) = [] of Int64
+
     # This will read the required data from the stream.
     def read(ttf : TrueTypeFont, data : TTFDataStream) : Nil
-      # TODO: Implement LOCA table reading
+      head = ttf.get_header
+      if head.nil?
+        raise IO::EOFError.new("Could not get head table")
+      end
+      num_glyphs = ttf.get_number_of_glyphs
+      @offsets = Array(Int64).new(num_glyphs + 1)
+      (num_glyphs + 1).times do |i|
+        if head.get_index_to_loc_format == SHORT_OFFSETS
+          @offsets << data.read_unsigned_short.to_i64 * 2
+        elsif head.get_index_to_loc_format == LONG_OFFSETS
+          @offsets << data.read_unsigned_int.to_i64
+        else
+          raise IO::EOFError.new("Error:TTF.loca unknown offset format: #{head.get_index_to_loc_format}")
+        end
+      end
+      if num_glyphs == 1 && @offsets[0] == 0 && @offsets[1] == 0
+        # PDFBOX-5794 empty glyph
+        raise IO::EOFError.new("The font has no glyphs")
+      end
+      @initialized = true
+    end
+
+    # Returns the offsets.
+    def get_offsets : Array(Int64)
+      @offsets
+    end
+
+    # Sets the offsets.
+    def set_offsets(offsets_value : Array(Int64))
+      @offsets = offsets_value
     end
   end
 
