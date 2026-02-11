@@ -430,7 +430,7 @@ module Fontbox::TTF
       elsif @format_type == 2.0_f32
         num_glyphs = data.read_unsigned_short.to_i32
         glyph_name_index = Array(Int32).new(num_glyphs)
-        @glyph_names = Array(String).new(num_glyphs)
+        @glyph_names = Array.new(num_glyphs, ".undefined")
         max_index = Int32::MIN
         num_glyphs.times do |_|
           index = data.read_unsigned_short.to_i32
@@ -463,7 +463,7 @@ module Fontbox::TTF
         num_glyphs.times do |i|
           index = glyph_name_index[i]
           if index >= 0 && index < WGL4Names::NUMBER_OF_MAC_GLYPHS
-            @glyph_names.as(Array(String))[i] = WGL4Names.get_glyph_name(index)
+            @glyph_names.as(Array(String))[i] = WGL4Names.get_glyph_name(index) || ".undefined"
           elsif index >= WGL4Names::NUMBER_OF_MAC_GLYPHS && index <= 32767 && !name_array.nil?
             @glyph_names.as(Array(String))[i] = name_array.as(Array(String))[index - WGL4Names::NUMBER_OF_MAC_GLYPHS]
           else
@@ -482,7 +482,7 @@ module Fontbox::TTF
             offset = data.read_signed_byte
             glyph_name_index << i + 1 + offset
           end
-          @glyph_names = Array(String).new(num_glyphs)
+          @glyph_names = Array.new(num_glyphs, ".undefined")
           num_glyphs.times do |i|
             index = glyph_name_index[i]
             if index >= 0 && index < WGL4Names::NUMBER_OF_MAC_GLYPHS
@@ -655,7 +655,7 @@ module Fontbox::TTF
       @string
     end
 
-    def string=(string_value : String)
+    def string=(string_value : String?)
       @string = string_value
     end
   end
@@ -900,8 +900,8 @@ module Fontbox::TTF
     ENCODING_UNICODE_2_0_FULL = 4
 
     # Surrogate offsets for format 8
-    private LEAD_OFFSET      = 0xD800_u64 - (0x10000_u64 >> 10)
-    private SURROGATE_OFFSET = 0x10000_u64 - (0xD800_u64 << 10) - 0xDC00_u64
+    private LEAD_OFFSET      = 0xD800_i64 - (0x10000_i64 >> 10)
+    private SURROGATE_OFFSET = 0x10000_i64 - (0xD800_i64 << 10) - 0xDC00_i64
 
     @platform_id : Int32 = 0
     @platform_encoding_id : Int32 = 0
@@ -909,6 +909,9 @@ module Fontbox::TTF
     @glyph_id_to_character_code : Array(Int32)? = nil
     @glyph_id_to_character_code_multiple : Hash(Int32, Array(Int32)) = Hash(Int32, Array(Int32)).new
     @character_code_to_glyph_id : Hash(Int32, Int32) = Hash(Int32, Int32).new
+
+    # Class used to manage CMap format 2 subheaders.
+    private record SubHeader, first_code : Int32, entry_count : Int32, id_delta : Int32, id_range_offset : Int32
 
     # This will read the required data from the stream.
     def init_data(data : TTFDataStream) : Nil
@@ -1020,7 +1023,7 @@ module Fontbox::TTF
       sub_header_keys = Array(Int32).new(256)
       max_sub_header_index = 0
       256.times do |_|
-        key = data.read_unsigned_short
+        key = data.read_unsigned_short.to_i32
         sub_header_keys << key
         max_sub_header_index = Math.max(max_sub_header_index, key // 8)
       end
@@ -1028,10 +1031,10 @@ module Fontbox::TTF
       # Read all SubHeaders to avoid useless seek on DataSource
       sub_headers = Array(SubHeader).new(max_sub_header_index + 1)
       (max_sub_header_index + 1).times do |i|
-        first_code = data.read_unsigned_short
-        entry_count = data.read_unsigned_short
-        id_delta = data.read_signed_short
-        id_range_offset = data.read_unsigned_short - (max_sub_header_index + 1 - i - 1) * 8 - 2
+        first_code = data.read_unsigned_short.to_i32
+        entry_count = data.read_unsigned_short.to_i32
+        id_delta = data.read_signed_short.to_i32
+        id_range_offset = data.read_unsigned_short.to_i32 - (max_sub_header_index + 1 - i - 1) * 8 - 2
         sub_headers << SubHeader.new(first_code, entry_count, id_delta, id_range_offset)
       end
       start_glyph_index_offset = data.get_current_position
@@ -1058,7 +1061,7 @@ module Fontbox::TTF
 
           # Go to the CharacterCode position in the Sub Array of the glyphIndexArray
           # glyphIndexArray contains Unsigned Short so add (j * 2) bytes at the index position
-          p = data.read_unsigned_short
+          p = data.read_unsigned_short.to_i32
           # Compute the glyphIndex
           if p > 0
             p = (p + id_delta) % 65536
@@ -1088,13 +1091,13 @@ module Fontbox::TTF
     end
 
     private def process_subtype4(data : TTFDataStream, num_glyphs : Int32) : Nil
-      seg_count_x2 = data.read_unsigned_short
+      seg_count_x2 = data.read_unsigned_short.to_i32
       seg_count = seg_count_x2 // 2
-      search_range = data.read_unsigned_short
-      entry_selector = data.read_unsigned_short
-      range_shift = data.read_unsigned_short
+      search_range = data.read_unsigned_short.to_i32
+      entry_selector = data.read_unsigned_short.to_i32
+      range_shift = data.read_unsigned_short.to_i32
       end_count = data.read_unsigned_short_array(seg_count)
-      reserved_pad = data.read_unsigned_short
+      reserved_pad = data.read_unsigned_short.to_i32
       start_count = data.read_unsigned_short_array(seg_count)
       id_delta = data.read_unsigned_short_array(seg_count)
       id_range_offset_position = data.get_current_position
@@ -1104,11 +1107,11 @@ module Fontbox::TTF
       max_glyph_id = 0
 
       seg_count.times do |i|
-        start = start_count[i]
-        end_val = end_count[i]
+        start = start_count[i].to_i32
+        end_val = end_count[i].to_i32
         if start != 65535 && end_val != 65535
-          delta = id_delta[i]
-          range_offset = id_range_offset[i]
+          delta = id_delta[i].to_i32
+          range_offset = id_range_offset[i].to_i32
           segment_range_offset = id_range_offset_position + (i * 2) + range_offset
           (start..end_val).each do |j|
             if range_offset == 0
@@ -1118,7 +1121,7 @@ module Fontbox::TTF
             else
               glyph_offset = segment_range_offset + ((j - start) * 2)
               data.seek(glyph_offset)
-              glyph_index = data.read_unsigned_short
+              glyph_index = data.read_unsigned_short.to_i32
               if glyph_index != 0
                 glyph_index = (glyph_index + delta) & 0xFFFF
                 max_glyph_id = Math.max(glyph_index, max_glyph_id)
@@ -1138,16 +1141,17 @@ module Fontbox::TTF
     end
 
     private def process_subtype6(data : TTFDataStream, num_glyphs : Int32) : Nil
-      first_code = data.read_unsigned_short
-      entry_count = data.read_unsigned_short
+      first_code = data.read_unsigned_short.to_i32
+      entry_count = data.read_unsigned_short.to_i32
       # skip empty tables
       return if entry_count == 0
       @character_code_to_glyph_id = Hash(Int32, Int32).new
       glyph_id_array = data.read_unsigned_short_array(entry_count)
       max_glyph_id = 0
       entry_count.times do |i|
-        max_glyph_id = Math.max(max_glyph_id, glyph_id_array[i])
-        @character_code_to_glyph_id[first_code + i] = glyph_id_array[i]
+        glyph_id = glyph_id_array[i].to_i32
+        max_glyph_id = Math.max(max_glyph_id, glyph_id)
+        @character_code_to_glyph_id[first_code + i] = glyph_id
       end
       build_glyph_id_to_character_code_lookup(max_glyph_id)
     end
@@ -1195,8 +1199,8 @@ module Fontbox::TTF
           else
             # the character code uses a 32bits format
             # convert it in decimal : see http://www.unicode.org/faq//utf_bom.html#utf16-4
-            lead = LEAD_OFFSET + (j >> 10)
-            trail = 0xDC00_u64 + (j & 0x3FF_u64)
+            lead = LEAD_OFFSET + (j >> 10).to_i64
+            trail = 0xDC00_i64 + (j & 0x3FF_u64).to_i64
 
             codepoint = (lead << 10) + trail + SURROGATE_OFFSET
             if codepoint > Int32::MAX
@@ -1385,13 +1389,13 @@ module Fontbox::TTF
 
     # This will read the required data from the stream.
     def read(ttf : TrueTypeFont, data : TTFDataStream) : Nil
-      version = data.read_unsigned_short
-      number_of_tables = data.read_unsigned_short
+      version = data.read_unsigned_short.to_i32
+      number_of_tables = data.read_unsigned_short.to_i32
       @cmaps = Array(CmapSubtable).new(number_of_tables)
-      number_of_tables.times do |i|
+      number_of_tables.times do
         cmap = CmapSubtable.new
         cmap.init_data(data)
-        @cmaps[i] = cmap
+        @cmaps << cmap
       end
       number_of_glyphs = ttf.get_number_of_glyphs
       number_of_tables.times do |i|
@@ -1456,11 +1460,11 @@ module Fontbox::TTF
       num_glyphs = ttf.get_number_of_glyphs
 
       bytes_read = 0
-      @advance_width = Array(Int32).new(@num_h_metrics)
-      @left_side_bearing = Array(Int16).new(@num_h_metrics)
-      @num_h_metrics.times do |_|
-        @advance_width << data.read_unsigned_short.to_i32
-        @left_side_bearing << data.read_signed_short
+      @advance_width = Array.new(@num_h_metrics, 0)
+      @left_side_bearing = Array.new(@num_h_metrics, 0_i16)
+      @num_h_metrics.times do |i|
+        @advance_width[i] = data.read_unsigned_short.to_i32
+        @left_side_bearing[i] = data.read_signed_short
         bytes_read += 4
       end
 
@@ -1473,12 +1477,12 @@ module Fontbox::TTF
 
       # make sure that table is never null and correct size, even with bad fonts that have no
       # "leftSideBearing" table, although they should
-      @non_horizontal_left_side_bearing = Array(Int16).new(number_non_horizontal)
+      @non_horizontal_left_side_bearing = Array.new(number_non_horizontal, 0_i16)
 
       if bytes_read < length
-        number_non_horizontal.times do |_|
+        number_non_horizontal.times do |i|
           if bytes_read < length
-            @non_horizontal_left_side_bearing << data.read_signed_short
+            @non_horizontal_left_side_bearing[i] = data.read_signed_short
             bytes_read += 2
           end
         end
@@ -1614,9 +1618,112 @@ module Fontbox::TTF
     # Tag for this table.
     TAG = "vhea"
 
+    @version : Float32 = 0.0_f32
+    @ascender : Int16 = 0
+    @descender : Int16 = 0
+    @line_gap : Int16 = 0
+    @advance_height_max : UInt16 = 0
+    @min_top_side_bearing : Int16 = 0
+    @min_bottom_side_bearing : Int16 = 0
+    @y_max_extent : Int16 = 0
+    @caret_slope_rise : Int16 = 0
+    @caret_slope_run : Int16 = 0
+    @caret_offset : Int16 = 0
+    @reserved1 : Int16 = 0
+    @reserved2 : Int16 = 0
+    @reserved3 : Int16 = 0
+    @reserved4 : Int16 = 0
+    @metric_data_format : Int16 = 0
+    @number_of_v_metrics : UInt16 = 0
+
     # This will read the required data from the stream.
     def read(ttf : TrueTypeFont, data : TTFDataStream) : Nil
-      # TODO: Implement VHEA table reading
+      @version = data.read_32_fixed
+      @ascender = data.read_signed_short
+      @descender = data.read_signed_short
+      @line_gap = data.read_signed_short
+      @advance_height_max = data.read_unsigned_short.to_u16
+      @min_top_side_bearing = data.read_signed_short
+      @min_bottom_side_bearing = data.read_signed_short
+      @y_max_extent = data.read_signed_short
+      @caret_slope_rise = data.read_signed_short
+      @caret_slope_run = data.read_signed_short
+      @caret_offset = data.read_signed_short
+      @reserved1 = data.read_signed_short
+      @reserved2 = data.read_signed_short
+      @reserved3 = data.read_signed_short
+      @reserved4 = data.read_signed_short
+      @metric_data_format = data.read_signed_short
+      @number_of_v_metrics = data.read_unsigned_short.to_u16
+      @initialized = true
+    end
+
+    def get_version : Float32
+      @version
+    end
+
+    def get_ascender : Int16
+      @ascender
+    end
+
+    def get_descender : Int16
+      @descender
+    end
+
+    def get_line_gap : Int16
+      @line_gap
+    end
+
+    def get_advance_height_max : UInt16
+      @advance_height_max
+    end
+
+    def get_min_top_side_bearing : Int16
+      @min_top_side_bearing
+    end
+
+    def get_min_bottom_side_bearing : Int16
+      @min_bottom_side_bearing
+    end
+
+    def get_y_max_extent : Int16
+      @y_max_extent
+    end
+
+    def get_caret_slope_rise : Int16
+      @caret_slope_rise
+    end
+
+    def get_caret_slope_run : Int16
+      @caret_slope_run
+    end
+
+    def get_caret_offset : Int16
+      @caret_offset
+    end
+
+    def get_reserved1 : Int16
+      @reserved1
+    end
+
+    def get_reserved2 : Int16
+      @reserved2
+    end
+
+    def get_reserved3 : Int16
+      @reserved3
+    end
+
+    def get_reserved4 : Int16
+      @reserved4
+    end
+
+    def get_metric_data_format : Int16
+      @metric_data_format
+    end
+
+    def get_number_of_v_metrics : UInt16
+      @number_of_v_metrics
     end
   end
 
@@ -1627,9 +1734,63 @@ module Fontbox::TTF
     # Tag for this table.
     TAG = "vmtx"
 
+    @advance_height : Array(Int32) = [] of Int32
+    @top_side_bearing : Array(Int16) = [] of Int16
+    @additional_top_side_bearing : Array(Int16) = [] of Int16
+    @num_v_metrics : Int32 = 0
+
     # This will read the required data from the stream.
     def read(ttf : TrueTypeFont, data : TTFDataStream) : Nil
-      # TODO: Implement VMTX table reading
+      v_header = ttf.get_vertical_header
+      if v_header.nil?
+        raise IO::EOFError.new("Could not get vhea table")
+      end
+      @num_v_metrics = v_header.get_number_of_v_metrics.to_i32
+      num_glyphs = ttf.get_number_of_glyphs
+
+      bytes_read = 0
+      @advance_height = Array.new(@num_v_metrics, 0)
+      @top_side_bearing = Array.new(@num_v_metrics, 0_i16)
+      @num_v_metrics.times do |i|
+        @advance_height[i] = data.read_unsigned_short.to_i32
+        @top_side_bearing[i] = data.read_signed_short
+        bytes_read += 4
+      end
+
+      if bytes_read < length
+        number_non_vertical = num_glyphs - @num_v_metrics
+        if number_non_vertical < 0
+          number_non_vertical = num_glyphs
+        end
+
+        @additional_top_side_bearing = Array.new(number_non_vertical, 0_i16)
+        number_non_vertical.times do |i|
+          if bytes_read < length
+            @additional_top_side_bearing[i] = data.read_signed_short
+            bytes_read += 2
+          end
+        end
+      else
+        @additional_top_side_bearing = [] of Int16
+      end
+
+      @initialized = true
+    end
+
+    def get_top_side_bearing(gid : Int32) : Int32
+      if gid < @num_v_metrics
+        @top_side_bearing[gid].to_i32
+      else
+        @additional_top_side_bearing[gid - @num_v_metrics].to_i32
+      end
+    end
+
+    def get_advance_height(gid : Int32) : Int32
+      if gid < @num_v_metrics
+        @advance_height[gid]
+      else
+        @advance_height[@advance_height.size - 1]
+      end
     end
   end
 
@@ -1640,9 +1801,30 @@ module Fontbox::TTF
     # Tag for this table.
     TAG = "VORG"
 
+    @version : Float32 = 0.0_f32
+    @default_vert_origin_y : Int16 = 0
+    @origins : Hash(Int32, Int16) = Hash(Int32, Int16).new
+
     # This will read the required data from the stream.
     def read(ttf : TrueTypeFont, data : TTFDataStream) : Nil
-      # TODO: Implement VORG table reading
+      @version = data.read_32_fixed
+      @default_vert_origin_y = data.read_signed_short
+      num_vert_origin_y_metrics = data.read_unsigned_short.to_i32
+      @origins = Hash(Int32, Int16).new(initial_capacity: num_vert_origin_y_metrics)
+      num_vert_origin_y_metrics.times do
+        glyph_id = data.read_unsigned_short.to_i32
+        y = data.read_signed_short
+        @origins[glyph_id] = y
+      end
+      @initialized = true
+    end
+
+    def get_version : Float32
+      @version
+    end
+
+    def get_origin_y(gid : Int32) : Int32
+      @origins[gid]?.try(&.to_i32) || @default_vert_origin_y.to_i32
     end
   end
 

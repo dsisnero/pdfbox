@@ -79,7 +79,7 @@ module Fontbox::TTF
     #
     # @return eight bytes interpreted as a long.
     def read_long : Int64
-      (read_int.to_i64 << 32) + (read_int & 0xFFFFFFFF).to_i64
+      (read_int.to_i64 << 32) + (read_int.to_i64 & 0xFFFFFFFF_i64)
     end
 
     # Read a signed 32-bit integer.
@@ -131,9 +131,7 @@ module Fontbox::TTF
     #
     # @return A view or nil (caller can use `read` instead). Please close the result
     def create_sub_view(length : Int64) : Pdfbox::IO::RandomAccessRead?
-      # TODO: Need RandomAccessReadBuffer equivalent
-      # For now, return nil as per Java implementation
-      nil
+      Pdfbox::IO::RandomAccessReadBuffer.new(@data).create_view(@current_position, length)
     end
 
     # This will get the original data file that was used for this stream.

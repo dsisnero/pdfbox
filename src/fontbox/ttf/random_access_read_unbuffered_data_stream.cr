@@ -46,7 +46,7 @@ module Fontbox::TTF
     end
 
     def read_long : Int64
-      ((read_int.to_i64 << 32) | (read_int & 0xFFFFFFFF).to_i64)
+      ((read_int.to_i64 << 32) | (read_int.to_i64 & 0xFFFFFFFF_i64))
     end
 
     private def read_int : Int32
@@ -67,8 +67,8 @@ module Fontbox::TTF
 
     # Lifetime of returned IO is bound by `this` lifetime, it won't close underlying `RandomAccessRead`.
     def get_original_data : IO
-      # TODO: Implement create_view method on RandomAccessRead
-      raise "Not implemented: RandomAccessRead.create_view"
+      view = @random_access_read.create_view(0, @length)
+      IO::Memory.new(view.read_all)
     end
 
     def get_original_data_size : Int64
@@ -76,8 +76,7 @@ module Fontbox::TTF
     end
 
     def create_sub_view(length : Int64) : Pdfbox::IO::RandomAccessRead?
-      # TODO: Implement create_view method on RandomAccessRead
-      nil
+      @random_access_read.create_view(get_current_position, length)
     end
   end
 end

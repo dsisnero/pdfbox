@@ -99,6 +99,21 @@ module Fontbox::TTF
       get_table(PostScriptTable::TAG).as?(PostScriptTable)
     end
 
+    # Gets the vertical header table.
+    def get_vertical_header : VerticalHeaderTable?
+      get_table(VerticalHeaderTable::TAG).as?(VerticalHeaderTable)
+    end
+
+    # Gets the vertical metrics table.
+    def get_vertical_metrics : VerticalMetricsTable?
+      get_table(VerticalMetricsTable::TAG).as?(VerticalMetricsTable)
+    end
+
+    # Gets the vertical origin table.
+    def get_vertical_origin : VerticalOriginTable?
+      get_table(VerticalOriginTable::TAG).as?(VerticalOriginTable)
+    end
+
     # Gets the naming table.
     def get_naming : NamingTable?
       get_table(NamingTable::TAG).as?(NamingTable)

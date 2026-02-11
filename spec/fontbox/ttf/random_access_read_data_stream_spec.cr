@@ -51,13 +51,31 @@ module Fontbox::TTF
     end
 
     it "test_double_close" do
-      # TODO: Need RandomAccessReadBufferedFile equivalent
-      # For now, use MemoryRandomAccessRead
       byte_array = Bytes.new(100)
       random_access_read = Pdfbox::IO::RandomAccessReadBuffer.new(byte_array)
       data_stream = RandomAccessReadDataStream.new(random_access_read)
       data_stream.close
       # Should not raise on double close
+      data_stream.close
+    end
+
+    it "test_create_sub_view" do
+      content = "0123456789"
+      random_access_read = Pdfbox::IO::RandomAccessReadBuffer.new(content.to_slice)
+      data_stream = RandomAccessReadDataStream.new(random_access_read)
+      data_stream.seek(3)
+
+      sub_view = data_stream.create_sub_view(4)
+      sub_view.should_not be_nil
+      view = sub_view || raise "expected sub view"
+      view.read.should eq('3'.ord.to_u8)
+      view.read.should eq('4'.ord.to_u8)
+      view.read.should eq('5'.ord.to_u8)
+      view.read.should eq('6'.ord.to_u8)
+      view.read.should be_nil
+      data_stream.get_current_position.should eq(3)
+
+      sub_view.try(&.close)
       data_stream.close
     end
 

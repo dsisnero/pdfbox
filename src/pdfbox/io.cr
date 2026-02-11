@@ -143,7 +143,10 @@ module Pdfbox::IO
     end
 
     def seek(position : Int64) : Nil
-      @io.pos = position
+      if position < 0
+        raise "Invalid position #{position}"
+      end
+      @io.pos = Math.min(position, length)
     end
 
     def read : UInt8?
@@ -168,6 +171,11 @@ module Pdfbox::IO
       super
       @io.close
     end
+
+    # Use an independent reader so view reads don't move this reader's cursor.
+    def create_view(start_position : Int64, stream_length : Int64) : RandomAccessRead
+      RandomAccessReadView.new(RandomAccessReadBuffer.new(@io.to_slice), start_position, stream_length)
+    end
   end
 
   # Alias for backward compatibility
@@ -177,8 +185,10 @@ module Pdfbox::IO
   # Corresponds to RandomAccessReadBufferedFile in Apache PDFBox
   class RandomAccessReadBufferedFile < RandomAccessRead
     @file : ::File
+    @filename : String
 
     def initialize(filename : String)
+      @filename = filename
       @file = ::File.open(filename, "r")
     end
 
@@ -191,7 +201,10 @@ module Pdfbox::IO
     end
 
     def seek(position : Int64) : Nil
-      @file.pos = position
+      if position < 0
+        raise "Invalid position #{position}"
+      end
+      @file.pos = Math.min(position, length)
     end
 
     def read : UInt8?
@@ -221,6 +234,11 @@ module Pdfbox::IO
 
     def finalize
       @file.close
+    end
+
+    # Use an independent file reader so view reads don't move this reader's cursor.
+    def create_view(start_position : Int64, stream_length : Int64) : RandomAccessRead
+      RandomAccessReadView.new(RandomAccessReadBufferedFile.new(@filename), start_position, stream_length)
     end
   end
 
