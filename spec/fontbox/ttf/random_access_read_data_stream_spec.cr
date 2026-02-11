@@ -4,7 +4,7 @@ module Fontbox::TTF
   describe RandomAccessReadDataStream do
     it "test_eof" do
       byte_array = Bytes.new(10)
-      random_access_read_buffer = Pdfbox::IO::MemoryRandomAccessRead.new(byte_array)
+      random_access_read_buffer = Pdfbox::IO::RandomAccessReadBuffer.new(byte_array)
       data_stream = RandomAccessReadDataStream.new(random_access_read_buffer)
       value = data_stream.read
       while value > -1
@@ -18,7 +18,7 @@ module Fontbox::TTF
 
     it "test_eof_unsigned_short" do
       byte_array = Bytes.new(3)
-      random_access_read_buffer = Pdfbox::IO::MemoryRandomAccessRead.new(byte_array)
+      random_access_read_buffer = Pdfbox::IO::RandomAccessReadBuffer.new(byte_array)
       data_stream = RandomAccessReadDataStream.new(random_access_read_buffer)
       data_stream.read_unsigned_short
       expect_raises(IO::EOFError) do
@@ -29,7 +29,7 @@ module Fontbox::TTF
 
     it "test_eof_unsigned_int" do
       byte_array = Bytes.new(5)
-      random_access_read_buffer = Pdfbox::IO::MemoryRandomAccessRead.new(byte_array)
+      random_access_read_buffer = Pdfbox::IO::RandomAccessReadBuffer.new(byte_array)
       data_stream = RandomAccessReadDataStream.new(random_access_read_buffer)
       data_stream.read_unsigned_int
       expect_raises(IO::EOFError) do
@@ -40,7 +40,7 @@ module Fontbox::TTF
 
     it "test_eof_unsigned_byte" do
       byte_array = Bytes.new(2)
-      random_access_read_buffer = Pdfbox::IO::MemoryRandomAccessRead.new(byte_array)
+      random_access_read_buffer = Pdfbox::IO::RandomAccessReadBuffer.new(byte_array)
       data_stream = RandomAccessReadDataStream.new(random_access_read_buffer)
       data_stream.read_unsigned_byte
       data_stream.read_unsigned_byte
@@ -54,7 +54,7 @@ module Fontbox::TTF
       # TODO: Need RandomAccessReadBufferedFile equivalent
       # For now, use MemoryRandomAccessRead
       byte_array = Bytes.new(100)
-      random_access_read = Pdfbox::IO::MemoryRandomAccessRead.new(byte_array)
+      random_access_read = Pdfbox::IO::RandomAccessReadBuffer.new(byte_array)
       data_stream = RandomAccessReadDataStream.new(random_access_read)
       data_stream.close
       # Should not raise on double close
@@ -64,7 +64,7 @@ module Fontbox::TTF
     it "ensure_read_finishes" do
       content = "1234567890"
       byte_array = content.to_slice
-      random_access_read = Pdfbox::IO::MemoryRandomAccessRead.new(byte_array)
+      random_access_read = Pdfbox::IO::RandomAccessReadBuffer.new(byte_array)
       read_buffer = Bytes.new(2)
       data_stream = RandomAccessReadDataStream.new(random_access_read)
       amount_read = 0
@@ -79,7 +79,7 @@ module Fontbox::TTF
     it "test_read_buffer" do
       content = "012345678A012345678B012345678C012345678D"
       byte_array = content.to_slice
-      random_access_read = Pdfbox::IO::MemoryRandomAccessRead.new(byte_array)
+      random_access_read = Pdfbox::IO::RandomAccessReadBuffer.new(byte_array)
       read_buffer = Bytes.new(40)
       data_stream = RandomAccessReadDataStream.new(random_access_read)
 

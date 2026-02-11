@@ -105,7 +105,7 @@ module Fontbox::Type1
       tokens[0].get_kind.should eq Kind::INTEGER
       tokens[0].int_value.should eq 3
       tokens[1].get_kind.should eq Kind::CHARSTRING
-      tokens[1].get_data.should eq Bytes['1', '2', '3']
+      tokens[1].get_data.should eq "123".to_slice
       tokens[2].get_kind.should eq Kind::NAME
       tokens[2].get_text.should eq "ND"
     end
