@@ -33,7 +33,7 @@ module Pdfbox::Pdfparser
       if data.size == 0
         Log.error { "PDFObjectStreamParser initialize: DECODED DATA IS EMPTY!" }
       end
-      source = Pdfbox::IO::MemoryRandomAccessRead.new(data)
+      source = Pdfbox::IO::RandomAccessReadBuffer.new(data)
       super(source, parser)
 
       # Get mandatory number of objects

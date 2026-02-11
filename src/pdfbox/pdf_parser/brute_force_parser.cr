@@ -68,7 +68,7 @@ module Pdfbox::Pdfparser
       @source.seek(origin_offset)
 
       # Create memory-based RandomAccessRead for the range
-      memory_source = Pdfbox::IO::MemoryRandomAccessRead.new(data)
+      memory_source = Pdfbox::IO::RandomAccessReadBuffer.new(data)
       original_source = @source
 
       iteration_count = 0
@@ -144,7 +144,7 @@ module Pdfbox::Pdfparser
 
     private def min_search_offset : Int64
       # When using memory source (brute force search in memory), we can search from offset 0
-      @source.is_a?(Pdfbox::IO::MemoryRandomAccessRead) ? 0_i64 : MINIMUM_SEARCH_OFFSET
+      @source.is_a?(Pdfbox::IO::RandomAccessReadBuffer) ? 0_i64 : MINIMUM_SEARCH_OFFSET
     end
 
     private def string?(chars : Array(Char)) : Bool

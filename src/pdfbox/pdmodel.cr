@@ -43,7 +43,7 @@ module Pdfbox::Pdmodel
       end
       bytes = Bytes.new(file_size.to_i32)
       io.read_fully(bytes)
-      source = Pdfbox::IO::MemoryRandomAccessRead.new(bytes)
+      source = Pdfbox::IO::RandomAccessReadBuffer.new(bytes)
       parser = Pdfbox::Pdfparser::Parser.new(source)
       parser.lenient = lenient
       parser.parse

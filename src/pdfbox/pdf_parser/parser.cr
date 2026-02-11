@@ -1218,7 +1218,7 @@ module Pdfbox::Pdfparser
 
     # Parse objects from stream data using sorted offsets
     private def parse_objects_from_sorted_offsets(
-      memory_io : Pdfbox::IO::MemoryRandomAccessRead,
+      memory_io : Pdfbox::IO::RandomAccessReadBuffer,
       offset_to_obj_num : Hash(Int32, Int64),
       sorted_offsets : Array(Int32),
       first : Int32,

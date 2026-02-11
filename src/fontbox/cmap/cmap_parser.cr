@@ -346,7 +346,7 @@ module Fontbox
           raise "Error: Could not find referenced cmap stream #{name}"
         end
         data = File.read(resource_path).to_slice
-        Pdfbox::IO::MemoryRandomAccessRead.new(data)
+        Pdfbox::IO::RandomAccessReadBuffer.new(data)
       end
 
       private def parse_next_token(random_access_read : Pdfbox::IO::RandomAccessRead)

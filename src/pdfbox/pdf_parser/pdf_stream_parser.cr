@@ -19,7 +19,7 @@ module Pdfbox::Pdfparser
 
     # Constructor for byte array
     def initialize(bytes : Bytes)
-      source = Pdfbox::IO::MemoryRandomAccessRead.new(bytes)
+      source = Pdfbox::IO::RandomAccessReadBuffer.new(bytes)
       super(source)
     end
 

@@ -73,7 +73,7 @@ describe Pdfbox::Pdfparser::Parser do
       # 0000000000 65535 f
       # 0000000010 00000 n
       xref_data = "xref\n0 2\n0000000000 65535 f\n0000000010 00000 n\n"
-      source = Pdfbox::IO::MemoryRandomAccessRead.new(xref_data.to_slice)
+      source = Pdfbox::IO::RandomAccessReadBuffer.new(xref_data.to_slice)
       parser = Pdfbox::Pdfparser::Parser.new(source)
 
       xref = parser.parse_xref
@@ -104,7 +104,7 @@ describe Pdfbox::Pdfparser::Parser do
       # 0000000100 00000 n
       # 0000000200 00001 n
       xref_data = "xref\n0 1\n0000000000 65535 f\n3 2\n0000000100 00000 n\n0000000200 00001 n\n"
-      source = Pdfbox::IO::MemoryRandomAccessRead.new(xref_data.to_slice)
+      source = Pdfbox::IO::RandomAccessReadBuffer.new(xref_data.to_slice)
       parser = Pdfbox::Pdfparser::Parser.new(source)
 
       xref = parser.parse_xref
