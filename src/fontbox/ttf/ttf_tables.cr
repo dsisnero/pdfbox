@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require "./gsub/glyph_substitution_data_extractor"
+
 # ameba:disable Naming/AccessorMethodName
 module Fontbox::TTF
   # Header table.
@@ -2793,7 +2795,7 @@ module Fontbox::TTF
       @range_records
     end
 
-    private def self.range_records_as_array(range_records : Array(RangeRecord)) : Array(Int32)
+    def self.range_records_as_array(range_records : Array(RangeRecord)) : Array(Int32)
       glyph_ids = [] of Int32
       range_records.each do |range|
         (range.get_start_glyph_id..range.get_end_glyph_id).each do |glyph_id|
@@ -3171,9 +3173,540 @@ module Fontbox::TTF
     # Tag for this table.
     TAG = "GSUB"
 
+    private Log = ::Log.for(self)
+
+    @script_list : Hash(String, ScriptTable)
+    @feature_list_table : FeatureListTable
+    @lookup_list_table : LookupListTable
+    @lookup_cache : Hash(Int32, Int32)
+    @reverse_lookup : Hash(Int32, Int32)
+    @last_used_supported_script : String?
+    @gsub_data : Model::GsubData?
+
+    def initialize
+      super
+      @script_list = Hash(String, ScriptTable).new
+      @feature_list_table = FeatureListTable.new(0, [] of FeatureRecord)
+      @lookup_list_table = LookupListTable.new(0, [] of LookupTable)
+      @lookup_cache = Hash(Int32, Int32).new
+      @reverse_lookup = Hash(Int32, Int32).new
+      @gsub_data = nil
+    end
+
     # This will read the required data from the stream.
     def read(ttf : TrueTypeFont, data : TTFDataStream) : Nil
-      # TODO: Implement GSUB table reading
+      start = data.get_current_position
+      major_version = data.read_unsigned_short.to_i32
+      minor_version = data.read_unsigned_short.to_i32
+      script_list_offset = data.read_unsigned_short.to_i32
+      feature_list_offset = data.read_unsigned_short.to_i32
+      lookup_list_offset = data.read_unsigned_short.to_i32
+      feature_variations_offset = -1_i64
+      if minor_version == 1
+        feature_variations_offset = data.read_unsigned_int.to_i64.to_i64
+      end
+
+      @script_list = read_script_list(data, start + script_list_offset)
+      @feature_list_table = read_feature_list(data, start + feature_list_offset)
+      if lookup_list_offset > 0
+        @lookup_list_table = read_lookup_list(data, start + lookup_list_offset)
+      else
+        Log.warn { "lookupListOffset is 0, LookupListTable is considered empty" }
+        @lookup_list_table = LookupListTable.new(0, [] of LookupTable)
+      end
+
+      # TODO: debugging logging as in Java
+
+      glyph_substitution_data_extractor = Gsub::GlyphSubstitutionDataExtractor.new
+      @gsub_data = glyph_substitution_data_extractor.get_gsub_data(@script_list, @feature_list_table, @lookup_list_table)
+
+      @initialized = true
+    end
+
+    # Returns a read-only view of the script tags for which this GSUB table has records.
+    def get_supported_script_tags : Set(String)
+      Set.new(@script_list.keys)
+    end
+
+    # Builds a new GsubData instance for given script tag.
+    def get_gsub_data(script_tag : String) : Model::GsubData?
+      script_table = @script_list[script_tag]?
+      return unless script_table
+      Gsub::GlyphSubstitutionDataExtractor.new.get_gsub_data(script_tag, script_table,
+        @feature_list_table, @lookup_list_table)
+    end
+
+    # Returns the GsubData instance containing all scripts of the table.
+    def get_gsub_data : Model::GsubData?
+      @gsub_data
+    end
+
+    # Apply glyph substitutions to the supplied gid.
+    def get_substitution(gid : Int32, script_tags : Array(String), enabled_features : Array(String)? = nil) : Int32
+      # TODO: implement
+      gid
+    end
+
+    # For a substitute-gid, retrieve the original gid.
+    def get_unsubstitution(sgid : Int32) : Int32
+      # TODO: implement
+      sgid
+    end
+
+    private def read_script_list(data : TTFDataStream, offset : Int64) : Hash(String, ScriptTable)
+      data.seek(offset)
+      script_count = data.read_unsigned_short.to_i32
+      script_offsets = Array(Int32).new(script_count)
+      script_tags = Array(String).new(script_count)
+      result = Hash(String, ScriptTable).new
+      script_count.times do |i|
+        script_tags << data.read_string(4)
+        script_offsets << data.read_unsigned_short.to_i32
+        if script_offsets[i] < data.get_current_position - offset
+          Log.error { "scriptOffsets[#{i}]: #{script_offsets[i]} implausible: data.get_current_position - offset = #{data.get_current_position - offset}" }
+          return result
+        end
+      end
+      script_count.times do |i|
+        if result.has_key?(script_tags[i])
+          # PDFBOX-6146 duplicate script tag, skip
+          next
+        end
+        script_table = read_script_table(data, offset + script_offsets[i])
+        result[script_tags[i]] = script_table
+      end
+      result
+    end
+
+    private def read_script_table(data : TTFDataStream, offset : Int64) : ScriptTable
+      data.seek(offset)
+      default_lang_sys_offset = data.read_unsigned_short.to_i32
+      lang_sys_count = data.read_unsigned_short.to_i32
+      lang_sys_tags = Array(String).new(lang_sys_count)
+      lang_sys_offsets = Array(Int32).new(lang_sys_count)
+      lang_sys_count.times do |i|
+        lang_sys_tags << data.read_string(4)
+        lang_sys_offsets << data.read_unsigned_short.to_i32
+        if lang_sys_offsets[i] < data.get_current_position - offset
+          Log.error { "langSysOffsets[#{i}]: #{lang_sys_offsets[i]} implausible: data.get_current_position - offset = #{data.get_current_position - offset}" }
+          return ScriptTable.new(nil, Hash(String, LangSysTable).new)
+        end
+        if i > 0 && lang_sys_tags[i] < lang_sys_tags[i - 1]
+          Log.error { "LangSysRecords not alphabetically sorted by LangSys tag: #{lang_sys_tags[i]} < #{lang_sys_tags[i - 1]}" }
+          return ScriptTable.new(nil, Hash(String, LangSysTable).new)
+        end
+      end
+
+      default_lang_sys_table = nil
+      if default_lang_sys_offset != 0
+        default_lang_sys_table = read_lang_sys_table(data, offset + default_lang_sys_offset)
+      end
+      lang_sys_tables = Hash(String, LangSysTable).new
+      lang_sys_count.times do |i|
+        lang_sys_table = read_lang_sys_table(data, offset + lang_sys_offsets[i])
+        lang_sys_tables[lang_sys_tags[i]] = lang_sys_table
+      end
+      ScriptTable.new(default_lang_sys_table, lang_sys_tables)
+    end
+
+    private def read_lang_sys_table(data : TTFDataStream, offset : Int64) : LangSysTable
+      data.seek(offset)
+      lookup_order = data.read_unsigned_short.to_i32
+      required_feature_index = data.read_unsigned_short.to_i32
+      feature_index_count = data.read_unsigned_short.to_i32
+      feature_indices = Array(Int32).new(feature_index_count)
+      feature_index_count.times do |_|
+        feature_indices << data.read_unsigned_short.to_i32
+      end
+      LangSysTable.new(lookup_order, required_feature_index, feature_index_count, feature_indices)
+    end
+
+    private def read_feature_list(data : TTFDataStream, offset : Int64) : FeatureListTable
+      data.seek(offset)
+      feature_count = data.read_unsigned_short.to_i32
+      feature_records = Array(FeatureRecord).new(feature_count)
+      feature_offsets = Array(Int32).new(feature_count)
+      feature_tags = Array(String).new(feature_count)
+      feature_count.times do |i|
+        feature_tags << data.read_string(4)
+        if i > 0 && feature_tags[i] < feature_tags[i - 1]
+          # catch corrupt file
+          if feature_tags[i].matches?(/\\w{4}/) && feature_tags[i - 1].matches?(/\\w{4}/)
+            Log.debug { "FeatureRecord array not alphabetically sorted by FeatureTag: #{feature_tags[i]} < #{feature_tags[i - 1]}" }
+          else
+            Log.warn { "FeatureRecord array not alphabetically sorted by FeatureTag: #{feature_tags[i]} < #{feature_tags[i - 1]}" }
+            return FeatureListTable.new(0, [] of FeatureRecord)
+          end
+        end
+        feature_offsets << data.read_unsigned_short.to_i32
+      end
+      feature_count.times do |i|
+        feature_table = read_feature_table(data, offset + feature_offsets[i])
+        feature_records << FeatureRecord.new(feature_tags[i], feature_table)
+      end
+      FeatureListTable.new(feature_count, feature_records)
+    end
+
+    private def read_feature_table(data : TTFDataStream, offset : Int64) : FeatureTable
+      data.seek(offset)
+      feature_params = data.read_unsigned_short.to_i32
+      lookup_index_count = data.read_unsigned_short.to_i32
+      lookup_list_indices = Array(Int32).new(lookup_index_count)
+      lookup_index_count.times do |_|
+        lookup_list_indices << data.read_unsigned_short.to_i32
+      end
+      FeatureTable.new(feature_params, lookup_index_count, lookup_list_indices)
+    end
+
+    private def read_lookup_list(data : TTFDataStream, offset : Int64) : LookupListTable
+      data.seek(offset)
+      lookup_count = data.read_unsigned_short.to_i32
+      lookups = Array(Int32).new(lookup_count)
+      lookup_count.times do |i|
+        lookups << data.read_unsigned_short.to_i32
+        if lookups[i] == 0
+          Log.error { "lookups[#{i}] is 0 at offset #{data.get_current_position - 2}" }
+        elsif offset + lookups[i] > data.get_original_data_size
+          Log.error { "#{offset + lookups[i]} > #{data.get_original_data_size}" }
+        end
+      end
+      lookup_tables = Array(LookupTable).new(lookup_count)
+      lookup_table_map = Hash(Int32, LookupTable).new
+      lookup_count.times do |i|
+        lookup_table = lookup_table_map[lookups[i]]?
+        if lookup_table.nil?
+          lookup_table = read_lookup_table(data, offset + lookups[i])
+          lookup_table_map[lookups[i]] = lookup_table
+        end
+        lookup_tables << lookup_table
+      end
+      LookupListTable.new(lookup_count, lookup_tables)
+    end
+
+    private def read_lookup_table(data : TTFDataStream, offset : Int64) : LookupTable
+      data.seek(offset)
+      lookup_type = data.read_unsigned_short.to_i32
+      lookup_flag = data.read_unsigned_short.to_i32
+      sub_table_count = data.read_unsigned_short.to_i32
+      sub_table_offsets = Array(Int32).new(sub_table_count)
+      sub_table_count.times do |i|
+        sub_table_offsets << data.read_unsigned_short.to_i32
+        if sub_table_offsets[i] == 0
+          Log.error { "subTableOffsets[#{i}] is 0 at offset #{data.get_current_position - 2}" }
+          return LookupTable.new(lookup_type, lookup_flag, 0, [] of LookupSubTable)
+        elsif offset + sub_table_offsets[i] > data.get_original_data_size
+          Log.error { "#{offset + sub_table_offsets[i]} > #{data.get_original_data_size}" }
+          return LookupTable.new(lookup_type, lookup_flag, 0, [] of LookupSubTable)
+        end
+      end
+      mark_filtering_set = 0
+      if (lookup_flag & 0x0010) != 0
+        mark_filtering_set = data.read_unsigned_short.to_i32
+      end
+      sub_tables = Array(LookupSubTable | Nil).new(sub_table_count) { nil }
+      case lookup_type
+      when 1, 2, 3, 4
+        sub_table_count.times do |i|
+          sub_tables[i] = read_lookup_subtable(data, offset + sub_table_offsets[i], lookup_type)
+        end
+      when 7
+        # Extension Substitution
+        sub_table_count.times do |i|
+          data.seek(offset + sub_table_offsets[i])
+          subst_format = data.read_unsigned_short.to_i32
+          if subst_format != 1
+            Log.error { "The expected SubstFormat for ExtensionSubstFormat1 subtable is #{subst_format} but should be 1 at offset #{offset + sub_table_offsets[i]}" }
+            next
+          end
+          extension_lookup_type = data.read_unsigned_short.to_i32
+          if lookup_type != 7 && lookup_type != extension_lookup_type
+            Log.error { "extensionLookupType changed from #{lookup_type} to #{extension_lookup_type} at offset #{offset + sub_table_offsets[i] + 2}" }
+            next
+          end
+          lookup_type = extension_lookup_type
+          extension_offset = data.read_unsigned_int.to_i64
+          extension_lookup_table_address = offset + sub_table_offsets[i] + extension_offset
+          sub_tables[i] = read_lookup_subtable(data, extension_lookup_table_address, extension_lookup_type)
+        end
+      else
+        Log.debug { "Type #{lookup_type} GSUB lookup table is not supported and will be ignored" }
+      end
+      LookupTable.new(lookup_type, lookup_flag, mark_filtering_set, sub_tables.compact)
+    end
+
+    private def read_lookup_subtable(data : TTFDataStream, offset : Int64, lookup_type : Int32) : LookupSubTable?
+      case lookup_type
+      when 1
+        read_single_lookup_subtable(data, offset)
+      when 2
+        read_multiple_substitution_subtable(data, offset)
+      when 3
+        read_alternate_substitution_subtable(data, offset)
+      when 4
+        read_ligature_substitution_subtable(data, offset)
+      else
+        Log.debug { "Type #{lookup_type} GSUB lookup table is not supported and will be ignored" }
+        nil
+      end
+    end
+
+    private def read_single_lookup_subtable(data : TTFDataStream, offset : Int64) : LookupSubTable?
+      data.seek(offset)
+      subst_format = data.read_unsigned_short.to_i32
+      case subst_format
+      when 1
+        coverage_offset = data.read_unsigned_short.to_i32
+        delta_glyph_id = data.read_signed_short
+        coverage_table = read_coverage_table(data, offset + coverage_offset)
+        LookupTypeSingleSubstFormat1.new(subst_format, coverage_table, delta_glyph_id)
+      when 2
+        coverage_offset = data.read_unsigned_short.to_i32
+        glyph_count = data.read_unsigned_short.to_i32
+        substitute_glyph_ids = Array(Int32).new(glyph_count)
+        glyph_count.times do |_|
+          substitute_glyph_ids << data.read_unsigned_short.to_i32
+        end
+        coverage_table = read_coverage_table(data, offset + coverage_offset)
+        LookupTypeSingleSubstFormat2.new(subst_format, coverage_table, substitute_glyph_ids)
+      else
+        Log.warn { "Unknown substFormat: #{subst_format}" }
+        nil
+      end
+    end
+
+    private def read_multiple_substitution_subtable(data : TTFDataStream, offset : Int64) : LookupSubTable?
+      data.seek(offset)
+      subst_format = data.read_unsigned_short.to_i32
+      if subst_format != 1
+        # TODO: raise IOException
+        return
+      end
+      coverage = data.read_unsigned_short.to_i32
+      sequence_count = data.read_unsigned_short.to_i32
+      sequence_offsets = Array(Int32).new(sequence_count)
+      sequence_count.times do |_|
+        sequence_offsets << data.read_unsigned_short.to_i32
+      end
+      coverage_table = read_coverage_table(data, offset + coverage)
+      if sequence_count != coverage_table.get_size
+        # TODO: raise IOException
+        return
+      end
+      sequence_tables = Array(SequenceTable).new(sequence_count)
+      sequence_count.times do |i|
+        data.seek(offset + sequence_offsets[i])
+        glyph_count = data.read_unsigned_short.to_i32
+        substitute_glyph_ids = data.read_unsigned_short_array(glyph_count)
+        sequence_tables << SequenceTable.new(glyph_count, substitute_glyph_ids)
+      end
+      LookupTypeMultipleSubstitutionFormat1.new(subst_format, coverage_table, sequence_tables)
+    end
+
+    private def read_alternate_substitution_subtable(data : TTFDataStream, offset : Int64) : LookupSubTable?
+      data.seek(offset)
+      subst_format = data.read_unsigned_short.to_i32
+      if subst_format != 1
+        # TODO: raise IOException
+        return
+      end
+      coverage = data.read_unsigned_short.to_i32
+      alt_set_count = data.read_unsigned_short.to_i32
+      alternate_offsets = Array(Int32).new(alt_set_count)
+      alt_set_count.times do |_|
+        alternate_offsets << data.read_unsigned_short.to_i32
+      end
+      coverage_table = read_coverage_table(data, offset + coverage)
+      if alt_set_count != coverage_table.get_size
+        # TODO: raise IOException
+        return
+      end
+      alternate_set_tables = Array(AlternateSetTable).new(alt_set_count)
+      alt_set_count.times do |i|
+        data.seek(offset + alternate_offsets[i])
+        glyph_count = data.read_unsigned_short.to_i32
+        alternate_glyph_ids = data.read_unsigned_short_array(glyph_count)
+        alternate_set_tables << AlternateSetTable.new(glyph_count, alternate_glyph_ids)
+      end
+      LookupTypeAlternateSubstitutionFormat1.new(subst_format, coverage_table, alternate_set_tables)
+    end
+
+    private def read_ligature_substitution_subtable(data : TTFDataStream, offset : Int64) : LookupSubTable?
+      data.seek(offset)
+      subst_format = data.read_unsigned_short.to_i32
+      if subst_format != 1
+        # TODO: raise IOException
+        return
+      end
+      coverage = data.read_unsigned_short.to_i32
+      lig_set_count = data.read_unsigned_short.to_i32
+      ligature_offsets = Array(Int32).new(lig_set_count)
+      lig_set_count.times do |_|
+        ligature_offsets << data.read_unsigned_short.to_i32
+      end
+      coverage_table = read_coverage_table(data, offset + coverage)
+      if lig_set_count != coverage_table.get_size
+        # TODO: raise IOException
+        return
+      end
+      ligature_set_tables = Array(LigatureSetTable).new(lig_set_count)
+      lig_set_count.times do |i|
+        coverage_glyph_id = coverage_table.get_glyph_id(i)
+        ligature_set_tables << read_ligature_set_table(data, offset + ligature_offsets[i], coverage_glyph_id)
+      end
+      LookupTypeLigatureSubstitutionSubstFormat1.new(subst_format, coverage_table, ligature_set_tables)
+    end
+
+    private def read_ligature_set_table(data : TTFDataStream, ligature_set_table_location : Int64, coverage_glyph_id : Int32) : LigatureSetTable
+      data.seek(ligature_set_table_location)
+      ligature_count = data.read_unsigned_short.to_i32
+      ligature_offsets = Array(Int32).new(ligature_count)
+      ligature_tables = Array(LigatureTable).new(ligature_count)
+      ligature_count.times do |_|
+        ligature_offsets << data.read_unsigned_short.to_i32
+      end
+      ligature_count.times do |i|
+        ligature_offset = ligature_offsets[i]
+        ligature_tables << read_ligature_table(data, ligature_set_table_location + ligature_offset, coverage_glyph_id)
+      end
+      LigatureSetTable.new(ligature_count, ligature_tables)
+    end
+
+    private def read_ligature_table(data : TTFDataStream, ligature_table_location : Int64, coverage_glyph_id : Int32) : LigatureTable
+      data.seek(ligature_table_location)
+      ligature_glyph = data.read_unsigned_short.to_i32
+      component_count = data.read_unsigned_short.to_i32
+      if component_count > 100
+        # TODO: raise IOException
+        component_count = 0
+      end
+      component_glyph_ids = Array(Int32).new(component_count)
+      if component_count > 0
+        component_glyph_ids << coverage_glyph_id
+      end
+      (1...component_count).each do |_|
+        component_glyph_ids << data.read_unsigned_short.to_i32
+      end
+      LigatureTable.new(ligature_glyph, component_count, component_glyph_ids)
+    end
+
+    private def read_coverage_table(data : TTFDataStream, offset : Int64) : CoverageTable
+      data.seek(offset)
+      coverage_format = data.read_unsigned_short.to_i32
+      case coverage_format
+      when 1
+        glyph_count = data.read_unsigned_short.to_i32
+        glyph_array = Array(Int32).new(glyph_count)
+        glyph_count.times do |_|
+          glyph_array << data.read_unsigned_short.to_i32
+        end
+        CoverageTableFormat1.new(coverage_format, glyph_array)
+      when 2
+        range_count = data.read_unsigned_short.to_i32
+        range_records = Array(RangeRecord).new(range_count)
+        range_count.times do |_|
+          range_records << read_range_record(data)
+        end
+        CoverageTableFormat2.new(coverage_format, range_records)
+      else
+        # TODO: raise IOException
+        CoverageTableFormat1.new(1, [] of Int32)
+      end
+    end
+
+    private def read_range_record(data : TTFDataStream) : RangeRecord
+      start_glyph_id = data.read_unsigned_short.to_i32
+      end_glyph_id = data.read_unsigned_short.to_i32
+      start_coverage_index = data.read_unsigned_short.to_i32
+      RangeRecord.new(start_glyph_id, end_glyph_id, start_coverage_index)
     end
   end
+
+  module Model
+    abstract class GsubData
+      abstract def get_language : Language
+      abstract def get_active_script_name : String
+      abstract def is_feature_supported(feature_name : String) : Bool
+      abstract def get_feature(feature_name : String) : ScriptFeature
+      abstract def get_supported_features : Set(String)
+
+      class NoDataFoundGsubData < GsubData
+        def get_language : Language
+          raise "UnsupportedOperationException"
+        end
+
+        def get_active_script_name : String
+          raise "UnsupportedOperationException"
+        end
+
+        def is_feature_supported(feature_name : String) : Bool
+          raise "UnsupportedOperationException"
+        end
+
+        def get_feature(feature_name : String) : ScriptFeature
+          raise "UnsupportedOperationException"
+        end
+
+        def get_supported_features : Set(String)
+          raise "UnsupportedOperationException"
+        end
+      end
+
+      NO_DATA_FOUND = NoDataFoundGsubData.new
+    end
+
+    enum Language
+      BENGALI
+      DEVANAGARI
+      GUJARATI
+      TAMIL
+      LATIN
+      DFLT
+      UNSPECIFIED
+
+      def script_names : Array(String)
+        case self
+        when BENGALI    then ["bng2", "beng"]
+        when DEVANAGARI then ["dev2", "deva"]
+        when GUJARATI   then ["gjr2", "gujr"]
+        when TAMIL      then ["tml2", "taml"]
+        when LATIN      then ["latn"]
+        when DFLT       then ["DFLT"]
+        else                 [] of String
+        end
+      end
+    end
+
+    abstract class ScriptFeature
+      abstract def get_feature_name : String
+      abstract def get_substitution(input_glyphs : Array(Int32)) : Array(Int32)?
+    end
+
+    class MapBackedGsubData < GsubData
+      def initialize(@language : Language, @active_script_name : String, @glyph_substitution_map : Hash(String, Hash(Array(Int32), Array(Int32))))
+      end
+
+      def get_language : Language
+        @language
+      end
+
+      def get_active_script_name : String
+        @active_script_name
+      end
+
+      def is_feature_supported(feature_name : String) : Bool
+        @glyph_substitution_map.has_key?(feature_name)
+      end
+
+      def get_feature(feature_name : String) : ScriptFeature
+        raise "Not yet implemented"
+      end
+
+      def get_supported_features : Set(String)
+        Set.new(@glyph_substitution_map.keys)
+      end
+    end
+  end
+
+  MapBackedGsubData = Model::MapBackedGsubData
+  GsubData          = Model::GsubData
 end
