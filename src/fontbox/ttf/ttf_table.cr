@@ -38,7 +38,7 @@ module Fontbox::TTF
     end
 
     # Sets the check sum.
-    protected def check_sum=(check_sum_value : Int64)
+    def check_sum=(check_sum_value : Int64)
       @check_sum = check_sum_value
     end
 
@@ -48,7 +48,7 @@ module Fontbox::TTF
     end
 
     # Sets the length.
-    protected def length=(length_value : Int64)
+    def length=(length_value : Int64)
       @length = length_value
     end
 
@@ -58,7 +58,7 @@ module Fontbox::TTF
     end
 
     # Sets the offset.
-    protected def offset=(offset_value : Int64)
+    def offset=(offset_value : Int64)
       @offset = offset_value
     end
 
@@ -68,7 +68,7 @@ module Fontbox::TTF
     end
 
     # Sets the tag.
-    protected def tag=(tag_value : String)
+    def tag=(tag_value : String)
       @tag = tag_value
     end
 

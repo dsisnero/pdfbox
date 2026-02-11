@@ -109,9 +109,60 @@ module Fontbox::TTF
       get_table(OS2WindowsMetricsTable::TAG).as?(OS2WindowsMetricsTable)
     end
 
+    # Gets the number of glyphs.
+    def get_number_of_glyphs : Int32
+      maxp = get_maximum_profile
+      if maxp.nil?
+        -1
+      else
+        maxp.get_num_glyphs.to_i32
+      end
+    end
+
+    # Gets the units per em.
+    def get_units_per_em : Int32
+      header = get_header
+      if header.nil?
+        -1
+      else
+        header.get_units_per_em.to_i32
+      end
+    end
+
     # Reads a table.
     def read_table(table : TTFTable) : Nil
-      # TODO: Implement table reading
+      return if table.get_initialized
+      original_position = @data.get_current_position
+      begin
+        @data.seek(table.offset)
+        table.read(self, @data)
+      ensure
+        @data.seek(original_position)
+      end
+    end
+
+    # Reads table headers into the given FontHeaders object.
+    def read_table_headers(tag : String, out_headers : FontHeaders) : Nil
+      table = get_table(tag)
+      return if table.nil?
+      original_position = @data.get_current_position
+      begin
+        @data.seek(table.offset)
+        table.read_headers(self, @data, out_headers)
+      ensure
+        @data.seek(original_position)
+      end
+    end
+
+    # Reads up to n bytes from a table.
+    def get_table_n_bytes(table : TTFTable, n : Int32) : Bytes
+      original_position = @data.get_current_position
+      begin
+        @data.seek(table.offset)
+        @data.read(n)
+      ensure
+        @data.seek(original_position)
+      end
     end
 
     # Gets the font name.

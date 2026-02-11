@@ -89,10 +89,10 @@ module Fontbox::TTF
       font = new_font(raf)
       font.version = raf.read_32_fixed
       number_of_tables = raf.read_unsigned_short
-      search_range = raf.read_unsigned_short
-      entry_selector = raf.read_unsigned_short
-      range_shift = raf.read_unsigned_short
-      number_of_tables.times do |i|
+      _search_range = raf.read_unsigned_short
+      _entry_selector = raf.read_unsigned_short
+      _range_shift = raf.read_unsigned_short
+      number_of_tables.times do |_|
         table = read_table_directory(raf)
 
         # skip tables with zero length
@@ -132,7 +132,7 @@ module Fontbox::TTF
       has_cff = font.get_table(CFFTable::TAG) != nil
       # TODO: Implement OpenTypeFont check
       is_otf = false
-      is_post_script = is_otf ? false : has_cff
+      _is_post_script = is_otf ? false : has_cff
 
       head = font.get_header
       if head.nil?
@@ -153,13 +153,123 @@ module Fontbox::TTF
     end
 
     private def parse_table_headers(raf : TTFDataStream) : FontHeaders
-      # TODO: Implement table headers parsing
-      FontHeaders.new
+      out_headers = FontHeaders.new
+      font = create_font_with_tables(raf)
+
+      # Read naming table headers
+      naming_table = font.get_table(NamingTable::TAG)
+      if naming_table
+        font.read_table_headers(NamingTable::TAG, out_headers)
+      end
+
+      # Read header table headers
+      header_table = font.get_table(HeaderTable::TAG)
+      if header_table
+        font.read_table_headers(HeaderTable::TAG, out_headers)
+      end
+
+      # Set OS/2 windows metrics
+      os2_table = font.get_table(OS2WindowsMetricsTable::TAG)
+      if os2_table
+        out_headers.set_os2_windows(os2_table.as(OS2WindowsMetricsTable))
+      end
+
+      # Check for CFF table (OpenType PostScript)
+      has_cff = font.get_table(CFFTable::TAG) != nil
+      # TODO: Implement OpenTypeFont check
+      is_otf = false
+      is_otf_and_post_script = false
+      if is_otf
+        # TODO: Handle OpenType font
+        nil
+      elsif !is_otf && has_cff
+        out_headers.set_error("True Type fonts using CFF outlines are not supported")
+        return out_headers
+      else
+        # non-OTF with possible gcid table
+        gcid_table = font.get_table("gcid")
+        if gcid_table && gcid_table.length >= FontHeaders::BYTES_GCID
+          out_headers.set_non_otf_gcid142(font.get_table_n_bytes(gcid_table, FontHeaders::BYTES_GCID))
+        end
+      end
+      out_headers.set_is_otf_and_post_script(is_otf_and_post_script)
+
+      # Check mandatory tables
+      mandatory_tables = [
+        HeaderTable::TAG,
+        HorizontalHeaderTable::TAG,
+        MaximumProfileTable::TAG,
+        @is_embedded ? nil : PostScriptTable::TAG,
+        is_otf_and_post_script ? nil : IndexToLocationTable::TAG,
+        is_otf_and_post_script ? nil : GlyphTable::TAG,
+        @is_embedded ? nil : NamingTable::TAG,
+        HorizontalMetricsTable::TAG,
+        @is_embedded ? nil : CmapTable::TAG,
+      ].compact
+
+      mandatory_tables.each do |tag|
+        if !font.get_table(tag)
+          out_headers.set_error("'#{tag}' table is mandatory")
+          return out_headers
+        end
+      end
+
+      out_headers
     end
 
     private def read_table_directory(raf : TTFDataStream) : TTFTable?
-      # TODO: Implement table directory reading
-      nil
+      table : TTFTable
+      tag = raf.read_string(4)
+      case tag
+      when CmapTable::TAG
+        table = CmapTable.new
+      when GlyphTable::TAG
+        table = GlyphTable.new
+      when HeaderTable::TAG
+        table = HeaderTable.new
+      when HorizontalHeaderTable::TAG
+        table = HorizontalHeaderTable.new
+      when HorizontalMetricsTable::TAG
+        table = HorizontalMetricsTable.new
+      when IndexToLocationTable::TAG
+        table = IndexToLocationTable.new
+      when MaximumProfileTable::TAG
+        table = MaximumProfileTable.new
+      when NamingTable::TAG
+        table = NamingTable.new
+      when OS2WindowsMetricsTable::TAG
+        table = OS2WindowsMetricsTable.new
+      when PostScriptTable::TAG
+        table = PostScriptTable.new
+      when DigitalSignatureTable::TAG
+        table = DigitalSignatureTable.new
+      when KerningTable::TAG
+        table = KerningTable.new
+      when VerticalHeaderTable::TAG
+        table = VerticalHeaderTable.new
+      when VerticalMetricsTable::TAG
+        table = VerticalMetricsTable.new
+      when VerticalOriginTable::TAG
+        table = VerticalOriginTable.new
+      when GlyphSubstitutionTable::TAG
+        table = GlyphSubstitutionTable.new
+      when CFFTable::TAG
+        table = CFFTable.new
+      else
+        # unknown table type but read it anyway.
+        table = TTFTable.new
+      end
+      table.tag = tag
+      table.check_sum = raf.read_unsigned_int.to_i64
+      table.offset = raf.read_unsigned_int.to_i64
+      table.length = raf.read_unsigned_int.to_i64
+
+      # skip tables with zero length (except glyf)
+      if table.length == 0 && tag != GlyphTable::TAG
+        return
+      end
+
+      table
     end
   end
 end

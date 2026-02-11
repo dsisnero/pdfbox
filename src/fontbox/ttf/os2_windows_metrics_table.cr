@@ -82,5 +82,10 @@ module Fontbox::TTF
     def read(ttf : TrueTypeFont, data : TTFDataStream) : Nil
       # TODO: Implement OS/2 table reading
     end
+
+    # This will read required headers from the stream into out_headers.
+    def read_headers(ttf : TrueTypeFont, data : TTFDataStream, out_headers : FontHeaders) : Nil
+      # TODO: Implement OS/2 table header reading
+    end
   end
 end

@@ -53,6 +53,11 @@ module Fontbox::TTF
       @header_mac_style
     end
 
+    # Sets the header mac style.
+    def set_header_mac_style(mac_style : Int32) : Nil
+      @header_mac_style = mac_style
+    end
+
     def get_os2_windows : OS2WindowsMetricsTable?
       @os2_windows
     end
@@ -84,6 +89,22 @@ module Fontbox::TTF
 
     def get_otf_supplement : Int32
       @otf_supplement
+    end
+
+    def set_os2_windows(os2 : OS2WindowsMetricsTable) : Nil
+      @os2_windows = os2
+    end
+
+    def set_error(error : String) : Nil
+      @error = error
+    end
+
+    def set_non_otf_gcid142(bytes : Bytes) : Nil
+      @non_otf_gcid142 = bytes
+    end
+
+    def set_is_otf_and_post_script(value : Bool) : Nil
+      @is_otf_and_post_script = value
     end
   end
 end
