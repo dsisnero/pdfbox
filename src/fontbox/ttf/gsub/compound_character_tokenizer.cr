@@ -24,11 +24,10 @@ module Fontbox::TTF::Gsub
     # the beginning or end, this has to be cleaned by the caller.
     def tokenize(text : String) : Array(String)
       tokens = [] of String
-      regex_matcher = @regex_expression.match(text)
 
       last_index_of_prev_match = 0
 
-      while match = @regex_expression.match_at(text, last_index_of_prev_match)
+      while match = @regex_expression.match(text, last_index_of_prev_match)
         begin_index_of_next_match = match.begin
 
         prev_token = text[last_index_of_prev_match...begin_index_of_next_match]

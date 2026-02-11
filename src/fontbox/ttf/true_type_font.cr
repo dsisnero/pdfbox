@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# ameba:disable Naming/AccessorMethodName
 module Fontbox::TTF
   # A TrueType font file.
   #
@@ -223,6 +224,90 @@ module Fontbox::TTF
     def get_name : String
       # TODO: Implement name retrieval from naming table
       ""
+    end
+
+    # Gets the cmap table.
+    def get_cmap : CmapTable?
+      get_table(CmapTable::TAG).as?(CmapTable)
+    end
+
+    # Returns the best Unicode cmap from the font (the most general).
+    # The PDF spec says that "The means by which this is accomplished are implementation-dependent."
+    # The returned cmap will perform glyph substitution.
+    # @param is_strict False if we allow falling back to any cmap, even if it's not Unicode.
+    # @return cmap to perform glyph substitution
+    # @raise IO::Error if the font could not be read, or there is no Unicode cmap
+    def get_unicode_cmap_lookup(is_strict : Bool = true) : CmapLookup
+      cmap = get_unicode_cmap_impl(is_strict)
+      # TODO: If enabled GSUB features, return SubstitutingCmapLookup
+      cmap
+    end
+
+    private def get_unicode_cmap_impl(is_strict : Bool) : CmapSubtable
+      cmap_table = get_cmap
+      if cmap_table.nil?
+        if is_strict
+          raise IO::Error.new("The TrueType font #{get_name} does not contain a 'cmap' table")
+        else
+          raise IO::Error.new("No cmap table found")
+        end
+      end
+
+      cmap = cmap_table.get_subtable(CmapTable::PLATFORM_UNICODE,
+        CmapTable::ENCODING_UNICODE_2_0_FULL)
+      if cmap.nil?
+        cmap = cmap_table.get_subtable(CmapTable::PLATFORM_WINDOWS,
+          CmapTable::ENCODING_WIN_UNICODE_FULL)
+      end
+      if cmap.nil?
+        cmap = cmap_table.get_subtable(CmapTable::PLATFORM_UNICODE,
+          CmapTable::ENCODING_UNICODE_2_0_BMP)
+      end
+      if cmap.nil?
+        cmap = cmap_table.get_subtable(CmapTable::PLATFORM_WINDOWS,
+          CmapTable::ENCODING_WIN_UNICODE_BMP)
+      end
+      if cmap.nil?
+        # Microsoft's "Recommendations for OpenType Fonts" says that "Symbol" encoding
+        # actually means "Unicode, non-standard character set"
+        cmap = cmap_table.get_subtable(CmapTable::PLATFORM_WINDOWS,
+          CmapTable::ENCODING_WIN_SYMBOL)
+      end
+      if cmap.nil?
+        # PDFBOX-6015
+        cmap = cmap_table.get_subtable(CmapTable::PLATFORM_UNICODE,
+          CmapTable::ENCODING_UNICODE_1_1)
+      end
+      if cmap.nil?
+        if is_strict
+          raise IO::Error.new("The TrueType font does not contain a Unicode cmap")
+        elsif cmap_table.cmaps.size > 0
+          # fallback to the first cmap (may not be Unicode, so may produce poor results)
+          cmap = cmap_table.cmaps[0]
+        else
+          raise IO::Error.new("No cmap subtables found")
+        end
+      end
+      cmap
+    end
+
+    # Gets the GSUB table.
+    def get_gsub : GlyphSubstitutionTable?
+      get_table(GlyphSubstitutionTable::TAG).as?(GlyphSubstitutionTable)
+    end
+
+    # Gets the GSUB data for the font.
+    def get_gsub_data : ::Fontbox::TTF::Model::GsubData
+      unless enable_gsub?
+        return ::Fontbox::TTF::Model::GsubData::NO_DATA_FOUND
+      end
+
+      table = get_gsub
+      if table.nil?
+        ::Fontbox::TTF::Model::GsubData::NO_DATA_FOUND
+      else
+        table.get_gsub_data || ::Fontbox::TTF::Model::GsubData::NO_DATA_FOUND
+      end
     end
   end
 end
