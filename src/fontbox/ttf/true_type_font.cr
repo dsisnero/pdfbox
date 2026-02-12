@@ -112,6 +112,15 @@ module Fontbox::TTF
       table(PostScriptTable::TAG).as?(PostScriptTable)
     end
 
+    # Gets the glyph ID for a given glyph name.
+    def name_to_gid(name : String) : Int32
+      post = postscript
+      return -1 if post.nil?
+      glyph_names = post.glyph_names
+      return -1 if glyph_names.nil?
+      glyph_names.index(name) || -1
+    end
+
     # Gets the vertical header table.
     def vertical_header : VerticalHeaderTable?
       table(VerticalHeaderTable::TAG).as?(VerticalHeaderTable)

@@ -2,7 +2,7 @@ require "../../spec_helper"
 
 module Fontbox::TTF
   private def self.liberation_sans_path
-    File.join(__DIR__, "../../../../apache_pdfbox/fontbox/src/test/resources/ttf/LiberationSans-Regular.ttf")
+    File.join("apache_pdfbox", "fontbox", "src", "test", "resources", "ttf", "LiberationSans-Regular.ttf")
   end
 
   private def self.load_liberation_sans
@@ -23,7 +23,10 @@ module Fontbox::TTF
 
       subset_font.number_of_glyphs.should eq(1)
       subset_font.name_to_gid(".notdef").should eq(0)
-      subset_font.glyph.glyph(0).should_not be_nil
+
+      glyph_table = subset_font.glyph
+      glyph_table.should_not be_nil
+      glyph_table.as(GlyphTable).glyph(0).should_not be_nil
     end
 
     pending "test empty subset with selected tables"
