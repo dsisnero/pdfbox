@@ -108,7 +108,7 @@ module Pdfbox::Pdmodel
     end
 
     # Get a page by index (0-based)
-    def get_page(index : Int) : Page?
+    def page(index : Int) : Page?
       pages[index]?
     end
 
@@ -905,7 +905,7 @@ module Pdfbox::Pdmodel
     end
 
     # Get value for a given name
-    def get_value(name : String) : T?
+    def value(name : String) : T?
       # Check local names first
       local_names = names
       if local_names && local_names.has_key?(name)
@@ -918,7 +918,7 @@ module Pdfbox::Pdmodel
         kids_list.each do |child|
           # Name trees don't have limits like number trees
           # Need to search all kids
-          if value = child.get_value(name)
+          if value = child.value(name)
             return value
           end
         end
@@ -1184,7 +1184,7 @@ module Pdfbox::Pdmodel
     end
 
     # Get value for a given index
-    def get_value(index : Int32) : T?
+    def value(index : Int32) : T?
       # Check local numbers first
       numbers = self.numbers
       if numbers && numbers.has_key?(index)
@@ -1198,7 +1198,7 @@ module Pdfbox::Pdmodel
           lower = child.lower_limit
           upper = child.upper_limit
           if lower && upper && lower <= index && upper >= index
-            return child.get_value(index)
+            return child.value(index)
           end
         end
       end
@@ -1285,7 +1285,7 @@ module Pdfbox::Pdmodel
     end
 
     private def set_upper_limit(upper : Int32?)
-      limits = get_or_create_limits_array
+      limits = or_create_limits_array
       if upper
         limits[1] = Cos::Integer.new(upper.to_i64)
       else
@@ -1294,7 +1294,7 @@ module Pdfbox::Pdmodel
     end
 
     private def set_lower_limit(lower : Int32?)
-      limits = get_or_create_limits_array
+      limits = or_create_limits_array
       if lower
         limits[0] = Cos::Integer.new(lower.to_i64)
       else
@@ -1302,7 +1302,7 @@ module Pdfbox::Pdmodel
       end
     end
 
-    private def get_or_create_limits_array : Cos::Array
+    private def or_create_limits_array : Cos::Array
       limits = @node[Cos::Name.new("Limits")]
       unless limits.is_a?(Cos::Array)
         limits = Cos::Array.new
@@ -1450,7 +1450,7 @@ module Pdfbox::Pdmodel
 
     # Get the title of the document
     def title : String?
-      get_string(Cos::Name.new("Title"))
+      string(Cos::Name.new("Title"))
     end
 
     # Set the title of the document
@@ -1460,7 +1460,7 @@ module Pdfbox::Pdmodel
 
     # Get the author of the document
     def author : String?
-      get_string(Cos::Name.new("Author"))
+      string(Cos::Name.new("Author"))
     end
 
     # Set the author of the document
@@ -1470,7 +1470,7 @@ module Pdfbox::Pdmodel
 
     # Get the subject of the document
     def subject : String?
-      get_string(Cos::Name.new("Subject"))
+      string(Cos::Name.new("Subject"))
     end
 
     # Set the subject of the document
@@ -1480,7 +1480,7 @@ module Pdfbox::Pdmodel
 
     # Get keywords for the document
     def keywords : String?
-      get_string(Cos::Name.new("Keywords"))
+      string(Cos::Name.new("Keywords"))
     end
 
     # Set keywords for the document
@@ -1490,7 +1490,7 @@ module Pdfbox::Pdmodel
 
     # Get the creator of the document
     def creator : String?
-      get_string(Cos::Name.new("Creator"))
+      string(Cos::Name.new("Creator"))
     end
 
     # Set the creator of the document
@@ -1500,7 +1500,7 @@ module Pdfbox::Pdmodel
 
     # Get the producer of the document
     def producer : String?
-      get_string(Cos::Name.new("Producer"))
+      string(Cos::Name.new("Producer"))
     end
 
     # Set the producer of the document
@@ -1510,7 +1510,7 @@ module Pdfbox::Pdmodel
 
     # Get the creation date as a string (PDF date format)
     def creation_date : String?
-      get_string(Cos::Name.new("CreationDate"))
+      string(Cos::Name.new("CreationDate"))
     end
 
     # Set the creation date (PDF date format string)
@@ -1520,7 +1520,7 @@ module Pdfbox::Pdmodel
 
     # Get the modification date as a string (PDF date format)
     def modification_date : String?
-      get_string(Cos::Name.new("ModDate"))
+      string(Cos::Name.new("ModDate"))
     end
 
     # Set the modification date (PDF date format string)
@@ -1530,7 +1530,7 @@ module Pdfbox::Pdmodel
 
     # Get the trapped value
     def trapped : String?
-      get_string(Cos::Name.new("Trapped"))
+      string(Cos::Name.new("Trapped"))
     end
 
     # Set the trapped value
@@ -1538,7 +1538,7 @@ module Pdfbox::Pdmodel
       set_string(Cos::Name.new("Trapped"), trapped)
     end
 
-    private def get_string(name : Cos::Name) : String?
+    private def string(name : Cos::Name) : String?
       value = @info_dict[name]
       return unless value
 
@@ -1691,7 +1691,7 @@ module Pdfbox::Pdmodel
     end
 
     # Get font by name
-    def get_font(name : Cos::Name) : Font?
+    def font(name : Cos::Name) : Font?
       fonts_dict = @cos_dict[Cos::Name.new("Font")]
       return unless fonts_dict
 

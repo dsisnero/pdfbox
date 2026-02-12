@@ -127,7 +127,7 @@ module Pdfbox::Pdfparser
 
       begin
         # parse startxref
-        start_xref_offset = get_startxref_offset
+        start_xref_offset = startxref_offset
         if start_xref_offset > -1
           xref_parser = XrefParser.new(parser)
           trailer = xref_parser.parse_xref(start_xref_offset)
@@ -151,7 +151,7 @@ module Pdfbox::Pdfparser
       if rebuild_trailer
         @xref_table.clear
         xref = XRef.new
-        trailer = get_brute_force_parser.rebuild_trailer(xref)
+        trailer = brute_force_parser.rebuild_trailer(xref)
         @xref_table = xref.entries
         @trailer_was_rebuild = true
       else
@@ -159,7 +159,7 @@ module Pdfbox::Pdfparser
         if (bf_parser = @brute_force_parser) && bf_parser.bf_search_triggered?
           xref = XRef.new
           xref.update_from_hash(@xref_table)
-          get_brute_force_parser.bf_search_for_obj_streams_xref(xref)
+          brute_force_parser.bf_search_for_obj_streams_xref(xref)
           @xref_table = xref.entries
         end
       end
@@ -168,7 +168,7 @@ module Pdfbox::Pdfparser
     end
 
     # Looks for and parses startxref. We first look for last '%%EOF' marker.
-    private def get_startxref_offset : Int64
+    private def startxref_offset : Int64
       buf = Bytes.empty
       skip_bytes = 0_i64
 
@@ -234,7 +234,7 @@ module Pdfbox::Pdfparser
       -1
     end
 
-    protected def get_brute_force_parser : BruteForceParser
+    protected def brute_force_parser : BruteForceParser
       parser = self.as?(Parser)
       raise ::IO::Error.new("BruteForceParser requires Parser instance") unless parser
       @brute_force_parser ||= BruteForceParser.new(parser)
@@ -542,7 +542,7 @@ module Pdfbox::Pdfparser
         return Pdfbox::Cos::Null.instance
       end
       # dereference the object
-      get_object_from_pool(get_object_key(obj_number, gen_number))
+      object_from_pool(object_key(obj_number, gen_number))
     end
 
     # ameba:disable Metrics/CyclomaticComplexity
@@ -601,8 +601,8 @@ module Pdfbox::Pdfparser
             if array.size > 0 && array[array.size - 1].is_a?(Pdfbox::Cos::Integer)
               number = array.delete_at(array.size - 1).as(Pdfbox::Cos::Integer)
               if number.value >= 0 && gen_number.value >= 0
-                key = get_object_key(number.value.to_i64, gen_number.value.to_i64)
-                value = get_object_from_pool(key)
+                key = object_key(number.value.to_i64, gen_number.value.to_i64)
+                value = object_from_pool(key)
               else
                 Log.warn { "Invalid value(s) for an object key #{number.value} #{gen_number.value}" }
               end
@@ -808,7 +808,7 @@ module Pdfbox::Pdfparser
       obj_num = first_num
       gen_num = second_num
       if parser = @parser
-        parser.get_object_from_pool(obj_num, gen_num)
+        parser.object_from_pool(obj_num, gen_num)
       else
         Pdfbox::Cos::Object.new(obj_num, gen_num)
       end
@@ -897,7 +897,7 @@ module Pdfbox::Pdfparser
     end
 
     # Get object key for given number and generation and optional stream index
-    protected def get_object_key(num : Int64, gen : Int64, stream_index : Int32 = -1) : Pdfbox::Cos::ObjectKey
+    protected def object_key(num : Int64, gen : Int64, stream_index : Int32 = -1) : Pdfbox::Cos::ObjectKey
       parser = @parser
       return Pdfbox::Cos::ObjectKey.new(num, gen, stream_index) if parser.nil?
 
@@ -922,12 +922,12 @@ module Pdfbox::Pdfparser
     end
 
     # Get object from pool by object key
-    protected def get_object_from_pool(key : Pdfbox::Cos::ObjectKey) : Pdfbox::Cos::Object
+    protected def object_from_pool(key : Pdfbox::Cos::ObjectKey) : Pdfbox::Cos::Object
       parser = @parser
       if parser.nil?
         raise SyntaxError.new("object reference #{key} at offset #{position} in content stream")
       end
-      parser.get_object_from_pool(key)
+      parser.object_from_pool(key)
     end
 
     # Read a line from the source stream (similar to Apache PDFBox readLine)
@@ -954,7 +954,7 @@ module Pdfbox::Pdfparser
     end
 
     # Returns length value referred to or defined in given object.
-    private def get_length(length_base_obj : Pdfbox::Cos::Base?) : Pdfbox::Cos::Base?
+    private def length(length_base_obj : Pdfbox::Cos::Base?) : Pdfbox::Cos::Base?
       return if length_base_obj.nil?
       # maybe length was given directly
       if length_base_obj.is_a?(Pdfbox::Cos::Number)
@@ -1111,7 +1111,7 @@ module Pdfbox::Pdfparser
       # Skip the upcoming CRLF/LF following the stream keyword
       skip_white_spaces
       # This needs to be dic.getItem because when we are parsing, the underlying object might still be null.
-      stream_length_obj = get_length(dic[Pdfbox::Cos::Name.new("Length")])
+      stream_length_obj = length(dic[Pdfbox::Cos::Name.new("Length")])
       if stream_length_obj.nil?
         if lenient?
           Log.warn do
@@ -1244,7 +1244,7 @@ module Pdfbox::Pdfparser
     # Get offset or object stream number for given object key
     # Returns positive value for file offset, negative for object stream number, nil if not found
     # Similar to Apache PDFBox COSParser.getObjectOffset
-    private def get_object_offset(key : Cos::ObjectKey, require_existing_not_compressed_obj : Bool) : Int64?
+    private def object_offset(key : Cos::ObjectKey, require_existing_not_compressed_obj : Bool) : Int64?
       parser = @parser
       return unless parser
 
@@ -1267,7 +1267,7 @@ module Pdfbox::Pdfparser
 
       # Try brute force search if not found and lenient
       if offset_or_objstm.nil? && parser.lenient
-        bf_parser = parser.get_brute_force_parser
+        bf_parser = parser.brute_force_parser
         bf_offsets = bf_parser.bf_cos_object_offsets
         if bf_offset = bf_offsets[key]?
           Log.debug { "Set missing offset #{bf_offset} for object #{key}" }
@@ -1354,14 +1354,14 @@ module Pdfbox::Pdfparser
     # This is the main method for resolving indirect references
     protected def parse_object_dynamically(key : Cos::ObjectKey, require_existing_not_compressed_obj : Bool) : Cos::Base?
       # Get object from pool (creates proxy if not exists)
-      pdf_object = get_object_from_pool(key)
+      pdf_object = object_from_pool(key)
 
       # Check if object is already resolved
       unless pdf_object.object.nil?
         return pdf_object.object
       end
 
-      offset_or_objstm = get_object_offset(key, require_existing_not_compressed_obj)
+      offset_or_objstm = object_offset(key, require_existing_not_compressed_obj)
       referenced_object = nil
 
       if offset_or_objstm

@@ -35,7 +35,7 @@ describe Pdfbox::Pdmodel::NumberTreeNode do
     end
   end
 
-  describe "#get_value" do
+  describe "#value" do
     it "retrieves value from leaf node" do
       # Create leaf node with numbers 1-7
       node5 = create_node
@@ -50,7 +50,7 @@ describe Pdfbox::Pdmodel::NumberTreeNode do
       }
       node5.numbers = numbers
 
-      node5.get_value(4).should eq(TestObject.new(51))
+      node5.value(4).should eq(TestObject.new(51))
     end
 
     it "retrieves value from tree structure" do
@@ -92,12 +92,12 @@ describe Pdfbox::Pdmodel::NumberTreeNode do
       node1.kids = [node2, node4]
 
       # Test retrieving value from nested structure
-      node1.get_value(9).should eq(TestObject.new(70))
+      node1.value(9).should eq(TestObject.new(70))
     end
 
     it "returns nil for non-existent index" do
       node = create_node
-      node.get_value(0).should be_nil
+      node.value(0).should be_nil
     end
 
     it "returns nil when kids and numbers are nil" do
@@ -136,7 +136,7 @@ describe Pdfbox::Pdmodel::NumberTreeNode do
       # Set kids and numbers to nil
       node1.kids = nil
       node1.numbers = nil
-      node1.get_value(0).should be_nil
+      node1.value(0).should be_nil
     end
   end
 

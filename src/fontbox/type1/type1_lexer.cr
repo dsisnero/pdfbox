@@ -35,10 +35,10 @@ module Fontbox::Type1
     # Checks if the kind of the next token equals the given one without consuming it
     def peek_kind(kind : Kind) : Bool
       token = @ahead_token
-      token && token.get_kind == kind
+      token && token.kind == kind
     end
 
-    private def get_char : Char
+    private def char : Char
       if @pos < @buffer.size
         c = @buffer[@pos].unsafe_chr
         @pos += 1
@@ -64,7 +64,7 @@ module Fontbox::Type1
       loop do
         skip = false
         while @pos < @buffer.size
-          c = get_char
+          c = char
 
           # delimiters
           case c
@@ -94,7 +94,7 @@ module Fontbox::Type1
           when '<'
             c2 = peek_char
             if c2 == '<'
-              get_char # consume second '<'
+              char # consume second '<'
               return Token.new("<<", Kind::START_DICT)
             else
               # code may have to be changed in something better, maybe new token type
@@ -104,7 +104,7 @@ module Fontbox::Type1
           when '>'
             c2 = peek_char
             if c2 == '>'
-              get_char # consume second '>'
+              char # consume second '>'
               return Token.new(">>", Kind::END_DICT)
             else
               unget_char
@@ -132,7 +132,7 @@ module Fontbox::Type1
 
                 if name == "RD" || name == "-|"
                   # return the next CharString instead
-                  if prev_token && prev_token.get_kind == Kind::INTEGER
+                  if prev_token && prev_token.kind == Kind::INTEGER
                     return read_char_string(prev_token.int_value)
                   else
                     raise IO::Error.new("expected INTEGER before -| or RD")
@@ -154,31 +154,31 @@ module Fontbox::Type1
       saved_pos = @pos
       sb = String::Builder.new
       radix = nil
-      c = get_char
+      c = char
       has_digit = false
 
       # optional + or -
       if c == '+' || c == '-'
         sb << c
-        c = get_char
+        c = char
       end
 
       # optional digits
       while c.ascii_number?
         sb << c
-        c = get_char
+        c = char
         has_digit = true
       end
 
       # optional .
       if c == '.'
         sb << c
-        c = get_char
+        c = char
       elsif c == '#'
         # PostScript radix number takes the form base#number
         radix = sb.to_s
         sb = String::Builder.new
-        c = get_char
+        c = char
       elsif sb.empty? || !has_digit
         # failure
         @pos = saved_pos
@@ -192,7 +192,7 @@ module Fontbox::Type1
       # required digit
       if c.ascii_number?
         sb << c
-        c = get_char
+        c = char
       elsif c != 'e' && c != 'E'
         # failure
         @pos = saved_pos
@@ -202,24 +202,24 @@ module Fontbox::Type1
       # optional digits
       while c.ascii_number?
         sb << c
-        c = get_char
+        c = char
       end
 
       # optional E
       if c == 'E' || c == 'e'
         sb << c
-        c = get_char
+        c = char
 
         # optional minus
         if c == '-'
           sb << c
-          c = get_char
+          c = char
         end
 
         # required digit
         if c.ascii_number?
           sb << c
-          c = get_char
+          c = char
         else
           # failure
           @pos = saved_pos
@@ -229,7 +229,7 @@ module Fontbox::Type1
         # optional digits
         while c.ascii_number?
           sb << c
-          c = get_char
+          c = char
         end
       end
 
@@ -250,7 +250,7 @@ module Fontbox::Type1
       sb = String::Builder.new
       while @pos < @buffer.size
         saved_pos = @pos
-        c = get_char
+        c = char
         if c.whitespace? ||
            c == '(' || c == ')' ||
            c == '<' || c == '>' ||
@@ -271,7 +271,7 @@ module Fontbox::Type1
     private def read_comment : String
       sb = String::Builder.new
       while @pos < @buffer.size
-        c = get_char
+        c = char
         if c == '\r' || c == '\n'
           break
         else
@@ -286,7 +286,7 @@ module Fontbox::Type1
       sb = String::Builder.new
 
       while @pos < @buffer.size
-        c = get_char
+        c = char
 
         # string context
         case c
@@ -302,7 +302,7 @@ module Fontbox::Type1
           @open_parens -= 1
         when '\\'
           # escapes: \n \r \t \b \f \\ \( \)
-          c1 = get_char
+          c1 = char
           case c1
           when 'n', 'r'
             sb << '\n'
@@ -322,8 +322,8 @@ module Fontbox::Type1
             # octal \ddd
             if c1.ascii_number?
               # read two more digits
-              c2 = get_char
-              c3 = get_char
+              c2 = char
+              c3 = char
               num = String.build { |s| s << c1 << c2 << c3 }
               begin
                 code = num.to_i32(8)
@@ -351,7 +351,7 @@ module Fontbox::Type1
         raise IO::Error.new("String length #{length} is larger than input")
       end
       # consume space
-      get_char if peek_char == ' '
+      char if peek_char == ' '
       data = @buffer[@pos, length]
       @pos += length
       Token.new(data, Kind::CHARSTRING)

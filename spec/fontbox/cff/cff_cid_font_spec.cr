@@ -47,15 +47,15 @@ class MockCIDCharset < Fontbox::CFF::Charset
     @gid_to_cid[gid] = cid
   end
 
-  def get_sid_for_gid(gid : Int32) : Int32
+  def sid_for_gid(gid : Int32) : Int32
     @gid_to_sid[gid]? || 0
   end
 
-  def get_gid_for_sid(sid : Int32) : Int32
+  def gid_for_sid(sid : Int32) : Int32
     @sid_to_gid[sid]? || 0
   end
 
-  def get_gid_for_cid(cid : Int32) : Int32
+  def gid_for_cid(cid : Int32) : Int32
     # Find GID for CID (inverse mapping)
     @gid_to_cid.each do |gid, cid_val|
       return gid if cid_val == cid
@@ -63,22 +63,22 @@ class MockCIDCharset < Fontbox::CFF::Charset
     0
   end
 
-  def get_sid(name : String) : Int32
+  def sid(name : String) : Int32
     @name_to_sid[name]? || 0
   end
 
-  def get_name_for_gid(gid : Int32) : String?
+  def name_for_gid(gid : Int32) : String?
     @gid_to_name[gid]?
   end
 
-  def get_cid_for_gid(gid : Int32) : Int32
+  def cid_for_gid(gid : Int32) : Int32
     @gid_to_cid[gid]? || 0
   end
 end
 
 # Mock FDSelect that always returns font dict index 0
 class MockFDSelect < Fontbox::CFF::FDSelect
-  def get_fd_index(gid : Int32) : Int32
+  def fd_index(gid : Int32) : Int32
     0
   end
 end
@@ -90,15 +90,41 @@ class TestableCFFCIDFont < Fontbox::CFF::CFFCIDFont
     super(value)
   end
 
-  setter charset : Fontbox::CFF::Charset?
-  setter char_strings : Array(Bytes)
-  setter global_subr_index : Array(Bytes)
-  setter registry : String
-  setter ordering : String
-  setter supplement : Int32
-  setter font_dicts : Array(Hash(String, Fontbox::CFF::CFFDictValue?))
-  setter priv_dicts : Array(Hash(String, Fontbox::CFF::CFFPrivateDictValue?))
-  setter fd_select : Fontbox::CFF::FDSelect?
+  def charset=(value : Fontbox::CFF::Charset?)
+    super(value)
+  end
+
+  def char_strings=(value : Array(Bytes))
+    super(value)
+  end
+
+  def global_subr_index=(value : Array(Bytes))
+    super(value)
+  end
+
+  def registry=(value : String)
+    super(value)
+  end
+
+  def ordering=(value : String)
+    super(value)
+  end
+
+  def supplement=(value : Int32)
+    super(value)
+  end
+
+  def font_dicts=(value : Array(Hash(String, Fontbox::CFF::CFFDictValue?)))
+    super(value)
+  end
+
+  def priv_dicts=(value : Array(Hash(String, Fontbox::CFF::CFFPrivateDictValue?)))
+    super(value)
+  end
+
+  def fd_select=(value : Fontbox::CFF::FDSelect?)
+    super(value)
+  end
 end
 
 describe Fontbox::CFF::CFFCIDFont do
@@ -138,7 +164,7 @@ describe Fontbox::CFF::CFFCIDFont do
       font.fd_select = MockFDSelect.new
 
       # Get charstring for CID 1 (should map to GID 1)
-      charstring = font.get_type2_char_string(1)
+      charstring = font.type2_char_string(1)
       charstring.should be_a(Fontbox::CFF::CIDKeyedType2CharString)
       charstring.cid.should eq 1
       charstring.gid.should eq 1
@@ -155,7 +181,7 @@ describe Fontbox::CFF::CFFCIDFont do
       font.fd_select = MockFDSelect.new
 
       # CID 999 doesn't exist, should fall back to .notdef
-      charstring = font.get_type2_char_string(999)
+      charstring = font.type2_char_string(999)
       charstring.should be_a(Fontbox::CFF::CIDKeyedType2CharString)
       charstring.gid.should eq 0 # .notdef GID
     end
@@ -169,8 +195,8 @@ describe Fontbox::CFF::CFFCIDFont do
       font.priv_dicts = [{"defaultWidthX" => 1000.as(Fontbox::CFF::CFFPrivateDictValue?), "nominalWidthX" => 0.as(Fontbox::CFF::CFFPrivateDictValue?)}]
       font.fd_select = MockFDSelect.new
 
-      first = font.get_type2_char_string(1)
-      second = font.get_type2_char_string(1)
+      first = font.type2_char_string(1)
+      second = font.type2_char_string(1)
       # Should be the same instance due to caching
       first.should be second
     end

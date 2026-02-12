@@ -224,7 +224,7 @@ module Fontbox
         end
       end
 
-      def get_codes_from_unicode(unicode : String) : Bytes?
+      def codes_from_unicode(unicode : String) : Bytes?
         @unicode_to_byte_codes[unicode]?
       end
 

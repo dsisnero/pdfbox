@@ -113,7 +113,7 @@ module Fontbox::CFF
     abstract def cid_font? : Bool
 
     # Returns the Type 2 charstring for the given GID.
-    abstract def get_type2_char_string(gid : Int32) : Type2CharString
+    abstract def type2_char_string(gid : Int32) : Type2CharString
 
     # Returns the number of glyphs in the font.
     def num_glyphs : Int32

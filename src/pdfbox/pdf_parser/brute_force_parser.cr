@@ -956,7 +956,7 @@ module Pdfbox::Pdfparser
       object_offsets.each do |key, offset|
         begin
           # Get object from parser's pool
-          cos_object = @parser.get_object_from_pool(key)
+          cos_object = @parser.object_from_pool(key)
           base_object = cos_object.object
           next unless base_object.is_a?(Cos::Dictionary)
 

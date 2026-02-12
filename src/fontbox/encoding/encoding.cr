@@ -29,13 +29,13 @@ module Fontbox
     end
 
     # This will get the character code for the name.
-    def get_code(name : String) : Int32?
+    def code(name : String) : Int32?
       @name_to_code[name]?
     end
 
     # This will take a character code and get the name from the code. This method will never return
     # nil.
-    def get_name(code : Int32) : String
+    def name(code : Int32) : String
       @code_to_name[code]? || ".notdef"
     end
 

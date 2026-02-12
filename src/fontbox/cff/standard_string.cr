@@ -19,7 +19,7 @@ module Fontbox::CFF
     extend self
 
     # This will return the string mapped to the given SID.
-    def get_name(sid : Int32) : String
+    def name(sid : Int32) : String
       SID2STR[sid]? || ".notdef"
     end
 

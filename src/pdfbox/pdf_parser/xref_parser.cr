@@ -191,7 +191,7 @@ module Pdfbox::Pdfparser
         return 0_i64
       end
       # search for the offset of the given xref table/stream among those found by a brute force search.
-      new_offset = parser_as_parser.get_brute_force_parser.bf_search_for_xref(object_offset)
+      new_offset = parser_as_parser.brute_force_parser.bf_search_for_xref(object_offset)
       if new_offset > -1
         Log.debug { "Fixed reference for xref table/stream #{object_offset} -> #{new_offset}" }
         return new_offset
@@ -532,7 +532,7 @@ module Pdfbox::Pdfparser
 
       unless validate_xref_offsets(xref_offset)
         parser = parser_as_parser
-        bf_cos_object_offsets = parser.get_brute_force_parser.bf_cos_object_offsets
+        bf_cos_object_offsets = parser.brute_force_parser.bf_cos_object_offsets
         unless bf_cos_object_offsets.empty?
           Log.debug { "Replaced read xref table with the results of a brute force search" }
           # Preserve compressed entries (negative offsets) from original xref table

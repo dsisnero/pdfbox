@@ -14,13 +14,13 @@ module Fontbox::TTF
 
       comp = GlyfCompositeComp.new(RandomAccessReadDataStream.new(Pdfbox::IO::RandomAccessReadBuffer.new(data)))
 
-      comp.get_glyph_index.should eq(18)
-      comp.get_argument1.should eq(3)
-      comp.get_argument2.should eq(-4)
-      comp.get_x_translate.should eq(3)
-      comp.get_y_translate.should eq(-4)
-      comp.get_x_scale.should be_close(0.5, 0.00001)
-      comp.get_y_scale.should be_close(0.5, 0.00001)
+      comp.glyph_index.should eq(18)
+      comp.argument1.should eq(3)
+      comp.argument2.should eq(-4)
+      comp.x_translate.should eq(3)
+      comp.y_translate.should eq(-4)
+      comp.x_scale.should be_close(0.5, 0.00001)
+      comp.y_scale.should be_close(0.5, 0.00001)
       comp.scale_x(10, 0).should eq(5)
       comp.scale_y(0, 10).should eq(5)
     end
@@ -40,10 +40,10 @@ module Fontbox::TTF
 
       comp = GlyfCompositeComp.new(RandomAccessReadDataStream.new(Pdfbox::IO::RandomAccessReadBuffer.new(data)))
 
-      comp.get_x_scale.should be_close(1.0, 0.00001)
-      comp.get_scale01.should be_close(0.5, 0.00001)
-      comp.get_scale10.should be_close(-0.5, 0.00001)
-      comp.get_y_scale.should be_close(1.0, 0.00001)
+      comp.x_scale.should be_close(1.0, 0.00001)
+      comp.scale01.should be_close(0.5, 0.00001)
+      comp.scale10.should be_close(-0.5, 0.00001)
+      comp.y_scale.should be_close(1.0, 0.00001)
       comp.scale_x(4, 2).should eq(3)
       comp.scale_y(4, 2).should eq(4)
     end

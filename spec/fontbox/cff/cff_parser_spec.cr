@@ -61,34 +61,36 @@ describe Fontbox::CFF::CFFParser do
   it "parses charset" do
     charset = test_font.charset
     charset.should_not be_nil
-    charset.not_nil!.is_cid_font?.should be_false
+    charset = charset.as(Fontbox::CFF::Charset)
+    charset.is_cid_font?.should be_false
 
     # gid2name
-    charset.not_nil!.get_name_for_gid(0).should eq ".notdef"
-    charset.not_nil!.get_name_for_gid(1).should eq "space"
-    charset.not_nil!.get_name_for_gid(7).should eq "F"
-    charset.not_nil!.get_name_for_gid(300).should eq "jcircumflex"
-    charset.not_nil!.get_name_for_gid(700).should eq "infinity"
+    charset.name_for_gid(0).should eq ".notdef"
+    charset.name_for_gid(1).should eq "space"
+    charset.name_for_gid(7).should eq "F"
+    charset.name_for_gid(300).should eq "jcircumflex"
+    charset.name_for_gid(700).should eq "infinity"
 
     # gid2sid
-    charset.not_nil!.get_sid_for_gid(0).should eq 0
-    charset.not_nil!.get_sid_for_gid(1).should eq 1
-    charset.not_nil!.get_sid_for_gid(7).should eq 39
-    charset.not_nil!.get_sid_for_gid(300).should eq 585
-    charset.not_nil!.get_sid_for_gid(700).should eq 872
+    charset.sid_for_gid(0).should eq 0
+    charset.sid_for_gid(1).should eq 1
+    charset.sid_for_gid(7).should eq 39
+    charset.sid_for_gid(300).should eq 585
+    charset.sid_for_gid(700).should eq 872
 
     # name2sid
-    charset.not_nil!.get_sid(".notdef").should eq 0
-    charset.not_nil!.get_sid("space").should eq 1
-    charset.not_nil!.get_sid("F").should eq 39
-    charset.not_nil!.get_sid("jcircumflex").should eq 585
-    charset.not_nil!.get_sid("infinity").should eq 872
+    charset.sid(".notdef").should eq 0
+    charset.sid("space").should eq 1
+    charset.sid("F").should eq 39
+    charset.sid("jcircumflex").should eq 585
+    charset.sid("infinity").should eq 872
   end
 
   it "parses encoding" do
     encoding = test_font.encoding
     encoding.should_not be_nil
-    encoding.not_nil!.should be_a(Fontbox::CFF::StandardEncoding)
+    encoding = encoding.as(Fontbox::CFF::CFFEncoding)
+    encoding.should be_a(Fontbox::CFF::StandardEncoding)
   end
 
   it "parses char strings bytes" do
@@ -135,33 +137,39 @@ describe Fontbox::CFF::CFFParser do
 
     blues = private_dict["BlueValues"]?.as?(Array(Fontbox::CFF::CFFNumber))
     blues.should_not be_nil
-    blues.not_nil!.map(&.to_i).should eq [-12, 0, 496, 508, 578, 590, 635, 647, 652, 664, 701, 713]
+    blues = blues.as(Array(Fontbox::CFF::CFFNumber))
+    blues.map(&.to_i).should eq [-12, 0, 496, 508, 578, 590, 635, 647, 652, 664, 701, 713]
 
     other_blues = private_dict["OtherBlues"]?.as?(Array(Fontbox::CFF::CFFNumber))
     other_blues.should_not be_nil
-    other_blues.not_nil!.map(&.to_i).should eq [-196, -184]
+    other_blues = other_blues.as(Array(Fontbox::CFF::CFFNumber))
+    other_blues.map(&.to_i).should eq [-196, -184]
 
     family_blues = private_dict["FamilyBlues"]?.as?(Array(Fontbox::CFF::CFFNumber))
     family_blues.should_not be_nil
-    family_blues.not_nil!.map(&.to_i).should eq [-12, 0, 486, 498, 574, 586, 638, 650, 656, 668, 712, 724]
+    family_blues = family_blues.as(Array(Fontbox::CFF::CFFNumber))
+    family_blues.map(&.to_i).should eq [-12, 0, 486, 498, 574, 586, 638, 650, 656, 668, 712, 724]
 
     family_other_blues = private_dict["FamilyOtherBlues"]?.as?(Array(Fontbox::CFF::CFFNumber))
     family_other_blues.should_not be_nil
-    family_other_blues.not_nil!.map(&.to_i).should eq [-217, -205]
+    family_other_blues = family_other_blues.as(Array(Fontbox::CFF::CFFNumber))
+    family_other_blues.map(&.to_i).should eq [-217, -205]
 
     stem_snap_h = private_dict["StemSnapH"]?.as?(Array(Fontbox::CFF::CFFNumber))
     stem_snap_h.should_not be_nil
-    stem_snap_h.not_nil!.map(&.to_i).should eq [115]
+    stem_snap_h = stem_snap_h.as(Array(Fontbox::CFF::CFFNumber))
+    stem_snap_h.map(&.to_i).should eq [115]
 
     stem_snap_v = private_dict["StemSnapV"]?.as?(Array(Fontbox::CFF::CFFNumber))
     stem_snap_v.should_not be_nil
-    stem_snap_v.not_nil!.map(&.to_i).should eq [146, 150]
+    stem_snap_v = stem_snap_v.as(Array(Fontbox::CFF::CFFNumber))
+    stem_snap_v.map(&.to_i).should eq [146, 150]
   end
 
   it "returns path for glyphs" do
-    # Test that get_path returns a non-empty path for some glyphs
+    # Test that path returns a non-empty path for some glyphs
     ["space", "F", "jcircumflex", "infinity"].each do |name|
-      path = test_font.get_path(name)
+      path = test_font.path(name)
       path.should be_a(Fontbox::Util::Path)
       # Path should have bounds (may be empty for .notdef but these should have geometry)
       bounds = path.bounds
@@ -183,7 +191,7 @@ describe Fontbox::CFF::CFFParser do
           name = code.chr.to_s
           gid = test_font.name_to_gid(name)
           # Get the charstring - this exercises Type2CharStringParser
-          charstring = test_font.get_type2_char_string(gid)
+          charstring = test_font.type2_char_string(gid)
           charstring.should be_a(Fontbox::CFF::Type2CharString)
         end
         exception_channel.send(nil)

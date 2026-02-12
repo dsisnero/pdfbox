@@ -45,14 +45,6 @@ module Fontbox::Type1
       @text = nil
     end
 
-    def get_text : String?
-      @text
-    end
-
-    def get_kind : Kind
-      @kind
-    end
-
     # Some fonts have reals where integers should be, so we tolerate it
     def int_value : Int32
       if text = @text
@@ -76,10 +68,6 @@ module Fontbox::Type1
       else
         false
       end
-    end
-
-    def get_data : Bytes?
-      @data
     end
 
     def to_s : String

@@ -10,13 +10,13 @@ module Fontbox::TTF::Gsub
     # @param cmap_lookup [CmapLookup] provides glyph ID lookup (CmapLookup interface)
     # @param gsub_data [::Fontbox::TTF::Model::GsubData] GSUB data for the font
     # @return [GsubWorker] language-specific worker or DefaultGsubWorker
-    def get_gsub_worker(cmap_lookup : CmapLookup, gsub_data : ::Fontbox::TTF::Model::GsubData) : GsubWorker
+    def gsub_worker(cmap_lookup : CmapLookup, gsub_data : ::Fontbox::TTF::Model::GsubData) : GsubWorker
       # TODO: this needs to be redesigned / improved because if a font supports several languages,
       # it will choose one of them and maybe not the one expected.
       # See also PDFBOX-5700 and PDFBOX-5729
       # For example, NotoSans-Regular hits Devanagari first
       # See also GlyphSubstitutionDataExtractor.getSupportedLanguage() which decides the language?!
-      language = gsub_data.get_language
+      language = gsub_data.language
       Log.debug { "Language: #{language}" }
 
       case language

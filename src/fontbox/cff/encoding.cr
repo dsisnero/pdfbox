@@ -31,7 +31,7 @@ module Fontbox::CFF
 
     # For use by subclasses only.
     protected def add(code : Int32, sid : Int32) : Nil
-      add_character_encoding(code, StandardString.get_name(sid))
+      add_character_encoding(code, StandardString.name(sid))
     end
   end
 end

@@ -27,7 +27,7 @@ module Fontbox::TTF::Gsub
         end
 
         Log.debug { "applying the feature #{feature}" }
-        script_feature = @gsub_data.get_feature(feature)
+        script_feature = @gsub_data.feature(feature)
         intermediate_glyph_ids = apply_gsub_feature(script_feature, intermediate_glyph_ids)
       end
 
@@ -36,13 +36,13 @@ module Fontbox::TTF::Gsub
 
     private def apply_gsub_feature(script_feature : ::Fontbox::TTF::Model::ScriptFeature,
                                    original_glyphs : Array(Int32)) : Array(Int32)
-      if script_feature.get_all_glyph_ids_for_substitution.empty?
-        Log.debug { "get_all_glyph_ids_for_substitution() for #{script_feature.get_name} is empty" }
+      if script_feature.all_glyph_ids_for_substitution.empty?
+        Log.debug { "get_all_glyph_ids_for_substitution() for #{script_feature.name} is empty" }
         return original_glyphs
       end
 
       glyph_array_splitter = GlyphArraySplitterRegexImpl.new(
-        script_feature.get_all_glyph_ids_for_substitution)
+        script_feature.all_glyph_ids_for_substitution)
 
       tokens = glyph_array_splitter.split(original_glyphs)
       gsub_processed_glyphs = [] of Int32
@@ -50,7 +50,7 @@ module Fontbox::TTF::Gsub
       tokens.each do |chunk|
         if script_feature.can_replace_glyphs(chunk)
           # gsub system kicks in, you get the glyphId directly
-          replacement_for_glyphs = script_feature.get_replacement_for_glyphs(chunk)
+          replacement_for_glyphs = script_feature.replacement_for_glyphs(chunk)
           gsub_processed_glyphs.concat(replacement_for_glyphs)
         else
           gsub_processed_glyphs.concat(chunk)
@@ -77,7 +77,7 @@ module Fontbox::TTF::Gsub
   private def self.get_aalt_glyph_ids(cmap_lookup, word : String) : Array(Int32)
     original_glyph_ids = [] of Int32
     word.each_char do |unicode_char|
-      glyph_id = cmap_lookup.get_glyph_id(unicode_char.ord)
+      glyph_id = cmap_lookup.glyph_id(unicode_char.ord)
       glyph_id.should be > 0
       original_glyph_ids << glyph_id
     end

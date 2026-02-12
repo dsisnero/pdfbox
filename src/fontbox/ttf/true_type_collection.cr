@@ -87,7 +87,7 @@ module Fontbox::TTF
     # @raise IO::Error if something went wrong when parsing any font or calling the TrueTypeFontProcessor
     def process_all_fonts(true_type_font_processor : TrueTypeFontProcessor) : Nil
       @num_fonts.times do |i|
-        font = get_font_at_index(i)
+        font = font_at_index(i)
         true_type_font_processor.process(font)
       end
     end
@@ -111,7 +111,7 @@ module Fontbox::TTF
       end
     end
 
-    private def get_font_at_index(idx : Int32) : TrueTypeFont
+    private def font_at_index(idx : Int32) : TrueTypeFont
       parser = create_font_parser_at_index_and_seek(idx)
       parser.parse(TTCDataStream.new(@stream))
     end
@@ -133,9 +133,9 @@ module Fontbox::TTF
     # @param name The postscript name of the font.
     # @return The found font, or nil if none is found.
     # @raise IO::Error if there is an error reading the font data
-    def get_font_by_name(name : String) : TrueTypeFont?
+    def font_by_name(name : String) : TrueTypeFont?
       @num_fonts.times do |i|
-        font = get_font_at_index(i)
+        font = font_at_index(i)
         if font.get_name == name
           return font
         end

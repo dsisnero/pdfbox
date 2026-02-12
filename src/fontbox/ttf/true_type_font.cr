@@ -253,29 +253,29 @@ module Fontbox::TTF
         end
       end
 
-      cmap = cmap_table.get_subtable(CmapTable::PLATFORM_UNICODE,
+      cmap = cmap_table.subtable(CmapTable::PLATFORM_UNICODE,
         CmapTable::ENCODING_UNICODE_2_0_FULL)
       if cmap.nil?
-        cmap = cmap_table.get_subtable(CmapTable::PLATFORM_WINDOWS,
+        cmap = cmap_table.subtable(CmapTable::PLATFORM_WINDOWS,
           CmapTable::ENCODING_WIN_UNICODE_FULL)
       end
       if cmap.nil?
-        cmap = cmap_table.get_subtable(CmapTable::PLATFORM_UNICODE,
+        cmap = cmap_table.subtable(CmapTable::PLATFORM_UNICODE,
           CmapTable::ENCODING_UNICODE_2_0_BMP)
       end
       if cmap.nil?
-        cmap = cmap_table.get_subtable(CmapTable::PLATFORM_WINDOWS,
+        cmap = cmap_table.subtable(CmapTable::PLATFORM_WINDOWS,
           CmapTable::ENCODING_WIN_UNICODE_BMP)
       end
       if cmap.nil?
         # Microsoft's "Recommendations for OpenType Fonts" says that "Symbol" encoding
         # actually means "Unicode, non-standard character set"
-        cmap = cmap_table.get_subtable(CmapTable::PLATFORM_WINDOWS,
+        cmap = cmap_table.subtable(CmapTable::PLATFORM_WINDOWS,
           CmapTable::ENCODING_WIN_SYMBOL)
       end
       if cmap.nil?
         # PDFBOX-6015
-        cmap = cmap_table.get_subtable(CmapTable::PLATFORM_UNICODE,
+        cmap = cmap_table.subtable(CmapTable::PLATFORM_UNICODE,
           CmapTable::ENCODING_UNICODE_1_1)
       end
       if cmap.nil?
@@ -306,7 +306,7 @@ module Fontbox::TTF
       if table.nil?
         ::Fontbox::TTF::Model::GsubData::NO_DATA_FOUND
       else
-        table.get_gsub_data || ::Fontbox::TTF::Model::GsubData::NO_DATA_FOUND
+        table.gsub_data || ::Fontbox::TTF::Model::GsubData::NO_DATA_FOUND
       end
     end
   end

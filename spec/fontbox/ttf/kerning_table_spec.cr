@@ -34,12 +34,12 @@ module Fontbox::TTF
       table = KerningTable.new
       table.read(StubTrueTypeFontForKerning.new, Fontbox::TTF.stream_for_kerning(data))
 
-      subtable = table.get_horizontal_kerning_subtable
+      subtable = table.horizontal_kerning_subtable
       subtable.should_not be_nil
       s = subtable || raise "expected horizontal kerning subtable"
-      s.get_kerning(10, 20).should eq(-50)
-      s.get_kerning(30, 40).should eq(100)
-      s.get_kerning(11, 20).should eq(0)
+      s.kerning(10, 20).should eq(-50)
+      s.kerning(30, 40).should eq(100)
+      s.kerning(11, 20).should eq(0)
     end
 
     it "returns nil for unsupported kerning table version" do
@@ -51,7 +51,7 @@ module Fontbox::TTF
       table = KerningTable.new
       table.read(StubTrueTypeFontForKerning.new, Fontbox::TTF.stream_for_kerning(data))
 
-      table.get_horizontal_kerning_subtable.should be_nil
+      table.horizontal_kerning_subtable.should be_nil
     end
   end
 end

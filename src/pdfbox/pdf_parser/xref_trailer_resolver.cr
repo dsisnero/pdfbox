@@ -179,7 +179,7 @@ module Pdfbox::Pdfparser
         # add this and follow chain defined by 'Prev' keys
         xref_seq_byte_pos << startxref_byte_pos_value
         while cur_obj.trailer
-          prev_byte_pos = get_long(cur_obj.trailer.as(Cos::Dictionary), PREV, -1_i64)
+          prev_byte_pos = long(cur_obj.trailer.as(Cos::Dictionary), PREV, -1_i64)
           if prev_byte_pos == -1
             break
           end
@@ -272,7 +272,7 @@ module Pdfbox::Pdfparser
     end
 
     # Returns the long value for the given key in the dictionary, or default if missing/not a number.
-    private def get_long(dict : Cos::Dictionary, key : Cos::Name, default : Int64 = -1_i64) : Int64
+    private def long(dict : Cos::Dictionary, key : Cos::Name, default : Int64 = -1_i64) : Int64
       value = dict[key]
       case value
       when Cos::Integer

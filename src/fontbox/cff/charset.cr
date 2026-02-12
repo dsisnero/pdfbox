@@ -15,25 +15,25 @@ module Fontbox::CFF
 
     # Returns the SID for a given GID.
     # SIDs are internal to the font and are not public.
-    abstract def get_sid_for_gid(gid : Int32) : Int32
+    abstract def sid_for_gid(gid : Int32) : Int32
 
     # Returns the GID for the given SID.
     # SIDs are internal to the font and are not public.
-    abstract def get_gid_for_sid(sid : Int32) : Int32
+    abstract def gid_for_sid(sid : Int32) : Int32
 
     # Returns the GID for a given CID.
     # Returns 0 if the CID is missing.
-    abstract def get_gid_for_cid(cid : Int32) : Int32
+    abstract def gid_for_cid(cid : Int32) : Int32
 
     # Returns the SID for a given PostScript name.
     # Some fonts have glyphs beyond their encoding with charset SID names.
-    abstract def get_sid(name : String) : Int32
+    abstract def sid(name : String) : Int32
 
     # Returns the PostScript glyph name for the given GID.
-    abstract def get_name_for_gid(gid : Int32) : String?
+    abstract def name_for_gid(gid : Int32) : String?
 
     # Returns the CID for the given GID.
-    abstract def get_cid_for_gid(gid : Int32) : Int32
+    abstract def cid_for_gid(gid : Int32) : Int32
   end
 
   # Embedded charset that delegates to either CID or Type1 charset
@@ -56,28 +56,28 @@ module Fontbox::CFF
       @charset.add_cid(gid, cid)
     end
 
-    def get_sid_for_gid(gid : Int32) : Int32
-      @charset.get_sid_for_gid(gid)
+    def sid_for_gid(gid : Int32) : Int32
+      @charset.sid_for_gid(gid)
     end
 
-    def get_gid_for_sid(sid : Int32) : Int32
-      @charset.get_gid_for_sid(sid)
+    def gid_for_sid(sid : Int32) : Int32
+      @charset.gid_for_sid(sid)
     end
 
-    def get_gid_for_cid(cid : Int32) : Int32
-      @charset.get_gid_for_cid(cid)
+    def gid_for_cid(cid : Int32) : Int32
+      @charset.gid_for_cid(cid)
     end
 
-    def get_sid(name : String) : Int32
-      @charset.get_sid(name)
+    def sid(name : String) : Int32
+      @charset.sid(name)
     end
 
-    def get_name_for_gid(gid : Int32) : String?
-      @charset.get_name_for_gid(gid)
+    def name_for_gid(gid : Int32) : String?
+      @charset.name_for_gid(gid)
     end
 
-    def get_cid_for_gid(gid : Int32) : Int32
-      @charset.get_cid_for_gid(gid)
+    def cid_for_gid(gid : Int32) : Int32
+      @charset.cid_for_gid(gid)
     end
   end
 
@@ -101,27 +101,27 @@ module Fontbox::CFF
       @gid_to_cid[gid] = cid
     end
 
-    def get_sid_for_gid(gid : Int32) : Int32
+    def sid_for_gid(gid : Int32) : Int32
       raise Exception.new(EXCEPTION_MESSAGE)
     end
 
-    def get_gid_for_sid(sid : Int32) : Int32
+    def gid_for_sid(sid : Int32) : Int32
       raise Exception.new(EXCEPTION_MESSAGE)
     end
 
-    def get_gid_for_cid(cid : Int32) : Int32
+    def gid_for_cid(cid : Int32) : Int32
       @sid_or_cid_to_gid[cid]? || 0
     end
 
-    def get_sid(name : String) : Int32
+    def sid(name : String) : Int32
       raise Exception.new(EXCEPTION_MESSAGE)
     end
 
-    def get_name_for_gid(gid : Int32) : String?
+    def name_for_gid(gid : Int32) : String?
       raise Exception.new(EXCEPTION_MESSAGE)
     end
 
-    def get_cid_for_gid(gid : Int32) : Int32
+    def cid_for_gid(gid : Int32) : Int32
       @gid_to_cid[gid]? || 0
     end
   end
@@ -150,27 +150,27 @@ module Fontbox::CFF
       raise Exception.new(EXCEPTION_MESSAGE)
     end
 
-    def get_sid_for_gid(gid : Int32) : Int32
+    def sid_for_gid(gid : Int32) : Int32
       @gid_to_sid[gid]? || 0
     end
 
-    def get_gid_for_sid(sid : Int32) : Int32
+    def gid_for_sid(sid : Int32) : Int32
       @sid_or_cid_to_gid[sid]? || 0
     end
 
-    def get_gid_for_cid(cid : Int32) : Int32
+    def gid_for_cid(cid : Int32) : Int32
       raise Exception.new(EXCEPTION_MESSAGE)
     end
 
-    def get_sid(name : String) : Int32
+    def sid(name : String) : Int32
       @name_to_sid[name]? || 0
     end
 
-    def get_name_for_gid(gid : Int32) : String?
+    def name_for_gid(gid : Int32) : String?
       @gid_to_name[gid]?
     end
 
-    def get_cid_for_gid(gid : Int32) : Int32
+    def cid_for_gid(gid : Int32) : Int32
       raise Exception.new(EXCEPTION_MESSAGE)
     end
   end

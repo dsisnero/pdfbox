@@ -27,7 +27,7 @@ module Fontbox::TTF
       font = Fontbox::TTF.parse_test_font
       cmap = font.table(CmapTable::TAG).as(CmapTable)
 
-      unicode_bmp = cmap.get_subtable(CmapTable::PLATFORM_WINDOWS, CmapTable::ENCODING_WIN_UNICODE_BMP)
+      unicode_bmp = cmap.subtable(CmapTable::PLATFORM_WINDOWS, CmapTable::ENCODING_WIN_UNICODE_BMP)
       unicode_bmp.should_not be_nil
 
       font.close
@@ -37,7 +37,7 @@ module Fontbox::TTF
       font = Fontbox::TTF.parse_test_font
       cmap = font.table(CmapTable::TAG).as(CmapTable)
 
-      cmap.get_subtable(CmapTable::PLATFORM_MACINTOSH, 99).should be_nil
+      cmap.subtable(CmapTable::PLATFORM_MACINTOSH, 99).should be_nil
 
       font.close
     end
@@ -45,18 +45,18 @@ module Fontbox::TTF
     it "maps character codes to glyph ids and back" do
       font = Fontbox::TTF.parse_test_font
       cmap = font.table(CmapTable::TAG).as(CmapTable)
-      unicode_bmp = cmap.get_subtable(CmapTable::PLATFORM_WINDOWS, CmapTable::ENCODING_WIN_UNICODE_BMP)
+      unicode_bmp = cmap.subtable(CmapTable::PLATFORM_WINDOWS, CmapTable::ENCODING_WIN_UNICODE_BMP)
       unicode_bmp.should_not be_nil
       subtable = unicode_bmp || raise "expected Windows Unicode BMP cmap subtable"
 
-      trade_mark_gid = subtable.get_glyph_id(0x2122)
-      euro_gid = subtable.get_glyph_id(0x20AC)
+      trade_mark_gid = subtable.glyph_id(0x2122)
+      euro_gid = subtable.glyph_id(0x20AC)
 
       trade_mark_gid.should be > 0
       euro_gid.should be > 0
 
-      trade_mark_codes = subtable.get_char_codes(trade_mark_gid)
-      euro_codes = subtable.get_char_codes(euro_gid)
+      trade_mark_codes = subtable.char_codes(trade_mark_gid)
+      euro_codes = subtable.char_codes(euro_gid)
 
       trade_mark_codes.should_not be_nil
       euro_codes.should_not be_nil
@@ -73,11 +73,11 @@ module Fontbox::TTF
     it "returns 0 for unknown character code" do
       font = Fontbox::TTF.parse_test_font
       cmap = font.table(CmapTable::TAG).as(CmapTable)
-      unicode_bmp = cmap.get_subtable(CmapTable::PLATFORM_WINDOWS, CmapTable::ENCODING_WIN_UNICODE_BMP)
+      unicode_bmp = cmap.subtable(CmapTable::PLATFORM_WINDOWS, CmapTable::ENCODING_WIN_UNICODE_BMP)
       unicode_bmp.should_not be_nil
 
       if unicode_bmp
-        unicode_bmp.get_glyph_id(0x110000).should eq(0)
+        unicode_bmp.glyph_id(0x110000).should eq(0)
       end
 
       font.close

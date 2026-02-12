@@ -28,9 +28,9 @@ module Fontbox::TTF::Gsub
     def initialize(cmap_lookup : CmapLookup, gsub_data : ::Fontbox::TTF::Model::GsubData)
       @cmap_lookup = cmap_lookup
       @gsub_data = gsub_data
-      @before_half_glyph_ids = get_before_half_glyph_ids
-      @reph_glyph_ids = get_reph_glyph_ids
-      @before_reph_glyph_ids = get_before_reph_glyph_ids
+      @before_half_glyph_ids = before_half_glyph_ids
+      @reph_glyph_ids = reph_glyph_ids
+      @before_reph_glyph_ids = before_reph_glyph_ids
     end
 
     def apply_transforms(original_glyph_ids : Array(Int32)) : Array(Int32)
@@ -42,7 +42,7 @@ module Fontbox::TTF::Gsub
           if feature == RKRF_FEATURE && @gsub_data.is_feature_supported(VATU_FEATURE)
             # Create your own rkrf feature from vatu feature
             intermediate_glyphs_from_gsub = apply_rkrf_feature(
-              @gsub_data.get_feature(VATU_FEATURE),
+              @gsub_data.feature(VATU_FEATURE),
               intermediate_glyphs_from_gsub)
           end
           Log.debug { "the feature #{feature} was not found" }
@@ -50,7 +50,7 @@ module Fontbox::TTF::Gsub
         end
 
         Log.debug { "applying the feature #{feature}" }
-        script_feature = @gsub_data.get_feature(feature)
+        script_feature = @gsub_data.feature(feature)
         intermediate_glyphs_from_gsub = apply_gsub_feature(script_feature, intermediate_glyphs_from_gsub)
       end
 
@@ -59,9 +59,9 @@ module Fontbox::TTF::Gsub
 
     private def apply_rkrf_feature(rkrf_glyphs_for_substitution : ::Fontbox::TTF::Model::ScriptFeature,
                                    original_glyph_ids : Array(Int32)) : Array(Int32)
-      rkrf_glyph_ids = rkrf_glyphs_for_substitution.get_all_glyph_ids_for_substitution
+      rkrf_glyph_ids = rkrf_glyphs_for_substitution.all_glyph_ids_for_substitution
       if rkrf_glyph_ids.empty?
-        Log.debug { "Glyph substitution list for #{rkrf_glyphs_for_substitution.get_name} is empty." }
+        Log.debug { "Glyph substitution list for #{rkrf_glyphs_for_substitution.name} is empty." }
         return original_glyph_ids
       end
 
@@ -147,9 +147,9 @@ module Fontbox::TTF::Gsub
 
     private def apply_gsub_feature(script_feature : ::Fontbox::TTF::Model::ScriptFeature,
                                    original_glyphs : Array(Int32)) : Array(Int32)
-      all_glyph_ids_for_substitution = script_feature.get_all_glyph_ids_for_substitution
+      all_glyph_ids_for_substitution = script_feature.all_glyph_ids_for_substitution
       if all_glyph_ids_for_substitution.empty?
-        Log.debug { "get_all_glyph_ids_for_substitution() for #{script_feature.get_name} is empty" }
+        Log.debug { "get_all_glyph_ids_for_substitution() for #{script_feature.name} is empty" }
         return original_glyphs
       end
 
@@ -160,7 +160,7 @@ module Fontbox::TTF::Gsub
       tokens.each do |chunk|
         if script_feature.can_replace_glyphs(chunk)
           # gsub system kicks in, you get the glyphId directly
-          replacement_for_glyphs = script_feature.get_replacement_for_glyphs(chunk)
+          replacement_for_glyphs = script_feature.replacement_for_glyphs(chunk)
           gsub_processed_glyphs.concat(replacement_for_glyphs)
         else
           gsub_processed_glyphs.concat(chunk)
@@ -172,20 +172,20 @@ module Fontbox::TTF::Gsub
       gsub_processed_glyphs
     end
 
-    private def get_before_half_glyph_ids : Array(Int32)
-      [get_glyph_id(BEFORE_HALF_CHAR)]
+    private def before_half_glyph_ids : Array(Int32)
+      [glyph_id(BEFORE_HALF_CHAR)]
     end
 
-    private def get_reph_glyph_ids : Array(Int32)
-      REPH_CHARS.map { |char| get_glyph_id(char) }
+    private def reph_glyph_ids : Array(Int32)
+      REPH_CHARS.map { |char| glyph_id(char) }
     end
 
-    private def get_before_reph_glyph_ids : Array(Int32)
-      BEFORE_REPH_CHARS.map { |char| get_glyph_id(char) }
+    private def before_reph_glyph_ids : Array(Int32)
+      BEFORE_REPH_CHARS.map { |char| glyph_id(char) }
     end
 
-    private def get_glyph_id(character : Char) : Int32
-      @cmap_lookup.get_glyph_id(character.ord)
+    private def glyph_id(character : Char) : Int32
+      @cmap_lookup.glyph_id(character.ord)
     end
   end
 end

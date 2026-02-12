@@ -30,14 +30,14 @@ module Pdfbox::Pdfparser
       end
       @stream[Cos::Name.new("Size")] = Cos::Integer.new(@size)
 
-      index_entry = get_index_entry
+      index_entry = self.index_entry
       index_array = Cos::Array.new
       index_entry.each do |i|
         index_array.add(Cos::Integer.new(i))
       end
       @stream[Cos::Name.new("Index")] = index_array
 
-      w_entry = get_w_entry
+      w_entry = self.w_entry
       w_array = Cos::Array.new
       w_entry.each do |j|
         w_array.add(Cos::Integer.new(j))
@@ -88,7 +88,7 @@ module Pdfbox::Pdfparser
       @size = stream_size
     end
 
-    private def get_w_entry : Array(Int32)
+    private def w_entry : Array(Int32)
       w_max = [0_i64, 0_i64, 0_i64]
       @stream_data.each do |entry|
         w_max[0] = Math.max(w_max[0], entry.first_column_value)
@@ -112,7 +112,7 @@ module Pdfbox::Pdfparser
       w
     end
 
-    private def get_index_entry : Array(Int64)
+    private def index_entry : Array(Int64)
       # Add object number 0 to the set
       obj_numbers = @object_numbers.dup
       obj_numbers.add(0_i64)

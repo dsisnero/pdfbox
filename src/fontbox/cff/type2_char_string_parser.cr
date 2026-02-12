@@ -66,7 +66,7 @@ module Fontbox::CFF
           process_call_gsubr(global_subr_index, local_subr_index, glyph_data)
         elsif b0 == HINTMASK || b0 == CNTRMASK
           glyph_data.vstem_count += count_numbers(glyph_data.sequence) // 2
-          mask_length = get_mask_length(glyph_data.hstem_count, glyph_data.vstem_count)
+          mask_length = mask_length(glyph_data.hstem_count, glyph_data.vstem_count)
           # drop the following bytes representing the mask as long as we don't support HINTMASK and CNTRMASK
           mask_length.times do
             input.read_unsigned_byte
@@ -82,7 +82,7 @@ module Fontbox::CFF
       end
     end
 
-    private def get_subr_bytes(subr_index : Array(Bytes)?, glyph_data : GlyphData) : Bytes?
+    private def subr_bytes(subr_index : Array(Bytes)?, glyph_data : GlyphData) : Bytes?
       return unless subr_index
       return if subr_index.empty?
 
@@ -95,14 +95,14 @@ module Fontbox::CFF
 
     private def process_call_subr(global_subr_index : Array(Bytes)?, local_subr_index : Array(Bytes)?, glyph_data : GlyphData) : Nil
       if !local_subr_index.nil? && !local_subr_index.empty?
-        subr_bytes = get_subr_bytes(local_subr_index, glyph_data)
+        subr_bytes = subr_bytes(local_subr_index, glyph_data)
         process_subr(global_subr_index, local_subr_index, subr_bytes, glyph_data)
       end
     end
 
     private def process_call_gsubr(global_subr_index : Array(Bytes)?, local_subr_index : Array(Bytes)?, glyph_data : GlyphData) : Nil
       if !global_subr_index.nil? && !global_subr_index.empty?
-        subr_bytes = get_subr_bytes(global_subr_index, glyph_data)
+        subr_bytes = subr_bytes(global_subr_index, glyph_data)
         process_subr(global_subr_index, local_subr_index, subr_bytes, glyph_data)
       end
     end
@@ -164,7 +164,7 @@ module Fontbox::CFF
       end
     end
 
-    private def get_mask_length(hstem_count : Int32, vstem_count : Int32) : Int32
+    private def mask_length(hstem_count : Int32, vstem_count : Int32) : Int32
       hint_count = hstem_count + vstem_count
       length = hint_count // 8
       if hint_count % 8 > 0

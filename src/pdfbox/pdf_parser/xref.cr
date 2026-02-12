@@ -159,7 +159,7 @@ module Pdfbox::Pdfparser
     end
 
     # Get entry by object number (alias for #[])
-    def get_entry_by_number(obj_num : Int64) : XRefEntry?
+    def entry_by_number(obj_num : Int64) : XRefEntry?
       self[obj_num]
     end
   end

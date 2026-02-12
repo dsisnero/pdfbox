@@ -57,7 +57,7 @@ module Fontbox
 
       private def add_mapping_from_bfrange(cmap : CMap, start_code : Bytes, values : Int32, token_bytes : Bytes); end
 
-      private def get_external_cmap(name : String) : Pdfbox::IO::RandomAccessRead; end
+      private def external_cmap(name : String) : Pdfbox::IO::RandomAccessRead; end
 
       private def check_expected_operator(operator : Operator, expected_operator_name : String, range_name : String); end
 
@@ -70,7 +70,7 @@ module Fontbox
       private def is_delimiter(a_byte : UInt8?) : Bool; end
 
       def parse_predefined(name : String) : CMap
-        random_access_read = get_external_cmap(name)
+        random_access_read = external_cmap(name)
         # deactivate strict mode
         strict_mode = @strict_mode
         @strict_mode = false
@@ -119,7 +119,7 @@ module Fontbox
       end
 
       private def parse_usecmap(use_cmap_name : LiteralName, result : CMap)
-        random_access_read = get_external_cmap(use_cmap_name.name)
+        random_access_read = external_cmap(use_cmap_name.name)
         use_cmap = parse(random_access_read)
         result.use_cmap(use_cmap)
         random_access_read.close
@@ -335,7 +335,7 @@ module Fontbox
         end
       end
 
-      private def get_external_cmap(name : String) : Pdfbox::IO::RandomAccessRead
+      private def external_cmap(name : String) : Pdfbox::IO::RandomAccessRead
         # Try to load from resources directory relative to project root
         resource_path = File.join(Dir.current, "resources", "org", "apache", "fontbox", "cmap", name)
         unless File.exists?(resource_path)

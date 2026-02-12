@@ -15,6 +15,8 @@
 
 require "log"
 require "./cff_font"
+require "./encoding"
+require "./charset"
 
 module Fontbox::CFF
   # This class represents a parser for a CFF font.
@@ -401,7 +403,7 @@ module Fontbox::CFF
         raise "Invalid negative index when reading a string"
       end
       if index <= 390
-        return StandardString.get_name(index)
+        return StandardString.name(index)
       end
       if string_index = @string_index
         if index - 391 < string_index.size
@@ -412,24 +414,24 @@ module Fontbox::CFF
       "SID#{index}"
     end
 
-    private def get_string(dict : DictData, name : String) : String?
-      entry = dict.get_entry(name)
+    private def string(dict : DictData, name : String) : String?
+      entry = dict.entry(name)
       if entry && entry.has_operands?
-        read_string(entry.get_number(0).to_i)
+        read_string(entry.number(0).to_i)
       end
     end
 
     private def parse_ros(top_dict : DictData) : CFFCIDFont?
       # determine if this is a Type 1-equivalent font or a CIDFont
-      ros_entry = top_dict.get_entry("ROS")
+      ros_entry = top_dict.entry("ROS")
       if ros_entry
         if ros_entry.size < 3
           raise "ROS entry must have 3 elements"
         end
         cff_cid_font = CFFCIDFont.new
-        cff_cid_font.registry = read_string(ros_entry.get_number(0).to_i)
-        cff_cid_font.ordering = read_string(ros_entry.get_number(1).to_i)
-        cff_cid_font.supplement = ros_entry.get_number(2).to_i
+        cff_cid_font.registry = read_string(ros_entry.number(0).to_i)
+        cff_cid_font.ordering = read_string(ros_entry.number(1).to_i)
+        cff_cid_font.supplement = ros_entry.number(2).to_i
         return cff_cid_font
       end
       nil
@@ -441,7 +443,7 @@ module Fontbox::CFF
       top_dict = read_dict_data(top_dict_input)
 
       # we don't support synthetic fonts
-      synthetic_base_entry = top_dict.get_entry("SyntheticBase")
+      synthetic_base_entry = top_dict.entry("SyntheticBase")
       if synthetic_base_entry
         raise "Synthetic Fonts are not supported"
       end
@@ -461,38 +463,38 @@ module Fontbox::CFF
       font.name = name
 
       # top dict
-      font.add_value_to_top_dict("version", get_string(top_dict, "version"))
-      font.add_value_to_top_dict("Notice", get_string(top_dict, "Notice"))
-      font.add_value_to_top_dict("Copyright", get_string(top_dict, "Copyright"))
-      font.add_value_to_top_dict("FullName", get_string(top_dict, "FullName"))
-      font.add_value_to_top_dict("FamilyName", get_string(top_dict, "FamilyName"))
-      font.add_value_to_top_dict("Weight", get_string(top_dict, "Weight"))
-      font.add_value_to_top_dict("isFixedPitch", top_dict.get_boolean("isFixedPitch", false))
-      font.add_value_to_top_dict("ItalicAngle", top_dict.get_number("ItalicAngle", 0))
-      font.add_value_to_top_dict("UnderlinePosition", top_dict.get_number("UnderlinePosition", -100))
-      font.add_value_to_top_dict("UnderlineThickness", top_dict.get_number("UnderlineThickness", 50))
-      font.add_value_to_top_dict("PaintType", top_dict.get_number("PaintType", 0))
-      font.add_value_to_top_dict("CharstringType", top_dict.get_number("CharstringType", 2))
-      font.add_value_to_top_dict("FontMatrix", top_dict.get_array("FontMatrix", [0.001, 0.0, 0.0, 0.001, 0.0, 0.0] of CFFNumber))
-      font.add_value_to_top_dict("UniqueID", top_dict.get_number("UniqueID", nil))
-      font.add_value_to_top_dict("FontBBox", top_dict.get_array("FontBBox", [0, 0, 0, 0] of CFFNumber))
-      font.add_value_to_top_dict("StrokeWidth", top_dict.get_number("StrokeWidth", 0))
-      font.add_value_to_top_dict("XUID", top_dict.get_array("XUID", nil))
+      font.add_value_to_top_dict("version", string(top_dict, "version"))
+      font.add_value_to_top_dict("Notice", string(top_dict, "Notice"))
+      font.add_value_to_top_dict("Copyright", string(top_dict, "Copyright"))
+      font.add_value_to_top_dict("FullName", string(top_dict, "FullName"))
+      font.add_value_to_top_dict("FamilyName", string(top_dict, "FamilyName"))
+      font.add_value_to_top_dict("Weight", string(top_dict, "Weight"))
+      font.add_value_to_top_dict("isFixedPitch", top_dict.boolean("isFixedPitch", false))
+      font.add_value_to_top_dict("ItalicAngle", top_dict.number("ItalicAngle", 0))
+      font.add_value_to_top_dict("UnderlinePosition", top_dict.number("UnderlinePosition", -100))
+      font.add_value_to_top_dict("UnderlineThickness", top_dict.number("UnderlineThickness", 50))
+      font.add_value_to_top_dict("PaintType", top_dict.number("PaintType", 0))
+      font.add_value_to_top_dict("CharstringType", top_dict.number("CharstringType", 2))
+      font.add_value_to_top_dict("FontMatrix", top_dict.array("FontMatrix", [0.001, 0.0, 0.0, 0.001, 0.0, 0.0] of CFFNumber))
+      font.add_value_to_top_dict("UniqueID", top_dict.number("UniqueID", nil))
+      font.add_value_to_top_dict("FontBBox", top_dict.array("FontBBox", [0, 0, 0, 0] of CFFNumber))
+      font.add_value_to_top_dict("StrokeWidth", top_dict.number("StrokeWidth", 0))
+      font.add_value_to_top_dict("XUID", top_dict.array("XUID", nil))
 
       # charstrings index
-      char_strings_entry = top_dict.get_entry("CharStrings")
+      char_strings_entry = top_dict.entry("CharStrings")
       if char_strings_entry.nil? || !char_strings_entry.has_operands?
         raise "CharStrings is missing or empty"
       end
-      char_strings_offset = char_strings_entry.get_number(0).to_i
+      char_strings_offset = char_strings_entry.number(0).to_i
       input.position = char_strings_offset
       char_strings_index = read_index_data(input)
 
       # charset
-      charset_entry = top_dict.get_entry("charset")
+      charset_entry = top_dict.entry("charset")
       charset : Charset
       if charset_entry && charset_entry.has_operands?
-        charset_id = charset_entry.get_number(0).to_i
+        charset_id = charset_entry.number(0).to_i
         if !is_cid_font && charset_id == 0
           charset = ISOAdobeCharset.instance
         elsif !is_cid_font && charset_id == 1
@@ -618,9 +620,9 @@ module Fontbox::CFF
 
     private def parse_type1_dicts(input : DataInput, top_dict : DictData, font : CFFType1Font, charset : Charset)
       # encoding
-      encoding_entry = top_dict.get_entry("Encoding")
+      encoding_entry = top_dict.entry("Encoding")
       encoding : CFFEncoding
-      encoding_id = encoding_entry && encoding_entry.has_operands? ? encoding_entry.get_number(0).to_i : 0
+      encoding_id = encoding_entry && encoding_entry.has_operands? ? encoding_entry.number(0).to_i : 0
       case encoding_id
       when 0
         encoding = StandardEncoding.instance
@@ -633,12 +635,12 @@ module Fontbox::CFF
       font.encoding = encoding
 
       # read private dict
-      private_entry = top_dict.get_entry("Private")
+      private_entry = top_dict.entry("Private")
       if private_entry.nil? || private_entry.size < 2
         raise "Private dictionary entry missing for font #{font.name}"
       end
-      private_offset = private_entry.get_number(1).to_i
-      private_size = private_entry.get_number(0).to_i
+      private_offset = private_entry.number(1).to_i
+      private_size = private_entry.number(0).to_i
       private_dict = read_dict_data(input, private_offset, private_size)
 
       # populate private dict
@@ -648,7 +650,7 @@ module Fontbox::CFF
       end
 
       # local subrs
-      local_subr_offset = private_dict.get_number("Subrs", 0)
+      local_subr_offset = private_dict.number("Subrs", 0)
       if local_subr_offset.is_a?(Int32) && local_subr_offset > 0
         input.position = private_offset + local_subr_offset
         font.add_to_private_dict("Subrs", read_index_data(input))
@@ -658,13 +660,13 @@ module Fontbox::CFF
     private def parse_cid_font_dicts(input : DataInput, top_dict : DictData, font : CFFCIDFont, nr_of_char_strings : Int32)
       # In a CIDKeyed Font, the Private dictionary isn't in the Top Dict but in the Font dict
       # which can be accessed by a lookup using FDArray and FDSelect
-      fd_array_entry = top_dict.get_entry("FDArray")
+      fd_array_entry = top_dict.entry("FDArray")
       if fd_array_entry.nil? || !fd_array_entry.has_operands?
         raise "FDArray is missing for a CIDKeyed Font."
       end
 
       # font dict index
-      font_dict_offset = fd_array_entry.get_number(0).to_i
+      font_dict_offset = fd_array_entry.number(0).to_i
       input.position = font_dict_offset
       fd_index = read_index_data(input)
       if fd_index.empty?
@@ -681,15 +683,15 @@ module Fontbox::CFF
 
         # font dict
         font_dict_map = Hash(String, CFFDictValue?).new
-        font_dict_map["FontName"] = get_string(font_dict, "FontName")
-        font_dict_map["FontType"] = font_dict.get_number("FontType", 0)
-        font_dict_map["FontBBox"] = font_dict.get_array("FontBBox", nil)
-        font_dict_map["FontMatrix"] = font_dict.get_array("FontMatrix", nil)
+        font_dict_map["FontName"] = string(font_dict, "FontName")
+        font_dict_map["FontType"] = font_dict.number("FontType", 0)
+        font_dict_map["FontBBox"] = font_dict.array("FontBBox", nil)
+        font_dict_map["FontMatrix"] = font_dict.array("FontMatrix", nil)
         # TODO OD-4 : Add here other keys
         font_dictionaries << font_dict_map
 
         # read private dict
-        private_entry = font_dict.get_entry("Private")
+        private_entry = font_dict.entry("Private")
         if private_entry.nil? || private_entry.size < 2
           # PDFBOX-5843 don't abort here, and don't skip empty bytes entries, because
           # getLocalSubrIndex() expects subr at a specific index
@@ -697,8 +699,8 @@ module Fontbox::CFF
           next
         end
 
-        private_offset = private_entry.get_number(1).to_i
-        private_size = private_entry.get_number(0).to_i
+        private_offset = private_entry.number(1).to_i
+        private_size = private_entry.number(0).to_i
         private_dict = read_dict_data(input, private_offset, private_size)
 
         # populate private dict
@@ -707,7 +709,7 @@ module Fontbox::CFF
         private_dictionaries << priv_dict
 
         # local subrs
-        local_subr_offset = private_dict.get_number("Subrs", 0)
+        local_subr_offset = private_dict.number("Subrs", 0)
         if local_subr_offset.is_a?(Int32) && local_subr_offset > 0
           input.position = private_offset + local_subr_offset
           priv_dict["Subrs"] = read_index_data(input)
@@ -719,11 +721,11 @@ module Fontbox::CFF
       end
 
       # font-dict (FD) select
-      fd_select_entry = top_dict.get_entry("FDSelect")
+      fd_select_entry = top_dict.entry("FDSelect")
       if fd_select_entry.nil? || !fd_select_entry.has_operands?
         raise "FDSelect is missing or empty"
       end
-      fd_select_pos = fd_select_entry.get_number(0).to_i
+      fd_select_pos = fd_select_entry.number(0).to_i
       input.position = fd_select_pos
       fd_select = read_fd_select(input, nr_of_char_strings)
 
@@ -750,23 +752,23 @@ module Fontbox::CFF
 
     private def read_private_dict(private_dict : DictData) : Hash(String, CFFPrivateDictValue?)
       priv_dict = Hash(String, CFFPrivateDictValue?).new
-      priv_dict["BlueValues"] = private_dict.get_delta("BlueValues", nil)
-      priv_dict["OtherBlues"] = private_dict.get_delta("OtherBlues", nil)
-      priv_dict["FamilyBlues"] = private_dict.get_delta("FamilyBlues", nil)
-      priv_dict["FamilyOtherBlues"] = private_dict.get_delta("FamilyOtherBlues", nil)
-      priv_dict["BlueScale"] = private_dict.get_number("BlueScale", 0.039625)
-      priv_dict["BlueShift"] = private_dict.get_number("BlueShift", 7)
-      priv_dict["BlueFuzz"] = private_dict.get_number("BlueFuzz", 1)
-      priv_dict["StdHW"] = private_dict.get_number("StdHW", nil)
-      priv_dict["StdVW"] = private_dict.get_number("StdVW", nil)
-      priv_dict["StemSnapH"] = private_dict.get_delta("StemSnapH", nil)
-      priv_dict["StemSnapV"] = private_dict.get_delta("StemSnapV", nil)
-      priv_dict["ForceBold"] = private_dict.get_boolean("ForceBold", false)
-      priv_dict["LanguageGroup"] = private_dict.get_number("LanguageGroup", 0)
-      priv_dict["ExpansionFactor"] = private_dict.get_number("ExpansionFactor", 0.06)
-      priv_dict["initialRandomSeed"] = private_dict.get_number("initialRandomSeed", 0)
-      priv_dict["defaultWidthX"] = private_dict.get_number("defaultWidthX", 0)
-      priv_dict["nominalWidthX"] = private_dict.get_number("nominalWidthX", 0)
+      priv_dict["BlueValues"] = private_dict.delta("BlueValues", nil)
+      priv_dict["OtherBlues"] = private_dict.delta("OtherBlues", nil)
+      priv_dict["FamilyBlues"] = private_dict.delta("FamilyBlues", nil)
+      priv_dict["FamilyOtherBlues"] = private_dict.delta("FamilyOtherBlues", nil)
+      priv_dict["BlueScale"] = private_dict.number("BlueScale", 0.039625)
+      priv_dict["BlueShift"] = private_dict.number("BlueShift", 7)
+      priv_dict["BlueFuzz"] = private_dict.number("BlueFuzz", 1)
+      priv_dict["StdHW"] = private_dict.number("StdHW", nil)
+      priv_dict["StdVW"] = private_dict.number("StdVW", nil)
+      priv_dict["StemSnapH"] = private_dict.delta("StemSnapH", nil)
+      priv_dict["StemSnapV"] = private_dict.delta("StemSnapV", nil)
+      priv_dict["ForceBold"] = private_dict.boolean("ForceBold", false)
+      priv_dict["LanguageGroup"] = private_dict.number("LanguageGroup", 0)
+      priv_dict["ExpansionFactor"] = private_dict.number("ExpansionFactor", 0.06)
+      priv_dict["initialRandomSeed"] = private_dict.number("initialRandomSeed", 0)
+      priv_dict["defaultWidthX"] = private_dict.number("defaultWidthX", 0)
+      priv_dict["nominalWidthX"] = private_dict.number("nominalWidthX", 0)
       priv_dict
     end
 
@@ -820,7 +822,7 @@ module Fontbox::CFF
       encoding.add(0, 0, ".notdef")
       (1..encoding.n_codes).each do |gid|
         code = data_input.read_unsigned_byte
-        sid = charset.get_sid_for_gid(gid)
+        sid = charset.sid_for_gid(gid)
         encoding.add(code, sid, read_string(sid))
       end
       if (format & 0x80) != 0
@@ -837,7 +839,7 @@ module Fontbox::CFF
         range_first = data_input.read_unsigned_byte
         range_left = data_input.read_unsigned_byte
         (0..range_left).each do |j|
-          sid = charset.get_sid_for_gid(gid)
+          sid = charset.sid_for_gid(gid)
           encoding.add(range_first + j, sid, read_string(sid))
           gid += 1
         end
@@ -885,32 +887,32 @@ module Fontbox::CFF
         end
       end
 
-      def get_entry(name : String) : Entry?
+      def entry(name : String) : Entry?
         @entries[name]?
       end
 
-      def get_boolean(name : String, default_value : Bool) : Bool
-        entry = get_entry(name)
-        return default_value unless entry && entry.has_operands?
-        entry.get_boolean(0, default_value)
+      def boolean(name : String, default_value : Bool) : Bool
+        ent = entry(name)
+        return default_value unless ent && ent.has_operands?
+        ent.boolean(0, default_value)
       end
 
-      def get_number(name : String, default_value : CFFNumber? = nil) : CFFNumber?
-        entry = get_entry(name)
-        return default_value unless entry && entry.has_operands?
-        entry.get_number(0)
+      def number(name : String, default_value : CFFNumber? = nil) : CFFNumber?
+        ent = entry(name)
+        return default_value unless ent && ent.has_operands?
+        ent.number(0)
       end
 
-      def get_array(name : String, default_value : Array(CFFNumber)? = nil) : Array(CFFNumber)?
-        entry = get_entry(name)
-        return default_value unless entry && entry.has_operands?
-        entry.get_operands
+      def array(name : String, default_value : Array(CFFNumber)? = nil) : Array(CFFNumber)?
+        ent = entry(name)
+        return default_value unless ent && ent.has_operands?
+        ent.operands
       end
 
-      def get_delta(name : String, default_value : Array(CFFNumber)? = nil) : Array(CFFNumber)?
-        entry = get_entry(name)
-        return default_value unless entry && entry.has_operands?
-        entry.get_delta
+      def delta(name : String, default_value : Array(CFFNumber)? = nil) : Array(CFFNumber)?
+        ent = entry(name)
+        return default_value unless ent && ent.has_operands?
+        ent.delta
       end
 
       class Entry
@@ -929,28 +931,31 @@ module Fontbox::CFF
           @operands.size
         end
 
-        def get_number(index : Int32) : CFFNumber
+        def number(index : Int32) : CFFNumber
           @operands[index]
         end
 
-        def get_boolean(index : Int32, default_value : Bool) : Bool
+        def boolean(index : Int32, default_value : Bool) : Bool
           operand = @operands[index]
           if operand.is_a?(Int32)
             case operand
             when 0
-              return false
+              false
             when 1
-              return true
+              true
+            else
+              default_value
             end
+          else
+            default_value
           end
-          default_value
         end
 
-        def get_operands : Array(CFFNumber)
+        def operands : Array(CFFNumber)
           @operands
         end
 
-        def get_delta : Array(CFFNumber)
+        def delta : Array(CFFNumber)
           result = @operands.dup
           (1...result.size).each do |i|
             result[i] = result[i - 1].to_i + result[i].to_i
@@ -1062,7 +1067,7 @@ module Fontbox::CFF
         @ranges_cid2gid << range_mapping
       end
 
-      def get_cid_for_gid(gid : Int32) : Int32
+      def cid_for_gid(gid : Int32) : Int32
         if is_cid_font?
           @ranges_cid2gid.each do |mapping|
             return mapping.map_value(gid) if mapping.is_in_range(gid)
@@ -1071,7 +1076,7 @@ module Fontbox::CFF
         super
       end
 
-      def get_gid_for_cid(cid : Int32) : Int32
+      def gid_for_cid(cid : Int32) : Int32
         if is_cid_font?
           @ranges_cid2gid.each do |mapping|
             return mapping.map_reverse_value(cid) if mapping.is_in_reverse_range(cid)
@@ -1093,14 +1098,14 @@ module Fontbox::CFF
         @ranges_cid2gid << range_mapping
       end
 
-      def get_cid_for_gid(gid : Int32) : Int32
+      def cid_for_gid(gid : Int32) : Int32
         @ranges_cid2gid.each do |mapping|
           return mapping.map_value(gid) if mapping.is_in_range(gid)
         end
         super
       end
 
-      def get_gid_for_cid(cid : Int32) : Int32
+      def gid_for_cid(cid : Int32) : Int32
         @ranges_cid2gid.each do |mapping|
           return mapping.map_reverse_value(cid) if mapping.is_in_reverse_range(cid)
         end

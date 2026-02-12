@@ -19,13 +19,13 @@ describe Fontbox::StandardEncoding do
   it "test standard encoding" do
     standard_encoding = Fontbox::StandardEncoding::INSTANCE
     # check some randomly chosen mappings
-    standard_encoding.get_name(0).should eq(".notdef")
-    standard_encoding.get_name(32).should eq("space")
-    standard_encoding.get_name(112).should eq("p")
-    standard_encoding.get_name(172).should eq("guilsinglleft")
-    standard_encoding.get_code("space").should eq(32)
-    standard_encoding.get_code("p").should eq(112)
-    standard_encoding.get_code("guilsinglleft").should eq(172)
+    standard_encoding.name(0).should eq(".notdef")
+    standard_encoding.name(32).should eq("space")
+    standard_encoding.name(112).should eq("p")
+    standard_encoding.name(172).should eq("guilsinglleft")
+    standard_encoding.code("space").should eq(32)
+    standard_encoding.code("p").should eq(112)
+    standard_encoding.code("guilsinglleft").should eq(172)
   end
 end
 
@@ -33,12 +33,12 @@ describe Fontbox::MacRomanEncoding do
   it "test mac roman encoding" do
     mac_roman_encoding = Fontbox::MacRomanEncoding::INSTANCE
     # check some randomly chosen mappings
-    mac_roman_encoding.get_name(0).should eq(".notdef")
-    mac_roman_encoding.get_name(32).should eq("space")
-    mac_roman_encoding.get_name(112).should eq("p")
-    mac_roman_encoding.get_name(167).should eq("germandbls")
-    mac_roman_encoding.get_code("space").should eq(32)
-    mac_roman_encoding.get_code("p").should eq(112)
-    mac_roman_encoding.get_code("germandbls").should eq(167)
+    mac_roman_encoding.name(0).should eq(".notdef")
+    mac_roman_encoding.name(32).should eq("space")
+    mac_roman_encoding.name(112).should eq("p")
+    mac_roman_encoding.name(167).should eq("germandbls")
+    mac_roman_encoding.code("space").should eq(32)
+    mac_roman_encoding.code("p").should eq(112)
+    mac_roman_encoding.code("germandbls").should eq(167)
   end
 end

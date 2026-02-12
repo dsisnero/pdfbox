@@ -15,16 +15,6 @@ module Fontbox
         @y = y
       end
 
-      # Returns the x-coordinate as Float64.
-      def get_x : Float64
-        @x
-      end
-
-      # Returns the y-coordinate as Float64.
-      def get_y : Float64
-        @y
-      end
-
       # Creates a new point with the same coordinates.
       def clone : Point2D
         Point2D.new(@x, @y)

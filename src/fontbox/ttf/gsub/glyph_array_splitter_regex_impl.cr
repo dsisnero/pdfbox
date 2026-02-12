@@ -8,7 +8,7 @@ module Fontbox::TTF::Gsub
     @compound_character_tokenizer : CompoundCharacterTokenizer
 
     def initialize(matchers : Set(Array(Int32)))
-      @compound_character_tokenizer = CompoundCharacterTokenizer.new(get_matchers_as_strings(matchers))
+      @compound_character_tokenizer = CompoundCharacterTokenizer.new(matchers_as_strings(matchers))
     end
 
     def split(glyph_ids : Array(Int32)) : Array(Array(Int32))
@@ -22,7 +22,7 @@ module Fontbox::TTF::Gsub
       modified_glyphs
     end
 
-    private def get_matchers_as_strings(matchers : Set(Array(Int32))) : Set(String)
+    private def matchers_as_strings(matchers : Set(Array(Int32))) : Set(String)
       # Sort strings with custom comparator: longer strings first,
       # if same length, reverse lexicographic order
       sorted_strings = matchers.map { |glyph_ids| convert_glyph_ids_to_string(glyph_ids) }

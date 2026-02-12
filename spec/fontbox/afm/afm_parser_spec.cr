@@ -39,7 +39,7 @@ describe Fontbox::AFM::Parser do
     it "parses Helvetica font metrics" do
       File.open("spec/resources/fontbox/afm/Helvetica.afm") do |io|
         parser = Fontbox::AFM::Parser.new(io)
-        font_metrics = parser.parse
+        parser.parse
         # TODO: verify font metrics
       end
     end
@@ -48,7 +48,7 @@ describe Fontbox::AFM::Parser do
       File.open("spec/resources/fontbox/afm/Helvetica.afm") do |io|
         parser = Fontbox::AFM::Parser.new(io)
         font_metrics = parser.parse
-        char_metrics = font_metrics.char_metrics
+        font_metrics.char_metrics
         # TODO: verify char metrics
       end
     end
@@ -57,7 +57,7 @@ describe Fontbox::AFM::Parser do
       File.open("spec/resources/fontbox/afm/Helvetica.afm") do |io|
         parser = Fontbox::AFM::Parser.new(io)
         font_metrics = parser.parse
-        kern_pairs = font_metrics.kern_pairs
+        font_metrics.kern_pairs
         # TODO: verify kern pairs
       end
     end
@@ -65,7 +65,7 @@ describe Fontbox::AFM::Parser do
     it "parses Helvetica font metrics with reduced dataset" do
       File.open("spec/resources/fontbox/afm/Helvetica.afm") do |io|
         parser = Fontbox::AFM::Parser.new(io)
-        font_metrics = parser.parse(true)
+        parser.parse(true)
         # TODO: verify reduced dataset
       end
     end
@@ -74,7 +74,7 @@ describe Fontbox::AFM::Parser do
       File.open("spec/resources/fontbox/afm/Helvetica.afm") do |io|
         parser = Fontbox::AFM::Parser.new(io)
         font_metrics = parser.parse(true)
-        char_metrics = font_metrics.char_metrics
+        font_metrics.char_metrics
         # TODO: verify char metrics
       end
     end

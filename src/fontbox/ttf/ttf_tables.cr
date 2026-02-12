@@ -323,72 +323,72 @@ module Fontbox::TTF
     end
 
     # Gets the version.
-    def get_version : Float32
+    def version : Float32
       @version
     end
 
     # Gets the maximum points.
-    def get_max_points : UInt16
+    def max_points : UInt16
       @max_points
     end
 
     # Gets the maximum contours.
-    def get_max_contours : UInt16
+    def max_contours : UInt16
       @max_contours
     end
 
     # Gets the maximum composite points.
-    def get_max_composite_points : UInt16
+    def max_composite_points : UInt16
       @max_composite_points
     end
 
     # Gets the maximum composite contours.
-    def get_max_composite_contours : UInt16
+    def max_composite_contours : UInt16
       @max_composite_contours
     end
 
     # Gets the maximum zones.
-    def get_max_zones : UInt16
+    def max_zones : UInt16
       @max_zones
     end
 
     # Gets the maximum twilight points.
-    def get_max_twilight_points : UInt16
+    def max_twilight_points : UInt16
       @max_twilight_points
     end
 
     # Gets the maximum storage.
-    def get_max_storage : UInt16
+    def max_storage : UInt16
       @max_storage
     end
 
     # Gets the maximum function definitions.
-    def get_max_function_defs : UInt16
+    def max_function_defs : UInt16
       @max_function_defs
     end
 
     # Gets the maximum instruction definitions.
-    def get_max_instruction_defs : UInt16
+    def max_instruction_defs : UInt16
       @max_instruction_defs
     end
 
     # Gets the maximum stack elements.
-    def get_max_stack_elements : UInt16
+    def max_stack_elements : UInt16
       @max_stack_elements
     end
 
     # Gets the maximum size of instructions.
-    def get_max_size_of_instructions : UInt16
+    def max_size_of_instructions : UInt16
       @max_size_of_instructions
     end
 
     # Gets the maximum component elements.
-    def get_max_component_elements : UInt16
+    def max_component_elements : UInt16
       @max_component_elements
     end
 
     # Gets the maximum component depth.
-    def get_max_component_depth : UInt16
+    def max_component_depth : UInt16
       @max_component_depth
     end
   end
@@ -428,7 +428,7 @@ module Fontbox::TTF
         # LOG.warn("No PostScript name data is provided for the font #{ttf.get_name}")
       elsif @format_type == 1.0_f32
         # This TrueType font file contains exactly the 258 glyphs in the standard Macintosh TrueType.
-        @glyph_names = WGL4Names.get_all_names
+        @glyph_names = WGL4Names.all_names
       elsif @format_type == 2.0_f32
         num_glyphs = data.read_unsigned_short.to_i32
         glyph_name_index = Array(Int32).new(num_glyphs)
@@ -465,7 +465,7 @@ module Fontbox::TTF
         num_glyphs.times do |i|
           index = glyph_name_index[i]
           if index >= 0 && index < WGL4Names::NUMBER_OF_MAC_GLYPHS
-            @glyph_names.as(Array(String))[i] = WGL4Names.get_glyph_name(index) || ".undefined"
+            @glyph_names.as(Array(String))[i] = WGL4Names.glyph_name(index) || ".undefined"
           elsif index >= WGL4Names::NUMBER_OF_MAC_GLYPHS && index <= 32767 && !name_array.nil?
             @glyph_names.as(Array(String))[i] = name_array.as(Array(String))[index - WGL4Names::NUMBER_OF_MAC_GLYPHS]
           else
@@ -488,7 +488,7 @@ module Fontbox::TTF
           num_glyphs.times do |i|
             index = glyph_name_index[i]
             if index >= 0 && index < WGL4Names::NUMBER_OF_MAC_GLYPHS
-              name = WGL4Names.get_glyph_name(index)
+              name = WGL4Names.glyph_name(index)
               if !name.nil?
                 @glyph_names.as(Array(String))[i] = name
               end
@@ -507,52 +507,52 @@ module Fontbox::TTF
     end
 
     # Gets the format type.
-    def get_format_type : Float32
+    def format_type : Float32
       @format_type
     end
 
     # Gets the italic angle.
-    def get_italic_angle : Float32
+    def italic_angle : Float32
       @italic_angle
     end
 
     # Gets the underline position.
-    def get_underline_position : Int16
+    def underline_position : Int16
       @underline_position
     end
 
     # Gets the underline thickness.
-    def get_underline_thickness : Int16
+    def underline_thickness : Int16
       @underline_thickness
     end
 
     # Gets the is fixed pitch flag.
-    def get_is_fixed_pitch : UInt64
+    def is_fixed_pitch : UInt64
       @is_fixed_pitch
     end
 
     # Gets the minimum memory type 42.
-    def get_min_mem_type42 : UInt64
+    def min_mem_type42 : UInt64
       @min_mem_type42
     end
 
     # Gets the maximum memory type 42.
-    def get_max_mem_type42 : UInt64
+    def max_mem_type42 : UInt64
       @max_mem_type42
     end
 
     # Gets the minimum memory type 1.
-    def get_min_mem_type1 : UInt64
+    def min_mem_type1 : UInt64
       @min_mem_type1
     end
 
     # Gets the maximum memory type 1.
-    def get_max_mem_type1 : UInt64
+    def max_mem_type1 : UInt64
       @max_mem_type1
     end
 
     # Gets the glyph names.
-    def get_glyph_names : Array(String)?
+    def glyph_names : Array(String)?
       @glyph_names
     end
 
@@ -560,7 +560,7 @@ module Fontbox::TTF
     #
     # @param gid the GID of the glyph name
     # @return the glyph name for the given glyph name or nil
-    def get_name(gid : Int32) : String?
+    def name(gid : Int32) : String?
       if gid < 0 || @glyph_names.nil? || gid >= @glyph_names.as(Array(String)).size
         return
       end
@@ -710,7 +710,7 @@ module Fontbox::TTF
         end
 
         data.seek(offset + (2_i64 * 3) + number_of_name_records.to_i64 * 2_i64 * 6 + record.string_offset.to_i64)
-        charset = get_charset(record)
+        charset = charset(record)
         string = data.read_string(record.string_length, charset)
         record.string = string
       end
@@ -720,7 +720,7 @@ module Fontbox::TTF
       read_interesting_strings
     end
 
-    private def get_charset(nr : NameRecord) : String
+    private def charset(nr : NameRecord) : String
       platform = nr.platform_id
       encoding = nr.platform_encoding_id
       charset = "ISO-8859-1" # Default to ISO Latin-1
@@ -759,16 +759,16 @@ module Fontbox::TTF
     end
 
     private def read_interesting_strings : Nil
-      @font_family = get_english_name(NameRecord::NAME_FONT_FAMILY_NAME)
-      @font_sub_family = get_english_name(NameRecord::NAME_FONT_SUB_FAMILY_NAME)
+      @font_family = english_name(NameRecord::NAME_FONT_FAMILY_NAME)
+      @font_sub_family = english_name(NameRecord::NAME_FONT_SUB_FAMILY_NAME)
 
       # extract PostScript name, only these two formats are valid
-      @ps_name = get_name(NameRecord::NAME_POSTSCRIPT_NAME,
+      @ps_name = name(NameRecord::NAME_POSTSCRIPT_NAME,
         NameRecord::PLATFORM_MACINTOSH,
         NameRecord::ENCODING_MACINTOSH_ROMAN,
         NameRecord::LANGUAGE_MACINTOSH_ENGLISH)
       if @ps_name.nil?
-        @ps_name = get_name(NameRecord::NAME_POSTSCRIPT_NAME,
+        @ps_name = name(NameRecord::NAME_POSTSCRIPT_NAME,
           NameRecord::PLATFORM_WINDOWS,
           NameRecord::ENCODING_WINDOWS_UNICODE_BMP,
           NameRecord::LANGUAGE_WINDOWS_EN_US)
@@ -792,10 +792,10 @@ module Fontbox::TTF
     end
 
     # Helper to get English names by best effort.
-    private def get_english_name(name_id : Int32) : String?
+    private def english_name(name_id : Int32) : String?
       # Unicode, Full, BMP, 1.1, 1.0
       (4.downto(0)).each do |i|
-        name_uni = get_name(name_id,
+        name_uni = name(name_id,
           NameRecord::PLATFORM_UNICODE,
           i,
           NameRecord::LANGUAGE_UNICODE)
@@ -805,7 +805,7 @@ module Fontbox::TTF
       end
 
       # Windows, Unicode BMP, EN-US
-      name_win = get_name(name_id,
+      name_win = name(name_id,
         NameRecord::PLATFORM_WINDOWS,
         NameRecord::ENCODING_WINDOWS_UNICODE_BMP,
         NameRecord::LANGUAGE_WINDOWS_EN_US)
@@ -814,14 +814,14 @@ module Fontbox::TTF
       end
 
       # Macintosh, Roman, English
-      get_name(name_id,
+      name(name_id,
         NameRecord::PLATFORM_MACINTOSH,
         NameRecord::ENCODING_MACINTOSH_ROMAN,
         NameRecord::LANGUAGE_MACINTOSH_ENGLISH)
     end
 
     # Returns a name from the table, or nil if it does not exist.
-    def get_name(name_id : Int32, platform_id : Int32, encoding_id : Int32, language_id : Int32) : String?
+    def name(name_id : Int32, platform_id : Int32, encoding_id : Int32, language_id : Int32) : String?
       platforms = @lookup_table[name_id]?
       return if platforms.nil?
 
@@ -835,22 +835,22 @@ module Fontbox::TTF
     end
 
     # Gets the name records for this naming table.
-    def get_name_records : Array(NameRecord)
+    def name_records : Array(NameRecord)
       @name_records
     end
 
     # Returns the font family name, in English.
-    def get_font_family : String?
+    def font_family : String?
       @font_family
     end
 
     # Returns the font sub family name, in English.
-    def get_font_sub_family : String?
+    def font_sub_family : String?
       @font_sub_family
     end
 
     # Returns the PostScript name.
-    def get_postscript_name : String?
+    def postscript_name : String?
       @ps_name
     end
   end
@@ -1010,14 +1010,14 @@ module Fontbox::TTF
     end
 
     # Returns the GlyphId linked with the given character code.
-    def get_glyph_id(character_code : Int32) : Int32
+    def glyph_id(character_code : Int32) : Int32
       glyph_id = @character_code_to_glyph_id[character_code]?
       glyph_id.nil? ? 0 : glyph_id
     end
 
     # Returns all possible character codes for the given gid, or nil if there is none.
-    def get_char_codes(gid : Int32) : Array(Int32)?
-      code = get_char_code(gid)
+    def char_codes(gid : Int32) : Array(Int32)?
+      code = char_code(gid)
       return if code == -1
       if code == Int32::MIN
         mapped_values = @glyph_id_to_character_code_multiple[gid]?
@@ -1031,7 +1031,7 @@ module Fontbox::TTF
       end
     end
 
-    private def get_char_code(gid : Int32) : Int32
+    private def char_code(gid : Int32) : Int32
       return -1 if gid < 0 || @glyph_id_to_character_code.nil? || gid >= @glyph_id_to_character_code.as(Array(Int32)).size
       @glyph_id_to_character_code.as(Array(Int32))[gid]
     end
@@ -1443,7 +1443,7 @@ module Fontbox::TTF
     end
 
     # Returns the subtable, if any, for the given platform and encoding.
-    def get_subtable(platform_id : Int32, platform_encoding_id : Int32) : CmapSubtable?
+    def subtable(platform_id : Int32, platform_encoding_id : Int32) : CmapSubtable?
       @cmaps.each do |cmap|
         if cmap.platform_id == platform_id && cmap.platform_encoding_id == platform_encoding_id
           return cmap
@@ -1500,17 +1500,17 @@ module Fontbox::TTF
     end
 
     # Sets glyph cache (mostly for tests).
-    def set_glyphs(glyphs_value : Array(GlyphData?)) : Nil
+    def glyphs=(glyphs_value : Array(GlyphData?)) : Nil
       @glyphs = glyphs_value
     end
 
     # Returns the data for the glyph with the given GID.
-    def get_glyph(gid : Int32) : GlyphData?
-      get_glyph(gid, 0)
+    def glyph(gid : Int32) : GlyphData?
+      glyph(gid, 0)
     end
 
     # Returns the data for the glyph with the given GID at composite resolution level.
-    def get_glyph(gid : Int32, level : Int32) : GlyphData?
+    def glyph(gid : Int32, level : Int32) : GlyphData?
       return if gid < 0 || gid >= @num_glyphs
 
       if @glyphs && (cached_glyph = @glyphs.not_nil![gid]?)
@@ -1530,7 +1530,7 @@ module Fontbox::TTF
           current_position = data_stream.current_position
           begin
             data_stream.seek(offsets[gid])
-            glyph = get_glyph_data(gid, level)
+            glyph = glyph_data(gid, level)
           ensure
             data_stream.seek(current_position)
           end
@@ -1545,8 +1545,8 @@ module Fontbox::TTF
       end
     end
 
-    private def get_glyph_data(gid : Int32, level : Int32) : GlyphData
-      max_component_depth = @maxp.not_nil!.get_max_component_depth.to_i32
+    private def glyph_data(gid : Int32, level : Int32) : GlyphData
+      max_component_depth = @maxp.not_nil!.max_component_depth.to_i32
       if level > max_component_depth
         raise IO::Error.new("composite glyph maximum level (#{max_component_depth}) reached")
       end
@@ -1556,8 +1556,8 @@ module Fontbox::TTF
       glyph.init_data(self, @data_stream.not_nil!, left_side_bearing, level)
 
       # Resolve composite glyphs immediately.
-      if glyph.get_description.is_composite
-        glyph.get_description.resolve
+      if glyph.description.is_composite
+        glyph.description.resolve
       end
       glyph
     end
@@ -1656,59 +1656,59 @@ module Fontbox::TTF
       end
     end
 
-    def set_first_index(idx : Int32) : Nil
+    def first_index=(idx : Int32) : Nil
       @first_index = idx
     end
 
-    def get_first_index : Int32
+    def first_index : Int32
       @first_index
     end
 
-    def set_first_contour(idx : Int32) : Nil
+    def first_contour=(idx : Int32) : Nil
       @first_contour = idx
     end
 
-    def get_first_contour : Int32
+    def first_contour : Int32
       @first_contour
     end
 
-    def get_argument1 : Int16
+    def argument1 : Int16
       @argument1
     end
 
-    def get_argument2 : Int16
+    def argument2 : Int16
       @argument2
     end
 
-    def get_flags : Int16
+    def flags : Int16
       @flags
     end
 
-    def get_glyph_index : Int32
+    def glyph_index : Int32
       @glyph_index
     end
 
-    def get_scale01 : Float64
+    def scale01 : Float64
       @scale01
     end
 
-    def get_scale10 : Float64
+    def scale10 : Float64
       @scale10
     end
 
-    def get_x_scale : Float64
+    def x_scale : Float64
       @xscale
     end
 
-    def get_y_scale : Float64
+    def y_scale : Float64
       @yscale
     end
 
-    def get_x_translate : Int32
+    def x_translate : Int32
       @xtranslate
     end
 
-    def get_y_translate : Int32
+    def y_translate : Int32
       @ytranslate
     end
 
@@ -1727,13 +1727,13 @@ module Fontbox::TTF
   #
   # Ported from Apache PDFBox GlyphDescription.
   module GlyphDescription
-    abstract def get_end_pt_of_contours(i : Int32) : Int32
-    abstract def get_flags(i : Int32) : Int32
-    abstract def get_x_coordinate(i : Int32) : Int16
-    abstract def get_y_coordinate(i : Int32) : Int16
+    abstract def end_pt_of_contours(i : Int32) : Int32
+    abstract def flags(i : Int32) : Int32
+    abstract def x_coordinate(i : Int32) : Int16
+    abstract def y_coordinate(i : Int32) : Int16
     abstract def is_composite : Bool
-    abstract def get_point_count : Int32
-    abstract def get_contour_count : Int32
+    abstract def point_count : Int32
+    abstract def contour_count : Int32
     abstract def resolve : Nil
   end
 
@@ -1761,11 +1761,11 @@ module Fontbox::TTF
       # no-op in base class
     end
 
-    def get_contour_count : Int32
+    def contour_count : Int32
       @contour_count
     end
 
-    def get_instructions : Array(Int32)
+    def instructions : Array(Int32)
       @instructions
     end
 
@@ -1819,19 +1819,19 @@ module Fontbox::TTF
       read_coords(@point_count, data, x0)
     end
 
-    def get_end_pt_of_contours(i : Int32) : Int32
+    def end_pt_of_contours(i : Int32) : Int32
       @end_pts_of_contours[i]
     end
 
-    def get_flags(i : Int32) : Int32
+    def flags(i : Int32) : Int32
       @flags[i]
     end
 
-    def get_x_coordinate(i : Int32) : Int16
+    def x_coordinate(i : Int32) : Int16
       @x_coordinates[i]
     end
 
-    def get_y_coordinate(i : Int32) : Int16
+    def y_coordinate(i : Int32) : Int16
       @y_coordinates[i]
     end
 
@@ -1839,7 +1839,7 @@ module Fontbox::TTF
       false
     end
 
-    def get_point_count : Int32
+    def point_count : Int32
       @point_count
     end
 
@@ -1933,31 +1933,31 @@ module Fontbox::TTF
       @bounding_box = Fontbox::Util::BoundingBox.new(0_f32, 0_f32, 0_f32, 0_f32)
     end
 
-    def get_bounding_box : Fontbox::Util::BoundingBox
+    def bounding_box : Fontbox::Util::BoundingBox
       @bounding_box.not_nil!
     end
 
-    def get_number_of_contours : Int16
+    def number_of_contours : Int16
       @number_of_contours
     end
 
-    def get_description : GlyphDescription
+    def description : GlyphDescription
       @glyph_description.not_nil!
     end
 
-    def get_x_maximum : Int16
+    def x_maximum : Int16
       @x_max
     end
 
-    def get_x_minimum : Int16
+    def x_minimum : Int16
       @x_min
     end
 
-    def get_y_maximum : Int16
+    def y_maximum : Int16
       @y_max
     end
 
-    def get_y_minimum : Int16
+    def y_minimum : Int16
       @y_min
     end
   end
@@ -1980,11 +1980,11 @@ module Fontbox::TTF
       loop do
         comp = GlyfCompositeComp.new(data)
         @components << comp
-        break if (comp.get_flags & GlyfCompositeComp::MORE_COMPONENTS) == 0
+        break if (comp.flags & GlyfCompositeComp::MORE_COMPONENTS) == 0
       end
 
       last_comp = @components.last
-      if (last_comp.get_flags & GlyfCompositeComp::WE_HAVE_INSTRUCTIONS) != 0
+      if (last_comp.flags & GlyfCompositeComp::WE_HAVE_INSTRUCTIONS) != 0
         read_instructions(data, data.read_unsigned_short.to_i32)
       end
       init_descriptions(level)
@@ -1999,13 +1999,13 @@ module Fontbox::TTF
       first_contour = 0
 
       @components.each do |comp|
-        comp.set_first_index(first_index)
-        comp.set_first_contour(first_contour)
+        comp.first_index = first_index
+        comp.first_contour = first_contour
 
-        if desc = @descriptions[comp.get_glyph_index]?
+        if desc = @descriptions[comp.glyph_index]?
           desc.resolve
-          first_index += desc.get_point_count
-          first_contour += desc.get_contour_count
+          first_index += desc.point_count
+          first_contour += desc.contour_count
         end
       end
 
@@ -2013,43 +2013,43 @@ module Fontbox::TTF
       @being_resolved = false
     end
 
-    def get_end_pt_of_contours(i : Int32) : Int32
-      if comp = get_composite_comp_end_pt(i)
-        if desc = @descriptions[comp.get_glyph_index]?
-          return desc.get_end_pt_of_contours(i - comp.get_first_contour) + comp.get_first_index
+    def end_pt_of_contours(i : Int32) : Int32
+      if comp = composite_comp_end_pt(i)
+        if desc = @descriptions[comp.glyph_index]?
+          return desc.end_pt_of_contours(i - comp.first_contour) + comp.first_index
         end
       end
       0
     end
 
-    def get_flags(i : Int32) : Int32
-      if comp = get_composite_comp(i)
-        if desc = @descriptions[comp.get_glyph_index]?
-          return desc.get_flags(i - comp.get_first_index)
+    def flags(i : Int32) : Int32
+      if comp = composite_comp(i)
+        if desc = @descriptions[comp.glyph_index]?
+          return desc.flags(i - comp.first_index)
         end
       end
       0
     end
 
-    def get_x_coordinate(i : Int32) : Int16
-      if comp = get_composite_comp(i)
-        if desc = @descriptions[comp.get_glyph_index]?
-          n = i - comp.get_first_index
-          x = desc.get_x_coordinate(n).to_i32
-          y = desc.get_y_coordinate(n).to_i32
-          return (comp.scale_x(x, y) + comp.get_x_translate).to_i16
+    def x_coordinate(i : Int32) : Int16
+      if comp = composite_comp(i)
+        if desc = @descriptions[comp.glyph_index]?
+          n = i - comp.first_index
+          x = desc.x_coordinate(n).to_i32
+          y = desc.y_coordinate(n).to_i32
+          return (comp.scale_x(x, y) + comp.x_translate).to_i16
         end
       end
       0_i16
     end
 
-    def get_y_coordinate(i : Int32) : Int16
-      if comp = get_composite_comp(i)
-        if desc = @descriptions[comp.get_glyph_index]?
-          n = i - comp.get_first_index
-          x = desc.get_x_coordinate(n).to_i32
-          y = desc.get_y_coordinate(n).to_i32
-          return (comp.scale_y(x, y) + comp.get_y_translate).to_i16
+    def y_coordinate(i : Int32) : Int16
+      if comp = composite_comp(i)
+        if desc = @descriptions[comp.glyph_index]?
+          n = i - comp.first_index
+          x = desc.x_coordinate(n).to_i32
+          y = desc.y_coordinate(n).to_i32
+          return (comp.scale_y(x, y) + comp.y_translate).to_i16
         end
       end
       0_i16
@@ -2059,11 +2059,11 @@ module Fontbox::TTF
       true
     end
 
-    def get_point_count : Int32
+    def point_count : Int32
       if @point_count < 0
         if comp = @components.last?
-          if desc = @descriptions[comp.get_glyph_index]?
-            @point_count = comp.get_first_index + desc.get_point_count
+          if desc = @descriptions[comp.glyph_index]?
+            @point_count = comp.first_index + desc.point_count
           else
             @point_count = 0
           end
@@ -2074,11 +2074,11 @@ module Fontbox::TTF
       @point_count
     end
 
-    def get_contour_count : Int32
+    def contour_count : Int32
       if @contour_count < 0
         if comp = @components.last?
-          if desc = @descriptions[comp.get_glyph_index]?
-            @contour_count = comp.get_first_contour + desc.get_contour_count
+          if desc = @descriptions[comp.glyph_index]?
+            @contour_count = comp.first_contour + desc.contour_count
           else
             @contour_count = 0
           end
@@ -2089,33 +2089,33 @@ module Fontbox::TTF
       @contour_count
     end
 
-    def get_component_count : Int32
+    def component_count : Int32
       @components.size
     end
 
     # Returns a copy to keep the internal list unmodifiable by callers.
-    def get_components : Array(GlyfCompositeComp)
+    def components : Array(GlyfCompositeComp)
       @components.dup
     end
 
-    private def get_composite_comp(i : Int32) : GlyfCompositeComp?
+    private def composite_comp(i : Int32) : GlyfCompositeComp?
       @components.each do |comp|
-        desc = @descriptions[comp.get_glyph_index]?
+        desc = @descriptions[comp.glyph_index]?
         next if desc.nil?
 
-        if comp.get_first_index <= i && i < (comp.get_first_index + desc.get_point_count)
+        if comp.first_index <= i && i < (comp.first_index + desc.point_count)
           return comp
         end
       end
       nil
     end
 
-    private def get_composite_comp_end_pt(i : Int32) : GlyfCompositeComp?
+    private def composite_comp_end_pt(i : Int32) : GlyfCompositeComp?
       @components.each do |comp|
-        desc = @descriptions[comp.get_glyph_index]?
+        desc = @descriptions[comp.glyph_index]?
         next if desc.nil?
 
-        if comp.get_first_contour <= i && i < (comp.get_first_contour + desc.get_contour_count)
+        if comp.first_contour <= i && i < (comp.first_contour + desc.contour_count)
           return comp
         end
       end
@@ -2125,9 +2125,9 @@ module Fontbox::TTF
     private def init_descriptions(level : Int32) : Nil
       @components.each do |component|
         begin
-          glyph = @glyph_table.get_glyph(component.get_glyph_index, level)
+          glyph = @glyph_table.glyph(component.glyph_index, level)
           if glyph
-            @descriptions[component.get_glyph_index] = glyph.get_description
+            @descriptions[component.glyph_index] = glyph.description
           end
         rescue IO::Error
           # Match Java behavior: ignore broken component references and continue.
@@ -2333,7 +2333,7 @@ module Fontbox::TTF
     end
 
     # Obtain first subtable that supports non-cross-stream horizontal kerning.
-    def get_horizontal_kerning_subtable(cross : Bool = false) : KerningSubtable?
+    def horizontal_kerning_subtable(cross : Bool = false) : KerningSubtable?
       return if @subtables.nil?
       @subtables.not_nil!.each do |subtable|
         if subtable.is_horizontal_kerning(cross)
@@ -2380,13 +2380,13 @@ module Fontbox::TTF
     end
 
     # Obtain kerning adjustment for glyph pair {l, r}.
-    def get_kerning(l : Int32, r : Int32) : Int32
+    def kerning(l : Int32, r : Int32) : Int32
       return 0 if @pairs.nil?
-      @pairs.not_nil!.get_kerning(l, r)
+      @pairs.not_nil!.kerning(l, r)
     end
 
     # Obtain kerning adjustments for a glyph sequence.
-    def get_kerning(glyphs : Array(Int32)) : Array(Int32)?
+    def kerning(glyphs : Array(Int32)) : Array(Int32)?
       return if @pairs.nil?
       ng = glyphs.size
       kerning = Array.new(ng, 0)
@@ -2400,7 +2400,7 @@ module Fontbox::TTF
             break
           end
         end
-        kerning[i] = get_kerning(left, right)
+        kerning[i] = kerning(left, right)
       end
       kerning
     end
@@ -2416,7 +2416,7 @@ module Fontbox::TTF
       @horizontal = is_bits_set(coverage, COVERAGE_HORIZONTAL, COVERAGE_HORIZONTAL_SHIFT)
       @minimums = is_bits_set(coverage, COVERAGE_MINIMUMS, COVERAGE_MINIMUMS_SHIFT)
       @cross_stream = is_bits_set(coverage, COVERAGE_CROSS_STREAM, COVERAGE_CROSS_STREAM_SHIFT)
-      format = get_bits(coverage, COVERAGE_FORMAT, COVERAGE_FORMAT_SHIFT)
+      format = bits(coverage, COVERAGE_FORMAT, COVERAGE_FORMAT_SHIFT)
 
       case format
       when 0
@@ -2443,16 +2443,16 @@ module Fontbox::TTF
     end
 
     private def is_bits_set(bits : Int32, mask : Int32, shift : Int32) : Bool
-      get_bits(bits, mask, shift) != 0
+      bits(bits, mask, shift) != 0
     end
 
-    private def get_bits(bits : Int32, mask : Int32, shift : Int32) : Int32
+    private def bits(bits : Int32, mask : Int32, shift : Int32) : Int32
       (bits & mask) >> shift
     end
 
     private module PairData
       abstract def read(data : TTFDataStream) : Nil
-      abstract def get_kerning(l : Int32, r : Int32) : Int32
+      abstract def kerning(l : Int32, r : Int32) : Int32
     end
 
     private class PairData0Format0
@@ -2474,7 +2474,7 @@ module Fontbox::TTF
         end
       end
 
-      def get_kerning(l : Int32, r : Int32) : Int32
+      def kerning(l : Int32, r : Int32) : Int32
         low = 0
         high = @pairs.size - 1
         while low <= high
@@ -2724,15 +2724,15 @@ module Fontbox::TTF
       @start_coverage_index = start_coverage_index
     end
 
-    def get_start_glyph_id : Int32
+    def start_glyph_id : Int32
       @start_glyph_id
     end
 
-    def get_end_glyph_id : Int32
+    def end_glyph_id : Int32
       @end_glyph_id
     end
 
-    def get_start_coverage_index : Int32
+    def start_coverage_index : Int32
       @start_coverage_index
     end
   end
@@ -2746,11 +2746,11 @@ module Fontbox::TTF
     def initialize(@coverage_format : Int32)
     end
 
-    abstract def get_coverage_index(gid : Int32) : Int32
-    abstract def get_glyph_id(index : Int32) : Int32
-    abstract def get_size : Int32
+    abstract def coverage_index(gid : Int32) : Int32
+    abstract def glyph_id(index : Int32) : Int32
+    abstract def size : Int32
 
-    def get_coverage_format : Int32
+    def coverage_format : Int32
       @coverage_format
     end
   end
@@ -2765,19 +2765,19 @@ module Fontbox::TTF
       super(coverage_format)
     end
 
-    def get_coverage_index(gid : Int32) : Int32
+    def coverage_index(gid : Int32) : Int32
       @glyph_array.bsearch_index(gid) || -1
     end
 
-    def get_glyph_id(index : Int32) : Int32
+    def glyph_id(index : Int32) : Int32
       @glyph_array[index]
     end
 
-    def get_size : Int32
+    def size : Int32
       @glyph_array.size
     end
 
-    def get_glyph_array : Array(Int32)
+    def glyph_array : Array(Int32)
       @glyph_array
     end
   end
@@ -2792,14 +2792,14 @@ module Fontbox::TTF
       super(coverage_format, self.class.range_records_as_array(@range_records))
     end
 
-    def get_range_records : Array(RangeRecord)
+    def range_records : Array(RangeRecord)
       @range_records
     end
 
     def self.range_records_as_array(range_records : Array(RangeRecord)) : Array(Int32)
       glyph_ids = [] of Int32
       range_records.each do |range|
-        (range.get_start_glyph_id..range.get_end_glyph_id).each do |glyph_id|
+        (range.start_glyph_id..range.end_glyph_id).each do |glyph_id|
           glyph_ids << glyph_id
         end
       end
@@ -2820,19 +2820,19 @@ module Fontbox::TTF
                    @feature_indices : Array(Int32))
     end
 
-    def get_lookup_order : Int32
+    def lookup_order : Int32
       @lookup_order
     end
 
-    def get_required_feature_index : Int32
+    def required_feature_index : Int32
       @required_feature_index
     end
 
-    def get_feature_index_count : Int32
+    def feature_index_count : Int32
       @feature_index_count
     end
 
-    def get_feature_indices : Array(Int32)
+    def feature_indices : Array(Int32)
       @feature_indices
     end
   end
@@ -2847,11 +2847,11 @@ module Fontbox::TTF
     def initialize(@default_lang_sys_table : LangSysTable?, @lang_sys_tables : Hash(String, LangSysTable))
     end
 
-    def get_default_lang_sys_table : LangSysTable?
+    def default_lang_sys_table : LangSysTable?
       @default_lang_sys_table
     end
 
-    def get_lang_sys_tables : Hash(String, LangSysTable)
+    def lang_sys_tables : Hash(String, LangSysTable)
       @lang_sys_tables
     end
   end
@@ -2867,15 +2867,15 @@ module Fontbox::TTF
     def initialize(@feature_params : Int32, @lookup_index_count : Int32, @lookup_list_indices : Array(Int32))
     end
 
-    def get_feature_params : Int32
+    def feature_params : Int32
       @feature_params
     end
 
-    def get_lookup_index_count : Int32
+    def lookup_index_count : Int32
       @lookup_index_count
     end
 
-    def get_lookup_list_indices : Array(Int32)
+    def lookup_list_indices : Array(Int32)
       @lookup_list_indices
     end
   end
@@ -2890,11 +2890,11 @@ module Fontbox::TTF
     def initialize(@feature_tag : String, @feature_table : FeatureTable)
     end
 
-    def get_feature_tag : String
+    def feature_tag : String
       @feature_tag
     end
 
-    def get_feature_table : FeatureTable
+    def feature_table : FeatureTable
       @feature_table
     end
   end
@@ -2909,11 +2909,11 @@ module Fontbox::TTF
     def initialize(@feature_count : Int32, @feature_records : Array(FeatureRecord))
     end
 
-    def get_feature_count : Int32
+    def feature_count : Int32
       @feature_count
     end
 
-    def get_feature_records : Array(FeatureRecord)
+    def feature_records : Array(FeatureRecord)
       @feature_records
     end
   end
@@ -2930,11 +2930,11 @@ module Fontbox::TTF
 
     abstract def do_substitution(gid : Int32, coverage_index : Int32) : Int32
 
-    def get_subst_format : Int32
+    def subst_format : Int32
       @subst_format
     end
 
-    def get_coverage_table : CoverageTable
+    def coverage_table : CoverageTable
       @coverage_table
     end
   end
@@ -2952,19 +2952,19 @@ module Fontbox::TTF
                    @sub_tables : Array(LookupSubTable))
     end
 
-    def get_lookup_type : Int32
+    def lookup_type : Int32
       @lookup_type
     end
 
-    def get_lookup_flag : Int32
+    def lookup_flag : Int32
       @lookup_flag
     end
 
-    def get_mark_filtering_set : Int32
+    def mark_filtering_set : Int32
       @mark_filtering_set
     end
 
-    def get_sub_tables : Array(LookupSubTable)
+    def sub_tables : Array(LookupSubTable)
       @sub_tables
     end
   end
@@ -2979,11 +2979,11 @@ module Fontbox::TTF
     def initialize(@lookup_count : Int32, @lookups : Array(LookupTable))
     end
 
-    def get_lookup_count : Int32
+    def lookup_count : Int32
       @lookup_count
     end
 
-    def get_lookups : Array(LookupTable)
+    def lookups : Array(LookupTable)
       @lookups
     end
   end
@@ -2998,11 +2998,11 @@ module Fontbox::TTF
     def initialize(@glyph_count : Int32, @substitute_glyph_ids : Array(Int32))
     end
 
-    def get_glyph_count : Int32
+    def glyph_count : Int32
       @glyph_count
     end
 
-    def get_substitute_glyph_ids : Array(Int32)
+    def substitute_glyph_ids : Array(Int32)
       @substitute_glyph_ids
     end
   end
@@ -3017,11 +3017,11 @@ module Fontbox::TTF
     def initialize(@glyph_count : Int32, @alternate_glyph_ids : Array(Int32))
     end
 
-    def get_glyph_count : Int32
+    def glyph_count : Int32
       @glyph_count
     end
 
-    def get_alternate_glyph_ids : Array(Int32)
+    def alternate_glyph_ids : Array(Int32)
       @alternate_glyph_ids
     end
   end
@@ -3036,11 +3036,11 @@ module Fontbox::TTF
     def initialize(@ligature_count : Int32, @ligature_tables : Array(LigatureTable))
     end
 
-    def get_ligature_count : Int32
+    def ligature_count : Int32
       @ligature_count
     end
 
-    def get_ligature_tables : Array(LigatureTable)
+    def ligature_tables : Array(LigatureTable)
       @ligature_tables
     end
   end
@@ -3056,15 +3056,15 @@ module Fontbox::TTF
     def initialize(@ligature_glyph : Int32, @component_count : Int32, @component_glyph_ids : Array(Int32))
     end
 
-    def get_ligature_glyph : Int32
+    def ligature_glyph : Int32
       @ligature_glyph
     end
 
-    def get_component_count : Int32
+    def component_count : Int32
       @component_count
     end
 
-    def get_component_glyph_ids : Array(Int32)
+    def component_glyph_ids : Array(Int32)
       @component_glyph_ids
     end
   end
@@ -3083,7 +3083,7 @@ module Fontbox::TTF
       coverage_index < 0 ? gid : gid + @delta_glyph_id.to_i32
     end
 
-    def get_delta_glyph_id : Int16
+    def delta_glyph_id : Int16
       @delta_glyph_id
     end
   end
@@ -3102,7 +3102,7 @@ module Fontbox::TTF
       coverage_index < 0 ? gid : @substitute_glyph_ids[coverage_index]
     end
 
-    def get_substitute_glyph_ids : Array(Int32)
+    def substitute_glyph_ids : Array(Int32)
       @substitute_glyph_ids
     end
   end
@@ -3122,7 +3122,7 @@ module Fontbox::TTF
       gid
     end
 
-    def get_sequence_tables : Array(SequenceTable)
+    def sequence_tables : Array(SequenceTable)
       @sequence_tables
     end
   end
@@ -3142,7 +3142,7 @@ module Fontbox::TTF
       gid
     end
 
-    def get_alternate_set_tables : Array(AlternateSetTable)
+    def alternate_set_tables : Array(AlternateSetTable)
       @alternate_set_tables
     end
   end
@@ -3162,7 +3162,7 @@ module Fontbox::TTF
       gid
     end
 
-    def get_ligature_set_tables : Array(LigatureSetTable)
+    def ligature_set_tables : Array(LigatureSetTable)
       @ligature_set_tables
     end
   end
@@ -3219,37 +3219,37 @@ module Fontbox::TTF
       # TODO: debugging logging as in Java
 
       glyph_substitution_data_extractor = Gsub::GlyphSubstitutionDataExtractor.new
-      @gsub_data = glyph_substitution_data_extractor.get_gsub_data(@script_list, @feature_list_table, @lookup_list_table)
+      @gsub_data = glyph_substitution_data_extractor.gsub_data(@script_list, @feature_list_table, @lookup_list_table)
 
       @initialized = true
     end
 
     # Returns a read-only view of the script tags for which this GSUB table has records.
-    def get_supported_script_tags : Set(String)
+    def supported_script_tags : Set(String)
       Set.new(@script_list.keys)
     end
 
     # Builds a new GsubData instance for given script tag.
-    def get_gsub_data(script_tag : String) : Model::GsubData?
+    def gsub_data(script_tag : String) : Model::GsubData?
       script_table = @script_list[script_tag]?
       return unless script_table
-      Gsub::GlyphSubstitutionDataExtractor.new.get_gsub_data(script_tag, script_table,
+      Gsub::GlyphSubstitutionDataExtractor.new.gsub_data(script_tag, script_table,
         @feature_list_table, @lookup_list_table)
     end
 
     # Returns the GsubData instance containing all scripts of the table.
-    def get_gsub_data : Model::GsubData?
+    def gsub_data : Model::GsubData?
       @gsub_data
     end
 
     # Apply glyph substitutions to the supplied gid.
-    def get_substitution(gid : Int32, script_tags : Array(String), enabled_features : Array(String)? = nil) : Int32
+    def substitution(gid : Int32, script_tags : Array(String), enabled_features : Array(String)? = nil) : Int32
       # TODO: implement
       gid
     end
 
     # For a substitute-gid, retrieve the original gid.
-    def get_unsubstitution(sgid : Int32) : Int32
+    def unsubstitution(sgid : Int32) : Int32
       # TODO: implement
       sgid
     end
@@ -3489,7 +3489,7 @@ module Fontbox::TTF
         sequence_offsets << data.read_unsigned_short.to_i32
       end
       coverage_table = read_coverage_table(data, offset + coverage)
-      if sequence_count != coverage_table.get_size
+      if sequence_count != coverage_table.size
         # TODO: raise IOException
         return
       end
@@ -3517,7 +3517,7 @@ module Fontbox::TTF
         alternate_offsets << data.read_unsigned_short.to_i32
       end
       coverage_table = read_coverage_table(data, offset + coverage)
-      if alt_set_count != coverage_table.get_size
+      if alt_set_count != coverage_table.size
         # TODO: raise IOException
         return
       end
@@ -3545,13 +3545,13 @@ module Fontbox::TTF
         ligature_offsets << data.read_unsigned_short.to_i32
       end
       coverage_table = read_coverage_table(data, offset + coverage)
-      if lig_set_count != coverage_table.get_size
+      if lig_set_count != coverage_table.size
         # TODO: raise IOException
         return
       end
       ligature_set_tables = Array(LigatureSetTable).new(lig_set_count)
       lig_set_count.times do |i|
-        coverage_glyph_id = coverage_table.get_glyph_id(i)
+        coverage_glyph_id = coverage_table.glyph_id(i)
         ligature_set_tables << read_ligature_set_table(data, offset + ligature_offsets[i], coverage_glyph_id)
       end
       LookupTypeLigatureSubstitutionSubstFormat1.new(subst_format, coverage_table, ligature_set_tables)
@@ -3624,18 +3624,18 @@ module Fontbox::TTF
 
   module Model
     abstract class GsubData
-      abstract def get_language : Language
-      abstract def get_active_script_name : String
+      abstract def language : Language
+      abstract def active_script_name : String
       abstract def is_feature_supported(feature_name : String) : Bool
-      abstract def get_feature(feature_name : String) : ScriptFeature
-      abstract def get_supported_features : Set(String)
+      abstract def feature(feature_name : String) : ScriptFeature
+      abstract def supported_features : Set(String)
 
       class NoDataFoundGsubData < GsubData
-        def get_language : Language
+        def language : Language
           raise "UnsupportedOperationException"
         end
 
-        def get_active_script_name : String
+        def active_script_name : String
           raise "UnsupportedOperationException"
         end
 
@@ -3643,11 +3643,11 @@ module Fontbox::TTF
           raise "UnsupportedOperationException"
         end
 
-        def get_feature(feature_name : String) : ScriptFeature
+        def feature(feature_name : String) : ScriptFeature
           raise "UnsupportedOperationException"
         end
 
-        def get_supported_features : Set(String)
+        def supported_features : Set(String)
           raise "UnsupportedOperationException"
         end
       end
@@ -3678,21 +3678,21 @@ module Fontbox::TTF
     end
 
     abstract class ScriptFeature
-      abstract def get_name : String
-      abstract def get_all_glyph_ids_for_substitution : Set(Array(Int32))
+      abstract def name : String
+      abstract def all_glyph_ids_for_substitution : Set(Array(Int32))
       abstract def can_replace_glyphs(glyph_ids : Array(Int32)) : Bool
-      abstract def get_replacement_for_glyphs(glyph_ids : Array(Int32)) : Array(Int32)
+      abstract def replacement_for_glyphs(glyph_ids : Array(Int32)) : Array(Int32)
     end
 
     class MapBackedScriptFeature < ScriptFeature
       def initialize(@name : String, @feature_map : Hash(Array(Int32), Array(Int32)))
       end
 
-      def get_name : String
+      def name : String
         @name
       end
 
-      def get_all_glyph_ids_for_substitution : Set(Array(Int32))
+      def all_glyph_ids_for_substitution : Set(Array(Int32))
         @feature_map.keys.to_set
       end
 
@@ -3700,7 +3700,7 @@ module Fontbox::TTF
         @feature_map.has_key?(glyph_ids)
       end
 
-      def get_replacement_for_glyphs(glyph_ids : Array(Int32)) : Array(Int32)
+      def replacement_for_glyphs(glyph_ids : Array(Int32)) : Array(Int32)
         unless can_replace_glyphs(glyph_ids)
           raise "The glyphs #{glyph_ids} cannot be replaced"
         end
@@ -3712,11 +3712,11 @@ module Fontbox::TTF
       def initialize(@language : Language, @active_script_name : String, @glyph_substitution_map : Hash(String, Hash(Array(Int32), Array(Int32))))
       end
 
-      def get_language : Language
+      def language : Language
         @language
       end
 
-      def get_active_script_name : String
+      def active_script_name : String
         @active_script_name
       end
 
@@ -3724,7 +3724,7 @@ module Fontbox::TTF
         @glyph_substitution_map.has_key?(feature_name)
       end
 
-      def get_feature(feature_name : String) : ScriptFeature
+      def feature(feature_name : String) : ScriptFeature
         feature_map = @glyph_substitution_map[feature_name]?
         if feature_map.nil?
           raise "Feature #{feature_name} not supported"
@@ -3732,7 +3732,7 @@ module Fontbox::TTF
         MapBackedScriptFeature.new(feature_name, feature_map)
       end
 
-      def get_supported_features : Set(String)
+      def supported_features : Set(String)
         Set.new(@glyph_substitution_map.keys)
       end
     end

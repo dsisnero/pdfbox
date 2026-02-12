@@ -55,19 +55,19 @@ module Pdfbox::Pdfparser
       @xref_trailer_resolver ||= XrefTrailerResolver.new
     end
 
-    protected def get_brute_force_parser : BruteForceParser
+    protected def brute_force_parser : BruteForceParser
       @brute_force_parser ||= BruteForceParser.new(self)
     end
 
     # Get object from pool or create a new proxy object for lazy resolution
-    def get_object_from_pool(key : Cos::ObjectKey) : Cos::Object
+    def object_from_pool(key : Cos::ObjectKey) : Cos::Object
       @object_pool[key] ||= Cos::Object.new(key, self)
     end
 
     # Get object from pool by object number and generation
-    def get_object_from_pool(object_number : Int64, generation_number : Int64) : Cos::Object
+    def object_from_pool(object_number : Int64, generation_number : Int64) : Cos::Object
       key = Cos::ObjectKey.new(object_number, generation_number)
-      get_object_from_pool(key)
+      object_from_pool(key)
     end
 
     # Parse PDF header and return version string (e.g., "1.4")
@@ -545,7 +545,7 @@ module Pdfbox::Pdfparser
       Log.debug { "parse_indirect_object_at_offset: offset=#{offset}, key=#{key}" }
       # Get object from pool if key provided
       start_time = Time.instant
-      cos_object = key ? get_object_from_pool(key) : nil
+      cos_object = key ? object_from_pool(key) : nil
 
       # Check if already dereferenced
       if cos_object && (obj = cos_object.object)
@@ -728,7 +728,7 @@ module Pdfbox::Pdfparser
           else
             if @lenient
               # Try brute-force search for missing object
-              bf_offsets = get_brute_force_parser.bf_cos_object_offsets
+              bf_offsets = brute_force_parser.bf_cos_object_offsets
               if bf_offset = bf_offsets[key]?
                 Log.debug { "resolve_object: found missing object #{obj_num} via brute-force at offset #{bf_offset}" }
                 # Add to xref table for future reference
@@ -855,7 +855,7 @@ module Pdfbox::Pdfparser
 
       # Object not in cache, need to parse the object stream
       obj_stream_key = Cos::ObjectKey.new(objstm_obj_nr, 0)
-      obj_stream_base = get_object_from_pool(obj_stream_key).object
+      obj_stream_base = object_from_pool(obj_stream_key).object
       return unless obj_stream_base.is_a?(Cos::Stream)
 
       # Use PDFObjectStreamParser to parse all objects
@@ -1526,7 +1526,7 @@ module Pdfbox::Pdfparser
                      root_ref.generation
                    else
                      # Find entry by object number to get generation
-                     entry = xref.get_entry_by_number(obj_number)
+                     entry = xref.entry_by_number(obj_number)
                      entry ? entry.generation : 0_i64
                    end
 
@@ -1546,7 +1546,7 @@ module Pdfbox::Pdfparser
       end
 
       if offset.nil? && @lenient
-        bf_offsets = get_brute_force_parser.bf_cos_object_offsets
+        bf_offsets = brute_force_parser.bf_cos_object_offsets
         if bf_offset = bf_offsets[matched_key]?
           offset = bf_offset
           xref[matched_key] = bf_offset
@@ -1599,7 +1599,7 @@ module Pdfbox::Pdfparser
       Log.warn { "Parser.rebuild_trailer_with_brute_force: START" }
       xref = XRef.new
       @xref = xref
-      trailer = get_brute_force_parser.rebuild_trailer(xref)
+      trailer = brute_force_parser.rebuild_trailer(xref)
       if trailer
         Log.warn { "Parser.rebuild_trailer_with_brute_force: SUCCESS, xref entries: #{xref.size}" }
         {xref, trailer}
@@ -1673,13 +1673,13 @@ module Pdfbox::Pdfparser
                        # Brute-force search for object streams in lenient mode
                        if @lenient
                          Log.warn { "Parser lenient mode enabled, performing brute-force search for object streams" }
-                         get_brute_force_parser.bf_search_for_obj_streams_xref(xref)
+                         brute_force_parser.bf_search_for_obj_streams_xref(xref)
                          Log.warn { "After brute-force search, xref entries: #{xref.size}" }
 
                          # If trailer missing Root, try brute force to find it
                          if trailer.nil? || !trailer.has_key?(Pdfbox::Cos::Name.new("Root"))
                            Log.warn { "Trailer missing Root, attempting brute-force trailer search" }
-                           if get_brute_force_parser.bf_find_trailer(trailer ||= Pdfbox::Cos::Dictionary.new)
+                           if brute_force_parser.bf_find_trailer(trailer ||= Pdfbox::Cos::Dictionary.new)
                              Log.warn { "Brute-force trailer search succeeded" }
                              @trailer = trailer
                            else
@@ -1719,7 +1719,7 @@ module Pdfbox::Pdfparser
                        Log.warn { "No startxref found, attempting brute-force trailer reconstruction" }
                        xref = XRef.new
                        @xref = xref
-                       trailer = get_brute_force_parser.rebuild_trailer(xref)
+                       trailer = brute_force_parser.rebuild_trailer(xref)
                        if trailer
                          @trailer = trailer
                          found_catalog_dict = parse_catalog_from_trailer(trailer, xref)

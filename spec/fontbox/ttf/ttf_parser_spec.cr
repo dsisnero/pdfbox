@@ -41,17 +41,17 @@ module Fontbox::TTF
       cmap_table = font.table(CmapTable::TAG).as(CmapTable)
       cmap_table.should_not be_nil
 
-      subtable = cmap_table.get_subtable(NameRecord::PLATFORM_WINDOWS, NameRecord::ENCODING_WINDOWS_UNICODE_BMP)
+      subtable = cmap_table.subtable(NameRecord::PLATFORM_WINDOWS, NameRecord::ENCODING_WINDOWS_UNICODE_BMP)
       subtable.should_not be_nil
 
       post = font.postscript
       post.should_not be_nil
-      glyph_names = post ? post.get_glyph_names : nil
+      glyph_names = post ? post.glyph_names : nil
       glyph_names.should_not be_nil
 
       table = subtable || raise "expected Windows Unicode BMP cmap subtable"
-      tm_gid = table.get_glyph_id(0x2122)
-      euro_gid = table.get_glyph_id(0x20AC)
+      tm_gid = table.glyph_id(0x2122)
+      euro_gid = table.glyph_id(0x20AC)
 
       names = glyph_names || raise "expected postscript glyph names"
       names[tm_gid].should eq("trademark")

@@ -20,6 +20,6 @@ module Fontbox::CFF
     #
     # @param name the character name of the Type1 charstring
     # @return Type 1 CharString
-    abstract def get_type1_char_string(name : String) : Type1CharString
+    abstract def type1_char_string(name : String) : Type1CharString
   end
 end

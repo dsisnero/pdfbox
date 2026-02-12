@@ -39,8 +39,8 @@ module Fontbox::CFF
       def initialize(@font : CFFType1Font)
       end
 
-      def get_type1_char_string(name : String) : Type1CharString
-        @font.get_type1_char_string(name)
+      def type1_char_string(name : String) : Type1CharString
+        @font.type1_char_string(name)
       end
     end
 
@@ -73,27 +73,27 @@ module Fontbox::CFF
     def name_to_gid(name : String) : Int32
       charset = self.charset
       return 0 unless charset
-      sid = charset.get_sid(name)
-      charset.get_gid_for_sid(sid)
+      sid = charset.sid(name)
+      charset.gid_for_sid(sid)
     end
 
     # Returns the Type 1 charstring for the given PostScript glyph name.
-    def get_type1_char_string(name : String) : Type1CharString
+    def type1_char_string(name : String) : Type1CharString
       gid = name_to_gid(name)
-      get_type2_char_string(gid, name)
+      type2_char_string(gid, name)
     end
 
     # Returns the path of the glyph for the given PostScript glyph name.
-    def get_path(name : String) : Fontbox::Util::Path
-      get_type1_char_string(name).path
+    def path(name : String) : Fontbox::Util::Path
+      type1_char_string(name).path
     end
 
     # Returns the Type 2 charstring for the given GID.
-    def get_type2_char_string(gid : Int32) : Type2CharString
-      get_type2_char_string(gid, "GID+" + gid.to_s)
+    def type2_char_string(gid : Int32) : Type2CharString
+      type2_char_string(gid, "GID+" + gid.to_s)
     end
 
-    private def get_type2_char_string(gid : Int32, name : String) : Type2CharString
+    private def type2_char_string(gid : Int32, name : String) : Type2CharString
       if cached = @char_string_cache[gid]?
         return cached
       end
@@ -111,14 +111,14 @@ module Fontbox::CFF
         if bytes.nil?
           bytes = char_strings[0] # .notdef
         end
-        type2seq = get_parser.parse(bytes, global_subr_index, get_local_subr_index)
-        type2 = Type2CharString.new(@reader.not_nil!, self.name, name, gid, type2seq, get_default_width_x, get_nominal_width_x)
+        type2seq = parser.parse(bytes, global_subr_index, local_subr_index)
+        type2 = Type2CharString.new(@reader.not_nil!, self.name, name, gid, type2seq, default_width_x, nominal_width_x)
         @char_string_cache[gid] = type2
         type2
       end
     end
 
-    private def get_parser : Type2CharStringParser
+    private def parser : Type2CharStringParser
       parser = @char_string_parser
       unless parser
         parser = Type2CharStringParser.new(name)
@@ -127,7 +127,7 @@ module Fontbox::CFF
       parser
     end
 
-    private def get_local_subr_index : Array(Bytes)?
+    private def local_subr_index : Array(Bytes)?
       local_subr = @local_subr_index
       unless local_subr
         subrs = @private_dict["Subrs"]?
@@ -140,16 +140,16 @@ module Fontbox::CFF
     end
 
     # helper for looking up keys/values
-    private def get_property(name : String) : CFFDictValue | CFFPrivateDictValue | Nil
+    private def property(name : String) : CFFDictValue | CFFPrivateDictValue | Nil
       top_dict_value = top_dict[name]?
       return top_dict_value unless top_dict_value.nil?
       @private_dict[name]?
     end
 
-    private def get_default_width_x : Int32
+    private def default_width_x : Int32
       width = @default_width_x
       unless width
-        num = get_property("defaultWidthX")
+        num = property("defaultWidthX")
         case num
         when Int32
           width = num
@@ -163,10 +163,10 @@ module Fontbox::CFF
       width
     end
 
-    private def get_nominal_width_x : Int32
+    private def nominal_width_x : Int32
       width = @nominal_width_x
       unless width
-        num = get_property("nominalWidthX")
+        num = property("nominalWidthX")
         case num
         when Int32
           width = num

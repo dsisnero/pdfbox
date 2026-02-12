@@ -14,7 +14,7 @@ module Fontbox::TTF::Gsub
     # @param compound_words A set of strings like _79_99_, _80_99_ or _92_99_.
     def initialize(compound_words : Set(String))
       validate_compound_words(compound_words)
-      @regex_expression = Regex.new(get_regex_from_tokens(compound_words))
+      @regex_expression = Regex.new(regex_from_tokens(compound_words))
     end
 
     # Tokenize a string into tokens.
@@ -65,7 +65,7 @@ module Fontbox::TTF::Gsub
       end
     end
 
-    private def get_regex_from_tokens(compound_words : Set(String)) : String
+    private def regex_from_tokens(compound_words : Set(String)) : String
       "(" + compound_words.join(")|(") + ")"
     end
   end

@@ -33,9 +33,9 @@ module Fontbox::CFF
       def initialize(@font : CFFCIDFont)
       end
 
-      def get_type1_char_string(name : String) : Type1CharString
+      def type1_char_string(name : String) : Type1CharString
         # CIDFonts only support this for legacy 'seac' commands, return .notdef
-        @font.get_type2_char_string(0)
+        @font.type2_char_string(0)
       end
     end
 
@@ -98,10 +98,10 @@ module Fontbox::CFF
     end
 
     # Returns the defaultWidthX for the given GID.
-    protected def get_default_width_x(gid : Int32) : Int32
+    protected def default_width_x(gid : Int32) : Int32
       fd_select = @fd_select
       return 1000 if fd_select.nil?
-      fd_array_index = fd_select.get_fd_index(gid)
+      fd_array_index = fd_select.fd_index(gid)
       return 1000 if fd_array_index == -1 || fd_array_index >= @priv_dicts.size
       priv_dict_value = @priv_dicts[fd_array_index]["defaultWidthX"]?
       case priv_dict_value
@@ -115,10 +115,10 @@ module Fontbox::CFF
     end
 
     # Returns the nominalWidthX for the given GID.
-    protected def get_nominal_width_x(gid : Int32) : Int32
+    protected def nominal_width_x(gid : Int32) : Int32
       fd_select = @fd_select
       return 0 if fd_select.nil?
-      fd_array_index = fd_select.get_fd_index(gid)
+      fd_array_index = fd_select.fd_index(gid)
       return 0 if fd_array_index == -1 || fd_array_index >= @priv_dicts.size
       priv_dict_value = @priv_dicts[fd_array_index]["nominalWidthX"]?
       case priv_dict_value
@@ -132,10 +132,10 @@ module Fontbox::CFF
     end
 
     # Returns the LocalSubrIndex for the given GID.
-    private def get_local_subr_index(gid : Int32) : Array(Bytes)?
+    private def local_subr_index(gid : Int32) : Array(Bytes)?
       fd_select = @fd_select
       return if fd_select.nil?
-      fd_array_index = fd_select.get_fd_index(gid)
+      fd_array_index = fd_select.fd_index(gid)
       return if fd_array_index == -1 || fd_array_index >= @priv_dicts.size
       priv_dict_value = @priv_dicts[fd_array_index]["Subrs"]?
       if priv_dict_value.is_a?(Array(Bytes))
@@ -144,12 +144,12 @@ module Fontbox::CFF
     end
 
     # Returns the path of the glyph for the given CID.
-    def get_path(cid : Int32) : Fontbox::Util::Path
-      get_type2_char_string(cid).path
+    def path(cid : Int32) : Fontbox::Util::Path
+      type2_char_string(cid).path
     end
 
     # Returns the Type 2 charstring for the given CID.
-    def get_type2_char_string(gid : Int32) : CIDKeyedType2CharString
+    def type2_char_string(gid : Int32) : CIDKeyedType2CharString
       cid = gid
       if cached = @char_string_cache[cid]?
         return cached
@@ -162,7 +162,7 @@ module Fontbox::CFF
         end
 
         charset = self.charset
-        glyph_id = charset ? charset.get_gid_for_cid(cid) : cid
+        glyph_id = charset ? charset.gid_for_cid(cid) : cid
         bytes = nil
         if glyph_id < char_strings.size
           bytes = char_strings[glyph_id]
@@ -170,15 +170,15 @@ module Fontbox::CFF
         if bytes.nil?
           bytes = char_strings[0] # .notdef
         end
-        type2seq = get_parser.parse(bytes, global_subr_index, get_local_subr_index(glyph_id))
+        type2seq = parser.parse(bytes, global_subr_index, local_subr_index(glyph_id))
         type2 = CIDKeyedType2CharString.new(@reader.not_nil!, name, cid, glyph_id, type2seq,
-          get_default_width_x(glyph_id), get_nominal_width_x(glyph_id))
+          default_width_x(glyph_id), nominal_width_x(glyph_id))
         @char_string_cache[cid] = type2
         type2
       end
     end
 
-    private def get_parser : Type2CharStringParser
+    private def parser : Type2CharStringParser
       parser = @char_string_parser
       unless parser
         parser = Type2CharStringParser.new(name)
@@ -190,7 +190,7 @@ module Fontbox::CFF
 
   # FDSelect interface
   abstract class FDSelect
-    abstract def get_fd_index(gid : Int32) : Int32
+    abstract def fd_index(gid : Int32) : Int32
   end
 
   # Format 0 FDSelect
@@ -198,7 +198,7 @@ module Fontbox::CFF
     def initialize(@fds : Array(Int32))
     end
 
-    def get_fd_index(gid : Int32) : Int32
+    def fd_index(gid : Int32) : Int32
       gid < @fds.size ? @fds[gid] : 0
     end
   end
@@ -217,7 +217,7 @@ module Fontbox::CFF
     def initialize(@range3 : Array(Range3), @sentinel : Int32)
     end
 
-    def get_fd_index(gid : Int32) : Int32
+    def fd_index(gid : Int32) : Int32
       @range3.each_with_index do |range, i|
         if range.first <= gid
           if i + 1 < @range3.size

@@ -4,8 +4,8 @@ module Fontbox::TTF
   describe GlyfSimpleDescript do
     it "creates an empty descript for zero contours" do
       desc = GlyfSimpleDescript.new(0_i16, RandomAccessReadDataStream.new(Pdfbox::IO::RandomAccessReadBuffer.new(Bytes.empty)), 0_i16)
-      desc.get_point_count.should eq(0)
-      desc.get_contour_count.should eq(0)
+      desc.point_count.should eq(0)
+      desc.contour_count.should eq(0)
       desc.is_composite.should be_false
     end
 
@@ -21,14 +21,14 @@ module Fontbox::TTF
 
       desc = GlyfSimpleDescript.new(1_i16, RandomAccessReadDataStream.new(Pdfbox::IO::RandomAccessReadBuffer.new(data)), 0_i16)
 
-      desc.get_contour_count.should eq(1)
-      desc.get_point_count.should eq(2)
-      desc.get_end_pt_of_contours(0).should eq(1)
+      desc.contour_count.should eq(1)
+      desc.point_count.should eq(2)
+      desc.end_pt_of_contours(0).should eq(1)
 
-      desc.get_x_coordinate(0).should eq(10)
-      desc.get_x_coordinate(1).should eq(15)
-      desc.get_y_coordinate(0).should eq(20)
-      desc.get_y_coordinate(1).should eq(18)
+      desc.x_coordinate(0).should eq(10)
+      desc.x_coordinate(1).should eq(15)
+      desc.y_coordinate(0).should eq(20)
+      desc.y_coordinate(1).should eq(18)
     end
 
     it "handles repeated flags" do
@@ -44,13 +44,13 @@ module Fontbox::TTF
 
       desc = GlyfSimpleDescript.new(1_i16, RandomAccessReadDataStream.new(Pdfbox::IO::RandomAccessReadBuffer.new(data)), 0_i16)
 
-      desc.get_point_count.should eq(3)
-      desc.get_x_coordinate(0).should eq(1)
-      desc.get_x_coordinate(1).should eq(2)
-      desc.get_x_coordinate(2).should eq(3)
-      desc.get_y_coordinate(0).should eq(1)
-      desc.get_y_coordinate(1).should eq(2)
-      desc.get_y_coordinate(2).should eq(3)
+      desc.point_count.should eq(3)
+      desc.x_coordinate(0).should eq(1)
+      desc.x_coordinate(1).should eq(2)
+      desc.x_coordinate(2).should eq(3)
+      desc.y_coordinate(0).should eq(1)
+      desc.y_coordinate(1).should eq(2)
+      desc.y_coordinate(2).should eq(3)
     end
   end
 end

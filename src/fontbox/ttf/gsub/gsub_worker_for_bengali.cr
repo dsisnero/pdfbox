@@ -31,8 +31,8 @@ module Fontbox::TTF::Gsub
     def initialize(cmap_lookup : CmapLookup, gsub_data : ::Fontbox::TTF::Model::GsubData)
       @cmap_lookup = cmap_lookup
       @gsub_data = gsub_data
-      @before_half_glyph_ids = get_before_half_glyph_ids
-      @before_and_after_span_glyph_ids = get_before_and_after_span_glyph_ids
+      @before_half_glyph_ids = before_half_glyph_ids
+      @before_and_after_span_glyph_ids = before_and_after_span_glyph_ids
     end
 
     def apply_transforms(original_glyph_ids : Array(Int32)) : Array(Int32)
@@ -46,7 +46,7 @@ module Fontbox::TTF::Gsub
 
         Log.debug { "applying the feature #{feature}" }
 
-        script_feature = @gsub_data.get_feature(feature)
+        script_feature = @gsub_data.feature(feature)
         intermediate_glyphs_from_gsub = apply_gsub_feature(script_feature, intermediate_glyphs_from_gsub)
       end
 
@@ -81,8 +81,8 @@ module Fontbox::TTF::Gsub
         if before_and_after_span_component
           previous_glyph_id = original_glyph_ids[index - 1]
           repositioned_glyph_ids[index] = previous_glyph_id
-          repositioned_glyph_ids[index - 1] = get_glyph_id(before_and_after_span_component.before_component_character)
-          repositioned_glyph_ids.insert(index + 1, get_glyph_id(before_and_after_span_component.after_component_character))
+          repositioned_glyph_ids[index - 1] = glyph_id(before_and_after_span_component.before_component_character)
+          repositioned_glyph_ids.insert(index + 1, glyph_id(before_and_after_span_component.after_component_character))
         end
       end
       repositioned_glyph_ids
@@ -90,10 +90,10 @@ module Fontbox::TTF::Gsub
 
     private def apply_gsub_feature(script_feature : ::Fontbox::TTF::Model::ScriptFeature,
                                    original_glyphs : Array(Int32)) : Array(Int32)
-      all_glyph_ids_for_substitution = script_feature.get_all_glyph_ids_for_substitution
+      all_glyph_ids_for_substitution = script_feature.all_glyph_ids_for_substitution
       if all_glyph_ids_for_substitution.empty?
         # not stopping here results in really weird output, the regex goes wild
-        Log.debug { "get_all_glyph_ids_for_substitution() for #{script_feature.get_name} is empty" }
+        Log.debug { "get_all_glyph_ids_for_substitution() for #{script_feature.name} is empty" }
         return original_glyphs
       end
 
@@ -104,7 +104,7 @@ module Fontbox::TTF::Gsub
       tokens.each do |chunk|
         if script_feature.can_replace_glyphs(chunk)
           # gsub system kicks in, you get the glyphId directly
-          replacement_for_glyphs = script_feature.get_replacement_for_glyphs(chunk)
+          replacement_for_glyphs = script_feature.replacement_for_glyphs(chunk)
           gsub_processed_glyphs.concat(replacement_for_glyphs)
         else
           gsub_processed_glyphs.concat(chunk)
@@ -116,28 +116,28 @@ module Fontbox::TTF::Gsub
       gsub_processed_glyphs
     end
 
-    private def get_before_half_glyph_ids : Array(Int32)
-      glyph_ids = BEFORE_HALF_CHARS.map { |char| get_glyph_id(char) }
+    private def before_half_glyph_ids : Array(Int32)
+      glyph_ids = BEFORE_HALF_CHARS.map { |char| glyph_id(char) }
 
       if @gsub_data.is_feature_supported(INIT_FEATURE)
-        feature = @gsub_data.get_feature(INIT_FEATURE)
-        feature.get_all_glyph_ids_for_substitution.each do |glyph_cluster|
-          glyph_ids.concat(feature.get_replacement_for_glyphs(glyph_cluster))
+        feature = @gsub_data.feature(INIT_FEATURE)
+        feature.all_glyph_ids_for_substitution.each do |glyph_cluster|
+          glyph_ids.concat(feature.replacement_for_glyphs(glyph_cluster))
         end
       end
 
       glyph_ids
     end
 
-    private def get_glyph_id(character : Char) : Int32
-      @cmap_lookup.get_glyph_id(character.ord)
+    private def glyph_id(character : Char) : Int32
+      @cmap_lookup.glyph_id(character.ord)
     end
 
-    private def get_before_and_after_span_glyph_ids : Hash(Int32, BeforeAndAfterSpanComponent)
+    private def before_and_after_span_glyph_ids : Hash(Int32, BeforeAndAfterSpanComponent)
       result = {} of Int32 => BeforeAndAfterSpanComponent
 
       BEFORE_AND_AFTER_SPAN_CHARS.each do |component|
-        result[get_glyph_id(component.original_character)] = component
+        result[glyph_id(component.original_character)] = component
       end
 
       result
