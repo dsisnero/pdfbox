@@ -213,7 +213,7 @@ module Fontbox::TTF
 
     # This will read required headers from the stream into out_headers.
     def read_headers(ttf : TrueTypeFont, data : TTFDataStream, out_headers : FontHeaders) : Nil
-      out_headers.set_os2_windows(self)
+      out_headers.os2_windows = self
     end
 
     # Gets the version.

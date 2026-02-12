@@ -7,7 +7,7 @@ module Fontbox::TTF
     end
 
     # ameba:disable Naming/AccessorMethodName
-    def get_index_to_loc_format : Int16
+    def index_to_loc_format : Int16
       @loca_format
     end
     # ameba:enable Naming/AccessorMethodName
@@ -19,14 +19,14 @@ module Fontbox::TTF
     end
 
     # ameba:disable Naming/AccessorMethodName
-    def get_header : HeaderTable?
+    def header : HeaderTable?
       @header
     end
 
     # ameba:enable Naming/AccessorMethodName
 
     # ameba:disable Naming/AccessorMethodName
-    def get_number_of_glyphs : Int32
+    def number_of_glyphs : Int32
       @num_glyphs
     end
     # ameba:enable Naming/AccessorMethodName
@@ -45,7 +45,7 @@ module Fontbox::TTF
 
       table.read(font, Fontbox::TTF.stream_for_loca(data))
 
-      table.get_offsets.should eq([0_i64, 4_i64, 10_i64])
+      table.offsets.should eq([0_i64, 4_i64, 10_i64])
     end
 
     it "reads long offsets" do
@@ -58,7 +58,7 @@ module Fontbox::TTF
 
       table.read(font, Fontbox::TTF.stream_for_loca(data))
 
-      table.get_offsets.should eq([0_i64, 16_i64, 32_i64])
+      table.offsets.should eq([0_i64, 16_i64, 32_i64])
     end
 
     it "raises when head table is missing" do

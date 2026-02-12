@@ -26,7 +26,7 @@ module Fontbox::TTF
 
       header = font.header
       header.should_not be_nil
-      created = header ? header.get_created : raise "expected header table"
+      created = header ? header.created : raise "expected header table"
 
       created.location.name.should eq("UTC")
       created.should eq(Time.utc(2010, 6, 18, 10, 23, 22))

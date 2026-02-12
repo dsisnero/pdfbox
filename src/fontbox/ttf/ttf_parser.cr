@@ -171,7 +171,7 @@ module Fontbox::TTF
       # Set OS/2 windows metrics
       os2_table = font.table(OS2WindowsMetricsTable::TAG)
       if os2_table
-        out_headers.set_os2_windows(os2_table.as(OS2WindowsMetricsTable))
+        out_headers.os2_windows = os2_table.as(OS2WindowsMetricsTable)
       end
 
       # Check for CFF table (OpenType PostScript)
@@ -183,16 +183,16 @@ module Fontbox::TTF
         # TODO: Handle OpenType font
         nil
       elsif !is_otf && has_cff
-        out_headers.set_error("True Type fonts using CFF outlines are not supported")
+        out_headers.error = "True Type fonts using CFF outlines are not supported"
         return out_headers
       else
         # non-OTF with possible gcid table
         gcid_table = font.table("gcid")
         if gcid_table && gcid_table.length >= FontHeaders::BYTES_GCID
-          out_headers.set_non_otf_gcid142(font.table_n_bytes(gcid_table, FontHeaders::BYTES_GCID))
+          out_headers.non_otf_gcid142 = font.table_n_bytes(gcid_table, FontHeaders::BYTES_GCID)
         end
       end
-      out_headers.set_is_otf_and_post_script(is_otf_and_post_script)
+      out_headers.is_otf_and_post_script = is_otf_and_post_script
 
       # Check mandatory tables
       mandatory_tables = [
@@ -209,7 +209,7 @@ module Fontbox::TTF
 
       mandatory_tables.each do |tag|
         if !font.table(tag)
-          out_headers.set_error("'#{tag}' table is mandatory")
+          out_headers.error = "'#{tag}' table is mandatory"
           return out_headers
         end
       end

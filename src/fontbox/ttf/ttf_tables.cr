@@ -75,41 +75,41 @@ module Fontbox::TTF
       # 44 == 4 + 4 + 4 + 4 + 2 + 2 + 2*8 + 4*2, see read()
       data.seek(data.current_position + 44)
       @mac_style = data.read_unsigned_short.to_u16
-      out_headers.set_header_mac_style(@mac_style.to_i32)
+      out_headers.header_mac_style = @mac_style.to_i32
     end
 
     # Gets the mac style flags.
-    def get_mac_style : UInt16
+    def mac_style : UInt16
       @mac_style
     end
 
     # Gets the check sum adjustment.
-    def get_check_sum_adjustment : UInt64
+    def check_sum_adjustment : UInt64
       @check_sum_adjustment
     end
 
     # Gets the created date.
-    def get_created : Time
+    def created : Time
       @created
     end
 
     # Gets the flags.
-    def get_flags : UInt16
+    def flags : UInt16
       @flags
     end
 
     # Gets the font direction hint.
-    def get_font_direction_hint : Int16
+    def font_direction_hint : Int16
       @font_direction_hint
     end
 
     # Gets the font revision.
-    def get_font_revision : Float32
+    def font_revision : Float32
       @font_revision
     end
 
     # Gets the glyph data format.
-    def get_glyph_data_format : Int16
+    def glyph_data_format : Int16
       @glyph_data_format
     end
 
@@ -119,17 +119,17 @@ module Fontbox::TTF
     end
 
     # Gets the lowest recommended PPEM.
-    def get_lowest_rec_ppem : UInt16
+    def lowest_rec_ppem : UInt16
       @lowest_rec_ppem
     end
 
     # Gets the magic number.
-    def get_magic_number : UInt64
+    def magic_number : UInt64
       @magic_number
     end
 
     # Gets the modified date.
-    def get_modified : Time
+    def modified : Time
       @modified
     end
 
@@ -139,22 +139,22 @@ module Fontbox::TTF
     end
 
     # Gets the x max.
-    def get_x_max : Int16
+    def x_max : Int16
       @x_max
     end
 
     # Gets the x min.
-    def get_x_min : Int16
+    def x_min : Int16
       @x_min
     end
 
     # Gets the y max.
-    def get_y_max : Int16
+    def y_max : Int16
       @y_max
     end
 
     # Gets the y min.
-    def get_y_min : Int16
+    def y_min : Int16
       @y_min
     end
   end
@@ -207,62 +207,62 @@ module Fontbox::TTF
     end
 
     # Gets the version.
-    def get_version : Float32
+    def version : Float32
       @version
     end
 
     # Gets the ascender.
-    def get_ascender : Int16
+    def ascender : Int16
       @ascender
     end
 
     # Gets the descender.
-    def get_descender : Int16
+    def descender : Int16
       @descender
     end
 
     # Gets the line gap.
-    def get_line_gap : Int16
+    def line_gap : Int16
       @line_gap
     end
 
     # Gets the advance width max.
-    def get_advance_width_max : UInt16
+    def advance_width_max : UInt16
       @advance_width_max
     end
 
     # Gets the minimum left side bearing.
-    def get_min_left_side_bearing : Int16
+    def min_left_side_bearing : Int16
       @min_left_side_bearing
     end
 
     # Gets the minimum right side bearing.
-    def get_min_right_side_bearing : Int16
+    def min_right_side_bearing : Int16
       @min_right_side_bearing
     end
 
     # Gets the x max extent.
-    def get_x_max_extent : Int16
+    def x_max_extent : Int16
       @x_max_extent
     end
 
     # Gets the caret slope rise.
-    def get_caret_slope_rise : Int16
+    def caret_slope_rise : Int16
       @caret_slope_rise
     end
 
     # Gets the caret slope run.
-    def get_caret_slope_run : Int16
+    def caret_slope_run : Int16
       @caret_slope_run
     end
 
     # Gets the caret offset.
-    def get_caret_offset : Int16
+    def caret_offset : Int16
       @caret_offset
     end
 
     # Gets the metric data format.
-    def get_metric_data_format : Int16
+    def metric_data_format : Int16
       @metric_data_format
     end
 
@@ -684,8 +684,8 @@ module Fontbox::TTF
     # This will read required headers from the stream into out_headers.
     def read_headers(ttf : TrueTypeFont, data : TTFDataStream, out_headers : FontHeaders) : Nil
       read_internal(ttf, data, true)
-      out_headers.set_name(@ps_name) if @ps_name
-      out_headers.set_font_family(@font_family, @font_sub_family) if @font_family
+      out_headers.name = @ps_name if @ps_name
+      out_headers.font_family = {@font_family, @font_sub_family} if @font_family
     end
 
     private def read_internal(ttf : TrueTypeFont, data : TTFDataStream, only_headers : Bool) : Nil
@@ -885,7 +885,7 @@ module Fontbox::TTF
       begin
         cff_font = Fontbox::CFF::CFFParser.new.parse(reader)[0]?
         if cff_font.is_a?(Fontbox::CFF::CFFCIDFont)
-          out_headers.set_otf_ros(cff_font.registry, cff_font.ordering, cff_font.supplement)
+          out_headers.otf_ros = {cff_font.registry, cff_font.ordering, cff_font.supplement}
         end
       ensure
         reader.close
@@ -893,7 +893,7 @@ module Fontbox::TTF
     end
 
     # Returns the parsed CFF font.
-    def get_font : Fontbox::CFF::CFFFont?
+    def font : Fontbox::CFF::CFFFont?
       @cff_font
     end
   end
@@ -1518,7 +1518,7 @@ module Fontbox::TTF
       end
 
       with_data_lock do
-        offsets = @loca.not_nil!.get_offsets
+        offsets = @loca.not_nil!.offsets
         glyph : GlyphData
         data_stream = @data_stream.not_nil!
 
@@ -1552,7 +1552,7 @@ module Fontbox::TTF
       end
 
       glyph = GlyphData.new
-      left_side_bearing = @hmt.nil? ? 0 : @hmt.not_nil!.get_left_side_bearing(gid)
+      left_side_bearing = @hmt.nil? ? 0 : @hmt.not_nil!.left_side_bearing(gid)
       glyph.init_data(self, @data_stream.not_nil!, left_side_bearing, level)
 
       # Resolve composite glyphs immediately.
@@ -2190,7 +2190,7 @@ module Fontbox::TTF
     end
 
     # Returns the advance width for the given GID.
-    def get_advance_width(gid : Int32) : Int32
+    def advance_width(gid : Int32) : Int32
       if @advance_width.empty?
         return 250
       end
@@ -2204,7 +2204,7 @@ module Fontbox::TTF
     end
 
     # Returns the left side bearing for the given GID.
-    def get_left_side_bearing(gid : Int32) : Int32
+    def left_side_bearing(gid : Int32) : Int32
       if @left_side_bearing.empty?
         return 0
       end
@@ -2216,22 +2216,22 @@ module Fontbox::TTF
     end
 
     # Gets the advance width array.
-    def get_advance_width_array : Array(Int32)
+    def advance_width_array : Array(Int32)
       @advance_width
     end
 
     # Gets the left side bearing array.
-    def get_left_side_bearing_array : Array(Int16)
+    def left_side_bearing_array : Array(Int16)
       @left_side_bearing
     end
 
     # Gets the non-horizontal left side bearing array.
-    def get_non_horizontal_left_side_bearing_array : Array(Int16)
+    def non_horizontal_left_side_bearing_array : Array(Int16)
       @non_horizontal_left_side_bearing
     end
 
     # Gets the number of horizontal metrics.
-    def get_num_h_metrics : Int32
+    def num_h_metrics : Int32
       @num_h_metrics
     end
   end
@@ -2273,12 +2273,12 @@ module Fontbox::TTF
     end
 
     # Returns the offsets.
-    def get_offsets : Array(Int64)
+    def offsets : Array(Int64)
       @offsets
     end
 
     # Sets the offsets.
-    def set_offsets(offsets_value : Array(Int64))
+    def offsets=(offsets_value : Array(Int64))
       @offsets = offsets_value
     end
   end
@@ -2540,67 +2540,67 @@ module Fontbox::TTF
       @initialized = true
     end
 
-    def get_version : Float32
+    def version : Float32
       @version
     end
 
-    def get_ascender : Int16
+    def ascender : Int16
       @ascender
     end
 
-    def get_descender : Int16
+    def descender : Int16
       @descender
     end
 
-    def get_line_gap : Int16
+    def line_gap : Int16
       @line_gap
     end
 
-    def get_advance_height_max : UInt16
+    def advance_height_max : UInt16
       @advance_height_max
     end
 
-    def get_min_top_side_bearing : Int16
+    def min_top_side_bearing : Int16
       @min_top_side_bearing
     end
 
-    def get_min_bottom_side_bearing : Int16
+    def min_bottom_side_bearing : Int16
       @min_bottom_side_bearing
     end
 
-    def get_y_max_extent : Int16
+    def y_max_extent : Int16
       @y_max_extent
     end
 
-    def get_caret_slope_rise : Int16
+    def caret_slope_rise : Int16
       @caret_slope_rise
     end
 
-    def get_caret_slope_run : Int16
+    def caret_slope_run : Int16
       @caret_slope_run
     end
 
-    def get_caret_offset : Int16
+    def caret_offset : Int16
       @caret_offset
     end
 
-    def get_reserved1 : Int16
+    def reserved1 : Int16
       @reserved1
     end
 
-    def get_reserved2 : Int16
+    def reserved2 : Int16
       @reserved2
     end
 
-    def get_reserved3 : Int16
+    def reserved3 : Int16
       @reserved3
     end
 
-    def get_reserved4 : Int16
+    def reserved4 : Int16
       @reserved4
     end
 
-    def get_metric_data_format : Int16
+    def metric_data_format : Int16
       @metric_data_format
     end
 
@@ -2659,7 +2659,7 @@ module Fontbox::TTF
       @initialized = true
     end
 
-    def get_top_side_bearing(gid : Int32) : Int32
+    def top_side_bearing(gid : Int32) : Int32
       if gid < @num_v_metrics
         @top_side_bearing[gid].to_i32
       else
@@ -2667,7 +2667,7 @@ module Fontbox::TTF
       end
     end
 
-    def get_advance_height(gid : Int32) : Int32
+    def advance_height(gid : Int32) : Int32
       if gid < @num_v_metrics
         @advance_height[gid]
       else
@@ -2701,11 +2701,11 @@ module Fontbox::TTF
       @initialized = true
     end
 
-    def get_version : Float32
+    def version : Float32
       @version
     end
 
-    def get_origin_y(gid : Int32) : Int32
+    def origin_y(gid : Int32) : Int32
       @origins[gid]?.try(&.to_i32) || @default_vert_origin_y.to_i32
     end
   end

@@ -41,7 +41,7 @@ module Fontbox::TTF
       glyph_table.should_not be_nil
       index_to_location = font.index_to_location
       index_to_location.should_not be_nil
-      offsets = index_to_location.as(IndexToLocationTable).get_offsets
+      offsets = index_to_location.as(IndexToLocationTable).offsets
 
       empty_gid = -1
       (0...(offsets.size - 1)).each do |gid|

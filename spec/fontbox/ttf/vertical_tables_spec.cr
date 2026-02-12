@@ -7,7 +7,7 @@ module Fontbox::TTF
     end
 
     # ameba:disable Naming/AccessorMethodName
-    def get_number_of_v_metrics : UInt16
+    def number_of_v_metrics : UInt16
       @metrics_count
     end
     # ameba:enable Naming/AccessorMethodName
@@ -19,14 +19,14 @@ module Fontbox::TTF
     end
 
     # ameba:disable Naming/AccessorMethodName
-    def get_vertical_header : VerticalHeaderTable?
+    def vertical_header : VerticalHeaderTable?
       @v_header
     end
 
     # ameba:enable Naming/AccessorMethodName
 
     # ameba:disable Naming/AccessorMethodName
-    def get_number_of_glyphs : Int32
+    def number_of_glyphs : Int32
       @num_glyphs
     end
     # ameba:enable Naming/AccessorMethodName

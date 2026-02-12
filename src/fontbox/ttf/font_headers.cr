@@ -42,34 +42,34 @@ module Fontbox::TTF
     @otf_ordering : String?
     @otf_supplement : Int32 = 0
 
-    def get_error : String?
+    def error : String?
       @error
     end
 
-    def get_name : String?
+    def name : String?
       @name
     end
 
     # null == no HeaderTable, ttf.get_header().get_mac_style()
-    def get_header_mac_style : Int32?
+    def header_mac_style : Int32?
       @header_mac_style
     end
 
     # Sets the header mac style.
-    def set_header_mac_style(mac_style : Int32) : Nil
+    def header_mac_style=(mac_style : Int32) : Nil
       @header_mac_style = mac_style
     end
 
-    def get_os2_windows : OS2WindowsMetricsTable?
+    def os2_windows : OS2WindowsMetricsTable?
       @os2_windows
     end
 
     # only when LOGGER(FileSystemFontProvider).is_trace_enabled() tracing: FontFamily, FontSubfamily
-    def get_font_family : String?
+    def font_family : String?
       @font_family
     end
 
-    def get_font_sub_family : String?
+    def font_sub_family : String?
       @font_sub_family
     end
 
@@ -77,52 +77,49 @@ module Fontbox::TTF
       @is_otf_and_post_script
     end
 
-    def get_non_otf_table_gcid142 : Bytes?
+    def non_otf_table_gcid142 : Bytes?
       @non_otf_gcid142
     end
 
-    def get_otf_registry : String?
+    def otf_registry : String?
       @otf_registry
     end
 
-    def get_otf_ordering : String?
+    def otf_ordering : String?
       @otf_ordering
     end
 
-    def get_otf_supplement : Int32
+    def otf_supplement : Int32
       @otf_supplement
     end
 
     # Sets OpenType CFF ROS metadata.
-    def set_otf_ros(registry : String, ordering : String, supplement : Int32) : Nil
-      @otf_registry = registry
-      @otf_ordering = ordering
-      @otf_supplement = supplement
+    def otf_ros=(ros : Tuple(String, String, Int32)) : Nil
+      @otf_registry, @otf_ordering, @otf_supplement = ros
     end
 
-    def set_os2_windows(os2 : OS2WindowsMetricsTable) : Nil
+    def os2_windows=(os2 : OS2WindowsMetricsTable) : Nil
       @os2_windows = os2
     end
 
-    def set_error(error : String) : Nil
+    def error=(error : String) : Nil
       @error = error
     end
 
-    def set_non_otf_gcid142(bytes : Bytes) : Nil
+    def non_otf_gcid142=(bytes : Bytes) : Nil
       @non_otf_gcid142 = bytes
     end
 
-    def set_is_otf_and_post_script(value : Bool) : Nil
+    def is_otf_and_post_script=(value : Bool) : Nil
       @is_otf_and_post_script = value
     end
 
-    def set_name(name : String?) : Nil
+    def name=(name : String?) : Nil
       @name = name
     end
 
-    def set_font_family(font_family : String?, font_sub_family : String?) : Nil
-      @font_family = font_family
-      @font_sub_family = font_sub_family
+    def font_family=(family_and_subfamily : Tuple(String?, String?)) : Nil
+      @font_family, @font_sub_family = family_and_subfamily
     end
   end
 end

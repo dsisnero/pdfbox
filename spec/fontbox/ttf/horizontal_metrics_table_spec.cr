@@ -58,13 +58,13 @@ module Fontbox::TTF
       font = StubTrueTypeFont.new(4, StubHorizontalHeaderTable.new(2_u16))
       table.read(font, Fontbox::TTF.stream_for(hmtx_data))
 
-      table.get_advance_width(0).should eq(500)
-      table.get_advance_width(1).should eq(600)
-      table.get_advance_width(3).should eq(600)
-      table.get_left_side_bearing(0).should eq(10)
-      table.get_left_side_bearing(1).should eq(-20)
-      table.get_left_side_bearing(2).should eq(30)
-      table.get_left_side_bearing(3).should eq(-40)
+      table.advance_width(0).should eq(500)
+      table.advance_width(1).should eq(600)
+      table.advance_width(3).should eq(600)
+      table.left_side_bearing(0).should eq(10)
+      table.left_side_bearing(1).should eq(-20)
+      table.left_side_bearing(2).should eq(30)
+      table.left_side_bearing(3).should eq(-40)
     end
 
     it "keeps non-horizontal left side bearing array sized even when bytes are missing" do
@@ -75,9 +75,9 @@ module Fontbox::TTF
       font = StubTrueTypeFont.new(4, StubHorizontalHeaderTable.new(2_u16))
       table.read(font, Fontbox::TTF.stream_for(hmtx_data))
 
-      table.get_non_horizontal_left_side_bearing_array.size.should eq(2)
-      table.get_left_side_bearing(2).should eq(0)
-      table.get_left_side_bearing(3).should eq(0)
+      table.non_horizontal_left_side_bearing_array.size.should eq(2)
+      table.left_side_bearing(2).should eq(0)
+      table.left_side_bearing(3).should eq(0)
     end
 
     it "raises when horizontal header table is missing" do
