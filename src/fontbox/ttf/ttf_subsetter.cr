@@ -42,6 +42,16 @@ module Fontbox::TTF
       end
     end
 
+    # Forces the glyph for the specified character code to be zero-width and contour-free,
+    # regardless of what the glyph looks like in the original font. Note that the specified
+    # character code is not added to the subset unless it is also added separately.
+    def force_invisible(code_point : Int32)
+      gid = @unicode_cmap.glyph_id(code_point)
+      if gid > 0
+        @invisible_glyph_ids.add(gid)
+      end
+    end
+
     def write_to_stream(io : IO)
       add_compound_references unless @has_added_compound_references
       build_gid_map
@@ -378,11 +388,11 @@ module Fontbox::TTF
     private def build_name_table : Bytes?
       naming = @ttf.table("name")
       if naming.nil?
-        return nil
+        return
       end
       if keep = @keep_tables
         if !keep.includes?("name")
-          return nil
+          return
         end
       end
       # TODO: implement proper naming table
@@ -392,11 +402,11 @@ module Fontbox::TTF
     private def build_os2_table : Bytes?
       os2 = @ttf.table("OS/2")
       if os2.nil? || @uni_to_gid.empty?
-        return nil
+        return
       end
       if keep = @keep_tables
         if !keep.includes?("OS/2")
-          return nil
+          return
         end
       end
       # TODO: implement OS/2 table
@@ -574,19 +584,57 @@ module Fontbox::TTF
     end
 
     private def build_post_table : Bytes?
-      # Return minimal post table version 2.0 with .notdef glyph name
-      io = IO::Memory.new(32)
-      write_fixed(io, 2.0)    # version
-      write_fixed(io, 0.0)    # italic angle
-      write_sint16(io, 0_i32) # underline position
-      write_sint16(io, 0_i32) # underline thickness
-      write_uint32(io, 0_u64) # is fixed pitch
-      write_uint32(io, 0_u64) # min mem type 42
-      write_uint32(io, 0_u64) # max mem type 42
-      write_uint32(io, 0_u64) # min mem type 1
-      write_uint32(io, 0_u64) # max mem type 1
-      write_uint16(io, 1_u32) # number of glyphs
-      write_uint16(io, 0_u32) # glyphNameIndex[0] = 0 (.notdef)
+      post = @ttf.table("post").as?(PostScriptTable)
+      if post.nil? || post.glyph_names.nil? ||
+         (keep = @keep_tables) && !keep.includes?(PostScriptTable::TAG)
+        return
+      end
+
+      io = IO::Memory.new
+      write_fixed(io, 2.0) # version
+      write_fixed(io, post.italic_angle.to_f64)
+      write_sint16(io, post.underline_position.to_i32)
+      write_sint16(io, post.underline_thickness.to_i32)
+      write_uint32(io, post.is_fixed_pitch)
+      write_uint32(io, post.min_mem_type42)
+      write_uint32(io, post.max_mem_type42)
+      write_uint32(io, post.min_mem_type1)
+      write_uint32(io, post.max_mem_type1)
+
+      # version 2.0
+      # numberOfGlyphs
+      write_uint16(io, @glyph_ids.size.to_u32)
+
+      # glyphNameIndex[numGlyphs]
+      names = {} of String => Int32
+      sorted_glyph_ids.each do |old_gid|
+        name = post.name(old_gid) || ".undefined"
+        mac_id = WGL4Names.glyph_index(name)
+        if mac_id
+          # the name is implicit, as it's from MacRoman
+          write_uint16(io, mac_id.to_u32)
+        else
+          # the name will be written explicitly
+          ordinal = names.fetch(name) do
+            size = names.size
+            names[name] = size
+            size
+          end
+          write_uint16(io, (258 + ordinal).to_u32)
+        end
+      end
+
+      # names[numberNewGlyphs]
+      names.each_key do |name|
+        buf = name.to_slice
+        if buf.size > 255
+          # truncate? According to spec, max 255 bytes
+          buf = buf[0, 255]
+        end
+        write_uint8(io, buf.size.to_u32)
+        io.write(buf)
+      end
+
       io.to_slice
     end
 
