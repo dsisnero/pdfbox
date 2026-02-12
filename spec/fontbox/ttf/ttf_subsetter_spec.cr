@@ -201,7 +201,48 @@ module Fontbox::TTF
         # DejaVu Sans Mono font not available on this machine, test skipped
       end
     end
-    pending "test PDFBox-3757: PostScript names not in WGL4Names don't get shuffled"
+    it "test PDFBox-3757: PostScript names not in WGL4Names don't get shuffled" do
+      font = load_liberation_sans
+      subsetter = TTFSubsetter.new(font)
+      subsetter.add('Ö')
+      subsetter.add('\u200A')
+
+      output = IO::Memory.new
+      subsetter.write_to_stream(output)
+
+      # Parse the subset font
+      subset_io = Pdfbox::IO::MemoryRandomAccessRead.new(output.to_slice)
+      subset_font = TTFParser.new(true).parse(subset_io)
+
+      subset_font.number_of_glyphs.should eq(5)
+
+      subset_font.name_to_gid(".notdef").should eq(0)
+      subset_font.name_to_gid("O").should eq(1)
+      subset_font.name_to_gid("Odieresis").should eq(2)
+      subset_font.name_to_gid("uni200A").should eq(3)
+      subset_font.name_to_gid("dieresis.uc").should eq(4)
+
+      post = subset_font.postscript
+      post.should_not be_nil
+      post.as(PostScriptTable).name(0).should eq(".notdef")
+      post.as(PostScriptTable).name(1).should eq("O")
+      post.as(PostScriptTable).name(2).should eq("Odieresis")
+      post.as(PostScriptTable).name(3).should eq("uni200A")
+      post.as(PostScriptTable).name(4).should eq("dieresis.uc")
+
+      # Optional: check hair space has empty contour, dieresis.uc has non-empty contour
+      glyph_table = subset_font.glyph
+      glyph_table.should_not be_nil
+      hair_gid = subset_font.name_to_gid("uni200A")
+      hair_glyph = glyph_table.as(GlyphTable).glyph(hair_gid)
+      hair_glyph.should_not be_nil
+      hair_glyph.as(GlyphData).number_of_contours.should eq(0)
+
+      dieresis_gid = subset_font.name_to_gid("dieresis.uc")
+      dieresis_glyph = glyph_table.as(GlyphTable).glyph(dieresis_gid)
+      dieresis_glyph.should_not be_nil
+      dieresis_glyph.as(GlyphData).number_of_contours.should be > 0
+    end
     pending "test PDFBox-5728: font with v3 PostScript table format and no glyph names"
     pending "test PDFBox-6015: font with 0/1 cmap"
   end
