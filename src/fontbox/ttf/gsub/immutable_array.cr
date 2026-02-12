@@ -130,11 +130,11 @@ module Fontbox::TTF::Gsub
 
     # Allow duplication to get mutable copy
     def dup : Array(T)
-      Array(T).new(self)
+      to_a
     end
 
     def clone : Array(T)
-      Array(T).new(self)
+      to_a
     end
   end
 end

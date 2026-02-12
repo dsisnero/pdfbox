@@ -82,5 +82,11 @@ module Fontbox::TTF
 
       font.close
     end
+
+    pending "PDFBox-5328: test that we get multiple encodings from cmap table (requires NotoSansSC-Regular.otf)" do
+    end
+
+    pending "PDFBox-4106: vertical substitution changes glyph IDs (requires ipag.ttf)" do
+    end
   end
 end
