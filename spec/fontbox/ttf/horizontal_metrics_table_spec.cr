@@ -22,7 +22,7 @@ module Fontbox::TTF
     end
 
     # ameba:disable Naming/AccessorMethodName
-    def get_number_of_h_metrics : UInt16
+    def number_of_h_metrics : UInt16
       @metrics_count
     end
     # ameba:enable Naming/AccessorMethodName
@@ -34,12 +34,12 @@ module Fontbox::TTF
     end
 
     # ameba:disable Naming/AccessorMethodName
-    def get_horizontal_header : HorizontalHeaderTable?
+    def horizontal_header : HorizontalHeaderTable?
       @horizontal_header
     end
 
     # ameba:disable Naming/AccessorMethodName
-    def get_number_of_glyphs : Int32
+    def number_of_glyphs : Int32
       @number_of_glyphs_value
     end
     # ameba:enable Naming/AccessorMethodName

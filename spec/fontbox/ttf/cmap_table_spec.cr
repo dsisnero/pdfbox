@@ -25,7 +25,7 @@ module Fontbox::TTF
   describe CmapTable do
     it "returns a Unicode subtable for known platform/encoding" do
       font = Fontbox::TTF.parse_test_font
-      cmap = font.get_table(CmapTable::TAG).as(CmapTable)
+      cmap = font.table(CmapTable::TAG).as(CmapTable)
 
       unicode_bmp = cmap.get_subtable(CmapTable::PLATFORM_WINDOWS, CmapTable::ENCODING_WIN_UNICODE_BMP)
       unicode_bmp.should_not be_nil
@@ -35,7 +35,7 @@ module Fontbox::TTF
 
     it "returns nil when no subtable exists for platform/encoding" do
       font = Fontbox::TTF.parse_test_font
-      cmap = font.get_table(CmapTable::TAG).as(CmapTable)
+      cmap = font.table(CmapTable::TAG).as(CmapTable)
 
       cmap.get_subtable(CmapTable::PLATFORM_MACINTOSH, 99).should be_nil
 
@@ -44,7 +44,7 @@ module Fontbox::TTF
 
     it "maps character codes to glyph ids and back" do
       font = Fontbox::TTF.parse_test_font
-      cmap = font.get_table(CmapTable::TAG).as(CmapTable)
+      cmap = font.table(CmapTable::TAG).as(CmapTable)
       unicode_bmp = cmap.get_subtable(CmapTable::PLATFORM_WINDOWS, CmapTable::ENCODING_WIN_UNICODE_BMP)
       unicode_bmp.should_not be_nil
       subtable = unicode_bmp || raise "expected Windows Unicode BMP cmap subtable"
@@ -72,7 +72,7 @@ module Fontbox::TTF
 
     it "returns 0 for unknown character code" do
       font = Fontbox::TTF.parse_test_font
-      cmap = font.get_table(CmapTable::TAG).as(CmapTable)
+      cmap = font.table(CmapTable::TAG).as(CmapTable)
       unicode_bmp = cmap.get_subtable(CmapTable::PLATFORM_WINDOWS, CmapTable::ENCODING_WIN_UNICODE_BMP)
       unicode_bmp.should_not be_nil
 

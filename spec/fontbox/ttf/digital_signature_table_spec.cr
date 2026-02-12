@@ -12,7 +12,7 @@ module Fontbox::TTF
       table = DigitalSignatureTable.new
       table.read(StubTrueTypeFontForDSIG.new, RandomAccessReadDataStream.new(Pdfbox::IO::RandomAccessReadBuffer.new(Bytes.empty)))
 
-      table.get_initialized.should be_true
+      table.initialized.should be_true
     end
   end
 end

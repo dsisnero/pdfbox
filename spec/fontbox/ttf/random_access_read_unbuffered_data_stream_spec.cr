@@ -15,14 +15,14 @@ module Fontbox::TTF
       view.read.should eq('4'.ord.to_u8)
       view.read.should be_nil
 
-      data_stream.get_current_position.should eq(2)
+      data_stream.current_position.should eq(2)
       data_stream.close
     end
 
-    it "test_get_original_data" do
+    it "test_original_data" do
       random_access_read = Pdfbox::IO::RandomAccessReadBuffer.new("0123456789".to_slice)
       data_stream = RandomAccessReadUnbufferedDataStream.new(random_access_read)
-      original = data_stream.get_original_data
+      original = data_stream.original_data
 
       original.gets_to_end.should eq("0123456789")
       data_stream.close

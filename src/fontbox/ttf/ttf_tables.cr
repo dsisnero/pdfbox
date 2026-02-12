@@ -73,7 +73,7 @@ module Fontbox::TTF
     # This will read required headers from the stream into out_headers.
     def read_headers(ttf : TrueTypeFont, data : TTFDataStream, out_headers : FontHeaders) : Nil
       # 44 == 4 + 4 + 4 + 4 + 2 + 2 + 2*8 + 4*2, see read()
-      data.seek(data.get_current_position + 44)
+      data.seek(data.current_position + 44)
       @mac_style = data.read_unsigned_short.to_u16
       out_headers.set_header_mac_style(@mac_style.to_i32)
     end
@@ -114,7 +114,7 @@ module Fontbox::TTF
     end
 
     # Gets the index to location format.
-    def get_index_to_loc_format : Int16
+    def index_to_loc_format : Int16
       @index_to_loc_format
     end
 
@@ -134,7 +134,7 @@ module Fontbox::TTF
     end
 
     # Gets the units per em.
-    def get_units_per_em : UInt16
+    def units_per_em : UInt16
       @units_per_em
     end
 
@@ -267,7 +267,7 @@ module Fontbox::TTF
     end
 
     # Gets the number of horizontal metrics.
-    def get_number_of_h_metrics : UInt16
+    def number_of_h_metrics : UInt16
       @number_of_h_metrics
     end
   end
@@ -318,7 +318,7 @@ module Fontbox::TTF
     end
 
     # Gets the number of glyphs.
-    def get_num_glyphs : UInt16
+    def num_glyphs : UInt16
       @num_glyphs
     end
 
@@ -423,7 +423,7 @@ module Fontbox::TTF
       @min_mem_type1 = data.read_unsigned_int
       @max_mem_type1 = data.read_unsigned_int
 
-      if data.get_current_position == data.get_original_data_size
+      if data.current_position == data.original_data_size
         # TODO: Log warning - No PostScript name data is provided for the font
         # LOG.warn("No PostScript name data is provided for the font #{ttf.get_name}")
       elsif @format_type == 1.0_f32
@@ -475,7 +475,7 @@ module Fontbox::TTF
           end
         end
       elsif @format_type == 2.5_f32
-        num_glyphs = ttf.get_number_of_glyphs
+        num_glyphs = ttf.number_of_glyphs
         if num_glyphs <= 0
           # TODO: Log error - invalid number of glyphs
         else
@@ -1065,7 +1065,7 @@ module Fontbox::TTF
         id_range_offset = data.read_unsigned_short.to_i32 - (max_sub_header_index + 1 - i - 1) * 8 - 2
         sub_headers << SubHeader.new(first_code, entry_count, id_delta, id_range_offset)
       end
-      start_glyph_index_offset = data.get_current_position
+      start_glyph_index_offset = data.current_position
       @glyph_id_to_character_code = new_glyph_id_to_character_code(num_glyphs)
       @character_code_to_glyph_id = Hash(Int32, Int32).new
       if num_glyphs == 0
@@ -1128,7 +1128,7 @@ module Fontbox::TTF
       reserved_pad = data.read_unsigned_short.to_i32
       start_count = data.read_unsigned_short_array(seg_count)
       id_delta = data.read_unsigned_short_array(seg_count)
-      id_range_offset_position = data.get_current_position
+      id_range_offset_position = data.current_position
       id_range_offset = data.read_unsigned_short_array(seg_count)
 
       @character_code_to_glyph_id = Hash(Int32, Int32).new
@@ -1425,7 +1425,7 @@ module Fontbox::TTF
         cmap.init_data(data)
         @cmaps << cmap
       end
-      number_of_glyphs = ttf.get_number_of_glyphs
+      number_of_glyphs = ttf.number_of_glyphs
       number_of_tables.times do |i|
         @cmaps[i].init_subtable(self, number_of_glyphs, data)
       end
@@ -1476,11 +1476,11 @@ module Fontbox::TTF
 
     # This will read the required data from the stream.
     def read(ttf : TrueTypeFont, data : TTFDataStream) : Nil
-      @loca = ttf.get_index_to_location
+      @loca = ttf.index_to_location
       if @loca.nil?
         raise IO::EOFError.new("Could not get loca table")
       end
-      @num_glyphs = ttf.get_number_of_glyphs
+      @num_glyphs = ttf.number_of_glyphs
 
       if @num_glyphs < MAX_CACHE_SIZE
         # don't cache huge fonts to save memory
@@ -1493,8 +1493,8 @@ module Fontbox::TTF
       @data_stream = RandomAccessReadDataStream.new(read)
 
       # Read hmtx and maxp references early like Java to avoid future lock-order issues.
-      @hmt = ttf.get_horizontal_metrics
-      @maxp = ttf.get_maximum_profile
+      @hmt = ttf.horizontal_metrics
+      @maxp = ttf.maximum_profile
 
       @initialized = true
     end
@@ -1522,12 +1522,12 @@ module Fontbox::TTF
         glyph : GlyphData
         data_stream = @data_stream.not_nil!
 
-        if offsets[gid] == offsets[gid + 1] || offsets[gid] == data_stream.get_original_data_size
+        if offsets[gid] == offsets[gid + 1] || offsets[gid] == data_stream.original_data_size
           # No outline. Return an empty glyph, not nil; composite glyphs may reference it.
           glyph = GlyphData.new
           glyph.init_empty_data
         else
-          current_position = data_stream.get_current_position
+          current_position = data_stream.current_position
           begin
             data_stream.seek(offsets[gid])
             glyph = get_glyph_data(gid, level)
@@ -2150,12 +2150,12 @@ module Fontbox::TTF
 
     # This will read the required data from the stream.
     def read(ttf : TrueTypeFont, data : TTFDataStream) : Nil
-      h_header = ttf.get_horizontal_header
+      h_header = ttf.horizontal_header
       if h_header.nil?
         raise IO::EOFError.new("Could not get hmtx table")
       end
-      @num_h_metrics = h_header.get_number_of_h_metrics.to_i32
-      num_glyphs = ttf.get_number_of_glyphs
+      @num_h_metrics = h_header.number_of_h_metrics.to_i32
+      num_glyphs = ttf.number_of_glyphs
 
       bytes_read = 0
       @advance_width = Array.new(@num_h_metrics, 0)
@@ -2250,19 +2250,19 @@ module Fontbox::TTF
 
     # This will read the required data from the stream.
     def read(ttf : TrueTypeFont, data : TTFDataStream) : Nil
-      head = ttf.get_header
+      head = ttf.header
       if head.nil?
         raise IO::EOFError.new("Could not get head table")
       end
-      num_glyphs = ttf.get_number_of_glyphs
+      num_glyphs = ttf.number_of_glyphs
       @offsets = Array(Int64).new(num_glyphs + 1)
       (num_glyphs + 1).times do |_|
-        if head.get_index_to_loc_format == SHORT_OFFSETS
+        if head.index_to_loc_format == SHORT_OFFSETS
           @offsets << data.read_unsigned_short.to_i64 * 2
-        elsif head.get_index_to_loc_format == LONG_OFFSETS
+        elsif head.index_to_loc_format == LONG_OFFSETS
           @offsets << data.read_unsigned_int.to_i64
         else
-          raise IO::EOFError.new("Error:TTF.loca unknown offset format: #{head.get_index_to_loc_format}")
+          raise IO::EOFError.new("Error:TTF.loca unknown offset format: #{head.index_to_loc_format}")
         end
       end
       if num_glyphs == 1 && @offsets[0] == 0 && @offsets[1] == 0
@@ -2604,7 +2604,7 @@ module Fontbox::TTF
       @metric_data_format
     end
 
-    def get_number_of_v_metrics : UInt16
+    def number_of_v_metrics : UInt16
       @number_of_v_metrics
     end
   end
@@ -2623,12 +2623,12 @@ module Fontbox::TTF
 
     # This will read the required data from the stream.
     def read(ttf : TrueTypeFont, data : TTFDataStream) : Nil
-      v_header = ttf.get_vertical_header
+      v_header = ttf.vertical_header
       if v_header.nil?
         raise IO::EOFError.new("Could not get vhea table")
       end
-      @num_v_metrics = v_header.get_number_of_v_metrics.to_i32
-      num_glyphs = ttf.get_number_of_glyphs
+      @num_v_metrics = v_header.number_of_v_metrics.to_i32
+      num_glyphs = ttf.number_of_glyphs
 
       bytes_read = 0
       @advance_height = Array.new(@num_v_metrics, 0)
@@ -3196,7 +3196,7 @@ module Fontbox::TTF
 
     # This will read the required data from the stream.
     def read(ttf : TrueTypeFont, data : TTFDataStream) : Nil
-      start = data.get_current_position
+      start = data.current_position
       major_version = data.read_unsigned_short.to_i32
       minor_version = data.read_unsigned_short.to_i32
       script_list_offset = data.read_unsigned_short.to_i32
@@ -3263,8 +3263,8 @@ module Fontbox::TTF
       script_count.times do |i|
         script_tags << data.read_string(4)
         script_offsets << data.read_unsigned_short.to_i32
-        if script_offsets[i] < data.get_current_position - offset
-          Log.error { "scriptOffsets[#{i}]: #{script_offsets[i]} implausible: data.get_current_position - offset = #{data.get_current_position - offset}" }
+        if script_offsets[i] < data.current_position - offset
+          Log.error { "scriptOffsets[#{i}]: #{script_offsets[i]} implausible: data.current_position - offset = #{data.current_position - offset}" }
           return result
         end
       end
@@ -3288,8 +3288,8 @@ module Fontbox::TTF
       lang_sys_count.times do |i|
         lang_sys_tags << data.read_string(4)
         lang_sys_offsets << data.read_unsigned_short.to_i32
-        if lang_sys_offsets[i] < data.get_current_position - offset
-          Log.error { "langSysOffsets[#{i}]: #{lang_sys_offsets[i]} implausible: data.get_current_position - offset = #{data.get_current_position - offset}" }
+        if lang_sys_offsets[i] < data.current_position - offset
+          Log.error { "langSysOffsets[#{i}]: #{lang_sys_offsets[i]} implausible: data.current_position - offset = #{data.current_position - offset}" }
           return ScriptTable.new(nil, Hash(String, LangSysTable).new)
         end
         if i > 0 && lang_sys_tags[i] < lang_sys_tags[i - 1]
@@ -3366,9 +3366,9 @@ module Fontbox::TTF
       lookup_count.times do |i|
         lookups << data.read_unsigned_short.to_i32
         if lookups[i] == 0
-          Log.error { "lookups[#{i}] is 0 at offset #{data.get_current_position - 2}" }
-        elsif offset + lookups[i] > data.get_original_data_size
-          Log.error { "#{offset + lookups[i]} > #{data.get_original_data_size}" }
+          Log.error { "lookups[#{i}] is 0 at offset #{data.current_position - 2}" }
+        elsif offset + lookups[i] > data.original_data_size
+          Log.error { "#{offset + lookups[i]} > #{data.original_data_size}" }
         end
       end
       lookup_tables = Array(LookupTable).new(lookup_count)
@@ -3393,10 +3393,10 @@ module Fontbox::TTF
       sub_table_count.times do |i|
         sub_table_offsets << data.read_unsigned_short.to_i32
         if sub_table_offsets[i] == 0
-          Log.error { "subTableOffsets[#{i}] is 0 at offset #{data.get_current_position - 2}" }
+          Log.error { "subTableOffsets[#{i}] is 0 at offset #{data.current_position - 2}" }
           return LookupTable.new(lookup_type, lookup_flag, 0, [] of LookupSubTable)
-        elsif offset + sub_table_offsets[i] > data.get_original_data_size
-          Log.error { "#{offset + sub_table_offsets[i]} > #{data.get_original_data_size}" }
+        elsif offset + sub_table_offsets[i] > data.original_data_size
+          Log.error { "#{offset + sub_table_offsets[i]} > #{data.original_data_size}" }
           return LookupTable.new(lookup_type, lookup_flag, 0, [] of LookupSubTable)
         end
       end

@@ -73,7 +73,7 @@ module Fontbox::TTF
       view.read.should eq('5'.ord.to_u8)
       view.read.should eq('6'.ord.to_u8)
       view.read.should be_nil
-      data_stream.get_current_position.should eq(3)
+      data_stream.current_position.should eq(3)
 
       sub_view.try(&.close)
       data_stream.close
@@ -103,31 +103,31 @@ module Fontbox::TTF
 
       count = 4
       bytes_read = data_stream.read(read_buffer, 0, count)
-      data_stream.get_current_position.should eq 4
+      data_stream.current_position.should eq 4
       bytes_read.should eq count
       String.new(read_buffer[0, count]).should eq "0123"
 
       count = 6
       bytes_read = data_stream.read(read_buffer, 0, count)
-      data_stream.get_current_position.should eq 10
+      data_stream.current_position.should eq 10
       bytes_read.should eq count
       String.new(read_buffer[0, count]).should eq "45678A"
 
       count = 10
       bytes_read = data_stream.read(read_buffer, 0, count)
-      data_stream.get_current_position.should eq 20
+      data_stream.current_position.should eq 20
       bytes_read.should eq count
       String.new(read_buffer[0, count]).should eq "012345678B"
 
       count = 10
       bytes_read = data_stream.read(read_buffer, 0, count)
-      data_stream.get_current_position.should eq 30
+      data_stream.current_position.should eq 30
       bytes_read.should eq count
       String.new(read_buffer[0, count]).should eq "012345678C"
 
       count = 10
       bytes_read = data_stream.read(read_buffer, 0, count)
-      data_stream.get_current_position.should eq 40
+      data_stream.current_position.should eq 40
       bytes_read.should eq count
       String.new(read_buffer[0, count]).should eq "012345678D"
 
@@ -135,16 +135,16 @@ module Fontbox::TTF
 
       data_stream.seek(0)
       data_stream.read(read_buffer, 0, 7)
-      data_stream.get_current_position.should eq 7
+      data_stream.current_position.should eq 7
 
       count = 16
       bytes_read = data_stream.read(read_buffer, 0, count)
-      data_stream.get_current_position.should eq 23
+      data_stream.current_position.should eq 23
       bytes_read.should eq count
       String.new(read_buffer[0, count]).should eq "78A012345678B012"
 
       bytes_read = data_stream.read(read_buffer, 0, 99)
-      data_stream.get_current_position.should eq 40
+      data_stream.current_position.should eq 40
       bytes_read.should eq 17
       String.new(read_buffer[0, 17]).should eq "345678C012345678D"
 
@@ -152,20 +152,20 @@ module Fontbox::TTF
 
       data_stream.seek(0)
       data_stream.read(read_buffer, 0, 7)
-      data_stream.get_current_position.should eq 7
+      data_stream.current_position.should eq 7
 
       count = 23
       bytes_read = data_stream.read(read_buffer, 0, count)
-      data_stream.get_current_position.should eq 30
+      data_stream.current_position.should eq 30
       bytes_read.should eq count
       String.new(read_buffer[0, count]).should eq "78A012345678B012345678C"
 
       data_stream.seek(0)
       data_stream.read(read_buffer, 0, 10)
-      data_stream.get_current_position.should eq 10
+      data_stream.current_position.should eq 10
       count = 23
       bytes_read = data_stream.read(read_buffer, 0, count)
-      data_stream.get_current_position.should eq 33
+      data_stream.current_position.should eq 33
       bytes_read.should eq count
       String.new(read_buffer[0, count]).should eq "012345678B012345678C012"
 

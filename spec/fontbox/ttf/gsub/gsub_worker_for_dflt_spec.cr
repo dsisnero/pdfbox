@@ -23,16 +23,16 @@ module Fontbox::TTF::Gsub
   describe GsubWorkerForDflt do
     it "testCorrectWorkerType" do
       with_dflt_font do |font|
-        cmap_lookup = font.get_unicode_cmap_lookup
-        gsub_worker = GsubWorkerFactory.new.get_gsub_worker(cmap_lookup, font.get_gsub_data)
+        cmap_lookup = font.unicode_cmap_lookup
+        gsub_worker = GsubWorkerFactory.new.get_gsub_worker(cmap_lookup, font.gsub_data)
         gsub_worker.should be_a(GsubWorkerForDflt)
       end
     end
 
     it "testApplyTransforms_code" do
       with_dflt_font do |font|
-        cmap_lookup = font.get_unicode_cmap_lookup
-        gsub_worker = GsubWorkerFactory.new.get_gsub_worker(cmap_lookup, font.get_gsub_data)
+        cmap_lookup = font.unicode_cmap_lookup
+        gsub_worker = GsubWorkerFactory.new.get_gsub_worker(cmap_lookup, font.gsub_data)
         glyphs_after_gsub = [229, 293, 235, 237]
         result = gsub_worker.apply_transforms(get_dflt_glyph_ids(cmap_lookup, "code"))
         result.should eq(glyphs_after_gsub)
@@ -41,8 +41,8 @@ module Fontbox::TTF::Gsub
 
     it "testApplyTransforms_fi" do
       with_dflt_font do |font|
-        cmap_lookup = font.get_unicode_cmap_lookup
-        gsub_worker = GsubWorkerFactory.new.get_gsub_worker(cmap_lookup, font.get_gsub_data)
+        cmap_lookup = font.unicode_cmap_lookup
+        gsub_worker = GsubWorkerFactory.new.get_gsub_worker(cmap_lookup, font.gsub_data)
         glyphs_after_gsub = [407]
         result = gsub_worker.apply_transforms(get_dflt_glyph_ids(cmap_lookup, "fi"))
         result.should eq(glyphs_after_gsub)
@@ -51,8 +51,8 @@ module Fontbox::TTF::Gsub
 
     it "testApplyTransforms_office" do
       with_dflt_font do |font|
-        cmap_lookup = font.get_unicode_cmap_lookup
-        gsub_worker = GsubWorkerFactory.new.get_gsub_worker(cmap_lookup, font.get_gsub_data)
+        cmap_lookup = font.unicode_cmap_lookup
+        gsub_worker = GsubWorkerFactory.new.get_gsub_worker(cmap_lookup, font.gsub_data)
         glyphs_after_gsub = [293, 257, 407, 229, 237]
         result = gsub_worker.apply_transforms(get_dflt_glyph_ids(cmap_lookup, "office"))
         result.should eq(glyphs_after_gsub)
@@ -61,8 +61,8 @@ module Fontbox::TTF::Gsub
 
     it "testApplyTransforms_ffl" do
       with_dflt_font do |font|
-        cmap_lookup = font.get_unicode_cmap_lookup
-        gsub_worker = GsubWorkerFactory.new.get_gsub_worker(cmap_lookup, font.get_gsub_data)
+        cmap_lookup = font.unicode_cmap_lookup
+        gsub_worker = GsubWorkerFactory.new.get_gsub_worker(cmap_lookup, font.gsub_data)
         glyphs_after_gsub = [257, 408]
         result = gsub_worker.apply_transforms(get_dflt_glyph_ids(cmap_lookup, "ffl"))
         result.should eq(glyphs_after_gsub)
@@ -71,8 +71,8 @@ module Fontbox::TTF::Gsub
 
     it "testApplyTransforms_immutableResult" do
       with_dflt_font do |font|
-        cmap_lookup = font.get_unicode_cmap_lookup
-        gsub_worker = GsubWorkerFactory.new.get_gsub_worker(cmap_lookup, font.get_gsub_data)
+        cmap_lookup = font.unicode_cmap_lookup
+        gsub_worker = GsubWorkerFactory.new.get_gsub_worker(cmap_lookup, font.gsub_data)
         result = gsub_worker.apply_transforms(get_dflt_glyph_ids(cmap_lookup, "abc"))
 
         result.should be_a(ImmutableArray(Int32))

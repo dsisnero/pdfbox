@@ -83,7 +83,7 @@ module Fontbox::TTF
       byte3 = read.to_i64
       byte4 = read.to_i64
       if byte4 < 0
-        raise IO::EOFError.new("EOF at #{get_current_position}, b1: #{byte1}, b2: #{byte2}, b3: #{byte3}, b4: #{byte4}")
+        raise IO::EOFError.new("EOF at #{current_position}, b1: #{byte1}, b2: #{byte2}, b3: #{byte3}, b4: #{byte4}")
       end
       ((byte1 << 24) + (byte2 << 16) + (byte3 << 8) + byte4).to_u64
     end
@@ -96,7 +96,7 @@ module Fontbox::TTF
       b1 = read
       b2 = read
       if (b1 | b2) < 0
-        raise IO::EOFError.new("EOF at #{get_current_position}, b1: #{b1}, b2: #{b2}")
+        raise IO::EOFError.new("EOF at #{current_position}, b1: #{b1}, b2: #{b2}")
       end
       ((b1 << 8) + b2).to_u32
     end
@@ -196,21 +196,18 @@ module Fontbox::TTF
     #
     # @return The current position in the stream.
     # @raise IO::Error If an error occurs while reading the stream.
-    # ameba:disable Naming/AccessorMethodName
-    abstract def get_current_position : Int64
+    abstract def current_position : Int64
 
     # This will get the original data file that was used for this stream.
     #
     # @return The data that was read from.
     # @raise IO::Error If there is an issue reading the data.
-    # ameba:disable Naming/AccessorMethodName
-    abstract def get_original_data : IO
+    abstract def original_data : IO
 
     # This will get the original data size that was used for this stream.
     #
     # @return The size of the original data.
-    # ameba:disable Naming/AccessorMethodName
-    abstract def get_original_data_size : Int64
+    abstract def original_data_size : Int64
 
     # Close the underlying resources.
     abstract def close : Nil

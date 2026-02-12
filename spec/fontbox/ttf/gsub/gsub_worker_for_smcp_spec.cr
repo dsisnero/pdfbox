@@ -82,8 +82,8 @@ module Fontbox::TTF::Gsub
       it "testCalibri" do
         font = TTFParser.new.parse(Pdfbox::IO::RandomAccessReadBufferedFile.new(calibri_path))
         begin
-          cmap_lookup = font.get_unicode_cmap_lookup
-          gsub_worker = GsubWorkerForSmcp.new(cmap_lookup, font.get_gsub_data)
+          cmap_lookup = font.unicode_cmap_lookup
+          gsub_worker = GsubWorkerForSmcp.new(cmap_lookup, font.gsub_data)
 
           # Values should be the same you get by looking at the GSUB lookup list 24 with a font tool
           # This one converts "ﬀ" (single-ff-ligature glyph) into "FF" small capitals

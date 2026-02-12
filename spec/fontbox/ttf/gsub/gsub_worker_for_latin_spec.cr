@@ -27,8 +27,8 @@ module Fontbox::TTF::Gsub
       it "testApplyLigaturesCalibri" do
         font = TTFParser.new.parse(Pdfbox::IO::RandomAccessReadBufferedFile.new(calibri_path))
         begin
-          cmap_lookup = font.get_unicode_cmap_lookup
-          gsub_worker = GsubWorkerFactory.new.get_gsub_worker(cmap_lookup, font.get_gsub_data)
+          cmap_lookup = font.unicode_cmap_lookup
+          gsub_worker = GsubWorkerFactory.new.get_gsub_worker(cmap_lookup, font.gsub_data)
 
           gsub_worker.apply_transforms(get_latin_glyph_ids(cmap_lookup, "effective")).should eq([286, 299, 286, 272, 415, 448, 286])
           gsub_worker.apply_transforms(get_latin_glyph_ids(cmap_lookup, "attitude")).should eq([258, 427, 410, 437, 282, 286])
@@ -49,8 +49,8 @@ module Fontbox::TTF::Gsub
 
     it "testApplyLigaturesFoglihtenNo07" do
       with_foglihten_font_latin do |font|
-        cmap_lookup = font.get_unicode_cmap_lookup
-        gsub_worker = GsubWorkerFactory.new.get_gsub_worker(cmap_lookup, font.get_gsub_data)
+        cmap_lookup = font.unicode_cmap_lookup
+        gsub_worker = GsubWorkerFactory.new.get_gsub_worker(cmap_lookup, font.gsub_data)
 
         gsub_worker.apply_transforms(get_latin_glyph_ids(cmap_lookup, "affine")).should eq([66, 1590, 645, 70])
         gsub_worker.apply_transforms(get_latin_glyph_ids(cmap_lookup, "attitude")).should eq([538, 633, 85, 86, 69, 70])

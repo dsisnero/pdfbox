@@ -31,7 +31,7 @@ module Fontbox::TTF
       @random_access_read = random_access_read
     end
 
-    def get_current_position : Int64
+    def current_position : Int64
       @random_access_read.position
     end
 
@@ -66,17 +66,17 @@ module Fontbox::TTF
     end
 
     # Lifetime of returned IO is bound by `this` lifetime, it won't close underlying `RandomAccessRead`.
-    def get_original_data : IO
+    def original_data : IO
       view = @random_access_read.create_view(0, @length)
       IO::Memory.new(view.read_all)
     end
 
-    def get_original_data_size : Int64
+    def original_data_size : Int64
       @length
     end
 
     def create_sub_view(length : Int64) : Pdfbox::IO::RandomAccessRead?
-      @random_access_read.create_view(get_current_position, length)
+      @random_access_read.create_view(current_position, length)
     end
   end
 end

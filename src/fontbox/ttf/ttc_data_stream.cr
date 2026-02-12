@@ -45,16 +45,16 @@ module Fontbox::TTF
       @stream.read(b, off, len)
     end
 
-    def get_current_position : Int64
-      @stream.get_current_position
+    def current_position : Int64
+      @stream.current_position
     end
 
-    def get_original_data : IO
-      @stream.get_original_data
+    def original_data : IO
+      @stream.original_data
     end
 
-    def get_original_data_size : Int64
-      @stream.get_original_data_size
+    def original_data_size : Int64
+      @stream.original_data_size
     end
 
     def create_sub_view(length : Int64) : Pdfbox::IO::RandomAccessRead?

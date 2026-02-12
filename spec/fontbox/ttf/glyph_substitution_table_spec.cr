@@ -10,7 +10,7 @@ module Fontbox::TTF
       it "getGsubData() with no args yields latn" do
         font = TTFParser.new.parse(Pdfbox::IO::RandomAccessReadBufferedFile.new(liberation_sans_ttf))
         begin
-          gsub_data = font.get_gsub_data
+          gsub_data = font.gsub_data
           gsub_data.get_active_script_name.should eq("latn")
         ensure
           font.close
@@ -20,7 +20,7 @@ module Fontbox::TTF
       it "getGsubData() for an unsupported script yields nil" do
         font = TTFParser.new.parse(Pdfbox::IO::RandomAccessReadBufferedFile.new(liberation_sans_ttf))
         begin
-          gsub_table = font.get_table(GlyphSubstitutionTable::TAG).as(GlyphSubstitutionTable)
+          gsub_table = font.table(GlyphSubstitutionTable::TAG).as(GlyphSubstitutionTable)
           gsub_data = gsub_table.get_gsub_data("<some_non_existent_script_tag>")
           gsub_data.should be_nil
         ensure
@@ -31,7 +31,7 @@ module Fontbox::TTF
       it "getGsubData() for 'cyrl' tag yields GSUB features of Cyrillic script" do
         font = TTFParser.new.parse(Pdfbox::IO::RandomAccessReadBufferedFile.new(liberation_sans_ttf))
         begin
-          gsub_table = font.get_table(GlyphSubstitutionTable::TAG).as(GlyphSubstitutionTable)
+          gsub_table = font.table(GlyphSubstitutionTable::TAG).as(GlyphSubstitutionTable)
           cyrillic_script_tag = "cyrl"
           expected_features = ["subs", "sups"]
 
@@ -48,7 +48,7 @@ module Fontbox::TTF
       it "All the script tags are loaded from GSUB as is" do
         font = TTFParser.new.parse(Pdfbox::IO::RandomAccessReadBufferedFile.new(liberation_sans_ttf))
         begin
-          gsub_table = font.get_table(GlyphSubstitutionTable::TAG).as(GlyphSubstitutionTable)
+          gsub_table = font.table(GlyphSubstitutionTable::TAG).as(GlyphSubstitutionTable)
           expected_set = Set.new(["DFLT", "bopo", "copt", "cyrl", "grek", "hebr", "latn"])
 
           supported_script_tags = gsub_table.get_supported_script_tags
@@ -63,7 +63,7 @@ module Fontbox::TTF
         it "GSUB data is loaded for script #{script_tag}" do
           font = TTFParser.new.parse(Pdfbox::IO::RandomAccessReadBufferedFile.new(liberation_sans_ttf))
           begin
-            gsub_table = font.get_table(GlyphSubstitutionTable::TAG).as(GlyphSubstitutionTable)
+            gsub_table = font.table(GlyphSubstitutionTable::TAG).as(GlyphSubstitutionTable)
             gsub_data = gsub_table.get_gsub_data(script_tag)
 
             gsub_data.should_not be_nil
@@ -81,10 +81,10 @@ module Fontbox::TTF
     it "parses GSUB script list and exposes script-specific gsub data" do
       font = TTFParser.new.parse(Pdfbox::IO::RandomAccessReadBufferedFile.new(liberation_sans_ttf))
       begin
-        gsub_table = font.get_table(GlyphSubstitutionTable::TAG)
+        gsub_table = font.table(GlyphSubstitutionTable::TAG)
         gsub_table.should_not be_nil
         gsub = gsub_table.as(GlyphSubstitutionTable)
-        gsub.get_initialized.should be_true
+        gsub.initialized.should be_true
 
         supported_script_tags = gsub.get_supported_script_tags
         supported_script_tags.includes?("latn").should be_true

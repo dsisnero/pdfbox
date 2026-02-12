@@ -76,7 +76,7 @@ module Fontbox::TTF
     #
     # @return true if the table is initialized
     # ameba:disable Naming/AccessorMethodName
-    def get_initialized : Bool
+    def initialized : Bool
       @initialized
     end
 

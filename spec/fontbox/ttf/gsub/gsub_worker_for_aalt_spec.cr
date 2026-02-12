@@ -87,8 +87,8 @@ module Fontbox::TTF::Gsub
   describe GsubWorkerForAalt do
     it "testApplyLigaturesFoglihtenNo07" do
       with_aalt_font do |font|
-        cmap_lookup = font.get_unicode_cmap_lookup
-        gsub_worker = GsubWorkerForAalt.new(font.get_gsub_data)
+        cmap_lookup = font.unicode_cmap_lookup
+        gsub_worker = GsubWorkerForAalt.new(font.gsub_data)
 
         # Values should be the same you get by looking at the GSUB lookup lists 12 or 13 with
         # a font tool

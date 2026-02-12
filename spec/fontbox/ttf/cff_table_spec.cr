@@ -15,7 +15,7 @@ module Fontbox::TTF
 
       table.read(StubTrueTypeFontForCFF.new, RandomAccessReadDataStream.new(Pdfbox::IO::RandomAccessReadBuffer.new(bytes)))
 
-      table.get_initialized.should be_true
+      table.initialized.should be_true
       table.get_font.should_not be_nil
       font = table.get_font || raise "expected parsed CFF font"
       font.name.should eq("SourceSansPro-Bold")

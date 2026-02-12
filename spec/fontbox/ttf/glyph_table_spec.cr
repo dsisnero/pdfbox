@@ -6,9 +6,9 @@ module Fontbox::TTF
       font_path = File.join("apache_pdfbox", "fontbox", "src", "test", "resources", "ttf", "LiberationSans-Regular.ttf")
       font = TTFParser.new.parse(Pdfbox::IO::RandomAccessReadBufferedFile.new(font_path))
 
-      glyph_table = font.get_table(GlyphTable::TAG)
+      glyph_table = font.table(GlyphTable::TAG)
       glyph_table.should_not be_nil
-      glyph_table.as(TTFTable).get_initialized.should be_true
+      glyph_table.as(TTFTable).initialized.should be_true
 
       font.close
     end
@@ -17,7 +17,7 @@ module Fontbox::TTF
       font_path = File.join("apache_pdfbox", "fontbox", "src", "test", "resources", "ttf", "LiberationSans-Regular.ttf")
       font = TTFParser.new.parse(Pdfbox::IO::RandomAccessReadBufferedFile.new(font_path))
 
-      glyph_table = font.get_glyph
+      glyph_table = font.glyph
       glyph_table.should_not be_nil
       glyph = glyph_table.as(GlyphTable).get_glyph(131)
       glyph.should_not be_nil
@@ -37,9 +37,9 @@ module Fontbox::TTF
     it "returns an empty glyph when loca reports no outline data" do
       font_path = File.join("apache_pdfbox", "fontbox", "src", "test", "resources", "ttf", "LiberationSans-Regular.ttf")
       font = TTFParser.new.parse(Pdfbox::IO::RandomAccessReadBufferedFile.new(font_path))
-      glyph_table = font.get_glyph
+      glyph_table = font.glyph
       glyph_table.should_not be_nil
-      index_to_location = font.get_index_to_location
+      index_to_location = font.index_to_location
       index_to_location.should_not be_nil
       offsets = index_to_location.as(IndexToLocationTable).get_offsets
 

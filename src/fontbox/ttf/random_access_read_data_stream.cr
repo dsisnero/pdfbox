@@ -54,8 +54,7 @@ module Fontbox::TTF
 
     # Get the current position in the stream.
     # @return The current position in the stream.
-    # ameba:disable Naming/AccessorMethodName
-    def get_current_position : Int64
+    def current_position : Int64
       @current_position.to_i64
     end
 
@@ -137,16 +136,14 @@ module Fontbox::TTF
     # This will get the original data file that was used for this stream.
     #
     # @return The data that was read from.
-    # ameba:disable Naming/AccessorMethodName
-    def get_original_data : IO
+    def original_data : IO
       IO::Memory.new(@data)
     end
 
     # This will get the original data size that was used for this stream.
     #
     # @return The size of the original data.
-    # ameba:disable Naming/AccessorMethodName
-    def get_original_data_size : Int64
+    def original_data_size : Int64
       @length
     end
   end

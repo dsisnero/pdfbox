@@ -61,12 +61,12 @@ module Fontbox::TTF
     end
 
     # Gets the original data size.
-    def get_original_data_size : Int64
-      @data.get_original_data_size
+    def original_data_size : Int64
+      @data.original_data_size
     end
 
     # Gets a table by tag.
-    def get_table(tag : String) : TTFTable?
+    def table(tag : String) : TTFTable?
       @tables[tag]?
     end
 
@@ -76,118 +76,118 @@ module Fontbox::TTF
     end
 
     # Gets all tables.
-    def get_tables : Array(TTFTable)
+    def tables : Array(TTFTable)
       @tables.values.to_a
     end
 
     # Gets the header table.
-    def get_header : HeaderTable?
-      table = get_table(HeaderTable::TAG).as?(HeaderTable)
-      if table && !table.get_initialized
+    def header : HeaderTable?
+      table = table(HeaderTable::TAG).as?(HeaderTable)
+      if table && !table.initialized
         read_table(table)
       end
       table
     end
 
     # Gets the horizontal header table.
-    def get_horizontal_header : HorizontalHeaderTable?
-      table = get_table(HorizontalHeaderTable::TAG).as?(HorizontalHeaderTable)
-      if table && !table.get_initialized
+    def horizontal_header : HorizontalHeaderTable?
+      table = table(HorizontalHeaderTable::TAG).as?(HorizontalHeaderTable)
+      if table && !table.initialized
         read_table(table)
       end
       table
     end
 
     # Gets the maximum profile table.
-    def get_maximum_profile : MaximumProfileTable?
-      table = get_table(MaximumProfileTable::TAG).as?(MaximumProfileTable)
-      if table && !table.get_initialized
+    def maximum_profile : MaximumProfileTable?
+      table = table(MaximumProfileTable::TAG).as?(MaximumProfileTable)
+      if table && !table.initialized
         read_table(table)
       end
       table
     end
 
     # Gets the postscript table.
-    def get_postscript : PostScriptTable?
-      get_table(PostScriptTable::TAG).as?(PostScriptTable)
+    def postscript : PostScriptTable?
+      table(PostScriptTable::TAG).as?(PostScriptTable)
     end
 
     # Gets the vertical header table.
-    def get_vertical_header : VerticalHeaderTable?
-      get_table(VerticalHeaderTable::TAG).as?(VerticalHeaderTable)
+    def vertical_header : VerticalHeaderTable?
+      table(VerticalHeaderTable::TAG).as?(VerticalHeaderTable)
     end
 
     # Gets the vertical metrics table.
-    def get_vertical_metrics : VerticalMetricsTable?
-      get_table(VerticalMetricsTable::TAG).as?(VerticalMetricsTable)
+    def vertical_metrics : VerticalMetricsTable?
+      table(VerticalMetricsTable::TAG).as?(VerticalMetricsTable)
     end
 
     # Gets the vertical origin table.
-    def get_vertical_origin : VerticalOriginTable?
-      get_table(VerticalOriginTable::TAG).as?(VerticalOriginTable)
+    def vertical_origin : VerticalOriginTable?
+      table(VerticalOriginTable::TAG).as?(VerticalOriginTable)
     end
 
     # Gets the horizontal metrics table.
-    def get_horizontal_metrics : HorizontalMetricsTable?
-      table = get_table(HorizontalMetricsTable::TAG).as?(HorizontalMetricsTable)
-      if table && !table.get_initialized
+    def horizontal_metrics : HorizontalMetricsTable?
+      table = table(HorizontalMetricsTable::TAG).as?(HorizontalMetricsTable)
+      if table && !table.initialized
         read_table(table)
       end
       table
     end
 
     # Gets the index-to-location table.
-    def get_index_to_location : IndexToLocationTable?
-      table = get_table(IndexToLocationTable::TAG).as?(IndexToLocationTable)
-      if table && !table.get_initialized
+    def index_to_location : IndexToLocationTable?
+      table = table(IndexToLocationTable::TAG).as?(IndexToLocationTable)
+      if table && !table.initialized
         read_table(table)
       end
       table
     end
 
     # Gets the glyph table.
-    def get_glyph : GlyphTable?
-      table = get_table(GlyphTable::TAG).as?(GlyphTable)
-      if table && !table.get_initialized
+    def glyph : GlyphTable?
+      table = table(GlyphTable::TAG).as?(GlyphTable)
+      if table && !table.initialized
         read_table(table)
       end
       table
     end
 
     # Gets the naming table.
-    def get_naming : NamingTable?
-      get_table(NamingTable::TAG).as?(NamingTable)
+    def naming : NamingTable?
+      table(NamingTable::TAG).as?(NamingTable)
     end
 
     # Gets the OS/2 Windows metrics table.
-    def get_os2_windows : OS2WindowsMetricsTable?
-      get_table(OS2WindowsMetricsTable::TAG).as?(OS2WindowsMetricsTable)
+    def os2_windows : OS2WindowsMetricsTable?
+      table(OS2WindowsMetricsTable::TAG).as?(OS2WindowsMetricsTable)
     end
 
     # Gets the number of glyphs.
-    def get_number_of_glyphs : Int32
-      maxp = get_maximum_profile
+    def number_of_glyphs : Int32
+      maxp = maximum_profile
       if maxp.nil?
         -1
       else
-        maxp.get_num_glyphs.to_i32
+        maxp.num_glyphs.to_i32
       end
     end
 
     # Gets the units per em.
-    def get_units_per_em : Int32
-      header = get_header
-      if header.nil?
+    def units_per_em : Int32
+      header_table = header
+      if header_table.nil?
         -1
       else
-        header.get_units_per_em.to_i32
+        header_table.units_per_em.to_i32
       end
     end
 
     # Reads a table.
     def read_table(table : TTFTable) : Nil
-      return if table.get_initialized
-      original_position = @data.get_current_position
+      return if table.initialized
+      original_position = @data.current_position
       begin
         @data.seek(table.offset)
         table.read(self, @data)
@@ -198,9 +198,9 @@ module Fontbox::TTF
 
     # Reads table headers into the given FontHeaders object.
     def read_table_headers(tag : String, out_headers : FontHeaders) : Nil
-      table = get_table(tag)
+      table = table(tag)
       return if table.nil?
-      original_position = @data.get_current_position
+      original_position = @data.current_position
       begin
         @data.seek(table.offset)
         table.read_headers(self, @data, out_headers)
@@ -210,8 +210,8 @@ module Fontbox::TTF
     end
 
     # Reads up to n bytes from a table.
-    def get_table_n_bytes(table : TTFTable, n : Int32) : Bytes
-      original_position = @data.get_current_position
+    def table_n_bytes(table : TTFTable, n : Int32) : Bytes
+      original_position = @data.current_position
       begin
         @data.seek(table.offset)
         @data.read(n)
@@ -221,14 +221,14 @@ module Fontbox::TTF
     end
 
     # Gets the font name.
-    def get_name : String
+    def name : String
       # TODO: Implement name retrieval from naming table
       ""
     end
 
     # Gets the cmap table.
-    def get_cmap : CmapTable?
-      get_table(CmapTable::TAG).as?(CmapTable)
+    def cmap : CmapTable?
+      table(CmapTable::TAG).as?(CmapTable)
     end
 
     # Returns the best Unicode cmap from the font (the most general).
@@ -237,17 +237,17 @@ module Fontbox::TTF
     # @param is_strict False if we allow falling back to any cmap, even if it's not Unicode.
     # @return cmap to perform glyph substitution
     # @raise IO::Error if the font could not be read, or there is no Unicode cmap
-    def get_unicode_cmap_lookup(is_strict : Bool = true) : CmapLookup
-      cmap = get_unicode_cmap_impl(is_strict)
+    def unicode_cmap_lookup(is_strict : Bool = true) : CmapLookup
+      cmap = unicode_cmap_impl(is_strict)
       # TODO: If enabled GSUB features, return SubstitutingCmapLookup
       cmap
     end
 
-    private def get_unicode_cmap_impl(is_strict : Bool) : CmapSubtable
-      cmap_table = get_cmap
+    private def unicode_cmap_impl(is_strict : Bool) : CmapSubtable
+      cmap_table = cmap
       if cmap_table.nil?
         if is_strict
-          raise IO::Error.new("The TrueType font #{get_name} does not contain a 'cmap' table")
+          raise IO::Error.new("The TrueType font #{name} does not contain a 'cmap' table")
         else
           raise IO::Error.new("No cmap table found")
         end
@@ -292,17 +292,17 @@ module Fontbox::TTF
     end
 
     # Gets the GSUB table.
-    def get_gsub : GlyphSubstitutionTable?
-      get_table(GlyphSubstitutionTable::TAG).as?(GlyphSubstitutionTable)
+    def gsub : GlyphSubstitutionTable?
+      table(GlyphSubstitutionTable::TAG).as?(GlyphSubstitutionTable)
     end
 
     # Gets the GSUB data for the font.
-    def get_gsub_data : ::Fontbox::TTF::Model::GsubData
+    def gsub_data : ::Fontbox::TTF::Model::GsubData
       unless enable_gsub?
         return ::Fontbox::TTF::Model::GsubData::NO_DATA_FOUND
       end
 
-      table = get_gsub
+      table = gsub
       if table.nil?
         ::Fontbox::TTF::Model::GsubData::NO_DATA_FOUND
       else

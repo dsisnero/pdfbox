@@ -23,8 +23,8 @@ module Fontbox::TTF::Gsub
   describe "GsubWorkerForTamil" do
     it "testDummy" do
       with_tamil_font do |font|
-        cmap_lookup = font.get_unicode_cmap_lookup
-        gsub_worker = GsubWorkerFactory.new.get_gsub_worker(cmap_lookup, font.get_gsub_data)
+        cmap_lookup = font.unicode_cmap_lookup
+        gsub_worker = GsubWorkerFactory.new.get_gsub_worker(cmap_lookup, font.gsub_data)
 
         # Java test expects DefaultGsubWorker because Tamil worker is not fully implemented
         # (has TODO comment in Java source)

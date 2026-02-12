@@ -24,7 +24,7 @@ module Fontbox::TTF
     it "parses header created date in UTC" do
       font = TTFParser.new.parse(Pdfbox::IO::RandomAccessReadBufferedFile.new(Fontbox::TTF.test_font_path))
 
-      header = font.get_header
+      header = font.header
       header.should_not be_nil
       created = header ? header.get_created : raise "expected header table"
 
@@ -38,13 +38,13 @@ module Fontbox::TTF
       font_bytes = File.read(Fontbox::TTF.test_font_path).to_slice
       font = TTFParser.new.parse(Pdfbox::IO::RandomAccessReadBuffer.new(font_bytes))
 
-      cmap_table = font.get_table(CmapTable::TAG).as(CmapTable)
+      cmap_table = font.table(CmapTable::TAG).as(CmapTable)
       cmap_table.should_not be_nil
 
       subtable = cmap_table.get_subtable(NameRecord::PLATFORM_WINDOWS, NameRecord::ENCODING_WINDOWS_UNICODE_BMP)
       subtable.should_not be_nil
 
-      post = font.get_postscript
+      post = font.postscript
       post.should_not be_nil
       glyph_names = post ? post.get_glyph_names : nil
       glyph_names.should_not be_nil

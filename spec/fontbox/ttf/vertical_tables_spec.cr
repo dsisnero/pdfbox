@@ -61,15 +61,15 @@ module Fontbox::TTF
       table = VerticalHeaderTable.new
       table.read(StubTrueTypeFontForVerticalMetrics.new(0, nil), Fontbox::TTF.stream_for_vertical(data))
 
-      table.get_version.should eq(1.0_f32)
-      table.get_ascender.should eq(1000)
-      table.get_descender.should eq(-200)
-      table.get_line_gap.should eq(20)
-      table.get_advance_height_max.should eq(1200_u16)
-      table.get_min_top_side_bearing.should eq(10)
-      table.get_min_bottom_side_bearing.should eq(-15)
-      table.get_y_max_extent.should eq(800)
-      table.get_number_of_v_metrics.should eq(2_u16)
+      table.version.should eq(1.0_f32)
+      table.ascender.should eq(1000)
+      table.descender.should eq(-200)
+      table.line_gap.should eq(20)
+      table.advance_height_max.should eq(1200_u16)
+      table.min_top_side_bearing.should eq(10)
+      table.min_bottom_side_bearing.should eq(-15)
+      table.y_max_extent.should eq(800)
+      table.number_of_v_metrics.should eq(2_u16)
     end
   end
 
@@ -86,13 +86,13 @@ module Fontbox::TTF
       font = StubTrueTypeFontForVerticalMetrics.new(4, StubVerticalHeaderTable.new(2_u16))
       table.read(font, Fontbox::TTF.stream_for_vertical(data))
 
-      table.get_advance_height(0).should eq(500)
-      table.get_advance_height(1).should eq(600)
-      table.get_advance_height(3).should eq(600)
-      table.get_top_side_bearing(0).should eq(10)
-      table.get_top_side_bearing(1).should eq(-20)
-      table.get_top_side_bearing(2).should eq(30)
-      table.get_top_side_bearing(3).should eq(-40)
+      table.advance_height(0).should eq(500)
+      table.advance_height(1).should eq(600)
+      table.advance_height(3).should eq(600)
+      table.top_side_bearing(0).should eq(10)
+      table.top_side_bearing(1).should eq(-20)
+      table.top_side_bearing(2).should eq(30)
+      table.top_side_bearing(3).should eq(-40)
     end
 
     it "raises when vhea table is missing" do
@@ -118,10 +118,10 @@ module Fontbox::TTF
       table = VerticalOriginTable.new
       table.read(StubTrueTypeFontForVerticalMetrics.new(0, nil), Fontbox::TTF.stream_for_vertical(data))
 
-      table.get_version.should eq(1.0_f32)
-      table.get_origin_y(5).should eq(900)
-      table.get_origin_y(7).should eq(850)
-      table.get_origin_y(6).should eq(880)
+      table.version.should eq(1.0_f32)
+      table.origin_y(5).should eq(900)
+      table.origin_y(7).should eq(850)
+      table.origin_y(6).should eq(880)
     end
   end
 end
