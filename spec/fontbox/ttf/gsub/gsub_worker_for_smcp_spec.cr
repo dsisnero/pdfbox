@@ -1,9 +1,11 @@
-# GSUB worker to test "smcp" (small caps), code is copied from the latin worker except for the features.
-#
-# Ported from Apache PDFBox GsubWorkerForSmcp.
-# @author Palash Ray
-# @author Tilman Hausherr
+require "../../../spec_helper"
+
 module Fontbox::TTF::Gsub
+  # GSUB worker to test "smcp" (small caps), code is copied from the latin worker except for the features.
+  #
+  # Ported from Apache PDFBox GsubWorkerForSmcp.
+  # @author Palash Ray
+  # @author Tilman Hausherr
   class GsubWorkerForSmcp < GsubWorker
     Log = ::Log.for(self)
 
@@ -18,7 +20,7 @@ module Fontbox::TTF::Gsub
     end
 
     def apply_transforms(original_glyph_ids : Array(Int32)) : Array(Int32)
-      intermediate_glyphs_from_gsub = original_glyph_ids
+      intermediate_glyph_ids = original_glyph_ids
 
       FEATURES_IN_ORDER.each do |feature|
         unless @gsub_data.is_feature_supported(feature)
@@ -28,10 +30,10 @@ module Fontbox::TTF::Gsub
 
         Log.debug { "applying the feature #{feature}" }
         script_feature = @gsub_data.get_feature(feature)
-        intermediate_glyphs_from_gsub = apply_gsub_feature(script_feature, intermediate_glyphs_from_gsub)
+        intermediate_glyph_ids = apply_gsub_feature(script_feature, intermediate_glyph_ids)
       end
 
-      ImmutableArray.new(intermediate_glyphs_from_gsub)
+      ImmutableArray.new(intermediate_glyph_ids)
     end
 
     private def apply_gsub_feature(script_feature : ::Fontbox::TTF::Model::ScriptFeature,
@@ -60,6 +62,43 @@ module Fontbox::TTF::Gsub
       Log.debug { "originalGlyphs: #{original_glyphs}, gsubProcessedGlyphs: #{gsub_processed_glyphs}" }
 
       gsub_processed_glyphs
+    end
+  end
+
+  private def self.get_smcp_glyph_ids(cmap_lookup, word : String) : Array(Int32)
+    original_glyph_ids = [] of Int32
+    word.each_char do |unicode_char|
+      glyph_id = cmap_lookup.get_glyph_id(unicode_char.ord)
+      glyph_id.should be > 0
+      original_glyph_ids << glyph_id
+    end
+    original_glyph_ids
+  end
+
+  describe GsubWorkerForSmcp do
+    calibri_path = "/usr/share/fonts/truetype/msttcorefonts/Calibri.ttf" # Common Linux path
+    # Alternative Windows path: "c:/windows/fonts/calibri.ttf"
+    if File.exists?(calibri_path)
+      it "testCalibri" do
+        font = TTFParser.new.parse(Pdfbox::IO::RandomAccessReadBufferedFile.new(calibri_path))
+        begin
+          cmap_lookup = font.get_unicode_cmap_lookup
+          gsub_worker = GsubWorkerForSmcp.new(cmap_lookup, font.get_gsub_data)
+
+          # Values should be the same you get by looking at the GSUB lookup list 24 with a font tool
+          # This one converts "ﬀ" (single-ff-ligature glyph) into "FF" small capitals
+          expected_glyphs = [165, 165]
+          # Note: \ufb00 is the Unicode character for "ﬀ" (Latin small ligature ff)
+          result = gsub_worker.apply_transforms(get_smcp_glyph_ids(cmap_lookup, "\ufb00"))
+          result.should eq(expected_glyphs)
+        ensure
+          font.close
+        end
+      end
+    else
+      pending "testCalibri" do
+        # Font not available, test skipped
+      end
     end
   end
 end
