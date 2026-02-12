@@ -26,21 +26,21 @@ module Fontbox::TTF::Gsub
       # Sort strings with custom comparator: longer strings first,
       # if same length, reverse lexicographic order
       sorted_strings = matchers.map { |glyph_ids| convert_glyph_ids_to_string(glyph_ids) }
-        .sort! do |s1, s2|
-          if s1.size == s2.size
-            s2 <=> s1 # reverse comparison
+        .sort! do |str1, str2|
+          if str1.size == str2.size
+            str2 <=> str1 # reverse comparison
           else
-            s2.size <=> s1.size # longer first
+            str2.size <=> str1.size # longer first
           end
         end
       Set.new(sorted_strings)
     end
 
     private def convert_glyph_ids_to_string(glyph_ids : Array(Int32)) : String
-      String.build do |sb|
-        sb << GLYPH_ID_SEPARATOR
+      String.build do |io|
+        io << GLYPH_ID_SEPARATOR
         glyph_ids.each do |glyph_id|
-          sb << glyph_id << GLYPH_ID_SEPARATOR
+          io << glyph_id << GLYPH_ID_SEPARATOR
         end
       end
     end

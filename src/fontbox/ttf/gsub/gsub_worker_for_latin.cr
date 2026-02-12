@@ -29,7 +29,7 @@ module Fontbox::TTF::Gsub
         intermediate_glyphs_from_gsub = apply_gsub_feature(script_feature, intermediate_glyphs_from_gsub)
       end
 
-      intermediate_glyphs_from_gsub
+      ImmutableArray.new(intermediate_glyphs_from_gsub)
     end
 
     private def apply_gsub_feature(script_feature : ::Fontbox::TTF::Model::ScriptFeature,

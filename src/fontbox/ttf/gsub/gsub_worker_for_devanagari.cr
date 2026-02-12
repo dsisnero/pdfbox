@@ -54,7 +54,7 @@ module Fontbox::TTF::Gsub
         intermediate_glyphs_from_gsub = apply_gsub_feature(script_feature, intermediate_glyphs_from_gsub)
       end
 
-      intermediate_glyphs_from_gsub
+      ImmutableArray.new(intermediate_glyphs_from_gsub)
     end
 
     private def apply_rkrf_feature(rkrf_glyphs_for_substitution : ::Fontbox::TTF::Model::ScriptFeature,

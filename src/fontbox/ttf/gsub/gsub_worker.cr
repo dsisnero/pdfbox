@@ -1,4 +1,5 @@
 require "../ttf_tables"
+require "./immutable_array"
 
 module Fontbox::TTF::Gsub
   # This class is responsible for replacing GlyphIDs with new ones according to the GSUB tables. Each language should
@@ -22,11 +23,12 @@ module Fontbox::TTF::Gsub
     Log = ::Log.for(self)
 
     def apply_transforms(original_glyph_ids : Array(Int32)) : Array(Int32)
-      Log.warn {
+      Log.warn do
         "#{self.class} does not perform actual GSUB substitutions. Perhaps the selected language is not yet supported by the FontBox library."
-      }
-      # Return a duplicate to prevent accidental modifications of the source list
-      original_glyph_ids.dup
+      end
+      # Return an immutable array to prevent accidental modifications of the source list
+      # (matching Java's Collections.unmodifiableList behavior)
+      ImmutableArray.new(original_glyph_ids)
     end
   end
 end

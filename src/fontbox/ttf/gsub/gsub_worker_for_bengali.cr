@@ -50,7 +50,7 @@ module Fontbox::TTF::Gsub
         intermediate_glyphs_from_gsub = apply_gsub_feature(script_feature, intermediate_glyphs_from_gsub)
       end
 
-      reposition_glyphs(intermediate_glyphs_from_gsub)
+      ImmutableArray.new(reposition_glyphs(intermediate_glyphs_from_gsub))
     end
 
     private def reposition_glyphs(original_glyph_ids : Array(Int32)) : Array(Int32)

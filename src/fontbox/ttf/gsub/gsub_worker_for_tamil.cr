@@ -14,8 +14,9 @@ module Fontbox::TTF::Gsub
     REPH_CHARS = ['\u0BB0', '\u0BCD']
     # Glyphs to precede reph
     BEFORE_REPH_CHARS = ['\u0BB8', '\u0BCD']
-    # Tamil vowel sign I (corrected from Gujarati \u0ABF to Tamil \u0BBF)
-    BEFORE_HALF_CHAR = '\u0BBF'
+    # TODO: adjust all below this line. The existing code has been copied from Gujarati
+    # Currently using Gujarati vowel sign I (\u0ABF) per Java source
+    BEFORE_HALF_CHAR = '\u0ABF'
 
     @cmap_lookup : CmapLookup
     @gsub_data : ::Fontbox::TTF::Model::GsubData
@@ -46,7 +47,7 @@ module Fontbox::TTF::Gsub
         intermediate_glyphs_from_gsub = apply_gsub_feature(script_feature, intermediate_glyphs_from_gsub)
       end
 
-      intermediate_glyphs_from_gsub
+      ImmutableArray.new(intermediate_glyphs_from_gsub)
     end
 
     private def reposition_glyphs(original_glyph_ids : Array(Int32)) : Array(Int32)
