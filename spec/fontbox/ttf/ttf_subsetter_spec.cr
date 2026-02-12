@@ -30,6 +30,29 @@ module Fontbox::TTF
     nil
   end
 
+  private def self.dejavu_sans_mono_path : String?
+    # Common font directories
+    font_dirs = [
+      "/usr/share/fonts/truetype/dejavu/",
+      "/System/Library/Fonts",
+      "/Library/Fonts",
+      File.expand_path("~/Library/Fonts"),
+      "/usr/local/share/fonts",
+      "/usr/share/fonts",
+      File.expand_path("~/.fonts"),
+      File.expand_path("~/.local/share/fonts"),
+    ]
+    font_dirs.each do |dir|
+      next unless Dir.exists?(dir)
+      Dir.each_child(dir) do |filename|
+        if filename.downcase == "dejavusansmono.ttf" || filename.downcase =~ /deja.*sans.*mono.*\.ttf/
+          return File.join(dir, filename)
+        end
+      end
+    end
+    nil
+  end
+
   describe TTFSubsetter do
     it "test empty subset" do
       font = load_liberation_sans
@@ -116,7 +139,7 @@ module Fontbox::TTF
     path = simhei_path
     if path
       it "test PDFBox-3319: widths and left side bearings in partially monospaced font" do
-        font = TTFParser.new.parse(Pdfbox::IO::FileRandomAccessRead.new(path))
+        font = TTFParser.new.parse(Pdfbox::IO::FileRandomAccessRead.new(path.not_nil!)) # ameba:disable Lint/NotNil
         # List copied from TrueTypeEmbedder.java
         tables = ["head", "hhea", "loca", "maxp", "cvt ", "prep", "glyf", "hmtx", "fpgm", "gasp"]
         subsetter = TTFSubsetter.new(font, tables)
@@ -143,7 +166,41 @@ module Fontbox::TTF
         # SimHei font not available on this machine, test skipped
       end
     end
-    pending "test PDFBox-3379: left side bearings in partially monospaced font"
+    dejavu_path = dejavu_sans_mono_path
+    if dejavu_path
+      it "test PDFBox-3379: left side bearings in partially monospaced font" do
+        font = TTFParser.new.parse(Pdfbox::IO::FileRandomAccessRead.new(dejavu_path.not_nil!)) # ameba:disable Lint/NotNil
+        subsetter = TTFSubsetter.new(font)
+        subsetter.add('A')
+        subsetter.add(' ')
+        subsetter.add('B')
+        output = IO::Memory.new
+        subsetter.write_to_stream(output)
+        subset_io = Pdfbox::IO::MemoryRandomAccessRead.new(output.to_slice)
+        subset_font = TTFParser.new(true).parse(subset_io)
+        subset_font.number_of_glyphs.should eq(4)
+        subset_font.name_to_gid(".notdef").should eq(0)
+        subset_font.name_to_gid("space").should eq(1)
+        subset_font.name_to_gid("A").should eq(2)
+        subset_font.name_to_gid("B").should eq(3)
+        ["A", "B", "space"].each do |name|
+          original_gid = font.name_to_gid(name)
+          subset_gid = subset_font.name_to_gid(name)
+          font.horizontal_metrics.not_nil! # ameba:disable Lint/NotNil
+            .advance_width(original_gid).should eq(
+            subset_font.horizontal_metrics.not_nil! # ameba:disable Lint/NotNil
+              .advance_width(subset_gid))
+          font.horizontal_metrics.not_nil! # ameba:disable Lint/NotNil
+            .left_side_bearing(original_gid).should eq(
+            subset_font.horizontal_metrics.not_nil! # ameba:disable Lint/NotNil
+              .left_side_bearing(subset_gid))
+        end
+      end
+    else
+      pending "test PDFBox-3379: left side bearings in partially monospaced font" do
+        # DejaVu Sans Mono font not available on this machine, test skipped
+      end
+    end
     pending "test PDFBox-3757: PostScript names not in WGL4Names don't get shuffled"
     pending "test PDFBox-5728: font with v3 PostScript table format and no glyph names"
     pending "test PDFBox-6015: font with 0/1 cmap"
