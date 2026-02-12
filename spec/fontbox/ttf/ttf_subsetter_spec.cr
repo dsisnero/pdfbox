@@ -53,6 +53,29 @@ module Fontbox::TTF
     nil
   end
 
+  private def self.noto_mono_path : String?
+    # Common font directories
+    font_dirs = [
+      "/System/Library/Fonts",
+      "/Library/Fonts",
+      File.expand_path("~/.fonts"),
+      File.expand_path("~/.local/share/fonts"),
+      "/usr/share/fonts",
+      "/usr/local/share/fonts",
+      "/usr/share/fonts/truetype/noto/",
+      File.expand_path("~/Library/Fonts"),
+    ]
+    font_dirs.each do |dir|
+      next unless Dir.exists?(dir)
+      Dir.each_child(dir) do |filename|
+        if filename.downcase == "notomono-regular.ttf"
+          return File.join(dir, filename)
+        end
+      end
+    end
+    nil
+  end
+
   describe TTFSubsetter do
     it "test empty subset" do
       font = load_liberation_sans
@@ -243,7 +266,29 @@ module Fontbox::TTF
       dieresis_glyph.should_not be_nil
       dieresis_glyph.as(GlyphData).number_of_contours.should be > 0
     end
-    pending "test PDFBox-5728: font with v3 PostScript table format and no glyph names"
+    path = noto_mono_path
+    if path
+      it "test PDFBox-5728: font with v3 PostScript table format and no glyph names" do
+        font = TTFParser.new.parse(Pdfbox::IO::FileRandomAccessRead.new(path.not_nil!)) # ameba:disable Lint/NotNil
+        post = font.postscript
+        post.should_not be_nil
+        post.as(PostScriptTable).format_type.should eq(3.0)
+        post.as(PostScriptTable).glyph_names.should be_nil
+        subsetter = TTFSubsetter.new(font)
+        subsetter.add('a')
+        output = IO::Memory.new
+        subsetter.write_to_stream(output)
+        # parse subset font to ensure no exception
+        subset_io = Pdfbox::IO::MemoryRandomAccessRead.new(output.to_slice)
+        _subset_font = TTFParser.new(true).parse(subset_io)
+        # optional: verify subset font has no post table (or minimal table)
+        # subset_font.table("post").should be_nil
+      end
+    else
+      pending "test PDFBox-5728: font with v3 PostScript table format and no glyph names" do
+        # NotoMono-Regular.ttf not available on this machine, test skipped
+      end
+    end
     pending "test PDFBox-6015: font with 0/1 cmap"
   end
 end
