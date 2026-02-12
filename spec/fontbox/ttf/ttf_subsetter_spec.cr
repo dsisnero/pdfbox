@@ -76,6 +76,28 @@ module Fontbox::TTF
     nil
   end
 
+  private def self.keyboard_path : String?
+    # Common font directories
+    font_dirs = [
+      "/System/Library/Fonts",
+      "/Library/Fonts",
+      File.expand_path("~/Library/Fonts"),
+      "/usr/share/fonts",
+      "/usr/local/share/fonts",
+      File.expand_path("~/.fonts"),
+      File.expand_path("~/.local/share/fonts"),
+    ]
+    font_dirs.each do |dir|
+      next unless Dir.exists?(dir)
+      Dir.each_child(dir) do |filename|
+        if filename.downcase == "keyboard.ttf"
+          return File.join(dir, filename)
+        end
+      end
+    end
+    nil
+  end
+
   describe TTFSubsetter do
     it "test empty subset" do
       font = load_liberation_sans
@@ -289,6 +311,22 @@ module Fontbox::TTF
         # NotoMono-Regular.ttf not available on this machine, test skipped
       end
     end
-    pending "test PDFBox-6015: font with 0/1 cmap"
+    path = keyboard_path
+    if path
+      it "test PDFBox-6015: font with 0/1 cmap" do
+        font = TTFParser.new.parse(Pdfbox::IO::FileRandomAccessRead.new(path.not_nil!)) # ameba:disable Lint/NotNil
+        lookup = font.unicode_cmap_lookup
+        lookup.glyph_id('a'.ord).should eq(185)
+        lookup.glyph_id('z'.ord).should eq(210)
+        lookup.glyph_id('A'.ord).should eq(159)
+        lookup.glyph_id('Z'.ord).should eq(184)
+        lookup.glyph_id('0'.ord).should eq(49)
+        lookup.glyph_id('9'.ord).should eq(58)
+      end
+    else
+      pending "test PDFBox-6015: font with 0/1 cmap" do
+        # Keyboard.ttf font not available on this machine, test skipped
+      end
+    end
   end
 end
