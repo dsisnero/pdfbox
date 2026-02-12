@@ -1,4 +1,7 @@
 module Fontbox::TTF
+  # Subsetter for TrueType (TTF) fonts.
+  #
+  # Ported from Apache PDFBox TTFSubsetter.
   class TTFSubsetter
     PAD_BUF = Bytes[0, 0, 0, 0]
 
@@ -12,6 +15,10 @@ module Fontbox::TTF
     @has_added_compound_references : Bool
     @gid_map : Hash(Int32, Int32)?
 
+    # Constructor.
+    #
+    # @param font The font to subset.
+    # @param tables Optional tables to keep if present.
     def initialize(font : TrueTypeFont, tables : Array(String)? = nil)
       @ttf = font
       @keep_tables = tables
@@ -29,11 +36,17 @@ module Fontbox::TTF
       @glyph_ids.add(0)
     end
 
+    # Add character to subset.
+    #
+    # @param char The character to add.
     def add(char : Char)
       code_point = char.ord
       add(code_point)
     end
 
+    # Add Unicode code point to subset.
+    #
+    # @param code_point The Unicode code point to add.
     def add(code_point : Int32)
       gid = @unicode_cmap.glyph_id(code_point)
       if gid > 0
@@ -45,6 +58,8 @@ module Fontbox::TTF
     # Forces the glyph for the specified character code to be zero-width and contour-free,
     # regardless of what the glyph looks like in the original font. Note that the specified
     # character code is not added to the subset unless it is also added separately.
+    #
+    # @param code_point The Unicode code point of the glyph to force invisible.
     def force_invisible(code_point : Int32)
       gid = @unicode_cmap.glyph_id(code_point)
       if gid > 0
@@ -53,6 +68,8 @@ module Fontbox::TTF
     end
 
     # Returns a map of new GID to old GID.
+    #
+    # @return Hash mapping new glyph IDs to original glyph IDs.
     def gid_map : Hash(Int32, Int32)
       add_compound_references unless @has_added_compound_references
       build_gid_map if @gid_map.nil?
@@ -65,6 +82,11 @@ module Fontbox::TTF
       result
     end
 
+    # Write subset font to stream.
+    #
+    # @param io The output stream to write to.
+    # @raise IO::Error If there is an error writing to the stream.
+    # @raise Exception If table tag is invalid or non-BMP Unicode character is encountered (not supported).
     def write_to_stream(io : IO)
       add_compound_references unless @has_added_compound_references
       build_gid_map
