@@ -1,16 +1,31 @@
 require "../../spec_helper"
 
 module Fontbox::TTF
-  private def liberation_sans_path
+  private def self.liberation_sans_path
     File.join(__DIR__, "../../../../apache_pdfbox/fontbox/src/test/resources/ttf/LiberationSans-Regular.ttf")
   end
 
-  private def load_liberation_sans
+  private def self.load_liberation_sans
     TTFParser.new.parse(Pdfbox::IO::FileRandomAccessRead.new(liberation_sans_path))
   end
 
   describe TTFSubsetter do
-    pending "test empty subset"
+    it "test empty subset" do
+      font = load_liberation_sans
+      subsetter = TTFSubsetter.new(font)
+
+      output = IO::Memory.new
+      subsetter.write_to_stream(output)
+
+      # Parse the subset font
+      subset_io = Pdfbox::IO::MemoryRandomAccessRead.new(output.to_slice)
+      subset_font = TTFParser.new(true).parse(subset_io)
+
+      subset_font.number_of_glyphs.should eq(1)
+      subset_font.name_to_gid(".notdef").should eq(0)
+      subset_font.glyph.glyph(0).should_not be_nil
+    end
+
     pending "test empty subset with selected tables"
     pending "test non-empty subset with one glyph"
     pending "test PDFBox-3319: widths and left side bearings in partially monospaced font"
