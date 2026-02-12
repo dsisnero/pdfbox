@@ -9,6 +9,27 @@ module Fontbox::TTF
     TTFParser.new.parse(Pdfbox::IO::FileRandomAccessRead.new(liberation_sans_path))
   end
 
+  private def self.simhei_path : String?
+    # Common font directories
+    font_dirs = [
+      "/System/Library/Fonts",
+      "/Library/Fonts",
+      File.expand_path("~/.fonts"),
+      File.expand_path("~/.local/share/fonts"),
+      "/usr/share/fonts",
+      "/usr/local/share/fonts",
+    ]
+    font_dirs.each do |dir|
+      next unless Dir.exists?(dir)
+      Dir.each_child(dir) do |filename|
+        if filename.downcase == "simhei.ttf" || filename.downcase == "simhei.ttc"
+          return File.join(dir, filename)
+        end
+      end
+    end
+    nil
+  end
+
   describe TTFSubsetter do
     it "test empty subset" do
       font = load_liberation_sans
@@ -79,12 +100,49 @@ module Fontbox::TTF
       # check advance width and left side bearing match original
       original_gid = font.name_to_gid("a")
       subset_gid = subset_font.name_to_gid("a")
-      font.horizontal_metrics.not_nil!.advance_width(original_gid).should eq(
-        subset_font.horizontal_metrics.not_nil!.advance_width(subset_gid))
-      font.horizontal_metrics.not_nil!.left_side_bearing(original_gid).should eq(
-        subset_font.horizontal_metrics.not_nil!.left_side_bearing(subset_gid))
+      font.horizontal_metrics.not_nil! # ameba:disable Lint/NotNil
+        .advance_width(original_gid).should eq(
+        subset_font.horizontal_metrics.not_nil! # ameba:disable Lint/NotNil
+          .advance_width(subset_gid))
+      font.horizontal_metrics.not_nil! # ameba:disable Lint/NotNil
+        .left_side_bearing(original_gid).should eq(
+        subset_font.horizontal_metrics.not_nil! # ameba:disable Lint/NotNil
+          .left_side_bearing(subset_gid))
+      # verify gid_map
+      subsetter.gid_map.size.should eq(2)
+      subsetter.gid_map[0].should eq(0) # .notdef
+      subsetter.gid_map[1].should eq(original_gid)
     end
-    pending "test PDFBox-3319: widths and left side bearings in partially monospaced font"
+    path = simhei_path
+    if path
+      it "test PDFBox-3319: widths and left side bearings in partially monospaced font" do
+        font = TTFParser.new.parse(Pdfbox::IO::FileRandomAccessRead.new(path))
+        # List copied from TrueTypeEmbedder.java
+        tables = ["head", "hhea", "loca", "maxp", "cvt ", "prep", "glyf", "hmtx", "fpgm", "gasp"]
+        subsetter = TTFSubsetter.new(font, tables)
+        chinese = "中国你好!"
+        chinese.each_char { |char| subsetter.add(char) }
+        output = IO::Memory.new
+        subsetter.write_to_stream(output)
+        subset_io = Pdfbox::IO::MemoryRandomAccessRead.new(output.to_slice)
+        subset_font = TTFParser.new(true).parse(subset_io)
+        subset_font.number_of_glyphs.should eq(6)
+        subsetter.gid_map.each do |new_gid, old_gid|
+          font.horizontal_metrics.not_nil! # ameba:disable Lint/NotNil
+            .advance_width(old_gid).should eq(
+            subset_font.horizontal_metrics.not_nil! # ameba:disable Lint/NotNil
+              .advance_width(new_gid))
+          font.horizontal_metrics.not_nil! # ameba:disable Lint/NotNil
+            .left_side_bearing(old_gid).should eq(
+            subset_font.horizontal_metrics.not_nil! # ameba:disable Lint/NotNil
+              .left_side_bearing(new_gid))
+        end
+      end
+    else
+      pending "test PDFBox-3319: widths and left side bearings in partially monospaced font" do
+        # SimHei font not available on this machine, test skipped
+      end
+    end
     pending "test PDFBox-3379: left side bearings in partially monospaced font"
     pending "test PDFBox-3757: PostScript names not in WGL4Names don't get shuffled"
     pending "test PDFBox-5728: font with v3 PostScript table format and no glyph names"

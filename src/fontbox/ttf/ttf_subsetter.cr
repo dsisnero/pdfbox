@@ -52,6 +52,19 @@ module Fontbox::TTF
       end
     end
 
+    # Returns a map of new GID to old GID.
+    def gid_map : Hash(Int32, Int32)
+      add_compound_references unless @has_added_compound_references
+      build_gid_map if @gid_map.nil?
+      map = @gid_map.not_nil! # ameba:disable Lint/NotNil
+      # invert old->new to new->old
+      result = Hash(Int32, Int32).new
+      map.each do |old_gid, new_gid|
+        result[new_gid] = old_gid
+      end
+      result
+    end
+
     def write_to_stream(io : IO)
       add_compound_references unless @has_added_compound_references
       build_gid_map
