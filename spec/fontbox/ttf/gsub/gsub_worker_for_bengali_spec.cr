@@ -63,6 +63,7 @@ module Fontbox::TTF::Gsub
       end
     end
 
+    # Disabled in Java source: @Disabled with comment "not working yet"
     pending "testApplyTransforms_o_kar_repeated_1_not_working_yet" do
       with_bengali_font do |font|
         cmap_lookup = font.get_unicode_cmap_lookup
@@ -73,6 +74,7 @@ module Fontbox::TTF::Gsub
       end
     end
 
+    # Disabled in Java source: @Disabled with comment "not working yet"
     pending "testApplyTransforms_o_kar_repeated_2_not_working_yet" do
       with_bengali_font do |font|
         cmap_lookup = font.get_unicode_cmap_lookup

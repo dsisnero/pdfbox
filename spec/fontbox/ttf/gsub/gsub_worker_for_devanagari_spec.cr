@@ -63,6 +63,7 @@ module Fontbox::TTF::Gsub
       end
     end
 
+    # Disabled in Java source: @Disabled - See PDFBOX-5729 comment
     pending "testApplyTransforms_rkrf" do
       with_devanagari_font do |font|
         cmap_lookup = font.get_unicode_cmap_lookup
@@ -103,6 +104,7 @@ module Fontbox::TTF::Gsub
       end
     end
 
+    # Disabled in Java source: @Disabled - See PDFBOX-5729 comment
     pending "testApplyTransforms_cjct" do
       with_devanagari_font do |font|
         cmap_lookup = font.get_unicode_cmap_lookup
@@ -123,6 +125,7 @@ module Fontbox::TTF::Gsub
       end
     end
 
+    # Disabled in Java source: @Disabled - See PDFBOX-5729 comment
     pending "testApplyTransforms_abvs" do
       with_devanagari_font do |font|
         cmap_lookup = font.get_unicode_cmap_lookup
@@ -143,6 +146,7 @@ module Fontbox::TTF::Gsub
       end
     end
 
+    # Disabled in Java source: @Disabled - See PDFBOX-5729 comment
     pending "testApplyTransforms_psts" do
       with_devanagari_font do |font|
         cmap_lookup = font.get_unicode_cmap_lookup
@@ -163,6 +167,7 @@ module Fontbox::TTF::Gsub
       end
     end
 
+    # Disabled in Java source: @Disabled - See PDFBOX-5729 comment
     pending "testApplyTransforms_calt" do
       with_devanagari_font do |font|
         cmap_lookup = font.get_unicode_cmap_lookup

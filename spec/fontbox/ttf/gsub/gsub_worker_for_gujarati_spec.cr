@@ -123,6 +123,7 @@ module Fontbox::TTF::Gsub
       end
     end
 
+    # Disabled in Java source: @Disabled
     pending "testApplyTransforms_psts" do
       with_gujarati_font do |font|
         cmap_lookup = font.get_unicode_cmap_lookup

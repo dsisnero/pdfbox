@@ -41,6 +41,7 @@ module Fontbox::TTF::Gsub
         end
       end
     else
+      # Pending due to missing Calibri font (system-dependent)
       pending "testApplyLigaturesCalibri" do
         # Font not available, test skipped
       end
