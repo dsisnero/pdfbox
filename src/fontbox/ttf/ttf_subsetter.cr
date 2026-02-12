@@ -135,8 +135,107 @@ module Fontbox::TTF
     end
 
     private def add_compound_references
-      # TODO: implement
+      return if @has_added_compound_references
       @has_added_compound_references = true
+
+      glyph_table = @ttf.table("glyf")
+      loca = @ttf.index_to_location
+      return if glyph_table.nil? || loca.nil?
+
+      offsets = loca.offsets
+      glyph_table_bytes = @ttf.table_bytes(glyph_table)
+
+      loop do
+        glyph_ids_to_add = nil
+
+        sorted = sorted_glyph_ids
+        sorted.each do |old_gid|
+          start_offset = offsets[old_gid]
+          end_offset = offsets[old_gid + 1]
+          length = (end_offset - start_offset).to_i32
+          next if length <= 0
+
+          # Get glyph data
+          bytes = glyph_table_bytes[start_offset.to_i32, length]
+          # Check if compound glyph (first two bytes are -1, -1)
+          if bytes.size >= 2 && bytes[0] == 0xFF_u8 && bytes[1] == 0xFF_u8
+            # Parse composite glyph components
+            offset = 10 # 2*5: skip numberOfContours (2), xMin, yMin, xMax, yMax (2 each)
+            while offset < bytes.size
+              flags = (bytes[offset].to_i32 << 8) | bytes[offset + 1].to_i32
+              offset += 2
+              component_gid = (bytes[offset].to_i32 << 8) | bytes[offset + 1].to_i32
+              offset += 2
+
+              # Check if component is already in our set
+              if !@glyph_ids.includes?(component_gid) && !@invisible_glyph_ids.includes?(component_gid)
+                glyph_ids_to_add ||= Set(Int32).new
+                glyph_ids_to_add.add(component_gid)
+              end
+
+              # Skip remaining fields based on flags
+              if (flags & GlyfCompositeComp::ARG_1_AND_2_ARE_WORDS) != 0
+                offset += 4 # two 16-bit words
+              else
+                offset += 2 # two 8-bit bytes
+              end
+
+              if (flags & GlyfCompositeComp::WE_HAVE_A_TWO_BY_TWO) != 0
+                offset += 8 # four 16-bit words
+              elsif (flags & GlyfCompositeComp::WE_HAVE_AN_X_AND_Y_SCALE) != 0
+                offset += 4 # two 16-bit words
+              elsif (flags & GlyfCompositeComp::WE_HAVE_A_SCALE) != 0
+                offset += 2 # one 16-bit word
+              end
+
+              break if (flags & GlyfCompositeComp::MORE_COMPONENTS) == 0
+            end
+          end
+        end
+
+        break if glyph_ids_to_add.nil?
+        glyph_ids_to_add.each do |gid|
+          @glyph_ids.add(gid)
+        end
+      end
+    end
+
+    private def rewrite_component_gids(bytes : Bytes, gid_map : Hash(Int32, Int32)) : Bytes
+      # Return a copy with component GIDs rewritten
+      return bytes if bytes.size < 2 || bytes[0] != 0xFF_u8 || bytes[1] != 0xFF_u8
+
+      # Create mutable copy
+      result = bytes.dup
+      offset = 10 # skip numberOfContours, bounding box
+      while offset < result.size
+        flags = (result[offset].to_i32 << 8) | result[offset + 1].to_i32
+        offset += 2
+
+        component_gid = (result[offset].to_i32 << 8) | result[offset + 1].to_i32
+        new_gid = gid_map[component_gid]? || component_gid
+        # Write back new GID
+        result[offset] = (new_gid >> 8).to_u8
+        result[offset + 1] = (new_gid & 0xFF).to_u8
+        offset += 2
+
+        # Skip remaining fields based on flags
+        if (flags & GlyfCompositeComp::ARG_1_AND_2_ARE_WORDS) != 0
+          offset += 4 # two 16-bit words
+        else
+          offset += 2 # two 8-bit bytes
+        end
+
+        if (flags & GlyfCompositeComp::WE_HAVE_A_TWO_BY_TWO) != 0
+          offset += 8 # four 16-bit words
+        elsif (flags & GlyfCompositeComp::WE_HAVE_AN_X_AND_Y_SCALE) != 0
+          offset += 4 # two 16-bit words
+        elsif (flags & GlyfCompositeComp::WE_HAVE_A_SCALE) != 0
+          offset += 2 # one 16-bit word
+        end
+
+        break if (flags & GlyfCompositeComp::MORE_COMPONENTS) == 0
+      end
+      result
     end
 
     private def write_fixed(io : IO, f : Float64)
@@ -277,10 +376,30 @@ module Fontbox::TTF
     end
 
     private def build_name_table : Bytes?
+      naming = @ttf.table("name")
+      if naming.nil?
+        return nil
+      end
+      if keep = @keep_tables
+        if !keep.includes?("name")
+          return nil
+        end
+      end
+      # TODO: implement proper naming table
       nil
     end
 
     private def build_os2_table : Bytes?
+      os2 = @ttf.table("OS/2")
+      if os2.nil? || @uni_to_gid.empty?
+        return nil
+      end
+      if keep = @keep_tables
+        if !keep.includes?("OS/2")
+          return nil
+        end
+      end
+      # TODO: implement OS/2 table
       nil
     end
 
@@ -289,6 +408,7 @@ module Fontbox::TTF
       loca = @ttf.index_to_location.not_nil!    # ameba:disable Lint/NotNil
       offsets = loca.offsets
       glyph_table_bytes = @ttf.table_bytes(glyph_table)
+      gid_map = @gid_map.not_nil! # ameba:disable Lint/NotNil
 
       io = IO::Memory.new
       new_offset = 0_i64
@@ -303,8 +423,12 @@ module Fontbox::TTF
         start = offsets[old_gid].to_i32
         length = (offsets[old_gid + 1] - offsets[old_gid]).to_i32
         if length > 0
-          # copy glyph data
-          io.write(glyph_table_bytes[start, length])
+          glyph_data = glyph_table_bytes[start, length]
+          # Rewrite component GIDs for compound glyphs
+          if glyph_data.size >= 2 && glyph_data[0] == 0xFF_u8 && glyph_data[1] == 0xFF_u8
+            glyph_data = rewrite_component_gids(glyph_data, gid_map)
+          end
+          io.write(glyph_data)
           new_offset += length
           # align to 4-byte boundary? (handled later in write_table_body)
         end
