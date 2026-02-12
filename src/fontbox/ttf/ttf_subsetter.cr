@@ -44,6 +44,7 @@ module Fontbox::TTF
 
     def write_to_stream(io : IO)
       add_compound_references unless @has_added_compound_references
+      build_gid_map
 
       new_loca = Array(Int64).new(@glyph_ids.size + 1, 0_i64)
 
@@ -80,16 +81,14 @@ module Fontbox::TTF
         tables["post"] = post
       end
 
-      # copy all other tables (TODO: implement when needed)
-      # if keep_tables = @keep_tables
-      #   @ttf.tables.each do |table|
-      #     tag = table.tag
-      #     if !tables.has_key?(tag) && keep_tables.includes?(tag)
-      #       # TODO: get table bytes
-      #       # tables[tag] = @ttf.get_table_bytes(table)
-      #     end
-      #   end
-      # end
+      # copy all other tables
+      if keep_tables = @keep_tables
+        @ttf.table_map.each do |tag, table|
+          if !tables.has_key?(tag) && keep_tables.includes?(tag)
+            tables[tag] = @ttf.table_bytes(table)
+          end
+        end
+      end
 
       # calculate checksum
       checksum = write_file_header(io, tables.size)
@@ -201,7 +200,7 @@ module Fontbox::TTF
     # Table building stubs
     private def build_head_table : Bytes
       io = IO::Memory.new(54)
-      h = @ttf.header.not_nil!
+      h = @ttf.header.not_nil! # ameba:disable Lint/NotNil
       write_fixed(io, h.@version.to_f64)
       write_fixed(io, h.@font_revision.to_f64)
       write_uint32(io, 0_u64) # checksum adjustment, filled later
@@ -225,7 +224,7 @@ module Fontbox::TTF
 
     private def build_hhea_table : Bytes
       io = IO::Memory.new(36)
-      h = @ttf.horizontal_header.not_nil!
+      h = @ttf.horizontal_header.not_nil! # ameba:disable Lint/NotNil
       write_fixed(io, h.@version.to_f64)
       write_sint16(io, h.@ascender.to_i32)
       write_sint16(io, h.@descender.to_i32)
@@ -256,7 +255,7 @@ module Fontbox::TTF
 
     private def build_maxp_table : Bytes
       io = IO::Memory.new(32)
-      p = @ttf.maximum_profile.not_nil!
+      p = @ttf.maximum_profile.not_nil! # ameba:disable Lint/NotNil
       write_fixed(io, p.@version.to_f64)
       write_uint16(io, sorted_glyph_ids.size.to_u32)
       if p.@version >= 1.0
@@ -286,19 +285,33 @@ module Fontbox::TTF
     end
 
     private def build_glyf_table(new_loca : Array(Int64)) : Bytes
-      # Simple .notdef glyph with zero contours
-      io = IO::Memory.new(10)
-      write_sint16(io, 0_i32) # numberOfContours = 0 (simple glyph)
-      # Bounds (xMin, yMin, xMax, yMax) - use zeros for now
-      write_sint16(io, 0_i32) # xMin
-      write_sint16(io, 0_i32) # yMin
-      write_sint16(io, 0_i32) # xMax
-      write_sint16(io, 0_i32) # yMax
-      # No instruction length, no instructions
-      bytes = io.to_slice
-      new_loca[0] = 0_i64
-      new_loca[1] = bytes.size.to_i64
-      bytes
+      glyph_table = @ttf.table("glyf").not_nil! # ameba:disable Lint/NotNil
+      loca = @ttf.index_to_location.not_nil!    # ameba:disable Lint/NotNil
+      offsets = loca.offsets
+      glyph_table_bytes = @ttf.table_bytes(glyph_table)
+
+      io = IO::Memory.new
+      new_offset = 0_i64
+      sorted = sorted_glyph_ids
+
+      sorted.each_with_index do |old_gid, idx|
+        new_loca[idx] = new_offset
+        if @invisible_glyph_ids.includes?(old_gid)
+          # skip copying, leave zero length
+          next
+        end
+        start = offsets[old_gid].to_i32
+        length = (offsets[old_gid + 1] - offsets[old_gid]).to_i32
+        if length > 0
+          # copy glyph data
+          io.write(glyph_table_bytes[start, length])
+          new_offset += length
+          # align to 4-byte boundary? (handled later in write_table_body)
+        end
+      end
+      # final loca entry
+      new_loca[sorted.size] = new_offset
+      io.to_slice
     end
 
     private def build_loca_table(new_loca : Array(Int64)) : Bytes
@@ -310,16 +323,129 @@ module Fontbox::TTF
     end
 
     private def build_cmap_table : Bytes?
-      nil
+      if @ttf.cmap.nil? || @uni_to_gid.empty?
+        return
+      end
+      if keep = @keep_tables
+        if !keep.includes?("cmap")
+          return
+        end
+      end
+
+      entries = @uni_to_gid.to_a.sort_by { |code_point, _| code_point }
+      # map old GID to new GID
+      gid_map = @gid_map.not_nil! # ameba:disable Lint/NotNil
+
+      # Build segments similar to Java algorithm
+      start_code = [] of Int32
+      end_code = [] of Int32
+      id_delta = [] of Int32
+
+      last_char_entry = entries[0]
+      prev_char_entry = last_char_entry
+      last_gid = gid_map[last_char_entry[1]]
+
+      i = 1
+      while i < entries.size
+        cur_char_entry = entries[i]
+        cur_gid = gid_map[cur_char_entry[1]]
+
+        # non-BMP not supported
+        if cur_char_entry[0] > 0xFFFF
+          raise "Non-BMP Unicode character not supported"
+        end
+
+        if cur_char_entry[0] != prev_char_entry[0] + 1 ||
+           cur_gid - last_gid != cur_char_entry[0] - last_char_entry[0]
+          # emit segment
+          if last_gid != 0
+            start_code << last_char_entry[0]
+            end_code << prev_char_entry[0]
+            id_delta << last_gid - last_char_entry[0]
+          elsif last_char_entry[0] != prev_char_entry[0]
+            # shorten ranges which start with GID 0 by one
+            start_code << last_char_entry[0] + 1
+            end_code << prev_char_entry[0]
+            id_delta << last_gid - last_char_entry[0]
+          end
+          last_gid = cur_gid
+          last_char_entry = cur_char_entry
+        end
+        prev_char_entry = cur_char_entry
+        i += 1
+      end
+
+      # trailing segment
+      start_code << last_char_entry[0]
+      end_code << prev_char_entry[0]
+      id_delta << last_gid - last_char_entry[0]
+
+      # GID 0 segment
+      start_code << 0xFFFF
+      end_code << 0xFFFF
+      id_delta << 1
+
+      seg_count = start_code.size
+
+      io = IO::Memory.new(64)
+      # cmap header
+      write_uint16(io, 0_u32) # version
+      write_uint16(io, 1_u32) # numberSubtables
+      # encoding record
+      write_uint16(io, 3_u32)  # platformID Windows
+      write_uint16(io, 1_u32)  # platformSpecificID Unicode BMP
+      write_uint32(io, 12_u64) # offset 4 * 2 + 4
+
+      # format 4 subtable
+      search_range = 2 * (1 << log2(seg_count))
+      write_uint16(io, 4_u32)                                 # format
+      write_uint16(io, (8 * 2 + seg_count * 4 * 2).to_u32)    # length
+      write_uint16(io, 0_u32)                                 # language
+      write_uint16(io, (seg_count * 2).to_u32)                # segCountX2
+      write_uint16(io, search_range.to_u32)                   # searchRange
+      write_uint16(io, log2(search_range // 2).to_u32)        # entrySelector
+      write_uint16(io, (2 * seg_count - search_range).to_u32) # rangeShift
+
+      # endCode
+      end_code.each { |end_code_val| write_uint16(io, end_code_val.to_u32) }
+      # reservedPad
+      write_uint16(io, 0_u32)
+      # startCode
+      start_code.each { |start_code_val| write_uint16(io, start_code_val.to_u32) }
+      # idDelta
+      id_delta.each { |delta| write_sint16(io, delta) }
+      # idRangeOffset (all zero for simplicity)
+      seg_count.times { write_uint16(io, 0_u32) }
+
+      io.to_slice
     end
 
     private def build_hmtx_table : Bytes
-      # For empty subset: single glyph 0
-      io = IO::Memory.new(4)
-      # Use original metrics for glyph 0 if available
-      hm = @ttf.horizontal_metrics.not_nil!
-      write_uint16(io, hm.advance_width(0).to_u32)
-      write_sint16(io, hm.left_side_bearing(0).to_i32)
+      hm = @ttf.horizontal_metrics.not_nil!  # ameba:disable Lint/NotNil
+      hhea = @ttf.horizontal_header.not_nil! # ameba:disable Lint/NotNil
+      sorted = sorted_glyph_ids
+
+      # compute number of HMetrics as in build_hhea_table
+      hmetrics = sorted.count { |gid| gid < hhea.@number_of_h_metrics }
+      if !sorted.empty? && sorted.last >= hhea.@number_of_h_metrics && !sorted.includes?(hhea.@number_of_h_metrics - 1)
+        hmetrics += 1
+      end
+
+      total_glyphs = sorted.size
+      io = IO::Memory.new(hmetrics * 4 + (total_glyphs - hmetrics) * 2)
+
+      # write hMetrics pairs
+      sorted.each_with_index do |old_gid, new_gid|
+        break if new_gid >= hmetrics
+        write_uint16(io, hm.advance_width(old_gid).to_u32)
+        write_sint16(io, hm.left_side_bearing(old_gid).to_i32)
+      end
+
+      # write leftSideBearings for remaining glyphs
+      sorted.each_with_index do |old_gid, new_gid|
+        next if new_gid < hmetrics
+        write_sint16(io, hm.left_side_bearing(old_gid).to_i32)
+      end
       io.to_slice
     end
 

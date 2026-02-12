@@ -80,6 +80,11 @@ module Fontbox::TTF
       @tables.values.to_a
     end
 
+    # Gets the table map (tag -> TTFTable).
+    def table_map : Hash(String, TTFTable)
+      @tables
+    end
+
     # Gets the header table.
     def header : HeaderTable?
       table = table(HeaderTable::TAG).as?(HeaderTable)
@@ -227,6 +232,15 @@ module Fontbox::TTF
       ensure
         @data.seek(original_position)
       end
+    end
+
+    # Reads all bytes from a table.
+    def table_bytes(table : TTFTable) : Bytes
+      length = table.length
+      if length > Int32::MAX
+        raise "Table length #{length} exceeds maximum size"
+      end
+      table_n_bytes(table, length.to_i32)
     end
 
     # Gets the font name.
