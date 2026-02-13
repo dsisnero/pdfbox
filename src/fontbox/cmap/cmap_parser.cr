@@ -2,11 +2,132 @@ require "../../pdfbox/io"
 
 module Fontbox
   module CMap
+    # Internal classes for CMapParser
+    private class LiteralName
+      getter name : String
+
+      def initialize(@name : String)
+      end
+    end
+
+    private class Operator
+      getter op : String
+
+      def initialize(@op : String)
+      end
+    end
+
+    # Union type for Number (used internally)
+    private alias Number = Int32 | Float64
+
+    # Token struct similar to JSON::Any to avoid recursive union compiler bug
+    private struct Token
+      alias RawType = String | Bytes | Int32 | Float64 | LiteralName | Operator | Array(Token) | Hash(String, Token)
+
+      @raw : RawType
+
+      def initialize(@raw : RawType)
+      end
+
+      # Get raw value (use with caution)
+      def raw : RawType
+        @raw
+      end
+
+      # Query methods
+      def string? : Bool
+        @raw.is_a?(String)
+      end
+
+      def bytes? : Bool
+        @raw.is_a?(Bytes)
+      end
+
+      def int? : Bool
+        @raw.is_a?(Int32)
+      end
+
+      def float? : Bool
+        @raw.is_a?(Float64)
+      end
+
+      def literal_name? : Bool
+        @raw.is_a?(LiteralName)
+      end
+
+      def operator? : Bool
+        @raw.is_a?(Operator)
+      end
+
+      def array? : Bool
+        @raw.is_a?(Array)
+      end
+
+      def hash? : Bool
+        @raw.is_a?(Hash)
+      end
+
+      def number? : Bool
+        int? || float?
+      end
+
+      # Getter methods (will raise if wrong type)
+      def as_s : String
+        @raw.as(String)
+      end
+
+      def as_bytes : Bytes
+        @raw.as(Bytes)
+      end
+
+      def as_i : Int32
+        @raw.as(Int32)
+      end
+
+      def as_f : Float64
+        @raw.as(Float64)
+      end
+
+      def as_literal_name : LiteralName
+        @raw.as(LiteralName)
+      end
+
+      def as_operator : Operator
+        @raw.as(Operator)
+      end
+
+      def as_a : Array(Token)
+        @raw.as(Array)
+      end
+
+      def as_h : Hash(String, Token)
+        @raw.as(Hash)
+      end
+
+      def as_number
+        if int?
+          as_i
+        elsif float?
+          as_f
+        else
+          raise "Not a number"
+        end
+      end
+
+      # For MARK_END_OF_DICTIONARY and MARK_END_OF_ARRAY string constants
+      def ==(other : String) : Bool
+        string? && as_s == other
+      end
+
+      # Needed for comparison with nil in loops
+      def ==(other : Nil) : Bool
+        false
+      end
+    end
+
     class CMapParser
       private MARK_END_OF_DICTIONARY = ">>"
       private MARK_END_OF_ARRAY      = "]"
-
-      private alias Token = String | Bytes | Int32 | Float64 | LiteralName | Operator | Array(Token) | Hash(String, Token)
 
       @strict_mode : Bool
       @token_parser_byte_buffer : Bytes
@@ -15,59 +136,6 @@ module Fontbox
         @strict_mode = strict_mode
         @token_parser_byte_buffer = Bytes.new(512)
       end
-
-      # Forward declarations
-      private def parse_next_token(random_access_read : Pdfbox::IO::RandomAccessRead) : Token?; end
-
-      private def parse_integer(random_access_read : Pdfbox::IO::RandomAccessRead) : Int32; end
-
-      private def parse_byte_array(random_access_read : Pdfbox::IO::RandomAccessRead) : Bytes; end
-
-      private def read_array(random_access_read : Pdfbox::IO::RandomAccessRead) : Array(Token); end
-
-      private def read_string(random_access_read : Pdfbox::IO::RandomAccessRead) : String; end
-
-      private def read_line(random_access_read : Pdfbox::IO::RandomAccessRead, first_byte : UInt8) : String; end
-
-      private def read_literal_name(random_access_read : Pdfbox::IO::RandomAccessRead) : LiteralName; end
-
-      private def read_operator(random_access_read : Pdfbox::IO::RandomAccessRead, first_byte : UInt8) : Operator; end
-
-      private def read_number(random_access_read : Pdfbox::IO::RandomAccessRead, first_byte : UInt8) : Number; end
-
-      private def read_dictionary(random_access_read : Pdfbox::IO::RandomAccessRead) : Hash(String, Token) | Bytes; end
-
-      private def read_until_end_of_line(random_access_read : Pdfbox::IO::RandomAccessRead, buf : String::Builder); end
-
-      private def parse_usecmap(use_cmap_name : LiteralName, result : CMap); end
-
-      private def parse_literal_name(literal : LiteralName, random_access_read : Pdfbox::IO::RandomAccessRead, result : CMap); end
-
-      private def parse_begincodespacerange(cos_count : Number, random_access_read : Pdfbox::IO::RandomAccessRead, result : CMap); end
-
-      private def parse_beginbfchar(cos_count : Number, random_access_read : Pdfbox::IO::RandomAccessRead, result : CMap); end
-
-      private def parse_begincidrange(number_of_lines : Int32, random_access_read : Pdfbox::IO::RandomAccessRead, result : CMap); end
-
-      private def parse_begincidchar(cos_count : Number, random_access_read : Pdfbox::IO::RandomAccessRead, result : CMap); end
-
-      private def parse_beginbfrange(cos_count : Number, random_access_read : Pdfbox::IO::RandomAccessRead, result : CMap); end
-
-      private def add_mapping_from_bfrange(cmap : CMap, start_code : Bytes, token_bytes_list : Array); end
-
-      private def add_mapping_from_bfrange(cmap : CMap, start_code : Bytes, values : Int32, token_bytes : Bytes); end
-
-      private def external_cmap(name : String) : Pdfbox::IO::RandomAccessRead; end
-
-      private def check_expected_operator(operator : Operator, expected_operator_name : String, range_name : String); end
-
-      private def create_string_from_bytes(bytes : Bytes) : String; end
-
-      private def increment(data : Bytes, position : Int32, use_strict_mode : Bool) : Bool; end
-
-      private def is_whitespace_or_eof(a_byte : UInt8?) : Bool; end
-
-      private def is_delimiter(a_byte : UInt8?) : Bool; end
 
       def parse_predefined(name : String) : CMap
         random_access_read = external_cmap(name)
@@ -87,16 +155,16 @@ module Fontbox
         previous_token = nil
         token = parse_next_token(random_access_read)
         while token
-          if token.is_a?(Operator)
-            op = token.as(Operator)
+          if token.operator?
+            op = token.as_operator
             if op.op == "endcmap"
               break
             end
 
-            if op.op == "usecmap" && previous_token.is_a?(LiteralName)
-              parse_usecmap(previous_token.as(LiteralName), result)
-            elsif previous_token.is_a?(Number)
-              number = previous_token.as(Number)
+            if op.op == "usecmap" && previous_token.try(&.literal_name?)
+              parse_usecmap(previous_token.as(Token).as_literal_name, result)
+            elsif previous_token.try(&.number?)
+              number = previous_token.as(Token).as_number
               if op.op == "begincodespacerange"
                 parse_begincodespacerange(number, random_access_read, result)
               elsif op.op == "beginbfchar"
@@ -105,12 +173,12 @@ module Fontbox
                 parse_beginbfrange(number, random_access_read, result)
               elsif op.op == "begincidchar"
                 parse_begincidchar(number, random_access_read, result)
-              elsif op.op == "begincidrange" && previous_token.is_a?(Int32)
-                parse_begincidrange(previous_token.as(Int32), random_access_read, result)
+              elsif op.op == "begincidrange" && previous_token.try(&.int?)
+                parse_begincidrange(previous_token.as(Token).as_i, random_access_read, result)
               end
             end
-          elsif token.is_a?(LiteralName)
-            parse_literal_name(token.as(LiteralName), random_access_read, result)
+          elsif token.literal_name?
+            parse_literal_name(token.as_literal_name, random_access_read, result)
           end
           previous_token = token
           token = parse_next_token(random_access_read)
@@ -129,40 +197,40 @@ module Fontbox
         case literal.name
         when "WMode"
           next_token = parse_next_token(random_access_read)
-          if next_token.is_a?(Int32)
-            result.wmode = next_token
+          if next_token && next_token.int?
+            result.wmode = next_token.as_i
           end
         when "CMapName"
           next_token = parse_next_token(random_access_read)
-          if next_token.is_a?(LiteralName)
-            result.name = next_token.as(LiteralName).name
+          if next_token && next_token.literal_name?
+            result.name = next_token.as_literal_name.name
           end
         when "CMapVersion"
           next_token = parse_next_token(random_access_read)
-          if next_token.is_a?(Number)
-            result.version = next_token.to_s
-          elsif next_token.is_a?(String)
-            result.version = next_token.as(String)
+          if next_token && next_token.number?
+            result.version = next_token.as_number.to_s
+          elsif next_token && next_token.string?
+            result.version = next_token.as_s
           end
         when "CMapType"
           next_token = parse_next_token(random_access_read)
-          if next_token.is_a?(Int32)
-            result.type = next_token
+          if next_token && next_token.int?
+            result.type = next_token.as_i
           end
         when "Registry"
           next_token = parse_next_token(random_access_read)
-          if next_token.is_a?(String)
-            result.registry = next_token
+          if next_token && next_token.string?
+            result.registry = next_token.as_s
           end
         when "Ordering"
           next_token = parse_next_token(random_access_read)
-          if next_token.is_a?(String)
-            result.ordering = next_token
+          if next_token && next_token.string?
+            result.ordering = next_token.as_s
           end
         when "Supplement"
           next_token = parse_next_token(random_access_read)
-          if next_token.is_a?(Int32)
-            result.supplement = next_token
+          if next_token && next_token.int?
+            result.supplement = next_token.as_i
           end
         end
       end
@@ -176,14 +244,14 @@ module Fontbox
       private def parse_begincodespacerange(cos_count : Number, random_access_read : Pdfbox::IO::RandomAccessRead, result : CMap)
         cos_count.to_i.times do |_|
           next_token = parse_next_token(random_access_read)
-          if next_token.is_a?(Operator)
-            check_expected_operator(next_token.as(Operator), "endcodespacerange", "codespacerange")
+          if next_token && next_token.operator?
+            check_expected_operator(next_token.as_operator, "endcodespacerange", "codespacerange")
             break
           end
-          unless next_token.is_a?(Bytes)
+          unless next_token && next_token.bytes?
             raise "start range missing"
           end
-          start_range = next_token.as(Bytes)
+          start_range = next_token.as_bytes
           end_range = parse_byte_array(random_access_read)
           begin
             result.add_codespace_range(CodespaceRange.new(start_range, end_range))
@@ -196,23 +264,23 @@ module Fontbox
       private def parse_beginbfchar(cos_count : Number, random_access_read : Pdfbox::IO::RandomAccessRead, result : CMap)
         cos_count.to_i.times do |_|
           next_token = parse_next_token(random_access_read)
-          if next_token.is_a?(Operator)
-            check_expected_operator(next_token.as(Operator), "endbfchar", "bfchar")
+          if next_token && next_token.operator?
+            check_expected_operator(next_token.as_operator, "endbfchar", "bfchar")
             break
           end
-          unless next_token.is_a?(Bytes)
+          unless next_token && next_token.bytes?
             raise "input code missing"
           end
-          input_code = next_token.as(Bytes)
+          input_code = next_token.as_bytes
           next_token = parse_next_token(random_access_read)
-          if next_token.is_a?(Bytes)
-            bytes = next_token.as(Bytes)
+          if next_token && next_token.bytes?
+            bytes = next_token.as_bytes
             value = create_string_from_bytes(bytes)
             result.add_char_mapping(input_code, value)
-          elsif next_token.is_a?(LiteralName)
-            result.add_char_mapping(input_code, next_token.as(LiteralName).name)
+          elsif next_token && next_token.literal_name?
+            result.add_char_mapping(input_code, next_token.as_literal_name.name)
           else
-            raise "Error parsing CMap beginbfchar, expected{Bytes or LiteralName} and not #{next_token.class}"
+            raise "Error parsing CMap beginbfchar, expected{Bytes or LiteralName} and not #{next_token.try(&.raw.class) || "nil"}"
           end
         end
       end
@@ -220,14 +288,14 @@ module Fontbox
       private def parse_begincidrange(number_of_lines : Int32, random_access_read : Pdfbox::IO::RandomAccessRead, result : CMap)
         number_of_lines.times do |_|
           next_token = parse_next_token(random_access_read)
-          if next_token.is_a?(Operator)
-            check_expected_operator(next_token.as(Operator), "endcidrange", "cidrange")
+          if next_token && next_token.operator?
+            check_expected_operator(next_token.as_operator, "endcidrange", "cidrange")
             break
           end
-          unless next_token.is_a?(Bytes)
+          unless next_token && next_token.bytes?
             raise "start code missing"
           end
-          start_code = next_token.as(Bytes)
+          start_code = next_token.as_bytes
           end_code = parse_byte_array(random_access_read)
           mapped_code = parse_integer(random_access_read)
           if start_code.size == end_code.size
@@ -245,14 +313,14 @@ module Fontbox
       private def parse_begincidchar(cos_count : Number, random_access_read : Pdfbox::IO::RandomAccessRead, result : CMap)
         cos_count.to_i.times do |_|
           next_token = parse_next_token(random_access_read)
-          if next_token.is_a?(Operator)
-            check_expected_operator(next_token.as(Operator), "endcidchar", "cidchar")
+          if next_token && next_token.operator?
+            check_expected_operator(next_token.as_operator, "endcidchar", "cidchar")
             break
           end
-          unless next_token.is_a?(Bytes)
+          unless next_token && next_token.bytes?
             raise "input code missing"
           end
-          input_code = next_token.as(Bytes)
+          input_code = next_token.as_bytes
           mapped_cid = parse_integer(random_access_read)
           result.add_cid_mapping(input_code, mapped_cid)
         end
@@ -261,23 +329,23 @@ module Fontbox
       private def parse_beginbfrange(cos_count : Number, random_access_read : Pdfbox::IO::RandomAccessRead, result : CMap)
         cos_count.to_i.times do |_|
           next_token = parse_next_token(random_access_read)
-          if next_token.is_a?(Operator)
-            check_expected_operator(next_token.as(Operator), "endbfrange", "bfrange")
+          if next_token && next_token.operator?
+            check_expected_operator(next_token.as_operator, "endbfrange", "bfrange")
             break
           end
-          unless next_token.is_a?(Bytes)
+          unless next_token && next_token.bytes?
             raise "start code missing"
           end
-          start_code = next_token.as(Bytes)
+          start_code = next_token.as_bytes
           next_token = parse_next_token(random_access_read)
-          if next_token.is_a?(Operator)
-            check_expected_operator(next_token.as(Operator), "endbfrange", "bfrange")
+          if next_token && next_token.operator?
+            check_expected_operator(next_token.as_operator, "endbfrange", "bfrange")
             break
           end
-          unless next_token.is_a?(Bytes)
+          unless next_token && next_token.bytes?
             raise "end code missing"
           end
-          end_code = next_token.as(Bytes)
+          end_code = next_token.as_bytes
           start = CMap.to_int(start_code)
           ending = CMap.to_int(end_code)
           # end has to be bigger than start or equal
@@ -286,14 +354,14 @@ module Fontbox
             break
           end
           next_token = parse_next_token(random_access_read)
-          if next_token.is_a?(Array)
-            array = next_token.as(Array)
+          if next_token && next_token.array?
+            array = next_token.as_a
             # ignore empty and malformed arrays
             if !array.empty? && array.size >= ending - start
               add_mapping_from_bfrange(result, start_code, array)
             end
-          elsif next_token.is_a?(Bytes)
-            token_bytes = next_token.as(Bytes)
+          elsif next_token && next_token.bytes?
+            token_bytes = next_token.as_bytes
             if token_bytes.size > 0
               # PDFBOX-4720:
               # some pdfs use the malformed bfrange <0000> <FFFF> <0000>. Add support by adding a identity
@@ -315,9 +383,9 @@ module Fontbox
         end
       end
 
-      private def add_mapping_from_bfrange(cmap : CMap, start_code : Bytes, token_bytes_list : Array)
+      private def add_mapping_from_bfrange(cmap : CMap, start_code : Bytes, token_bytes_list : Array(Token))
         token_bytes_list.each do |token_bytes|
-          value = create_string_from_bytes(token_bytes.as(Bytes))
+          value = create_string_from_bytes(token_bytes.as_bytes)
           cmap.add_char_mapping(start_code, value)
           increment(start_code, start_code.size - 1, false)
         end
@@ -349,7 +417,7 @@ module Fontbox
         Pdfbox::IO::RandomAccessReadBuffer.new(data)
       end
 
-      private def parse_next_token(random_access_read : Pdfbox::IO::RandomAccessRead)
+      private def parse_next_token(random_access_read : Pdfbox::IO::RandomAccessRead) : Token?
         next_byte = random_access_read.read
         # skip whitespace
         while next_byte == 0x09 || next_byte == 0x20 || next_byte == 0x0D || next_byte == 0x0A
@@ -360,35 +428,40 @@ module Fontbox
           # EOF returning nil
           nil
         when '%'.ord
-          read_line(random_access_read, next_byte.as(UInt8))
+          Token.new(read_line(random_access_read, next_byte.as(UInt8)))
         when '('.ord
-          read_string(random_access_read)
+          Token.new(read_string(random_access_read))
         when '>'.ord
           if random_access_read.read == '>'.ord
-            MARK_END_OF_DICTIONARY
+            Token.new(MARK_END_OF_DICTIONARY)
           else
             raise "Error: expected the end of a dictionary."
           end
         when ']'.ord
-          MARK_END_OF_ARRAY
+          Token.new(MARK_END_OF_ARRAY)
         when '['.ord
-          read_array(random_access_read)
+          Token.new(read_array(random_access_read))
         when '<'.ord
-          read_dictionary(random_access_read)
+          result = read_dictionary(random_access_read)
+          if result.is_a?(Bytes)
+            Token.new(result)
+          else
+            Token.new(result)
+          end
         when '/'.ord
-          read_literal_name(random_access_read)
+          Token.new(read_literal_name(random_access_read))
         when '0'.ord, '1'.ord, '2'.ord, '3'.ord, '4'.ord, '5'.ord, '6'.ord, '7'.ord, '8'.ord, '9'.ord
-          read_number(random_access_read, next_byte.as(UInt8))
+          Token.new(read_number(random_access_read, next_byte.as(UInt8)))
         else
-          read_operator(random_access_read, next_byte.as(UInt8))
+          Token.new(read_operator(random_access_read, next_byte.as(UInt8)))
         end
       end
 
       private def parse_integer(random_access_read : Pdfbox::IO::RandomAccessRead) : Int32
         next_token = parse_next_token(random_access_read)
         raise "expected integer value is missing" if next_token.nil?
-        if next_token.is_a?(Int32)
-          return next_token
+        if next_token.int?
+          return next_token.as_i
         end
         raise "invalid type for next token"
       end
@@ -396,8 +469,8 @@ module Fontbox
       private def parse_byte_array(random_access_read : Pdfbox::IO::RandomAccessRead) : Bytes
         next_token = parse_next_token(random_access_read)
         raise "expected byte[] value is missing" if next_token.nil?
-        if next_token.is_a?(Bytes)
-          return next_token
+        if next_token.bytes?
+          return next_token.as_bytes
         end
         raise "invalid type for next token"
       end
@@ -406,7 +479,7 @@ module Fontbox
         list = [] of Token
         next_token = parse_next_token(random_access_read)
         while next_token && next_token != MARK_END_OF_ARRAY
-          list << next_token.as(Token)
+          list << next_token
           next_token = parse_next_token(random_access_read)
         end
         list
@@ -433,11 +506,11 @@ module Fontbox
       private def read_literal_name(random_access_read : Pdfbox::IO::RandomAccessRead) : LiteralName
         buffer = String::Builder.new
         string_byte = random_access_read.read
-        while !is_whitespace_or_eof(string_byte) && !is_delimiter(string_byte)
+        while !whitespace_or_eof?(string_byte) && !delimiter?(string_byte)
           buffer << string_byte.as(UInt8).chr
           string_byte = random_access_read.read
         end
-        if is_delimiter(string_byte)
+        if delimiter?(string_byte)
           random_access_read.rewind(1)
         end
         LiteralName.new(buffer.to_s)
@@ -450,11 +523,11 @@ module Fontbox
         next_byte = random_access_read.read
         # newline separator may be missing in malformed CMap files
         # see PDFBOX-2035
-        while !is_whitespace_or_eof(next_byte) && !is_delimiter(next_byte) && (!next_byte.nil? && !next_byte.as(UInt8).chr.ascii_number?)
+        while !whitespace_or_eof?(next_byte) && !delimiter?(next_byte) && (!next_byte.nil? && !next_byte.as(UInt8).chr.ascii_number?)
           buffer << next_byte.as(UInt8).chr
           next_byte = random_access_read.read
         end
-        if !next_byte.nil? && (is_delimiter(next_byte) || next_byte.chr.ascii_number?)
+        if !next_byte.nil? && (delimiter?(next_byte) || next_byte.chr.ascii_number?)
           random_access_read.rewind(1)
         end
         Operator.new(buffer.to_s)
@@ -465,7 +538,7 @@ module Fontbox
         buffer = String::Builder.new
         buffer << next_byte.chr
         next_byte = random_access_read.read
-        while !is_whitespace_or_eof(next_byte) && (!next_byte.nil? && (next_byte.as(UInt8).chr.ascii_number? || next_byte == '.'.ord))
+        while !whitespace_or_eof?(next_byte) && (!next_byte.nil? && (next_byte.as(UInt8).chr.ascii_number? || next_byte == '.'.ord))
           buffer << next_byte.as(UInt8).chr
           next_byte = random_access_read.read
         end
@@ -482,15 +555,15 @@ module Fontbox
         raise "Invalid number '#{value}'"
       end
 
-      private def read_dictionary(random_access_read : Pdfbox::IO::RandomAccessRead)
+      private def read_dictionary(random_access_read : Pdfbox::IO::RandomAccessRead) : Hash(String, Token) | Bytes
         the_next_byte = random_access_read.read
         if the_next_byte == '<'.ord
           result = {} of String => Token
           key = parse_next_token(random_access_read)
-          while key.is_a?(LiteralName) && key.as(LiteralName).name != MARK_END_OF_DICTIONARY
+          while key && key.literal_name? && key.as_literal_name.name != MARK_END_OF_DICTIONARY
             value = parse_next_token(random_access_read)
             raise "Unexpected EOF" if value.nil?
-            result[key.as(LiteralName).name] = value.as(Token)
+            result[key.as_literal_name.name] = value.as(Token)
             key = parse_next_token(random_access_read)
           end
           result
@@ -500,7 +573,7 @@ module Fontbox
           while !the_next_byte.nil? && the_next_byte != '>'.ord
             # all kind of whitespaces may occur in malformed CMap files
             # see PDFBOX-2035
-            if is_whitespace_or_eof(the_next_byte)
+            if whitespace_or_eof?(the_next_byte)
               # skipping whitespaces
               the_next_byte = random_access_read.read
               next
@@ -543,7 +616,7 @@ module Fontbox
         end
       end
 
-      private def is_whitespace_or_eof(a_byte : UInt8?) : Bool
+      private def whitespace_or_eof?(a_byte : UInt8?) : Bool
         case a_byte
         when nil, 0x20, 0x0D, 0x0A
           true
@@ -552,7 +625,7 @@ module Fontbox
         end
       end
 
-      private def is_delimiter(a_byte : UInt8?) : Bool
+      private def delimiter?(a_byte : UInt8?) : Bool
         case a_byte
         when '('.ord, ')'.ord, '<'.ord, '>'.ord, '['.ord, ']'.ord, '{'.ord, '}'.ord, '/'.ord, '%'.ord
           true
@@ -583,24 +656,6 @@ module Fontbox
           String.new(bytes, "UTF-16BE")
         end
       end
-
-      # Internal classes
-      private class LiteralName
-        getter name : String
-
-        def initialize(@name : String)
-        end
-      end
-
-      private class Operator
-        getter op : String
-
-        def initialize(@op : String)
-        end
-      end
-
-      # Union type for Number
-      alias Number = Int32 | Float64
     end
   end
 end
