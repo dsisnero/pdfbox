@@ -336,6 +336,50 @@ module Pdfbox::Pdmodel::Encryption
       entry.as?(Pdfbox::Cos::String)
     end
 
+    private def get_name_as_string(key : Pdfbox::Cos::Name) : String?
+      entry = @dictionary[key]
+      # Dereference COSObject
+      while entry.is_a?(Pdfbox::Cos::Object)
+        entry = entry.object
+      end
+      # COSNull treated as nil
+      return if entry.nil? || entry.is_a?(Pdfbox::Cos::Null)
+      entry.as?(Pdfbox::Cos::Name).try(&.value)
+    end
+
+    private def get_cos_name(key : Pdfbox::Cos::Name) : Pdfbox::Cos::Name?
+      entry = @dictionary[key]
+      # Dereference COSObject
+      while entry.is_a?(Pdfbox::Cos::Object)
+        entry = entry.object
+      end
+      # COSNull treated as nil
+      return if entry.nil? || entry.is_a?(Pdfbox::Cos::Null)
+      entry.as?(Pdfbox::Cos::Name)
+    end
+
+    private def get_boolean(key : Pdfbox::Cos::Name, default : Bool) : Bool
+      entry = @dictionary[key]
+      while entry.is_a?(Pdfbox::Cos::Object)
+        entry = entry.object
+      end
+      return default if entry.nil? || entry.is_a?(Pdfbox::Cos::Null)
+      if bool = entry.as?(Pdfbox::Cos::Boolean)
+        bool.value
+      else
+        default
+      end
+    end
+
+    private def get_recipients_array : Pdfbox::Cos::Array?
+      entry = @dictionary[Pdfbox::Cos::Name.new("Recipients")]
+      while entry.is_a?(Pdfbox::Cos::Object)
+        entry = entry.object
+      end
+      return if entry.nil? || entry.is_a?(Pdfbox::Cos::Null)
+      entry.as?(Pdfbox::Cos::Array)
+    end
+
     def version : Int32
       get_int(Pdfbox::Cos::Name.new("V"), 0)
     end
@@ -413,25 +457,26 @@ module Pdfbox::Pdmodel::Encryption
     end
 
     def encrypt_metadata? : Bool
-      true
+      get_boolean(Pdfbox::Cos::Name.new("EncryptMetadata"), true)
     end
 
     def stream_filter_name : Pdfbox::Cos::Name?
-      nil
+      get_cos_name(Pdfbox::Cos::Name.new("StmF"))
     end
 
     def string_filter_name : Pdfbox::Cos::Name?
-      nil
+      get_cos_name(Pdfbox::Cos::Name.new("StrF"))
     end
 
     def perms : Bytes?
-      nil
+      perms_str = get_cos_string(Pdfbox::Cos::Name.new("Perms"))
+      return unless perms_str
+      perms_str.bytes
     end
 
     # TODO: implement
     def security_handler : SecurityHandler
-      raise ::IO::Error.new("No security handler for filter #{filter}") unless @security_handler
-      @security_handler.not_nil!
+      @security_handler || raise ::IO::Error.new("No security handler for filter #{filter}")
     end
 
     def has_security_handler? : Bool
@@ -444,11 +489,11 @@ module Pdfbox::Pdmodel::Encryption
     end
 
     def sub_filter : String?
-      nil
+      get_name_as_string(Pdfbox::Cos::Name.new("SubFilter"))
     end
 
     def sub_filter=(subfilter : String) : String
-      # TODO
+      @dictionary[Pdfbox::Cos::Name.new("SubFilter")] = Pdfbox::Cos::Name.new(subfilter)
       subfilter
     end
 
@@ -468,22 +513,22 @@ module Pdfbox::Pdmodel::Encryption
     end
 
     def owner_key=(o : Bytes) : Bytes
-      # TODO
+      @dictionary[Pdfbox::Cos::Name.new("O")] = Pdfbox::Cos::String.new(o)
       o
     end
 
     def user_key=(u : Bytes) : Bytes
-      # TODO
+      @dictionary[Pdfbox::Cos::Name.new("U")] = Pdfbox::Cos::String.new(u)
       u
     end
 
     def owner_encryption_key=(oe : Bytes) : Bytes
-      # TODO
+      @dictionary[Pdfbox::Cos::Name.new("OE")] = Pdfbox::Cos::String.new(oe)
       oe
     end
 
     def user_encryption_key=(ue : Bytes) : Bytes
-      # TODO
+      @dictionary[Pdfbox::Cos::Name.new("UE")] = Pdfbox::Cos::String.new(ue)
       ue
     end
 
@@ -493,16 +538,28 @@ module Pdfbox::Pdmodel::Encryption
     end
 
     def recipients=(recipients : Array(Bytes)) : Array(Bytes)
-      # TODO
+      array = Pdfbox::Cos::Array.new
+      recipients.each do |recipient|
+        array << Pdfbox::Cos::String.new(recipient)
+      end
+      @dictionary[Pdfbox::Cos::Name.new("Recipients")] = array
       recipients
     end
 
     def recipients_length : Int32
-      0
+      array = get_recipients_array
+      array ? array.size : 0
     end
 
     def recipient_string_at(i : Int32) : Pdfbox::Cos::String?
-      nil
+      array = get_recipients_array
+      return unless array
+      entry = array[i]?
+      return unless entry
+      while entry.is_a?(Pdfbox::Cos::Object)
+        entry = entry.object
+      end
+      entry.as?(Pdfbox::Cos::String)
     end
 
     def std_crypt_filter_dictionary : Pdfbox::Pdmodel::Encryption::PDCryptFilterDictionary?
@@ -532,17 +589,17 @@ module Pdfbox::Pdmodel::Encryption
     end
 
     def stream_filter_name=(stream_filter_name : Pdfbox::Cos::Name) : Pdfbox::Cos::Name
-      # TODO
+      @dictionary[Pdfbox::Cos::Name.new("StmF")] = stream_filter_name
       stream_filter_name
     end
 
     def string_filter_name=(string_filter_name : Pdfbox::Cos::Name) : Pdfbox::Cos::Name
-      # TODO
+      @dictionary[Pdfbox::Cos::Name.new("StrF")] = string_filter_name
       string_filter_name
     end
 
     def perms=(perms : Bytes) : Bytes
-      # TODO
+      @dictionary[Pdfbox::Cos::Name.new("Perms")] = Pdfbox::Cos::String.new(perms)
       perms
     end
 

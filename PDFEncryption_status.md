@@ -16,40 +16,40 @@ This document tracks the porting status of encryption-related classes from Apach
 | `public COSDictionary getCOSObject()` | `def dictionary : Pdfbox::Cos::Dictionary` | Renamed to `dictionary` (Crystal idiom) | ❌ Not tested | ✅ Implemented |
 | `public void setFilter(String filter)` | `def filter=(filter : String) : String` | Property setter (Crystal idiom) | ✅ Tested in specs | ✅ Implemented |
 | `public final String getFilter()` | `def filter : String` | Snake case getter | ✅ Tested in specs | ✅ Implemented |
-| `public String getSubFilter()` | `def sub_filter : String?` | Snake case, returns nil-able | ❌ Not tested | ⚠️ Stub |
-| `public void setSubFilter(String subfilter)` | `def sub_filter=(subfilter : String) : String` | Property setter (Crystal idiom) | ❌ Not tested | ⚠️ Stub |
+| `public String getSubFilter()` | `def sub_filter : String?` | Snake case, returns nil-able | ✅ Tested in specs | ✅ Implemented |
+| `public void setSubFilter(String subfilter)` | `def sub_filter=(subfilter : String) : String` | Property setter (Crystal idiom) | ✅ Tested in specs | ✅ Implemented |
 | `public void setVersion(int version)` | `def version=(version : Int32) : Int32` | Property setter (Crystal idiom) | ✅ Tested in specs | ✅ Implemented |
-| `public int getVersion()` | `def version : Int32` | Snake case getter | ❌ Not tested | ✅ Implemented |
+| `public int getVersion()` | `def version : Int32` | Snake case getter | ✅ Tested in specs | ✅ Implemented |
 | `public void setLength(int length)` | `def length=(length : Int32) : Int32` | Property setter (Crystal idiom) | ✅ Tested in specs | ✅ Implemented |
-| `public int getLength()` | `def length : Int32` | Snake case getter | ❌ Not tested | ✅ Implemented |
+| `public int getLength()` | `def length : Int32` | Snake case getter | ✅ Tested in specs | ✅ Implemented |
 | `public void setRevision(int revision)` | `def revision=(revision : Int32) : Int32` | Property setter (Crystal idiom) | ✅ Tested in specs | ✅ Implemented |
-| `public int getRevision()` | `def revision : Int32` | Snake case getter | ❌ Not tested | ✅ Implemented |
-| `public void setOwnerKey(byte[] o) throws IOException` | `def owner_key=(o : Bytes) : Bytes` | Property setter (Crystal idiom) | ❌ Not tested | ⚠️ Stub |
-| `public byte[] getOwnerKey() throws IOException` | `def owner_key : Bytes?` | Snake case, returns `Bytes?` | ❌ Not tested | ⚠️ Stub |
-| `public void setUserKey(byte[] u) throws IOException` | `def set_user_key(u : Bytes) : Nil` | Snake case | ❌ Not tested | ⚠️ Stub |
-| `public byte[] getUserKey() throws IOException` | `def user_key : Bytes?` | Snake case | ❌ Not tested | ⚠️ Stub |
-| `public void setOwnerEncryptionKey(byte[] oe) throws IOException` | `def set_owner_encryption_key(oe : Bytes) : Nil` | Snake case | ❌ Not tested | ⚠️ Stub |
-| `public byte[] getOwnerEncryptionKey() throws IOException` | `def owner_encryption_key : Bytes?` | Snake case | ❌ Not tested | ⚠️ Stub |
-| `public void setUserEncryptionKey(byte[] ue) throws IOException` | `def set_user_encryption_key(ue : Bytes) : Nil` | Snake case | ❌ Not tested | ⚠️ Stub |
-| `public byte[] getUserEncryptionKey() throws IOException` | `def user_encryption_key : Bytes?` | Snake case | ❌ Not tested | ⚠️ Stub |
+| `public int getRevision()` | `def revision : Int32` | Snake case getter | ✅ Tested in specs | ✅ Implemented |
+| `public void setOwnerKey(byte[] o) throws IOException` | `def owner_key=(o : Bytes) : Bytes` | Property setter (Crystal idiom) | ✅ Tested in specs | ✅ Implemented |
+| `public byte[] getOwnerKey() throws IOException` | `def owner_key : Bytes?` | Snake case, returns `Bytes?` | ✅ Tested in specs | ✅ Implemented |
+| `public void setUserKey(byte[] u) throws IOException` | `def user_key=(u : Bytes) : Bytes` | Property setter (Crystal idiom) | ✅ Tested in specs | ✅ Implemented |
+| `public byte[] getUserKey() throws IOException` | `def user_key : Bytes?` | Snake case | ✅ Tested in specs | ✅ Implemented |
+| `public void setOwnerEncryptionKey(byte[] oe) throws IOException` | `def owner_encryption_key=(oe : Bytes) : Bytes` | Property setter (Crystal idiom) | ✅ Tested in specs | ✅ Implemented |
+| `public byte[] getOwnerEncryptionKey() throws IOException` | `def owner_encryption_key : Bytes?` | Snake case | ✅ Tested in specs | ✅ Implemented |
+| `public void setUserEncryptionKey(byte[] ue) throws IOException` | `def user_encryption_key=(ue : Bytes) : Bytes` | Property setter (Crystal idiom) | ✅ Tested in specs | ✅ Implemented |
+| `public byte[] getUserEncryptionKey() throws IOException` | `def user_encryption_key : Bytes?` | Snake case | ✅ Tested in specs | ✅ Implemented |
 | `public void setPermissions(int permissions)` | `def permissions=(permissions : Int32) : Int32` | Property setter (Crystal idiom) | ✅ Tested in specs | ✅ Implemented |
 | `public int getPermissions()` | `def permissions : Int32` | Snake case getter | ✅ Tested in specs | ✅ Implemented |
-| `public boolean isEncryptMetaData()` | `def encrypt_metadata? : Bool` | Snake case with `?` suffix | ❌ Not tested | ⚠️ Stub |
-| `public void setRecipients(byte[][] recipients) throws IOException` | `def set_recipients(recipients : Array(Bytes)) : Nil` | `Array(Bytes)` instead of `byte[][]` | ❌ Not tested | ⚠️ Stub |
+| `public boolean isEncryptMetaData()` | `def encrypt_metadata? : Bool` | Snake case with `?` suffix | ✅ Tested in specs | ✅ Implemented |
+| `public void setRecipients(byte[][] recipients) throws IOException` | `def recipients=(recipients : Array(Bytes)) : Array(Bytes)` | Property setter (Crystal idiom) | ❌ Not tested | ⚠️ Stub |
 | `public int getRecipientsLength()` | `def recipients_length : Int32` | Snake case | ❌ Not tested | ⚠️ Stub |
 | `public COSString getRecipientStringAt(int i)` | `def recipient_string_at(i : Int32) : Pdfbox::Cos::String?` | Snake case | ❌ Not tested | ⚠️ Stub |
 | `public PDCryptFilterDictionary getStdCryptFilterDictionary()` | `def std_crypt_filter_dictionary : Pdfbox::Pdmodel::Encryption::PDCryptFilterDictionary?` | Snake case | ❌ Not tested | ⚠️ Stub |
 | `public PDCryptFilterDictionary getDefaultCryptFilterDictionary()` | `def default_crypt_filter_dictionary : Pdfbox::Pdmodel::Encryption::PDCryptFilterDictionary?` | Snake case | ❌ Not tested | ⚠️ Stub |
 | `public PDCryptFilterDictionary getCryptFilterDictionary(COSName cryptFilterName)` | `def crypt_filter_dictionary(crypt_filter_name : Pdfbox::Cos::Name) : Pdfbox::Pdmodel::Encryption::PDCryptFilterDictionary?` | Snake case | ❌ Not tested | ⚠️ Stub |
-| `public void setCryptFilterDictionary(COSName cryptFilterName, PDCryptFilterDictionary cryptFilterDictionary)` | `def set_crypt_filter_dictionary(crypt_filter_name : Pdfbox::Cos::Name, crypt_filter_dictionary : Pdfbox::Pdmodel::Encryption::PDCryptFilterDictionary) : Nil` | Snake case | ❌ Not tested | ⚠️ Stub |
-| `public void setStdCryptFilterDictionary(PDCryptFilterDictionary cryptFilterDictionary)` | `def set_std_crypt_filter_dictionary(crypt_filter_dictionary : Pdfbox::Pdmodel::Encryption::PDCryptFilterDictionary) : Nil` | Snake case | ❌ Not tested | ⚠️ Stub |
-| `public void setDefaultCryptFilterDictionary(PDCryptFilterDictionary defaultFilterDictionary)` | `def set_default_crypt_filter_dictionary(default_filter_dictionary : Pdfbox::Pdmodel::Encryption::PDCryptFilterDictionary) : Nil` | Snake case | ❌ Not tested | ⚠️ Stub |
-| `public COSName getStreamFilterName()` | `def stream_filter_name : Pdfbox::Cos::Name?` | Snake case | ❌ Not tested | ⚠️ Stub |
-| `public void setStreamFilterName(COSName streamFilterName)` | `def set_stream_filter_name(stream_filter_name : Pdfbox::Cos::Name) : Nil` | Snake case | ❌ Not tested | ⚠️ Stub |
-| `public COSName getStringFilterName()` | `def string_filter_name : Pdfbox::Cos::Name?` | Snake case | ❌ Not tested | ⚠️ Stub |
-| `public void setStringFilterName(COSName stringFilterName)` | `def set_string_filter_name(string_filter_name : Pdfbox::Cos::Name) : Nil` | Snake case | ❌ Not tested | ⚠️ Stub |
-| `public void setPerms(byte[] perms) throws IOException` | `def set_perms(perms : Bytes) : Nil` | Snake case | ❌ Not tested | ⚠️ Stub |
-| `public byte[] getPerms() throws IOException` | `def perms : Bytes?` | Snake case | ❌ Not tested | ⚠️ Stub |
+| `public void setCryptFilterDictionary(COSName cryptFilterName, PDCryptFilterDictionary cryptFilterDictionary)` | `def assign_crypt_filter_dictionary(crypt_filter_name : Pdfbox::Cos::Name, crypt_filter_dictionary : Pdfbox::Pdmodel::Encryption::PDCryptFilterDictionary) : Nil` | Snake case, renamed to avoid conflict with property setter | ❌ Not tested | ⚠️ Stub |
+| `public void setStdCryptFilterDictionary(PDCryptFilterDictionary cryptFilterDictionary)` | `def std_crypt_filter_dictionary=(crypt_filter_dictionary : Pdfbox::Pdmodel::Encryption::PDCryptFilterDictionary) : Pdfbox::Pdmodel::Encryption::PDCryptFilterDictionary` | Property setter (Crystal idiom) | ❌ Not tested | ⚠️ Stub |
+| `public void setDefaultCryptFilterDictionary(PDCryptFilterDictionary defaultFilterDictionary)` | `def default_crypt_filter_dictionary=(default_filter_dictionary : Pdfbox::Pdmodel::Encryption::PDCryptFilterDictionary) : Pdfbox::Pdmodel::Encryption::PDCryptFilterDictionary` | Property setter (Crystal idiom) | ❌ Not tested | ⚠️ Stub |
+| `public COSName getStreamFilterName()` | `def stream_filter_name : Pdfbox::Cos::Name?` | Snake case | ✅ Tested in specs | ✅ Implemented |
+| `public void setStreamFilterName(COSName streamFilterName)` | `def stream_filter_name=(stream_filter_name : Pdfbox::Cos::Name) : Pdfbox::Cos::Name` | Property setter (Crystal idiom) | ✅ Tested in specs | ✅ Implemented |
+| `public COSName getStringFilterName()` | `def string_filter_name : Pdfbox::Cos::Name?` | Snake case | ✅ Tested in specs | ✅ Implemented |
+| `public void setStringFilterName(COSName stringFilterName)` | `def string_filter_name=(string_filter_name : Pdfbox::Cos::Name) : Pdfbox::Cos::Name` | Property setter (Crystal idiom) | ✅ Tested in specs | ✅ Implemented |
+| `public void setPerms(byte[] perms) throws IOException` | `def perms=(perms : Bytes) : Bytes` | Property setter (Crystal idiom) | ✅ Tested in specs | ✅ Implemented |
+| `public byte[] getPerms() throws IOException` | `def perms : Bytes?` | Snake case | ✅ Tested in specs | ✅ Implemented |
 | `public void removeV45filters()` | `def remove_v45_filters : Nil` | Snake case | ❌ Not tested | ⚠️ Stub |
 
 ### Constants

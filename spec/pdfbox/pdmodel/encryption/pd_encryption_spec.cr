@@ -211,6 +211,28 @@ describe Pdfbox::Pdmodel::Encryption::PDEncryption do
     end
   end
 
+  describe "#encrypt_metadata?" do
+    it "returns true when EncryptMetadata missing" do
+      dict = Pdfbox::Cos::Dictionary.new
+      encryption = Pdfbox::Pdmodel::Encryption::PDEncryption.new(dict)
+      encryption.encrypt_metadata?.should be_true
+    end
+
+    it "returns false when EncryptMetadata is false" do
+      dict = Pdfbox::Cos::Dictionary.new
+      dict[Pdfbox::Cos::Name.new("EncryptMetadata")] = Pdfbox::Cos::Boolean.get(false)
+      encryption = Pdfbox::Pdmodel::Encryption::PDEncryption.new(dict)
+      encryption.encrypt_metadata?.should be_false
+    end
+
+    it "returns true when EncryptMetadata is true" do
+      dict = Pdfbox::Cos::Dictionary.new
+      dict[Pdfbox::Cos::Name.new("EncryptMetadata")] = Pdfbox::Cos::Boolean.get(true)
+      encryption = Pdfbox::Pdmodel::Encryption::PDEncryption.new(dict)
+      encryption.encrypt_metadata?.should be_true
+    end
+  end
+
   it "sets filter in dictionary" do
     dict = Pdfbox::Cos::Dictionary.new
     encryption = Pdfbox::Pdmodel::Encryption::PDEncryption.new(dict)

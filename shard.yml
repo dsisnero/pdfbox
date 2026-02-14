@@ -11,6 +11,8 @@ license: MIT
 dependencies:
   crimage:
     github: naqvis/crimage
+  pdf:
+    github: watzon/pdf.cr
 
 development_dependencies:
   ameba:
