@@ -72,23 +72,23 @@ describe Pdfbox::Pdmodel::Encryption do
     # Skip JCE unlimited strength check - not applicable to Crystal
 
     permission = Pdfbox::Pdmodel::Encryption::AccessPermission.new
-    permission.set_can_assemble_document(false)
-    permission.set_can_extract_content(false)
-    permission.set_can_extract_for_accessibility(true)
-    permission.set_can_fill_in_form(false)
-    permission.set_can_modify(false)
-    permission.set_can_modify_annotations(false)
-    permission.set_can_print(true)
-    permission.set_can_print_faithful(false)
+    permission.can_assemble_document = false
+    permission.can_extract_content = false
+    permission.can_extract_for_accessibility = true
+    permission.can_fill_in_form = false
+    permission.can_modify = false
+    permission.can_modify_annotations = false
+    permission.can_print = true
+    permission.can_print_faithful = false
     permission.set_read_only
   end
 
   it "testPermissions" do
     full_ap = Pdfbox::Pdmodel::Encryption::AccessPermission.new
     restr_ap = Pdfbox::Pdmodel::Encryption::AccessPermission.new
-    restr_ap.set_can_print(false)
-    restr_ap.set_can_extract_content(false)
-    restr_ap.set_can_modify(false)
+    restr_ap.can_print = false
+    restr_ap.can_extract_content = false
+    restr_ap.can_modify = false
 
     input_file_as_byte_array = get_file_resource_as_byte_array("PasswordSample-40bit.pdf")
     check_perms(input_file_as_byte_array, "owner", full_ap)
@@ -97,9 +97,9 @@ describe Pdfbox::Pdmodel::Encryption do
       check_perms(input_file_as_byte_array, "", nil)
     end
 
-    restr_ap.set_can_assemble_document(false)
-    restr_ap.set_can_extract_for_accessibility(false)
-    restr_ap.set_can_print_faithful(false)
+    restr_ap.can_assemble_document = false
+    restr_ap.can_extract_for_accessibility = false
+    restr_ap.can_print_faithful = false
 
     input_file_as_byte_array = get_file_resource_as_byte_array("PasswordSample-128bit.pdf")
     check_perms(input_file_as_byte_array, "owner", full_ap)
