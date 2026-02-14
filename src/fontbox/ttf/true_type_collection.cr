@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require "../../pdfbox/io"
+
 module Fontbox::TTF
   # A TrueType Collection, now more properly known as a "Font Collection" as it may contain either
   # TrueType or OpenType fonts.

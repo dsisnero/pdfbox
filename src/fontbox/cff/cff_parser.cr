@@ -17,6 +17,7 @@ require "log"
 require "./cff_font"
 require "./encoding"
 require "./charset"
+require "../../pdfbox/io"
 
 module Fontbox::CFF
   # This class represents a parser for a CFF font.

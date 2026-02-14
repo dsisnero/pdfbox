@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require "../../pdfbox/io"
+
 module Fontbox::TTF
   # An implementation of the TTFDataStream using RandomAccessRead as source.
   # The underlying RandomAccessRead can be any length, but this implementation supports

@@ -14,6 +14,7 @@
 # limitations under the License.
 
 require "./gsub/glyph_substitution_data_extractor"
+require "../../pdfbox/io"
 
 # ameba:disable Naming/AccessorMethodName
 module Fontbox::TTF

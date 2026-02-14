@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require "../../pdfbox/io"
+
 module Fontbox::TTF
   # In contrast to RandomAccessReadDataStream,
   # this class doesn't pre-load RandomAccessRead into a byte[],

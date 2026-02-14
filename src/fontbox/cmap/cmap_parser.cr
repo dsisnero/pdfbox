@@ -405,10 +405,10 @@ module Fontbox
 
       private def external_cmap(name : String) : Pdfbox::IO::RandomAccessRead
         # Try to load from resources directory relative to project root
-        resource_path = File.join(Dir.current, "resources", "org", "apache", "fontbox", "cmap", name)
+        resource_path = File.join(Dir.current, "spec", "resources", "org", "apache", "fontbox", "cmap", name)
         unless File.exists?(resource_path)
           # Try relative to source file
-          resource_path = File.join(__DIR__, "../../../../resources/org/apache/fontbox/cmap", name)
+          resource_path = File.join(__DIR__, "../../../../spec/resources/org/apache/fontbox/cmap", name)
         end
         unless File.exists?(resource_path)
           raise "Error: Could not find referenced cmap stream #{name}"
