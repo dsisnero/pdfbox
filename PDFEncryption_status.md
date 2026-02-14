@@ -108,22 +108,22 @@ This document tracks the porting status of encryption-related classes from Apach
 | `public StandardSecurityHandler(StandardProtectionPolicy standardProtectionPolicy)` | `def initialize(@policy : StandardProtectionPolicy = StandardProtectionPolicy.new)` | Combined with default | ❌ Not tested | ✅ Partial |
 | `public void prepareForDecryption(PDEncryption encryption, COSArray documentIDArray, DecryptionMaterial decryptionMaterial)` | `def prepare_for_decryption(encryption : PDEncryption, document_id : Bytes?, material : DecryptionMaterial) : Nil` | Snake case, `Bytes?` instead of `COSArray` | ✅ Tested in specs | ⚠️ Stub |
 | `public AccessPermission getCurrentAccessPermission()` | `def current_access_permission : AccessPermission` | Snake case | ✅ Tested in specs | ✅ Implemented |
-| `public void prepareDocumentForEncryption(PDDocument document)` | `def prepare_document_for_encryption(document : Pdfbox::Pdmodel::Document) : Nil` | Snake case | ❌ Not tested | ❌ Missing |
-| `public boolean isOwnerPassword(byte[] ownerPassword, byte[] user, byte[] owner, int permissions, byte[] id, int encRevision, int keyLengthInBytes, boolean encryptMetadata)` | `def is_owner_password?(owner_password : Bytes, user : Bytes, owner : Bytes, permissions : Int32, id : Bytes, enc_revision : Int32, key_length_in_bytes : Int32, encrypt_metadata : Bool) : Bool` | Snake case with `?` suffix | ❌ Not tested | ❌ Missing |
-| `public boolean isUserPassword(byte[] password, byte[] user, byte[] owner, int permissions, byte[] id, int encRevision, int keyLengthInBytes, boolean encryptMetadata)` | `def is_user_password?(password : Bytes, user : Bytes, owner : Bytes, permissions : Int32, id : Bytes, enc_revision : Int32, key_length_in_bytes : Int32, encrypt_metadata : Bool) : Bool` | Snake case with `?` suffix | ❌ Not tested | ❌ Missing |
-| `public byte[] getUserPassword(byte[] ownerPassword, byte[] owner, int encRevision, int length)` | `def user_password(owner_password : Bytes, owner : Bytes, enc_revision : Int32, length : Int32) : Bytes` | Snake case | ❌ Not tested | ❌ Missing |
-| `public byte[] computeEncryptedKey(byte[] password, byte[] o, byte[] u, byte[] oe, byte[] ue, int permissions, byte[] id, int encRevision, int keyLengthInBytes, boolean encryptMetadata, boolean isOwnerPassword)` | `def compute_encrypted_key(password : Bytes, o : Bytes, u : Bytes, oe : Bytes?, ue : Bytes?, permissions : Int32, id : Bytes, enc_revision : Int32, key_length_in_bytes : Int32, encrypt_metadata : Bool, is_owner_password : Bool) : Bytes` | Snake case | ❌ Not tested | ❌ Missing |
-| `public byte[] computeUserPassword(byte[] password, byte[] owner, int permissions, byte[] id, int encRevision, int keyLengthInBytes, boolean encryptMetadata)` | `def compute_user_password(password : Bytes, owner : Bytes, permissions : Int32, id : Bytes, enc_revision : Int32, key_length_in_bytes : Int32, encrypt_metadata : Bool) : Bytes` | Snake case | ❌ Not tested | ❌ Missing |
-| `public byte[] computeOwnerPassword(byte[] ownerPassword, byte[] userPassword, int encRevision, int length)` | `def compute_owner_password(owner_password : Bytes, user_password : Bytes, enc_revision : Int32, length : Int32) : Bytes` | Snake case | ❌ Not tested | ❌ Missing |
+| `public void prepareDocumentForEncryption(PDDocument document)` | `def prepare_document_for_encryption(document : Pdfbox::Pdmodel::Document) : Nil` | Snake case | ❌ Not tested | ⚠️ Stub |
+| `public boolean isOwnerPassword(byte[] ownerPassword, byte[] user, byte[] owner, int permissions, byte[] id, int encRevision, int keyLengthInBytes, boolean encryptMetadata)` | `def owner_password?(owner_password : Bytes, user : Bytes, owner : Bytes, permissions : Int32, id : Bytes, enc_revision : Int32, key_length_in_bytes : Int32, encrypt_metadata : Bool) : Bool` | Snake case with `?` suffix (renamed from `is_owner_password?` to `owner_password?` per Crystal idioms) | ❌ Not tested | ⚠️ Stub |
+| `public boolean isUserPassword(byte[] password, byte[] user, byte[] owner, int permissions, byte[] id, int encRevision, int keyLengthInBytes, boolean encryptMetadata)` | `def user_password?(password : Bytes, user : Bytes, owner : Bytes, permissions : Int32, id : Bytes, enc_revision : Int32, key_length_in_bytes : Int32, encrypt_metadata : Bool) : Bool` | Snake case with `?` suffix (renamed from `is_user_password?` to `user_password?` per Crystal idioms) | ❌ Not tested | ⚠️ Stub |
+| `public byte[] getUserPassword(byte[] ownerPassword, byte[] owner, int encRevision, int length)` | `def user_password(owner_password : Bytes, owner : Bytes, enc_revision : Int32, length : Int32) : Bytes` | Snake case | ❌ Not tested | ⚠️ Partial (implements revisions 2-4, returns empty for 5-6) |
+| `public byte[] computeEncryptedKey(byte[] password, byte[] o, byte[] u, byte[] oe, byte[] ue, int permissions, byte[] id, int encRevision, int keyLengthInBytes, boolean encryptMetadata, boolean isOwnerPassword)` | `def compute_encrypted_key(password : Bytes, o : Bytes, u : Bytes, oe : Bytes?, ue : Bytes?, permissions : Int32, id : Bytes, enc_revision : Int32, key_length_in_bytes : Int32, encrypt_metadata : Bool, is_owner_password : Bool) : Bytes` | Snake case | ❌ Not tested | ⚠️ Stub |
+| `public byte[] computeUserPassword(byte[] password, byte[] owner, int permissions, byte[] id, int encRevision, int keyLengthInBytes, boolean encryptMetadata)` | `def compute_user_password(password : Bytes, owner : Bytes, permissions : Int32, id : Bytes, enc_revision : Int32, key_length_in_bytes : Int32, encrypt_metadata : Bool) : Bytes` | Snake case | ❌ Not tested | ⚠️ Stub |
+| `public byte[] computeOwnerPassword(byte[] ownerPassword, byte[] userPassword, int encRevision, int length)` | `def compute_owner_password(owner_password : Bytes, user_password : Bytes, enc_revision : Int32, length : Int32) : Bytes` | Snake case | ❌ Not tested | ⚠️ Stub |
 
 ### Constants
 | Original Java Constant | Crystal Constant | Value |
 |------------------------|-----------------|-------|
 | `FILTER` | `FILTER` | `"Standard"` |
-| `PROTECTION_POLICY_CLASS` | ❌ Missing | `StandardProtectionPolicy.class` |
-| `REVISION_2` through `REVISION_6` | ❌ Missing | `2` through `6` |
-| `ENCRYPT_PADDING` | ❌ Missing | 32-byte array |
-| `HASHES_2B` | ❌ Missing | `["SHA-256", "SHA-384", "SHA-512"]` |
+| `PROTECTION_POLICY_CLASS` | `PROTECTION_POLICY_CLASS` | `StandardProtectionPolicy` |
+| `REVISION_2` through `REVISION_6` | `REVISION_2`, `REVISION_3`, `REVISION_4`, `REVISION_5`, `REVISION_6` | `2` through `6` |
+| `ENCRYPT_PADDING` | `ENCRYPT_PADDING` | 32-byte array with specific values |
+| `HASHES_2B` | `HASHES_2B` | `["SHA-256", "SHA-384", "SHA-512"]` |
 
 ## Other Encryption Classes
 

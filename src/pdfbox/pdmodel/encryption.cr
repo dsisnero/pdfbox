@@ -1,7 +1,43 @@
 # Encryption types for PDFBox Crystal
 require "../cos"
+require "digest"
+require "openssl"
 
 module Pdfbox::Pdmodel::Encryption
+  # Simple RC4 implementation for PDF encryption (compatible with PDF RC4)
+  class RC4
+    @s = Bytes.new(256, 0_u8)
+    @i = 0_u8
+    @j = 0_u8
+
+    def initialize(key : Bytes)
+      key_len = key.size
+      (0..255).each do |i|
+        @s[i] = i.to_u8
+      end
+
+      j = 0_u8
+      (0..255).each do |i|
+        j = (j + @s[i] + key[i % key_len]) & 0xFF
+        @s[i], @s[j] = @s[j], @s[i]
+      end
+      @i = 0_u8
+      @j = 0_u8
+    end
+
+    def process(data : Bytes) : Bytes
+      result = Bytes.new(data.size)
+      data.each_with_index do |byte, idx|
+        @i = (@i + 1) & 0xFF
+        @j = (@j + @s[@i]) & 0xFF
+        @s[@i], @s[@j] = @s[@j], @s[@i]
+        t = (@s[@i] + @s[@j]) & 0xFF
+        result[idx] = byte ^ @s[t]
+      end
+      result
+    end
+  end
+
   # Basic view of access permission
   class AccessPermission
     private DEFAULT_PERMISSIONS           = ~3 # bits 0 & 1 need to be zero
@@ -227,6 +263,28 @@ module Pdfbox::Pdmodel::Encryption
 
   class StandardSecurityHandler < SecurityHandler
     FILTER = "Standard"
+    # Protection policy class for this handler.
+    PROTECTION_POLICY_CLASS = StandardProtectionPolicy
+
+    REVISION_2 = 2
+    REVISION_3 = 3
+    REVISION_4 = 4
+    REVISION_5 = 5
+    REVISION_6 = 6
+
+    # Standard padding for encryption.
+    ENCRYPT_PADDING = Bytes[
+      0x28_u8, 0xBF_u8, 0x4E_u8, 0x5E_u8, 0x4E_u8,
+      0x75_u8, 0x8A_u8, 0x41_u8, 0x64_u8, 0x00_u8,
+      0x4E_u8, 0x56_u8, 0xFF_u8, 0xFA_u8, 0x01_u8,
+      0x08_u8, 0x2E_u8, 0x2E_u8, 0x00_u8, 0xB6_u8,
+      0xD0_u8, 0x68_u8, 0x3E_u8, 0x80_u8, 0x2F_u8,
+      0x0C_u8, 0xA9_u8, 0xFE_u8, 0x64_u8, 0x53_u8,
+      0x69_u8, 0x7A_u8,
+    ]
+
+    # Hashes used for Algorithm 2.B, depending on remainder from E modulo 3
+    HASHES_2B = ["SHA-256", "SHA-384", "SHA-512"]
 
     def initialize(@policy : StandardProtectionPolicy = StandardProtectionPolicy.new)
       super()
@@ -252,6 +310,93 @@ module Pdfbox::Pdmodel::Encryption
       else
         raise ::IO::Error.new("Cannot decrypt PDF, the password is incorrect")
       end
+    end
+
+    def prepare_document_for_encryption(document : Pdfbox::Pdmodel::Document) : Nil
+      # TODO: implement
+      raise "Not implemented: prepare_document_for_encryption"
+    end
+
+    def owner_password?(owner_password : Bytes, user : Bytes, owner : Bytes, permissions : Int32, id : Bytes, enc_revision : Int32, key_length_in_bytes : Int32, encrypt_metadata : Bool) : Bool
+      # TODO: implement
+      false
+    end
+
+    def user_password?(password : Bytes, user : Bytes, owner : Bytes, permissions : Int32, id : Bytes, enc_revision : Int32, key_length_in_bytes : Int32, encrypt_metadata : Bool) : Bool
+      # TODO: implement
+      false
+    end
+
+    def user_password(owner_password : Bytes, owner : Bytes, enc_revision : Int32, length : Int32) : Bytes
+      if enc_revision == REVISION_5 || enc_revision == REVISION_6
+        Bytes.new(0)
+      else
+        user_password234(owner_password, owner, enc_revision, length)
+      end
+    end
+
+    def compute_encrypted_key(password : Bytes, o : Bytes, u : Bytes, oe : Bytes?, ue : Bytes?, permissions : Int32, id : Bytes, enc_revision : Int32, key_length_in_bytes : Int32, encrypt_metadata : Bool, is_owner_password : Bool) : Bytes
+      # TODO: implement
+      Bytes.new(0)
+    end
+
+    def compute_user_password(password : Bytes, owner : Bytes, permissions : Int32, id : Bytes, enc_revision : Int32, key_length_in_bytes : Int32, encrypt_metadata : Bool) : Bytes
+      # TODO: implement
+      Bytes.new(0)
+    end
+
+    def compute_owner_password(owner_password : Bytes, user_password : Bytes, enc_revision : Int32, length : Int32) : Bytes
+      # TODO: implement
+      Bytes.new(0)
+    end
+
+    private def truncate_or_pad(password : Bytes) : Bytes
+      padded = Bytes.new(ENCRYPT_PADDING.size, 0_u8)
+      bytes_before_pad = Math.min(password.size, padded.size)
+      password.copy_to(padded[0, bytes_before_pad])
+      ENCRYPT_PADDING.copy_to(padded[bytes_before_pad, ENCRYPT_PADDING.size - bytes_before_pad])
+      padded
+    end
+
+    private def compute_rc4_key(password : Bytes, enc_revision : Int32, length : Int32) : Bytes
+      padded = truncate_or_pad(password)
+      digest = Digest::MD5.digest(padded)
+      if enc_revision == REVISION_3 || enc_revision == REVISION_4
+        50.times do
+          md = Digest::MD5.new
+          md.update(digest[0, length])
+          digest = md.final
+        end
+      end
+      digest[0, length]
+    end
+
+    private def user_password234(owner_password : Bytes, owner : Bytes, enc_revision : Int32, length : Int32) : Bytes
+      rc4_key = compute_rc4_key(owner_password, enc_revision, length)
+
+      if enc_revision == REVISION_2
+        encrypt_data_rc4(rc4_key, owner)
+      elsif enc_revision == REVISION_3 || enc_revision == REVISION_4
+        iteration_key = Bytes.new(rc4_key.size, 0_u8)
+        otemp = Bytes.new(owner.size, 0_u8)
+        owner.copy_to(otemp)
+
+        19.downto(0) do |i|
+          rc4_key.copy_to(iteration_key)
+          iteration_key.size.times do |j|
+            iteration_key[j] = iteration_key[j] ^ i.to_u8
+          end
+          otemp = encrypt_data_rc4(iteration_key, otemp)
+        end
+        otemp
+      else
+        Bytes.new(0)
+      end
+    end
+
+    private def encrypt_data_rc4(key : Bytes, data : Bytes) : Bytes
+      rc4 = RC4.new(key)
+      rc4.process(data)
     end
   end
 
