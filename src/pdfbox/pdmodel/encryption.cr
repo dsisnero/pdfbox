@@ -275,6 +275,64 @@ module Pdfbox::Pdmodel::Encryption
     end
   end
 
+  class PDCryptFilterDictionary
+    @dictionary : Pdfbox::Cos::Dictionary
+
+    def initialize(dictionary : Pdfbox::Cos::Dictionary? = nil)
+      @dictionary = dictionary || Pdfbox::Cos::Dictionary.new
+    end
+
+    def dictionary : Pdfbox::Cos::Dictionary
+      @dictionary
+    end
+
+    def length=(length : Int32) : Int32
+      @dictionary[Pdfbox::Cos::Name.new("Length")] = Pdfbox::Cos::Integer.new(length.to_i64)
+      length
+    end
+
+    def length : Int32
+      entry = @dictionary[Pdfbox::Cos::Name.new("Length")]
+      while entry.is_a?(Pdfbox::Cos::Object)
+        entry = entry.object
+      end
+      return 40 if entry.nil? || entry.is_a?(Pdfbox::Cos::Null)
+      entry.as?(Pdfbox::Cos::Integer).try(&.value.to_i32) || 40
+    end
+
+    def crypt_filter_method=(cfm : Pdfbox::Cos::Name) : Pdfbox::Cos::Name
+      @dictionary[Pdfbox::Cos::Name.new("CFM")] = cfm
+      cfm
+    end
+
+    def crypt_filter_method : Pdfbox::Cos::Name?
+      entry = @dictionary[Pdfbox::Cos::Name.new("CFM")]
+      while entry.is_a?(Pdfbox::Cos::Object)
+        entry = entry.object
+      end
+      return if entry.nil? || entry.is_a?(Pdfbox::Cos::Null)
+      entry.as?(Pdfbox::Cos::Name)
+    end
+
+    def encrypt_metadata? : Bool
+      entry = @dictionary[Pdfbox::Cos::Name.new("EncryptMetadata")]
+      while entry.is_a?(Pdfbox::Cos::Object)
+        entry = entry.object
+      end
+      return true if entry.nil? || entry.is_a?(Pdfbox::Cos::Null)
+      if bool = entry.as?(Pdfbox::Cos::Boolean)
+        bool.value
+      else
+        true
+      end
+    end
+
+    def encrypt_metadata=(encrypt_metadata : Bool) : Bool
+      @dictionary[Pdfbox::Cos::Name.new("EncryptMetadata")] = Pdfbox::Cos::Boolean.get(encrypt_metadata)
+      encrypt_metadata
+    end
+  end
+
   class PDEncryption
     # See PDF Reference 1.4 Table 3.13.
     VERSION0_UNDOCUMENTED_UNSUPPORTED = 0
@@ -295,6 +353,10 @@ module Pdfbox::Pdmodel::Encryption
 
     # The default version, according to the PDF Reference.
     DEFAULT_VERSION = VERSION0_UNDOCUMENTED_UNSUPPORTED
+
+    # Crypt filter names
+    STD_CF               = Pdfbox::Cos::Name.new("StdCF")
+    DEFAULT_CRYPT_FILTER = Pdfbox::Cos::Name.new("DefaultCryptFilter")
 
     @dictionary : Pdfbox::Cos::Dictionary
     property security_handler : SecurityHandler?
@@ -378,6 +440,15 @@ module Pdfbox::Pdmodel::Encryption
       end
       return if entry.nil? || entry.is_a?(Pdfbox::Cos::Null)
       entry.as?(Pdfbox::Cos::Array)
+    end
+
+    private def get_cf_dictionary : Pdfbox::Cos::Dictionary?
+      entry = @dictionary[Pdfbox::Cos::Name.new("CF")]
+      while entry.is_a?(Pdfbox::Cos::Object)
+        entry = entry.object
+      end
+      return if entry.nil? || entry.is_a?(Pdfbox::Cos::Null)
+      entry.as?(Pdfbox::Cos::Dictionary)
     end
 
     def version : Int32
@@ -540,7 +611,7 @@ module Pdfbox::Pdmodel::Encryption
     def recipients=(recipients : Array(Bytes)) : Array(Bytes)
       array = Pdfbox::Cos::Array.new
       recipients.each do |recipient|
-        array << Pdfbox::Cos::String.new(recipient)
+        array.add(Pdfbox::Cos::String.new(recipient))
       end
       @dictionary[Pdfbox::Cos::Name.new("Recipients")] = array
       recipients
@@ -554,8 +625,8 @@ module Pdfbox::Pdmodel::Encryption
     def recipient_string_at(i : Int32) : Pdfbox::Cos::String?
       array = get_recipients_array
       return unless array
-      entry = array[i]?
-      return unless entry
+      return unless i >= 0 && i < array.size
+      entry = array[i]
       while entry.is_a?(Pdfbox::Cos::Object)
         entry = entry.object
       end
@@ -563,28 +634,54 @@ module Pdfbox::Pdmodel::Encryption
     end
 
     def std_crypt_filter_dictionary : Pdfbox::Pdmodel::Encryption::PDCryptFilterDictionary?
-      nil
+      crypt_filter_dictionary(STD_CF)
     end
 
     def default_crypt_filter_dictionary : Pdfbox::Pdmodel::Encryption::PDCryptFilterDictionary?
-      nil
+      crypt_filter_dictionary(DEFAULT_CRYPT_FILTER)
     end
 
     def crypt_filter_dictionary(crypt_filter_name : Pdfbox::Cos::Name) : Pdfbox::Pdmodel::Encryption::PDCryptFilterDictionary?
-      nil
+      cf_dict = get_cf_dictionary
+      return unless cf_dict
+
+      entry = cf_dict[crypt_filter_name]
+      while entry.is_a?(Pdfbox::Cos::Object)
+        entry = entry.object
+      end
+      return if entry.nil? || entry.is_a?(Pdfbox::Cos::Null)
+
+      if crypt_dict = entry.as?(Pdfbox::Cos::Dictionary)
+        PDCryptFilterDictionary.new(crypt_dict)
+      end
     end
 
     def assign_crypt_filter_dictionary(crypt_filter_name : Pdfbox::Cos::Name, crypt_filter_dictionary : Pdfbox::Pdmodel::Encryption::PDCryptFilterDictionary) : Nil
-      # TODO
+      cf_key = Pdfbox::Cos::Name.new("CF")
+      entry = @dictionary[cf_key]
+      while entry.is_a?(Pdfbox::Cos::Object)
+        entry = entry.object
+      end
+      cf_dictionary = if entry.nil? || entry.is_a?(Pdfbox::Cos::Null) || !entry.is_a?(Pdfbox::Cos::Dictionary)
+                        new_dict = Pdfbox::Cos::Dictionary.new
+                        @dictionary[cf_key] = new_dict
+                        new_dict
+                      else
+                        entry.as(Pdfbox::Cos::Dictionary)
+                      end
+      cf_dictionary.set_direct(true) # PDFBOX-4436 direct obj needed for Adobe Reader on Android
+      cf_dictionary[crypt_filter_name] = crypt_filter_dictionary.dictionary
     end
 
     def std_crypt_filter_dictionary=(crypt_filter_dictionary : Pdfbox::Pdmodel::Encryption::PDCryptFilterDictionary) : Pdfbox::Pdmodel::Encryption::PDCryptFilterDictionary
-      # TODO
+      crypt_filter_dictionary.dictionary.set_direct(true) # PDFBOX-4436
+      assign_crypt_filter_dictionary(STD_CF, crypt_filter_dictionary)
       crypt_filter_dictionary
     end
 
     def default_crypt_filter_dictionary=(default_filter_dictionary : Pdfbox::Pdmodel::Encryption::PDCryptFilterDictionary) : Pdfbox::Pdmodel::Encryption::PDCryptFilterDictionary
-      # TODO
+      default_filter_dictionary.dictionary.set_direct(true) # PDFBOX-4436
+      assign_crypt_filter_dictionary(DEFAULT_CRYPT_FILTER, default_filter_dictionary)
       default_filter_dictionary
     end
 
@@ -604,7 +701,9 @@ module Pdfbox::Pdmodel::Encryption
     end
 
     def remove_v45_filters : Nil
-      # TODO
+      @dictionary.delete(Pdfbox::Cos::Name.new("CF"))
+      @dictionary.delete(Pdfbox::Cos::Name.new("StmF"))
+      @dictionary.delete(Pdfbox::Cos::Name.new("StrF"))
     end
 
     def filter : String

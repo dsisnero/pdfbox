@@ -233,6 +233,46 @@ describe Pdfbox::Pdmodel::Encryption::PDEncryption do
     end
   end
 
+  describe "recipients methods" do
+    it "sets recipients in dictionary" do
+      dict = Pdfbox::Cos::Dictionary.new
+      encryption = Pdfbox::Pdmodel::Encryption::PDEncryption.new(dict)
+      recipients = [Bytes[1, 2, 3], Bytes[4, 5, 6], Bytes[7, 8, 9]]
+      encryption.recipients = recipients
+      encryption.recipients_length.should eq(3)
+    end
+
+    it "returns 0 when Recipients missing" do
+      dict = Pdfbox::Cos::Dictionary.new
+      encryption = Pdfbox::Pdmodel::Encryption::PDEncryption.new(dict)
+      encryption.recipients_length.should eq(0)
+    end
+
+    it "gets recipient string at index" do
+      dict = Pdfbox::Cos::Dictionary.new
+      encryption = Pdfbox::Pdmodel::Encryption::PDEncryption.new(dict)
+      recipients = [Bytes[10, 11, 12], Bytes[20, 21, 22]]
+      encryption.recipients = recipients
+
+      str1 = encryption.recipient_string_at(0)
+      str1.should_not be_nil
+      str1.not_nil!.bytes.should eq(Bytes[10, 11, 12])
+
+      str2 = encryption.recipient_string_at(1)
+      str2.should_not be_nil
+      str2.not_nil!.bytes.should eq(Bytes[20, 21, 22])
+    end
+
+    it "returns nil for out of bounds index" do
+      dict = Pdfbox::Cos::Dictionary.new
+      encryption = Pdfbox::Pdmodel::Encryption::PDEncryption.new(dict)
+      recipients = [Bytes[1, 2, 3]]
+      encryption.recipients = recipients
+
+      encryption.recipient_string_at(5).should be_nil
+    end
+  end
+
   it "sets filter in dictionary" do
     dict = Pdfbox::Cos::Dictionary.new
     encryption = Pdfbox::Pdmodel::Encryption::PDEncryption.new(dict)

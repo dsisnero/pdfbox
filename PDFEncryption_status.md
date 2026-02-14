@@ -35,22 +35,22 @@ This document tracks the porting status of encryption-related classes from Apach
 | `public void setPermissions(int permissions)` | `def permissions=(permissions : Int32) : Int32` | Property setter (Crystal idiom) | ✅ Tested in specs | ✅ Implemented |
 | `public int getPermissions()` | `def permissions : Int32` | Snake case getter | ✅ Tested in specs | ✅ Implemented |
 | `public boolean isEncryptMetaData()` | `def encrypt_metadata? : Bool` | Snake case with `?` suffix | ✅ Tested in specs | ✅ Implemented |
-| `public void setRecipients(byte[][] recipients) throws IOException` | `def recipients=(recipients : Array(Bytes)) : Array(Bytes)` | Property setter (Crystal idiom) | ❌ Not tested | ⚠️ Stub |
-| `public int getRecipientsLength()` | `def recipients_length : Int32` | Snake case | ❌ Not tested | ⚠️ Stub |
-| `public COSString getRecipientStringAt(int i)` | `def recipient_string_at(i : Int32) : Pdfbox::Cos::String?` | Snake case | ❌ Not tested | ⚠️ Stub |
-| `public PDCryptFilterDictionary getStdCryptFilterDictionary()` | `def std_crypt_filter_dictionary : Pdfbox::Pdmodel::Encryption::PDCryptFilterDictionary?` | Snake case | ❌ Not tested | ⚠️ Stub |
-| `public PDCryptFilterDictionary getDefaultCryptFilterDictionary()` | `def default_crypt_filter_dictionary : Pdfbox::Pdmodel::Encryption::PDCryptFilterDictionary?` | Snake case | ❌ Not tested | ⚠️ Stub |
-| `public PDCryptFilterDictionary getCryptFilterDictionary(COSName cryptFilterName)` | `def crypt_filter_dictionary(crypt_filter_name : Pdfbox::Cos::Name) : Pdfbox::Pdmodel::Encryption::PDCryptFilterDictionary?` | Snake case | ❌ Not tested | ⚠️ Stub |
-| `public void setCryptFilterDictionary(COSName cryptFilterName, PDCryptFilterDictionary cryptFilterDictionary)` | `def assign_crypt_filter_dictionary(crypt_filter_name : Pdfbox::Cos::Name, crypt_filter_dictionary : Pdfbox::Pdmodel::Encryption::PDCryptFilterDictionary) : Nil` | Snake case, renamed to avoid conflict with property setter | ❌ Not tested | ⚠️ Stub |
-| `public void setStdCryptFilterDictionary(PDCryptFilterDictionary cryptFilterDictionary)` | `def std_crypt_filter_dictionary=(crypt_filter_dictionary : Pdfbox::Pdmodel::Encryption::PDCryptFilterDictionary) : Pdfbox::Pdmodel::Encryption::PDCryptFilterDictionary` | Property setter (Crystal idiom) | ❌ Not tested | ⚠️ Stub |
-| `public void setDefaultCryptFilterDictionary(PDCryptFilterDictionary defaultFilterDictionary)` | `def default_crypt_filter_dictionary=(default_filter_dictionary : Pdfbox::Pdmodel::Encryption::PDCryptFilterDictionary) : Pdfbox::Pdmodel::Encryption::PDCryptFilterDictionary` | Property setter (Crystal idiom) | ❌ Not tested | ⚠️ Stub |
+| `public void setRecipients(byte[][] recipients) throws IOException` | `def recipients=(recipients : Array(Bytes)) : Array(Bytes)` | Property setter (Crystal idiom) | ✅ Tested in specs | ✅ Implemented |
+| `public int getRecipientsLength()` | `def recipients_length : Int32` | Snake case | ✅ Tested in specs | ✅ Implemented |
+| `public COSString getRecipientStringAt(int i)` | `def recipient_string_at(i : Int32) : Pdfbox::Cos::String?` | Snake case | ✅ Tested in specs | ✅ Implemented |
+| `public PDCryptFilterDictionary getStdCryptFilterDictionary()` | `def std_crypt_filter_dictionary : Pdfbox::Pdmodel::Encryption::PDCryptFilterDictionary?` | Snake case | ❌ Not tested | ✅ Implemented |
+| `public PDCryptFilterDictionary getDefaultCryptFilterDictionary()` | `def default_crypt_filter_dictionary : Pdfbox::Pdmodel::Encryption::PDCryptFilterDictionary?` | Snake case | ❌ Not tested | ✅ Implemented |
+| `public PDCryptFilterDictionary getCryptFilterDictionary(COSName cryptFilterName)` | `def crypt_filter_dictionary(crypt_filter_name : Pdfbox::Cos::Name) : Pdfbox::Pdmodel::Encryption::PDCryptFilterDictionary?` | Snake case | ❌ Not tested | ✅ Implemented |
+| `public void setCryptFilterDictionary(COSName cryptFilterName, PDCryptFilterDictionary cryptFilterDictionary)` | `def assign_crypt_filter_dictionary(crypt_filter_name : Pdfbox::Cos::Name, crypt_filter_dictionary : Pdfbox::Pdmodel::Encryption::PDCryptFilterDictionary) : Nil` | Snake case, renamed to avoid conflict with property setter | ❌ Not tested | ✅ Implemented |
+| `public void setStdCryptFilterDictionary(PDCryptFilterDictionary cryptFilterDictionary)` | `def std_crypt_filter_dictionary=(crypt_filter_dictionary : Pdfbox::Pdmodel::Encryption::PDCryptFilterDictionary) : Pdfbox::Pdmodel::Encryption::PDCryptFilterDictionary` | Property setter (Crystal idiom) | ❌ Not tested | ✅ Implemented |
+| `public void setDefaultCryptFilterDictionary(PDCryptFilterDictionary defaultFilterDictionary)` | `def default_crypt_filter_dictionary=(default_filter_dictionary : Pdfbox::Pdmodel::Encryption::PDCryptFilterDictionary) : Pdfbox::Pdmodel::Encryption::PDCryptFilterDictionary` | Property setter (Crystal idiom) | ❌ Not tested | ✅ Implemented |
 | `public COSName getStreamFilterName()` | `def stream_filter_name : Pdfbox::Cos::Name?` | Snake case | ✅ Tested in specs | ✅ Implemented |
 | `public void setStreamFilterName(COSName streamFilterName)` | `def stream_filter_name=(stream_filter_name : Pdfbox::Cos::Name) : Pdfbox::Cos::Name` | Property setter (Crystal idiom) | ✅ Tested in specs | ✅ Implemented |
 | `public COSName getStringFilterName()` | `def string_filter_name : Pdfbox::Cos::Name?` | Snake case | ✅ Tested in specs | ✅ Implemented |
 | `public void setStringFilterName(COSName stringFilterName)` | `def string_filter_name=(string_filter_name : Pdfbox::Cos::Name) : Pdfbox::Cos::Name` | Property setter (Crystal idiom) | ✅ Tested in specs | ✅ Implemented |
 | `public void setPerms(byte[] perms) throws IOException` | `def perms=(perms : Bytes) : Bytes` | Property setter (Crystal idiom) | ✅ Tested in specs | ✅ Implemented |
 | `public byte[] getPerms() throws IOException` | `def perms : Bytes?` | Snake case | ✅ Tested in specs | ✅ Implemented |
-| `public void removeV45filters()` | `def remove_v45_filters : Nil` | Snake case | ❌ Not tested | ⚠️ Stub |
+| `public void removeV45filters()` | `def remove_v45_filters : Nil` | Snake case | ❌ Not tested | ✅ Implemented |
 
 ### Constants
 | Original Java Constant | Crystal Constant | Value |
@@ -63,6 +63,8 @@ This document tracks the porting status of encryption-related classes from Apach
 | `DEFAULT_NAME` | `DEFAULT_NAME` | `"Standard"` |
 | `DEFAULT_LENGTH` | `DEFAULT_LENGTH` | `40` |
 | `DEFAULT_VERSION` | `DEFAULT_VERSION` | `VERSION0_UNDOCUMENTED_UNSUPPORTED` |
+| `COSName.STD_CF` | `STD_CF` | `Pdfbox::Cos::Name.new("StdCF")` |
+| `COSName.DEFAULT_CRYPT_FILTER` | `DEFAULT_CRYPT_FILTER` | `Pdfbox::Cos::Name.new("DefaultCryptFilter")` |
 
 ## AccessPermission.java → encryption.cr (AccessPermission class)
 
