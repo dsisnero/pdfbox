@@ -76,6 +76,23 @@ module Pdfbox::IO
       read(slice)
     end
 
+    # Read fully into buffer, raising EOFError if not enough bytes
+    def read_fully(buffer : Bytes) : Nil
+      read_fully(buffer, 0, buffer.size)
+    end
+
+    # Read fully into buffer at offset, raising EOFError if not enough bytes
+    def read_fully(buffer : Bytes, offset : Int32, length : Int32) : Nil
+      raise "Invalid offset #{offset} or length #{length} for buffer size #{buffer.size}" if offset < 0 || length < 0 || offset + length > buffer.size
+      total_read = 0
+      while total_read < length
+        slice = buffer[offset + total_read, length - total_read]
+        bytes_read = read(slice)
+        raise ::IO::EOFError.new if bytes_read == 0
+        total_read += bytes_read
+      end
+    end
+
     # Read byte at position without advancing
     abstract def peek : UInt8?
 
@@ -85,6 +102,11 @@ module Pdfbox::IO
     # Check if the resource is closed
     def closed? : Bool
       @closed
+    end
+
+    # Raise if the resource is closed
+    protected def check_closed : Nil
+      raise ::IO::Error.new("RandomAccessRead already closed") if closed?
     end
 
     # Close the resource (if needed)
@@ -143,6 +165,7 @@ module Pdfbox::IO
     end
 
     def seek(position : Int64) : Nil
+      check_closed
       if position < 0
         raise "Invalid position #{position}"
       end
@@ -150,20 +173,24 @@ module Pdfbox::IO
     end
 
     def read : UInt8?
+      check_closed
       byte = @io.read_byte
       byte.nil? ? nil : byte
     end
 
     def read(buffer : Bytes) : Int32
+      check_closed
       @io.read(buffer)
     end
 
     def peek : UInt8?
+      check_closed
       slice = @io.peek
       slice.nil? ? nil : slice.first?
     end
 
     def eof? : Bool
+      check_closed
       @io.pos >= @io.size
     end
 
@@ -201,6 +228,7 @@ module Pdfbox::IO
     end
 
     def seek(position : Int64) : Nil
+      check_closed
       if position < 0
         raise "Invalid position #{position}"
       end
@@ -208,15 +236,18 @@ module Pdfbox::IO
     end
 
     def read : UInt8?
+      check_closed
       byte = @file.read_byte
       byte.nil? ? nil : byte
     end
 
     def read(buffer : Bytes) : Int32
+      check_closed
       @file.read(buffer)
     end
 
     def peek : UInt8?
+      check_closed
       current_pos = @file.pos
       byte = read
       @file.pos = current_pos
@@ -224,6 +255,7 @@ module Pdfbox::IO
     end
 
     def eof? : Bool
+      check_closed
       @file.pos >= @file.size
     end
 
@@ -265,6 +297,7 @@ module Pdfbox::IO
     end
 
     def seek(position : Int64) : Nil
+      check_closed
       if position < 0
         raise "Invalid position #{position}"
       end
@@ -275,6 +308,7 @@ module Pdfbox::IO
     end
 
     def read : UInt8?
+      check_closed
       if eof?
         return
       end
@@ -288,6 +322,7 @@ module Pdfbox::IO
     end
 
     def read(buffer : Bytes) : Int32
+      check_closed
       if eof?
         return 0
       end
@@ -304,6 +339,7 @@ module Pdfbox::IO
     end
 
     def peek : UInt8?
+      check_closed
       if eof?
         return
       end
@@ -312,6 +348,7 @@ module Pdfbox::IO
     end
 
     def eof? : Bool
+      check_closed
       @current_position >= @stream_length
     end
 
