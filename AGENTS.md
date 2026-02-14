@@ -2,7 +2,7 @@
 
 This project is a **Crystal port of Apache PDFBox** - a library for working with PDF documents in Crystal.
 
-**Apache PDFBox Source:** The original Java source code is available in the `./apache_pdfbox/` directory. Use this as the reference implementation when porting features.
+**Apache PDFBox Source:** The original Java source code is available in the `./apache_pdfbox/` directory. Use this as the reference implementation when porting features.  Our logic must match the java logic.  The java source is the source of truth.
 
 **Test-Driven Development (TDD):**
 - **Port tests first** before implementing functionality

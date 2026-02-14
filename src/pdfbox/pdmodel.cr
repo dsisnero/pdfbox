@@ -2,6 +2,8 @@
 #
 # This module contains the high-level PDF document model classes,
 # corresponding to the pdmodel package in Apache PDFBox.
+require "./pdmodel/encryption"
+
 module Pdfbox::Pdmodel
   # Main PDF document class
   class Document
@@ -144,6 +146,11 @@ module Pdfbox::Pdmodel
       return unless info_dict.is_a?(Cos::Dictionary)
 
       DocumentInformation.new(info_dict)
+    end
+
+    # Get current access permissions for encrypted documents
+    def current_access_permission : Encryption::AccessPermission
+      Encryption::AccessPermission.new
     end
 
     # Close the document and release resources

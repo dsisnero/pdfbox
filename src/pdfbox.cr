@@ -19,6 +19,7 @@ end
 require "./pdfbox/cos"
 require "./pdfbox/pdmodel"
 require "./pdfbox/io"
+require "./pdfbox/loader"
 require "./pdfbox/pdf_parser"
 require "./pdfbox/pdfwriter"
 require "./fontbox"
