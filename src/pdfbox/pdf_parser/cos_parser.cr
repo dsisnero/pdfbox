@@ -644,8 +644,7 @@ module Pdfbox::Pdfparser
     # Parse a COS literal string (for testing compatibility)
     def parse_cos_literal_string : Pdfbox::Cos::String
       skip_spaces
-      string = read_literal_string_as_string
-      Pdfbox::Cos::String.new(string)
+      Pdfbox::Cos::String.new(read_literal_string)
     end
 
     # Parse a COS string
@@ -656,17 +655,17 @@ module Pdfbox::Pdfparser
       char = peek_char
       return unless char
 
-      string =
+      bytes =
         case char
         when '('
-          read_literal_string_as_string
+          read_literal_string
         when '<'
           read_hexadecimal_string
         end
 
-      return unless string
+      return unless bytes
 
-      Pdfbox::Cos::String.new(string)
+      Pdfbox::Cos::String.new(bytes)
     end
 
     # Parse a COS name

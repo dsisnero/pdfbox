@@ -12,10 +12,43 @@ module Pdfbox::Pdmodel
     @pages : Array(Page)
     @catalog : DocumentCatalog?
     @trailer : Cos::Dictionary?
+    @encryption : Encryption::PDEncryption?
+    @document_id : Bytes?
+    @current_access_permission : Encryption::AccessPermission?
 
     def initialize(@cos_document : Cos::Dictionary? = nil, @version : String = "1.4", @trailer : Cos::Dictionary? = nil)
       @pages = [] of Page
       @catalog = @cos_document ? DocumentCatalog.new(@cos_document.as(Cos::Dictionary), self) : nil
+      @encryption = nil
+      @document_id = nil
+      @current_access_permission = nil
+
+      # Extract encryption dictionary and document ID from trailer
+      if trailer = @trailer
+        # Get /Encrypt dictionary
+        if encrypt_entry = trailer[Cos::Name.new("Encrypt")]
+          # Resolve indirect reference if needed
+          if encrypt_entry.is_a?(Cos::Object)
+            encrypt_entry = encrypt_entry.object
+          end
+          if encrypt_entry.is_a?(Cos::Dictionary)
+            @encryption = Encryption::PDEncryption.new(encrypt_entry)
+          end
+        end
+
+        # Get /ID array (first element is used as document ID)
+        if id_entry = trailer[Cos::Name.new("ID")]
+          if id_entry.is_a?(Cos::Object)
+            id_entry = id_entry.object
+          end
+          if id_entry.is_a?(Cos::Array) && id_entry.size > 0
+            id_first = id_entry[0]
+            if id_first.is_a?(Cos::String)
+              @document_id = id_first.bytes
+            end
+          end
+        end
+      end
     end
 
     # Get PDF version (e.g., "1.4")
@@ -129,6 +162,36 @@ module Pdfbox::Pdmodel
       @trailer
     end
 
+    # Get the encryption dictionary, if present
+    def encryption : Encryption::PDEncryption?
+      @encryption
+    end
+
+    # Get the document ID bytes, required for password validation
+    def document_id : Bytes?
+      @document_id
+    end
+
+    # Attempt to decrypt the document with the given password
+    # Returns true if password is correct and decryption succeeded
+    def decrypt(password : String) : Bool
+      return false unless @encryption && @document_id
+      encryption = @encryption
+      return false unless encryption
+
+      # Get security handler from encryption dictionary
+      security_handler = encryption.security_handler
+      return false unless security_handler
+
+      # Create decryption material
+      material = Encryption::StandardDecryptionMaterial.new(password)
+
+      security_handler.prepare_for_decryption(encryption, @document_id, material)
+      # After successful preparation, security handler should have current access permission
+      @current_access_permission = security_handler.current_access_permission
+      true
+    end
+
     # Get document information (metadata)
     def document_information : DocumentInformation?
       trailer = @trailer
@@ -150,7 +213,7 @@ module Pdfbox::Pdmodel
 
     # Get current access permissions for encrypted documents
     def current_access_permission : Encryption::AccessPermission
-      Encryption::AccessPermission.new
+      @current_access_permission || Encryption::AccessPermission.new
     end
 
     # Close the document and release resources
@@ -1103,8 +1166,6 @@ module Pdfbox::Pdmodel
         length_value.value.to_i32
       when Cos::Float
         length_value.value.to_i32
-      else
-        nil
       end
     end
 

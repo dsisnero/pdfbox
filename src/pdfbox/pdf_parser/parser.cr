@@ -1711,7 +1711,12 @@ module Pdfbox::Pdfparser
 
                        found_catalog_dict = parse_catalog_from_trailer(trailer, xref)
                        if found_catalog_dict
-                         pages = parse_pages_from_catalog(found_catalog_dict, xref)
+                         begin
+                           pages = parse_pages_from_catalog(found_catalog_dict, xref)
+                         rescue ex
+                           raise ex unless @lenient
+                           Log.warn { "Skipping page tree parsing in lenient mode: #{ex.message}" }
+                         end
                        end
                        found_catalog_dict
                      else
@@ -1724,7 +1729,12 @@ module Pdfbox::Pdfparser
                          @trailer = trailer
                          found_catalog_dict = parse_catalog_from_trailer(trailer, xref)
                          if found_catalog_dict
-                           pages = parse_pages_from_catalog(found_catalog_dict, xref)
+                           begin
+                             pages = parse_pages_from_catalog(found_catalog_dict, xref)
+                           rescue ex
+                             raise ex unless @lenient
+                             Log.warn { "Skipping page tree parsing in lenient mode: #{ex.message}" }
+                           end
                          end
                          found_catalog_dict
                        else

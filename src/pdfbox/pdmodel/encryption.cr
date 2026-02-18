@@ -2,6 +2,7 @@
 require "../cos"
 require "digest"
 require "openssl"
+require "io"
 
 module Pdfbox::Pdmodel::Encryption
   # Simple RC4 implementation for PDF encryption (compatible with PDF RC4)
@@ -16,10 +17,10 @@ module Pdfbox::Pdmodel::Encryption
         @s[i] = i.to_u8
       end
 
-      j = 0_u8
+      j = 0
       (0..255).each do |i|
-        j = (j + @s[i] + key[i % key_len]) & 0xFF
-        @s[i], @s[j] = @s[j], @s[i]
+        j = (j + @s[i].to_i32 + key[i % key_len].to_i32) & 0xFF
+        @s[i], @s[j.to_u8] = @s[j.to_u8], @s[i]
       end
       @i = 0_u8
       @j = 0_u8
@@ -28,10 +29,10 @@ module Pdfbox::Pdmodel::Encryption
     def process(data : Bytes) : Bytes
       result = Bytes.new(data.size)
       data.each_with_index do |byte, idx|
-        @i = (@i + 1) & 0xFF
-        @j = (@j + @s[@i]) & 0xFF
+        @i = ((@i.to_i32 + 1) & 0xFF).to_u8
+        @j = ((@j.to_i32 + @s[@i].to_i32) & 0xFF).to_u8
         @s[@i], @s[@j] = @s[@j], @s[@i]
-        t = (@s[@i] + @s[@j]) & 0xFF
+        t = (@s[@i].to_i32 + @s[@j].to_i32) & 0xFF
         result[idx] = byte ^ @s[t]
       end
       result
@@ -53,17 +54,23 @@ module Pdfbox::Pdmodel::Encryption
     @bytes : Int32
     @read_only = false
 
-    def initialize(@owner_permission : Bool = true)
+    def initialize
       @bytes = DEFAULT_PERMISSIONS
     end
 
     def initialize(permissions : Int32)
       @bytes = permissions
-      @owner_permission = false
     end
 
     def owner_permission? : Bool
-      @owner_permission
+      can_assemble_document? &&
+        can_extract_content? &&
+        can_extract_for_accessibility? &&
+        can_fill_in_form? &&
+        can_modify? &&
+        can_modify_annotations? &&
+        can_print? &&
+        can_print_faithful?
     end
 
     def read_only? : Bool
@@ -291,24 +298,47 @@ module Pdfbox::Pdmodel::Encryption
     end
 
     def prepare_for_decryption(encryption : PDEncryption, document_id : Bytes?, material : DecryptionMaterial) : Nil
-      # Simplified version for testing
       unless material.is_a?(StandardDecryptionMaterial)
         raise ::IO::Error.new("Decryption material is not compatible with the document")
       end
 
       password = material.password
       password = "" if password.nil?
-      dic_permissions = encryption.permissions
+      # Get encryption parameters
+      user_key = encryption.user_key
+      owner_key = encryption.owner_key
+      if user_key.nil? || owner_key.nil?
+        raise ::IO::Error.new("Encryption dictionary missing O or U entry")
+      end
+      user_key_value = user_key
+      owner_key_value = owner_key
+      permissions = encryption.permissions
+      enc_revision = encryption.revision
+      key_length_bits = encryption.length
+      key_length_in_bytes = key_length_bits // 8
+      encrypt_metadata = encryption.encrypt_metadata?
 
-      # For testing, check if password is "owner" or "user"
-      if password == "owner"
+      # Document ID is required for password validation
+      id = document_id
+      if id.nil?
+        raise ::IO::Error.new("Document ID is required for password validation")
+      end
+
+      # Convert password to bytes based on revision
+      password_bytes = password_to_bytes(password, enc_revision)
+
+      # Try owner password first
+      if owner_password?(password_bytes, user_key_value, owner_key_value, permissions, id, enc_revision, key_length_in_bytes, encrypt_metadata)
         set_current_access_permission(AccessPermission.owner_access_permission)
-      elsif password == "user"
-        perm = AccessPermission.new(dic_permissions)
-        perm.set_read_only
-        set_current_access_permission(perm)
+        # Then try user password
       else
-        raise ::IO::Error.new("Cannot decrypt PDF, the password is incorrect")
+        if user_password?(password_bytes, user_key_value, owner_key_value, permissions, id, enc_revision, key_length_in_bytes, encrypt_metadata)
+          perm = AccessPermission.new(permissions)
+          perm.set_read_only
+          set_current_access_permission(perm)
+        else
+          raise ::IO::Error.new("Cannot decrypt PDF, the password is incorrect")
+        end
       end
     end
 
@@ -318,13 +348,25 @@ module Pdfbox::Pdmodel::Encryption
     end
 
     def owner_password?(owner_password : Bytes, user : Bytes, owner : Bytes, permissions : Int32, id : Bytes, enc_revision : Int32, key_length_in_bytes : Int32, encrypt_metadata : Bool) : Bool
-      # TODO: implement
-      false
+      case enc_revision
+      when REVISION_2, REVISION_3, REVISION_4
+        owner_password234?(owner_password, user, owner, permissions, id, enc_revision, key_length_in_bytes, encrypt_metadata)
+      when REVISION_5, REVISION_6
+        owner_password56?(owner_password, user, owner, enc_revision)
+      else
+        raise ::IO::Error.new("Unknown Encryption Revision #{enc_revision}")
+      end
     end
 
     def user_password?(password : Bytes, user : Bytes, owner : Bytes, permissions : Int32, id : Bytes, enc_revision : Int32, key_length_in_bytes : Int32, encrypt_metadata : Bool) : Bool
-      # TODO: implement
-      false
+      case enc_revision
+      when REVISION_2, REVISION_3, REVISION_4
+        user_password234?(password, user, owner, permissions, id, enc_revision, key_length_in_bytes, encrypt_metadata)
+      when REVISION_5, REVISION_6
+        user_password56?(password, user, enc_revision)
+      else
+        raise ::IO::Error.new("Unknown Encryption Revision #{enc_revision}")
+      end
     end
 
     def user_password(owner_password : Bytes, owner : Bytes, enc_revision : Int32, length : Int32) : Bytes
@@ -336,25 +378,135 @@ module Pdfbox::Pdmodel::Encryption
     end
 
     def compute_encrypted_key(password : Bytes, o : Bytes, u : Bytes, oe : Bytes?, ue : Bytes?, permissions : Int32, id : Bytes, enc_revision : Int32, key_length_in_bytes : Int32, encrypt_metadata : Bool, is_owner_password : Bool) : Bytes
-      # TODO: implement
-      Bytes.new(0)
+      if enc_revision == REVISION_5 || enc_revision == REVISION_6
+        compute_encrypted_key_rev56(password, is_owner_password, o, u, oe, ue, enc_revision)
+      else
+        compute_encrypted_key_rev234(password, o, permissions, id, encrypt_metadata, key_length_in_bytes, enc_revision)
+      end
     end
 
     def compute_user_password(password : Bytes, owner : Bytes, permissions : Int32, id : Bytes, enc_revision : Int32, key_length_in_bytes : Int32, encrypt_metadata : Bool) : Bytes
-      # TODO: implement
-      Bytes.new(0)
+      if enc_revision == REVISION_5 || enc_revision == REVISION_6
+        return Bytes.new(0)
+      end
+
+      enc_key = compute_encrypted_key_rev234(password, owner, permissions, id, encrypt_metadata, key_length_in_bytes, enc_revision)
+
+      if enc_revision == REVISION_2
+        encrypt_data_rc4(enc_key, ENCRYPT_PADDING)
+      elsif enc_revision == REVISION_3 || enc_revision == REVISION_4
+        md = Digest::MD5.new
+        md.update(ENCRYPT_PADDING)
+        md.update(id)
+        hash_result = md.final
+
+        result = ::IO::Memory.new
+        result.write(hash_result)
+
+        iteration_key = Bytes.new(enc_key.size, 0_u8)
+        20.times do |i|
+          enc_key.copy_to(iteration_key)
+          iteration_key.size.times do |j|
+            iteration_key[j] = iteration_key[j] ^ i.to_u8
+          end
+
+          # Get current result bytes, encrypt them
+          current_data = result.to_slice
+          result.rewind
+          encrypted = encrypt_data_rc4(iteration_key, current_data)
+          result.write(encrypted)
+        end
+
+        final_result = Bytes.new(32, 0_u8)
+        result.rewind
+        result.read(final_result[0, 16])
+        ENCRYPT_PADDING[0, 16].copy_to(final_result[16, 16])
+        final_result
+      else
+        Bytes.new(0)
+      end
     end
 
     def compute_owner_password(owner_password : Bytes, user_password : Bytes, enc_revision : Int32, length : Int32) : Bytes
-      # TODO: implement
-      Bytes.new(0)
+      if enc_revision == REVISION_2 && length != 5
+        raise ::IO::Error.new("Expected length=5 actual=#{length}")
+      end
+
+      rc4_key = compute_rc4_key(owner_password, enc_revision, length)
+      padded_user = truncate_or_pad(user_password)
+
+      encrypted = encrypt_data_rc4(rc4_key, padded_user)
+
+      if enc_revision == REVISION_3 || enc_revision == REVISION_4
+        iteration_key = Bytes.new(rc4_key.size, 0_u8)
+        (1..19).each do |i|
+          rc4_key.copy_to(iteration_key)
+          iteration_key.size.times do |j|
+            iteration_key[j] = iteration_key[j] ^ i.to_u8
+          end
+          encrypted = encrypt_data_rc4(iteration_key, encrypted)
+        end
+      end
+
+      encrypted
+    end
+
+    private def owner_password234?(owner_password : Bytes, user : Bytes, owner : Bytes, permissions : Int32, id : Bytes, enc_revision : Int32, key_length_in_bytes : Int32, encrypt_metadata : Bool) : Bool
+      user_password = user_password234(owner_password, owner, enc_revision, key_length_in_bytes)
+      user_password234?(user_password, user, owner, permissions, id, enc_revision, key_length_in_bytes, encrypt_metadata)
+    end
+
+    private def owner_password56?(owner_password : Bytes, user : Bytes, owner : Bytes, enc_revision : Int32) : Bool
+      if owner.size < 40
+        raise ::IO::Error.new("Owner password is too short")
+      end
+
+      truncated_owner_password = truncate127(owner_password)
+      o_hash = owner[0, 32]
+      o_validation_salt = owner[32, 8]
+
+      hash = if enc_revision == REVISION_5
+               compute_sha256(truncated_owner_password, o_validation_salt, user)
+             else
+               compute_hash2a(truncated_owner_password, o_validation_salt, user)
+             end
+
+      hash == o_hash
+    end
+
+    private def user_password234?(password : Bytes, user : Bytes, owner : Bytes, permissions : Int32, id : Bytes, enc_revision : Int32, length : Int32, encrypt_metadata : Bool) : Bool
+      password_bytes = compute_user_password(password, owner, permissions, id, enc_revision, length, encrypt_metadata)
+      if enc_revision == REVISION_2
+        user == password_bytes
+      else
+        # compare first 16 bytes only
+        user[0, 16] == password_bytes[0, 16]
+      end
+    end
+
+    private def user_password56?(password : Bytes, user : Bytes, enc_revision : Int32) : Bool
+      if user.size < 40
+        raise ::IO::Error.new("User password is too short")
+      end
+
+      truncated_password = truncate127(password)
+      u_hash = user[0, 32]
+      u_validation_salt = user[32, 8]
+
+      hash = if enc_revision == REVISION_5
+               compute_sha256(truncated_password, u_validation_salt, nil)
+             else
+               compute_hash2a(truncated_password, u_validation_salt, nil)
+             end
+
+      hash == u_hash
     end
 
     private def truncate_or_pad(password : Bytes) : Bytes
       padded = Bytes.new(ENCRYPT_PADDING.size, 0_u8)
       bytes_before_pad = Math.min(password.size, padded.size)
-      password.copy_to(padded[0, bytes_before_pad])
-      ENCRYPT_PADDING.copy_to(padded[bytes_before_pad, ENCRYPT_PADDING.size - bytes_before_pad])
+      password[0, bytes_before_pad].copy_to(padded[0, bytes_before_pad])
+      ENCRYPT_PADDING[0, ENCRYPT_PADDING.size - bytes_before_pad].copy_to(padded[bytes_before_pad, ENCRYPT_PADDING.size - bytes_before_pad])
       padded
     end
 
@@ -392,6 +544,212 @@ module Pdfbox::Pdmodel::Encryption
       else
         Bytes.new(0)
       end
+    end
+
+    private def compute_encrypted_key_rev234(password : Bytes, o : Bytes, permissions : Int32, id : Bytes, encrypt_metadata : Bool, length : Int32, enc_revision : Int32) : Bytes
+      # Algorithm 2, based on MD5
+      padded = truncate_or_pad(password)
+
+      md = Digest::MD5.new
+      md.update(padded)
+      md.update(o)
+
+      # Write permissions as little-endian bytes
+      md.update(Bytes[(permissions & 0xFF).to_u8])
+      md.update(Bytes[((permissions >> 8) & 0xFF).to_u8])
+      md.update(Bytes[((permissions >> 16) & 0xFF).to_u8])
+      md.update(Bytes[((permissions >> 24) & 0xFF).to_u8])
+
+      md.update(id)
+
+      # (Security handlers of revision 4 or greater) If document metadata is not being
+      # encrypted, pass 4 bytes with the value 0xFFFFFFFF to the MD5 hash function.
+      if enc_revision == REVISION_4 && !encrypt_metadata
+        md.update(Bytes[0xFF_u8, 0xFF_u8, 0xFF_u8, 0xFF_u8])
+      end
+
+      digest = md.final
+
+      if enc_revision == REVISION_3 || enc_revision == REVISION_4
+        50.times do
+          md = Digest::MD5.new
+          md.update(digest[0, length])
+          digest = md.final
+        end
+      end
+
+      digest[0, length]
+    end
+
+    private def compute_encrypted_key_rev56(password : Bytes, is_owner_password : Bool, o : Bytes, u : Bytes, oe : Bytes?, ue : Bytes?, enc_revision : Int32) : Bytes
+      hash : Bytes
+      file_key_enc : Bytes
+
+      if is_owner_password
+        raise ::IO::Error.new("/Encrypt/OE entry is missing") unless oe
+        o_key_salt = o[40, 8]
+        hash = if enc_revision == REVISION_5
+                 compute_sha256(password, o_key_salt, u)
+               else
+                 compute_hash2a(password, o_key_salt, u)
+               end
+        file_key_enc = oe
+      else
+        raise ::IO::Error.new("/Encrypt/UE entry is missing") unless ue
+        u_key_salt = u[40, 8]
+        hash = if enc_revision == REVISION_5
+                 compute_sha256(password, u_key_salt, nil)
+               else
+                 compute_hash2a(password, u_key_salt, nil)
+               end
+        file_key_enc = ue
+      end
+
+      cipher = OpenSSL::Cipher.new("AES-256-CBC")
+      cipher.decrypt
+      cipher.key = hash
+      cipher.iv = Bytes.new(16, 0_u8)
+      cipher.padding = false
+      cipher.update(file_key_enc) + cipher.final
+    end
+
+    # Algorithm 2.A from ISO 32000-2
+    private def compute_hash2a(password : Bytes, salt : Bytes, u : Bytes?) : Bytes
+      user_key = adjust_user_key(u)
+      truncated_password = truncate127(password)
+      input = concat(truncated_password, salt, user_key)
+      compute_hash2b(input, truncated_password, user_key)
+    end
+
+    # Algorithm 2.B from ISO 32000-2
+    private def compute_hash2b(input : Bytes, password : Bytes, user_key : Bytes?) : Bytes
+      k = Digest::SHA256.digest(input)
+      user_key48 = if user_key && user_key.size >= 48
+                     user_key[0, 48]
+                   end
+
+      e = Bytes.empty
+      round = 0
+      while round < 64 || (e[e.size - 1].to_i32 > round - 32)
+        has_user_key = !user_key48.nil?
+        chunk_size = password.size + k.size + (has_user_key ? 48 : 0)
+        k1 = Bytes.new(64 * chunk_size, 0_u8)
+
+        pos = 0
+        64.times do
+          password.copy_to(k1[pos, password.size])
+          pos += password.size
+          k.copy_to(k1[pos, k.size])
+          pos += k.size
+          if key48 = user_key48
+            key48.copy_to(k1[pos, 48])
+            pos += 48
+          end
+        end
+
+        k_first = k[0, 16]
+        k_second = k[16, 16]
+        cipher = OpenSSL::Cipher.new("AES-128-CBC")
+        cipher.encrypt
+        cipher.key = k_first
+        cipher.iv = k_second
+        cipher.padding = false
+        e = cipher.update(k1) + cipher.final
+
+        remainder = 0
+        e[0, 16].each do |b|
+          remainder = ((remainder * 256) + b) % 3
+        end
+        next_hash = HASHES_2B[remainder]
+
+        k = case next_hash
+            when "SHA-384"
+              OpenSSL::Digest.new("SHA384").update(e).final
+            when "SHA-512"
+              OpenSSL::Digest.new("SHA512").update(e).final
+            else
+              Digest::SHA256.digest(e)
+            end
+
+        round += 1
+      end
+
+      if k.size > 32
+        k[0, 32]
+      else
+        k
+      end
+    end
+
+    private def compute_sha256(input : Bytes, password : Bytes, user_key : Bytes?) : Bytes
+      data = concat(input, password, adjust_user_key(user_key))
+      Digest::SHA256.digest(data)
+    end
+
+    private def adjust_user_key(u : Bytes?) : Bytes
+      return Bytes.empty if u.nil?
+      user = u
+      if user.size < 48
+        raise ::IO::Error.new("Bad U length")
+      elsif user.size > 48
+        user[0, 48]
+      else
+        user
+      end
+    end
+
+    private def concat(a : Bytes, b : Bytes) : Bytes
+      result = Bytes.new(a.size + b.size, 0_u8)
+      a.copy_to(result[0, a.size])
+      b.copy_to(result[a.size, b.size])
+      result
+    end
+
+    private def concat(a : Bytes, b : Bytes, c : Bytes) : Bytes
+      result = Bytes.new(a.size + b.size + c.size, 0_u8)
+      a.copy_to(result[0, a.size])
+      b.copy_to(result[a.size, b.size])
+      c.copy_to(result[a.size + b.size, c.size])
+      result
+    end
+
+    private def truncate127(input : Bytes) : Bytes
+      return input if input.size <= 127
+      input[0, 127]
+    end
+
+    private def password_to_bytes(password : String, enc_revision : Int32) : Bytes
+      # Apply SASLPrep for revision 6 (PDFBOX-4155)
+      password = sasl_prep_query(password) if enc_revision == REVISION_6
+
+      if enc_revision == REVISION_5 || enc_revision == REVISION_6
+        # UTF-8 encoding for revisions 5-6
+        password.to_slice
+      else
+        # ISO-8859-1 encoding for revisions 2-4
+        iso_8859_1_bytes(password)
+      end
+    end
+
+    private def sasl_prep_query(password : String) : String
+      # TODO: implement SASLPrep string preparation as per RFC 4013
+      # For now, return unchanged (ASCII passwords work)
+      password
+    end
+
+    private def iso_8859_1_bytes(password : String) : Bytes
+      # Convert string to ISO-8859-1 bytes
+      # ISO-8859-1 maps characters 0-255 directly, characters outside range become '?' (0x3F)
+      result = Bytes.new(password.size)
+      password.each_char_with_index do |char, i|
+        codepoint = char.ord
+        if codepoint <= 255
+          result[i] = codepoint.to_u8
+        else
+          result[i] = '?'.ord.to_u8 # 0x3F
+        end
+      end
+      result
     end
 
     private def encrypt_data_rc4(key : Bytes, data : Bytes) : Bytes
@@ -627,7 +985,7 @@ module Pdfbox::Pdmodel::Encryption
       # Create new bytes with target size, copying original and padding with zeros if needed
       result = Bytes.new(target_size, 0_u8)
       copy_size = Math.min(bytes.size, target_size)
-      bytes.copy_to(result[0, copy_size])
+      bytes[0, copy_size].copy_to(result[0, copy_size])
       result
     end
 
@@ -646,7 +1004,7 @@ module Pdfbox::Pdmodel::Encryption
       # Create new bytes with target size, copying original and padding with zeros if needed
       result = Bytes.new(target_size, 0_u8)
       copy_size = Math.min(bytes.size, target_size)
-      bytes.copy_to(result[0, copy_size])
+      bytes[0, copy_size].copy_to(result[0, copy_size])
       result
     end
 

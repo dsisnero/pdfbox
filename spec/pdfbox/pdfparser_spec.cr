@@ -140,6 +140,16 @@ describe Pdfbox::Pdfparser::COSParser do
       obj.as(Pdfbox::Cos::String).value.should eq("Hello")
     end
 
+    it "preserves raw bytes for hexadecimal strings with high-bit values" do
+      # 94E8 should remain raw bytes [0x94, 0xE8], not UTF-8 encoded text bytes
+      bytes = Bytes['<'.ord, '9'.ord, '4'.ord, 'E'.ord, '8'.ord, '>'.ord, ' '.ord]
+      source = Pdfbox::IO::MemoryRandomAccessRead.new(bytes)
+      parser = Pdfbox::Pdfparser::COSParser.new(source)
+      obj = parser.parse_object
+      obj.should be_a(Pdfbox::Cos::String)
+      obj.as(Pdfbox::Cos::String).bytes.should eq(Bytes[0x94_u8, 0xE8_u8])
+    end
+
     it "parses hexadecimal string with whitespace" do
       bytes = Bytes['<'.ord, '4'.ord, '8'.ord, ' '.ord, '6'.ord, '5'.ord, ' '.ord, '6'.ord, 'C'.ord, ' '.ord, '6'.ord, 'C'.ord, ' '.ord, '6'.ord, 'F'.ord, '>'.ord, ' '.ord]
       source = Pdfbox::IO::MemoryRandomAccessRead.new(bytes)
