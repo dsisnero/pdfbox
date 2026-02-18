@@ -509,6 +509,18 @@ describe Pdfbox::Cos::Dictionary do
       dict2 = Pdfbox::Cos::Dictionary.new({Pdfbox::Cos::Name.new("X") => Pdfbox::Cos::Name.new("Y").as(Pdfbox::Cos::Base)})
       dict1.should_not eq(dict2)
     end
+
+    it "is not equal to a stream with matching dictionary entries" do
+      dict = Pdfbox::Cos::Dictionary.new
+      dict[Pdfbox::Cos::Name.new("BE")] = Pdfbox::Cos::Name.new("BE")
+      dict[Pdfbox::Cos::Name.new("Length")] = Pdfbox::Cos::Integer.new(0_i64)
+
+      stream = Pdfbox::Cos::Stream.new
+      stream[Pdfbox::Cos::Name.new("BE")] = Pdfbox::Cos::Name.new("BE")
+
+      dict.should_not eq(stream)
+      stream.should_not eq(dict)
+    end
   end
 
   describe "#write_pdf" do
