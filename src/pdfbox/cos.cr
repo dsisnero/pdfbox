@@ -6,10 +6,49 @@ module Pdfbox::Cos
   # Error class for COS operations
   class Error < Pdfbox::PDFError; end
 
+  # Tracks document parse lifecycle to decide whether COS updates are accepted.
+  class DocumentState
+    @parsing = true
+
+    def parsing=(parsing : Bool) : Nil
+      @parsing = parsing
+    end
+
+    def accepting_updates? : Bool
+      !@parsing
+    end
+  end
+
+  # Tracks incremental-update state for a COS object.
+  class UpdateState
+    @origin_document_state : DocumentState?
+    @updated = false
+
+    def origin_document_state=(origin_document_state : DocumentState?) : Nil
+      return if @origin_document_state || origin_document_state.nil?
+      @origin_document_state = origin_document_state
+      update(true)
+    end
+
+    def origin_document_state : DocumentState?
+      @origin_document_state
+    end
+
+    def updated? : Bool
+      @updated
+    end
+
+    def update(updated : Bool) : Nil
+      return unless @origin_document_state.try(&.accepting_updates?)
+      @updated = updated
+    end
+  end
+
   # Base class for all COS objects
   abstract class Base
     @direct : Bool = true
     @key : ObjectKey?
+    @update_state : UpdateState?
 
     # Write this object in PDF format to the given IO
     abstract def write_pdf(io : ::IO) : Nil
@@ -34,6 +73,18 @@ module Pdfbox::Cos
     # Set the ObjectKey of an indirect object.
     def key=(key : ObjectKey?) : Nil
       @key = key
+    end
+
+    def update_state : UpdateState
+      @update_state ||= UpdateState.new
+    end
+
+    def need_to_be_updated? : Bool
+      update_state.updated?
+    end
+
+    def need_to_be_updated=(flag : Bool) : Nil
+      update_state.update(flag)
     end
   end
 
