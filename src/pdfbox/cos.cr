@@ -55,6 +55,11 @@ module Pdfbox::Cos
     # Write this object in PDF format to the given IO
     abstract def write_pdf(io : ::IO) : Nil
 
+    # Java compatibility: COSBase#getCOSObject returns the wrapped COS object.
+    def cos_object : Base
+      self
+    end
+
     # If the state is set true, the dictionary will be written direct into the called object.
     # This means, no indirect object will be created.
     def direct? : Bool
