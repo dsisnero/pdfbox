@@ -772,4 +772,51 @@ module Pdfbox::Cos
       end
     end
   end
+
+  # Minimal COSDocument implementation used for COS-level document tests.
+  class Document < Base
+    @xref_table = {} of ObjectKey? => Int64
+    @object_pool = {} of ObjectKey => Object
+
+    def write_pdf(io : ::IO) : Nil
+      io << "%COSDocument"
+    end
+
+    def add_xref_table(values : Hash(ObjectKey?, Int64)) : Nil
+      values.each do |key, value|
+        @xref_table[key] = value
+      end
+    end
+
+    def set_object(key : ObjectKey, object : Object) : Nil
+      @object_pool[key] = object
+    end
+
+    def objects_by_type(type : Name) : ::Array(Object)
+      result = [] of Object
+      @xref_table.each_key do |object_key|
+        next unless object_key
+        object = @object_pool[object_key]?
+        next unless object
+        real_object = object.object
+        next unless real_object.is_a?(Dictionary)
+        dict_type = real_object[Name.new("Type")]
+        result << object if dict_type == type
+      end
+      result
+    end
+
+    def linearized_dictionary : Dictionary?
+      @xref_table.each do |object_key, offset|
+        next unless object_key
+        next unless offset > 0
+        object = @object_pool[object_key]?
+        next unless object
+        real_object = object.object
+        next unless real_object.is_a?(Dictionary)
+        return real_object if real_object[Name.new("Linearized")]
+      end
+      nil
+    end
+  end
 end
