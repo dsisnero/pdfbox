@@ -53,6 +53,40 @@ describe Pdfbox::Cos::Array do
     end
   end
 
+  describe "float conversion helpers" do
+    it "converts float arrays to COSFloat and back" do
+      start = [1.0_f64, 0.1_f64, 0.02_f64]
+      array = Pdfbox::Cos::Array.new
+      array.float_array = start
+
+      array.size.should eq(3)
+      array.get(0).should eq(Pdfbox::Cos::Float.new(1.0))
+      array.get(1).should eq(Pdfbox::Cos::Float.new(0.1))
+      array.get(2).should eq(Pdfbox::Cos::Float.new(0.02))
+
+      float_list = array.to_cos_number_float_list
+      float_list.should eq([1.0_f64, 0.1_f64, 0.02_f64])
+
+      ending = array.to_float_array
+      ending.should eq(start)
+    end
+
+    it "maps null-like placeholders to nil/zero in numeric conversions" do
+      array = Pdfbox::Cos::Array.new([
+        Pdfbox::Cos::Float.new(1.0),
+        Pdfbox::Cos::Null.instance,
+        Pdfbox::Cos::Float.new(0.02),
+      ])
+
+      float_list = array.to_cos_number_float_list
+      float_list[0].should eq(1.0_f64)
+      float_list[1].should be_nil
+      float_list[2].should eq(0.02_f64)
+
+      array.to_float_array.should eq([1.0_f64, 0.0_f64, 0.02_f64])
+    end
+  end
+
   describe "#to_list" do
     it "returns a list copy of items" do
       array = Pdfbox::Cos::Array.of_cos_integers([0, 1, 2, 3, 4, 5])

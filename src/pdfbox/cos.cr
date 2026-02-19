@@ -674,6 +674,28 @@ module Pdfbox::Cos
       @items.map { |item| item.as?(Integer).try(&.value) }
     end
 
+    def float_array=(values : Enumerable(Float32 | Float64 | Int | Int64)) : Nil
+      @items.clear
+      values.each do |value|
+        @items << Float.new(value.to_f64)
+      end
+    end
+
+    def to_cos_number_float_list : ::Array(Float64?)
+      @items.map do |item|
+        case item
+        when Float
+          item.value
+        when Integer
+          item.value.to_f64
+        end
+      end
+    end
+
+    def to_float_array : ::Array(Float64)
+      to_cos_number_float_list.map { |value| value || 0.0_f64 }
+    end
+
     def to_list : ::Array(Base)
       @items.dup
     end
