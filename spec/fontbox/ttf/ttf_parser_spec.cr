@@ -17,7 +17,7 @@ require "../../spec_helper"
 
 module Fontbox::TTF
   def self.test_font_path : String
-    File.join("apache_pdfbox", "fontbox", "src", "test", "resources", "ttf", "LiberationSans-Regular.ttf")
+    File.join("vendor/pdfbox", "fontbox", "src", "test", "resources", "ttf", "LiberationSans-Regular.ttf")
   end
 
   describe TTFParser do

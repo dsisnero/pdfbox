@@ -75,7 +75,33 @@ module Pdfbox::Pdfparser
       # Read first line (up to newline)
       line = read_line
       unless line.starts_with?("%PDF-")
-        raise SyntaxError.new("Invalid PDF header: #{line.inspect}")
+        if @lenient
+          # Java parity: in lenient mode, scan the initial bytes for a PDF header marker.
+          original_pos = source.position
+          begin
+            source.seek(0_i64)
+            read_size = Math.min(4096_i64, source.length).to_i
+            buffer = Bytes.new(read_size)
+            actual = source.read(buffer)
+            window = if actual && actual > 0
+                       String.new(buffer[0, actual], "ISO-8859-1")
+                     else
+                       ""
+                     end
+            if header_index = window.index("%PDF-")
+              source.seek(header_index.to_i64)
+              line = read_line
+            else
+              raise SyntaxError.new("Invalid PDF header: #{line.inspect}")
+            end
+          ensure
+            # read_line above already positioned source correctly when header is found;
+            # if not found, restore for consistent error behavior.
+            source.seek(original_pos) unless line.starts_with?("%PDF-")
+          end
+        else
+          raise SyntaxError.new("Invalid PDF header: #{line.inspect}")
+        end
       end
       # Extract version: %PDF-1.4
       version = line[5..]
@@ -596,55 +622,10 @@ module Pdfbox::Pdfparser
         seek(saved_pos)
         return object
       end
-
-      # Get Length from dictionary
-      length_entry = object[Pdfbox::Cos::Name.new("Length")]
-      Log.debug { "handle_stream_incremental: length_entry type = #{length_entry.class}, value = #{length_entry.inspect}" }
-      unless length_entry
-        raise SyntaxError.new("Stream missing /Length entry")
-      end
-
-      # Resolve length (could be direct integer or indirect reference)
-      length_value : Int64? = nil
-      case length_entry
-      when Pdfbox::Cos::Integer
-        length_value = length_entry.value.to_i64
-      when Pdfbox::Cos::Object
-        # Dereference the object
-        obj = length_entry.object
-        if obj.is_a?(Pdfbox::Cos::Integer)
-          length_value = obj.value.to_i64
-        else
-          raise SyntaxError.new("Length object does not contain an integer")
-        end
-      else
-        raise SyntaxError.new("Length entry must be integer or indirect reference")
-      end
-
-      length = length_value || raise SyntaxError.new("Stream missing /Length entry")
-      Log.debug { "handle_stream_incremental: resolved length = #{length}" }
-
-      # Skip whitespace (EOL marker) after "stream"
-      skip_spaces
-      Log.debug { "handle_stream_incremental: after skip_spaces, position=#{position}" }
-
-      # Read stream data as raw bytes
-      data = Bytes.new(length)
-      source.read(data)
-      Log.debug { "handle_stream_incremental: read #{data.size} bytes, first 10: #{data[0, Math.min(10, data.size)].hexstring}" }
-
-      # Create Stream object with data
-      stream_obj = Pdfbox::Cos::Stream.new(object.entries, data)
-
-      # Skip "endstream"
-      skip_spaces
-      begin
-        read_expected_string("endstream")
-      rescue
-        raise SyntaxError.new("Expected 'endstream' after stream data at position #{position}")
-      end
-
-      stream_obj
+      # Rewind to the beginning of the stream keyword and delegate to COSParser stream handling.
+      # This preserves Java/PDFBox fallback behavior for malformed streams (e.g. missing /Length).
+      seek(saved_pos)
+      parse_cos_stream(object)
     end
 
     # Check for endobj incrementally

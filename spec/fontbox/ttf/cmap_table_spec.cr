@@ -17,7 +17,7 @@ require "../../spec_helper"
 
 module Fontbox::TTF
   def self.parse_test_font : TrueTypeFont
-    font_path = File.join("apache_pdfbox", "fontbox", "src", "test", "resources", "ttf", "LiberationSans-Regular.ttf")
+    font_path = File.join("vendor/pdfbox", "fontbox", "src", "test", "resources", "ttf", "LiberationSans-Regular.ttf")
     parser = TTFParser.new
     parser.parse(Pdfbox::IO::RandomAccessReadBufferedFile.new(font_path))
   end

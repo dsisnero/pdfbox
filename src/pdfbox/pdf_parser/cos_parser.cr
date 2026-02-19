@@ -76,6 +76,8 @@ module Pdfbox::Pdfparser
                    password : String = "", key_store_input_stream : ::IO? = nil, key_alias : String? = nil)
       super(source)
       @parser = parser
+      # Keep child parser behavior aligned with parent parser leniency.
+      @lenient = parser.try(&.lenient) || false
       @recursion_depth = 0
       @file_len = source.length
       @strm_buf = Bytes.new(STRMBUFLEN)

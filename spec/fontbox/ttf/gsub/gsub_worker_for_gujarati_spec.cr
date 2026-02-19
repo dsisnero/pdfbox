@@ -1,7 +1,7 @@
 require "../../../spec_helper"
 
 module Fontbox::TTF::Gsub
-  LOHIT_GUJARATI_TTF = "apache_pdfbox/fontbox/src/test/resources/ttf/Lohit-Gujarati.ttf"
+  LOHIT_GUJARATI_TTF = "vendor/pdfbox/fontbox/src/test/resources/ttf/Lohit-Gujarati.ttf"
 
   private def self.with_gujarati_font(&)
     font = TTFParser.new.parse(Pdfbox::IO::RandomAccessReadBufferedFile.new(LOHIT_GUJARATI_TTF))

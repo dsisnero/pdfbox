@@ -1,7 +1,7 @@
 require "../../../spec_helper"
 
 module Fontbox::TTF::Gsub
-  LOHIT_BENGALI_TTF = "apache_pdfbox/fontbox/src/test/resources/ttf/Lohit-Bengali.ttf"
+  LOHIT_BENGALI_TTF = "vendor/pdfbox/fontbox/src/test/resources/ttf/Lohit-Bengali.ttf"
 
   private def self.with_bengali_font(&)
     font = TTFParser.new.parse(Pdfbox::IO::RandomAccessReadBufferedFile.new(LOHIT_BENGALI_TTF))

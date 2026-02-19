@@ -2,7 +2,7 @@ require "../../../spec_helper"
 
 module Fontbox::TTF::Gsub
   private def self.with_foglihten_font_latin(&)
-    font_path = "apache_pdfbox/fontbox/src/test/resources/otf/FoglihtenNo07.otf"
+    font_path = "vendor/pdfbox/fontbox/src/test/resources/otf/FoglihtenNo07.otf"
     font = TTFParser.new.parse(Pdfbox::IO::RandomAccessReadBufferedFile.new(font_path))
     begin
       yield font

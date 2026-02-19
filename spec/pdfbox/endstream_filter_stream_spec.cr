@@ -63,12 +63,22 @@ describe Pdfbox::Pdfparser::EndstreamFilterStream do
   end
 
   it "test PDFBOX-2079 embedded file" do
-    # PDFBOX-2079: Embedded zip file with missing /Length entry forces use of EndstreamFilterStream
-    # Original test extracts embedded file and checks size (17660 bytes)
-    # For now, just verify PDF loads without exception
+    # PDFBOX-2079: embedded zip has no /Length, forcing EndstreamFilterStream path.
+    # Java test writes extracted bytes to disk and asserts resulting size.
     pdf_path = File.expand_path("../resources/pdfbox/pdparser/embedded_zip.pdf", __DIR__)
     doc = Pdfbox::Pdmodel::Document.load(pdf_path, lenient: true)
-    doc.should_not be_nil
-    doc.close if doc.responds_to?(:close)
+    catalog = doc.document_catalog || raise "Expected document catalog"
+    names = catalog.names || raise "Expected names dictionary"
+    embedded_files = names.embedded_files || raise "Expected embedded files name tree"
+    map = embedded_files.names || raise "Expected embedded files map"
+    map.size.should eq(1)
+
+    spec = map["My first attachment"]? || raise "Expected My first attachment spec"
+    embedded = spec.embedded_file || raise "Expected embedded file"
+    input = embedded.create_input_stream || raise "Expected embedded file input stream"
+    data = input.gets_to_end.to_slice
+    data.size.should eq(17660)
+
+    doc.close
   end
 end

@@ -1,5 +1,5 @@
 module Fontbox::TTF::Gsub
-  JOSEFIN_SANS_TTF = "apache_pdfbox/fontbox/src/test/resources/ttf/JosefinSans-Italic.ttf"
+  JOSEFIN_SANS_TTF = "vendor/pdfbox/fontbox/src/test/resources/ttf/JosefinSans-Italic.ttf"
 
   private def self.with_dflt_font(&)
     font = TTFParser.new.parse(Pdfbox::IO::RandomAccessReadBufferedFile.new(JOSEFIN_SANS_TTF))

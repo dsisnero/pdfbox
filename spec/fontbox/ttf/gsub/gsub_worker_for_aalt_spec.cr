@@ -63,7 +63,7 @@ module Fontbox::TTF::Gsub
     end
   end
 
-  FOGLIHTEN_NO07_OTF_AALT = "apache_pdfbox/fontbox/src/test/resources/otf/FoglihtenNo07.otf"
+  FOGLIHTEN_NO07_OTF_AALT = "vendor/pdfbox/fontbox/src/test/resources/otf/FoglihtenNo07.otf"
 
   private def self.with_aalt_font(&)
     font = TTFParser.new.parse(Pdfbox::IO::RandomAccessReadBufferedFile.new(FOGLIHTEN_NO07_OTF_AALT))

@@ -1,7 +1,7 @@
 require "../../../spec_helper"
 
 module Fontbox::TTF::Gsub
-  LOHIT_DEVANAGARI_TTF = "apache_pdfbox/fontbox/src/test/resources/ttf/Lohit-Devanagari.ttf"
+  LOHIT_DEVANAGARI_TTF = "vendor/pdfbox/fontbox/src/test/resources/ttf/Lohit-Devanagari.ttf"
 
   private def self.with_devanagari_font(&)
     font = TTFParser.new.parse(Pdfbox::IO::RandomAccessReadBufferedFile.new(LOHIT_DEVANAGARI_TTF))

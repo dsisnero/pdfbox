@@ -2,7 +2,7 @@ require "../../spec_helper"
 
 module Fontbox::TTF
   private def self.liberation_sans_ttf
-    File.join("apache_pdfbox", "fontbox", "src", "test", "resources", "ttf", "LiberationSans-Regular.ttf")
+    File.join("vendor/pdfbox", "fontbox", "src", "test", "resources", "ttf", "LiberationSans-Regular.ttf")
   end
 
   describe GlyphSubstitutionTable do

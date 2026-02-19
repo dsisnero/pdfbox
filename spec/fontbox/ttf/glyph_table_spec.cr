@@ -3,7 +3,7 @@ require "../../spec_helper"
 module Fontbox::TTF
   describe GlyphTable do
     it "is initialized when parsed from a TTF" do
-      font_path = File.join("apache_pdfbox", "fontbox", "src", "test", "resources", "ttf", "LiberationSans-Regular.ttf")
+      font_path = File.join("vendor/pdfbox", "fontbox", "src", "test", "resources", "ttf", "LiberationSans-Regular.ttf")
       font = TTFParser.new.parse(Pdfbox::IO::RandomAccessReadBufferedFile.new(font_path))
 
       glyph_table = font.table(GlyphTable::TAG)
@@ -14,7 +14,7 @@ module Fontbox::TTF
     end
 
     it "returns a composite glyph with its resolved components" do
-      font_path = File.join("apache_pdfbox", "fontbox", "src", "test", "resources", "ttf", "LiberationSans-Regular.ttf")
+      font_path = File.join("vendor/pdfbox", "fontbox", "src", "test", "resources", "ttf", "LiberationSans-Regular.ttf")
       font = TTFParser.new.parse(Pdfbox::IO::RandomAccessReadBufferedFile.new(font_path))
 
       glyph_table = font.glyph
@@ -35,7 +35,7 @@ module Fontbox::TTF
     end
 
     it "returns an empty glyph when loca reports no outline data" do
-      font_path = File.join("apache_pdfbox", "fontbox", "src", "test", "resources", "ttf", "LiberationSans-Regular.ttf")
+      font_path = File.join("vendor/pdfbox", "fontbox", "src", "test", "resources", "ttf", "LiberationSans-Regular.ttf")
       font = TTFParser.new.parse(Pdfbox::IO::RandomAccessReadBufferedFile.new(font_path))
       glyph_table = font.glyph
       glyph_table.should_not be_nil

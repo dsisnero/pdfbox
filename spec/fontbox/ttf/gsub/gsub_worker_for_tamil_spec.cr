@@ -1,5 +1,5 @@
 module Fontbox::TTF::Gsub
-  LOHIT_TAMIL_TTF = "apache_pdfbox/fontbox/src/test/resources/ttf/Lohit-Tamil.ttf"
+  LOHIT_TAMIL_TTF = "vendor/pdfbox/fontbox/src/test/resources/ttf/Lohit-Tamil.ttf"
 
   private def self.with_tamil_font(&)
     font = TTFParser.new.parse(Pdfbox::IO::RandomAccessReadBufferedFile.new(LOHIT_TAMIL_TTF))

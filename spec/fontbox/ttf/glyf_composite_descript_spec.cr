@@ -3,7 +3,7 @@ require "../../spec_helper"
 module Fontbox::TTF
   describe GlyfCompositeDescript do
     it "returns components without exposing internal mutable storage" do
-      font_path = File.join("apache_pdfbox", "fontbox", "src", "test", "resources", "ttf", "LiberationSans-Regular.ttf")
+      font_path = File.join("vendor/pdfbox", "fontbox", "src", "test", "resources", "ttf", "LiberationSans-Regular.ttf")
       font = TTFParser.new.parse(Pdfbox::IO::RandomAccessReadBufferedFile.new(font_path))
       glyph_table = font.glyph
       glyph_table.should_not be_nil

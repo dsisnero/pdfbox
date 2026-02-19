@@ -1317,7 +1317,7 @@ module Pdfbox::Pdmodel
       stream = self.stream
       return unless stream
 
-      IO::Memory.new(stream.data)
+      ::IO::Memory.new(stream.data)
     end
 
     # Get embedded file data as bytes
