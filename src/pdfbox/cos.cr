@@ -568,10 +568,12 @@ module Pdfbox::Cos
   class Name < Base
     @value : ::String
 
-    FILTER         = new("Filter")
-    FLATE_DECODE   = new("FlateDecode")
-    ASCII85_DECODE = new("ASCII85Decode")
-    LENGTH         = new("Length")
+    FILTER            = new("Filter")
+    FLATE_DECODE      = new("FlateDecode")
+    ASCII85_DECODE    = new("ASCII85Decode")
+    RUN_LENGTH_DECODE = new("RunLengthDecode")
+    LZW_DECODE        = new("LZWDecode")
+    LENGTH            = new("Length")
 
     def initialize(@value : ::String)
     end
