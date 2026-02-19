@@ -40,10 +40,11 @@ module Pdfbox::Cos
     end
 
     def ==(other : self) : Bool
-      @number_and_generation == other.@number_and_generation && @stream_index == other.@stream_index
+      # Java parity: COSObjectKey equality/hash ignore stream index.
+      @number_and_generation == other.@number_and_generation
     end
 
-    def_hash @number_and_generation, @stream_index
+    def_hash @number_and_generation
 
     def to_s(io : IO) : Nil
       io << number << " " << generation << " R"
