@@ -41,6 +41,30 @@ describe Pdfbox::Cos::String do
     Pdfbox::Cos::String.new(high_bits).value.should eq(high_bits)
   end
 
+  it "returns hex representation of underlying bytes" do
+    expected = "Test subject for testing getHex"
+    string = Pdfbox::Cos::String.new(expected)
+    string.to_hex_string.should eq("54657374207375626A65637420666F722074657374696E6720676574486578")
+  end
+
+  it "compares parsed hex strings by content and decoded value" do
+    test1 = Pdfbox::Cos::String.parse_hex("000000FF000000")
+    test2 = Pdfbox::Cos::String.parse_hex("000000FF00FFFF")
+
+    test1.should eq(test1)
+    test2.should eq(test2)
+    test1.to_hex_string.should_not eq(test2.to_hex_string)
+    test1.bytes.should_not eq(test2.bytes)
+    test1.should_not eq(test2)
+    test1.value.should_not eq(test2.value)
+  end
+
+  it "returns raw bytes for escaped-character strings" do
+    esc_char_string = "( test#some) escaped< \\chars>!~1239857 "
+    string = Pdfbox::Cos::String.new(esc_char_string)
+    String.new(string.bytes).should eq(esc_char_string)
+  end
+
   it "includes force_hex_form in equality and hash comparisons" do
     literal = Pdfbox::Cos::String.new("Test1")
     same_literal = Pdfbox::Cos::String.new("Test1")
