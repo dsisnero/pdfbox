@@ -1746,7 +1746,7 @@ module Pdfbox::Pdfparser
 
       # Add parsed pages to document
       pages.each do |page|
-        doc.add_page(page)
+        doc.add_parsed_page(page)
       end
       @initial_parse_done = true
       doc

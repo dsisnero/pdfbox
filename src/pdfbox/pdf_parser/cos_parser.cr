@@ -110,10 +110,12 @@ module Pdfbox::Pdfparser
     end
 
     # Sets how many trailing bytes of PDF file are searched for EOF marker and 'startxref' marker.
-    # ameba:disable Naming/AccessorMethodName
-    def set_eof_lookup_range(byte_count : Int32) : Nil
+
+    def eof_lookup_range=(byte_count : Int32) : Int32
       if byte_count > 15
         @read_trail_bytes = byte_count
+      else
+        @read_trail_bytes
       end
     end
 
@@ -366,7 +368,7 @@ module Pdfbox::Pdfparser
     end
 
     # Parse a COS object from the stream (similar to Apache PDFBox parseDirObject)
-    # ameba:disable Metrics/CyclomaticComplexity
+
     def parse_dir_object : Pdfbox::Cos::Base?
       @recursion_depth += 1
       if @recursion_depth > MAX_RECURSION_DEPTH
@@ -455,7 +457,7 @@ module Pdfbox::Pdfparser
       read_expected_char('<')
       skip_spaces
       dict = Pdfbox::Cos::Dictionary.new
-      dict.set_direct(is_direct)
+      dict.direct = is_direct
 
       loop do
         skip_spaces
@@ -503,7 +505,7 @@ module Pdfbox::Pdfparser
         Log.warn { "Skipped out of range number value at offset #{position}" }
       else
         # label this item as direct, to avoid signature problems.
-        value.try(&.set_direct(true))
+        value.try(&.direct = true)
         if key
           dict[key] = value
         end
@@ -545,7 +547,6 @@ module Pdfbox::Pdfparser
       object_from_pool(object_key(obj_number, gen_number))
     end
 
-    # ameba:disable Metrics/CyclomaticComplexity
     private def read_until_end_of_cos_dictionary : Bool
       c = read_char
       while c && c != '/' && c != '>'
@@ -576,7 +577,7 @@ module Pdfbox::Pdfparser
     end
 
     # Parse a COS array
-    # ameba:disable Metrics/CyclomaticComplexity
+
     def parse_array : Pdfbox::Cos::Array
       @recursion_depth += 1
       if @recursion_depth > MAX_RECURSION_DEPTH
@@ -1025,7 +1026,6 @@ module Pdfbox::Pdfparser
       true
     end
 
-    # ameba:disable Metrics/CyclomaticComplexity
     private def read_until_end_stream(filter_stream : EndstreamFilterStream) : Int64
       buf_size = 0
       char_match_count = 0
@@ -1103,7 +1103,6 @@ module Pdfbox::Pdfparser
       filter_stream.calculate_length
     end
 
-    # ameba:disable Metrics/CyclomaticComplexity
     protected def parse_cos_stream(dic : Pdfbox::Cos::Dictionary) : Pdfbox::Cos::Stream
       # read 'stream'; this was already tested in parse_object_dynamically()
       read_string
@@ -1286,7 +1285,7 @@ module Pdfbox::Pdfparser
 
     # Parse file object at given offset
     # Similar to Apache PDFBox COSParser.parseFileObject
-    # ameba:disable Metrics/CyclomaticComplexity
+
     private def parse_file_object(obj_offset : Int64, key : Cos::ObjectKey) : Cos::Base?
       # jump to the object start
       seek(obj_offset)
@@ -1304,7 +1303,7 @@ module Pdfbox::Pdfparser
       skip_spaces
       parsed_object = parse_dir_object
       if parsed_object
-        parsed_object.set_direct(false)
+        parsed_object.direct = false
         parsed_object.key = key
       end
 

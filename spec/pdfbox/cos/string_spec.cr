@@ -41,6 +41,23 @@ describe Pdfbox::Cos::String do
     Pdfbox::Cos::String.new(high_bits).value.should eq(high_bits)
   end
 
+  it "stores bytes as PDFDocEncoding for 8-bit text and UTF-16BE with BOM for higher codepoints" do
+    ascii = "This is some regular text. It should all be expressible in ASCII"
+    latin1 = "En français où les choses sont accentués. En español, así"
+    high_bits = "をクリックしてく"
+
+    ascii_bytes = Pdfbox::Cos::String.new(ascii).bytes
+    latin1_bytes = Pdfbox::Cos::String.new(latin1).bytes
+    high_bytes = Pdfbox::Cos::String.new(high_bits).bytes
+
+    String.new(ascii_bytes, "ISO-8859-1").should eq(ascii)
+    String.new(latin1_bytes, "ISO-8859-1").should eq(latin1)
+
+    high_bytes[0].should eq(0xFE_u8)
+    high_bytes[1].should eq(0xFF_u8)
+    String.new(high_bytes[2, high_bytes.size - 2], "UTF-16BE").should eq(high_bits)
+  end
+
   it "returns hex representation of underlying bytes" do
     expected = "Test subject for testing getHex"
     string = Pdfbox::Cos::String.new(expected)
@@ -63,6 +80,22 @@ describe Pdfbox::Cos::String do
     esc_char_string = "( test#some) escaped< \\chars>!~1239857 "
     string = Pdfbox::Cos::String.new(esc_char_string)
     String.new(string.bytes).should eq(esc_char_string)
+  end
+
+  it "defensively copies input bytes in constructor" do
+    source = Bytes[0x41_u8, 0x42_u8, 0x43_u8]
+    string = Pdfbox::Cos::String.new(source)
+    source[0] = 0x5A_u8
+
+    String.new(string.bytes).should eq("ABC")
+  end
+
+  it "returns a defensive copy from bytes accessor" do
+    string = Pdfbox::Cos::String.new("ABC")
+    view = string.bytes
+    view[0] = 0x5A_u8
+
+    String.new(string.bytes).should eq("ABC")
   end
 
   it "accepts a COS writer visitor" do

@@ -1172,18 +1172,18 @@ module Pdfbox::Pdmodel::Encryption
                       else
                         entry.as(Pdfbox::Cos::Dictionary)
                       end
-      cf_dictionary.set_direct(true) # PDFBOX-4436 direct obj needed for Adobe Reader on Android
+      cf_dictionary.direct = true # PDFBOX-4436 direct obj needed for Adobe Reader on Android
       cf_dictionary[crypt_filter_name] = crypt_filter_dictionary.dictionary
     end
 
     def std_crypt_filter_dictionary=(crypt_filter_dictionary : Pdfbox::Pdmodel::Encryption::PDCryptFilterDictionary) : Pdfbox::Pdmodel::Encryption::PDCryptFilterDictionary
-      crypt_filter_dictionary.dictionary.set_direct(true) # PDFBOX-4436
+      crypt_filter_dictionary.dictionary.direct = true # PDFBOX-4436
       assign_crypt_filter_dictionary(STD_CF, crypt_filter_dictionary)
       crypt_filter_dictionary
     end
 
     def default_crypt_filter_dictionary=(default_filter_dictionary : Pdfbox::Pdmodel::Encryption::PDCryptFilterDictionary) : Pdfbox::Pdmodel::Encryption::PDCryptFilterDictionary
-      default_filter_dictionary.dictionary.set_direct(true) # PDFBOX-4436
+      default_filter_dictionary.dictionary.direct = true # PDFBOX-4436
       assign_crypt_filter_dictionary(DEFAULT_CRYPT_FILTER, default_filter_dictionary)
       default_filter_dictionary
     end

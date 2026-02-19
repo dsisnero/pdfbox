@@ -2,6 +2,8 @@
 #
 # This module contains the fundamental object types used in PDF documents,
 # corresponding to the COS (Cos Object System) in Apache PDFBox.
+require "compress/zlib"
+
 module Pdfbox::Cos
   # Error class for COS operations
   class Error < Pdfbox::PDFError; end
@@ -452,7 +454,8 @@ module Pdfbox::Cos
     end
 
     # Creates a new PDF string from raw bytes
-    def initialize(@bytes : Bytes, @force_hex_form : Bool = false)
+    def initialize(bytes : Bytes, @force_hex_form : Bool = false)
+      @bytes = bytes.dup
     end
 
     # Gets the string value as a PDF text string.
@@ -475,7 +478,7 @@ module Pdfbox::Cos
 
     # Gets the raw bytes
     def bytes : Bytes
-      @bytes
+      @bytes.dup
     end
 
     # Whether this string should be written in hex form
@@ -564,6 +567,11 @@ module Pdfbox::Cos
   # Name object in PDF document (PDF keyword)
   class Name < Base
     @value : ::String
+
+    FILTER         = new("Filter")
+    FLATE_DECODE   = new("FlateDecode")
+    ASCII85_DECODE = new("ASCII85Decode")
+    LENGTH         = new("Length")
 
     def initialize(@value : ::String)
     end
@@ -957,6 +965,31 @@ module Pdfbox::Cos
       @data
     end
 
+    def has_data : Bool
+      !@data.empty?
+    end
+
+    def has_data? : Bool
+      has_data
+    end
+
+    def create_raw_input_stream : ::IO
+      ::IO::Memory.new(@data)
+    end
+
+    def create_input_stream : ::IO
+      raise ::IO::Error.new("COSStream has no data") unless has_data
+      ::IO::Memory.new(decode_filters(@data, self[Name::FILTER]))
+    end
+
+    def create_raw_output_stream : ::IO
+      StreamOutput.new(self, nil, false)
+    end
+
+    def create_output_stream(filters : Base? = nil) : ::IO
+      StreamOutput.new(self, filters, true)
+    end
+
     # Write this stream in PDF format to the given IO
     def write_pdf(io : ::IO) : Nil
       # Write stream dictionary
@@ -975,6 +1008,212 @@ module Pdfbox::Cos
     end
 
     def_hash @data
+
+    def decode_filters(data : Bytes, filters : Base?) : Bytes
+      return data if filters.nil?
+
+      case filters
+      when Name
+        decode_with_filter(data, filters)
+      when Array
+        decoded = data
+        filters.items.each do |item|
+          filter = item.as?(Name) || raise Error.new("Invalid stream filter entry: #{item.inspect}")
+          decoded = decode_with_filter(decoded, filter)
+        end
+        decoded
+      else
+        raise Error.new("Unsupported stream filter type: #{filters.class}")
+      end
+    end
+
+    def encode_filters(data : Bytes, filters : Base?) : Bytes
+      return data if filters.nil?
+
+      case filters
+      when Name
+        encode_with_filter(data, filters)
+      when Array
+        encoded = data
+        filters.items.reverse_each do |item|
+          filter = item.as?(Name) || raise Error.new("Invalid stream filter entry: #{item.inspect}")
+          encoded = encode_with_filter(encoded, filter)
+        end
+        encoded
+      else
+        raise Error.new("Unsupported stream filter type: #{filters.class}")
+      end
+    end
+
+    private def decode_with_filter(data : Bytes, filter : Name) : Bytes
+      case filter.value
+      when "FlateDecode"
+        io = ::IO::Memory.new(data)
+        reader = Compress::Zlib::Reader.new(io)
+        output = ::IO::Memory.new
+        ::IO.copy(reader, output)
+        reader.close
+        output.to_slice
+      when "ASCII85Decode"
+        ascii85_decode(data)
+      else
+        raise UnsupportedOperationError.new("Unsupported stream decode filter: #{filter.value}")
+      end
+    end
+
+    private def encode_with_filter(data : Bytes, filter : Name) : Bytes
+      case filter.value
+      when "FlateDecode"
+        output = ::IO::Memory.new
+        writer = Compress::Zlib::Writer.new(output)
+        writer.write(data)
+        writer.close
+        output.to_slice
+      when "ASCII85Decode"
+        ascii85_encode(data)
+      else
+        raise UnsupportedOperationError.new("Unsupported stream encode filter: #{filter.value}")
+      end
+    end
+
+    private def ascii85_encode(data : Bytes) : Bytes
+      encoded = ::String.build do |io|
+        index = 0
+        while index + 4 <= data.size
+          value = (data[index].to_u32 << 24) |
+                  (data[index + 1].to_u32 << 16) |
+                  (data[index + 2].to_u32 << 8) |
+                  data[index + 3].to_u32
+          if value == 0
+            io << 'z'
+          else
+            chunk = StaticArray(UInt8, 5).new(0_u8)
+            4.downto(0) do |position|
+              chunk[position] = (value % 85 + 33).to_u8
+              value //= 85
+            end
+            5.times { |i| io.write_byte(chunk[i]) }
+          end
+          index += 4
+        end
+
+        remaining = data.size - index
+        if remaining > 0
+          value = 0_u32
+          4.times do |offset|
+            value <<= 8
+            value |= data[index + offset].to_u32 if offset < remaining
+          end
+
+          chunk = StaticArray(UInt8, 5).new(0_u8)
+          4.downto(0) do |position|
+            chunk[position] = (value % 85 + 33).to_u8
+            value //= 85
+          end
+          (remaining + 1).times { |i| io.write_byte(chunk[i]) }
+        end
+
+        io << '~' << '>'
+      end
+      encoded.to_slice
+    end
+
+    private def ascii85_decode(data : Bytes) : Bytes
+      output = [] of UInt8
+      tuple = [] of UInt32
+      index = 0
+
+      while index < data.size
+        char = data[index].chr
+        index += 1
+
+        next if char.whitespace?
+
+        if char == 'z'
+          raise Error.new("Invalid ASCII85 'z' inside tuple") unless tuple.empty?
+          output.concat([0_u8, 0_u8, 0_u8, 0_u8])
+          next
+        end
+
+        break if char == '~'
+
+        unless char >= '!' && char <= 'u'
+          raise Error.new("Invalid ASCII85 character: #{char.inspect}")
+        end
+
+        tuple << (char.ord - 33).to_u32
+        next unless tuple.size == 5
+
+        value = 0_u32
+        tuple.each { |digit| value = value * 85 + digit }
+        output << ((value >> 24) & 0xFF).to_u8
+        output << ((value >> 16) & 0xFF).to_u8
+        output << ((value >> 8) & 0xFF).to_u8
+        output << (value & 0xFF).to_u8
+        tuple.clear
+      end
+
+      unless tuple.empty?
+        tuple_length = tuple.size
+        raise Error.new("Invalid ASCII85 tuple length") if tuple_length == 1
+        while tuple.size < 5
+          tuple << 84_u32
+        end
+        value = 0_u32
+        tuple.each { |digit| value = value * 85 + digit }
+        decoded = StaticArray(UInt8, 4).new(0_u8)
+        decoded[0] = ((value >> 24) & 0xFF).to_u8
+        decoded[1] = ((value >> 16) & 0xFF).to_u8
+        decoded[2] = ((value >> 8) & 0xFF).to_u8
+        decoded[3] = (value & 0xFF).to_u8
+        (tuple_length - 1).times { |i| output << decoded[i] }
+      end
+
+      Bytes.new(output.size) { |i| output[i] }
+    end
+
+    private class StreamOutput < ::IO
+      @buffer : ::IO::Memory
+      @buffer = ::IO::Memory.new
+      @closed = false
+
+      def initialize(@stream : Stream, @filters : Base?, @encode : Bool)
+      end
+
+      def read(slice : Bytes) : Int32
+        raise ::IO::Error.new("Not readable")
+      end
+
+      def write(slice : Bytes) : Nil
+        raise ::IO::Error.new("Closed stream") if @closed
+        @buffer.write(slice)
+      end
+
+      def flush : Nil
+      end
+
+      def close : Nil
+        return if @closed
+        @closed = true
+
+        raw = @buffer.to_slice
+        data = @encode ? @stream.encode_filters(raw, @filters) : raw
+        @stream.data = data
+        @stream.set_int(Name::LENGTH, data.size)
+
+        if @encode
+          if filters = @filters
+            @stream.set_item(Name::FILTER, filters)
+          else
+            @stream.remove_item(Name::FILTER)
+          end
+        end
+      end
+
+      def closed? : Bool
+        @closed
+      end
+    end
   end
 
   # Object reference (indirect object) - corresponds to COSObject in Apache PDFBox

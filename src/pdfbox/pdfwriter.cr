@@ -81,11 +81,21 @@ module Pdfbox::Pdfwriter
         page_offset = @destination.pos.to_i64
         xref_writer.add_entry(page_offset, 0_i64, :in_use)
         obj_num = 3 + i
+        page = @document.get_page(i)
         @destination << obj_num << " 0 obj\n"
         @destination << "<<\n"
         @destination << "/Type /Page\n"
         @destination << "/Parent 2 0 R\n"
-        @destination << "/MediaBox [0 0 612 792]\n" # Letter size
+        if media_box = page.media_box
+          @destination << "/MediaBox ["
+          @destination << media_box.lower_left_x << ' '
+          @destination << media_box.lower_left_y << ' '
+          @destination << media_box.upper_right_x << ' '
+          @destination << media_box.upper_right_y
+          @destination << "]\n"
+        else
+          @destination << "/MediaBox [0 0 612 792]\n" # Letter size
+        end
         @destination << ">>\n"
         @destination << "endobj\n"
       end

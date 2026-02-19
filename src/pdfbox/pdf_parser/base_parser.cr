@@ -120,7 +120,7 @@ module Pdfbox::Pdfparser
     end
 
     # Determine if a character terminates a PDF name.
-    # ameba:disable Metrics/CyclomaticComplexity
+
     protected def end_of_name?(ch : Int32) : Bool
       case ch
       when ASCII_SPACE
@@ -177,7 +177,7 @@ module Pdfbox::Pdfparser
     end
 
     # This will parse a PDF string.
-    # ameba:disable Metrics/CyclomaticComplexity
+
     protected def read_literal_string : Bytes
       read_expected_char('(')
 
@@ -473,7 +473,7 @@ module Pdfbox::Pdfparser
     end
 
     # Read a PDF number (integer or float)
-    # ameba:disable Metrics/CyclomaticComplexity
+
     protected def read_number : Float64 | Int64
       skip_spaces
 
@@ -553,7 +553,7 @@ module Pdfbox::Pdfparser
     end
 
     # Read a PDF hexadecimal string as raw bytes
-    # ameba:disable Metrics/CyclomaticComplexity
+
     protected def read_hexadecimal_string : Bytes
       skip_spaces
 
