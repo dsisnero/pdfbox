@@ -31,8 +31,7 @@ class MockCIDCharset < Fontbox::CFF::Charset
     end
   end
 
-  # ameba:disable Naming/PredicateName
-  def is_cid_font? : Bool
+  def cid_font? : Bool
     true
   end
 

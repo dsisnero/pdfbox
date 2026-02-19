@@ -19,7 +19,7 @@ module Fontbox::TTF::Gsub
       intermediate_glyphs_from_gsub = original_glyph_ids
 
       FEATURES_IN_ORDER.each do |feature|
-        unless @gsub_data.is_feature_supported(feature)
+        unless @gsub_data.feature_supported?(feature)
           Log.debug { "the feature #{feature} was not found" }
           next
         end

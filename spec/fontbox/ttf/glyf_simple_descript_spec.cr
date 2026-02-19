@@ -6,7 +6,7 @@ module Fontbox::TTF
       desc = GlyfSimpleDescript.new(0_i16, RandomAccessReadDataStream.new(Pdfbox::IO::RandomAccessReadBuffer.new(Bytes.empty)), 0_i16)
       desc.point_count.should eq(0)
       desc.contour_count.should eq(0)
-      desc.is_composite.should be_false
+      desc.composite?.should be_false
     end
 
     it "reads contour endpoints, flags and relative coordinates" do

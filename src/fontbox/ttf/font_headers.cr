@@ -12,8 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-# ameba:disable Naming/AccessorMethodName
-# ameba:disable Naming/PredicateName
 
 module Fontbox::TTF
   # To improve performance of FileSystemFontProvider.scan_fonts(...),
@@ -37,7 +35,7 @@ module Fontbox::TTF
     @font_family : String?
     @font_sub_family : String?
     @non_otf_gcid142 : Bytes?
-    @is_otf_and_post_script : Bool = false
+    @open_type_post_script : Bool = false
     @otf_registry : String?
     @otf_ordering : String?
     @otf_supplement : Int32 = 0
@@ -73,8 +71,8 @@ module Fontbox::TTF
       @font_sub_family
     end
 
-    def is_open_type_post_script? : Bool
-      @is_otf_and_post_script
+    def open_type_post_script? : Bool
+      @open_type_post_script
     end
 
     def non_otf_table_gcid142 : Bytes?
@@ -110,8 +108,8 @@ module Fontbox::TTF
       @non_otf_gcid142 = bytes
     end
 
-    def is_otf_and_post_script=(value : Bool) : Nil
-      @is_otf_and_post_script = value
+    def open_type_post_script=(value : Bool) : Nil
+      @open_type_post_script = value
     end
 
     def name=(name : String?) : Nil

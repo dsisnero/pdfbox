@@ -168,13 +168,13 @@ module Fontbox::TTF
       # check advance width and left side bearing match original
       original_gid = font.name_to_gid("a")
       subset_gid = subset_font.name_to_gid("a")
-      font.horizontal_metrics.not_nil! # ameba:disable Lint/NotNil
+      font.horizontal_metrics.not_nil!
         .advance_width(original_gid).should eq(
-        subset_font.horizontal_metrics.not_nil! # ameba:disable Lint/NotNil
+        subset_font.horizontal_metrics.not_nil!
           .advance_width(subset_gid))
-      font.horizontal_metrics.not_nil! # ameba:disable Lint/NotNil
+      font.horizontal_metrics.not_nil!
         .left_side_bearing(original_gid).should eq(
-        subset_font.horizontal_metrics.not_nil! # ameba:disable Lint/NotNil
+        subset_font.horizontal_metrics.not_nil!
           .left_side_bearing(subset_gid))
       # verify gid_map
       subsetter.gid_map.size.should eq(2)
@@ -184,7 +184,7 @@ module Fontbox::TTF
     path = simhei_path
     if path
       it "test PDFBox-3319: widths and left side bearings in partially monospaced font" do
-        font = TTFParser.new.parse(Pdfbox::IO::FileRandomAccessRead.new(path.not_nil!)) # ameba:disable Lint/NotNil
+        font = TTFParser.new.parse(Pdfbox::IO::FileRandomAccessRead.new(path.not_nil!))
         # List copied from TrueTypeEmbedder.java
         tables = ["head", "hhea", "loca", "maxp", "cvt ", "prep", "glyf", "hmtx", "fpgm", "gasp"]
         subsetter = TTFSubsetter.new(font, tables)
@@ -196,13 +196,13 @@ module Fontbox::TTF
         subset_font = TTFParser.new(true).parse(subset_io)
         subset_font.number_of_glyphs.should eq(6)
         subsetter.gid_map.each do |new_gid, old_gid|
-          font.horizontal_metrics.not_nil! # ameba:disable Lint/NotNil
+          font.horizontal_metrics.not_nil!
             .advance_width(old_gid).should eq(
-            subset_font.horizontal_metrics.not_nil! # ameba:disable Lint/NotNil
+            subset_font.horizontal_metrics.not_nil!
               .advance_width(new_gid))
-          font.horizontal_metrics.not_nil! # ameba:disable Lint/NotNil
+          font.horizontal_metrics.not_nil!
             .left_side_bearing(old_gid).should eq(
-            subset_font.horizontal_metrics.not_nil! # ameba:disable Lint/NotNil
+            subset_font.horizontal_metrics.not_nil!
               .left_side_bearing(new_gid))
         end
       end
@@ -214,7 +214,7 @@ module Fontbox::TTF
     dejavu_path = dejavu_sans_mono_path
     if dejavu_path
       it "test PDFBox-3379: left side bearings in partially monospaced font" do
-        font = TTFParser.new.parse(Pdfbox::IO::FileRandomAccessRead.new(dejavu_path.not_nil!)) # ameba:disable Lint/NotNil
+        font = TTFParser.new.parse(Pdfbox::IO::FileRandomAccessRead.new(dejavu_path.not_nil!))
         subsetter = TTFSubsetter.new(font)
         subsetter.add('A')
         subsetter.add(' ')
@@ -231,13 +231,13 @@ module Fontbox::TTF
         ["A", "B", "space"].each do |name|
           original_gid = font.name_to_gid(name)
           subset_gid = subset_font.name_to_gid(name)
-          font.horizontal_metrics.not_nil! # ameba:disable Lint/NotNil
+          font.horizontal_metrics.not_nil!
             .advance_width(original_gid).should eq(
-            subset_font.horizontal_metrics.not_nil! # ameba:disable Lint/NotNil
+            subset_font.horizontal_metrics.not_nil!
               .advance_width(subset_gid))
-          font.horizontal_metrics.not_nil! # ameba:disable Lint/NotNil
+          font.horizontal_metrics.not_nil!
             .left_side_bearing(original_gid).should eq(
-            subset_font.horizontal_metrics.not_nil! # ameba:disable Lint/NotNil
+            subset_font.horizontal_metrics.not_nil!
               .left_side_bearing(subset_gid))
         end
       end
@@ -291,7 +291,7 @@ module Fontbox::TTF
     path = noto_mono_path
     if path
       it "test PDFBox-5728: font with v3 PostScript table format and no glyph names" do
-        font = TTFParser.new.parse(Pdfbox::IO::FileRandomAccessRead.new(path.not_nil!)) # ameba:disable Lint/NotNil
+        font = TTFParser.new.parse(Pdfbox::IO::FileRandomAccessRead.new(path.not_nil!))
         post = font.postscript
         post.should_not be_nil
         post.as(PostScriptTable).format_type.should eq(3.0)
@@ -314,7 +314,7 @@ module Fontbox::TTF
     path = keyboard_path
     if path
       it "test PDFBox-6015: font with 0/1 cmap" do
-        font = TTFParser.new.parse(Pdfbox::IO::FileRandomAccessRead.new(path.not_nil!)) # ameba:disable Lint/NotNil
+        font = TTFParser.new.parse(Pdfbox::IO::FileRandomAccessRead.new(path.not_nil!))
         lookup = font.unicode_cmap_lookup
         lookup.glyph_id('a'.ord).should eq(185)
         lookup.glyph_id('z'.ord).should eq(210)

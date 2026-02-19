@@ -5,7 +5,7 @@ module Fontbox::CFF
     it "test_embedded_charset" do
       # true -> CharsetCID
       embedded_charset_cid = EmbeddedCharset.new(true)
-      embedded_charset_cid.is_cid_font?.should be_true
+      embedded_charset_cid.cid_font?.should be_true
       embedded_charset_cid.add_cid(10, 20)
       # test existing mapping
       embedded_charset_cid.gid_for_cid(20).should eq 10
@@ -31,7 +31,7 @@ module Fontbox::CFF
       end
       # false -> CharsetType1
       embedded_charset_type1 = EmbeddedCharset.new(false)
-      embedded_charset_type1.is_cid_font?.should be_false
+      embedded_charset_type1.cid_font?.should be_false
       embedded_charset_type1.add_sid(10, 20, "test")
       # test existing mapping
       embedded_charset_type1.sid("test").should eq 20
@@ -54,7 +54,7 @@ module Fontbox::CFF
 
     it "test_charset_cid" do
       charset_cid = CharsetCID.new
-      charset_cid.is_cid_font?.should be_true
+      charset_cid.cid_font?.should be_true
       charset_cid.add_cid(10, 20)
       # test existing mapping
       charset_cid.gid_for_cid(20).should eq 10
@@ -82,7 +82,7 @@ module Fontbox::CFF
 
     it "test_charset_type1" do
       charset_type1 = CharsetType1.new
-      charset_type1.is_cid_font?.should be_false
+      charset_type1.cid_font?.should be_false
       charset_type1.add_sid(10, 20, "test")
       # test existing mapping
       charset_type1.sid("test").should eq 20

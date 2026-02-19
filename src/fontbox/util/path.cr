@@ -5,7 +5,7 @@ module Fontbox
     class Path
       @commands = [] of Command
       @current_point : Point2D? = nil
-      @bounds : Rectangle2D? = nil
+      @bounds : Rectangle2D = Rectangle2D.new(0, 0, 0, 0)
       @bounds_dirty = true
 
       private abstract struct Command
@@ -91,14 +91,14 @@ module Fontbox
       # Returns the bounding rectangle of the path.
       def bounds : Rectangle2D
         compute_bounds if @bounds_dirty
-        @bounds.not_nil!
+        @bounds
       end
 
       # Resets the path to empty.
       def reset : Nil
         @commands.clear
         @current_point = nil
-        @bounds = nil
+        @bounds = Rectangle2D.new(0, 0, 0, 0)
         @bounds_dirty = true
       end
 

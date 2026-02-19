@@ -23,7 +23,7 @@ module Fontbox::TTF
       glyph.should_not be_nil
 
       description = glyph.as(GlyphData).description
-      description.is_composite.should be_true
+      description.composite?.should be_true
 
       composite = description.as(GlyfCompositeDescript)
       composite.component_count.should eq(2)
@@ -54,7 +54,7 @@ module Fontbox::TTF
       empty_gid.should be >= 0
       glyph = glyph_table.as(GlyphTable).glyph(empty_gid)
       glyph.should_not be_nil
-      glyph.as(GlyphData).description.is_composite.should be_false
+      glyph.as(GlyphData).description.composite?.should be_false
       glyph.as(GlyphData).description.point_count.should eq(0)
 
       font.close

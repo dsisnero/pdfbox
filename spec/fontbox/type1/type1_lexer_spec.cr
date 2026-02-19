@@ -5,10 +5,10 @@ module Fontbox::Type1
     it "test real numbers" do
       s = "/FontMatrix [1e-3 0e-3 0e-3 -1E-03 0 0 1.23 -1.23 ] readonly def"
       t1l = Type1Lexer.new(s.to_slice)
-      read_tokens = ->(t1l : Type1Lexer) do
+      read_tokens = ->(lexer : Type1Lexer) do
         tokens = [] of Token
         loop do
-          token = t1l.next_token
+          token = lexer.next_token
           break if token.nil?
           tokens << token
         end
@@ -55,10 +55,10 @@ module Fontbox::Type1
     it "test proc and name and dict and string" do
       s = "/ND {noaccess def} executeonly def \n 8#173 +2#110 \n%comment \n<< (string \\n \\r \\t \\b \\f \\\\ \\( \\) \\123) >>"
       t1l = Type1Lexer.new(s.to_slice)
-      read_tokens = ->(t1l : Type1Lexer) do
+      read_tokens = ->(lexer : Type1Lexer) do
         tokens = [] of Token
         loop do
-          token = t1l.next_token
+          token = lexer.next_token
           break if token.nil?
           tokens << token
         end
@@ -91,10 +91,10 @@ module Fontbox::Type1
     it "test data" do
       s = "3 RD 123 ND"
       t1l = Type1Lexer.new(s.to_slice)
-      read_tokens = ->(t1l : Type1Lexer) do
+      read_tokens = ->(lexer : Type1Lexer) do
         tokens = [] of Token
         loop do
-          token = t1l.next_token
+          token = lexer.next_token
           break if token.nil?
           tokens << token
         end
@@ -114,10 +114,10 @@ module Fontbox::Type1
       s = "999 RD"
       t1l = Type1Lexer.new(s.to_slice)
       expect_raises(IO::Error, "String length 999 is larger than input") do
-        read_tokens = ->(t1l : Type1Lexer) do
+        read_tokens = ->(lexer : Type1Lexer) do
           tokens = [] of Token
           loop do
-            token = t1l.next_token
+            token = lexer.next_token
             break if token.nil?
             tokens << token
           end

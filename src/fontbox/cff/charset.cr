@@ -5,7 +5,7 @@ module Fontbox::CFF
   # Abstract base class for CFF charsets
   abstract class Charset
     # Indicates if the charset belongs to a CID font.
-    abstract def is_cid_font? : Bool
+    abstract def cid_font? : Bool
 
     # Adds a new GID/SID/name combination to the charset.
     abstract def add_sid(gid : Int32, sid : Int32, name : String) : Nil
@@ -44,8 +44,8 @@ module Fontbox::CFF
       @charset = is_cid_font ? CharsetCID.new : CharsetType1.new
     end
 
-    def is_cid_font? : Bool
-      @charset.is_cid_font?
+    def cid_font? : Bool
+      @charset.cid_font?
     end
 
     def add_sid(gid : Int32, sid : Int32, name : String) : Nil
@@ -88,7 +88,7 @@ module Fontbox::CFF
     @sid_or_cid_to_gid = Hash(Int32, Int32).new
     @gid_to_cid = Hash(Int32, Int32).new
 
-    def is_cid_font? : Bool
+    def cid_font? : Bool
       true
     end
 
@@ -135,7 +135,7 @@ module Fontbox::CFF
     @name_to_sid = Hash(String, Int32).new
     @gid_to_name = Hash(Int32, String).new
 
-    def is_cid_font? : Bool
+    def cid_font? : Bool
       false
     end
 

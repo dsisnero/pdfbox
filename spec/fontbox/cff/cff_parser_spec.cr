@@ -62,7 +62,7 @@ describe Fontbox::CFF::CFFParser do
     charset = test_font.charset
     charset.should_not be_nil
     charset = charset.as(Fontbox::CFF::Charset)
-    charset.is_cid_font?.should be_false
+    charset.cid_font?.should be_false
 
     # gid2name
     charset.name_for_gid(0).should eq ".notdef"

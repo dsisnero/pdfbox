@@ -24,7 +24,6 @@ module Fontbox::CFF
     @fd_select : FDSelect?
     @char_string_cache = Hash(Int32, CIDKeyedType2CharString).new
     @char_string_parser : Type2CharStringParser?
-    @reader : PrivateType1CharStringReader? = nil
     @char_string_cache_mutex = Thread::Mutex.new
 
     # Private implementation of Type1CharStringReader, because only CFFType1Font can
@@ -39,9 +38,15 @@ module Fontbox::CFF
       end
     end
 
+    @reader : PrivateType1CharStringReader?
+
     def initialize
       super
       @reader = PrivateType1CharStringReader.new(self)
+    end
+
+    private def reader : PrivateType1CharStringReader
+      @reader.as(PrivateType1CharStringReader)
     end
 
     def cid_font? : Bool
@@ -171,7 +176,7 @@ module Fontbox::CFF
           bytes = char_strings[0] # .notdef
         end
         type2seq = parser.parse(bytes, global_subr_index, local_subr_index(glyph_id))
-        type2 = CIDKeyedType2CharString.new(@reader.not_nil!, name, cid, glyph_id, type2seq,
+        type2 = CIDKeyedType2CharString.new(reader, name, cid, glyph_id, type2seq,
           default_width_x(glyph_id), nominal_width_x(glyph_id))
         @char_string_cache[cid] = type2
         type2

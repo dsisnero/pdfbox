@@ -324,7 +324,7 @@ module Fontbox::Type1
               # read two more digits
               c2 = char
               c3 = char
-              num = String.build { |s| s << c1 << c2 << c3 }
+              num = String.build { |io| io << c1 << c2 << c3 }
               begin
                 code = num.to_i32(8)
                 sb << code.chr

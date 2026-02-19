@@ -199,7 +199,7 @@ module Fontbox
           when CHAR_WIDTH
             font_metrics.char_width = [read_float, read_float]
           when IS_FIXED_PITCH
-            font_metrics.is_fixed_pitch = read_boolean
+            font_metrics.fixed_pitch = read_boolean
           when START_CHAR_METRICS
             char_metrics_read = parse_char_metrics(font_metrics)
           when START_KERN_DATA

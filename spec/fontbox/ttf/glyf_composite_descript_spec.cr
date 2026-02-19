@@ -12,7 +12,7 @@ module Fontbox::TTF
 
       glyph_data = glyph.as(GlyphData)
       description = glyph_data.description
-      description.is_composite.should be_true
+      description.composite?.should be_true
 
       composite = description.as(GlyfCompositeDescript)
       composite.component_count.should eq(2)

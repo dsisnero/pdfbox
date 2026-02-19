@@ -21,7 +21,6 @@ module Fontbox::TTF
       super()
     end
 
-    # ameba:disable Naming/AccessorMethodName
     def number_of_h_metrics : UInt16
       @metrics_count
     end
@@ -33,12 +32,10 @@ module Fontbox::TTF
       super(RandomAccessReadDataStream.new(Pdfbox::IO::RandomAccessReadBuffer.new(Bytes.empty)))
     end
 
-    # ameba:disable Naming/AccessorMethodName
     def horizontal_header : HorizontalHeaderTable?
       @horizontal_header
     end
 
-    # ameba:disable Naming/AccessorMethodName
     def number_of_glyphs : Int32
       @number_of_glyphs_value
     end

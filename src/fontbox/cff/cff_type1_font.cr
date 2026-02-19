@@ -25,12 +25,16 @@ module Fontbox::CFF
     @default_width_x : Int32?
     @nominal_width_x : Int32?
     @local_subr_index : Array(Bytes)?
-    @reader : PrivateType1CharStringReader? = nil
+    @reader : PrivateType1CharStringReader?
     @char_string_cache_mutex = Thread::Mutex.new
 
     def initialize
       super
       @reader = PrivateType1CharStringReader.new(self)
+    end
+
+    private def reader : PrivateType1CharStringReader
+      @reader.as(PrivateType1CharStringReader)
     end
 
     # Private implementation of Type1CharStringReader, because only CFFType1Font can
@@ -112,7 +116,7 @@ module Fontbox::CFF
           bytes = char_strings[0] # .notdef
         end
         type2seq = parser.parse(bytes, global_subr_index, local_subr_index)
-        type2 = Type2CharString.new(@reader.not_nil!, self.name, name, gid, type2seq, default_width_x, nominal_width_x)
+        type2 = Type2CharString.new(reader, self.name, name, gid, type2seq, default_width_x, nominal_width_x)
         @char_string_cache[gid] = type2
         type2
       end
