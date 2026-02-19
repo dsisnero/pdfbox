@@ -3,6 +3,7 @@ module Pdfbox::Filter
 end
 
 require "./filter/filter"
+require "./filter/identity_filter"
 require "./filter/flate_filter"
 require "./filter/ascii85_filter"
 require "./filter/predictor"

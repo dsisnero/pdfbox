@@ -2783,7 +2783,20 @@ module Fontbox::TTF
     end
 
     def coverage_index(gid : Int32) : Int32
-      @glyph_array.bsearch_index(gid) || -1
+      low = 0
+      high = @glyph_array.size - 1
+      while low <= high
+        mid = low + ((high - low) // 2)
+        mid_val = @glyph_array[mid]
+        if mid_val < gid
+          low = mid + 1
+        elsif mid_val > gid
+          high = mid - 1
+        else
+          return mid
+        end
+      end
+      -1
     end
 
     def glyph_id(index : Int32) : Int32
@@ -3261,14 +3274,125 @@ module Fontbox::TTF
 
     # Apply glyph substitutions to the supplied gid.
     def substitution(gid : Int32, script_tags : Array(String), enabled_features : Array(String)? = nil) : Int32
-      # TODO: implement
-      gid
+      return -1 if gid == -1
+
+      cached = @lookup_cache[gid]?
+      return cached if cached
+
+      script_tag = select_script_tag(script_tags)
+      lang_sys_tables = get_lang_sys_tables(script_tag)
+      feature_records = get_feature_records(lang_sys_tables, enabled_features)
+      sgid = gid
+      feature_records.each do |feature_record|
+        sgid = apply_feature(feature_record, sgid)
+      end
+      @lookup_cache[gid] = sgid
+      @reverse_lookup[sgid] = gid
+      sgid
     end
 
     # For a substitute-gid, retrieve the original gid.
     def unsubstitution(sgid : Int32) : Int32
-      # TODO: implement
-      sgid
+      gid = @reverse_lookup[sgid]?
+      if gid.nil?
+        Log.warn { "Trying to un-substitute a never-before-seen gid: #{sgid}" }
+        return sgid
+      end
+      gid
+    end
+
+    private def select_script_tag(tags : Array(String)) : String
+      if tags.size == 1
+        tag = tags[0]
+        if tag == OpenTypeScript::INHERITED || (tag == OpenTypeScript::TAG_DEFAULT && !@script_list.has_key?(tag))
+          if @last_used_supported_script.nil?
+            @last_used_supported_script = @script_list.keys.first?
+          end
+          return @last_used_supported_script || tag
+        end
+      end
+
+      tags.each do |tag_name|
+        if @script_list.has_key?(tag_name)
+          @last_used_supported_script = tag_name
+          return tag_name
+        end
+      end
+      tags[0]
+    end
+
+    private def get_lang_sys_tables(script_tag : String) : Array(LangSysTable)
+      script_table = @script_list[script_tag]?
+      return [] of LangSysTable unless script_table
+
+      result = script_table.lang_sys_tables.values.to_a
+      default_lang_sys = script_table.default_lang_sys_table
+      result << default_lang_sys if default_lang_sys
+      result
+    end
+
+    private def get_feature_records(lang_sys_tables : Array(LangSysTable), enabled_features : Array(String)?) : Array(FeatureRecord)
+      return [] of FeatureRecord if lang_sys_tables.empty?
+
+      result = [] of FeatureRecord
+      feature_records = @feature_list_table.feature_records
+
+      lang_sys_tables.each do |lang_sys_table|
+        required = lang_sys_table.required_feature_index
+        if required != 0xFFFF && required < feature_records.size
+          result << feature_records[required]
+        end
+        lang_sys_table.feature_indices.each do |feature_index|
+          if feature_index < feature_records.size
+            feature_record = feature_records[feature_index]
+            if enabled_features.nil? || enabled_features.includes?(feature_record.feature_tag)
+              result << feature_record
+            end
+          end
+        end
+      end
+
+      # "vrt2" supersedes "vert".
+      if result.any? { |feature_record| feature_record.feature_tag == "vrt2" }
+        result.reject! { |feature_record| feature_record.feature_tag == "vert" }
+      end
+
+      if enabled_features && result.size > 1
+        result.sort_by! do |feature_record|
+          index = enabled_features.index(feature_record.feature_tag)
+          index.nil? ? -1 : index
+        end
+      end
+
+      result
+    end
+
+    private def apply_feature(feature_record : FeatureRecord, gid : Int32) : Int32
+      lookup_result = gid
+      lookups = @lookup_list_table.lookups
+      feature_record.feature_table.lookup_list_indices.each do |lookup_list_index|
+        if lookup_list_index < 0 || lookup_list_index >= lookups.size
+          Log.warn { "Skipping GSUB feature '#{feature_record.feature_tag}' with invalid lookupListIndex #{lookup_list_index} (len: #{lookups.size})" }
+          next
+        end
+        lookup_table = lookups[lookup_list_index]
+        if lookup_table.lookup_type != 1
+          Log.warn { "Skipping GSUB feature '#{feature_record.feature_tag}' because it requires unsupported lookup table type #{lookup_table.lookup_type}" }
+          next
+        end
+        lookup_result = do_lookup(lookup_table, lookup_result)
+      end
+      lookup_result
+    end
+
+    private def do_lookup(lookup_table : LookupTable, gid : Int32) : Int32
+      lookup_table.sub_tables.each do |lookup_subtable|
+        coverage_index = lookup_subtable.coverage_table.coverage_index(gid)
+        if coverage_index >= 0
+          return lookup_subtable.do_substitution(gid, coverage_index)
+        end
+      end
+      gid
     end
 
     private def read_script_list(data : TTFDataStream, offset : Int64) : Hash(String, ScriptTable)

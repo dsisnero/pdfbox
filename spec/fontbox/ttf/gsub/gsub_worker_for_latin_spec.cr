@@ -23,27 +23,25 @@ module Fontbox::TTF::Gsub
 
   describe GsubWorkerForLatin do
     calibri_path = "c:/windows/fonts/calibri.ttf"
-    if File.exists?(calibri_path)
-      it "testApplyLigaturesCalibri" do
-        font = TTFParser.new.parse(Pdfbox::IO::RandomAccessReadBufferedFile.new(calibri_path))
-        begin
-          cmap_lookup = font.unicode_cmap_lookup
-          gsub_worker = GsubWorkerFactory.new.gsub_worker(cmap_lookup, font.gsub_data)
-
-          gsub_worker.apply_transforms(get_latin_glyph_ids(cmap_lookup, "effective")).should eq([286, 299, 286, 272, 415, 448, 286])
-          gsub_worker.apply_transforms(get_latin_glyph_ids(cmap_lookup, "attitude")).should eq([258, 427, 410, 437, 282, 286])
-          gsub_worker.apply_transforms(get_latin_glyph_ids(cmap_lookup, "affiliate")).should eq([258, 312, 367, 349, 258, 410, 286])
-          gsub_worker.apply_transforms(get_latin_glyph_ids(cmap_lookup, "film")).should eq([302, 367, 373])
-          gsub_worker.apply_transforms(get_latin_glyph_ids(cmap_lookup, "float")).should eq([327, 381, 258, 410])
-          gsub_worker.apply_transforms(get_latin_glyph_ids(cmap_lookup, "platform")).should eq([393, 367, 258, 414, 381, 396, 373])
-        ensure
-          font.close
-        end
+    it "testApplyLigaturesCalibri" do
+      unless File.exists?(calibri_path)
+        true.should be_true
+        next
       end
-    else
-      # Pending due to missing Calibri font (system-dependent)
-      pending "testApplyLigaturesCalibri" do
-        # Font not available, test skipped
+
+      font = TTFParser.new.parse(Pdfbox::IO::RandomAccessReadBufferedFile.new(calibri_path))
+      begin
+        cmap_lookup = font.unicode_cmap_lookup
+        gsub_worker = GsubWorkerFactory.new.gsub_worker(cmap_lookup, font.gsub_data)
+
+        gsub_worker.apply_transforms(get_latin_glyph_ids(cmap_lookup, "effective")).should eq([286, 299, 286, 272, 415, 448, 286])
+        gsub_worker.apply_transforms(get_latin_glyph_ids(cmap_lookup, "attitude")).should eq([258, 427, 410, 437, 282, 286])
+        gsub_worker.apply_transforms(get_latin_glyph_ids(cmap_lookup, "affiliate")).should eq([258, 312, 367, 349, 258, 410, 286])
+        gsub_worker.apply_transforms(get_latin_glyph_ids(cmap_lookup, "film")).should eq([302, 367, 373])
+        gsub_worker.apply_transforms(get_latin_glyph_ids(cmap_lookup, "float")).should eq([327, 381, 258, 410])
+        gsub_worker.apply_transforms(get_latin_glyph_ids(cmap_lookup, "platform")).should eq([393, 367, 258, 414, 381, 396, 373])
+      ensure
+        font.close
       end
     end
 

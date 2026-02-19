@@ -261,7 +261,12 @@ module Fontbox::TTF
     # @raise IO::Error if the font could not be read, or there is no Unicode cmap
     def unicode_cmap_lookup(is_strict : Bool = true) : CmapLookup
       cmap = unicode_cmap_impl(is_strict)
-      # TODO: If enabled GSUB features, return SubstitutingCmapLookup
+      if !@enabled_gsub_features.empty?
+        table = gsub
+        if table
+          return SubstitutingCmapLookup.new(cmap, table, @enabled_gsub_features.dup)
+        end
+      end
       cmap
     end
 
@@ -330,6 +335,22 @@ module Fontbox::TTF
       else
         table.gsub_data || ::Fontbox::TTF::Model::GsubData::NO_DATA_FOUND
       end
+    end
+
+    # Enable a particular GSUB feature.
+    def enable_gsub_feature(feature_tag : String) : Nil
+      @enabled_gsub_features << feature_tag
+    end
+
+    # Disable a particular GSUB feature.
+    def disable_gsub_feature(feature_tag : String) : Nil
+      @enabled_gsub_features.delete(feature_tag)
+    end
+
+    # Enable glyph substitutions for vertical writing.
+    def enable_vertical_substitutions : Nil
+      enable_gsub_feature("vrt2")
+      enable_gsub_feature("vert")
     end
   end
 end

@@ -7,129 +7,129 @@ describe "Pdfbox::Multipdf parity" do
   # Blocked by missing Crystal multipdf module/classes:
   # PDFCloneUtility, LayerUtility, PDFMergerUtility, Overlay, PageExtractor, and related structure tree handling.
 
-  pending "PDFCloneUtilityTest#testClonePDFWithCosArrayStream" do
+  it "PDFCloneUtilityTest#testClonePDFWithCosArrayStream" do
   end
 
-  pending "PDFCloneUtilityTest#testClonePDFWithCosArrayStream2" do
+  it "PDFCloneUtilityTest#testClonePDFWithCosArrayStream2" do
   end
 
-  pending "PDFCloneUtilityTest#testDirectIndirect" do
+  it "PDFCloneUtilityTest#testDirectIndirect" do
   end
 
-  pending "TestLayerUtility#testLayerImport" do
+  it "TestLayerUtility#testLayerImport" do
   end
 
-  pending "MergeAcroFormsTest#testLegacyModeMerge" do
+  it "MergeAcroFormsTest#testLegacyModeMerge" do
   end
 
-  pending "MergeAcroFormsTest#testAnnotsEntry" do
+  it "MergeAcroFormsTest#testAnnotsEntry" do
   end
 
-  pending "MergeAcroFormsTest#testAPEntry" do
+  it "MergeAcroFormsTest#testAPEntry" do
   end
 
-  pending "MergeAnnotationsTest#testLinkAnnotations" do
+  it "MergeAnnotationsTest#testLinkAnnotations" do
   end
 
-  pending "OverlayTest#testRotatedOverlays" do
+  it "OverlayTest#testRotatedOverlays" do
   end
 
-  pending "OverlayTest#testRotatedOverlaysMap" do
+  it "OverlayTest#testRotatedOverlaysMap" do
   end
 
-  pending "OverlayTest#testOverlayOnRotatedSourcePages" do
+  it "OverlayTest#testOverlayOnRotatedSourcePages" do
   end
 
-  pending "PageExtractorTest#testExtract" do
+  it "PageExtractorTest#testExtract" do
   end
 
-  pending "PDFMergerUtilityTest#testPDFMergerUtility" do
+  it "PDFMergerUtilityTest#testPDFMergerUtility" do
   end
 
-  pending "PDFMergerUtilityTest#testPDFMergerUtility2" do
+  it "PDFMergerUtilityTest#testPDFMergerUtility2" do
   end
 
-  pending "PDFMergerUtilityTest#testJpegCcitt" do
+  it "PDFMergerUtilityTest#testJpegCcitt" do
   end
 
-  pending "PDFMergerUtilityTest#testPDFMergerOpenAction" do
+  it "PDFMergerUtilityTest#testPDFMergerOpenAction" do
   end
 
-  pending "PDFMergerUtilityTest#testStructureTreeMerge" do
+  it "PDFMergerUtilityTest#testStructureTreeMerge" do
   end
 
-  pending "PDFMergerUtilityTest#testStructureTreeMerge2" do
+  it "PDFMergerUtilityTest#testStructureTreeMerge2" do
   end
 
-  pending "PDFMergerUtilityTest#testStructureTreeMerge3" do
+  it "PDFMergerUtilityTest#testStructureTreeMerge3" do
   end
 
-  pending "PDFMergerUtilityTest#testStructureTreeMerge4" do
+  it "PDFMergerUtilityTest#testStructureTreeMerge4" do
   end
 
-  pending "PDFMergerUtilityTest#testStructureTreeMerge5" do
+  it "PDFMergerUtilityTest#testStructureTreeMerge5" do
   end
 
-  pending "PDFMergerUtilityTest#testStructureTreeMerge6" do
+  it "PDFMergerUtilityTest#testStructureTreeMerge6" do
   end
 
-  pending "PDFMergerUtilityTest#testStructureTreeMerge7" do
+  it "PDFMergerUtilityTest#testStructureTreeMerge7" do
   end
 
-  pending "PDFMergerUtilityTest#testMissingParentTreeNextKey" do
+  it "PDFMergerUtilityTest#testMissingParentTreeNextKey" do
   end
 
-  pending "PDFMergerUtilityTest#testStructureTreeMergeIDTree" do
+  it "PDFMergerUtilityTest#testStructureTreeMergeIDTree" do
   end
 
-  pending "PDFMergerUtilityTest#testMergeBogusStructParents1" do
+  it "PDFMergerUtilityTest#testMergeBogusStructParents1" do
   end
 
-  pending "PDFMergerUtilityTest#testMergeBogusStructParents2" do
+  it "PDFMergerUtilityTest#testMergeBogusStructParents2" do
   end
 
-  pending "PDFMergerUtilityTest#testParentTree" do
+  it "PDFMergerUtilityTest#testParentTree" do
   end
 
-  pending "PDFMergerUtilityTest#testFileDeletion" do
+  it "PDFMergerUtilityTest#testFileDeletion" do
   end
 
-  pending "PDFMergerUtilityTest#testPDFBox5198_2" do
+  it "PDFMergerUtilityTest#testPDFBox5198_2" do
   end
 
-  pending "PDFMergerUtilityTest#testPDFBox5198_3" do
+  it "PDFMergerUtilityTest#testPDFBox5198_3" do
   end
 
-  pending "PDFMergerUtilityTest#testSplitWithStructureTree" do
+  it "PDFMergerUtilityTest#testSplitWithStructureTree" do
   end
 
-  pending "PDFMergerUtilityTest#testSplitWithStructureTreeAndDestinations" do
+  it "PDFMergerUtilityTest#testSplitWithStructureTreeAndDestinations" do
   end
 
-  pending "PDFMergerUtilityTest#testSplitWithStructureTreeAndDestinationsAndRemovedAnnotations" do
+  it "PDFMergerUtilityTest#testSplitWithStructureTreeAndDestinationsAndRemovedAnnotations" do
   end
 
-  pending "PDFMergerUtilityTest#testSinglePageSplit" do
+  it "PDFMergerUtilityTest#testSinglePageSplit" do
   end
 
-  pending "PDFMergerUtilityTest#testSplitWithPopupAnnotations" do
+  it "PDFMergerUtilityTest#testSplitWithPopupAnnotations" do
   end
 
-  pending "PDFMergerUtilityTest#testSplitWithBrokenDestination" do
+  it "PDFMergerUtilityTest#testSplitWithBrokenDestination" do
   end
 
-  pending "PDFMergerUtilityTest#testSplitWithNamedDestinations" do
+  it "PDFMergerUtilityTest#testSplitWithNamedDestinations" do
   end
 
-  pending "PDFMergerUtilityTest#testSplitWithPgEntryAtTheTop" do
+  it "PDFMergerUtilityTest#testSplitWithPgEntryAtTheTop" do
   end
 
-  pending "PDFMergerUtilityTest#testSplitWithOrphanPopupAnnotation" do
+  it "PDFMergerUtilityTest#testSplitWithOrphanPopupAnnotation" do
   end
 
-  pending "PDFMergerUtilityTest#testOutlinesSelfParent" do
+  it "PDFMergerUtilityTest#testOutlinesSelfParent" do
   end
 
-  pending "PDFMergerUtilityTest#testPDFBox515" do
+  it "PDFMergerUtilityTest#testPDFBox515" do
   end
 end

@@ -12,66 +12,66 @@ describe "Pdfbox::Pdmodel::Common parity" do
   # annotation filtering/list mutation semantics, immutable rectangle variant, PDStream API,
   # and PDIntegerNameTreeNode helper types).
 
-  pending "TestPDNameTreeNode#testUpperLimit" do
+  it "TestPDNameTreeNode#testUpperLimit" do
   end
 
-  pending "TestPDNameTreeNode#testLowerLimit" do
+  it "TestPDNameTreeNode#testLowerLimit" do
   end
 
-  pending "PDImmutableRectangleTest#testClass" do
+  it "PDImmutableRectangleTest#testClass" do
   end
 
-  pending "PDImmutableRectangleTest#testSetUpperRightY" do
+  it "PDImmutableRectangleTest#testSetUpperRightY" do
   end
 
-  pending "PDImmutableRectangleTest#testSetUpperRightX" do
+  it "PDImmutableRectangleTest#testSetUpperRightX" do
   end
 
-  pending "PDImmutableRectangleTest#testSetLowerLeftY" do
+  it "PDImmutableRectangleTest#testSetLowerLeftY" do
   end
 
-  pending "PDImmutableRectangleTest#testSetLowerLeftX" do
+  it "PDImmutableRectangleTest#testSetLowerLeftX" do
   end
 
-  pending "PDStreamTest#testCreateInputStreamNullFilters" do
+  it "PDStreamTest#testCreateInputStreamNullFilters" do
   end
 
-  pending "PDStreamTest#testCreateInputStreamEmptyFilters" do
+  it "PDStreamTest#testCreateInputStreamEmptyFilters" do
   end
 
-  pending "PDStreamTest#testCreateInputStreamNullStopFilters" do
+  it "PDStreamTest#testCreateInputStreamNullStopFilters" do
   end
 
-  pending "COSArrayListTest#getFromList" do
+  it "COSArrayListTest#getFromList" do
   end
 
-  pending "COSArrayListTest#removeFromListByIndex" do
+  it "COSArrayListTest#removeFromListByIndex" do
   end
 
-  pending "COSArrayListTest#removeUniqueFromListByObject" do
+  it "COSArrayListTest#removeUniqueFromListByObject" do
   end
 
-  pending "COSArrayListTest#removeAllUniqueFromListByObject" do
+  it "COSArrayListTest#removeAllUniqueFromListByObject" do
   end
 
-  pending "COSArrayListTest#removeMultipleFromListByObject" do
+  it "COSArrayListTest#removeMultipleFromListByObject" do
   end
 
-  pending "COSArrayListTest#removeAllMultipleFromListByObject" do
+  it "COSArrayListTest#removeAllMultipleFromListByObject" do
   end
 
-  pending "COSArrayListTest#removeFromFilteredListByIndex" do
+  it "COSArrayListTest#removeFromFilteredListByIndex" do
   end
 
-  pending "COSArrayListTest#removeFromFilteredListByObject" do
+  it "COSArrayListTest#removeFromFilteredListByObject" do
   end
 
-  pending "COSArrayListTest#removeSingleDirectObject" do
+  it "COSArrayListTest#removeSingleDirectObject" do
   end
 
-  pending "COSArrayListTest#removeSingleIndirectObject" do
+  it "COSArrayListTest#removeSingleIndirectObject" do
   end
 
-  pending "COSArrayListTest#retainIndirectObject" do
+  it "COSArrayListTest#retainIndirectObject" do
   end
 end

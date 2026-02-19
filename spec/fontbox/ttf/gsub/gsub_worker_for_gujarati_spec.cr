@@ -124,7 +124,7 @@ module Fontbox::TTF::Gsub
     end
 
     # Disabled in Java source: @Disabled
-    pending "testApplyTransforms_psts" do
+    it "testApplyTransforms_psts" do
       with_gujarati_font do |font|
         cmap_lookup = font.unicode_cmap_lookup
         gsub_worker = GsubWorkerFactory.new.gsub_worker(cmap_lookup, font.gsub_data)

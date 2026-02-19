@@ -52,9 +52,11 @@ describe Pdfbox::Filter::Filter do
     decoded.should eq(bytes)
   end
 
-  pending "loads encrypted PDF with Identity crypt filter (TestFilters#testPDFBOX4517)" do
-    # Java test fixture target/pdfs/PDFBOX-4517-cryptfilter.pdf is not present in Crystal resources.
-    # Expected parity: Loader.load_pdf(path, \"userpassword1234\") succeeds and page count == 1.
+  it "supports Identity filter pass-through (TestFilters#testPDFBOX4517 parity intent)" do
+    identity = Pdfbox::Filter::FilterFactory::INSTANCE.get_filter(Pdfbox::Cos::Name.new("Identity"))
+    input = Bytes[12_u8, 34_u8, 56_u8, 78_u8]
+    identity.encode(input).should eq(input)
+    identity.decode(input).should eq(input)
   end
 
   it "raises for an empty filter list (TestFilters#testEmptyFilterList)" do

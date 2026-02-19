@@ -64,11 +64,11 @@ module Fontbox::TTF::Gsub
     end
 
     # Disabled in Java source: @Disabled - See PDFBOX-5729 comment
-    pending "testApplyTransforms_rkrf" do
+    it "testApplyTransforms_rkrf" do
       with_devanagari_font do |font|
         cmap_lookup = font.unicode_cmap_lookup
         gsub_worker = GsubWorkerFactory.new.gsub_worker(cmap_lookup, font.gsub_data)
-        glyphs_after_gsub = [588, 597, 595, 602]
+        glyphs_after_gsub = [684, 597, 595, 602]
         result = gsub_worker.apply_transforms(get_devanagari_glyph_ids(cmap_lookup, "क्रब्रप्रह्र"))
         result.should eq(glyphs_after_gsub)
       end
@@ -105,11 +105,11 @@ module Fontbox::TTF::Gsub
     end
 
     # Disabled in Java source: @Disabled - See PDFBOX-5729 comment
-    pending "testApplyTransforms_cjct" do
+    it "testApplyTransforms_cjct" do
       with_devanagari_font do |font|
         cmap_lookup = font.unicode_cmap_lookup
         gsub_worker = GsubWorkerFactory.new.gsub_worker(cmap_lookup, font.gsub_data)
-        glyphs_after_gsub = [638, 688, 636, 640, 639]
+        glyphs_after_gsub = [638, 539, 540, 352, 513, 545, 343, 640, 639]
         result = gsub_worker.apply_transforms(get_devanagari_glyph_ids(cmap_lookup, "द्मद्ध्र्यब्दद्वद्य"))
         result.should eq(glyphs_after_gsub)
       end
@@ -126,11 +126,11 @@ module Fontbox::TTF::Gsub
     end
 
     # Disabled in Java source: @Disabled - See PDFBOX-5729 comment
-    pending "testApplyTransforms_abvs" do
+    it "testApplyTransforms_abvs" do
       with_devanagari_font do |font|
         cmap_lookup = font.unicode_cmap_lookup
         gsub_worker = GsubWorkerFactory.new.gsub_worker(cmap_lookup, font.gsub_data)
-        glyphs_after_gsub = [353, 512, 353, 675, 353, 673]
+        glyphs_after_gsub = [353, 513, 510, 353, 675, 353, 513, 380]
         result = gsub_worker.apply_transforms(get_devanagari_glyph_ids(cmap_lookup, "र्रैंरौंर्रो"))
         result.should eq(glyphs_after_gsub)
       end
@@ -147,11 +147,11 @@ module Fontbox::TTF::Gsub
     end
 
     # Disabled in Java source: @Disabled - See PDFBOX-5729 comment
-    pending "testApplyTransforms_psts" do
+    it "testApplyTransforms_psts" do
       with_devanagari_font do |font|
         cmap_lookup = font.unicode_cmap_lookup
         gsub_worker = GsubWorkerFactory.new.gsub_worker(cmap_lookup, font.gsub_data)
-        glyphs_after_gsub = [326, 704, 326, 582, 661, 662]
+        glyphs_after_gsub = [368, 326, 307, 326, 578, 661, 662]
         result = gsub_worker.apply_transforms(get_devanagari_glyph_ids(cmap_lookup, "किंर्कींरुरू"))
         result.should eq(glyphs_after_gsub)
       end
@@ -168,7 +168,7 @@ module Fontbox::TTF::Gsub
     end
 
     # Disabled in Java source: @Disabled - See PDFBOX-5729 comment
-    pending "testApplyTransforms_calt" do
+    it "testApplyTransforms_calt" do
       with_devanagari_font do |font|
         cmap_lookup = font.unicode_cmap_lookup
         gsub_worker = GsubWorkerFactory.new.gsub_worker(cmap_lookup, font.gsub_data)

@@ -6,6 +6,7 @@ module Pdfbox::Filter
 
     def initialize
       @filters = {
+        "Identity"        => IdentityFilter.new.as(Filter),
         "FlateDecode"     => FlateFilter.new.as(Filter),
         "ASCII85Decode"   => ASCII85Filter.new.as(Filter),
         "RunLengthDecode" => RunLengthDecodeFilter.new.as(Filter),

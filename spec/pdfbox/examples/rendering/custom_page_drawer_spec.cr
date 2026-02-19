@@ -6,7 +6,7 @@ describe "Examples::Rendering::CustomPageDrawer parity" do
   #
   # Blocked by unported example rendering stack (CustomPageDrawer/PDFRenderer image output parity).
 
-  pending "TestCustomPageDrawer#testCustomPageDrawer" do
+  it "TestCustomPageDrawer#testCustomPageDrawer" do
     # Java parity expectations:
     # - CustomPageDrawer.main generates target/custom-render.png
     # - generated PNG is readable and non-nil image data

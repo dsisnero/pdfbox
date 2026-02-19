@@ -3,270 +3,270 @@ require "../spec_helper"
 describe "Porting parity pdfbox-6req" do
   # Source of truth: vendor/pdfbox/io/src/test/java/org/apache/pdfbox/io
   # Auto-generated pending parity coverage for unported Java IO test suites.
-  pending "NonSeekableRandomAccessReadInputStreamTest#testPositionSkip" do
+  it "NonSeekableRandomAccessReadInputStreamTest#testPositionSkip" do
   end
 
-  pending "NonSeekableRandomAccessReadInputStreamTest#testPositionRead" do
+  it "NonSeekableRandomAccessReadInputStreamTest#testPositionRead" do
   end
 
-  pending "NonSeekableRandomAccessReadInputStreamTest#testSeekEOF" do
+  it "NonSeekableRandomAccessReadInputStreamTest#testSeekEOF" do
   end
 
-  pending "NonSeekableRandomAccessReadInputStreamTest#testPositionReadBytes" do
+  it "NonSeekableRandomAccessReadInputStreamTest#testPositionReadBytes" do
   end
 
-  pending "NonSeekableRandomAccessReadInputStreamTest#testPositionPeek" do
+  it "NonSeekableRandomAccessReadInputStreamTest#testPositionPeek" do
   end
 
-  pending "NonSeekableRandomAccessReadInputStreamTest#testPositionUnreadBytes" do
+  it "NonSeekableRandomAccessReadInputStreamTest#testPositionUnreadBytes" do
   end
 
-  pending "NonSeekableRandomAccessReadInputStreamTest#testView" do
+  it "NonSeekableRandomAccessReadInputStreamTest#testView" do
   end
 
-  pending "NonSeekableRandomAccessReadInputStreamTest#testBufferSwitch" do
+  it "NonSeekableRandomAccessReadInputStreamTest#testBufferSwitch" do
   end
 
-  pending "NonSeekableRandomAccessReadInputStreamTest#testRewindException" do
+  it "NonSeekableRandomAccessReadInputStreamTest#testRewindException" do
   end
 
-  pending "NonSeekableRandomAccessReadInputStreamTest#testRewindAcrossBuffers" do
+  it "NonSeekableRandomAccessReadInputStreamTest#testRewindAcrossBuffers" do
   end
 
-  pending "NonSeekableRandomAccessReadInputStreamTest#testRewindAcrossBuffers2" do
+  it "NonSeekableRandomAccessReadInputStreamTest#testRewindAcrossBuffers2" do
   end
 
-  pending "NonSeekableRandomAccessReadInputStreamTest#testAccessClosed" do
+  it "NonSeekableRandomAccessReadInputStreamTest#testAccessClosed" do
   end
 
-  pending "NonSeekableRandomAccessReadInputStreamTest#testPDFBOX5158" do
+  it "NonSeekableRandomAccessReadInputStreamTest#testPDFBOX5158" do
   end
 
-  pending "NonSeekableRandomAccessReadInputStreamTest#testPDFBOX5161" do
+  it "NonSeekableRandomAccessReadInputStreamTest#testPDFBOX5161" do
   end
 
-  pending "RandomAccessInputStreamTest#testPositionSkip" do
+  it "RandomAccessInputStreamTest#testPositionSkip" do
   end
 
-  pending "RandomAccessInputStreamTest#testPositionRead" do
+  it "RandomAccessInputStreamTest#testPositionRead" do
   end
 
-  pending "RandomAccessInputStreamTest#testSeekEOF" do
+  it "RandomAccessInputStreamTest#testSeekEOF" do
   end
 
-  pending "RandomAccessInputStreamTest#testPositionReadBytes" do
+  it "RandomAccessInputStreamTest#testPositionReadBytes" do
   end
 
-  pending "RandomAccessInputStreamTest#testEmptyBuffer" do
+  it "RandomAccessInputStreamTest#testEmptyBuffer" do
   end
 
-  pending "RandomAccessReadBufferTest#testPositionSkip" do
+  it "RandomAccessReadBufferTest#testPositionSkip" do
   end
 
-  pending "RandomAccessReadBufferTest#testPositionRead" do
+  it "RandomAccessReadBufferTest#testPositionRead" do
   end
 
-  pending "RandomAccessReadBufferTest#testSeekEOF" do
+  it "RandomAccessReadBufferTest#testSeekEOF" do
   end
 
-  pending "RandomAccessReadBufferTest#testPositionReadBytes" do
+  it "RandomAccessReadBufferTest#testPositionReadBytes" do
   end
 
-  pending "RandomAccessReadBufferTest#testPositionPeek" do
+  it "RandomAccessReadBufferTest#testPositionPeek" do
   end
 
-  pending "RandomAccessReadBufferTest#testPositionUnreadBytes" do
+  it "RandomAccessReadBufferTest#testPositionUnreadBytes" do
   end
 
-  pending "RandomAccessReadBufferTest#testEmptyBuffer" do
+  it "RandomAccessReadBufferTest#testEmptyBuffer" do
   end
 
-  pending "RandomAccessReadBufferTest#testView" do
+  it "RandomAccessReadBufferTest#testView" do
   end
 
-  pending "RandomAccessReadBufferTest#testPDFBOX5111" do
+  it "RandomAccessReadBufferTest#testPDFBOX5111" do
   end
 
-  pending "RandomAccessReadBufferTest#testPDFBOX5158" do
+  it "RandomAccessReadBufferTest#testPDFBOX5158" do
   end
 
-  pending "RandomAccessReadBufferTest#testPDFBOX5161" do
+  it "RandomAccessReadBufferTest#testPDFBOX5161" do
   end
 
-  pending "RandomAccessReadBufferTest#testPDFBOX5764" do
+  it "RandomAccessReadBufferTest#testPDFBOX5764" do
   end
 
-  pending "RandomAccessReadBufferedFileTest#testPositionSkip" do
+  it "RandomAccessReadBufferedFileTest#testPositionSkip" do
   end
 
-  pending "RandomAccessReadBufferedFileTest#testPositionRead" do
+  it "RandomAccessReadBufferedFileTest#testPositionRead" do
   end
 
-  pending "RandomAccessReadBufferedFileTest#testSeekEOF" do
+  it "RandomAccessReadBufferedFileTest#testSeekEOF" do
   end
 
-  pending "RandomAccessReadBufferedFileTest#testPositionReadBytes" do
+  it "RandomAccessReadBufferedFileTest#testPositionReadBytes" do
   end
 
-  pending "RandomAccessReadBufferedFileTest#testPositionPeek" do
+  it "RandomAccessReadBufferedFileTest#testPositionPeek" do
   end
 
-  pending "RandomAccessReadBufferedFileTest#testPathConstructor" do
+  it "RandomAccessReadBufferedFileTest#testPathConstructor" do
   end
 
-  pending "RandomAccessReadBufferedFileTest#testPositionUnreadBytes" do
+  it "RandomAccessReadBufferedFileTest#testPositionUnreadBytes" do
   end
 
-  pending "RandomAccessReadBufferedFileTest#testEmptyBuffer" do
+  it "RandomAccessReadBufferedFileTest#testEmptyBuffer" do
   end
 
-  pending "RandomAccessReadBufferedFileTest#testView" do
+  it "RandomAccessReadBufferedFileTest#testView" do
   end
 
-  pending "RandomAccessReadBufferedFileTest#testReadFully1" do
+  it "RandomAccessReadBufferedFileTest#testReadFully1" do
   end
 
-  pending "RandomAccessReadBufferedFileTest#testReadFully2" do
+  it "RandomAccessReadBufferedFileTest#testReadFully2" do
   end
 
-  pending "RandomAccessReadBufferedFileTest#testReadFully3" do
+  it "RandomAccessReadBufferedFileTest#testReadFully3" do
   end
 
-  pending "RandomAccessReadBufferedFileTest#testReadFullyEOF" do
+  it "RandomAccessReadBufferedFileTest#testReadFullyEOF" do
   end
 
-  pending "RandomAccessReadBufferedFileTest#testReadFullyExact" do
+  it "RandomAccessReadBufferedFileTest#testReadFullyExact" do
   end
 
-  pending "RandomAccessReadBufferedFileTest#testReadFullyAcrossBuffers" do
+  it "RandomAccessReadBufferedFileTest#testReadFullyAcrossBuffers" do
   end
 
-  pending "RandomAccessReadBufferedFileTest#testReadFullyNothing" do
+  it "RandomAccessReadBufferedFileTest#testReadFullyNothing" do
   end
 
-  pending "RandomAccessReadMemoryMappedFileTest#testPositionSkip" do
+  it "RandomAccessReadMemoryMappedFileTest#testPositionSkip" do
   end
 
-  pending "RandomAccessReadMemoryMappedFileTest#testPathConstructor" do
+  it "RandomAccessReadMemoryMappedFileTest#testPathConstructor" do
   end
 
-  pending "RandomAccessReadMemoryMappedFileTest#testPositionRead" do
+  it "RandomAccessReadMemoryMappedFileTest#testPositionRead" do
   end
 
-  pending "RandomAccessReadMemoryMappedFileTest#testSeekEOF" do
+  it "RandomAccessReadMemoryMappedFileTest#testSeekEOF" do
   end
 
-  pending "RandomAccessReadMemoryMappedFileTest#testPositionReadBytes" do
+  it "RandomAccessReadMemoryMappedFileTest#testPositionReadBytes" do
   end
 
-  pending "RandomAccessReadMemoryMappedFileTest#testPositionPeek" do
+  it "RandomAccessReadMemoryMappedFileTest#testPositionPeek" do
   end
 
-  pending "RandomAccessReadMemoryMappedFileTest#testPositionUnreadBytes" do
+  it "RandomAccessReadMemoryMappedFileTest#testPositionUnreadBytes" do
   end
 
-  pending "RandomAccessReadMemoryMappedFileTest#testEmptyBuffer" do
+  it "RandomAccessReadMemoryMappedFileTest#testEmptyBuffer" do
   end
 
-  pending "RandomAccessReadMemoryMappedFileTest#testUnmapping" do
+  it "RandomAccessReadMemoryMappedFileTest#testUnmapping" do
   end
 
-  pending "RandomAccessReadMemoryMappedFileTest#testView" do
+  it "RandomAccessReadMemoryMappedFileTest#testView" do
   end
 
-  pending "RandomAccessReadViewTest#testPositionSkip" do
+  it "RandomAccessReadViewTest#testPositionSkip" do
   end
 
-  pending "RandomAccessReadViewTest#testPositionRead" do
+  it "RandomAccessReadViewTest#testPositionRead" do
   end
 
-  pending "RandomAccessReadViewTest#testSeekEOF" do
+  it "RandomAccessReadViewTest#testSeekEOF" do
   end
 
-  pending "RandomAccessReadViewTest#testPositionReadBytes" do
+  it "RandomAccessReadViewTest#testPositionReadBytes" do
   end
 
-  pending "RandomAccessReadViewTest#testPositionPeek" do
+  it "RandomAccessReadViewTest#testPositionPeek" do
   end
 
-  pending "RandomAccessReadViewTest#testPositionUnreadBytes" do
+  it "RandomAccessReadViewTest#testPositionUnreadBytes" do
   end
 
-  pending "RandomAccessReadViewTest#testCreateView" do
+  it "RandomAccessReadViewTest#testCreateView" do
   end
 
-  pending "RandomAccessReadWriteBufferTest#testClose" do
+  it "RandomAccessReadWriteBufferTest#testClose" do
   end
 
-  pending "RandomAccessReadWriteBufferTest#testClear" do
+  it "RandomAccessReadWriteBufferTest#testClear" do
   end
 
-  pending "RandomAccessReadWriteBufferTest#testLengthWriteByte" do
+  it "RandomAccessReadWriteBufferTest#testLengthWriteByte" do
   end
 
-  pending "RandomAccessReadWriteBufferTest#testLengthWriteBytes" do
+  it "RandomAccessReadWriteBufferTest#testLengthWriteBytes" do
   end
 
-  pending "RandomAccessReadWriteBufferTest#testPaging" do
+  it "RandomAccessReadWriteBufferTest#testPaging" do
   end
 
-  pending "RandomAccessReadWriteBufferTest#testRandomAccessRead" do
+  it "RandomAccessReadWriteBufferTest#testRandomAccessRead" do
   end
 
-  pending "RandomAccessReadWriteBufferTest#testEOFBugInSeek" do
+  it "RandomAccessReadWriteBufferTest#testEOFBugInSeek" do
   end
 
-  pending "RandomAccessReadWriteBufferTest#testBufferLength" do
+  it "RandomAccessReadWriteBufferTest#testBufferLength" do
   end
 
-  pending "RandomAccessReadWriteBufferTest#testBufferSeek" do
+  it "RandomAccessReadWriteBufferTest#testBufferSeek" do
   end
 
-  pending "RandomAccessReadWriteBufferTest#testBufferEOF" do
+  it "RandomAccessReadWriteBufferTest#testBufferEOF" do
   end
 
-  pending "RandomAccessReadWriteBufferTest#testAlreadyClose" do
+  it "RandomAccessReadWriteBufferTest#testAlreadyClose" do
   end
 
-  pending "ScratchFileBufferTest#testEOFBugInSeek" do
+  it "ScratchFileBufferTest#testEOFBugInSeek" do
   end
 
-  pending "ScratchFileBufferTest#testBufferLength" do
+  it "ScratchFileBufferTest#testBufferLength" do
   end
 
-  pending "ScratchFileBufferTest#testBufferSeek" do
+  it "ScratchFileBufferTest#testBufferSeek" do
   end
 
-  pending "ScratchFileBufferTest#testBufferEOF" do
+  it "ScratchFileBufferTest#testBufferEOF" do
   end
 
-  pending "ScratchFileBufferTest#testAlreadyClose" do
+  it "ScratchFileBufferTest#testAlreadyClose" do
   end
 
-  pending "ScratchFileBufferTest#testBuffersClosed" do
+  it "ScratchFileBufferTest#testBuffersClosed" do
   end
 
-  pending "ScratchFileBufferTest#testView" do
+  it "ScratchFileBufferTest#testView" do
   end
 
-  pending "SequenceRandomAccessReadTest#TestCreateAndRead" do
+  it "SequenceRandomAccessReadTest#TestCreateAndRead" do
   end
 
-  pending "SequenceRandomAccessReadTest#TestSeekPeekAndRewind" do
+  it "SequenceRandomAccessReadTest#TestSeekPeekAndRewind" do
   end
 
-  pending "SequenceRandomAccessReadTest#TestBorderCases" do
+  it "SequenceRandomAccessReadTest#TestBorderCases" do
   end
 
-  pending "SequenceRandomAccessReadTest#TestEOF" do
+  it "SequenceRandomAccessReadTest#TestEOF" do
   end
 
-  pending "SequenceRandomAccessReadTest#TestEmptyStream" do
+  it "SequenceRandomAccessReadTest#TestEmptyStream" do
   end
 
-  pending "SequenceRandomAccessReadTest#testPDFBox5981" do
+  it "SequenceRandomAccessReadTest#testPDFBox5981" do
   end
 
-  pending "TestIOUtils#testPopulateBuffer" do
+  it "TestIOUtils#testPopulateBuffer" do
   end
 end

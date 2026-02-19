@@ -75,14 +75,18 @@ module Fontbox::TTF::Gsub
     private def reposition_before_and_after_span_glyph_ids(original_glyph_ids : Array(Int32)) : Array(Int32)
       repositioned_glyph_ids = original_glyph_ids.dup
 
-      (1...original_glyph_ids.size).each do |index|
-        glyph_id = original_glyph_ids[index]
+      index = 1
+      while index < repositioned_glyph_ids.size
+        glyph_id = repositioned_glyph_ids[index]
         before_and_after_span_component = @before_and_after_span_glyph_ids[glyph_id]?
         if before_and_after_span_component
-          previous_glyph_id = original_glyph_ids[index - 1]
-          repositioned_glyph_ids[index] = previous_glyph_id
+          previous_glyph_id = repositioned_glyph_ids[index - 1]
           repositioned_glyph_ids[index - 1] = glyph_id(before_and_after_span_component.before_component_character)
+          repositioned_glyph_ids[index] = previous_glyph_id
           repositioned_glyph_ids.insert(index + 1, glyph_id(before_and_after_span_component.after_component_character))
+          index += 2
+        else
+          index += 1
         end
       end
       repositioned_glyph_ids
@@ -137,7 +141,10 @@ module Fontbox::TTF::Gsub
       result = {} of Int32 => BeforeAndAfterSpanComponent
 
       BEFORE_AND_AFTER_SPAN_CHARS.each do |component|
-        result[glyph_id(component.original_character)] = component
+        gid = glyph_id(component.original_character)
+        # Preserve first mapping to avoid overriding a normalized glyph with a less
+        # specific fallback; this fixes repeated o-kar handling.
+        result[gid] ||= component
       end
 
       result

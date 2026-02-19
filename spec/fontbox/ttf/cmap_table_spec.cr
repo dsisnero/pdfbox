@@ -83,10 +83,55 @@ module Fontbox::TTF
       font.close
     end
 
-    pending "PDFBox-5328: test that we get multiple encodings from cmap table (requires NotoSansSC-Regular.otf)" do
+    it "PDFBox-5328: gets multiple encodings from cmap table" do
+      expected_char_codes = [19981, 63847]
+      gid = 8712
+      font_file = File.join("vendor", "pdfbox", "fontbox", "target", "fonts", "NotoSansSC-Regular.otf")
+      otf = TTFParser.new(false).parse(Pdfbox::IO::RandomAccessReadBufferedFile.new(font_file))
+
+      unicode_cmap_lookup = otf.unicode_cmap_lookup
+      char_codes = unicode_cmap_lookup.char_codes(gid)
+      char_codes.should eq(expected_char_codes)
+
+      cmap_table = otf.cmap
+      cmap_table.should_not be_nil
+      cmap = cmap_table || raise "expected cmap table"
+
+      unicode_full_cmap_table = cmap.subtable(CmapTable::PLATFORM_UNICODE, CmapTable::ENCODING_UNICODE_2_0_FULL)
+      unicode_bmp_cmap_table = cmap.subtable(CmapTable::PLATFORM_UNICODE, CmapTable::ENCODING_UNICODE_2_0_BMP)
+      unicode_full_cmap_table.should_not be_nil
+      unicode_bmp_cmap_table.should_not be_nil
+
+      unicode_full = unicode_full_cmap_table || raise "expected unicode full cmap subtable"
+      unicode_bmp = unicode_bmp_cmap_table || raise "expected unicode bmp cmap subtable"
+
+      unicode_bmp_char_codes = unicode_bmp.char_codes(gid)
+      unicode_full_char_codes = unicode_full.char_codes(gid)
+
+      unicode_bmp_char_codes.should eq(expected_char_codes)
+      unicode_full_char_codes.should eq(expected_char_codes)
+
+      otf.close
     end
 
-    pending "PDFBox-4106: vertical substitution changes glyph IDs (requires ipag.ttf)" do
+    it "PDFBox-4106: vertical substitution changes glyph IDs" do
+      ipa_font = File.join("vendor", "pdfbox", "fontbox", "target", "fonts", "ipag00303", "ipag.ttf")
+      ttf = TTFParser.new.parse(Pdfbox::IO::RandomAccessReadBufferedFile.new(ipa_font))
+
+      unicode_cmap_lookup1 = ttf.unicode_cmap_lookup
+      hgid1 = unicode_cmap_lookup1.glyph_id('「'.ord)
+      hgid2 = unicode_cmap_lookup1.glyph_id('」'.ord)
+      ttf.enable_vertical_substitutions
+      unicode_cmap_lookup2 = ttf.unicode_cmap_lookup
+      vgid1 = unicode_cmap_lookup2.glyph_id('「'.ord)
+      vgid2 = unicode_cmap_lookup2.glyph_id('」'.ord)
+
+      hgid1.should eq(441)
+      hgid2.should eq(442)
+      vgid1.should eq(7392)
+      vgid2.should eq(7393)
+
+      ttf.close
     end
   end
 end
