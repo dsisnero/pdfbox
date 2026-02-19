@@ -144,6 +144,89 @@ module Pdfbox::Cos
   module Number
   end
 
+  # PDFDocEncoding mapping used for PDF text strings.
+  module PDFDocEncoding
+    CODE_TO_UNI = ::Array(Char).new(256, '\u0000')
+    UNI_TO_CODE = ::Hash(Char, UInt8).new
+
+    private def self.set(code : Int32, unicode : Char) : Nil
+      CODE_TO_UNI[code] = unicode
+      UNI_TO_CODE[unicode] = code.to_u8
+    end
+
+    private def self.init : Nil
+      (0..255).each do |i|
+        next if i > 0x17 && i < 0x20
+        next if i > 0x7E && i < 0xA1
+        next if i == 0xAD
+        set(i, i.chr)
+      end
+
+      set(0x18, '\u02D8')
+      set(0x19, '\u02C7')
+      set(0x1A, '\u02C6')
+      set(0x1B, '\u02D9')
+      set(0x1C, '\u02DD')
+      set(0x1D, '\u02DB')
+      set(0x1E, '\u02DA')
+      set(0x1F, '\u02DC')
+      set(0x7F, '\uFFFD')
+      set(0x80, '\u2022')
+      set(0x81, '\u2020')
+      set(0x82, '\u2021')
+      set(0x83, '\u2026')
+      set(0x84, '\u2014')
+      set(0x85, '\u2013')
+      set(0x86, '\u0192')
+      set(0x87, '\u2044')
+      set(0x88, '\u2039')
+      set(0x89, '\u203A')
+      set(0x8A, '\u2212')
+      set(0x8B, '\u2030')
+      set(0x8C, '\u201E')
+      set(0x8D, '\u201C')
+      set(0x8E, '\u201D')
+      set(0x8F, '\u2018')
+      set(0x90, '\u2019')
+      set(0x91, '\u201A')
+      set(0x92, '\u2122')
+      set(0x93, '\uFB01')
+      set(0x94, '\uFB02')
+      set(0x95, '\u0141')
+      set(0x96, '\u0152')
+      set(0x97, '\u0160')
+      set(0x98, '\u0178')
+      set(0x99, '\u017D')
+      set(0x9A, '\u0131')
+      set(0x9B, '\u0142')
+      set(0x9C, '\u0153')
+      set(0x9D, '\u0161')
+      set(0x9E, '\u017E')
+      set(0x9F, '\uFFFD')
+      set(0xA0, '\u20AC')
+    end
+
+    init
+
+    def self.to_string(bytes : Bytes) : ::String
+      ::String.build do |str|
+        bytes.each do |byte|
+          str << CODE_TO_UNI[byte]
+        end
+      end
+    end
+
+    def self.get_bytes(text : ::String) : Bytes
+      Bytes.new(text.size) do |i|
+        UNI_TO_CODE.fetch(text[i], 0_u8)
+      end
+    end
+
+    def self.contains_char?(character : Char) : Bool
+      UNI_TO_CODE.has_key?(character)
+    end
+  end
+
   # Integer value in PDF document
   class Integer < Base
     include Number
@@ -220,16 +303,35 @@ module Pdfbox::Cos
 
     # Creates a new PDF string from a String (text string)
     def initialize(string : ::String, @force_hex_form : Bool = false)
-      @bytes = string.to_slice
+      if string.each_char.all? { |char| PDFDocEncoding.contains_char?(char) }
+        @bytes = PDFDocEncoding.get_bytes(string)
+      else
+        utf16 = string.to_utf16
+        @bytes = Bytes.new(2 + utf16.size * 2)
+        @bytes[0] = 0xFE_u8
+        @bytes[1] = 0xFF_u8
+        utf16.each_with_index do |code_unit, index|
+          @bytes[2 + index * 2] = ((code_unit >> 8) & 0xFF).to_u8
+          @bytes[3 + index * 2] = (code_unit & 0xFF).to_u8
+        end
+      end
     end
 
     # Creates a new PDF string from raw bytes
     def initialize(@bytes : Bytes, @force_hex_form : Bool = false)
     end
 
-    # Gets the string value (decoded as UTF-8)
+    # Gets the string value as a PDF text string.
     def value : ::String
-      ::String.new(@bytes)
+      if @bytes.size >= 2
+        if @bytes[0] == 0xFE_u8 && @bytes[1] == 0xFF_u8
+          return ::String.new(@bytes[2, @bytes.size - 2], "UTF-16BE")
+        elsif @bytes[0] == 0xFF_u8 && @bytes[1] == 0xFE_u8
+          return ::String.new(@bytes[2, @bytes.size - 2], "UTF-16LE")
+        end
+      end
+
+      PDFDocEncoding.to_string(@bytes)
     end
 
     # Gets the string value as object
@@ -314,8 +416,7 @@ module Pdfbox::Cos
 
     # Equality comparison
     def ==(other : self) : Bool
-      return false unless @force_hex_form == other.@force_hex_form
-      @bytes == other.@bytes
+      value == other.value && @force_hex_form == other.@force_hex_form
     end
 
     def ==(other) : Bool
