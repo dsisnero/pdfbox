@@ -312,6 +312,10 @@ module Pdfbox::Cos
       io << @value
     end
 
+    def to_s(io : ::IO) : Nil
+      io << @value
+    end
+
     def ==(other : self) : Bool
       @value == other.@value
     end
