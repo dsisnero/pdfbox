@@ -591,8 +591,20 @@ module Pdfbox::Cos
   class Array < Base
     @items = [] of Base
 
-    def initialize(items : Enumerable(Base) = [] of Base)
-      @items = items.to_a
+    def initialize(items : Enumerable = [] of Base)
+      @items = items.map { |item| item.as(Base) }.to_a
+    end
+
+    def self.of_cos_names(names : Enumerable(::String)) : self
+      new(names.map { |name| Name.new(name) })
+    end
+
+    def self.of_cos_strings(strings : Enumerable(::String)) : self
+      new(strings.map { |value| String.new(value) })
+    end
+
+    def self.of_cos_integers(values : Enumerable(Int)) : self
+      new(values.map { |value| Integer.get(value.to_i64) })
     end
 
     def items : ::Array(Base)
@@ -608,8 +620,49 @@ module Pdfbox::Cos
       @items[index]
     end
 
+    def []?(index : Int) : Base?
+      @items[index]?
+    end
+
+    def get(index : Int) : Base?
+      self[index]?
+    end
+
     def []=(index : Int, value : Base) : Base
       @items[index] = value
+    end
+
+    def get_string(index : Int, default : ::String? = nil) : ::String?
+      value = self[index]?
+      return default unless value.is_a?(String)
+      value.value
+    end
+
+    def get_int(index : Int, default : Int64 = 0_i64) : Int64
+      value = self[index]?
+      return default unless value.is_a?(Integer)
+      value.value
+    end
+
+    def to_cos_name_string_list : ::Array(::String)
+      @items.compact_map { |item| item.as?(Name).try(&.value) }
+    end
+
+    def to_cos_string_string_list : ::Array(::String)
+      @items.compact_map { |item| item.as?(String).try(&.value) }
+    end
+
+    def to_cos_number_integer_list : ::Array(Int64)
+      @items.compact_map { |item| item.as?(Integer).try(&.value) }
+    end
+
+    def to_list : ::Array(Base)
+      @items.dup
+    end
+
+    def index_of(value : Base) : Int32
+      index = @items.index(value)
+      index ? index.to_i32 : -1
     end
 
     def size : Int32
