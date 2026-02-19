@@ -540,7 +540,7 @@ module Pdfbox::Cos
 
     # Write this string in PDF format to the given IO
     def write_pdf(io : ::IO) : Nil
-      Pdfbox::Pdfwriter::PDFIO.write_string(io, ::String.new(@bytes), @force_hex_form)
+      Pdfbox::Pdfwriter::PDFIO.write_string(io, @bytes, @force_hex_form)
     end
 
     # Equality comparison

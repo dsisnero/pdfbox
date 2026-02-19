@@ -32,6 +32,7 @@ module Pdfbox::Pdfwriter
     # Write the PDF document
     def write : Nil
       write_header(@document.version)
+      cos_writer = COSWriter.new(@destination)
 
       # Create xref writer
       xref_writer = XRefWriter.new(@destination)
@@ -46,6 +47,16 @@ module Pdfbox::Pdfwriter
       @destination << "<<\n"
       @destination << "/Type /Catalog\n"
       @destination << "/Pages 2 0 R\n"
+      if catalog = @document.document_catalog
+        catalog.cos_object.entries.each do |key, value|
+          key_name = key.value
+          next if key_name == "Type" || key_name == "Pages"
+          cos_writer.write_name(key)
+          @destination << ' '
+          cos_writer.write(value)
+          @destination << '\n'
+        end
+      end
       @destination << ">>\n"
       @destination << "endobj\n"
 
@@ -180,7 +191,7 @@ module Pdfbox::Pdfwriter
 
     # Write a COS string
     def write_string(string : Pdfbox::Cos::String) : Nil
-      PDFIO.write_string(@destination, string.value)
+      PDFIO.write_string(@destination, string.bytes, string.force_hex_form?)
     end
 
     # Write a COS name
@@ -289,35 +300,38 @@ module Pdfbox::Pdfwriter
   module PDFIO
     # Write a PDF string (literal or hexadecimal)
     def self.write_string(io : ::IO, string : String, hex : Bool = false) : Nil
+      write_string(io, string.to_slice, hex)
+    end
+
+    def self.write_string(io : ::IO, bytes : Bytes, hex : Bool = false) : Nil
       if hex
         io << '<'
-        string.each_byte do |byte|
+        bytes.each do |byte|
           io << byte.to_s(16).upcase.rjust(2, '0')
         end
         io << '>'
       else
         io << '('
-        # Escape special characters in literal strings
-        string.each_char do |char|
-          case char
-          when '('
+        bytes.each do |byte|
+          case byte
+          when '('.ord
             io << '\\' << '('
-          when ')'
+          when ')'.ord
             io << '\\' << ')'
-          when '\\'
+          when '\\'.ord
             io << '\\' << '\\'
-          when '\n'
+          when '\n'.ord
             io << '\\' << 'n'
-          when '\r'
+          when '\r'.ord
             io << '\\' << 'r'
-          when '\t'
+          when '\t'.ord
             io << '\\' << 't'
-          when '\b'
+          when '\b'.ord
             io << '\\' << 'b'
-          when '\f'
+          when '\f'.ord
             io << '\\' << 'f'
           else
-            io << char
+            io.write_byte(byte)
           end
         end
         io << ')'
