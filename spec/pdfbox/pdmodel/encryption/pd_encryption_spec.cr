@@ -128,8 +128,9 @@ describe Pdfbox::Pdmodel::Encryption::PDEncryption do
       encryption = Pdfbox::Pdmodel::Encryption::PDEncryption.new(dict)
       bytes = encryption.owner_key
       bytes.should_not be_nil
-      bytes.not_nil!.size.should eq(32) # default revision <= 4
-      bytes.not_nil![0, 4].should eq(Bytes[1, 2, 3, 4])
+      bytes = bytes || raise "expected owner key bytes"
+      bytes.size.should eq(32) # default revision <= 4
+      bytes[0, 4].should eq(Bytes[1, 2, 3, 4])
     end
 
     it "returns nil when O entry missing" do
@@ -145,8 +146,9 @@ describe Pdfbox::Pdmodel::Encryption::PDEncryption do
       encryption = Pdfbox::Pdmodel::Encryption::PDEncryption.new(dict)
       bytes = encryption.owner_key
       bytes.should_not be_nil
-      bytes.not_nil!.size.should eq(48)
-      bytes.not_nil![0, 4].should eq(Bytes[5, 6, 7, 8])
+      bytes = bytes || raise "expected owner key bytes"
+      bytes.size.should eq(48)
+      bytes[0, 4].should eq(Bytes[5, 6, 7, 8])
     end
   end
 
@@ -157,8 +159,9 @@ describe Pdfbox::Pdmodel::Encryption::PDEncryption do
       encryption = Pdfbox::Pdmodel::Encryption::PDEncryption.new(dict)
       bytes = encryption.user_key
       bytes.should_not be_nil
-      bytes.not_nil!.size.should eq(32)
-      bytes.not_nil![0, 3].should eq(Bytes[10, 11, 12])
+      bytes = bytes || raise "expected user key bytes"
+      bytes.size.should eq(32)
+      bytes[0, 3].should eq(Bytes[10, 11, 12])
     end
 
     it "returns nil when U entry missing" do
@@ -175,8 +178,9 @@ describe Pdfbox::Pdmodel::Encryption::PDEncryption do
       encryption = Pdfbox::Pdmodel::Encryption::PDEncryption.new(dict)
       bytes = encryption.owner_encryption_key
       bytes.should_not be_nil
-      bytes.not_nil!.size.should eq(32)
-      bytes.not_nil![0, 3].should eq(Bytes[20, 21, 22])
+      bytes = bytes || raise "expected owner encryption key bytes"
+      bytes.size.should eq(32)
+      bytes[0, 3].should eq(Bytes[20, 21, 22])
     end
 
     it "returns nil when OE entry missing" do
@@ -193,8 +197,9 @@ describe Pdfbox::Pdmodel::Encryption::PDEncryption do
       encryption = Pdfbox::Pdmodel::Encryption::PDEncryption.new(dict)
       bytes = encryption.user_encryption_key
       bytes.should_not be_nil
-      bytes.not_nil!.size.should eq(32)
-      bytes.not_nil![0, 3].should eq(Bytes[30, 31, 32])
+      bytes = bytes || raise "expected user encryption key bytes"
+      bytes.size.should eq(32)
+      bytes[0, 3].should eq(Bytes[30, 31, 32])
     end
 
     it "returns nil when UE entry missing" do
@@ -256,11 +261,13 @@ describe Pdfbox::Pdmodel::Encryption::PDEncryption do
 
       str1 = encryption.recipient_string_at(0)
       str1.should_not be_nil
-      str1.not_nil!.bytes.should eq(Bytes[10, 11, 12])
+      str1 = str1 || raise "expected first recipient string"
+      str1.bytes.should eq(Bytes[10, 11, 12])
 
       str2 = encryption.recipient_string_at(1)
       str2.should_not be_nil
-      str2.not_nil!.bytes.should eq(Bytes[20, 21, 22])
+      str2 = str2 || raise "expected second recipient string"
+      str2.bytes.should eq(Bytes[20, 21, 22])
     end
 
     it "returns nil for out of bounds index" do

@@ -11,20 +11,20 @@ describe Fontbox::CMap::CMapStrings do
       min_value = [0_u8]
       mapping = Fontbox::CMap::CMapStrings.get_mapping(min_value)
       mapping.should_not be_nil
-      mapping = mapping.not_nil!
+      mapping = mapping || raise "expected mapping"
       mapping.should eq String.new(Slice[0_u8], "ISO-8859-1")
       # same object reference for same input - TODO: test object identity
 
       max_value = [0xFF_u8]
       mapping2 = Fontbox::CMap::CMapStrings.get_mapping(max_value)
       mapping2.should_not be_nil
-      mapping2 = mapping2.not_nil!
+      mapping2 = mapping2 || raise "expected mapping2"
       mapping2.should eq String.new(Slice[0xFF_u8], "ISO-8859-1")
 
       any_value = [98_u8]
       mapping3 = Fontbox::CMap::CMapStrings.get_mapping(any_value)
       mapping3.should_not be_nil
-      mapping3 = mapping3.not_nil!
+      mapping3 = mapping3 || raise "expected mapping3"
       mapping3.should eq String.new(Slice[98_u8], "ISO-8859-1")
     end
 
@@ -32,20 +32,20 @@ describe Fontbox::CMap::CMapStrings do
       min_value = [0_u8, 0_u8]
       mapping = Fontbox::CMap::CMapStrings.get_mapping(min_value)
       mapping.should_not be_nil
-      mapping = mapping.not_nil!
+      mapping = mapping || raise "expected mapping"
       mapping.should eq String.new(Slice[0_u8, 0_u8], "UTF-16BE")
       # same object reference for same input - TODO: test object identity
 
       max_value = [0xFF_u8, 0xFF_u8]
       mapping2 = Fontbox::CMap::CMapStrings.get_mapping(max_value)
       mapping2.should_not be_nil
-      mapping2 = mapping2.not_nil!
+      mapping2 = mapping2 || raise "expected mapping2"
       mapping2.should eq String.new(Slice[0xFF_u8, 0xFF_u8], "UTF-16BE")
 
       any_value = [0x12_u8, 0x34_u8]
       mapping3 = Fontbox::CMap::CMapStrings.get_mapping(any_value)
       mapping3.should_not be_nil
-      mapping3 = mapping3.not_nil!
+      mapping3 = mapping3 || raise "expected mapping3"
       mapping3.should eq String.new(Slice[0x12_u8, 0x34_u8], "UTF-16BE")
     end
   end
@@ -77,7 +77,7 @@ describe Fontbox::CMap::CMapStrings do
       bytes = [0_u8]
       result = Fontbox::CMap::CMapStrings.get_byte_value(bytes)
       result.should_not be_nil
-      result = result.not_nil!
+      result = result || raise "expected result"
       result.should eq Slice[0_u8]
       # same object reference - TODO: test object identity
     end
@@ -86,7 +86,7 @@ describe Fontbox::CMap::CMapStrings do
       bytes = [0x12_u8, 0x34_u8]
       result = Fontbox::CMap::CMapStrings.get_byte_value(bytes)
       result.should_not be_nil
-      result = result.not_nil!
+      result = result || raise "expected result"
       result.should eq Slice[0x12_u8, 0x34_u8]
       # same object reference - TODO: test object identity
     end

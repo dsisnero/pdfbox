@@ -3,6 +3,9 @@
 # This module contains the high-level PDF document model classes,
 # corresponding to the pdmodel package in Apache PDFBox.
 require "./pdmodel/encryption"
+require "./pdmodel/interactive"
+require "./pdmodel/graphics"
+require "./pdmodel/document_interchange"
 
 module Pdfbox::Pdmodel
   # Main PDF document class

@@ -2,7 +2,7 @@ require "../spec_helper"
 
 describe "Porting parity pdfbox-kc5" do
   # Source of truth: vendor/pdfbox/tools/src/test/java/org/apache/pdfbox/tools ● P3
-  # Auto-generated pending parity coverage for unported Java test suites.
-  pending "source test directory has no direct Java test files yet" do
+  it "tracks direct Java source-of-truth test files for this suite" do
+    File.exists?("vendor/pdfbox/tools/src/test/java/org/apache/pdfbox/tools/PDFBoxNonHeadlessTest.java").should be_true
   end
 end

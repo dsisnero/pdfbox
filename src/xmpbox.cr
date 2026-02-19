@@ -5,3 +5,5 @@
 module Xmpbox
   # TODO: Implement xmpbox functionality
 end
+
+require "./xmpbox/date_converter"
