@@ -142,6 +142,26 @@ module Pdfbox::Cos
 
   # Marker module for numeric types (Integer and Float)
   module Number
+    def self.get(number : ::String) : Integer | Float
+      return parse_single_char(number) if number.size == 1
+      return Float.new(number.to_f64) if number.includes?('.') || number.includes?('e')
+      parse_integer_or_out_of_range(number)
+    end
+
+    private def self.parse_single_char(number : ::String) : Integer
+      digit = number[0]
+      return Integer.get((digit.ord - '0'.ord).to_i64) if digit >= '0' && digit <= '9'
+      return Integer::ZERO if digit == '-' || digit == '.'
+      raise Error.new("Not a number: #{number}")
+    end
+
+    private def self.parse_integer_or_out_of_range(number : ::String) : Integer
+      Integer.get(number.to_i64)
+    rescue
+      number_string = (number.starts_with?('+') || number.starts_with?('-')) ? number[1..] : number
+      raise Error.new("Not a number: #{number}") unless /\A\d*\z/.matches?(number_string)
+      number.starts_with?('-') ? Integer::OUT_OF_RANGE_MIN : Integer::OUT_OF_RANGE_MAX
+    end
   end
 
   # PDFDocEncoding mapping used for PDF text strings.
@@ -230,9 +250,29 @@ module Pdfbox::Cos
   # Integer value in PDF document
   class Integer < Base
     include Number
-    @value : Int64
+    LOW              = -100_i64
+    HIGH             =  256_i64
+    OUT_OF_RANGE_MAX = new(Int64::MAX, false)
+    OUT_OF_RANGE_MIN = new(Int64::MIN, false)
+    ZERO             = get(0_i64)
+    ONE              = get(1_i64)
+    TWO              = get(2_i64)
+    THREE            = get(3_i64)
 
-    def initialize(@value : Int64)
+    @@cache = Hash(Int64, Integer).new
+
+    @value : Int64
+    @valid : Bool
+
+    def initialize(@value : Int64, @valid : Bool = true)
+    end
+
+    def self.get(value : Int64) : Integer
+      if value >= LOW && value <= HIGH
+        @@cache[value] ||= new(value)
+      else
+        new(value)
+      end
     end
 
     def value : Int64
@@ -245,7 +285,7 @@ module Pdfbox::Cos
 
     # Check if integer is within valid PDF range (signed 32-bit)
     def valid? : Bool
-      @value >= Int32::MIN.to_i64 && @value <= Int32::MAX.to_i64
+      @valid
     end
 
     # Write this integer in PDF format to the given IO
