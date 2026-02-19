@@ -65,6 +65,22 @@ describe Pdfbox::Cos::String do
     String.new(string.bytes).should eq(esc_char_string)
   end
 
+  it "accepts a COS writer visitor" do
+    esc_char_string = "( test#some) escaped< \\chars>!~1239857 "
+    esc_char_string_pdf_format = "\\( test#some\\) escaped< \\\\chars>!~1239857 "
+    output = IO::Memory.new
+    visitor = Pdfbox::Pdfwriter::COSWriter.new(output)
+
+    literal = Pdfbox::Cos::String.new(esc_char_string)
+    literal.accept(visitor)
+    String.new(output.to_slice).should eq("(#{esc_char_string_pdf_format})")
+
+    output.clear
+    forced_hex = Pdfbox::Cos::String.new(esc_char_string, true)
+    forced_hex.accept(visitor)
+    String.new(output.to_slice).should eq("<#{forced_hex.to_hex_string}>")
+  end
+
   it "includes force_hex_form in equality and hash comparisons" do
     literal = Pdfbox::Cos::String.new("Test1")
     same_literal = Pdfbox::Cos::String.new("Test1")

@@ -60,6 +60,11 @@ module Pdfbox::Cos
       self
     end
 
+    # Java compatibility: COSBase#accept routes to a COS visitor/writer.
+    def accept(visitor) : Nil
+      visitor.write(self)
+    end
+
     # If the state is set true, the dictionary will be written direct into the called object.
     # This means, no indirect object will be created.
     def direct? : Bool
