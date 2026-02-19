@@ -6,6 +6,8 @@ module Pdfbox::Cos
   # Error class for COS operations
   class Error < Pdfbox::PDFError; end
 
+  class UnsupportedOperationError < Error; end
+
   # Tracks document parse lifecycle to decide whether COS updates are accepted.
   class DocumentState
     @parsing = true
@@ -570,6 +572,14 @@ module Pdfbox::Cos
       @entries[key] = value
     end
 
+    def set_item(key : Name, value : Base) : Base
+      self[key] = value
+    end
+
+    def set_item(key : ::String, value : Base) : Base
+      self[Name.new(key)] = value
+    end
+
     def [](key : Name) : Base?
       @entries[key]?
     end
@@ -578,12 +588,119 @@ module Pdfbox::Cos
       @entries.has_key?(key)
     end
 
+    def contains_key?(key : ::String) : Bool
+      has_key?(Name.new(key))
+    end
+
     def delete(key : Name) : Base?
       @entries.delete(key)
     end
 
+    def remove_item(key : Name) : Base?
+      delete(key)
+    end
+
+    def clear : Nil
+      @entries.clear
+    end
+
+    def add_all(other : Dictionary) : Nil
+      other.entries.each do |key, value|
+        @entries[key] = value
+      end
+    end
+
     def size : Int32
       @entries.size
+    end
+
+    def set_flag(key : Name, bit_flag : Int32, value : Bool) : Nil
+      int_value = self[key].as?(Integer).try(&.value) || 0_i64
+      updated =
+        if value
+          int_value | bit_flag
+        else
+          int_value & ~bit_flag
+        end
+      self[key] = Integer.new(updated)
+    end
+
+    def set_boolean(key : Name, value : Bool) : Nil
+      self[key] = Boolean.get(value)
+    end
+
+    def set_boolean(key : ::String, value : Bool) : Nil
+      set_boolean(Name.new(key), value)
+    end
+
+    def set_name(key : Name, value : ::String) : Nil
+      self[key] = Name.new(value)
+    end
+
+    def set_name(key : ::String, value : ::String) : Nil
+      set_name(Name.new(key), value)
+    end
+
+    def set_date(key : Name, value : Time) : Nil
+      self[key] = String.new(value.to_s("%Y%m%d%H%M%S"))
+    end
+
+    def set_date(key : ::String, value : Time) : Nil
+      set_date(Name.new(key), value)
+    end
+
+    def set_embedded_date(embedded : Name, key : Name, value : Time) : Nil
+      embedded_dict = self[embedded].as?(Dictionary) || Dictionary.new
+      embedded_dict.set_date(key, value)
+      self[embedded] = embedded_dict
+    end
+
+    def set_string(key : Name, value : ::String) : Nil
+      self[key] = String.new(value)
+    end
+
+    def set_string(key : ::String, value : ::String) : Nil
+      set_string(Name.new(key), value)
+    end
+
+    def set_embedded_string(embedded : Name, key : Name, value : ::String) : Nil
+      embedded_dict = self[embedded].as?(Dictionary) || Dictionary.new
+      embedded_dict.set_string(key, value)
+      self[embedded] = embedded_dict
+    end
+
+    def set_int(key : Name, value : Int) : Nil
+      self[key] = Integer.new(value.to_i64)
+    end
+
+    def set_int(key : ::String, value : Int) : Nil
+      set_int(Name.new(key), value)
+    end
+
+    def set_embedded_int(embedded : Name, key : Name, value : Int) : Nil
+      embedded_dict = self[embedded].as?(Dictionary) || Dictionary.new
+      embedded_dict.set_int(key, value)
+      self[embedded] = embedded_dict
+    end
+
+    def set_long(key : Name, value : Int64) : Nil
+      self[key] = Integer.new(value)
+    end
+
+    def set_long(key : ::String, value : Int64) : Nil
+      set_long(Name.new(key), value)
+    end
+
+    def set_float(key : Name, value : Float64) : Nil
+      self[key] = Float.new(value)
+    end
+
+    def set_float(key : ::String, value : Float64) : Nil
+      set_float(Name.new(key), value)
+    end
+
+    def as_unmodifiable_dictionary : Dictionary
+      UnmodifiableDictionary.new(@entries)
     end
 
     # Write this dictionary in PDF format to the given IO
@@ -817,6 +934,116 @@ module Pdfbox::Cos
         return real_object if real_object[Name.new("Linearized")]
       end
       nil
+    end
+  end
+
+  class UnmodifiableDictionary < Dictionary
+    def initialize(entries : ::Hash(Name, Base) = {} of Name => Base)
+      super(entries.dup)
+    end
+
+    def []=(key : Name, value : Base) : Base
+      raise UnsupportedOperationError.new("Unmodifiable dictionary")
+    end
+
+    def clear : Nil
+      raise UnsupportedOperationError.new("Unmodifiable dictionary")
+    end
+
+    def delete(key : Name) : Base?
+      raise UnsupportedOperationError.new("Unmodifiable dictionary")
+    end
+
+    def remove_item(key : Name) : Base?
+      raise UnsupportedOperationError.new("Unmodifiable dictionary")
+    end
+
+    def add_all(other : Dictionary) : Nil
+      raise UnsupportedOperationError.new("Unmodifiable dictionary")
+    end
+
+    def set_flag(key : Name, bit_flag : Int32, value : Bool) : Nil
+      raise UnsupportedOperationError.new("Unmodifiable dictionary")
+    end
+
+    def need_to_be_updated=(flag : Bool) : Nil
+      raise UnsupportedOperationError.new("Unmodifiable dictionary")
+    end
+
+    def set_item(key : Name, value : Base) : Base
+      raise UnsupportedOperationError.new("Unmodifiable dictionary")
+    end
+
+    def set_item(key : ::String, value : Base) : Base
+      raise UnsupportedOperationError.new("Unmodifiable dictionary")
+    end
+
+    def set_boolean(key : Name, value : Bool) : Nil
+      raise UnsupportedOperationError.new("Unmodifiable dictionary")
+    end
+
+    def set_boolean(key : ::String, value : Bool) : Nil
+      raise UnsupportedOperationError.new("Unmodifiable dictionary")
+    end
+
+    def set_name(key : Name, value : ::String) : Nil
+      raise UnsupportedOperationError.new("Unmodifiable dictionary")
+    end
+
+    def set_name(key : ::String, value : ::String) : Nil
+      raise UnsupportedOperationError.new("Unmodifiable dictionary")
+    end
+
+    def set_date(key : Name, value : Time) : Nil
+      raise UnsupportedOperationError.new("Unmodifiable dictionary")
+    end
+
+    def set_date(key : ::String, value : Time) : Nil
+      raise UnsupportedOperationError.new("Unmodifiable dictionary")
+    end
+
+    def set_embedded_date(embedded : Name, key : Name, value : Time) : Nil
+      raise UnsupportedOperationError.new("Unmodifiable dictionary")
+    end
+
+    def set_string(key : Name, value : ::String) : Nil
+      raise UnsupportedOperationError.new("Unmodifiable dictionary")
+    end
+
+    def set_string(key : ::String, value : ::String) : Nil
+      raise UnsupportedOperationError.new("Unmodifiable dictionary")
+    end
+
+    def set_embedded_string(embedded : Name, key : Name, value : ::String) : Nil
+      raise UnsupportedOperationError.new("Unmodifiable dictionary")
+    end
+
+    def set_int(key : Name, value : Int) : Nil
+      raise UnsupportedOperationError.new("Unmodifiable dictionary")
+    end
+
+    def set_int(key : ::String, value : Int) : Nil
+      raise UnsupportedOperationError.new("Unmodifiable dictionary")
+    end
+
+    def set_embedded_int(embedded : Name, key : Name, value : Int) : Nil
+      raise UnsupportedOperationError.new("Unmodifiable dictionary")
+    end
+
+    def set_long(key : Name, value : Int64) : Nil
+      raise UnsupportedOperationError.new("Unmodifiable dictionary")
+    end
+
+    def set_long(key : ::String, value : Int64) : Nil
+      raise UnsupportedOperationError.new("Unmodifiable dictionary")
+    end
+
+    def set_float(key : Name, value : Float64) : Nil
+      raise UnsupportedOperationError.new("Unmodifiable dictionary")
+    end
+
+    def set_float(key : ::String, value : Float64) : Nil
+      raise UnsupportedOperationError.new("Unmodifiable dictionary")
     end
   end
 end
