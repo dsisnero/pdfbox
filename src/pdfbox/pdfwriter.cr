@@ -32,6 +32,7 @@ module Pdfbox::Pdfwriter
     # Write the PDF document
     def write : Nil
       write_header(@document.version)
+      cos_writer = COSWriter.new(@destination)
 
       # Create xref writer
       xref_writer = XRefWriter.new(@destination)
@@ -46,6 +47,16 @@ module Pdfbox::Pdfwriter
       @destination << "<<\n"
       @destination << "/Type /Catalog\n"
       @destination << "/Pages 2 0 R\n"
+      if catalog = @document.document_catalog
+        catalog.cos_object.entries.each do |key, value|
+          key_name = key.value
+          next if key_name == "Type" || key_name == "Pages"
+          cos_writer.write_name(key)
+          @destination << ' '
+          cos_writer.write(value)
+          @destination << '\n'
+        end
+      end
       @destination << ">>\n"
       @destination << "endobj\n"
 
@@ -70,11 +81,21 @@ module Pdfbox::Pdfwriter
         page_offset = @destination.pos.to_i64
         xref_writer.add_entry(page_offset, 0_i64, :in_use)
         obj_num = 3 + i
+        page = @document.get_page(i)
         @destination << obj_num << " 0 obj\n"
         @destination << "<<\n"
         @destination << "/Type /Page\n"
         @destination << "/Parent 2 0 R\n"
-        @destination << "/MediaBox [0 0 612 792]\n" # Letter size
+        if media_box = page.media_box
+          @destination << "/MediaBox ["
+          @destination << media_box.lower_left_x << ' '
+          @destination << media_box.lower_left_y << ' '
+          @destination << media_box.upper_right_x << ' '
+          @destination << media_box.upper_right_y
+          @destination << "]\n"
+        else
+          @destination << "/MediaBox [0 0 612 792]\n" # Letter size
+        end
         @destination << ">>\n"
         @destination << "endobj\n"
       end
@@ -180,7 +201,7 @@ module Pdfbox::Pdfwriter
 
     # Write a COS string
     def write_string(string : Pdfbox::Cos::String) : Nil
-      PDFIO.write_string(@destination, string.value)
+      PDFIO.write_string(@destination, string.bytes, string.force_hex_form?)
     end
 
     # Write a COS name
@@ -289,35 +310,30 @@ module Pdfbox::Pdfwriter
   module PDFIO
     # Write a PDF string (literal or hexadecimal)
     def self.write_string(io : ::IO, string : String, hex : Bool = false) : Nil
-      if hex
+      write_string(io, string.to_slice, hex)
+    end
+
+    def self.write_string(io : ::IO, bytes : Bytes, hex : Bool = false) : Nil
+      is_ascii = !hex && bytes.all? { |byte| byte < 0x80_u8 && byte != 0x0d_u8 && byte != 0x0a_u8 }
+
+      if hex || !is_ascii
         io << '<'
-        string.each_byte do |byte|
+        bytes.each do |byte|
           io << byte.to_s(16).upcase.rjust(2, '0')
         end
         io << '>'
       else
         io << '('
-        # Escape special characters in literal strings
-        string.each_char do |char|
-          case char
-          when '('
+        bytes.each do |byte|
+          case byte
+          when '('.ord
             io << '\\' << '('
-          when ')'
+          when ')'.ord
             io << '\\' << ')'
-          when '\\'
+          when '\\'.ord
             io << '\\' << '\\'
-          when '\n'
-            io << '\\' << 'n'
-          when '\r'
-            io << '\\' << 'r'
-          when '\t'
-            io << '\\' << 't'
-          when '\b'
-            io << '\\' << 'b'
-          when '\f'
-            io << '\\' << 'f'
           else
-            io << char
+            io.write_byte(byte)
           end
         end
         io << ')'

@@ -26,3 +26,6 @@ test_*_release
 
 # Temporary directories
 cff_parser/
+
+# Git worktrees
+.worktrees/

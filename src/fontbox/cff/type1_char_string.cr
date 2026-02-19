@@ -24,10 +24,11 @@ module Fontbox::CFF
     @font_name : String
     @glyph_name : String
     @type1_sequence = [] of CharStringCommand | Int32 | Float64
-    @path : Fontbox::Util::Path? = nil
+    @path : Fontbox::Util::Path = Fontbox::Util::Path.new
+    @rendered = false
     @width : Int32 = 0
-    @left_side_bearing : Fontbox::Util::Point2D? = nil
-    @current : Fontbox::Util::Point2D? = nil
+    @left_side_bearing : Fontbox::Util::Point2D = Fontbox::Util::Point2D.new(0.0, 0.0)
+    @current : Fontbox::Util::Point2D = Fontbox::Util::Point2D.new(0.0, 0.0)
     @is_flex = false
     @flex_points = [] of Fontbox::Util::Point2D
     @command_count = 0
@@ -67,10 +68,8 @@ module Fontbox::CFF
 
     # Returns the path of the character.
     def path : Fontbox::Util::Path
-      if @path.nil?
-        render
-      end
-      @path.not_nil!
+      render unless @rendered
+      @path
     end
 
     # Renders the Type 1 char string sequence to a Path.
@@ -87,6 +86,7 @@ module Fontbox::CFF
           numbers << obj
         end
       end
+      @rendered = true
     end
 
     private def handle_type1_command(numbers : Array(Int32 | Float64), command : CharStringCommand) : Nil
@@ -147,13 +147,13 @@ module Fontbox::CFF
         if numbers.size >= 3
           @left_side_bearing = Fontbox::Util::Point2D.new(numbers[0].to_f, numbers[1].to_f)
           @width = numbers[2].to_i
-          @current.not_nil!.set_location(@left_side_bearing.not_nil!.x, @left_side_bearing.not_nil!.y)
+          @current.set_location(@left_side_bearing.x, @left_side_bearing.y)
         end
       when CharStringCommand::Type1KeyWord::HSBW
         if numbers.size >= 2
           @left_side_bearing = Fontbox::Util::Point2D.new(numbers[0].to_f, 0.0)
           @width = numbers[1].to_i
-          @current.not_nil!.set_location(@left_side_bearing.not_nil!.x, @left_side_bearing.not_nil!.y)
+          @current.set_location(@left_side_bearing.x, @left_side_bearing.y)
         end
       when CharStringCommand::Type1KeyWord::VHCURVETO
         if numbers.size >= 4
@@ -205,7 +205,7 @@ module Fontbox::CFF
     end
 
     private def set_current_point(x : Int32 | Float64, y : Int32 | Float64) : Nil
-      @current.not_nil!.set_location(x.to_f, y.to_f)
+      @current.set_location(x.to_f, y.to_f)
     end
 
     # Flex (via OtherSubrs)
@@ -221,14 +221,14 @@ module Fontbox::CFF
 
         # reference point is relative to start point
         reference = @flex_points[0]
-        reference.set_location(@current.not_nil!.x + reference.x, @current.not_nil!.y + reference.y)
+        reference.set_location(@current.x + reference.x, @current.y + reference.y)
 
         # first point is relative to reference point
         first = @flex_points[1]
         first.set_location(reference.x + first.x, reference.y + first.y)
 
         # make the first point relative to the start point
-        first.set_location(first.x - @current.not_nil!.x, first.y - @current.not_nil!.y)
+        first.set_location(first.x - @current.x, first.y - @current.y)
 
         p1 = @flex_points[1]
         p2 = @flex_points[2]
@@ -251,49 +251,49 @@ module Fontbox::CFF
 
     # Relative moveto.
     private def rmove_to(dx : Int32 | Float64, dy : Int32 | Float64) : Nil
-      x = @current.not_nil!.x + dx.to_f
-      y = @current.not_nil!.y + dy.to_f
-      @path.not_nil!.move_to(x, y)
-      @current.not_nil!.set_location(x, y)
+      x = @current.x + dx.to_f
+      y = @current.y + dy.to_f
+      @path.move_to(x, y)
+      @current.set_location(x, y)
     end
 
     # Relative lineto.
     private def rline_to(dx : Int32 | Float64, dy : Int32 | Float64) : Nil
-      x = @current.not_nil!.x + dx.to_f
-      y = @current.not_nil!.y + dy.to_f
-      if @path.not_nil!.current_point.nil?
+      x = @current.x + dx.to_f
+      y = @current.y + dy.to_f
+      if @path.current_point.nil?
         Log.warn { "rlineTo without initial moveTo in font #{@font_name}, glyph #{@glyph_name}" }
-        @path.not_nil!.move_to(x, y)
+        @path.move_to(x, y)
       else
-        @path.not_nil!.line_to(x, y)
+        @path.line_to(x, y)
       end
-      @current.not_nil!.set_location(x, y)
+      @current.set_location(x, y)
     end
 
     # Relative curveto.
     private def rrcurve_to(dx1 : Int32 | Float64, dy1 : Int32 | Float64, dx2 : Int32 | Float64, dy2 : Int32 | Float64,
                            dx3 : Int32 | Float64, dy3 : Int32 | Float64) : Nil
-      x1 = @current.not_nil!.x + dx1.to_f
-      y1 = @current.not_nil!.y + dy1.to_f
+      x1 = @current.x + dx1.to_f
+      y1 = @current.y + dy1.to_f
       x2 = x1 + dx2.to_f
       y2 = y1 + dy2.to_f
       x3 = x2 + dx3.to_f
       y3 = y2 + dy3.to_f
-      if @path.not_nil!.current_point.nil?
+      if @path.current_point.nil?
         Log.warn { "rrcurveTo without initial moveTo in font #{@font_name}, glyph #{@glyph_name}" }
-        @path.not_nil!.move_to(x3, y3)
+        @path.move_to(x3, y3)
       else
-        @path.not_nil!.curve_to(x1, y1, x2, y2, x3, y3)
+        @path.curve_to(x1, y1, x2, y2, x3, y3)
       end
-      @current.not_nil!.set_location(x3, y3)
+      @current.set_location(x3, y3)
     end
 
     # Close path.
     private def close_charstring1_path : Nil
-      if @path.not_nil!.current_point.nil?
+      if @path.current_point.nil?
         Log.warn { "closepath without initial moveTo in font #{@font_name}, glyph #{@glyph_name}" }
       else
-        @path.not_nil!.close_path
+        @path.close_path
       end
       # In Java: path.moveTo(current.getX(), current.getY())
       # We'll keep current point unchanged

@@ -13,7 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# ameba:disable Naming/AccessorMethodName
 module Fontbox::TTF
   # A TrueType font file.
   #
@@ -80,6 +79,11 @@ module Fontbox::TTF
       @tables.values.to_a
     end
 
+    # Gets the table map (tag -> TTFTable).
+    def table_map : Hash(String, TTFTable)
+      @tables
+    end
+
     # Gets the header table.
     def header : HeaderTable?
       table = table(HeaderTable::TAG).as?(HeaderTable)
@@ -110,6 +114,15 @@ module Fontbox::TTF
     # Gets the postscript table.
     def postscript : PostScriptTable?
       table(PostScriptTable::TAG).as?(PostScriptTable)
+    end
+
+    # Gets the glyph ID for a given glyph name.
+    def name_to_gid(name : String) : Int32
+      post = postscript
+      return -1 if post.nil?
+      glyph_names = post.glyph_names
+      return -1 if glyph_names.nil?
+      glyph_names.index(name) || -1
     end
 
     # Gets the vertical header table.
@@ -218,6 +231,15 @@ module Fontbox::TTF
       ensure
         @data.seek(original_position)
       end
+    end
+
+    # Reads all bytes from a table.
+    def table_bytes(table : TTFTable) : Bytes
+      length = table.length
+      if length > Int32::MAX
+        raise "Table length #{length} exceeds maximum size"
+      end
+      table_n_bytes(table, length.to_i32)
     end
 
     # Gets the font name.

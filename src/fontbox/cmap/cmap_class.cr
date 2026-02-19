@@ -203,12 +203,12 @@ module Fontbox
           index = CMapStrings.get_index_value(bytes)
           return unless index
           @char_to_unicode_one_byte[index] = unicode
-          @unicode_to_byte_codes[unicode] = CMapStrings.get_byte_value(bytes).not_nil!
+          @unicode_to_byte_codes[unicode] = CMapStrings.get_byte_value(bytes).not_nil! # ameba:disable Lint/NotNil
         when 2
           index = CMapStrings.get_index_value(bytes)
           return unless index
           @char_to_unicode_two_bytes[index] = unicode
-          @unicode_to_byte_codes[unicode] = CMapStrings.get_byte_value(bytes).not_nil!
+          @unicode_to_byte_codes[unicode] = CMapStrings.get_byte_value(bytes).not_nil! # ameba:disable Lint/NotNil
         when 3, 4
           code = bytes_to_int(bytes)
           @char_to_unicode_more_bytes[code] = unicode
@@ -273,22 +273,22 @@ module Fontbox
         end
         cmap.char_to_unicode_more_bytes.each do |k, v|
           bytes = if k <= 0xFFFFFF
-                    Bytes.new(3) { |i|
+                    Bytes.new(3) do |i|
                       case i
                       when 0 then (k >> 16).to_u8
                       when 1 then (k >> 8).to_u8
                       else        k.to_u8
                       end
-                    }
+                    end
                   else
-                    Bytes.new(4) { |i|
+                    Bytes.new(4) do |i|
                       case i
                       when 0 then (k >> 24).to_u8
                       when 1 then (k >> 16).to_u8
                       when 2 then (k >> 8).to_u8
                       else        k.to_u8
                       end
-                    }
+                    end
                   end
           @unicode_to_byte_codes[v] = bytes
         end

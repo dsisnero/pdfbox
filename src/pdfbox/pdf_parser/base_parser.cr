@@ -120,7 +120,7 @@ module Pdfbox::Pdfparser
     end
 
     # Determine if a character terminates a PDF name.
-    # ameba:disable Metrics/CyclomaticComplexity
+
     protected def end_of_name?(ch : Int32) : Bool
       case ch
       when ASCII_SPACE
@@ -177,7 +177,7 @@ module Pdfbox::Pdfparser
     end
 
     # This will parse a PDF string.
-    # ameba:disable Metrics/CyclomaticComplexity
+
     protected def read_literal_string : Bytes
       read_expected_char('(')
 
@@ -473,7 +473,7 @@ module Pdfbox::Pdfparser
     end
 
     # Read a PDF number (integer or float)
-    # ameba:disable Metrics/CyclomaticComplexity
+
     protected def read_number : Float64 | Int64
       skip_spaces
 
@@ -552,9 +552,9 @@ module Pdfbox::Pdfparser
       String.new(bytes, "ISO-8859-1")
     end
 
-    # Read a PDF hexadecimal string
-    # ameba:disable Metrics/CyclomaticComplexity
-    protected def read_hexadecimal_string : String
+    # Read a PDF hexadecimal string as raw bytes
+
+    protected def read_hexadecimal_string : Bytes
       skip_spaces
 
       c = source.read
@@ -592,22 +592,25 @@ module Pdfbox::Pdfparser
         end
       end
 
-      # Convert hex string to actual string
+      # Convert hex string to raw bytes
       hex_str = hex_digits
-      result = String::Builder.new
+      result = Bytes.new((hex_str.size + 1) // 2, 0_u8)
+      out_idx = 0
       i = 0
       while i + 1 < hex_str.size
         byte = hex_str[i, 2].to_i(16)
-        result << byte.chr
+        result[out_idx] = byte.to_u8
+        out_idx += 1
         i += 2
       end
       # Handle leftover single hex digit (pad with '0' per spec)
       if i < hex_str.size
         byte = (hex_str[i].to_s + "0").to_i(16)
-        result << byte.chr
+        result[out_idx] = byte.to_u8
+        out_idx += 1
       end
 
-      result.to_s
+      result[0, out_idx]
     end
 
     # This method is used to read a token by the read_int and the read_long method. Valid

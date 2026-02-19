@@ -59,7 +59,7 @@ module Pdfbox::Pdfparser
           next
         end
         value = @stream[key]?
-        value.set_direct(true) if value
+        value.direct = true if value
       end
 
       @stream

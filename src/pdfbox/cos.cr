@@ -2,17 +2,70 @@
 #
 # This module contains the fundamental object types used in PDF documents,
 # corresponding to the COS (Cos Object System) in Apache PDFBox.
+require "compress/zlib"
+
 module Pdfbox::Cos
   # Error class for COS operations
   class Error < Pdfbox::PDFError; end
+
+  class UnsupportedOperationError < Error; end
+
+  # Tracks document parse lifecycle to decide whether COS updates are accepted.
+  class DocumentState
+    @parsing = true
+
+    def parsing=(parsing : Bool) : Nil
+      @parsing = parsing
+    end
+
+    def accepting_updates? : Bool
+      !@parsing
+    end
+  end
+
+  # Tracks incremental-update state for a COS object.
+  class UpdateState
+    @origin_document_state : DocumentState?
+    @updated = false
+
+    def origin_document_state=(origin_document_state : DocumentState?) : Nil
+      return if @origin_document_state || origin_document_state.nil?
+      @origin_document_state = origin_document_state
+      update(true)
+    end
+
+    def origin_document_state : DocumentState?
+      @origin_document_state
+    end
+
+    def updated? : Bool
+      @updated
+    end
+
+    def update(updated : Bool) : Nil
+      return unless @origin_document_state.try(&.accepting_updates?)
+      @updated = updated
+    end
+  end
 
   # Base class for all COS objects
   abstract class Base
     @direct : Bool = true
     @key : ObjectKey?
+    @update_state : UpdateState?
 
     # Write this object in PDF format to the given IO
     abstract def write_pdf(io : ::IO) : Nil
+
+    # Java compatibility: COSBase#getCOSObject returns the wrapped COS object.
+    def cos_object : Base
+      self
+    end
+
+    # Java compatibility: COSBase#accept routes to a COS visitor/writer.
+    def accept(visitor) : Nil
+      visitor.write(self)
+    end
 
     # If the state is set true, the dictionary will be written direct into the called object.
     # This means, no indirect object will be created.
@@ -21,8 +74,8 @@ module Pdfbox::Cos
     end
 
     # Set the state true, if the dictionary should be written as a direct object and not indirect.
-    # ameba:disable Naming/AccessorMethodName
-    def set_direct(direct : Bool) : Nil
+
+    def direct=(direct : Bool) : Bool
       @direct = direct
     end
 
@@ -34,6 +87,18 @@ module Pdfbox::Cos
     # Set the ObjectKey of an indirect object.
     def key=(key : ObjectKey?) : Nil
       @key = key
+    end
+
+    def update_state : UpdateState
+      @update_state ||= UpdateState.new
+    end
+
+    def need_to_be_updated? : Bool
+      update_state.updated?
+    end
+
+    def need_to_be_updated=(flag : Bool) : Nil
+      update_state.update(flag)
     end
   end
 
@@ -87,18 +152,158 @@ module Pdfbox::Cos
     def write_pdf(io : ::IO) : Nil
       io << (@value ? "true" : "false")
     end
+
+    def ==(other : self) : Bool
+      same?(other)
+    end
+
+    def ==(other) : Bool
+      false
+    end
+
+    # Match java.lang.Boolean hash constants used by Apache PDFBox.
+    def hash : Int32
+      @value ? 1231 : 1237
+    end
+
+    def to_s(io : ::IO) : Nil
+      io << (@value ? "true" : "false")
+    end
   end
 
   # Marker module for numeric types (Integer and Float)
   module Number
+    def self.get(number : ::String) : Integer | Float
+      return parse_single_char(number) if number.size == 1
+      return Float.new(number.to_f64) if number.includes?('.') || number.includes?('e')
+      parse_integer_or_out_of_range(number)
+    end
+
+    private def self.parse_single_char(number : ::String) : Integer
+      digit = number[0]
+      return Integer.get((digit.ord - '0'.ord).to_i64) if digit >= '0' && digit <= '9'
+      return Integer::ZERO if digit == '-' || digit == '.'
+      raise Error.new("Not a number: #{number}")
+    end
+
+    private def self.parse_integer_or_out_of_range(number : ::String) : Integer
+      Integer.get(number.to_i64)
+    rescue
+      number_string = (number.starts_with?('+') || number.starts_with?('-')) ? number[1..] : number
+      raise Error.new("Not a number: #{number}") unless /\A\d*\z/.matches?(number_string)
+      number.starts_with?('-') ? Integer::OUT_OF_RANGE_MIN : Integer::OUT_OF_RANGE_MAX
+    end
+  end
+
+  # PDFDocEncoding mapping used for PDF text strings.
+  module PDFDocEncoding
+    CODE_TO_UNI = ::Array(Char).new(256, '\u0000')
+    UNI_TO_CODE = ::Hash(Char, UInt8).new
+
+    private def self.set(code : Int32, unicode : Char) : Nil
+      CODE_TO_UNI[code] = unicode
+      UNI_TO_CODE[unicode] = code.to_u8
+    end
+
+    private def self.init : Nil
+      (0..255).each do |i|
+        next if i > 0x17 && i < 0x20
+        next if i > 0x7E && i < 0xA1
+        next if i == 0xAD
+        set(i, i.chr)
+      end
+
+      set(0x18, '\u02D8')
+      set(0x19, '\u02C7')
+      set(0x1A, '\u02C6')
+      set(0x1B, '\u02D9')
+      set(0x1C, '\u02DD')
+      set(0x1D, '\u02DB')
+      set(0x1E, '\u02DA')
+      set(0x1F, '\u02DC')
+      set(0x7F, '\uFFFD')
+      set(0x80, '\u2022')
+      set(0x81, '\u2020')
+      set(0x82, '\u2021')
+      set(0x83, '\u2026')
+      set(0x84, '\u2014')
+      set(0x85, '\u2013')
+      set(0x86, '\u0192')
+      set(0x87, '\u2044')
+      set(0x88, '\u2039')
+      set(0x89, '\u203A')
+      set(0x8A, '\u2212')
+      set(0x8B, '\u2030')
+      set(0x8C, '\u201E')
+      set(0x8D, '\u201C')
+      set(0x8E, '\u201D')
+      set(0x8F, '\u2018')
+      set(0x90, '\u2019')
+      set(0x91, '\u201A')
+      set(0x92, '\u2122')
+      set(0x93, '\uFB01')
+      set(0x94, '\uFB02')
+      set(0x95, '\u0141')
+      set(0x96, '\u0152')
+      set(0x97, '\u0160')
+      set(0x98, '\u0178')
+      set(0x99, '\u017D')
+      set(0x9A, '\u0131')
+      set(0x9B, '\u0142')
+      set(0x9C, '\u0153')
+      set(0x9D, '\u0161')
+      set(0x9E, '\u017E')
+      set(0x9F, '\uFFFD')
+      set(0xA0, '\u20AC')
+    end
+
+    init
+
+    def self.to_string(bytes : Bytes) : ::String
+      ::String.build do |str|
+        bytes.each do |byte|
+          str << CODE_TO_UNI[byte]
+        end
+      end
+    end
+
+    def self.get_bytes(text : ::String) : Bytes
+      Bytes.new(text.size) do |i|
+        UNI_TO_CODE.fetch(text[i], 0_u8)
+      end
+    end
+
+    def self.contains_char?(character : Char) : Bool
+      UNI_TO_CODE.has_key?(character)
+    end
   end
 
   # Integer value in PDF document
   class Integer < Base
     include Number
-    @value : Int64
+    LOW              = -100_i64
+    HIGH             =  256_i64
+    OUT_OF_RANGE_MAX = new(Int64::MAX, false)
+    OUT_OF_RANGE_MIN = new(Int64::MIN, false)
+    ZERO             = get(0_i64)
+    ONE              = get(1_i64)
+    TWO              = get(2_i64)
+    THREE            = get(3_i64)
 
-    def initialize(@value : Int64)
+    @@cache = Hash(Int64, Integer).new
+
+    @value : Int64
+    @valid : Bool
+
+    def initialize(@value : Int64, @valid : Bool = true)
+    end
+
+    def self.get(value : Int64) : Integer
+      if value >= LOW && value <= HIGH
+        @@cache[value] ||= new(value)
+      else
+        new(value)
+      end
     end
 
     def value : Int64
@@ -111,11 +316,15 @@ module Pdfbox::Cos
 
     # Check if integer is within valid PDF range (signed 32-bit)
     def valid? : Bool
-      @value >= Int32::MIN.to_i64 && @value <= Int32::MAX.to_i64
+      @valid
     end
 
     # Write this integer in PDF format to the given IO
     def write_pdf(io : ::IO) : Nil
+      io << @value
+    end
+
+    def to_s(io : ::IO) : Nil
       io << @value
     end
 
@@ -148,18 +357,79 @@ module Pdfbox::Cos
 
     # Write this float in PDF format to the given IO
     def write_pdf(io : ::IO) : Nil
-      io << @value
+      io << format_string
+    end
+
+    def to_s(io : ::IO) : Nil
+      io << "COSFloat{" << format_string << "}"
     end
 
     def ==(other : self) : Bool
-      @value == other.@value
+      value_bits == other.@value.unsafe_as(UInt64)
     end
 
     def ==(other) : Bool
       false
     end
 
-    def_hash @value
+    def hash : UInt64
+      value_bits.hash
+    end
+
+    private def value_bits : UInt64
+      @value.unsafe_as(UInt64)
+    end
+
+    private def format_string : ::String
+      text = @value.to_s
+      return text unless text.includes?('e') || text.includes?('E')
+      expand_scientific_notation(text)
+    end
+
+    private def expand_scientific_notation(text : ::String) : ::String
+      sign = ""
+      mantissa_and_exponent = text
+      if mantissa_and_exponent.starts_with?('-')
+        sign = "-"
+        mantissa_and_exponent = mantissa_and_exponent[1..]
+      elsif mantissa_and_exponent.starts_with?('+')
+        mantissa_and_exponent = mantissa_and_exponent[1..]
+      end
+
+      parts = mantissa_and_exponent.split(/e|E/, 2)
+      mantissa = parts[0]
+      exponent = parts[1].to_i
+
+      decimal_point = mantissa.index('.')
+      if decimal_point
+        int_part = mantissa[0...decimal_point]
+        frac_part = mantissa[(decimal_point + 1)..]
+      else
+        int_part = mantissa
+        frac_part = ""
+      end
+      digits = int_part + frac_part
+      decimal_position = int_part.size + exponent
+
+      plain =
+        if decimal_position <= 0
+          "0." + ("0" * -decimal_position) + digits
+        elsif decimal_position >= digits.size
+          digits + ("0" * (decimal_position - digits.size))
+        else
+          digits[0...decimal_position] + "." + digits[decimal_position..]
+        end
+
+      if plain.includes?('.')
+        while plain.ends_with?('0')
+          plain = plain[0...-1]
+        end
+        plain = plain[0...-1] if plain.ends_with?('.')
+      end
+
+      plain = "0" if plain.empty?
+      sign + plain
+    end
   end
 
   # String value in PDF document
@@ -169,16 +439,36 @@ module Pdfbox::Cos
 
     # Creates a new PDF string from a String (text string)
     def initialize(string : ::String, @force_hex_form : Bool = false)
-      @bytes = string.to_slice
+      if string.each_char.all? { |char| PDFDocEncoding.contains_char?(char) }
+        @bytes = PDFDocEncoding.get_bytes(string)
+      else
+        utf16 = string.to_utf16
+        @bytes = Bytes.new(2 + utf16.size * 2)
+        @bytes[0] = 0xFE_u8
+        @bytes[1] = 0xFF_u8
+        utf16.each_with_index do |code_unit, index|
+          @bytes[2 + index * 2] = ((code_unit >> 8) & 0xFF).to_u8
+          @bytes[3 + index * 2] = (code_unit & 0xFF).to_u8
+        end
+      end
     end
 
     # Creates a new PDF string from raw bytes
-    def initialize(@bytes : Bytes, @force_hex_form : Bool = false)
+    def initialize(bytes : Bytes, @force_hex_form : Bool = false)
+      @bytes = bytes.dup
     end
 
-    # Gets the string value (decoded as UTF-8)
+    # Gets the string value as a PDF text string.
     def value : ::String
-      ::String.new(@bytes)
+      if @bytes.size >= 2
+        if @bytes[0] == 0xFE_u8 && @bytes[1] == 0xFF_u8
+          return ::String.new(@bytes[2, @bytes.size - 2], "UTF-16BE")
+        elsif @bytes[0] == 0xFF_u8 && @bytes[1] == 0xFE_u8
+          return ::String.new(@bytes[2, @bytes.size - 2], "UTF-16LE")
+        end
+      end
+
+      PDFDocEncoding.to_string(@bytes)
     end
 
     # Gets the string value as object
@@ -188,7 +478,7 @@ module Pdfbox::Cos
 
     # Gets the raw bytes
     def bytes : Bytes
-      @bytes
+      @bytes.dup
     end
 
     # Whether this string should be written in hex form
@@ -258,13 +548,12 @@ module Pdfbox::Cos
 
     # Write this string in PDF format to the given IO
     def write_pdf(io : ::IO) : Nil
-      Pdfbox::Pdfwriter::PDFIO.write_string(io, ::String.new(@bytes), @force_hex_form)
+      Pdfbox::Pdfwriter::PDFIO.write_string(io, @bytes, @force_hex_form)
     end
 
     # Equality comparison
     def ==(other : self) : Bool
-      return false unless @force_hex_form == other.@force_hex_form
-      @bytes == other.@bytes
+      value == other.value && @force_hex_form == other.@force_hex_form
     end
 
     def ==(other) : Bool
@@ -278,6 +567,13 @@ module Pdfbox::Cos
   # Name object in PDF document (PDF keyword)
   class Name < Base
     @value : ::String
+
+    FILTER            = new("Filter")
+    FLATE_DECODE      = new("FlateDecode")
+    ASCII85_DECODE    = new("ASCII85Decode")
+    RUN_LENGTH_DECODE = new("RunLengthDecode")
+    LZW_DECODE        = new("LZWDecode")
+    LENGTH            = new("Length")
 
     def initialize(@value : ::String)
     end
@@ -310,8 +606,24 @@ module Pdfbox::Cos
   class Array < Base
     @items = [] of Base
 
-    def initialize(items : Enumerable(Base) = [] of Base)
-      @items = items.to_a
+    def initialize(items : Nil)
+      raise ArgumentError.new("items cannot be nil")
+    end
+
+    def initialize(items : Enumerable = [] of Base)
+      @items = items.map { |item| item.as(Base) }.to_a
+    end
+
+    def self.of_cos_names(names : Enumerable(::String)) : self
+      new(names.map { |name| Name.new(name) })
+    end
+
+    def self.of_cos_strings(strings : Enumerable(::String)) : self
+      new(strings.map { |value| String.new(value) })
+    end
+
+    def self.of_cos_integers(values : Enumerable(Int)) : self
+      new(values.map { |value| Integer.get(value.to_i64) })
     end
 
     def items : ::Array(Base)
@@ -327,8 +639,115 @@ module Pdfbox::Cos
       @items[index]
     end
 
+    def []?(index : Int) : Base?
+      @items[index]?
+    end
+
+    def get(index : Int) : Base?
+      self[index]?
+    end
+
     def []=(index : Int, value : Base) : Base
       @items[index] = value
+    end
+
+    def get_string(index : Int, default : ::String? = nil) : ::String?
+      value = self[index]?
+      return default unless value.is_a?(String)
+      value.value
+    end
+
+    def get_name(index : Int, default : ::String? = nil) : ::String?
+      value = self[index]?
+      return default unless value.is_a?(Name)
+      value.value
+    end
+
+    def get_int(index : Int, default : Int64 = 0_i64) : Int64
+      value = self[index]?
+      return default unless value.is_a?(Integer)
+      value.value
+    end
+
+    def set_name(index : Int, value : ::String) : Nil
+      self[index] = Name.new(value)
+    end
+
+    def set_int(index : Int, value : Int) : Nil
+      self[index] = Integer.get(value.to_i64)
+    end
+
+    def set_string(index : Int, value : ::String) : Nil
+      self[index] = String.new(value)
+    end
+
+    def to_cos_name_string_list : ::Array(::String?)
+      @items.map { |item| item.as?(Name).try(&.value) }
+    end
+
+    def to_cos_string_string_list : ::Array(::String?)
+      @items.map { |item| item.as?(String).try(&.value) }
+    end
+
+    def to_cos_number_integer_list : ::Array(Int64?)
+      @items.map { |item| item.as?(Integer).try(&.value) }
+    end
+
+    def float_array=(values : Enumerable(Float32 | Float64 | Int | Int64)) : Nil
+      @items.clear
+      values.each do |value|
+        @items << Float.new(value.to_f64)
+      end
+    end
+
+    def to_cos_number_float_list : ::Array(Float64?)
+      @items.map do |item|
+        case item
+        when Float
+          item.value
+        when Integer
+          item.value.to_f64
+        end
+      end
+    end
+
+    def to_float_array : ::Array(Float64)
+      to_cos_number_float_list.map { |value| value || 0.0_f64 }
+    end
+
+    def to_list : ::Array(Base)
+      @items.dup
+    end
+
+    def index_of(value : Base) : Int32
+      index = @items.index(value)
+      index ? index.to_i32 : -1
+    end
+
+    def clear : Nil
+      @items.clear
+    end
+
+    def remove(index : Int) : Base
+      delete_at(index)
+    end
+
+    def remove_object(value : Base) : Bool
+      !!@items.delete(value)
+    end
+
+    def remove_all(values : Enumerable(Base)) : Nil
+      values.each { |value| @items.delete(value) }
+    end
+
+    def retain_all(values : Enumerable(Base)) : Nil
+      keep = values.to_set
+      @items.select! { |item| keep.includes?(item) }
+    end
+
+    def grow_to_size(size : Int, fill_value : Base = Null.instance) : Nil
+      return if @items.size >= size
+      (size - @items.size).times { @items << fill_value }
     end
 
     def size : Int32
@@ -378,6 +797,14 @@ module Pdfbox::Cos
       @entries[key] = value
     end
 
+    def set_item(key : Name, value : Base) : Base
+      self[key] = value
+    end
+
+    def set_item(key : ::String, value : Base) : Base
+      self[Name.new(key)] = value
+    end
+
     def [](key : Name) : Base?
       @entries[key]?
     end
@@ -386,12 +813,119 @@ module Pdfbox::Cos
       @entries.has_key?(key)
     end
 
+    def contains_key?(key : ::String) : Bool
+      has_key?(Name.new(key))
+    end
+
     def delete(key : Name) : Base?
       @entries.delete(key)
     end
 
+    def remove_item(key : Name) : Base?
+      delete(key)
+    end
+
+    def clear : Nil
+      @entries.clear
+    end
+
+    def add_all(other : Dictionary) : Nil
+      other.entries.each do |key, value|
+        @entries[key] = value
+      end
+    end
+
     def size : Int32
       @entries.size
+    end
+
+    def set_flag(key : Name, bit_flag : Int32, value : Bool) : Nil
+      int_value = self[key].as?(Integer).try(&.value) || 0_i64
+      updated =
+        if value
+          int_value | bit_flag
+        else
+          int_value & ~bit_flag
+        end
+      self[key] = Integer.new(updated)
+    end
+
+    def set_boolean(key : Name, value : Bool) : Nil
+      self[key] = Boolean.get(value)
+    end
+
+    def set_boolean(key : ::String, value : Bool) : Nil
+      set_boolean(Name.new(key), value)
+    end
+
+    def set_name(key : Name, value : ::String) : Nil
+      self[key] = Name.new(value)
+    end
+
+    def set_name(key : ::String, value : ::String) : Nil
+      set_name(Name.new(key), value)
+    end
+
+    def set_date(key : Name, value : Time) : Nil
+      self[key] = String.new(value.to_s("%Y%m%d%H%M%S"))
+    end
+
+    def set_date(key : ::String, value : Time) : Nil
+      set_date(Name.new(key), value)
+    end
+
+    def set_embedded_date(embedded : Name, key : Name, value : Time) : Nil
+      embedded_dict = self[embedded].as?(Dictionary) || Dictionary.new
+      embedded_dict.set_date(key, value)
+      self[embedded] = embedded_dict
+    end
+
+    def set_string(key : Name, value : ::String) : Nil
+      self[key] = String.new(value)
+    end
+
+    def set_string(key : ::String, value : ::String) : Nil
+      set_string(Name.new(key), value)
+    end
+
+    def set_embedded_string(embedded : Name, key : Name, value : ::String) : Nil
+      embedded_dict = self[embedded].as?(Dictionary) || Dictionary.new
+      embedded_dict.set_string(key, value)
+      self[embedded] = embedded_dict
+    end
+
+    def set_int(key : Name, value : Int) : Nil
+      self[key] = Integer.new(value.to_i64)
+    end
+
+    def set_int(key : ::String, value : Int) : Nil
+      set_int(Name.new(key), value)
+    end
+
+    def set_embedded_int(embedded : Name, key : Name, value : Int) : Nil
+      embedded_dict = self[embedded].as?(Dictionary) || Dictionary.new
+      embedded_dict.set_int(key, value)
+      self[embedded] = embedded_dict
+    end
+
+    def set_long(key : Name, value : Int64) : Nil
+      self[key] = Integer.new(value)
+    end
+
+    def set_long(key : ::String, value : Int64) : Nil
+      set_long(Name.new(key), value)
+    end
+
+    def set_float(key : Name, value : Float64) : Nil
+      self[key] = Float.new(value)
+    end
+
+    def set_float(key : ::String, value : Float64) : Nil
+      set_float(Name.new(key), value)
+    end
+
+    def as_unmodifiable_dictionary : Dictionary
+      UnmodifiableDictionary.new(@entries)
     end
 
     # Write this dictionary in PDF format to the given IO
@@ -433,6 +967,31 @@ module Pdfbox::Cos
       @data
     end
 
+    def has_data : Bool
+      !@data.empty?
+    end
+
+    def has_data? : Bool
+      has_data
+    end
+
+    def create_raw_input_stream : ::IO
+      ::IO::Memory.new(@data)
+    end
+
+    def create_input_stream : ::IO
+      raise ::IO::Error.new("COSStream has no data") unless has_data
+      ::IO::Memory.new(decode_filters(@data, self[Name::FILTER]))
+    end
+
+    def create_raw_output_stream : ::IO
+      StreamOutput.new(self, nil, false)
+    end
+
+    def create_output_stream(filters : Base? = nil) : ::IO
+      StreamOutput.new(self, filters, true)
+    end
+
     # Write this stream in PDF format to the given IO
     def write_pdf(io : ::IO) : Nil
       # Write stream dictionary
@@ -451,6 +1010,212 @@ module Pdfbox::Cos
     end
 
     def_hash @data
+
+    def decode_filters(data : Bytes, filters : Base?) : Bytes
+      return data if filters.nil?
+
+      case filters
+      when Name
+        decode_with_filter(data, filters)
+      when Array
+        decoded = data
+        filters.items.each do |item|
+          filter = item.as?(Name) || raise Error.new("Invalid stream filter entry: #{item.inspect}")
+          decoded = decode_with_filter(decoded, filter)
+        end
+        decoded
+      else
+        raise Error.new("Unsupported stream filter type: #{filters.class}")
+      end
+    end
+
+    def encode_filters(data : Bytes, filters : Base?) : Bytes
+      return data if filters.nil?
+
+      case filters
+      when Name
+        encode_with_filter(data, filters)
+      when Array
+        encoded = data
+        filters.items.reverse_each do |item|
+          filter = item.as?(Name) || raise Error.new("Invalid stream filter entry: #{item.inspect}")
+          encoded = encode_with_filter(encoded, filter)
+        end
+        encoded
+      else
+        raise Error.new("Unsupported stream filter type: #{filters.class}")
+      end
+    end
+
+    private def decode_with_filter(data : Bytes, filter : Name) : Bytes
+      case filter.value
+      when "FlateDecode"
+        io = ::IO::Memory.new(data)
+        reader = Compress::Zlib::Reader.new(io)
+        output = ::IO::Memory.new
+        ::IO.copy(reader, output)
+        reader.close
+        output.to_slice
+      when "ASCII85Decode"
+        ascii85_decode(data)
+      else
+        raise UnsupportedOperationError.new("Unsupported stream decode filter: #{filter.value}")
+      end
+    end
+
+    private def encode_with_filter(data : Bytes, filter : Name) : Bytes
+      case filter.value
+      when "FlateDecode"
+        output = ::IO::Memory.new
+        writer = Compress::Zlib::Writer.new(output)
+        writer.write(data)
+        writer.close
+        output.to_slice
+      when "ASCII85Decode"
+        ascii85_encode(data)
+      else
+        raise UnsupportedOperationError.new("Unsupported stream encode filter: #{filter.value}")
+      end
+    end
+
+    private def ascii85_encode(data : Bytes) : Bytes
+      encoded = ::String.build do |io|
+        index = 0
+        while index + 4 <= data.size
+          value = (data[index].to_u32 << 24) |
+                  (data[index + 1].to_u32 << 16) |
+                  (data[index + 2].to_u32 << 8) |
+                  data[index + 3].to_u32
+          if value == 0
+            io << 'z'
+          else
+            chunk = StaticArray(UInt8, 5).new(0_u8)
+            4.downto(0) do |position|
+              chunk[position] = (value % 85 + 33).to_u8
+              value //= 85
+            end
+            5.times { |i| io.write_byte(chunk[i]) }
+          end
+          index += 4
+        end
+
+        remaining = data.size - index
+        if remaining > 0
+          value = 0_u32
+          4.times do |offset|
+            value <<= 8
+            value |= data[index + offset].to_u32 if offset < remaining
+          end
+
+          chunk = StaticArray(UInt8, 5).new(0_u8)
+          4.downto(0) do |position|
+            chunk[position] = (value % 85 + 33).to_u8
+            value //= 85
+          end
+          (remaining + 1).times { |i| io.write_byte(chunk[i]) }
+        end
+
+        io << '~' << '>'
+      end
+      encoded.to_slice
+    end
+
+    private def ascii85_decode(data : Bytes) : Bytes
+      output = [] of UInt8
+      tuple = [] of UInt32
+      index = 0
+
+      while index < data.size
+        char = data[index].chr
+        index += 1
+
+        next if char.whitespace?
+
+        if char == 'z'
+          raise Error.new("Invalid ASCII85 'z' inside tuple") unless tuple.empty?
+          output.concat([0_u8, 0_u8, 0_u8, 0_u8])
+          next
+        end
+
+        break if char == '~'
+
+        unless char >= '!' && char <= 'u'
+          raise Error.new("Invalid ASCII85 character: #{char.inspect}")
+        end
+
+        tuple << (char.ord - 33).to_u32
+        next unless tuple.size == 5
+
+        value = 0_u32
+        tuple.each { |digit| value = value * 85 + digit }
+        output << ((value >> 24) & 0xFF).to_u8
+        output << ((value >> 16) & 0xFF).to_u8
+        output << ((value >> 8) & 0xFF).to_u8
+        output << (value & 0xFF).to_u8
+        tuple.clear
+      end
+
+      unless tuple.empty?
+        tuple_length = tuple.size
+        raise Error.new("Invalid ASCII85 tuple length") if tuple_length == 1
+        while tuple.size < 5
+          tuple << 84_u32
+        end
+        value = 0_u32
+        tuple.each { |digit| value = value * 85 + digit }
+        decoded = StaticArray(UInt8, 4).new(0_u8)
+        decoded[0] = ((value >> 24) & 0xFF).to_u8
+        decoded[1] = ((value >> 16) & 0xFF).to_u8
+        decoded[2] = ((value >> 8) & 0xFF).to_u8
+        decoded[3] = (value & 0xFF).to_u8
+        (tuple_length - 1).times { |i| output << decoded[i] }
+      end
+
+      Bytes.new(output.size) { |i| output[i] }
+    end
+
+    private class StreamOutput < ::IO
+      @buffer : ::IO::Memory
+      @buffer = ::IO::Memory.new
+      @closed = false
+
+      def initialize(@stream : Stream, @filters : Base?, @encode : Bool)
+      end
+
+      def read(slice : Bytes) : Int32
+        raise ::IO::Error.new("Not readable")
+      end
+
+      def write(slice : Bytes) : Nil
+        raise ::IO::Error.new("Closed stream") if @closed
+        @buffer.write(slice)
+      end
+
+      def flush : Nil
+      end
+
+      def close : Nil
+        return if @closed
+        @closed = true
+
+        raw = @buffer.to_slice
+        data = @encode ? @stream.encode_filters(raw, @filters) : raw
+        @stream.data = data
+        @stream.set_int(Name::LENGTH, data.size)
+
+        if @encode
+          if filters = @filters
+            @stream.set_item(Name::FILTER, filters)
+          else
+            @stream.remove_item(Name::FILTER)
+          end
+        end
+      end
+
+      def closed? : Bool
+        @closed
+      end
+    end
   end
 
   # Object reference (indirect object) - corresponds to COSObject in Apache PDFBox
@@ -578,6 +1343,163 @@ module Pdfbox::Cos
       else
         io << "COSObject{unknown}"
       end
+    end
+  end
+
+  # Minimal COSDocument implementation used for COS-level document tests.
+  class Document < Base
+    @xref_table = {} of ObjectKey? => Int64
+    @object_pool = {} of ObjectKey => Object
+
+    def write_pdf(io : ::IO) : Nil
+      io << "%COSDocument"
+    end
+
+    def add_xref_table(values : Hash(ObjectKey?, Int64)) : Nil
+      values.each do |key, value|
+        @xref_table[key] = value
+      end
+    end
+
+    def set_object(key : ObjectKey, object : Object) : Nil
+      @object_pool[key] = object
+    end
+
+    def objects_by_type(type : Name) : ::Array(Object)
+      result = [] of Object
+      @xref_table.each_key do |object_key|
+        next unless object_key
+        object = @object_pool[object_key]?
+        next unless object
+        real_object = object.object
+        next unless real_object.is_a?(Dictionary)
+        dict_type = real_object[Name.new("Type")]
+        result << object if dict_type == type
+      end
+      result
+    end
+
+    def linearized_dictionary : Dictionary?
+      @xref_table.each do |object_key, offset|
+        next unless object_key
+        next unless offset > 0
+        object = @object_pool[object_key]?
+        next unless object
+        real_object = object.object
+        next unless real_object.is_a?(Dictionary)
+        return real_object if real_object[Name.new("Linearized")]
+      end
+      nil
+    end
+  end
+
+  class UnmodifiableDictionary < Dictionary
+    def initialize(entries : ::Hash(Name, Base) = {} of Name => Base)
+      super(entries.dup)
+    end
+
+    def []=(key : Name, value : Base) : Base
+      raise UnsupportedOperationError.new("Unmodifiable dictionary")
+    end
+
+    def clear : Nil
+      raise UnsupportedOperationError.new("Unmodifiable dictionary")
+    end
+
+    def delete(key : Name) : Base?
+      raise UnsupportedOperationError.new("Unmodifiable dictionary")
+    end
+
+    def remove_item(key : Name) : Base?
+      raise UnsupportedOperationError.new("Unmodifiable dictionary")
+    end
+
+    def add_all(other : Dictionary) : Nil
+      raise UnsupportedOperationError.new("Unmodifiable dictionary")
+    end
+
+    def set_flag(key : Name, bit_flag : Int32, value : Bool) : Nil
+      raise UnsupportedOperationError.new("Unmodifiable dictionary")
+    end
+
+    def need_to_be_updated=(flag : Bool) : Nil
+      raise UnsupportedOperationError.new("Unmodifiable dictionary")
+    end
+
+    def set_item(key : Name, value : Base) : Base
+      raise UnsupportedOperationError.new("Unmodifiable dictionary")
+    end
+
+    def set_item(key : ::String, value : Base) : Base
+      raise UnsupportedOperationError.new("Unmodifiable dictionary")
+    end
+
+    def set_boolean(key : Name, value : Bool) : Nil
+      raise UnsupportedOperationError.new("Unmodifiable dictionary")
+    end
+
+    def set_boolean(key : ::String, value : Bool) : Nil
+      raise UnsupportedOperationError.new("Unmodifiable dictionary")
+    end
+
+    def set_name(key : Name, value : ::String) : Nil
+      raise UnsupportedOperationError.new("Unmodifiable dictionary")
+    end
+
+    def set_name(key : ::String, value : ::String) : Nil
+      raise UnsupportedOperationError.new("Unmodifiable dictionary")
+    end
+
+    def set_date(key : Name, value : Time) : Nil
+      raise UnsupportedOperationError.new("Unmodifiable dictionary")
+    end
+
+    def set_date(key : ::String, value : Time) : Nil
+      raise UnsupportedOperationError.new("Unmodifiable dictionary")
+    end
+
+    def set_embedded_date(embedded : Name, key : Name, value : Time) : Nil
+      raise UnsupportedOperationError.new("Unmodifiable dictionary")
+    end
+
+    def set_string(key : Name, value : ::String) : Nil
+      raise UnsupportedOperationError.new("Unmodifiable dictionary")
+    end
+
+    def set_string(key : ::String, value : ::String) : Nil
+      raise UnsupportedOperationError.new("Unmodifiable dictionary")
+    end
+
+    def set_embedded_string(embedded : Name, key : Name, value : ::String) : Nil
+      raise UnsupportedOperationError.new("Unmodifiable dictionary")
+    end
+
+    def set_int(key : Name, value : Int) : Nil
+      raise UnsupportedOperationError.new("Unmodifiable dictionary")
+    end
+
+    def set_int(key : ::String, value : Int) : Nil
+      raise UnsupportedOperationError.new("Unmodifiable dictionary")
+    end
+
+    def set_embedded_int(embedded : Name, key : Name, value : Int) : Nil
+      raise UnsupportedOperationError.new("Unmodifiable dictionary")
+    end
+
+    def set_long(key : Name, value : Int64) : Nil
+      raise UnsupportedOperationError.new("Unmodifiable dictionary")
+    end
+
+    def set_long(key : ::String, value : Int64) : Nil
+      raise UnsupportedOperationError.new("Unmodifiable dictionary")
+    end
+
+    def set_float(key : Name, value : Float64) : Nil
+      raise UnsupportedOperationError.new("Unmodifiable dictionary")
+    end
+
+    def set_float(key : ::String, value : Float64) : Nil
+      raise UnsupportedOperationError.new("Unmodifiable dictionary")
     end
   end
 end

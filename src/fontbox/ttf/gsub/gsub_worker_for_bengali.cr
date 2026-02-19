@@ -39,7 +39,7 @@ module Fontbox::TTF::Gsub
       intermediate_glyphs_from_gsub = original_glyph_ids
 
       FEATURES_IN_ORDER.each do |feature|
-        unless @gsub_data.is_feature_supported(feature)
+        unless @gsub_data.feature_supported?(feature)
           Log.debug { "the feature #{feature} was not found" }
           next
         end
@@ -119,7 +119,7 @@ module Fontbox::TTF::Gsub
     private def before_half_glyph_ids : Array(Int32)
       glyph_ids = BEFORE_HALF_CHARS.map { |char| glyph_id(char) }
 
-      if @gsub_data.is_feature_supported(INIT_FEATURE)
+      if @gsub_data.feature_supported?(INIT_FEATURE)
         feature = @gsub_data.feature(INIT_FEATURE)
         feature.all_glyph_ids_for_substitution.each do |glyph_cluster|
           glyph_ids.concat(feature.replacement_for_glyphs(glyph_cluster))

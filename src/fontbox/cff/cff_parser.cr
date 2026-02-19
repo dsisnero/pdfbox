@@ -17,6 +17,7 @@ require "log"
 require "./cff_font"
 require "./encoding"
 require "./charset"
+require "../../pdfbox/io"
 
 module Fontbox::CFF
   # This class represents a parser for a CFF font.
@@ -91,7 +92,7 @@ module Fontbox::CFF
     end
 
     @string_index : Array(String)?
-    @source : ByteSource?
+    @source : ByteSource = SimpleByteSource.new(Bytes.empty)
 
     # for debugging only
     @debug_font_name : String?
@@ -168,7 +169,7 @@ module Fontbox::CFF
       name_index.each_with_index do |name, i|
         font = parse_font(input, name, top_dict_index[i])
         font.global_subr_index = global_subr_index
-        font.source = @source.not_nil!
+        font.source = @source
         fonts << font
       end
       fonts
@@ -1028,20 +1029,20 @@ module Fontbox::CFF
         @end_mapped_value = @start_mapped_value + n_left
       end
 
-      def is_in_range(value : Int32) : Bool
+      def in_range?(value : Int32) : Bool
         value >= @start_value && value <= @end_value
       end
 
-      def is_in_reverse_range(value : Int32) : Bool
+      def in_reverse_range?(value : Int32) : Bool
         value >= @start_mapped_value && value <= @end_mapped_value
       end
 
       def map_value(value : Int32) : Int32
-        is_in_range(value) ? @start_mapped_value + (value - @start_value) : 0
+        in_range?(value) ? @start_mapped_value + (value - @start_value) : 0
       end
 
       def map_reverse_value(value : Int32) : Int32
-        is_in_reverse_range(value) ? @start_value + (value - @start_mapped_value) : 0
+        in_reverse_range?(value) ? @start_value + (value - @start_mapped_value) : 0
       end
 
       def to_s(io : IO) : Nil
@@ -1068,18 +1069,18 @@ module Fontbox::CFF
       end
 
       def cid_for_gid(gid : Int32) : Int32
-        if is_cid_font?
+        if cid_font?
           @ranges_cid2gid.each do |mapping|
-            return mapping.map_value(gid) if mapping.is_in_range(gid)
+            return mapping.map_value(gid) if mapping.in_range?(gid)
           end
         end
         super
       end
 
       def gid_for_cid(cid : Int32) : Int32
-        if is_cid_font?
+        if cid_font?
           @ranges_cid2gid.each do |mapping|
-            return mapping.map_reverse_value(cid) if mapping.is_in_reverse_range(cid)
+            return mapping.map_reverse_value(cid) if mapping.in_reverse_range?(cid)
           end
         end
         super
@@ -1100,14 +1101,14 @@ module Fontbox::CFF
 
       def cid_for_gid(gid : Int32) : Int32
         @ranges_cid2gid.each do |mapping|
-          return mapping.map_value(gid) if mapping.is_in_range(gid)
+          return mapping.map_value(gid) if mapping.in_range?(gid)
         end
         super
       end
 
       def gid_for_cid(cid : Int32) : Int32
         @ranges_cid2gid.each do |mapping|
-          return mapping.map_reverse_value(cid) if mapping.is_in_reverse_range(cid)
+          return mapping.map_reverse_value(cid) if mapping.in_reverse_range?(cid)
         end
         super
       end

@@ -20,10 +20,10 @@ module Fontbox
       end
 
       def matches(code : Array(UInt8) | Bytes) : Bool
-        is_full_match(code, code.size)
+        full_match?(code, code.size)
       end
 
-      def is_full_match(code : Array(UInt8) | Bytes, code_len : Int32) : Bool
+      def full_match?(code : Array(UInt8) | Bytes, code_len : Int32) : Bool
         return false if @code_length != code_len
 
         (0...@code_length).each do |i|

@@ -77,19 +77,19 @@ module Fontbox::TTF
     end
 
     # Returns the index of the glyph with the given name.
-    # ameba:disable Naming/AccessorMethodName
+
     def glyph_index(name : String) : Int32?
       MAC_GLYPH_NAMES_INDICES[name]?
     end
 
     # Returns the name of the glyph at the given index.
-    # ameba:disable Naming/AccessorMethodName
+
     def glyph_name(index : Int32) : String?
       index >= 0 && index < NUMBER_OF_MAC_GLYPHS ? MAC_GLYPH_NAMES[index] : nil
     end
 
     # Returns a new array with all glyph names.
-    # ameba:disable Naming/AccessorMethodName
+
     def all_names : Array(String)
       MAC_GLYPH_NAMES.dup
     end

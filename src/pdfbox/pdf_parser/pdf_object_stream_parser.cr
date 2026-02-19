@@ -75,7 +75,7 @@ module Pdfbox::Pdfparser
           source.skip(object_offset)
           stream_object = parse_dir_object
           if stream_object
-            stream_object.set_direct(false)
+            stream_object.direct = false
           end
         end
       ensure
@@ -102,17 +102,10 @@ module Pdfbox::Pdfparser
         end
         index = 0
         object_numbers.each do |offset, obj_number|
-          # Try to find key with matching stream index from xref
-          object_key = nil
-          if parser = @parser
-            if xref = parser.xref
-              object_key = xref.find_key(obj_number, index)
-            end
-          end
-          object_key ||= object_key(obj_number, 0_i64)
+          object_key = object_key(obj_number, 0_i64)
           # skip object if the index doesn't match
           if index_needed
-            if object_key.stream_index == -1 || object_key.stream_index != index
+            if object_key.stream_index > -1 && object_key.stream_index != index
               index += 1
               next
             end
@@ -127,7 +120,7 @@ module Pdfbox::Pdfparser
           if stream_object.nil?
             stream_object = Pdfbox::Cos::Null.instance
           else
-            stream_object.set_direct(false)
+            stream_object.direct = false
           end
           all_objects[object_key] = stream_object.as(Pdfbox::Cos::Base)
           index += 1

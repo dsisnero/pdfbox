@@ -48,7 +48,7 @@ describe Fontbox::AFM::FontMetrics do
       fm.underline_position = 70.0_f32
       fm.underline_thickness = 80.0_f32
       fm.italic_angle = 90.0_f32
-      fm.is_fixed_pitch = true
+      fm.fixed_pitch = true
 
       fm.afm_version.should eq(4.3_f32)
       fm.weight.should eq("weight")
@@ -68,7 +68,7 @@ describe Fontbox::AFM::FontMetrics do
       fm.underline_position.should eq(70.0_f32)
       fm.underline_thickness.should eq(80.0_f32)
       fm.italic_angle.should eq(90.0_f32)
-      fm.is_fixed_pitch.should be_true
+      fm.fixed_pitch.should be_true
     end
   end
 

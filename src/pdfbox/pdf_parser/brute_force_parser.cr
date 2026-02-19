@@ -48,7 +48,7 @@ module Pdfbox::Pdfparser
     end
 
     # Brute force search for every object in the pdf.
-    # ameba:disable Metrics/CyclomaticComplexity
+
     private def bf_search_for_objects : Nil
       Log.warn { "BruteForceParser.bf_search_for_objects: START" }
       last_eof_marker = bf_search_for_last_eof_marker
@@ -383,7 +383,7 @@ module Pdfbox::Pdfparser
     end
 
     # Brute force search for all objects streams of a pdf.
-    # ameba:disable Metrics/CyclomaticComplexity
+
     private def bf_search_for_obj_stream_offsets : Hash(Int64, Cos::ObjectKey)
       start_time = Time.instant
       bf_search_obj_streams_offsets = {} of Int64 => Cos::ObjectKey
@@ -851,7 +851,7 @@ module Pdfbox::Pdfparser
     end
 
     # Brute force search for trailer dictionary
-    # ameba:disable Metrics/CyclomaticComplexity
+
     private def bf_search_for_trailer(trailer : Cos::Dictionary) : Bool
       Log.warn { "BruteForceParser.bf_search_for_trailer: START" }
       origin_offset = @source.position

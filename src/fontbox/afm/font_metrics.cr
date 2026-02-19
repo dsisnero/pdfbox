@@ -5,7 +5,7 @@ module Fontbox
         notice, encoding_scheme, mapping_scheme, esc_char, character_set, characters,
         is_base_font, v_vector, is_fixed_v, cap_height, x_height, ascender, descender,
         standard_horizontal_width, standard_vertical_width, underline_position,
-        underline_thickness, italic_angle, char_width, is_fixed_pitch, comments,
+        underline_thickness, italic_angle, char_width, fixed_pitch, comments,
         char_metrics, kern_pairs, kern_pairs0, kern_pairs1, composites, track_kern,
         metric_sets
       property char_metrics_map
@@ -37,7 +37,7 @@ module Fontbox
         @underline_thickness = 0.0_f32
         @italic_angle = 0.0_f32
         @char_width = [] of Float32
-        @is_fixed_pitch = false
+        @fixed_pitch = false
         @comments = [] of String
         @char_metrics = [] of CharMetric
         @char_metrics_map = {} of String => CharMetric

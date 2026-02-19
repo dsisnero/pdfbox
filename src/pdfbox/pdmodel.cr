@@ -2,6 +2,8 @@
 #
 # This module contains the high-level PDF document model classes,
 # corresponding to the pdmodel package in Apache PDFBox.
+require "./pdmodel/encryption"
+
 module Pdfbox::Pdmodel
   # Main PDF document class
   class Document
@@ -10,10 +12,44 @@ module Pdfbox::Pdmodel
     @pages : Array(Page)
     @catalog : DocumentCatalog?
     @trailer : Cos::Dictionary?
+    @encryption : Encryption::PDEncryption?
+    @document_id : Bytes?
+    @current_access_permission : Encryption::AccessPermission?
+    @all_security_to_be_removed : Bool = false
 
     def initialize(@cos_document : Cos::Dictionary? = nil, @version : String = "1.4", @trailer : Cos::Dictionary? = nil)
       @pages = [] of Page
       @catalog = @cos_document ? DocumentCatalog.new(@cos_document.as(Cos::Dictionary), self) : nil
+      @encryption = nil
+      @document_id = nil
+      @current_access_permission = nil
+
+      # Extract encryption dictionary and document ID from trailer
+      if trailer = @trailer
+        # Get /Encrypt dictionary
+        if encrypt_entry = trailer[Cos::Name.new("Encrypt")]
+          # Resolve indirect reference if needed
+          if encrypt_entry.is_a?(Cos::Object)
+            encrypt_entry = encrypt_entry.object
+          end
+          if encrypt_entry.is_a?(Cos::Dictionary)
+            @encryption = Encryption::PDEncryption.new(encrypt_entry)
+          end
+        end
+
+        # Get /ID array (first element is used as document ID)
+        if id_entry = trailer[Cos::Name.new("ID")]
+          if id_entry.is_a?(Cos::Object)
+            id_entry = id_entry.object
+          end
+          if id_entry.is_a?(Cos::Array) && id_entry.size > 0
+            id_first = id_entry[0]
+            if id_first.is_a?(Cos::String)
+              @document_id = id_first.bytes
+            end
+          end
+        end
+      end
     end
 
     # Get PDF version (e.g., "1.4")
@@ -80,8 +116,22 @@ module Pdfbox::Pdmodel
       writer.write
     end
 
+    # Save the document incrementally.
+    # Current Crystal port fallback writes a full document.
+    def save_incremental(io : ::IO) : Nil
+      save(io)
+    end
+
     # Add a page to the document
     def add_page(page : Page) : Page
+      ensure_pages_loaded
+      @pages << page
+      page
+    end
+
+    # Append a page that was already resolved from the page tree during parsing.
+    # This avoids recursive hydration while the parser is constructing the document.
+    def add_parsed_page(page : Page) : Page
       @pages << page
       page
     end
@@ -94,12 +144,17 @@ module Pdfbox::Pdmodel
 
     # Get all pages in the document
     def pages : Array(Page)
+      ensure_pages_loaded
       @pages
     end
 
     # Get the number of pages
     def page_count : Int32
       pages.size
+    end
+
+    def number_of_pages : Int32
+      page_count
     end
 
     # Get the document catalog
@@ -112,19 +167,57 @@ module Pdfbox::Pdmodel
       pages[index]?
     end
 
+    def get_page(index : Int) : Page
+      page(index) || raise IndexError.new
+    end
+
     # Remove a page from the document
     def remove_page(page : Page) : Bool
+      ensure_pages_loaded
       @pages.delete(page)
     end
 
     # Remove a page by index
     def remove_page(index : Int) : Bool
-      !!@pages.delete_at?(index)
+      ensure_pages_loaded
+      return false if index < 0 || index >= @pages.size
+      @pages.delete_at(index)
+      true
     end
 
     # Get the document trailer dictionary
     def trailer : Cos::Dictionary?
       @trailer
+    end
+
+    # Get the encryption dictionary, if present
+    def encryption : Encryption::PDEncryption?
+      @encryption
+    end
+
+    # Get the document ID bytes, required for password validation
+    def document_id : Bytes?
+      @document_id
+    end
+
+    # Attempt to decrypt the document with the given password
+    # Returns true if password is correct and decryption succeeded
+    def decrypt(password : String) : Bool
+      return false unless @encryption && @document_id
+      encryption = @encryption
+      return false unless encryption
+
+      # Get security handler from encryption dictionary
+      security_handler = encryption.security_handler
+      return false unless security_handler
+
+      # Create decryption material
+      material = Encryption::StandardDecryptionMaterial.new(password)
+
+      security_handler.prepare_for_decryption(encryption, @document_id, material)
+      # After successful preparation, security handler should have current access permission
+      @current_access_permission = security_handler.current_access_permission
+      true
     end
 
     # Get document information (metadata)
@@ -146,9 +239,62 @@ module Pdfbox::Pdmodel
       DocumentInformation.new(info_dict)
     end
 
+    # Get current access permissions for encrypted documents
+    def current_access_permission : Encryption::AccessPermission
+      @current_access_permission || Encryption::AccessPermission.new
+    end
+
+    def all_security_to_be_removed=(remove_all_security : Bool) : Bool
+      @all_security_to_be_removed = remove_all_security
+    end
+
+    def all_security_to_be_removed? : Bool
+      @all_security_to_be_removed
+    end
+
+    # Java API compatibility wrapper.
+    # ameba:disable Naming/AccessorMethodName
+    def set_all_security_to_be_removed(_remove_all_security : Bool) : Nil
+      self.all_security_to_be_removed = _remove_all_security
+    end
+
+    # ameba:enable Naming/AccessorMethodName
+
     # Close the document and release resources
     def close : Nil
       # TODO: Implement cleanup
+    end
+
+    private def ensure_pages_loaded : Nil
+      return unless @pages.empty?
+
+      catalog = @catalog
+      return unless catalog
+
+      pages_entry = catalog.cos_object[Cos::Name.new("Pages")]
+      return unless pages_entry
+
+      pages_dict = dereference_dictionary(pages_entry)
+      return unless pages_dict
+
+      kids = pages_dict[Cos::Name.new("Kids")]
+      return unless kids.is_a?(Cos::Array)
+
+      kids.items.each do |kid|
+        page_dict = dereference_dictionary(kid)
+        next unless page_dict
+        @pages << Page.new(page_dict)
+      end
+    end
+
+    private def dereference_dictionary(base : Cos::Base) : Cos::Dictionary?
+      candidate = base
+      if candidate.is_a?(Cos::Object)
+        deref = candidate.object
+        return unless deref
+        candidate = deref
+      end
+      candidate.as?(Cos::Dictionary)
     end
   end
 
@@ -156,19 +302,49 @@ module Pdfbox::Pdmodel
   class Page
     @cos_page : Cos::Dictionary?
 
-    def initialize(@cos_page : Cos::Dictionary? = nil)
-      # TODO: Initialize page structure
+    def initialize(cos_page : Cos::Dictionary? = nil)
+      @cos_page = cos_page || default_page_dictionary
+    end
+
+    def cos_object : Cos::Dictionary?
+      @cos_page
     end
 
     # Get page media box (boundaries)
     def media_box : Rectangle?
-      # TODO: Implement media box retrieval
-      nil
+      cos_page = @cos_page
+      return unless cos_page
+
+      media_box = cos_page[Cos::Name.new("MediaBox")]
+      return unless media_box
+
+      if media_box.is_a?(Cos::Object)
+        media_box = media_box.object
+      end
+
+      return unless media_box.is_a?(Cos::Array)
+      return unless media_box.size == 4
+
+      llx = to_float(media_box[0]?)
+      lly = to_float(media_box[1]?)
+      urx = to_float(media_box[2]?)
+      ury = to_float(media_box[3]?)
+      return unless llx && lly && urx && ury
+
+      Rectangle.new(llx, lly, urx, ury)
     end
 
     # Set page media box
     def media_box=(rect : Rectangle) : Rectangle
-      # TODO: Implement media box setting
+      cos_page = @cos_page || default_page_dictionary
+      @cos_page = cos_page
+
+      cos_page[Cos::Name.new("MediaBox")] = Cos::Array.new([
+        Cos::Float.new(rect.lower_left_x),
+        Cos::Float.new(rect.lower_left_y),
+        Cos::Float.new(rect.upper_right_x),
+        Cos::Float.new(rect.upper_right_y),
+      ])
       rect
     end
 
@@ -216,14 +392,51 @@ module Pdfbox::Pdmodel
 
     # Get page contents stream
     def contents : Cos::Stream?
-      # TODO: Implement contents retrieval
-      nil
+      cos_page = @cos_page
+      return unless cos_page
+
+      contents = cos_page[Cos::Name.new("Contents")]
+      return unless contents
+
+      if contents.is_a?(Cos::Object)
+        contents = contents.object
+      end
+
+      contents.as?(Cos::Stream)
     end
 
     # Set page contents stream
     def contents=(stream : Cos::Stream) : Cos::Stream
-      # TODO: Implement contents setting
+      cos_page = @cos_page || default_page_dictionary
+      @cos_page = cos_page
+      cos_page[Cos::Name.new("Contents")] = stream
       stream
+    end
+
+    def has_contents? : Bool
+      !contents.nil?
+    end
+
+    private def default_page_dictionary : Cos::Dictionary
+      dict = Cos::Dictionary.new
+      dict[Cos::Name.new("Type")] = Cos::Name.new("Page")
+      dict[Cos::Name.new("MediaBox")] = Cos::Array.new([
+        Cos::Float.new(0.0_f64),
+        Cos::Float.new(0.0_f64),
+        Cos::Float.new(612.0_f64),
+        Cos::Float.new(792.0_f64),
+      ])
+      dict
+    end
+
+    private def to_float(base : Cos::Base?) : Float64?
+      return unless base
+      case base
+      when Cos::Integer
+        base.value.to_f64
+      when Cos::Float
+        base.value
+      end
     end
   end
 
@@ -1096,8 +1309,6 @@ module Pdfbox::Pdmodel
         length_value.value.to_i32
       when Cos::Float
         length_value.value.to_i32
-      else
-        nil
       end
     end
 

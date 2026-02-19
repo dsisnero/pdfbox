@@ -38,8 +38,8 @@ module Fontbox::TTF::Gsub
       intermediate_glyphs_from_gsub = reposition_glyphs(intermediate_glyphs_from_gsub)
 
       FEATURES_IN_ORDER.each do |feature|
-        unless @gsub_data.is_feature_supported(feature)
-          if feature == RKRF_FEATURE && @gsub_data.is_feature_supported(VATU_FEATURE)
+        unless @gsub_data.feature_supported?(feature)
+          if feature == RKRF_FEATURE && @gsub_data.feature_supported?(VATU_FEATURE)
             # Create your own rkrf feature from vatu feature
             intermediate_glyphs_from_gsub = apply_rkrf_feature(
               @gsub_data.feature(VATU_FEATURE),

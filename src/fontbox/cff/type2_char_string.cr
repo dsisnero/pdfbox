@@ -288,8 +288,8 @@ module Fontbox::CFF
     end
 
     private def add_command_list(numbers_list : Array(Array(Int32 | Float64)), command : CharStringCommand) : Nil
-      numbers_list.each do |ns|
-        add_command(ns, command)
+      numbers_list.each do |numbers|
+        add_command(numbers, command)
       end
     end
 
