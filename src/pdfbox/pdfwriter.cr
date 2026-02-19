@@ -304,7 +304,9 @@ module Pdfbox::Pdfwriter
     end
 
     def self.write_string(io : ::IO, bytes : Bytes, hex : Bool = false) : Nil
-      if hex
+      is_ascii = !hex && bytes.all? { |byte| byte < 0x80_u8 && byte != 0x0d_u8 && byte != 0x0a_u8 }
+
+      if hex || !is_ascii
         io << '<'
         bytes.each do |byte|
           io << byte.to_s(16).upcase.rjust(2, '0')
@@ -320,16 +322,6 @@ module Pdfbox::Pdfwriter
             io << '\\' << ')'
           when '\\'.ord
             io << '\\' << '\\'
-          when '\n'.ord
-            io << '\\' << 'n'
-          when '\r'.ord
-            io << '\\' << 'r'
-          when '\t'.ord
-            io << '\\' << 't'
-          when '\b'.ord
-            io << '\\' << 'b'
-          when '\f'.ord
-            io << '\\' << 'f'
           else
             io.write_byte(byte)
           end

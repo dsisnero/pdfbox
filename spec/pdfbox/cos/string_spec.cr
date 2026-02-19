@@ -81,6 +81,30 @@ describe Pdfbox::Cos::String do
     String.new(output.to_slice).should eq("<#{forced_hex.to_hex_string}>")
   end
 
+  it "writes ASCII as literal and non-ASCII as hex" do
+    ascii = Pdfbox::Cos::String.new("This is some regular text. It should all be expressible in ASCII")
+    ascii_out = IO::Memory.new
+    ascii.write_pdf(ascii_out)
+    String.new(ascii_out.to_slice).should eq("(This is some regular text. It should all be expressible in ASCII)")
+
+    text8bit = Pdfbox::Cos::String.new("En français où les choses sont accentués. En español, así")
+    text8bit_out = IO::Memory.new
+    text8bit.write_pdf(text8bit_out)
+    String.new(text8bit_out.to_slice).should eq("<#{text8bit.to_hex_string}>")
+
+    high_bits = Pdfbox::Cos::String.new("をクリックしてく")
+    high_bits_out = IO::Memory.new
+    high_bits.write_pdf(high_bits_out)
+    String.new(high_bits_out.to_slice).should eq("<#{high_bits.to_hex_string}>")
+  end
+
+  it "writes strings containing end-of-line bytes as hex" do
+    line_feed = Pdfbox::Cos::String.new("Line1\nLine2\nLine3\n")
+    output = IO::Memory.new
+    line_feed.write_pdf(output)
+    String.new(output.to_slice).should eq("<#{line_feed.to_hex_string}>")
+  end
+
   it "includes force_hex_form in equality and hash comparisons" do
     literal = Pdfbox::Cos::String.new("Test1")
     same_literal = Pdfbox::Cos::String.new("Test1")
