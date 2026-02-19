@@ -2444,7 +2444,7 @@ module Fontbox::TTF
     end
 
     private def read_subtable0_format0(data : TTFDataStream) : Nil
-      pair_data = PairData0Format0.new
+      pair_data = KerningPairs.new
       pair_data.read(data)
       @pairs = pair_data
     end
@@ -2471,7 +2471,8 @@ module Fontbox::TTF
       abstract def kerning(l : Int32, r : Int32) : Int32
     end
 
-    private class PairData0Format0
+    # Compatibility class name used by older call sites/tests.
+    private class KerningPairs
       include PairData
 
       @search_range : Int32 = 0
