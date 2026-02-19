@@ -29,3 +29,6 @@ cff_parser/
 
 # Git worktrees
 .worktrees/
+
+# Crystal compiler cache
+.crystal-cache/

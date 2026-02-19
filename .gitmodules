@@ -1,3 +1,3 @@
-[submodule "apache_pdfbox"]
-	path = apache_pdfbox
+[submodule "pdfbox"]
+	path = vendor/pdfbox
 	url = https://github.com/apache/pdfbox.git
