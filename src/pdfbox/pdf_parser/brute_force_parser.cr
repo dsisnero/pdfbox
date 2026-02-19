@@ -50,7 +50,7 @@ module Pdfbox::Pdfparser
     # Brute force search for every object in the pdf.
 
     private def bf_search_for_objects : Nil
-      Log.warn { "BruteForceParser.bf_search_for_objects: START" }
+      Log.debug { "BruteForceParser.bf_search_for_objects: START" }
       last_eof_marker = bf_search_for_last_eof_marker
       origin_offset = @source.position
 
@@ -59,7 +59,7 @@ module Pdfbox::Pdfparser
       range_size = last_eof_marker - start_offset
       if range_size <= 0
         @source.seek(origin_offset)
-        Log.warn { "BruteForceParser.bf_search_for_objects: empty range" }
+        Log.debug { "BruteForceParser.bf_search_for_objects: empty range" }
         return
       end
 
@@ -89,7 +89,7 @@ module Pdfbox::Pdfparser
           while current_offset < range_size && !@source.eof? && iteration_count < max_iterations
             iteration_count += 1
             if iteration_count % 100_000 == 0
-              Log.warn { "BruteForceParser.bf_search_for_objects: iteration #{iteration_count}, offset #{current_offset}" }
+              Log.debug { "BruteForceParser.bf_search_for_objects: iteration #{iteration_count}, offset #{current_offset}" }
             end
             @source.seek(current_offset)
             next_char = @source.read
@@ -118,7 +118,7 @@ module Pdfbox::Pdfparser
         end
 
         if iteration_count >= max_iterations
-          Log.warn { "BruteForceParser.bf_search_for_objects: hit iteration limit #{max_iterations}" }
+          Log.debug { "BruteForceParser.bf_search_for_objects: hit iteration limit #{max_iterations}" }
         end
 
         if (last_eof_marker < Int64::MAX || end_of_obj_found) && last_obj_offset > 0
@@ -130,7 +130,7 @@ module Pdfbox::Pdfparser
         @source = original_source
       end
 
-      Log.warn { "BruteForceParser.bf_search_for_objects: END, found #{@bf_search_cos_object_key_offsets.size} objects, iterations: #{iteration_count}" }
+      Log.debug { "BruteForceParser.bf_search_for_objects: END, found #{@bf_search_cos_object_key_offsets.size} objects, iterations: #{iteration_count}" }
     end
 
     # Helper methods from BaseParser
@@ -520,7 +520,7 @@ module Pdfbox::Pdfparser
       end
 
       elapsed = Time.instant - start_time
-      Log.warn { "bf_search_for_obj_stream_offsets: scanned #{data_size} bytes, found #{total_matches} pattern matches, parsed #{positions_found} streams in #{elapsed.total_milliseconds.round(2)}ms" }
+      Log.debug { "bf_search_for_obj_stream_offsets: scanned #{data_size} bytes, found #{total_matches} pattern matches, parsed #{positions_found} streams in #{elapsed.total_milliseconds.round(2)}ms" }
       bf_search_obj_streams_offsets
     end
 
@@ -528,7 +528,7 @@ module Pdfbox::Pdfparser
       origin_offset = @source.position
       offsets_map = bf_search_for_obj_stream_offsets
       object_offsets = bf_cos_object_offsets
-      Log.warn { "bf_search_for_obj_streams: offsets_map size=#{offsets_map.size}, object_offsets size=#{object_offsets.size}" }
+      Log.debug { "bf_search_for_obj_streams: offsets_map size=#{offsets_map.size}, object_offsets size=#{object_offsets.size}" }
       original_xref_size = xref_table.size
 
       # collect all stream offsets where the stream object itself was found
@@ -536,11 +536,11 @@ module Pdfbox::Pdfparser
       offsets_map.each do |offset, key|
         obj_stream_offsets << {offset, key}
       end
-      Log.warn { "bf_search_for_obj_streams: valid object streams count: #{obj_stream_offsets.size}" }
+      Log.debug { "bf_search_for_obj_streams: valid object streams count: #{obj_stream_offsets.size}" }
 
       # add all found compressed objects to the brute force search result
       obj_stream_offsets.each_with_index do |(offset, key), i|
-        Log.warn { "bf_search_for_obj_streams: processing stream #{i + 1}/#{obj_stream_offsets.size} at offset #{offset}, key #{key}" }
+        Log.debug { "bf_search_for_obj_streams: processing stream #{i + 1}/#{obj_stream_offsets.size} at offset #{offset}, key #{key}" }
         begin
           # Parse the object stream at offset
           stream = parse_object_stream_at_offset(offset)
@@ -548,7 +548,7 @@ module Pdfbox::Pdfparser
           # stream is a Cos::Stream
           # Get object numbers from stream
           objects = @parser.parse_object_stream(stream)
-          Log.warn { "bf_search_for_obj_streams: extracted #{objects.size} objects from stream" }
+          Log.debug { "bf_search_for_obj_streams: extracted #{objects.size} objects from stream" }
           stm_obj_number = key.number
           # For each object found in stream, add compressed entry
           objects.each do |obj_key, _|
@@ -560,10 +560,10 @@ module Pdfbox::Pdfparser
             xref_table[obj_key] = -stm_obj_number
           end
         rescue ex
-          Log.warn { "Skipped corrupt stream at offset #{offset}: #{ex.message}" }
+          Log.debug { "Skipped corrupt stream at offset #{offset}: #{ex.message}" }
         end
       end
-      Log.warn { "bf_search_for_obj_streams: END, added #{xref_table.size - original_xref_size} compressed entries" }
+      Log.debug { "bf_search_for_obj_streams: END, added #{xref_table.size - original_xref_size} compressed entries" }
       # restore origin offset
       @source.seek(origin_offset)
     end
@@ -579,12 +579,12 @@ module Pdfbox::Pdfparser
 
     # Brute force search for object streams updating XRef directly
     def bf_search_for_obj_streams_xref(xref : XRef) : Nil
-      Log.warn { "BruteForceParser.bf_search_for_obj_streams_xref: START" }
+      Log.debug { "BruteForceParser.bf_search_for_obj_streams_xref: START" }
       # Convert xref to hash, call existing method, then update back
       hash = xref.to_hash
       bf_search_for_obj_streams(hash)
       xref.update_from_hash(hash)
-      Log.warn { "BruteForceParser.bf_search_for_obj_streams_xref: END" }
+      Log.debug { "BruteForceParser.bf_search_for_obj_streams_xref: END" }
     end
 
     private def read_generation_number(offset : Int64) : Int64
@@ -853,7 +853,7 @@ module Pdfbox::Pdfparser
     # Brute force search for trailer dictionary
 
     private def bf_search_for_trailer(trailer : Cos::Dictionary) : Bool
-      Log.warn { "BruteForceParser.bf_search_for_trailer: START" }
+      Log.debug { "BruteForceParser.bf_search_for_trailer: START" }
       origin_offset = @source.position
       @source.seek(MINIMUM_SEARCH_OFFSET)
 
@@ -929,7 +929,7 @@ module Pdfbox::Pdfparser
             end
 
             @source.seek(origin_offset)
-            Log.warn { "BruteForceParser.bf_search_for_trailer: FOUND valid trailer" }
+            Log.debug { "BruteForceParser.bf_search_for_trailer: FOUND valid trailer" }
             return true
           end
         rescue ex
@@ -942,13 +942,13 @@ module Pdfbox::Pdfparser
       end
 
       @source.seek(origin_offset)
-      Log.warn { "BruteForceParser.bf_search_for_trailer: NOT FOUND" }
+      Log.debug { "BruteForceParser.bf_search_for_trailer: NOT FOUND" }
       false
     end
 
     # Search for the different parts of the trailer dictionary
     private def search_for_trailer_items(trailer : Cos::Dictionary) : Bool
-      Log.warn { "BruteForceParser.search_for_trailer_items: START" }
+      Log.debug { "BruteForceParser.search_for_trailer_items: START" }
       root_object : Cos::Object? = nil
       info_object : Cos::Object? = nil
 
@@ -978,35 +978,35 @@ module Pdfbox::Pdfparser
       if root_object
         trailer[Cos::Name.new("Root")] = root_object
         found_root = true
-        Log.warn { "BruteForceParser.search_for_trailer_items: found Root" }
+        Log.debug { "BruteForceParser.search_for_trailer_items: found Root" }
       end
 
       if info_object
         trailer[Cos::Name.new("Info")] = info_object
-        Log.warn { "BruteForceParser.search_for_trailer_items: found Info" }
+        Log.debug { "BruteForceParser.search_for_trailer_items: found Info" }
       end
 
-      Log.warn { "BruteForceParser.search_for_trailer_items: END, root_found=#{found_root}" }
+      Log.debug { "BruteForceParser.search_for_trailer_items: END, root_found=#{found_root}" }
       found_root
     end
 
     # Public method to find trailer using brute force
     def bf_find_trailer(trailer : Cos::Dictionary) : Bool
-      Log.warn { "BruteForceParser.bf_find_trailer: START" }
+      Log.debug { "BruteForceParser.bf_find_trailer: START" }
 
       # First try direct trailer search
       if bf_search_for_trailer(trailer)
-        Log.warn { "BruteForceParser.bf_find_trailer: found via direct search" }
+        Log.debug { "BruteForceParser.bf_find_trailer: found via direct search" }
         return true
       end
 
       # Fall back to searching individual items
       if search_for_trailer_items(trailer)
-        Log.warn { "BruteForceParser.bf_find_trailer: found via item search" }
+        Log.debug { "BruteForceParser.bf_find_trailer: found via item search" }
         return true
       end
 
-      Log.warn { "BruteForceParser.bf_find_trailer: NOT FOUND" }
+      Log.debug { "BruteForceParser.bf_find_trailer: NOT FOUND" }
       false
     end
 
@@ -1021,7 +1021,7 @@ module Pdfbox::Pdfparser
 
     # Rebuild trailer using brute force search (similar to Java rebuildTrailer)
     def rebuild_trailer(xref : XRef) : Cos::Dictionary?
-      Log.warn { "BruteForceParser.rebuild_trailer: START" }
+      Log.debug { "BruteForceParser.rebuild_trailer: START" }
 
       # Get brute force offsets and populate xref
       bf_offsets = bf_cos_object_offsets
@@ -1037,10 +1037,10 @@ module Pdfbox::Pdfparser
 
       # Try to find trailer entries
       if bf_find_trailer(trailer)
-        Log.warn { "BruteForceParser.rebuild_trailer: found trailer" }
+        Log.debug { "BruteForceParser.rebuild_trailer: found trailer" }
         trailer
       else
-        Log.warn { "BruteForceParser.rebuild_trailer: could not find trailer" }
+        Log.debug { "BruteForceParser.rebuild_trailer: could not find trailer" }
         nil
       end
     end

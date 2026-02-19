@@ -230,7 +230,7 @@ module Pdfbox::Pdfparser
       if next_str.starts_with?("trailer")
         Log.warn { "skipping empty xref table" }
         elapsed = Time.instant - start_time
-        Log.warn { "parse_xref: parsed #{xref.size} entries in #{elapsed.total_milliseconds.round(2)}ms" }
+        Log.debug { "parse_xref: parsed #{xref.size} entries in #{elapsed.total_milliseconds.round(2)}ms" }
         return xref
       end
 
@@ -316,7 +316,7 @@ module Pdfbox::Pdfparser
       end
 
       elapsed = Time.instant - start_time
-      Log.warn { "parse_xref: parsed #{xref.size} entries in #{elapsed.total_milliseconds.round(2)}ms" }
+      Log.debug { "parse_xref: parsed #{xref.size} entries in #{elapsed.total_milliseconds.round(2)}ms" }
       xref
     end
 
@@ -576,7 +576,7 @@ module Pdfbox::Pdfparser
       # Check if already dereferenced
       if cos_object && (obj = cos_object.object)
         elapsed = Time.instant - start_time
-        Log.warn { "parse_indirect_object_at_offset: cached object #{obj.inspect} took #{elapsed.total_milliseconds.round(2)}ms" }
+        Log.debug { "parse_indirect_object_at_offset: cached object #{obj.inspect} took #{elapsed.total_milliseconds.round(2)}ms" }
         return obj
       end
 
@@ -603,7 +603,7 @@ module Pdfbox::Pdfparser
       end
 
       elapsed = Time.instant - start_time
-      Log.warn { "parse_indirect_object_at_offset: parsed object #{object.inspect} took #{elapsed.total_milliseconds.round(2)}ms" }
+      Log.debug { "parse_indirect_object_at_offset: parsed object #{object.inspect} took #{elapsed.total_milliseconds.round(2)}ms" }
       object
     end
 
@@ -698,7 +698,7 @@ module Pdfbox::Pdfparser
           end
 
           if xref_entry = xref[obj_num]
-            Log.warn { "resolve_object: obj #{obj_num}, type=#{xref_entry.type}, compressed?=#{xref_entry.compressed?}, offset=#{xref_entry.offset}, generation=#{xref_entry.generation}" }
+            Log.debug { "resolve_object: obj #{obj_num}, type=#{xref_entry.type}, compressed?=#{xref_entry.compressed?}, offset=#{xref_entry.offset}, generation=#{xref_entry.generation}" }
             if xref_entry.compressed?
               # Object is compressed in an object stream
               # offset is negative object stream number, generation is 0, index is stored in key.stream_index
@@ -750,7 +750,7 @@ module Pdfbox::Pdfparser
 
     # Parse an object from an object stream (similar to Apache PDFBox parseObjectStreamObject)
     private def parse_object_from_stream(obj_stream_number : Int64, key : Cos::ObjectKey, index_in_stream : Int64, xref : XRef) : Cos::Base
-      Log.warn { "parse_object_from_stream: parsing object #{key.number} from stream #{obj_stream_number} at index #{index_in_stream}" }
+      Log.debug { "parse_object_from_stream: parsing object #{key.number} from stream #{obj_stream_number} at index #{index_in_stream}" }
       start_time = Time.instant
 
       # Get or create cache for this object stream
@@ -761,22 +761,15 @@ module Pdfbox::Pdfparser
       if cached_object
         Log.debug { "parse_object_from_stream: found object #{key.number} in cache" }
         elapsed = Time.instant - start_time
-        Log.warn { "parse_object_from_stream: cached object #{key.number} took #{elapsed.total_milliseconds.round(2)}ms" }
+        Log.debug { "parse_object_from_stream: cached object #{key.number} took #{elapsed.total_milliseconds.round(2)}ms" }
         return cached_object
       end
 
       # Object not in cache, need to parse the object stream
-      puts "parse_object_from_stream: looking up object stream #{obj_stream_number} in xref (size #{xref.size})"
-      xref.each_entry do |obj_num, entry|
-        if obj_num == obj_stream_number
-          puts "  found entry: offset #{entry.offset}, generation #{entry.generation}, type #{entry.type}"
-        end
-      end
       obj_stream_xref_entry = xref[obj_stream_number]
       unless obj_stream_xref_entry
         raise SyntaxError.new("Object stream #{obj_stream_number} not found in xref")
       end
-      puts "parse_object_from_stream: obj_stream_xref_entry offset=#{obj_stream_xref_entry.offset}, generation=#{obj_stream_xref_entry.generation}, type=#{obj_stream_xref_entry.type}"
 
       unless obj_stream_xref_entry.in_use?
         raise SyntaxError.new("Object stream #{obj_stream_number} is not an in-use entry")
@@ -821,7 +814,7 @@ module Pdfbox::Pdfparser
 
       Log.debug { "parse_object_from_stream: cached #{all_objects.size} remaining objects" }
       elapsed = Time.instant - start_time
-      Log.warn { "parse_object_from_stream: parsed object #{key.number} from stream #{obj_stream_number} took #{elapsed.total_milliseconds.round(2)}ms" }
+      Log.debug { "parse_object_from_stream: parsed object #{key.number} from stream #{obj_stream_number} took #{elapsed.total_milliseconds.round(2)}ms" }
       requested_object
     end
 
@@ -910,7 +903,7 @@ module Pdfbox::Pdfparser
         end
       end
       elapsed = Time.instant - start_time
-      Log.warn { "decompress_flate: took #{elapsed.total_milliseconds.round(2)}ms, input #{data.size} -> #{result.size}" }
+      Log.debug { "decompress_flate: took #{elapsed.total_milliseconds.round(2)}ms, input #{data.size} -> #{result.size}" }
       result
     end
 
@@ -951,7 +944,7 @@ module Pdfbox::Pdfparser
       end
 
       elapsed = Time.instant - start_time
-      Log.warn { "decode_stream_data: took #{elapsed.total_milliseconds.round(2)}ms, size #{data.size}" }
+      Log.debug { "decode_stream_data: took #{elapsed.total_milliseconds.round(2)}ms, size #{data.size}" }
       data
     end
 
@@ -1019,7 +1012,7 @@ module Pdfbox::Pdfparser
         # Optimized UP filter implementation
         output = apply_png_predictor_up_fast(input, columns)
         elapsed = Time.instant - start_time
-        Log.warn { "apply_png_predictor: optimized UP filter, rows=#{input.size // (columns + 1)}, columns=#{columns}, took #{elapsed.total_milliseconds.round(2)}ms" }
+        Log.debug { "apply_png_predictor: optimized UP filter, rows=#{input.size // (columns + 1)}, columns=#{columns}, took #{elapsed.total_milliseconds.round(2)}ms" }
         return output
       end
 
@@ -1027,7 +1020,7 @@ module Pdfbox::Pdfparser
       row_length = columns + 1
       return input if input.size % row_length != 0
       row_count = input.size // row_length
-      Log.warn { "apply_png_predictor: rows=#{row_count}, columns=#{columns}, predictor=#{predictor}" }
+      Log.debug { "apply_png_predictor: rows=#{row_count}, columns=#{columns}, predictor=#{predictor}" }
       output_size = row_count.to_i64 * columns
       raise RuntimeError.new("PNG predictor output size overflow") if output_size > Int32::MAX || output_size < 0
       output = Bytes.new(output_size.to_i32)
@@ -1053,7 +1046,7 @@ module Pdfbox::Pdfparser
         end
       end
       elapsed = Time.instant - start_time
-      Log.warn { "apply_png_predictor: took #{elapsed.total_milliseconds.round(2)}ms" }
+      Log.debug { "apply_png_predictor: took #{elapsed.total_milliseconds.round(2)}ms" }
       output
     end
 
@@ -1235,7 +1228,7 @@ module Pdfbox::Pdfparser
 
         if total_objects > 100 && index % 1000 == 0
           obj_elapsed = Time.instant - obj_start_time
-          Log.warn { "parse_objects_from_sorted_offsets: parsed object #{index + 1}/#{total_objects} (#{obj_num}) at offset #{offset} took #{obj_elapsed.total_milliseconds.round(2)}ms" }
+          Log.debug { "parse_objects_from_sorted_offsets: parsed object #{index + 1}/#{total_objects} (#{obj_num}) at offset #{offset} took #{obj_elapsed.total_milliseconds.round(2)}ms" }
         end
 
         Log.debug { "parse_objects_from_sorted_offsets: parsed object #{obj_num} at offset #{offset}, key=#{key}" }
@@ -1243,13 +1236,13 @@ module Pdfbox::Pdfparser
       end
 
       elapsed = Time.instant - start_time
-      Log.warn { "parse_objects_from_sorted_offsets: parsed #{total_objects} objects took #{elapsed.total_milliseconds.round(2)}ms" }
+      Log.debug { "parse_objects_from_sorted_offsets: parsed #{total_objects} objects took #{elapsed.total_milliseconds.round(2)}ms" }
       all_objects
     end
 
     # Parse all objects from object stream and return map of object keys to objects
     private def parse_all_objects_from_stream(obj_stream : Cos::Stream) : Hash(Cos::ObjectKey, Cos::Base)
-      Log.warn { "parse_all_objects_from_stream: START parsing all objects from stream" }
+      Log.debug { "parse_all_objects_from_stream: START parsing all objects from stream" }
       Log.debug { "parse_all_objects_from_stream: stream class: #{obj_stream.class}" }
       start_time = Time.instant
 
@@ -1265,7 +1258,7 @@ module Pdfbox::Pdfparser
 
       Log.debug { "parse_all_objects_from_stream: successfully parsed #{all_objects.size} objects" }
       elapsed = Time.instant - start_time
-      Log.warn { "parse_all_objects_from_stream: parsed #{all_objects.size} objects took #{elapsed.total_milliseconds.round(2)}ms" }
+      Log.debug { "parse_all_objects_from_stream: parsed #{all_objects.size} objects took #{elapsed.total_milliseconds.round(2)}ms" }
       all_objects
     end
 
@@ -1575,12 +1568,12 @@ module Pdfbox::Pdfparser
 
     # Rebuild trailer using brute force when startxref missing or trailer incomplete
     private def rebuild_trailer_with_brute_force : Tuple(XRef, Cos::Dictionary?)?
-      Log.warn { "Parser.rebuild_trailer_with_brute_force: START" }
+      Log.debug { "Parser.rebuild_trailer_with_brute_force: START" }
       xref = XRef.new
       @xref = xref
       trailer = brute_force_parser.rebuild_trailer(xref)
       if trailer
-        Log.warn { "Parser.rebuild_trailer_with_brute_force: SUCCESS, xref entries: #{xref.size}" }
+        Log.debug { "Parser.rebuild_trailer_with_brute_force: SUCCESS, xref entries: #{xref.size}" }
         {xref, trailer}
       else
         Log.error { "Parser.rebuild_trailer_with_brute_force: FAILED" }
@@ -1651,18 +1644,18 @@ module Pdfbox::Pdfparser
 
                        # Brute-force search for object streams in lenient mode
                        if @lenient
-                         Log.warn { "Parser lenient mode enabled, performing brute-force search for object streams" }
+                         Log.debug { "Parser lenient mode enabled, performing brute-force search for object streams" }
                          brute_force_parser.bf_search_for_obj_streams_xref(xref)
-                         Log.warn { "After brute-force search, xref entries: #{xref.size}" }
+                         Log.debug { "After brute-force search, xref entries: #{xref.size}" }
 
                          # If trailer missing Root, try brute force to find it
                          if trailer.nil? || !trailer.has_key?(Pdfbox::Cos::Name.new("Root"))
-                           Log.warn { "Trailer missing Root, attempting brute-force trailer search" }
+                           Log.debug { "Trailer missing Root, attempting brute-force trailer search" }
                            if brute_force_parser.bf_find_trailer(trailer ||= Pdfbox::Cos::Dictionary.new)
-                             Log.warn { "Brute-force trailer search succeeded" }
+                             Log.debug { "Brute-force trailer search succeeded" }
                              @trailer = trailer
                            else
-                             Log.warn { "Brute-force trailer search failed" }
+                             Log.debug { "Brute-force trailer search failed" }
                            end
                          end
                        end

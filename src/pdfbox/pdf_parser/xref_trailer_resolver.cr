@@ -147,11 +147,6 @@ module Pdfbox::Pdfparser
     #
     # @param startxref_byte_pos_value starting position of the first XRef
     def startxref=(startxref_byte_pos_value : Int64) : Nil
-      puts "XrefTrailerResolver.startxref= called with #{startxref_byte_pos_value}"
-      puts "  byte_pos_to_xref_map size = #{@byte_pos_to_xref_map.size}"
-      @byte_pos_to_xref_map.each do |pos, obj|
-        puts "    pos #{pos}: xref_table size #{obj.xref_table.size}, trailer #{obj.trailer ? "present" : "nil"}"
-      end
       if @resolved_xref_trailer
         Log.warn { "Method must be called only ones with last startxref value." }
         return
@@ -166,7 +161,6 @@ module Pdfbox::Pdfparser
 
       if cur_obj.nil?
         # no XRef at given position
-        puts "  No XRef object at position #{startxref_byte_pos_value}"
         Log.warn { "Did not found XRef object at specified startxref position #{startxref_byte_pos_value}" }
 
         # use all objects in byte position order (last entries overwrite previous ones)
@@ -200,11 +194,9 @@ module Pdfbox::Pdfparser
         xref_seq_byte_pos.reverse!
       end
 
-      puts "  xref_seq_byte_pos = #{xref_seq_byte_pos}"
       # merge used and sorted XRef/trailer
       xref_seq_byte_pos.each do |b_pos|
         cur_obj = @byte_pos_to_xref_map[b_pos]
-        puts "  merging xref object at pos #{b_pos}: xref_table size #{cur_obj.xref_table.size}"
         if trailer = cur_obj.trailer
           resolved_trailer = resolved.trailer.as(Cos::Dictionary)
           trailer.entries.each do |key, value|
@@ -213,12 +205,8 @@ module Pdfbox::Pdfparser
         end
         cur_obj.xref_table.each do |key, offset|
           resolved.xref_table[key] = offset
-          if key.number == 141
-            puts "    merged object 141: offset #{offset}, generation #{key.generation}, stream_index #{key.stream_index}"
-          end
         end
       end
-      puts "  resolved xref_table size = #{resolved.xref_table.size}"
     end
 
     # Gets the resolved trailer. Might return nil in case
@@ -230,20 +218,7 @@ module Pdfbox::Pdfparser
     # Gets the resolved xref table. Might return nil in case
     # #set_startxref was not called before.
     def xref_table : Hash(Cos::ObjectKey, Int64)?
-      table = @resolved_xref_trailer.try &.xref_table
-      if table && !table.empty?
-        compressed = table.count { |_key, offset| offset < 0 }
-        puts "XrefTrailerResolver.xref_table: size=#{table.size}, compressed=#{compressed}"
-        # Debug object 141
-        table.each do |key, offset|
-          if key.number == 141
-            puts "XrefTrailerResolver.xref_table: object 141: offset #{offset}, generation #{key.generation}, stream_index #{key.stream_index}"
-          end
-        end
-      else
-        puts "XrefTrailerResolver.xref_table: table is #{table ? "empty" : "nil"}"
-      end
-      table
+      @resolved_xref_trailer.try &.xref_table
     end
 
     # Returns object numbers which are referenced as contained
