@@ -175,7 +175,7 @@ module Pdfbox::Cos
   module Number
     def self.get(number : ::String) : Integer | Float
       return parse_single_char(number) if number.size == 1
-      return Float.new(number.to_f64) if number.includes?('.') || number.includes?('e')
+      return parse_float(number) if number.includes?('.') || number.includes?('e') || number.includes?('E')
       parse_integer_or_out_of_range(number)
     end
 
@@ -192,6 +192,39 @@ module Pdfbox::Cos
       number_string = (number.starts_with?('+') || number.starts_with?('-')) ? number[1..] : number
       raise Error.new("Not a number: #{number}") unless /\A\d*\z/.matches?(number_string)
       number.starts_with?('-') ? Integer::OUT_OF_RANGE_MIN : Integer::OUT_OF_RANGE_MAX
+    end
+
+    # Java COSFloat(String) parity:
+    # - accepts certain malformed values by normalizing misplaced negatives
+    # - clamps infinities to Float::MAX
+    # - coerces subnormal values to 0
+    private def self.parse_float(number : ::String) : Float
+      parsed = try_parse_float64(number)
+      return Float.new(coerce_float64(parsed)) if parsed
+
+      normalized = normalize_malformed_float(number) || raise Error.new("Not a number: #{number}")
+      reparsed = try_parse_float64(normalized) || raise Error.new("Not a number: #{number}")
+      Float.new(coerce_float64(reparsed))
+    end
+
+    private def self.try_parse_float64(text : ::String) : Float64?
+      text.to_f64
+    rescue ArgumentError
+      nil
+    end
+
+    private def self.normalize_malformed_float(text : ::String) : ::String?
+      return text[1..] if text.starts_with?("--")
+      return "-" + text.sub("-", "") if /^0\.0*-\d+$/.matches?(text)
+      return "-" + text.gsub("-", "") if /^-\d+\.-\d+$/.matches?(text)
+      nil
+    end
+
+    private def self.coerce_float64(value : Float64) : Float64
+      return Float32::MAX.to_f64 if value > Float32::MAX
+      return -Float32::MAX.to_f64 if value < -Float32::MAX
+      return 0_f64 if value.abs < Float32::MIN_POSITIVE
+      value
     end
   end
 

@@ -75,4 +75,9 @@ describe Pdfbox::Cos::ObjectKey do
       Pdfbox::Cos::ObjectKey.new(100_i64, 0_i64).hash.should_not eq(Pdfbox::Cos::ObjectKey.new(99_i64, 1_i64).hash)
     end
   end
+
+  pending "preserves rendering across split documents (PDFBOX-5742)" do
+    # Java TestCOSObjectKey#testPDFBox5742 depends on Splitter + PDFRenderer + image diff helpers.
+    # This remains blocked until split/render parity is implemented in Crystal.
+  end
 end
