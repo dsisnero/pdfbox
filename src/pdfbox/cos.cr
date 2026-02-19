@@ -62,8 +62,8 @@ module Pdfbox::Cos
     end
 
     # Set the state true, if the dictionary should be written as a direct object and not indirect.
-    # ameba:disable Naming/AccessorMethodName
-    def set_direct(direct : Bool) : Nil
+
+    def direct=(direct : Bool) : Bool
       @direct = direct
     end
 
@@ -138,6 +138,23 @@ module Pdfbox::Cos
 
     # Write this boolean in PDF format to the given IO
     def write_pdf(io : ::IO) : Nil
+      io << (@value ? "true" : "false")
+    end
+
+    def ==(other : self) : Bool
+      same?(other)
+    end
+
+    def ==(other) : Bool
+      false
+    end
+
+    # Match java.lang.Boolean hash constants used by Apache PDFBox.
+    def hash : Int32
+      @value ? 1231 : 1237
+    end
+
+    def to_s(io : ::IO) : Nil
       io << (@value ? "true" : "false")
     end
   end
