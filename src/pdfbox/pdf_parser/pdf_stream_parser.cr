@@ -93,7 +93,8 @@ module Pdfbox::Pdfparser
           Pdfbox::ContentStream::Operator.get_operator(next_str)
         end
       when '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-', '+', '.'
-        # Number parsing similar to Apache PDFBox
+        # Java PDFStreamParser parses raw numbers here (not object references).
+        # Content streams treat "12 0 R" as [12, 0, Operator("R")].
         parse_cos_number
       when 'B'
         parse_begin_inline_image

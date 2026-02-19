@@ -43,6 +43,32 @@ module Pdfbox::Pdfparser
   end
 
   describe PDFStreamParser do
+    describe "number/reference tokenization parity" do
+      it "parses object-reference-like sequences as numbers plus operator" do
+        # Java source of truth:
+        # vendor/pdfbox/pdfbox/src/main/java/org/apache/pdfbox/pdfparser/PDFStreamParser.java
+        # parseNextToken() numeric branch always returns COSNumber; it does not parse references.
+        tokens = PDFStreamParserSpecHelpers.parse_token_string("12 0 R")
+        tokens.size.should eq(3)
+
+        tokens[0].should be_a(Pdfbox::Cos::Integer)
+        tokens[0].as(Pdfbox::Cos::Integer).value.should eq(12)
+        tokens[1].should be_a(Pdfbox::Cos::Integer)
+        tokens[1].as(Pdfbox::Cos::Integer).value.should eq(0)
+        tokens[2].should be_a(Pdfbox::ContentStream::Operator)
+        tokens[2].as(Pdfbox::ContentStream::Operator).name.should eq("R")
+      end
+
+      it "keeps numbers before drawing operators as standalone numeric operands" do
+        tokens = PDFStreamParserSpecHelpers.parse_token_string("100 200 m")
+        tokens.size.should eq(3)
+        tokens[0].should be_a(Pdfbox::Cos::Integer)
+        tokens[1].should be_a(Pdfbox::Cos::Integer)
+        tokens[2].should be_a(Pdfbox::ContentStream::Operator)
+        tokens[2].as(Pdfbox::ContentStream::Operator).name.should eq("m")
+      end
+    end
+
     describe "inline images" do
       it "parses ID with Q operator" do
         PDFStreamParserSpecHelpers.test_inline_image_2ops("ID\n12345EI Q", "12345", "Q")
