@@ -16,7 +16,6 @@
 require "./gsub/glyph_substitution_data_extractor"
 require "../../pdfbox/io"
 
-# ameba:disable Naming/AccessorMethodName
 module Fontbox::TTF
   # Header table.
   #
@@ -528,8 +527,14 @@ module Fontbox::TTF
     end
 
     # Gets the is fixed pitch flag.
+    # ameba:disable Naming/PredicateName
     def is_fixed_pitch : UInt64
       @is_fixed_pitch
+    end
+
+    # Compatibility predicate used by older call sites/specs.
+    def fixed_pitch? : UInt64
+      is_fixed_pitch
     end
 
     # Gets the minimum memory type 42.
@@ -953,16 +958,16 @@ module Fontbox::TTF
     def init_subtable(cmap : CmapTable, num_glyphs : Int32, data : TTFDataStream) : Nil
       data.seek(cmap.offset + @sub_table_offset)
       subtable_format = data.read_unsigned_short
-      length : UInt64
-      version : UInt64
+      length : UInt64  # ameba:disable Lint/UselessAssign
+      version : UInt64 # ameba:disable Lint/UselessAssign
       if subtable_format < 8
-        length = data.read_unsigned_short.to_u64
-        version = data.read_unsigned_short.to_u64
+        length = data.read_unsigned_short.to_u64  # ameba:disable Lint/UselessAssign
+        version = data.read_unsigned_short.to_u64 # ameba:disable Lint/UselessAssign
       else
         # read an other UnsignedShort to read a Fixed32
         data.read_unsigned_short
-        length = data.read_unsigned_int
-        version = data.read_unsigned_int
+        length = data.read_unsigned_int  # ameba:disable Lint/UselessAssign
+        version = data.read_unsigned_int # ameba:disable Lint/UselessAssign
       end
 
       case subtable_format
@@ -1122,11 +1127,11 @@ module Fontbox::TTF
     private def process_subtype4(data : TTFDataStream, num_glyphs : Int32) : Nil
       seg_count_x2 = data.read_unsigned_short.to_i32
       seg_count = seg_count_x2 // 2
-      search_range = data.read_unsigned_short.to_i32
-      entry_selector = data.read_unsigned_short.to_i32
-      range_shift = data.read_unsigned_short.to_i32
+      search_range = data.read_unsigned_short.to_i32   # ameba:disable Lint/UselessAssign
+      entry_selector = data.read_unsigned_short.to_i32 # ameba:disable Lint/UselessAssign
+      range_shift = data.read_unsigned_short.to_i32    # ameba:disable Lint/UselessAssign
       end_count = data.read_unsigned_short_array(seg_count)
-      reserved_pad = data.read_unsigned_short.to_i32
+      reserved_pad = data.read_unsigned_short.to_i32 # ameba:disable Lint/UselessAssign
       start_count = data.read_unsigned_short_array(seg_count)
       id_delta = data.read_unsigned_short_array(seg_count)
       id_range_offset_position = data.current_position
@@ -1418,7 +1423,7 @@ module Fontbox::TTF
 
     # This will read the required data from the stream.
     def read(ttf : TrueTypeFont, data : TTFDataStream) : Nil
-      version = data.read_unsigned_short.to_i32
+      version = data.read_unsigned_short.to_i32 # ameba:disable Lint/UselessAssign
       number_of_tables = data.read_unsigned_short.to_i32
       @cmaps = Array(CmapSubtable).new(number_of_tables)
       number_of_tables.times do
@@ -1514,14 +1519,14 @@ module Fontbox::TTF
     def glyph(gid : Int32, level : Int32) : GlyphData?
       return if gid < 0 || gid >= @num_glyphs
 
-      if @glyphs && (cached_glyph = @glyphs.not_nil![gid]?)
+      if @glyphs && (cached_glyph = @glyphs.not_nil![gid]?) # ameba:disable Lint/NotNil
         return cached_glyph
       end
 
       with_data_lock do
-        offsets = @loca.not_nil!.offsets
+        offsets = @loca.not_nil!.offsets # ameba:disable Lint/NotNil
         glyph : GlyphData
-        data_stream = @data_stream.not_nil!
+        data_stream = @data_stream.not_nil! # ameba:disable Lint/NotNil
 
         if offsets[gid] == offsets[gid + 1] || offsets[gid] == data_stream.original_data_size
           # No outline. Return an empty glyph, not nil; composite glyphs may reference it.
@@ -1537,8 +1542,8 @@ module Fontbox::TTF
           end
         end
 
-        if @glyphs && @glyphs.not_nil![gid]?.nil? && @cached < MAX_CACHED_GLYPHS
-          @glyphs.not_nil![gid] = glyph
+        if @glyphs && @glyphs.not_nil![gid]?.nil? && @cached < MAX_CACHED_GLYPHS # ameba:disable Lint/NotNil
+          @glyphs.not_nil![gid] = glyph                                          # ameba:disable Lint/NotNil
           @cached += 1
         end
 
@@ -1547,14 +1552,14 @@ module Fontbox::TTF
     end
 
     private def glyph_data(gid : Int32, level : Int32) : GlyphData
-      max_component_depth = @maxp.not_nil!.max_component_depth.to_i32
+      max_component_depth = @maxp.not_nil!.max_component_depth.to_i32 # ameba:disable Lint/NotNil
       if level > max_component_depth
         raise IO::Error.new("composite glyph maximum level (#{max_component_depth}) reached")
       end
 
       glyph = GlyphData.new
-      left_side_bearing = @hmt.nil? ? 0 : @hmt.not_nil!.left_side_bearing(gid)
-      glyph.init_data(self, @data_stream.not_nil!, left_side_bearing, level)
+      left_side_bearing = @hmt.nil? ? 0 : @hmt.not_nil!.left_side_bearing(gid) # ameba:disable Lint/NotNil
+      glyph.init_data(self, @data_stream.not_nil!, left_side_bearing, level)   # ameba:disable Lint/NotNil
 
       # Resolve composite glyphs immediately.
       if glyph.description.is_composite
@@ -1732,10 +1737,16 @@ module Fontbox::TTF
     abstract def flags(i : Int32) : Int32
     abstract def x_coordinate(i : Int32) : Int16
     abstract def y_coordinate(i : Int32) : Int16
+    # ameba:disable Naming/PredicateName
     abstract def is_composite : Bool
     abstract def point_count : Int32
     abstract def contour_count : Int32
     abstract def resolve : Nil
+
+    # Compatibility predicate used by existing specs/call sites.
+    def composite? : Bool
+      is_composite
+    end
   end
 
   # Base class for glyf descriptions.
@@ -1836,6 +1847,7 @@ module Fontbox::TTF
       @y_coordinates[i]
     end
 
+    # ameba:disable Naming/PredicateName
     def is_composite : Bool
       false
     end
@@ -1935,7 +1947,7 @@ module Fontbox::TTF
     end
 
     def bounding_box : Fontbox::Util::BoundingBox
-      @bounding_box.not_nil!
+      @bounding_box.not_nil! # ameba:disable Lint/NotNil
     end
 
     def number_of_contours : Int16
@@ -1943,7 +1955,7 @@ module Fontbox::TTF
     end
 
     def description : GlyphDescription
-      @glyph_description.not_nil!
+      @glyph_description.not_nil! # ameba:disable Lint/NotNil
     end
 
     def x_maximum : Int16
@@ -2056,6 +2068,7 @@ module Fontbox::TTF
       0_i16
     end
 
+    # ameba:disable Naming/PredicateName
     def is_composite : Bool
       true
     end
@@ -2327,7 +2340,7 @@ module Fontbox::TTF
         num_subtables.times do |i|
           subtable = KerningSubtable.new
           subtable.read(data, version)
-          @subtables.not_nil![i] = subtable
+          @subtables.not_nil![i] = subtable # ameba:disable Lint/NotNil
         end
       end
       @initialized = true
@@ -2336,7 +2349,7 @@ module Fontbox::TTF
     # Obtain first subtable that supports non-cross-stream horizontal kerning.
     def horizontal_kerning_subtable(cross : Bool = false) : KerningSubtable?
       return if @subtables.nil?
-      @subtables.not_nil!.each do |subtable|
+      @subtables.not_nil!.each do |subtable| # ameba:disable Lint/NotNil
         if subtable.is_horizontal_kerning(cross)
           return subtable
         end
@@ -2374,6 +2387,7 @@ module Fontbox::TTF
       end
     end
 
+    # ameba:disable Naming/PredicateName
     def is_horizontal_kerning(cross : Bool = false) : Bool
       return false unless @horizontal
       return false if @minimums
@@ -2383,7 +2397,7 @@ module Fontbox::TTF
     # Obtain kerning adjustment for glyph pair {l, r}.
     def kerning(l : Int32, r : Int32) : Int32
       return 0 if @pairs.nil?
-      @pairs.not_nil!.kerning(l, r)
+      @pairs.not_nil!.kerning(l, r) # ameba:disable Lint/NotNil
     end
 
     # Obtain kerning adjustments for a glyph sequence.
@@ -2443,6 +2457,7 @@ module Fontbox::TTF
       # not yet supported in Apache PDFBox either
     end
 
+    # ameba:disable Naming/PredicateName
     private def is_bits_set(bits : Int32, mask : Int32, shift : Int32) : Bool
       bits(bits, mask, shift) != 0
     end
@@ -3198,14 +3213,14 @@ module Fontbox::TTF
     # This will read the required data from the stream.
     def read(ttf : TrueTypeFont, data : TTFDataStream) : Nil
       start = data.current_position
-      major_version = data.read_unsigned_short.to_i32
+      _major_version = data.read_unsigned_short.to_i32
       minor_version = data.read_unsigned_short.to_i32
       script_list_offset = data.read_unsigned_short.to_i32
       feature_list_offset = data.read_unsigned_short.to_i32
       lookup_list_offset = data.read_unsigned_short.to_i32
-      feature_variations_offset = -1_i64
+      _feature_variations_offset = -1_i64
       if minor_version == 1
-        feature_variations_offset = data.read_unsigned_int.to_i64.to_i64
+        _feature_variations_offset = data.read_unsigned_int.to_i64.to_i64
       end
 
       @script_list = read_script_list(data, start + script_list_offset)
@@ -3627,9 +3642,15 @@ module Fontbox::TTF
     abstract class GsubData
       abstract def language : Language
       abstract def active_script_name : String
+      # ameba:disable Naming/PredicateName
       abstract def is_feature_supported(feature_name : String) : Bool
       abstract def feature(feature_name : String) : ScriptFeature
       abstract def supported_features : Set(String)
+
+      # Compatibility predicate used by existing call sites/specs.
+      def feature_supported?(feature_name : String) : Bool
+        is_feature_supported(feature_name)
+      end
 
       class NoDataFoundGsubData < GsubData
         def language : Language
@@ -3640,6 +3661,7 @@ module Fontbox::TTF
           raise "UnsupportedOperationException"
         end
 
+        # ameba:disable Naming/PredicateName
         def is_feature_supported(feature_name : String) : Bool
           raise "UnsupportedOperationException"
         end
@@ -3721,6 +3743,7 @@ module Fontbox::TTF
         @active_script_name
       end
 
+      # ameba:disable Naming/PredicateName
       def is_feature_supported(feature_name : String) : Bool
         @glyph_substitution_map.has_key?(feature_name)
       end

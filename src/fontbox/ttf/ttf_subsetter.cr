@@ -73,7 +73,7 @@ module Fontbox::TTF
     def gid_map : Hash(Int32, Int32)
       add_compound_references unless @has_added_compound_references
       build_gid_map if @gid_map.nil?
-      map = @gid_map.not_nil! # ameba:disable Lint/NotNil
+      map = @gid_map.as(Hash(Int32, Int32))
       # invert old->new to new->old
       result = Hash(Int32, Int32).new
       map.each do |old_gid, new_gid|
@@ -344,7 +344,7 @@ module Fontbox::TTF
     # Table building stubs
     private def build_head_table : Bytes
       io = IO::Memory.new(54)
-      h = @ttf.header.not_nil! # ameba:disable Lint/NotNil
+      h = @ttf.header.as(HeaderTable)
       write_fixed(io, h.@version.to_f64)
       write_fixed(io, h.@font_revision.to_f64)
       write_uint32(io, 0_u64) # checksum adjustment, filled later
@@ -368,7 +368,7 @@ module Fontbox::TTF
 
     private def build_hhea_table : Bytes
       io = IO::Memory.new(36)
-      h = @ttf.horizontal_header.not_nil! # ameba:disable Lint/NotNil
+      h = @ttf.horizontal_header.as(HorizontalHeaderTable)
       write_fixed(io, h.@version.to_f64)
       write_sint16(io, h.@ascender.to_i32)
       write_sint16(io, h.@descender.to_i32)
@@ -399,7 +399,7 @@ module Fontbox::TTF
 
     private def build_maxp_table : Bytes
       io = IO::Memory.new(32)
-      p = @ttf.maximum_profile.not_nil! # ameba:disable Lint/NotNil
+      p = @ttf.maximum_profile.as(MaximumProfileTable)
       write_fixed(io, p.@version.to_f64)
       write_uint16(io, sorted_glyph_ids.size.to_u32)
       if p.@version >= 1.0
@@ -449,11 +449,11 @@ module Fontbox::TTF
     end
 
     private def build_glyf_table(new_loca : Array(Int64)) : Bytes
-      glyph_table = @ttf.table("glyf").not_nil! # ameba:disable Lint/NotNil
-      loca = @ttf.index_to_location.not_nil!    # ameba:disable Lint/NotNil
+      glyph_table = @ttf.table("glyf").as(GlyphTable)
+      loca = @ttf.index_to_location.as(IndexToLocationTable)
       offsets = loca.offsets
       glyph_table_bytes = @ttf.table_bytes(glyph_table)
-      gid_map = @gid_map.not_nil! # ameba:disable Lint/NotNil
+      gid_map = @gid_map.as(Hash(Int32, Int32))
 
       io = IO::Memory.new
       new_offset = 0_i64
@@ -503,7 +503,7 @@ module Fontbox::TTF
 
       entries = @uni_to_gid.to_a.sort_by { |code_point, _| code_point }
       # map old GID to new GID
-      gid_map = @gid_map.not_nil! # ameba:disable Lint/NotNil
+      gid_map = @gid_map.as(Hash(Int32, Int32))
 
       # Build segments similar to Java algorithm
       start_code = [] of Int32
@@ -590,8 +590,8 @@ module Fontbox::TTF
     end
 
     private def build_hmtx_table : Bytes
-      hm = @ttf.horizontal_metrics.not_nil!  # ameba:disable Lint/NotNil
-      hhea = @ttf.horizontal_header.not_nil! # ameba:disable Lint/NotNil
+      hm = @ttf.horizontal_metrics.as(HorizontalMetricsTable)
+      hhea = @ttf.horizontal_header.as(HorizontalHeaderTable)
       sorted = sorted_glyph_ids
 
       # compute number of HMetrics as in build_hhea_table

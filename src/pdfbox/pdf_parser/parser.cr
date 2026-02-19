@@ -98,7 +98,7 @@ module Pdfbox::Pdfparser
     end
 
     # Parse cross-reference table
-    # ameba:disable Metrics/CyclomaticComplexity
+
     def parse_xref(start_byte_pos : Int64? = nil) : XRef
       # puts "DEBUG: parse_xref called" if @lenient
       start_time = Time.instant
@@ -496,7 +496,7 @@ module Pdfbox::Pdfparser
     end
 
     # Parse object header using BaseParser (incremental)
-    # ameba:disable Metrics/CyclomaticComplexity
+
     private def parse_object_header_incremental(offset : Int64, key : Cos::ObjectKey?) : Int64
       source.seek(offset)
 
@@ -705,7 +705,7 @@ module Pdfbox::Pdfparser
     end
 
     # Resolve a COS object, handling indirect references
-    # ameba:disable Metrics/CyclomaticComplexity
+
     private def resolve_object(obj : Cos::Base, xref : XRef) : Cos::Base
       if obj.is_a?(Cos::Object)
         # Handle case where Cos::Object is just a wrapper around already dereferenced object
@@ -933,7 +933,6 @@ module Pdfbox::Pdfparser
       result
     end
 
-    # ameba:disable Metrics/CyclomaticComplexity
     protected def decode_stream_data(stream : Pdfbox::Cos::Stream) : Bytes
       start_time = Time.instant
       data = stream.data
@@ -1078,7 +1077,7 @@ module Pdfbox::Pdfparser
     end
 
     # Optimized UP filter (type 2) implementation using pointers
-    # ameba:disable Metrics/CyclomaticComplexity
+
     private def apply_png_predictor_up_fast(input : Bytes, columns : Int32) : Bytes
       row_length = columns + 1
       row_count = input.size // row_length
@@ -1339,7 +1338,7 @@ module Pdfbox::Pdfparser
       result = parse_object_dynamically(key, false)
 
       if result
-        result.set_direct(false)
+        result.direct = false
         result.key = key
       end
 
@@ -1505,7 +1504,6 @@ module Pdfbox::Pdfparser
       {xref, trailer}
     end
 
-    # ameba:disable Metrics/CyclomaticComplexity
     private def parse_catalog_from_trailer(trailer : Pdfbox::Cos::Dictionary?, xref : XRef) : Pdfbox::Cos::Dictionary?
       return unless trailer
 
@@ -1628,7 +1626,7 @@ module Pdfbox::Pdfparser
     end
 
     # Parse the PDF document
-    # ameba:disable Metrics/CyclomaticComplexity
+
     def parse : Pdfbox::Pdmodel::Document
       Log.debug { "PARSER: START parsing PDF document" }
       # puts "DEBUG: Parser.parse started (lenient=#{@lenient})" if @lenient
