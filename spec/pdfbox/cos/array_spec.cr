@@ -62,4 +62,101 @@ describe Pdfbox::Cos::Array do
       list.last.should eq(Pdfbox::Cos::Integer.get(5_i64))
     end
   end
+
+  describe "set/get helpers" do
+    it "supports set/get name" do
+      array = Pdfbox::Cos::Array.new
+      array.grow_to_size(3)
+      array.set_name(0, "A")
+      array.set_name(1, "B")
+      array.set_name(2, "C")
+
+      array.get_name(0).should eq("A")
+      array.get_name(1).should eq("B")
+      array.get_name(2).should eq("C")
+      array.get_name(3, "NULL").should eq("NULL")
+      array.index_of(Pdfbox::Cos::Name.new("A")).should eq(0)
+      array.index_of(Pdfbox::Cos::Name.new("D")).should eq(-1)
+    end
+
+    it "supports set/get int" do
+      array = Pdfbox::Cos::Array.new
+      array.grow_to_size(3)
+      array.set_int(0, 0)
+      array.set_int(1, 1)
+      array.set_int(2, 2)
+
+      array.get_int(0).should eq(0_i64)
+      array.get_int(1).should eq(1_i64)
+      array.get_int(2).should eq(2_i64)
+      array.get_int(3, 0_i64).should eq(0_i64)
+      array.index_of(Pdfbox::Cos::Integer.get(0_i64)).should eq(0)
+      array.index_of(Pdfbox::Cos::Integer.get(3_i64)).should eq(-1)
+    end
+
+    it "supports set/get string" do
+      array = Pdfbox::Cos::Array.new
+      array.grow_to_size(3)
+      array.set_string(0, "Test1")
+      array.set_string(1, "Test2")
+      array.set_string(2, "Test3")
+
+      array.get_string(0).should eq("Test1")
+      array.get_string(1).should eq("Test2")
+      array.get_string(2).should eq("Test3")
+      array.get_string(3, "NULL").should eq("NULL")
+      array.index_of(Pdfbox::Cos::String.new("Test1")).should eq(0)
+      array.index_of(Pdfbox::Cos::String.new("Test4")).should eq(-1)
+    end
+  end
+
+  describe "remove operations" do
+    it "supports clear, remove, remove_object, remove_all, and retain_all" do
+      array = Pdfbox::Cos::Array.of_cos_integers([1, 2, 3, 4, 5, 6])
+      array.clear
+      array.size.should eq(0)
+
+      array = Pdfbox::Cos::Array.of_cos_integers([1, 2, 3, 4, 5, 6])
+      array.remove(2).should eq(Pdfbox::Cos::Integer.get(3_i64))
+      array.size.should eq(5)
+      array.get_int(0).should eq(1_i64)
+      array.get_int(2).should eq(4_i64)
+
+      array.remove_object(Pdfbox::Cos::Integer.get(5_i64)).should be_true
+      array.size.should eq(4)
+      array.get_int(3).should eq(6_i64)
+
+      array = Pdfbox::Cos::Array.of_cos_integers([1, 2, 3, 4, 5, 6])
+      array.remove_all([Pdfbox::Cos::Integer.get(3_i64), Pdfbox::Cos::Integer.get(4_i64)])
+      array.size.should eq(4)
+      array.get_int(1).should eq(2_i64)
+      array.get_int(2).should eq(5_i64)
+
+      array = Pdfbox::Cos::Array.of_cos_integers([1, 2, 3, 4, 5, 6])
+      array.retain_all([Pdfbox::Cos::Integer.get(3_i64), Pdfbox::Cos::Integer.get(4_i64)])
+      array.size.should eq(2)
+      array.get_int(0).should eq(3_i64)
+      array.get_int(1).should eq(4_i64)
+    end
+  end
+
+  describe "#grow_to_size" do
+    it "grows and fills with default or provided value" do
+      array = Pdfbox::Cos::Array.new
+      array.size.should eq(0)
+      array.grow_to_size(2)
+      array.size.should eq(2)
+
+      array.grow_to_size(2, Pdfbox::Cos::Integer.get(0_i64))
+      array.size.should eq(2)
+
+      array.grow_to_size(4, Pdfbox::Cos::Integer.get(1_i64))
+      array.size.should eq(4)
+      list = array.to_cos_number_integer_list
+      list.size.should eq(4)
+      list[0].should be_nil
+      list[2].should eq(1_i64)
+      list[3].should eq(1_i64)
+    end
+  end
 end

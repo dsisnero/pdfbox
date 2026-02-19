@@ -638,22 +638,40 @@ module Pdfbox::Cos
       value.value
     end
 
+    def get_name(index : Int, default : ::String? = nil) : ::String?
+      value = self[index]?
+      return default unless value.is_a?(Name)
+      value.value
+    end
+
     def get_int(index : Int, default : Int64 = 0_i64) : Int64
       value = self[index]?
       return default unless value.is_a?(Integer)
       value.value
     end
 
-    def to_cos_name_string_list : ::Array(::String)
-      @items.compact_map { |item| item.as?(Name).try(&.value) }
+    def set_name(index : Int, value : ::String) : Nil
+      self[index] = Name.new(value)
     end
 
-    def to_cos_string_string_list : ::Array(::String)
-      @items.compact_map { |item| item.as?(String).try(&.value) }
+    def set_int(index : Int, value : Int) : Nil
+      self[index] = Integer.get(value.to_i64)
     end
 
-    def to_cos_number_integer_list : ::Array(Int64)
-      @items.compact_map { |item| item.as?(Integer).try(&.value) }
+    def set_string(index : Int, value : ::String) : Nil
+      self[index] = String.new(value)
+    end
+
+    def to_cos_name_string_list : ::Array(::String?)
+      @items.map { |item| item.as?(Name).try(&.value) }
+    end
+
+    def to_cos_string_string_list : ::Array(::String?)
+      @items.map { |item| item.as?(String).try(&.value) }
+    end
+
+    def to_cos_number_integer_list : ::Array(Int64?)
+      @items.map { |item| item.as?(Integer).try(&.value) }
     end
 
     def to_list : ::Array(Base)
@@ -663,6 +681,32 @@ module Pdfbox::Cos
     def index_of(value : Base) : Int32
       index = @items.index(value)
       index ? index.to_i32 : -1
+    end
+
+    def clear : Nil
+      @items.clear
+    end
+
+    def remove(index : Int) : Base
+      delete_at(index)
+    end
+
+    def remove_object(value : Base) : Bool
+      !!@items.delete(value)
+    end
+
+    def remove_all(values : Enumerable(Base)) : Nil
+      values.each { |value| @items.delete(value) }
+    end
+
+    def retain_all(values : Enumerable(Base)) : Nil
+      keep = values.to_set
+      @items.select! { |item| keep.includes?(item) }
+    end
+
+    def grow_to_size(size : Int, fill_value : Base = Null.instance) : Nil
+      return if @items.size >= size
+      (size - @items.size).times { @items << fill_value }
     end
 
     def size : Int32
