@@ -591,6 +591,10 @@ module Pdfbox::Cos
   class Array < Base
     @items = [] of Base
 
+    def initialize(items : Nil)
+      raise ArgumentError.new("items cannot be nil")
+    end
+
     def initialize(items : Enumerable = [] of Base)
       @items = items.map { |item| item.as(Base) }.to_a
     end

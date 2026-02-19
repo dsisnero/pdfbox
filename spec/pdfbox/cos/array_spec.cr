@@ -18,6 +18,10 @@ describe Pdfbox::Cos::Array do
       array.get(1).should eq(Pdfbox::Cos::Name.new("B"))
       array.get(2).should eq(Pdfbox::Cos::Name.new("C"))
     end
+
+    it "raises when initialized with nil" do
+      expect_raises(ArgumentError) { Pdfbox::Cos::Array.new(nil) }
+    end
   end
 
   describe "name conversion helpers" do
@@ -111,6 +115,9 @@ describe Pdfbox::Cos::Array do
       array.get_name(3, "NULL").should eq("NULL")
       array.index_of(Pdfbox::Cos::Name.new("A")).should eq(0)
       array.index_of(Pdfbox::Cos::Name.new("D")).should eq(-1)
+      array.set_name(1, "D")
+      array.size.should eq(3)
+      array.get_name(1).should eq("D")
     end
 
     it "supports set/get int" do
@@ -126,6 +133,9 @@ describe Pdfbox::Cos::Array do
       array.get_int(3, 0_i64).should eq(0_i64)
       array.index_of(Pdfbox::Cos::Integer.get(0_i64)).should eq(0)
       array.index_of(Pdfbox::Cos::Integer.get(3_i64)).should eq(-1)
+      array.set_int(1, 3)
+      array.size.should eq(3)
+      array.get_int(1).should eq(3_i64)
     end
 
     it "supports set/get string" do
@@ -141,6 +151,9 @@ describe Pdfbox::Cos::Array do
       array.get_string(3, "NULL").should eq("NULL")
       array.index_of(Pdfbox::Cos::String.new("Test1")).should eq(0)
       array.index_of(Pdfbox::Cos::String.new("Test4")).should eq(-1)
+      array.set_string(1, "Test4")
+      array.size.should eq(3)
+      array.get_string(1).should eq("Test4")
     end
   end
 
