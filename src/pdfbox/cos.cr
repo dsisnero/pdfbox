@@ -350,18 +350,79 @@ module Pdfbox::Cos
 
     # Write this float in PDF format to the given IO
     def write_pdf(io : ::IO) : Nil
-      io << @value
+      io << format_string
+    end
+
+    def to_s(io : ::IO) : Nil
+      io << "COSFloat{" << format_string << "}"
     end
 
     def ==(other : self) : Bool
-      @value == other.@value
+      value_bits == other.@value.unsafe_as(UInt64)
     end
 
     def ==(other) : Bool
       false
     end
 
-    def_hash @value
+    def hash : UInt64
+      value_bits.hash
+    end
+
+    private def value_bits : UInt64
+      @value.unsafe_as(UInt64)
+    end
+
+    private def format_string : ::String
+      text = @value.to_s
+      return text unless text.includes?('e') || text.includes?('E')
+      expand_scientific_notation(text)
+    end
+
+    private def expand_scientific_notation(text : ::String) : ::String
+      sign = ""
+      mantissa_and_exponent = text
+      if mantissa_and_exponent.starts_with?('-')
+        sign = "-"
+        mantissa_and_exponent = mantissa_and_exponent[1..]
+      elsif mantissa_and_exponent.starts_with?('+')
+        mantissa_and_exponent = mantissa_and_exponent[1..]
+      end
+
+      parts = mantissa_and_exponent.split(/e|E/, 2)
+      mantissa = parts[0]
+      exponent = parts[1].to_i
+
+      decimal_point = mantissa.index('.')
+      if decimal_point
+        int_part = mantissa[0...decimal_point]
+        frac_part = mantissa[(decimal_point + 1)..]
+      else
+        int_part = mantissa
+        frac_part = ""
+      end
+      digits = int_part + frac_part
+      decimal_position = int_part.size + exponent
+
+      plain =
+        if decimal_position <= 0
+          "0." + ("0" * -decimal_position) + digits
+        elsif decimal_position >= digits.size
+          digits + ("0" * (decimal_position - digits.size))
+        else
+          digits[0...decimal_position] + "." + digits[decimal_position..]
+        end
+
+      if plain.includes?('.')
+        while plain.ends_with?('0')
+          plain = plain[0...-1]
+        end
+        plain = plain[0...-1] if plain.ends_with?('.')
+      end
+
+      plain = "0" if plain.empty?
+      sign + plain
+    end
   end
 
   # String value in PDF document
