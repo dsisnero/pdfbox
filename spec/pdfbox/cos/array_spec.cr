@@ -55,6 +55,19 @@ describe Pdfbox::Cos::Array do
       array.get_int(2).should eq(3_i64)
       array.to_cos_number_integer_list.should eq([1_i64, 2_i64, 3_i64])
     end
+
+    it "preserves null placeholders in integer list conversion" do
+      array = Pdfbox::Cos::Array.new([
+        Pdfbox::Cos::Integer.get(1_i64),
+        Pdfbox::Cos::Null.instance,
+        Pdfbox::Cos::Integer.get(3_i64),
+      ])
+      array.size.should eq(3)
+      array.get_int(0).should eq(1_i64)
+      array.get(1).should eq(Pdfbox::Cos::Null.instance)
+      array.get_int(2).should eq(3_i64)
+      array.to_cos_number_integer_list.should eq([1_i64, nil, 3_i64])
+    end
   end
 
   describe "float conversion helpers" do
