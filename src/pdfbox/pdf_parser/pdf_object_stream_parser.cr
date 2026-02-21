@@ -150,7 +150,7 @@ module Pdfbox::Pdfparser
       # according to the pdf spec the offsets shall be sorted ascending
       # but we can't rely on that, so we have to sort the offsets
       # as the sequential parsers relies on it
-      Log.debug { "private_read_object_offsets: START, number_of_objects=#{@number_of_objects}, first_object=#{@first_object}, source.position=#{source.position}" }
+      Log.debug { "private_read_object_offsets: START, number_of_objects=#{@number_of_objects}, first_object=#{@first_object}" }
       object_offsets = {} of Int32 => Int64
       first_object_position = source.position + @first_object - 1
       Log.debug { "private_read_object_offsets: first_object_position=#{first_object_position}" }

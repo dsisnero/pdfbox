@@ -130,7 +130,7 @@ module Pdfbox::Pdfparser
         @source = original_source
       end
 
-      Log.debug { "BruteForceParser.bf_search_for_objects: END, found #{@bf_search_cos_object_key_offsets.size} objects, iterations: #{iteration_count}" }
+      Log.debug { "BruteForceParser.bf_search_for_objects: END, found #{@bf_search_cos_object_key_offsets.size} objects" }
     end
 
     # Helper methods from BaseParser

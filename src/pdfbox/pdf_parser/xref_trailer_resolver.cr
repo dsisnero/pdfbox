@@ -111,9 +111,7 @@ module Pdfbox::Pdfparser
       # overwritten by obsolete entries in hybrid files (/XRefStm entry)
       unless cur_obj.xref_table.has_key?(obj_key)
         cur_obj.xref_table[obj_key] = offset
-        if obj_key.number == 141
-          Log.debug { "XrefTrailerResolver.add_xref: added object 141, offset #{offset}, generation #{obj_key.generation}, stream_index #{obj_key.stream_index}" }
-        end
+        # Debug logging removed for performance
       end
     end
 
