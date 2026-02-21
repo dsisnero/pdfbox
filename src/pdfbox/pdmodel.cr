@@ -512,6 +512,80 @@ module Pdfbox::Pdmodel
     A0 = Rectangle.from_dimensions(2384.0, 3370.0)
   end
 
+  # Range class for specifying numeric ranges [min, max]
+  # Used by page labels, color spaces, and other PDF structures
+  class PDRange
+    @range_array : Cos::Array
+    @starting_index : Int32
+
+    # Default constructor creates a range [0.0, 1.0]
+    def initialize
+      @range_array = Cos::Array.new
+      @range_array.add(Cos::Float.new(0.0))
+      @range_array.add(Cos::Float.new(1.0))
+      @starting_index = 0
+    end
+
+    # Create from existing COSArray starting at index 0
+    def initialize(range_array : Cos::Array)
+      @range_array = range_array
+      @starting_index = 0
+    end
+
+    # Create from COSArray with a specific starting index
+    # Arrays can contain multiple ranges: [min1, max1, min2, max2, ...]
+    # starting_index specifies which range pair (0 = first pair)
+    def initialize(@range_array : Cos::Array, @starting_index : Int32)
+    end
+
+    # Get the underlying COSArray
+    def cos_array : Cos::Array
+      @range_array
+    end
+
+    # Get the minimum value of the range
+    def min : Float64
+      value = @range_array[@starting_index * 2]
+      case value
+      when Cos::Integer then value.value.to_f64
+      when Cos::Float   then value.value
+      else
+        0.0
+      end
+    end
+
+    # Set the minimum value of the range
+    def min=(value : Float64)
+      @range_array[@starting_index * 2] = Cos::Float.new(value)
+    end
+
+    # Get the maximum value of the range
+    def max : Float64
+      value = @range_array[@starting_index * 2 + 1]
+      case value
+      when Cos::Integer then value.value.to_f64
+      when Cos::Float   then value.value
+      else
+        1.0
+      end
+    end
+
+    # Set the maximum value of the range
+    def max=(value : Float64)
+      @range_array[@starting_index * 2 + 1] = Cos::Float.new(value)
+    end
+
+    # Convert to string representation
+    def to_s(io : IO) : Nil
+      io << "PDRange{" << min << ", " << max << "}"
+    end
+
+    # Explicit to_s for compatibility
+    def to_s : String
+      "PDRange{#{min}, #{max}}"
+    end
+  end
+
   # Document catalog class
   class DocumentCatalog
     Log = ::Log.for(self)

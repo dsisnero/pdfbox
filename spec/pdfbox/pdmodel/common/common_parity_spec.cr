@@ -12,6 +12,69 @@ describe "Pdfbox::Pdmodel::Common parity" do
   # annotation filtering/list mutation semantics, immutable rectangle variant, PDStream API,
   # and PDIntegerNameTreeNode helper types).
 
+  describe "Range" do
+    it "creates default range [0.0, 1.0]" do
+      range = Pdfbox::Pdmodel::PDRange.new
+      range.min.should eq(0.0)
+      range.max.should eq(1.0)
+    end
+
+    it "creates range from COSArray" do
+      arr = Pdfbox::Cos::Array.new
+      arr.add(Pdfbox::Cos::Float.new(2.5))
+      arr.add(Pdfbox::Cos::Float.new(5.0))
+
+      range = Pdfbox::Pdmodel::PDRange.new(arr)
+      range.min.should eq(2.5)
+      range.max.should eq(5.0)
+    end
+
+    it "creates range from COSArray with starting index" do
+      arr = Pdfbox::Cos::Array.new
+      # First range
+      arr.add(Pdfbox::Cos::Float.new(0.0))
+      arr.add(Pdfbox::Cos::Float.new(1.0))
+      # Second range
+      arr.add(Pdfbox::Cos::Float.new(2.5))
+      arr.add(Pdfbox::Cos::Float.new(5.0))
+
+      range0 = Pdfbox::Pdmodel::PDRange.new(arr, 0)
+      range0.min.should eq(0.0)
+      range0.max.should eq(1.0)
+
+      range1 = Pdfbox::Pdmodel::PDRange.new(arr, 1)
+      range1.min.should eq(2.5)
+      range1.max.should eq(5.0)
+    end
+
+    it "sets min value" do
+      range = Pdfbox::Pdmodel::PDRange.new
+      range.min = 3.5
+      range.min.should eq(3.5)
+    end
+
+    it "sets max value" do
+      range = Pdfbox::Pdmodel::PDRange.new
+      range.max = 7.0
+      range.max.should eq(7.0)
+    end
+
+    it "returns underlying COSArray" do
+      arr = Pdfbox::Cos::Array.new
+      arr.add(Pdfbox::Cos::Float.new(1.0))
+      arr.add(Pdfbox::Cos::Float.new(2.0))
+
+      range = Pdfbox::Pdmodel::PDRange.new(arr)
+      range.cos_array.should be(arr)
+    end
+
+    it "converts to string" do
+      range = Pdfbox::Pdmodel::PDRange.new
+      range.to_s.should contain("0.0")
+      range.to_s.should contain("1.0")
+    end
+  end
+
   it "TestPDNameTreeNode#testUpperLimit" do
   end
 
