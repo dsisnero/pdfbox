@@ -9,6 +9,7 @@ module Pdfbox::Pdmodel::Common
 
   class WrapperTestCOSObjectable
     def initialize(@value : String); end
+
     def cos_object : Cos::Base
       Cos::String.new(@value)
     end
