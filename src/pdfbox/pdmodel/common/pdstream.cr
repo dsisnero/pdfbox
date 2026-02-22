@@ -1,5 +1,7 @@
 # PDStream represents a stream in a PDF document.
 # Streams are tied to a single PDF document.
+require "../../cos"
+
 module Pdfbox::Pdmodel::Common
   class PDStream
     @stream : Cos::Stream
@@ -14,17 +16,17 @@ module Pdfbox::Pdmodel::Common
     end
 
     # This will get a stream that can be written to
-    def create_output_stream : IO
+    def create_output_stream : ::IO
       @stream.create_output_stream
     end
 
     # This will get a stream that can be written to, with the given filter
-    def create_output_stream(filter : Cos::Name) : IO
+    def create_output_stream(filter : Cos::Name) : ::IO
       @stream.create_output_stream(filter)
     end
 
     # This will get a stream that can be read from
-    def create_input_stream : IO
+    def create_input_stream : ::IO
       @stream.create_input_stream
     end
 

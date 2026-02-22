@@ -70,7 +70,8 @@ module Pdfbox::Pdmodel::Graphics::Color
         @components.dup
       else
         # Return array sized to match color space component count
-        count = @color_space.not_nil!.number_of_components
+        color_space = @color_space.as(PDColorSpace)
+        count = color_space.number_of_components
         result = Array(Float32).new(count, 0.0_f32)
         @components.each_with_index do |val, i|
           break if i >= count
@@ -93,7 +94,9 @@ module Pdfbox::Pdmodel::Graphics::Color
     # Returns the packed RGB value for this color
     def to_rgb : Int32
       raise "Cannot convert pattern to RGB" if pattern?
-      floats = @color_space.not_nil!.to_rgb(@components)
+      color_space = @color_space
+      raise "No color space for RGB conversion" unless color_space
+      floats = color_space.to_rgb(@components)
       r = (floats[0] * 255).round.to_i32
       g = (floats[1] * 255).round.to_i32
       b = (floats[2] * 255).round.to_i32

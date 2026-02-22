@@ -1,4 +1,6 @@
 # Abstract base class for PDF functions
+require "../pdstream"
+
 module Pdfbox::Pdmodel::Common::Function
   abstract class PDFunction
     # Factory method to create the appropriate PDFunction subclass
@@ -10,12 +12,12 @@ module Pdfbox::Pdmodel::Common::Function
 
       base = function
       if base.is_a?(Cos::Object)
-        # TODO: resolve indirect object
-        base = base.get_object
+        # resolve indirect object
+        base = base.object
       end
 
-      unless base.is_a?(Cos::Dictionary) || base.is_a?(Cos::Stream)
-        raise "Error: Function must be a Dictionary or Stream, but is #{base.class}"
+      unless base && (base.is_a?(Cos::Dictionary) || base.is_a?(Cos::Stream))
+        raise "Error: Function must be a Dictionary or Stream, but is #{base ? base.class : "(nil)"}"
       end
 
       function_type = base[Cos::Name::FUNCTION_TYPE]
@@ -48,8 +50,9 @@ module Pdfbox::Pdmodel::Common::Function
     def initialize(function : Cos::Base)
       case function
       when Cos::Stream
-        @function_stream = Common::PDStream.new(function)
-        @function_stream.not_nil!.cos_object[Cos::Name::TYPE] = Cos::Name::FUNCTION
+        stream = Common::PDStream.new(function)
+        @function_stream = stream
+        stream.cos_object[Cos::Name::TYPE] = Cos::Name::FUNCTION
       when Cos::Dictionary
         @function_dictionary = function
       end
@@ -67,7 +70,7 @@ module Pdfbox::Pdmodel::Common::Function
       if stream = @function_stream
         stream.cos_object
       else
-        @function_dictionary.not_nil!
+        @function_dictionary.as(Cos::Dictionary)
       end
     end
 
@@ -87,7 +90,9 @@ module Pdfbox::Pdmodel::Common::Function
 
     # Get the range for a specific output parameter
     def range_for_output(n : Int32) : PDRange
-      PDRange.new(range_values.not_nil!, n)
+      range_vals = range_values
+      raise "No range values for function" unless range_vals
+      PDRange.new(range_vals, n)
     end
 
     # Set the range values
@@ -134,7 +139,7 @@ module Pdfbox::Pdmodel::Common::Function
         domain_obj = cos_object[Cos::Name::DOMAIN]
         @domain = domain_obj.as(Cos::Array)
       end
-      @domain.not_nil!
+      @domain.as(Cos::Array)
     end
 
     # Clip input values to range

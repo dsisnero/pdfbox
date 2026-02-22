@@ -3,6 +3,7 @@
 # This module contains the fundamental object types used in PDF documents,
 # corresponding to the COS (Cos Object System) in Apache PDFBox.
 require "compress/zlib"
+require "../pdfbox"
 
 module Pdfbox::Cos
   # Error class for COS operations
@@ -609,6 +610,7 @@ module Pdfbox::Cos
     LENGTH            = new("Length")
     TYPE              = new("Type")
     FUNCTION          = new("Function")
+    FUNCTION_TYPE     = new("FunctionType")
     DOMAIN            = new("Domain")
     RANGE             = new("Range")
     C0                = new("C0")
@@ -619,6 +621,8 @@ module Pdfbox::Cos
     ORDER             = new("Order")
     ENCODE            = new("Encode")
     DECODE            = new("Decode")
+    BOUNDS            = new("Bounds")
+    FUNCTIONS         = new("Functions")
     IDENTITY          = new("Identity")
 
     def initialize(@value : ::String)

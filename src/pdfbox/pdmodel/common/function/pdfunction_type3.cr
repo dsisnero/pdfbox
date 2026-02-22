@@ -25,7 +25,7 @@ module Pdfbox::Pdmodel::Common::Function
       end
       funcs = cos_object[Cos::Name::FUNCTIONS].as?(Cos::Array)
       @functions = funcs || Cos::Array.new
-      @functions.not_nil!
+      @functions.as(Cos::Array)
     end
 
     # Returns all bounds values as COSArray.
@@ -35,7 +35,7 @@ module Pdfbox::Pdmodel::Common::Function
       end
       b = cos_object[Cos::Name::BOUNDS].as?(Cos::Array)
       @bounds = b || Cos::Array.new
-      @bounds.not_nil!
+      @bounds.as(Cos::Array)
     end
 
     # Returns all encode values as COSArray.
@@ -45,7 +45,7 @@ module Pdfbox::Pdmodel::Common::Function
       end
       enc = cos_object[Cos::Name::ENCODE].as?(Cos::Array)
       @encode = enc || Cos::Array.new
-      @encode.not_nil!
+      @encode.as(Cos::Array)
     end
 
     # Get the encode for the input parameter.
@@ -64,15 +64,9 @@ module Pdfbox::Pdmodel::Common::Function
       # clip input value to domain
       x = clip_to_range(x, domain.min.to_f32, domain.max.to_f32)
 
-      if funcs_array = @functions_array
-        # already cached
-      else
-        ar = functions
-        @functions_array = Array(PDFunction).new(ar.size) do |i|
-          PDFunction.create(ar.get(i))
-        end
+      funcs_array = @functions_array ||= Array(PDFunction).new(functions.size) do |i|
+        PDFunction.create(functions[i])
       end
-      funcs_array = @functions_array.not_nil!
 
       if funcs_array.size == 1
         # This doesn't make sense but it may happen ...
@@ -80,18 +74,13 @@ module Pdfbox::Pdmodel::Common::Function
         enc_range = encode_for_parameter(0)
         x = interpolate(x, domain.min.to_f32, domain.max.to_f32, enc_range.min.to_f32, enc_range.max.to_f32)
       else
-        if bounds_vals = @bounds_values
-          # already cached
-        else
-          @bounds_values = bounds.items.map do |item|
-            case item
-            when Cos::Integer then item.value.to_f32
-            when Cos::Float   then item.value.to_f32
-            else                   0.0_f32
-            end
+        bounds_vals = @bounds_values ||= bounds.items.map do |item|
+          case item
+          when Cos::Integer then item.value.to_f32
+          when Cos::Float   then item.value.to_f32
+          else                   0.0_f32
           end
         end
-        bounds_vals = @bounds_values.not_nil!
         bounds_size = bounds_vals.size
         # create a combined array containing the domain and the bounds values
         # domain.min, bounds[0], bounds[1], ...., bounds[bounds_size-1], domain.max
@@ -124,7 +113,7 @@ module Pdfbox::Pdmodel::Common::Function
       end
       function_values = [x]
       # calculate the output values using the chosen function
-      function_result = function.not_nil!.eval(function_values)
+      function_result = function.as(PDFunction).eval(function_values)
       # clip to range if available
       clip_to_range(function_result)
     end

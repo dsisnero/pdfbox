@@ -32,8 +32,6 @@ module Pdfbox::Pdmodel::Interactive::Form
         PDSignatureField.new(form, field, parent)
       when FIELD_TYPE_BUTTON
         create_button_subtype(form, field, parent)
-      else
-        nil
       end
     end
 

@@ -53,7 +53,9 @@ module Pdfbox::Pdmodel::Common
     # Add element
     def add(o : E) : Bool
       if parent_dict = @parent_dict
-        parent_dict[@dict_key.not_nil!] = @array
+        if dict_key = @dict_key
+          parent_dict[dict_key] = @array
+        end
         @parent_dict = nil
       end
 

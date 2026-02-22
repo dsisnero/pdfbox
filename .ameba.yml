@@ -29,3 +29,4 @@ Metrics/CyclomaticComplexity:
     - "src/pdfbox/filter/run_length_decode_filter.cr"  # encode(io, io): 13
     - "src/pdfbox/pdf_parser/xref_parser.cr"  # parse_xref: 18, parse_xref_table: 18, find_object_key: 15
     - "src/pdfbox/pdf_parser/pdf_io.cr"  # parse_date_from_random_access_read: 34
+    - "src/pdfbox/pdmodel/common/function/pdfunction.cr"  # create: 13
