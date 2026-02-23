@@ -10,7 +10,7 @@ describe Pdfbox::Pdmodel::Common::PDRectangle do
   end
 
   it "creates rectangle with specific coordinates" do
-    rect = Pdfbox::Pdmodel::Common::PDRectangle.new(10.0_f32, 20.0_f32, 100.0_f32, 200.0_f32)
+    rect = Pdfbox::Pdmodel::Common::PDRectangle.new(10.0_f32, 20.0_f32, 90.0_f32, 180.0_f32)
     rect.lower_left_x.should eq(10.0_f32)
     rect.lower_left_y.should eq(20.0_f32)
     rect.upper_right_x.should eq(100.0_f32)
@@ -18,7 +18,7 @@ describe Pdfbox::Pdmodel::Common::PDRectangle do
   end
 
   it "calculates width and height" do
-    rect = Pdfbox::Pdmodel::Common::PDRectangle.new(10.0_f32, 20.0_f32, 100.0_f32, 200.0_f32)
+    rect = Pdfbox::Pdmodel::Common::PDRectangle.new(10.0_f32, 20.0_f32, 90.0_f32, 180.0_f32)
     rect.width.should eq(90.0_f32)
     rect.height.should eq(180.0_f32)
   end

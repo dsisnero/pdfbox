@@ -11,17 +11,45 @@ module Pdfbox::Pdmodel::Common
     def initialize(@stream : Cos::Stream)
     end
 
+    # Creates a new empty PDStream object attached to a COSDocument
+    def initialize(document : Cos::Document)
+      @stream = document.create_cos_stream
+    end
+
     # Creates a new empty PDStream object attached to the given document
     def initialize(document : Pdmodel::PDDocument)
-      # TODO: create COSStream via document's COSDocument
-      @stream = Cos::Stream.new
+      @stream = document.document.create_cos_stream
     end
 
     # Creates a PDStream from input data, copying into a new stream
-    def initialize(document : Pdmodel::PDDocument, input : IO)
-      @stream = Cos::Stream.new
+    def initialize(document : Pdmodel::PDDocument, input : ::IO)
+      @stream = document.document.create_cos_stream
       output = @stream.create_output_stream
-      IO.copy(input, output)
+      ::IO.copy(input, output)
+      output.close
+    end
+
+    # Creates a PDStream from input data with a single filter
+    def initialize(document : Pdmodel::PDDocument, input : ::IO, filter : Cos::Name)
+      @stream = document.document.create_cos_stream
+      output = @stream.create_output_stream(filter)
+      ::IO.copy(input, output)
+      output.close
+    end
+
+    # Creates a PDStream from input data with multiple filters
+    def initialize(document : Pdmodel::PDDocument, input : ::IO, filters : Cos::Array)
+      @stream = document.document.create_cos_stream
+      output = @stream.create_output_stream(filters)
+      ::IO.copy(input, output)
+      output.close
+    end
+
+    # Creates a PDStream from input data with optional filters (nil, Cos::Name, or Cos::Array)
+    def initialize(document : Pdmodel::PDDocument, input : ::IO, filters : Cos::Base?)
+      @stream = document.document.create_cos_stream
+      output = @stream.create_output_stream(filters)
+      ::IO.copy(input, output)
       output.close
     end
 
@@ -42,6 +70,12 @@ module Pdfbox::Pdmodel::Common
 
     # This will get a stream that can be read from
     def create_input_stream : ::IO
+      @stream.create_input_stream
+    end
+
+    # This will get a stream with some filters applied but not others
+    def create_input_stream(stop_filters : Array(String)?) : ::IO
+      # For now, ignore stop_filters as filter support is not fully implemented
       @stream.create_input_stream
     end
 

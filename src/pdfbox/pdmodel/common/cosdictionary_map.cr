@@ -29,6 +29,14 @@ module Pdfbox::Pdmodel::Common
       @actuals.has_key?(key)
     end
 
+    def contains_key(key : String) : Bool
+      has_key?(key)
+    end
+
+    def contains_value(value : V) : Bool
+      has_value?(value)
+    end
+
     # Checks if the map contains the given value.
     def has_value?(value : V) : Bool
       @actuals.has_value?(value)
@@ -62,6 +70,20 @@ module Pdfbox::Pdmodel::Common
       @actuals.delete(key)
     end
 
+    def get(key : String) : V?
+      self[key]?
+    end
+
+    def put(key : String, value : V) : V?
+      old = self[key]?
+      self[key] = value
+      old
+    end
+
+    def remove(key : String) : V?
+      delete(key)
+    end
+
     # Clears all entries.
     def clear : Nil
       @map.clear
@@ -78,9 +100,24 @@ module Pdfbox::Pdmodel::Common
       @actuals.values
     end
 
+    # Returns the keys as a Set.
+    def key_set : Set(String)
+      Set.new(@actuals.keys)
+    end
+
+    # Returns the entries as a Set of tuples.
+    def entry_set : Set({String, V})
+      Set.new(@actuals.entries)
+    end
+
     # Returns the underlying COSDictionary.
     def to_dictionary : Cos::Dictionary
       @map
+    end
+
+    # Put all entries (unsupported).
+    def put_all(m : Hash(String, V)) : Nil
+      raise NotImplementedError.new("Not yet implemented")
     end
 
     # Equality check.
@@ -129,6 +166,11 @@ module Pdfbox::Pdmodel::Common
         end
       end
       dic
+    end
+
+    # String representation
+    def to_s(io : ::IO) : Nil
+      io << @actuals.to_s
     end
   end
 end

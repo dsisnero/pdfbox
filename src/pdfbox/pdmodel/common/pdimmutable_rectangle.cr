@@ -8,19 +8,19 @@ module Pdfbox::Pdmodel::Common
 
     # Override setters to throw UnsupportedOperationException
     def lower_left_x=(value : Float32)
-      raise "Immutable class"
+      raise Cos::UnsupportedOperationError.new("Immutable class")
     end
 
     def lower_left_y=(value : Float32)
-      raise "Immutable class"
+      raise Cos::UnsupportedOperationError.new("Immutable class")
     end
 
     def upper_right_x=(value : Float32)
-      raise "Immutable class"
+      raise Cos::UnsupportedOperationError.new("Immutable class")
     end
 
     def upper_right_y=(value : Float32)
-      raise "Immutable class"
+      raise Cos::UnsupportedOperationError.new("Immutable class")
     end
   end
 end

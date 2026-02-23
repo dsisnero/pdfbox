@@ -49,8 +49,8 @@ module Pdfbox::Pdmodel::Common
 
       node24 = PDNumberTreeNode(PDTest).new(PD_TEST_CONVERTER)
       numbers = {
-        8 => PDTest.new(54),
-        9 => PDTest.new(70),
+         8 => PDTest.new(54),
+         9 => PDTest.new(70),
         10 => PDTest.new(39),
         11 => PDTest.new(30),
         12 => PDTest.new(40),

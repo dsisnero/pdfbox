@@ -1485,6 +1485,7 @@ module Pdfbox::Cos
   class Document < Base
     @xref_table = {} of ObjectKey? => Int64
     @object_pool = {} of ObjectKey => Object
+    @streams = [] of Stream
 
     def write_pdf(io : ::IO) : Nil
       io << "%COSDocument"
@@ -1525,6 +1526,12 @@ module Pdfbox::Cos
         return real_object if real_object[Name.new("Linearized")]
       end
       nil
+    end
+
+    def create_cos_stream : Stream
+      stream = Stream.new
+      @streams << stream
+      stream
     end
   end
 
