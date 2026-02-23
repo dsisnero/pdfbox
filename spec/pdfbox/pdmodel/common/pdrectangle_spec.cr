@@ -48,21 +48,54 @@ describe Pdfbox::Pdmodel::Common::PDRectangle do
 end
 
 describe Pdfbox::Pdmodel::Common::PDImmutableRectangle do
+  # PDImmutableRectangleTest#testClass
+  it "predefined constants are PDImmutableRectangle instances" do
+    Pdfbox::Pdmodel::Common::PDRectangle::A0.should be_a(Pdfbox::Pdmodel::Common::PDImmutableRectangle)
+    Pdfbox::Pdmodel::Common::PDRectangle::A1.should be_a(Pdfbox::Pdmodel::Common::PDImmutableRectangle)
+    Pdfbox::Pdmodel::Common::PDRectangle::A2.should be_a(Pdfbox::Pdmodel::Common::PDImmutableRectangle)
+    Pdfbox::Pdmodel::Common::PDRectangle::A3.should be_a(Pdfbox::Pdmodel::Common::PDImmutableRectangle)
+    Pdfbox::Pdmodel::Common::PDRectangle::A4.should be_a(Pdfbox::Pdmodel::Common::PDImmutableRectangle)
+    Pdfbox::Pdmodel::Common::PDRectangle::A5.should be_a(Pdfbox::Pdmodel::Common::PDImmutableRectangle)
+    Pdfbox::Pdmodel::Common::PDRectangle::A6.should be_a(Pdfbox::Pdmodel::Common::PDImmutableRectangle)
+    Pdfbox::Pdmodel::Common::PDRectangle::LEGAL.should be_a(Pdfbox::Pdmodel::Common::PDImmutableRectangle)
+    Pdfbox::Pdmodel::Common::PDRectangle::LETTER.should be_a(Pdfbox::Pdmodel::Common::PDImmutableRectangle)
+  end
+
   it "creates immutable rectangle" do
     rect = Pdfbox::Pdmodel::Common::PDImmutableRectangle.new(100.0_f32, 200.0_f32)
     rect.width.should eq(100.0_f32)
     rect.height.should eq(200.0_f32)
   end
 
-  it "raises error when trying to modify" do
+  # PDImmutableRectangleTest#testSetUpperRightY
+  it "raises UnsupportedOperationError when trying to set upper right y" do
     rect = Pdfbox::Pdmodel::Common::PDImmutableRectangle.new(100.0_f32, 200.0_f32)
-
-    expect_raises(Exception) do
-      rect.lower_left_x = 10.0_f32
+    expect_raises(Pdfbox::Cos::UnsupportedOperationError, "Immutable class") do
+      rect.upper_right_y = 0.0_f32
     end
+  end
 
-    expect_raises(Exception) do
-      rect.upper_right_x = 10.0_f32
+  # PDImmutableRectangleTest#testSetUpperRightX
+  it "raises UnsupportedOperationError when trying to set upper right x" do
+    rect = Pdfbox::Pdmodel::Common::PDImmutableRectangle.new(100.0_f32, 200.0_f32)
+    expect_raises(Pdfbox::Cos::UnsupportedOperationError, "Immutable class") do
+      rect.upper_right_x = 0.0_f32
+    end
+  end
+
+  # PDImmutableRectangleTest#testSetLowerLeftY
+  it "raises UnsupportedOperationError when trying to set lower left y" do
+    rect = Pdfbox::Pdmodel::Common::PDImmutableRectangle.new(100.0_f32, 200.0_f32)
+    expect_raises(Pdfbox::Cos::UnsupportedOperationError, "Immutable class") do
+      rect.lower_left_y = 0.0_f32
+    end
+  end
+
+  # PDImmutableRectangleTest#testSetLowerLeftX
+  it "raises UnsupportedOperationError when trying to set lower left x" do
+    rect = Pdfbox::Pdmodel::Common::PDImmutableRectangle.new(100.0_f32, 200.0_f32)
+    expect_raises(Pdfbox::Cos::UnsupportedOperationError, "Immutable class") do
+      rect.lower_left_x = 0.0_f32
     end
   end
 end
