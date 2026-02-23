@@ -1,6 +1,7 @@
 # PDStream represents a stream in a PDF document.
 # Streams are tied to a single PDF document.
 require "../../cos"
+require "../document"
 
 module Pdfbox::Pdmodel::Common
   class PDStream
@@ -8,6 +9,20 @@ module Pdfbox::Pdmodel::Common
 
     # Creates a PDStream which wraps the given COSStream
     def initialize(@stream : Cos::Stream)
+    end
+
+    # Creates a new empty PDStream object attached to the given document
+    def initialize(document : Pdmodel::PDDocument)
+      # TODO: create COSStream via document's COSDocument
+      @stream = Cos::Stream.new
+    end
+
+    # Creates a PDStream from input data, copying into a new stream
+    def initialize(document : Pdmodel::PDDocument, input : IO)
+      @stream = Cos::Stream.new
+      output = @stream.create_output_stream
+      IO.copy(input, output)
+      output.close
     end
 
     # Get the cos stream associated with this object

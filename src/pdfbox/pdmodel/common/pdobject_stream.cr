@@ -1,10 +1,22 @@
 # PDObjectStream represents an object stream in a PDF document.
 # Object streams contain multiple compressed PDF objects.
+require "../../pdmodel"
+
 module Pdfbox::Pdmodel::Common
   class PDObjectStream < PDStream
     # Constructor wrapping a COSStream
     def initialize(stream : Cos::Stream)
       super(stream)
+    end
+
+    # This will create a new PDObjectStream object.
+    # @param document The document that the stream will be part of.
+    # @return A new stream object.
+    def self.create_stream(document : Pdmodel::PDDocument) : PDObjectStream
+      cos_stream = Cos::Stream.new
+      strm = new(cos_stream)
+      strm.cos_object.set_item(Cos::Name::TYPE, Cos::Name::OBJ_STM)
+      strm
     end
 
     # Get the type of this object, should always return "ObjStm"

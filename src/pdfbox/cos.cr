@@ -881,6 +881,10 @@ module Pdfbox::Cos
       @entries[key]?
     end
 
+    def []?(key : Name) : Base?
+      @entries[key]?
+    end
+
     def has_key?(key : Name) : Bool
       @entries.has_key?(key)
     end
@@ -939,7 +943,7 @@ module Pdfbox::Cos
     end
 
     def set_date(key : Name, value : Time) : Nil
-      self[key] = String.new(value.to_s("%Y%m%d%H%M%S"))
+      self[key] = String.new(Xmpbox::DateConverter.to_iso8601(value, false))
     end
 
     def set_date(key : ::String, value : Time) : Nil

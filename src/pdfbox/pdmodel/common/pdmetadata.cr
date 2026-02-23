@@ -7,6 +7,20 @@ module Pdfbox::Pdmodel::Common
       super(stream)
     end
 
+    # Creates a new PDMetadata object with /Type and /Subtype entries for document-level metadata
+    def initialize(document : Pdmodel::PDDocument)
+      super(document)
+      cos_object[Cos::Name::TYPE] = Cos::Name.new("Metadata")
+      cos_object[Cos::Name::SUBTYPE] = Cos::Name.new("XML")
+    end
+
+    # Constructor with input stream
+    def initialize(document : Pdmodel::PDDocument, input : IO)
+      super(document, input)
+      cos_object[Cos::Name::TYPE] = Cos::Name.new("Metadata")
+      cos_object[Cos::Name::SUBTYPE] = Cos::Name.new("XML")
+    end
+
     # Extract the XMP metadata
     # Returns a stream to get the xmp data from
     def export_xmp_metadata : IO

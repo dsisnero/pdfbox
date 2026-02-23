@@ -83,7 +83,7 @@ class Pdfbox::Pdmodel::Common::Filespecification::PDEmbeddedFile < ::Pdfbox::Pdm
   # @return The mac subtype.
   def mac_subtype : String?
     params = cos_object[Cos::Name::PARAMS].as?(Cos::Dictionary)
-    return nil unless params
+    return unless params
     params.get_embedded_string(Cos::Name::MAC, Cos::Name::SUBTYPE)
   end
 
@@ -104,7 +104,7 @@ class Pdfbox::Pdmodel::Common::Filespecification::PDEmbeddedFile < ::Pdfbox::Pdm
   # @return The mac Creator.
   def mac_creator : String?
     params = cos_object[Cos::Name::PARAMS].as?(Cos::Dictionary)
-    return nil unless params
+    return unless params
     params.get_embedded_string(Cos::Name::MAC, Cos::Name::CREATOR)
   end
 
@@ -125,7 +125,7 @@ class Pdfbox::Pdmodel::Common::Filespecification::PDEmbeddedFile < ::Pdfbox::Pdm
   # @return The mac ResFork.
   def mac_res_fork : String?
     params = cos_object[Cos::Name::PARAMS].as?(Cos::Dictionary)
-    return nil unless params
+    return unless params
     params.get_embedded_string(Cos::Name::MAC, Cos::Name::RES_FORK)
   end
 
