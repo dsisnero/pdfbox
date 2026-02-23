@@ -4,6 +4,7 @@
 # corresponding to the COS (Cos Object System) in Apache PDFBox.
 require "compress/zlib"
 require "../pdfbox"
+require "../xmpbox/date_converter"
 
 module Pdfbox::Cos
   # Error class for COS operations
@@ -376,6 +377,8 @@ module Pdfbox::Cos
   # Floating point value in PDF document
   class Float < Base
     include Number
+    ZERO = new(0.0)
+    ONE  = new(1.0)
     @value : Float64
 
     def initialize(@value : Float64)
@@ -631,6 +634,18 @@ module Pdfbox::Cos
     P                 = new("P")
     S                 = new("S")
     ST                = new("ST")
+    EMBEDDED_FILE     = new("EmbeddedFile")
+    SUBTYPE           = new("Subtype")
+    PARAMS            = new("Params")
+    CREATION_DATE     = new("CreationDate")
+    MOD_DATE          = new("ModDate")
+    CHECK_SUM         = new("CheckSum")
+    MAC               = new("Mac")
+    CREATOR           = new("Creator")
+    RES_FORK          = new("ResFork")
+    OBJ_STM           = new("ObjStm")
+    FIRST             = new("First")
+    EXTENDS           = new("Extends")
 
     def initialize(@value : ::String)
     end
@@ -965,6 +980,27 @@ module Pdfbox::Cos
       self[embedded] = embedded_dict
     end
 
+    # Get a string from an embedded dictionary, returning default if not present
+    def get_embedded_string(embedded : Name, key : Name, default : ::String? = nil) : ::String?
+      embedded_dict = get_dictionary(embedded)
+      return default unless embedded_dict
+      embedded_dict.get_string(key, default)
+    end
+
+    # Get an integer from an embedded dictionary, returning default if not present
+    def get_embedded_int(embedded : Name, key : Name, default : Int32 = 0) : Int32
+      embedded_dict = get_dictionary(embedded)
+      return default unless embedded_dict
+      embedded_dict.get_int(key, default.to_i64).to_i
+    end
+
+    # Get a date from an embedded dictionary, returning default if not present
+    def get_embedded_date(embedded : Name, key : Name, default : Time? = nil) : Time?
+      embedded_dict = get_dictionary(embedded)
+      return default unless embedded_dict
+      embedded_dict.get_date(key, default)
+    end
+
     def set_long(key : Name, value : Int64) : Nil
       self[key] = Integer.new(value)
     end
@@ -979,6 +1015,44 @@ module Pdfbox::Cos
 
     def set_float(key : ::String, value : Float64) : Nil
       set_float(Name.new(key), value)
+    end
+
+    # Get the dictionary object, dereferencing COSObject and treating COSNull as nil
+    private def get_dictionary_object(key : Name) : Base?
+      value = self[key]?
+      return unless value
+      if value.is_a?(Object)
+        value = value.object
+      end
+      return if value.is_a?(Null)
+      value
+    end
+
+    # Get a nested dictionary, returning nil if not present or not a dictionary
+    def get_dictionary(key : Name) : Dictionary?
+      dict = get_dictionary_object(key)
+      dict.as?(Dictionary) if dict
+    end
+
+    # Get a string value, returning default if not present or not a string
+    def get_string(key : Name, default : ::String? = nil) : ::String?
+      value = get_dictionary_object(key)
+      return default unless value.is_a?(String)
+      value.value
+    end
+
+    # Get an integer value, returning default if not present or not an integer
+    def get_int(key : Name, default : Int64 = 0_i64) : Int64
+      value = get_dictionary_object(key)
+      return default unless value.is_a?(Integer)
+      value.value
+    end
+
+    # Get a date value, returning default if not present or not a valid date string
+    def get_date(key : Name, default : Time? = nil) : Time?
+      value = get_dictionary_object(key)
+      return default unless value.is_a?(String)
+      Xmpbox::DateConverter.to_calendar(value.value)
     end
 
     def as_unmodifiable_dictionary : Dictionary
