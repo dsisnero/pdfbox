@@ -7,6 +7,12 @@ require "./pdmodel/encryption"
 require "./pdmodel/interactive"
 require "./pdmodel/graphics"
 require "./pdmodel/document_interchange"
+require "./pdmodel/font/encoding"
+require "./pdmodel/font/encoding/win_ansi_encoding"
+require "./pdmodel/font/encoding/standard_encoding"
+require "./pdmodel/font/encoding/mac_roman_encoding"
+require "./pdmodel/font/encoding/dictionary_encoding"
+require "./pdmodel/font/encoding/mac_expert_encoding"
 
 module Pdfbox::Pdmodel
   # Main PDF document class
@@ -1947,115 +1953,120 @@ module Pdfbox::Pdmodel
     end
   end
 
-  # PDF font descriptor
-  # Corresponds to PDFontDescriptor in Apache PDFBox
-  class FontDescriptor
-    Log = ::Log.for(self)
+  module Font
+    # PDF font descriptor
+    # Corresponds to PDFontDescriptor in Apache PDFBox
 
-    @cos_dict : Cos::Dictionary
+    # PDF font descriptor
+    # Corresponds to PDFontDescriptor in Apache PDFBox
+    class FontDescriptor
+      Log = ::Log.for(self)
 
-    def initialize(@cos_dict : Cos::Dictionary)
-    end
+      @cos_dict : Cos::Dictionary
 
-    # Get the underlying COS dictionary
-    def cos_object : Cos::Dictionary
-      @cos_dict
-    end
-
-    # Get FontFile2 entry (embedded TrueType font)
-    def font_file2 : Cos::Stream?
-      font_file2_value = @cos_dict[Cos::Name.new("FontFile2")]
-      return unless font_file2_value
-
-      # Handle indirect references
-      if font_file2_value.is_a?(Cos::Object)
-        font_file2_value = font_file2_value.object
+      def initialize(@cos_dict : Cos::Dictionary)
       end
 
-      font_file2_value.as?(Cos::Stream)
-    end
-
-    # Get Length1 value from FontFile2 stream
-    def length1 : Int32?
-      stream = font_file2
-      return unless stream
-
-      length1_value = stream[Cos::Name.new("Length1")]
-      return unless length1_value
-
-      # Handle indirect references
-      if length1_value.is_a?(Cos::Object)
-        length1_value = length1_value.object
+      # Get the underlying COS dictionary
+      def cos_object : Cos::Dictionary
+        @cos_dict
       end
 
-      case length1_value
-      when Cos::Integer
-        length1_value.value.to_i32
-      when Cos::String
-        length1_value.value.to_i32? rescue nil
-      when Cos::Float
-        length1_value.value.to_i32
-      end
-    end
-  end
-
-  # PDF font base class
-  # Corresponds to PDFont in Apache PDFBox
-  class Font
-    Log = ::Log.for(self)
-
-    @cos_dict : Cos::Dictionary
-
-    def initialize(@cos_dict : Cos::Dictionary)
-    end
-
-    # Get the underlying COS dictionary
-    def cos_object : Cos::Dictionary
-      @cos_dict
-    end
-
-    # Get font descriptor
-    def font_descriptor : FontDescriptor?
-      # Check for direct FontDescriptor entry
-      descriptor_value = @cos_dict[Cos::Name.new("FontDescriptor")]
-      if descriptor_value
-        # Handle indirect references
-        if descriptor_value.is_a?(Cos::Object)
-          descriptor_value = descriptor_value.object
-        end
-
-        return FontDescriptor.new(descriptor_value) if descriptor_value.is_a?(Cos::Dictionary)
-      end
-
-      # Handle Type 0 fonts (composite fonts) which have DescendantFonts
-      subtype_value = @cos_dict[Cos::Name.new("Subtype")]
-      if subtype_value.is_a?(Cos::Name) && subtype_value.value == "Type0"
-        descendant_fonts_value = @cos_dict[Cos::Name.new("DescendantFonts")]
-        return unless descendant_fonts_value
+      # Get FontFile2 entry (embedded TrueType font)
+      def font_file2 : Cos::Stream?
+        font_file2_value = @cos_dict[Cos::Name.new("FontFile2")]
+        return unless font_file2_value
 
         # Handle indirect references
-        if descendant_fonts_value.is_a?(Cos::Object)
-          descendant_fonts_value = descendant_fonts_value.object
+        if font_file2_value.is_a?(Cos::Object)
+          font_file2_value = font_file2_value.object
         end
 
-        return unless descendant_fonts_value.is_a?(Cos::Array)
-        return if descendant_fonts_value.size == 0
-
-        # Get first descendant font
-        first_descendant = descendant_fonts_value[0]
-        # Handle indirect references
-        if first_descendant.is_a?(Cos::Object)
-          first_descendant = first_descendant.object
-        end
-
-        return unless first_descendant.is_a?(Cos::Dictionary)
-
-        # Create a Font instance for the descendant and get its descriptor
-        descendant_font = Font.new(first_descendant)
-        return descendant_font.font_descriptor
+        font_file2_value.as?(Cos::Stream)
       end
 
-      nil
+      # Get Length1 value from FontFile2 stream
+      def length1 : Int32?
+        stream = font_file2
+        return unless stream
+
+        length1_value = stream[Cos::Name.new("Length1")]
+        return unless length1_value
+
+        # Handle indirect references
+        if length1_value.is_a?(Cos::Object)
+          length1_value = length1_value.object
+        end
+
+        case length1_value
+        when Cos::Integer
+          length1_value.value.to_i32
+        when Cos::String
+          length1_value.value.to_i32? rescue nil
+        when Cos::Float
+          length1_value.value.to_i32
+        end
+      end
+    end
+
+    # PDF font base class
+    # Corresponds to PDFont in Apache PDFBox
+    class Font
+      Log = ::Log.for(self)
+
+      @cos_dict : Cos::Dictionary
+
+      def initialize(@cos_dict : Cos::Dictionary)
+      end
+
+      # Get the underlying COS dictionary
+      def cos_object : Cos::Dictionary
+        @cos_dict
+      end
+
+      # Get font descriptor
+      def font_descriptor : FontDescriptor?
+        # Check for direct FontDescriptor entry
+        descriptor_value = @cos_dict[Cos::Name.new("FontDescriptor")]
+        if descriptor_value
+          # Handle indirect references
+          if descriptor_value.is_a?(Cos::Object)
+            descriptor_value = descriptor_value.object
+          end
+
+          return FontDescriptor.new(descriptor_value) if descriptor_value.is_a?(Cos::Dictionary)
+        end
+
+        # Handle Type 0 fonts (composite fonts) which have DescendantFonts
+        subtype_value = @cos_dict[Cos::Name.new("Subtype")]
+        if subtype_value.is_a?(Cos::Name) && subtype_value.value == "Type0"
+          descendant_fonts_value = @cos_dict[Cos::Name.new("DescendantFonts")]
+          return unless descendant_fonts_value
+
+          # Handle indirect references
+          if descendant_fonts_value.is_a?(Cos::Object)
+            descendant_fonts_value = descendant_fonts_value.object
+          end
+
+          return unless descendant_fonts_value.is_a?(Cos::Array)
+          return if descendant_fonts_value.size == 0
+
+          # Get first descendant font
+          first_descendant = descendant_fonts_value[0]
+          # Handle indirect references
+          if first_descendant.is_a?(Cos::Object)
+            first_descendant = first_descendant.object
+          end
+
+          return unless first_descendant.is_a?(Cos::Dictionary)
+
+          # Create a Font instance for the descendant and get its descriptor
+          descendant_font = Font.new(first_descendant)
+          return descendant_font.font_descriptor
+        end
+
+        nil
+      end
     end
   end
 
@@ -2074,7 +2085,7 @@ module Pdfbox::Pdmodel
     end
 
     # Get font by name
-    def font(name : Cos::Name) : Font?
+    def font(name : Cos::Name) : Font::Font?
       fonts_dict = @cos_dict[Cos::Name.new("Font")]
       return unless fonts_dict
 
@@ -2095,7 +2106,7 @@ module Pdfbox::Pdmodel
 
       return unless font_dict.is_a?(Cos::Dictionary)
 
-      Font.new(font_dict)
+      Font::Font.new(font_dict)
     end
   end
 end
