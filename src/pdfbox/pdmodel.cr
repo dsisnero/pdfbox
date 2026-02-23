@@ -7,12 +7,7 @@ require "./pdmodel/encryption"
 require "./pdmodel/interactive"
 require "./pdmodel/graphics"
 require "./pdmodel/document_interchange"
-require "./pdmodel/font/encoding"
-require "./pdmodel/font/encoding/win_ansi_encoding"
-require "./pdmodel/font/encoding/standard_encoding"
-require "./pdmodel/font/encoding/mac_roman_encoding"
-require "./pdmodel/font/encoding/dictionary_encoding"
-require "./pdmodel/font/encoding/mac_expert_encoding"
+require "./pdmodel/font"
 
 module Pdfbox::Pdmodel
   # Main PDF document class

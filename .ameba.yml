@@ -9,6 +9,7 @@ Version: "1.7.0-dev"
 
 Excluded:
   - spec/**/*
+  - temp/**/*
 
 Metrics/CyclomaticComplexity:
   Excluded:

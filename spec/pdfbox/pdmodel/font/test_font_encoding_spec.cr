@@ -19,12 +19,12 @@ describe "TestFontEncoding" do
   # Test the add method of a font encoding.
   describe "test_add" do
     it "should have space at code 32 in WinAnsiEncoding" do
-      code_for_space = Pdfbox::Pdmodel::Font::WinAnsiEncoding::INSTANCE.get_name_to_code_map["space"]
+      code_for_space = Pdfbox::Pdmodel::Font::WinAnsiEncoding::INSTANCE.name_to_code_map["space"]
       code_for_space.should eq 32
     end
 
     it "should have space at code 32 in MacRomanEncoding" do
-      code_for_space = Pdfbox::Pdmodel::Font::MacRomanEncoding::INSTANCE.get_name_to_code_map["space"]
+      code_for_space = Pdfbox::Pdmodel::Font::MacRomanEncoding::INSTANCE.name_to_code_map["space"]
       code_for_space.should eq 32
     end
   end
@@ -41,8 +41,8 @@ describe "TestFontEncoding" do
 
       dict_encoding = Pdfbox::Pdmodel::Font::DictionaryEncoding.new(dict_encoding_dict, false, nil)
 
-      dict_encoding.get_name_to_code_map["space"]?.should be_nil
-      dict_encoding.get_name_to_code_map["a"]?.should eq 32
+      dict_encoding.name_to_code_map["space"]?.should be_nil
+      dict_encoding.name_to_code_map["a"]?.should eq 32
     end
   end
 

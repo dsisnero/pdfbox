@@ -5,7 +5,7 @@ describe Pdfbox::Pdmodel::Font do
     describe "WinAnsiEncoding" do
       it "maps space to code 32" do
         encoding = Pdfbox::Pdmodel::Font::WinAnsiEncoding::INSTANCE
-        code = encoding.get_name_to_code_map["space"]
+        code = encoding.name_to_code_map["space"]
         code.should eq(32)
       end
     end
@@ -13,7 +13,7 @@ describe Pdfbox::Pdmodel::Font do
     describe "MacRomanEncoding" do
       it "maps space to code 32" do
         encoding = Pdfbox::Pdmodel::Font::MacRomanEncoding::INSTANCE
-        code = encoding.get_name_to_code_map["space"]
+        code = encoding.name_to_code_map["space"]
         code.should eq(32)
       end
     end
@@ -31,9 +31,9 @@ describe Pdfbox::Pdmodel::Font do
 
         encoding = Pdfbox::Pdmodel::Font::DictionaryEncoding.new(dict, false, nil)
         # Space mapping should be absent (overwritten)
-        encoding.get_name_to_code_map["space"]?.should be_nil
+        encoding.name_to_code_map["space"]?.should be_nil
         # 'a' should map to code 32
-        encoding.get_name_to_code_map["a"]?.should eq(32)
+        encoding.name_to_code_map["a"]?.should eq(32)
       end
     end
   end

@@ -267,7 +267,7 @@ module Pdfbox::Pdmodel::Font
     # Returns the name of this encoding.
     #
     # @return the name of the encoding
-    def get_encoding_name : String
+    def encoding_name : String
       "WinAnsiEncoding"
     end
   end

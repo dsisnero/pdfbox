@@ -59,7 +59,7 @@ module Pdfbox::Pdmodel::Font
       @base_encoding = base
 
       # Copy mappings from base encoding
-      base_map = base.get_code_to_name_map
+      base_map = base.code_to_name_map
       base_map.each do |code, name|
         add(code, name)
       end
@@ -136,9 +136,9 @@ module Pdfbox::Pdmodel::Font
     # Returns the name of this encoding.
     #
     # @return the name of the encoding
-    def get_encoding_name : String
+    def encoding_name : String
       if base = @base_encoding
-        base.get_encoding_name + " with differences"
+        base.encoding_name + " with differences"
       else
         "differences"
       end

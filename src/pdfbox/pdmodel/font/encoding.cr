@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require "../common/cos_objectable"
+
 module Pdfbox::Pdmodel::Font
   # A PostScript encoding vector, maps character codes to glyph names.
   # Corresponds to org.apache.pdfbox.pdmodel.font.encoding.Encoding in Apache PDFBox.
@@ -35,6 +37,10 @@ module Pdfbox::Pdmodel::Font
         MacRomanEncoding::INSTANCE
       elsif name == Cos::Name::MAC_EXPERT_ENCODING
         MacExpertEncoding::INSTANCE
+      elsif name == Cos::Name::SYMBOL_ENCODING
+        SymbolEncoding::INSTANCE
+      elsif name == Cos::Name::ZAPF_DINGBATS_ENCODING
+        ZapfDingbatsEncoding::INSTANCE
       else
         nil
       end
@@ -49,7 +55,7 @@ module Pdfbox::Pdmodel::Font
     # Returns an unmodifiable view of the code -> name mapping.
     #
     # @return the code -> name map
-    def get_code_to_name_map : Hash(Int32, String)
+    def code_to_name_map : Hash(Int32, String)
       @code_to_name.dup
     end
 
@@ -57,7 +63,7 @@ module Pdfbox::Pdmodel::Font
     # the same code.
     #
     # @return the name -> code map
-    def get_name_to_code_map : Hash(String, Int32)
+    def name_to_code_map : Hash(String, Int32)
       @inverted.dup
     end
 
@@ -120,6 +126,6 @@ module Pdfbox::Pdmodel::Font
     # Returns the name of this encoding.
     #
     # @return the name of the encoding
-    abstract def get_encoding_name : String
+    abstract def encoding_name : String
   end
 end
