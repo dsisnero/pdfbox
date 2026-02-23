@@ -96,6 +96,18 @@ module Pdfbox::Pdfwriter
         else
           @destination << "/MediaBox [0 0 612 792]\n" # Letter size
         end
+
+        # Write other page dictionary entries (Annots, Resources, Contents, etc.)
+        if page_dict = page.cos_object
+          page_dict.entries.each do |key, value|
+            key_name = key.value
+            next if key_name == "Type" || key_name == "Parent" || key_name == "MediaBox"
+            cos_writer.write_name(key)
+            @destination << ' '
+            cos_writer.write(value)
+            @destination << '\n'
+          end
+        end
         @destination << ">>\n"
         @destination << "endobj\n"
       end

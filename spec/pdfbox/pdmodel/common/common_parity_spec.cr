@@ -592,7 +592,7 @@ describe "Pdfbox::Pdmodel::Common parity" do
     end
   end
 
-  pending "Writer bug: Annots not written" do
+  it "COSArrayListTest#removeSingleDirectObject" do
     temp_dir = "./temp"
     Dir.mkdir_p(temp_dir)
     temp_file = File.join(temp_dir, "removeSingleDirectObjectTest.pdf")
@@ -635,7 +635,7 @@ describe "Pdfbox::Pdmodel::Common parity" do
     annotations.to_list.size.should eq(3) # The size of the internal COSArray shall be 3
   end
 
-  pending "Writer bug: Annots not written" do
+  it "COSArrayListTest#removeSingleIndirectObject" do
     temp_dir = "./temp"
     Dir.mkdir_p(temp_dir)
     temp_file = File.join(temp_dir, "removeSingleIndirectObjectTest.pdf")
@@ -674,7 +674,7 @@ describe "Pdfbox::Pdmodel::Common parity" do
     annotations.to_list.size.should eq(3) # The size of the internal COSArray shall be 3
   end
 
-  pending "Writer bug: Annots not written" do
+  it "COSArrayListTest#retainIndirectObject" do
     temp_dir = "./temp"
     Dir.mkdir_p(temp_dir)
     temp_file = File.join(temp_dir, "removeIndirectObjectTest.pdf")
