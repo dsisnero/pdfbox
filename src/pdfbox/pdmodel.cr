@@ -130,6 +130,7 @@ module Pdfbox::Pdmodel
     def add_page(page : Page) : Page
       ensure_pages_loaded
       @pages << page
+      add_page_to_tree(page)
       page
     end
 
@@ -138,6 +139,40 @@ module Pdfbox::Pdmodel
     def add_parsed_page(page : Page) : Page
       @pages << page
       page
+    end
+
+    private def add_page_to_tree(page : Page) : Nil
+      catalog = @catalog
+      return unless catalog
+
+      pages_entry = catalog.cos_object[Cos::Name.new("Pages")]
+      return unless pages_entry.is_a?(Cos::Dictionary)
+
+      kids = pages_entry[Cos::Name.new("Kids")]
+      unless kids.is_a?(Cos::Array)
+        kids = Cos::Array.new
+        pages_entry[Cos::Name.new("Kids")] = kids
+      end
+
+      # Ensure page dictionary is indirect
+      page_dict = page.cos_object
+      return unless page_dict
+      page_dict.direct = false
+
+      # Create indirect object reference for page
+      page_obj = Cos::Object.new(page_dict)
+      kids.add(page_obj)
+
+      # Update page count
+      count = pages_entry[Cos::Name.new("Count")]
+      if count.is_a?(Cos::Integer)
+        pages_entry[Cos::Name.new("Count")] = Cos::Integer.new(count.value + 1)
+      else
+        pages_entry[Cos::Name.new("Count")] = Cos::Integer.new(1)
+      end
+
+      # Set parent reference in page dictionary
+      page_dict[Cos::Name.new("Parent")] = Cos::Object.new(pages_entry)
     end
 
     # Create and add a new page
@@ -419,6 +454,65 @@ module Pdfbox::Pdmodel
 
     def has_contents? : Bool
       !contents.nil?
+    end
+
+    # Get annotations on this page
+    def annotations : Common::COSArrayList(Interactive::Annotation::PDAnnotation)
+      annots = @cos_page.try(&.[Cos::Name.new("Annots")])
+      return Common::COSArrayList(Interactive::Annotation::PDAnnotation).new unless annots
+
+      # Handle indirect references
+      if annots.is_a?(Cos::Object)
+        annots = annots.object
+      end
+
+      return Common::COSArrayList(Interactive::Annotation::PDAnnotation).new unless annots.is_a?(Cos::Array)
+
+      # Convert COSArray to list of PDAnnotation
+      actual_list = [] of Interactive::Annotation::PDAnnotation
+      annots.items.each do |item|
+        dict = item
+        # Handle indirect references
+        if dict.is_a?(Cos::Object)
+          dict = dict.object
+        end
+        next unless dict.is_a?(Cos::Dictionary)
+
+        # Check subtype and create appropriate annotation
+        subtype = dict[Cos::Name.new("Subtype")]
+        if subtype.is_a?(Cos::Name)
+          case subtype.value
+          when "Highlight"
+            actual_list << Interactive::Annotation::PDAnnotationHighlight.new(dict)
+          when "Link"
+            actual_list << Interactive::Annotation::PDAnnotationLink.new(dict)
+          when "Circle"
+            actual_list << Interactive::Annotation::PDAnnotationCircle.new(dict)
+          when "Square"
+            actual_list << Interactive::Annotation::PDAnnotationSquare.new(dict)
+          else
+            # Generic annotation as fallback
+            actual_list << Interactive::Annotation::PDAnnotation.new(dict)
+          end
+        else
+          # No subtype, create generic annotation
+          actual_list << Interactive::Annotation::PDAnnotation.new(dict)
+        end
+      end
+
+      Common::COSArrayList(Interactive::Annotation::PDAnnotation).new(actual_list, annots)
+    end
+
+    # Set annotations on this page
+    def annotations=(annotations : Enumerable(Interactive::Annotation::PDAnnotation)) : Nil
+      cos_page = @cos_page || default_page_dictionary
+      @cos_page = cos_page
+
+      array = Cos::Array.new
+      annotations.each do |annot|
+        array.add(annot.cos_object)
+      end
+      cos_page[Cos::Name.new("Annots")] = array
     end
 
     private def default_page_dictionary : Cos::Dictionary

@@ -592,12 +592,124 @@ describe "Pdfbox::Pdmodel::Common parity" do
     end
   end
 
-  it "COSArrayListTest#removeSingleDirectObject" do
+  pending "Writer bug: Annots not written" do
+    temp_dir = "./temp"
+    Dir.mkdir_p(temp_dir)
+    temp_file = File.join(temp_dir, "removeSingleDirectObjectTest.pdf")
+
+    # generate test file
+    pdf = Pdfbox::Pdmodel::Document.create
+    page = Pdfbox::Pdmodel::Page.new
+    pdf.add_page(page)
+
+    page_annots = [] of Pdfbox::Pdmodel::Interactive::Annotation::PDAnnotation
+    txt_mark = Pdfbox::Pdmodel::Interactive::Annotation::PDAnnotationHighlight.new
+    txt_link = Pdfbox::Pdmodel::Interactive::Annotation::PDAnnotationLink.new
+
+    # enforce the COSDictionaries to be written directly into the COSArray
+    txt_mark.cos_object.direct = true
+    txt_link.cos_object.direct = true
+
+    page_annots << txt_mark
+    page_annots << txt_mark
+    page_annots << txt_mark
+    page_annots << txt_link
+    page_annots.size.should eq(4) # There shall be 4 annotations generated
+
+    page.annotations = page_annots
+
+    pdf.save(temp_file)
+
+    # load and verify
+    loaded_pdf = Pdfbox::Loader.load_pdf(temp_file)
+    loaded_page = loaded_pdf.page(0).not_nil!
+
+    annotations = loaded_page.annotations
+    annotations.size.should eq(4)         # There shall be 4 annotations retrieved
+    annotations.to_list.size.should eq(4) # The size of the internal COSArray shall be 4
+
+    to_be_removed = annotations.get(0)
+    annotations.remove(to_be_removed)
+
+    annotations.size.should eq(3)         # There shall be 3 annotations left
+    annotations.to_list.size.should eq(3) # The size of the internal COSArray shall be 3
   end
 
-  it "COSArrayListTest#removeSingleIndirectObject" do
+  pending "Writer bug: Annots not written" do
+    temp_dir = "./temp"
+    Dir.mkdir_p(temp_dir)
+    temp_file = File.join(temp_dir, "removeSingleIndirectObjectTest.pdf")
+
+    # generate test file
+    pdf = Pdfbox::Pdmodel::Document.create
+    page = Pdfbox::Pdmodel::Page.new
+    pdf.add_page(page)
+
+    page_annots = [] of Pdfbox::Pdmodel::Interactive::Annotation::PDAnnotation
+    txt_mark = Pdfbox::Pdmodel::Interactive::Annotation::PDAnnotationHighlight.new
+    txt_link = Pdfbox::Pdmodel::Interactive::Annotation::PDAnnotationLink.new
+
+    page_annots << txt_mark
+    page_annots << txt_mark
+    page_annots << txt_mark
+    page_annots << txt_link
+    page_annots.size.should eq(4) # There shall be 4 annotations generated
+
+    page.annotations = page_annots
+
+    pdf.save(temp_file)
+
+    # load and verify
+    loaded_pdf = Pdfbox::Loader.load_pdf(temp_file)
+    loaded_page = loaded_pdf.page(0).not_nil!
+
+    annotations = loaded_page.annotations
+    annotations.size.should eq(4)         # There shall be 4 annotations retrieved
+    annotations.to_list.size.should eq(4) # The size of the internal COSArray shall be 4
+
+    to_be_removed = annotations.get(0)
+    annotations.remove(to_be_removed)
+
+    annotations.size.should eq(3)         # There shall be 3 annotations left
+    annotations.to_list.size.should eq(3) # The size of the internal COSArray shall be 3
   end
 
-  it "COSArrayListTest#retainIndirectObject" do
+  pending "Writer bug: Annots not written" do
+    temp_dir = "./temp"
+    Dir.mkdir_p(temp_dir)
+    temp_file = File.join(temp_dir, "removeIndirectObjectTest.pdf")
+
+    # generate test file
+    pdf = Pdfbox::Pdmodel::Document.create
+    page = Pdfbox::Pdmodel::Page.new
+    pdf.add_page(page)
+
+    page_annots = [] of Pdfbox::Pdmodel::Interactive::Annotation::PDAnnotation
+    txt_mark = Pdfbox::Pdmodel::Interactive::Annotation::PDAnnotationHighlight.new
+    txt_link = Pdfbox::Pdmodel::Interactive::Annotation::PDAnnotationLink.new
+
+    page_annots << txt_mark
+    page_annots << txt_mark
+    page_annots << txt_mark
+    page_annots << txt_link
+    page_annots.size.should eq(4) # There shall be 4 annotations generated
+
+    page.annotations = page_annots
+
+    pdf.save(temp_file)
+
+    # load and verify
+    loaded_pdf = Pdfbox::Loader.load_pdf(temp_file)
+    loaded_page = loaded_pdf.page(0).not_nil!
+
+    annotations = loaded_page.annotations
+    annotations.size.should eq(4)         # There shall be 4 annotations retrieved
+    annotations.to_list.size.should eq(4) # The size of the internal COSArray shall be 4
+
+    to_be_retained = [annotations.get(0)]
+    annotations.retain_all(to_be_retained)
+
+    annotations.size.should eq(3)         # There shall be 3 annotations left
+    annotations.to_list.size.should eq(3) # The size of the internal COSArray shall be 3
   end
 end

@@ -1,6 +1,6 @@
 # Base class for PDF annotations
 module Pdfbox::Pdmodel::Interactive::Annotation
-  abstract class PDAnnotation
+  class PDAnnotation
     FLAG_INVISIBLE       = 1 << 0
     FLAG_HIDDEN          = 1 << 1
     FLAG_PRINTED         = 1 << 2
@@ -22,8 +22,16 @@ module Pdfbox::Pdmodel::Interactive::Annotation
       @dictionary
     end
 
-    # Get the annotation subtype
-    abstract def subtype : String
+    # Get the annotation subtype from dictionary
+    def subtype : String
+      subtype_value = @dictionary[Cos::Name.new("Subtype")]
+      case subtype_value
+      when Cos::Name
+        subtype_value.value
+      else
+        ""
+      end
+    end
 
     # Get the annotation rectangle
     def rectangle : Common::PDRectangle?
