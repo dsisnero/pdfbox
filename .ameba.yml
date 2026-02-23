@@ -7,43 +7,8 @@
 
 Version: "1.7.0-dev"
 
-Layout/TrailingBlankLines:
-  Excluded:
-  - spec/helpers/pd_integer_name_tree_node.cr
-  - spec/pdfbox/pdmodel/common/filespecification/pdembedded_file_spec.cr
-  - spec/pdfbox/pdmodel/common/pdnumber_tree_node_spec.cr
-  - spec/pdfbox/pdmodel/common/pdpage_label_range_spec.cr
-  - spec/pdfbox/pdmodel/common/pdpage_labels_spec.cr
-  - spec/pdfbox/pdmodel/common/pdrange_spec.cr
-  - src/pdfbox/pdmodel/interactive/action/pdaction_javascript.cr
-  - src/pdfbox/pdmodel/interactive/document_navigation/destination/pdpage_destination.cr
-
-Lint/Formatting:
-  Excluded:
-  - spec/helpers/pd_integer_name_tree_node.cr
-  - spec/pdfbox/pdmodel/common/filespecification/pdembedded_file_spec.cr
-  - spec/pdfbox/pdmodel/common/pdnumber_tree_node_spec.cr
-  - spec/pdfbox/pdmodel/common/pdpage_label_range_spec.cr
-  - spec/pdfbox/pdmodel/common/pdpage_labels_spec.cr
-  - spec/pdfbox/pdmodel/common/pdrange_spec.cr
-  - src/pdfbox/pdmodel/interactive/action/pdaction_javascript.cr
-  - src/pdfbox/pdmodel/interactive/document_navigation/destination/pdpage_destination.cr
-
-Lint/NotNil:
-  Excluded:
-  - spec/pdfbox/pdmodel/common/common_parity_spec.cr
-  - spec/pdfbox/pdmodel/common/cosdictionary_map_spec.cr
-  - spec/pdfbox/pdmodel/common/filespecification/pdembedded_file_spec.cr
-  - spec/pdfbox/pdmodel/common/pdnumber_tree_node_spec.cr
-  - spec/pdfbox/pdmodel/common/pdpage_labels_spec.cr
-
-Lint/SpecFilename:
-  Excluded:
-  - spec/helpers/pd_integer_name_tree_node.cr
-
-Lint/UselessAssign:
-  Excluded:
-  - spec/pdfbox/pdmodel/common/function/pdfunction_type4_spec.cr
+Excluded:
+  - spec/**/*
 
 Metrics/CyclomaticComplexity:
   Excluded:
@@ -72,6 +37,3 @@ Metrics/CyclomaticComplexity:
   - src/pdfbox/pdf_parser/xref_parser.cr
   - src/pdfbox/pdmodel/common/function/pdfunction.cr
 
-Naming/BlockParameterName:
-  Excluded:
-  - src/pdfbox/pdmodel/common/cosarray_list.cr

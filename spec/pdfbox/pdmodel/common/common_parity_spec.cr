@@ -238,21 +238,307 @@ describe "Pdfbox::Pdmodel::Common parity" do
   end
 
   it "COSArrayListTest#getFromList" do
+    # Create Cos::Integer objects (they implement cos_object and return self)
+    # Use different values to ensure they're not equal
+    int1 = Pdfbox::Cos::Integer.get(1_i64)
+    int2 = Pdfbox::Cos::Integer.get(2_i64)
+    int3 = Pdfbox::Cos::Integer.get(3_i64)
+    # int2 appears twice to test duplicates
+
+    # Create Java-like list and array for comparison
+    actual_list = [int1, int2, int3, int2] # int2 appears twice
+    tbc_list = [int1, int2, int3, int2]    # comparison list
+
+    # Create COSArray with the objects
+    cos_array = Pdfbox::Cos::Array.new
+    cos_array.add(int1.cos_object) # cos_object returns self
+    cos_array.add(int2.cos_object)
+    cos_array.add(int3.cos_object)
+    cos_array.add(int2.cos_object) # int2 appears twice
+
+    # Create array of COSBase objects for comparison
+    tbc_array = [] of Pdfbox::Cos::Base
+    tbc_array << int1.cos_object
+    tbc_array << int2.cos_object
+    tbc_array << int3.cos_object
+    tbc_array << int2.cos_object
+
+    # Create COSArrayList
+    cos_array_list = Pdfbox::Pdmodel::Common::COSArrayList(Pdfbox::Cos::Integer).new(actual_list, cos_array)
+
+    # Verify sync between COSArrayList and underlying COSArray
+    cos_array_list.size.times do |i|
+      int = cos_array_list.get(i)
+      # PDModel element's cos_object should equal COSArray element at same index
+      int.cos_object.should eq(cos_array[i])
+
+      # Compare with Java List
+      int.should eq(tbc_list[i])
+
+      # Compare cos_object with array of COSBase
+      int.cos_object.should eq(tbc_array[i])
+    end
   end
 
   it "COSArrayListTest#removeFromListByIndex" do
+    # Create Cos::Integer objects (they implement cos_object and return self)
+    # Use different values to ensure they're not equal
+    int1 = Pdfbox::Cos::Integer.get(1000_i64) # outside cache range
+    int2 = Pdfbox::Cos::Integer.get(2000_i64)
+    int3 = Pdfbox::Cos::Integer.get(3000_i64)
+    int4 = Pdfbox::Cos::Integer.get(4000_i64)
+
+    # Create Java-like list and array for comparison
+    actual_list = [int1, int2, int3, int4]
+    tbc_list = [int1, int2, int3, int4]
+
+    # Create COSArray with the objects
+    cos_array = Pdfbox::Cos::Array.new
+    cos_array.add(int1.cos_object) # cos_object returns self
+    cos_array.add(int2.cos_object)
+    cos_array.add(int3.cos_object)
+    cos_array.add(int4.cos_object)
+
+    # Create array of COSBase objects for comparison
+    tbc_array = [] of Pdfbox::Cos::Base
+    tbc_array << int1.cos_object
+    tbc_array << int2.cos_object
+    tbc_array << int3.cos_object
+    tbc_array << int4.cos_object
+
+    # Create COSArrayList
+    cos_array_list = Pdfbox::Pdmodel::Common::COSArrayList(Pdfbox::Cos::Integer).new(actual_list, cos_array)
+
+    position_to_remove = 2
+    to_be_removed = cos_array_list.get(position_to_remove)
+
+    # Remove element by index
+    removed = cos_array_list.remove(position_to_remove)
+
+    # Remove operation shall return the removed object
+    removed.should eq(to_be_removed)
+
+    # List size shall be 3
+    cos_array_list.size.should eq(3)
+
+    # COSArray size shall be 3
+    cos_array.size.should eq(3)
+
+    # PDModel shall no longer exist in List
+    cos_array_list.index_of(tbc_list[position_to_remove]).should be_nil
+
+    # COSObject shall no longer exist in COSArray
+    cos_array.index_of(tbc_array[position_to_remove]).should eq(-1)
   end
 
   it "COSArrayListTest#removeUniqueFromListByObject" do
+    # Create Cos::Integer objects (they implement cos_object and return self)
+    # Use different values to ensure they're not equal
+    int1 = Pdfbox::Cos::Integer.get(1000_i64) # outside cache range
+    int2 = Pdfbox::Cos::Integer.get(2000_i64)
+    int3 = Pdfbox::Cos::Integer.get(3000_i64)
+    # int2 appears twice to test duplicates
+
+    # Create Java-like list and array for comparison
+    actual_list = [int1, int2, int3, int2] # int2 appears twice
+    tbc_list = [int1, int2, int3, int2]    # comparison list
+
+    # Create COSArray with the objects
+    cos_array = Pdfbox::Cos::Array.new
+    cos_array.add(int1.cos_object)
+    cos_array.add(int2.cos_object)
+    cos_array.add(int3.cos_object)
+    cos_array.add(int2.cos_object) # int2 appears twice
+
+    # Create array of COSBase objects for comparison
+    tbc_array = [] of Pdfbox::Cos::Base
+    tbc_array << int1.cos_object
+    tbc_array << int2.cos_object
+    tbc_array << int3.cos_object
+    tbc_array << int2.cos_object
+
+    # Create COSArrayList
+    cos_array_list = Pdfbox::Pdmodel::Common::COSArrayList(Pdfbox::Cos::Integer).new(actual_list, cos_array)
+
+    position_to_remove = 2
+    to_be_removed = actual_list[position_to_remove]
+
+    # Remove element by object
+    removed = cos_array_list.remove(to_be_removed)
+
+    # Remove operation shall return true
+    removed.should be_true
+
+    # List size shall be 3
+    cos_array_list.size.should eq(3)
+
+    # COSArray size shall be 3
+    cos_array.size.should eq(3)
+
+    # Compare with Java List/Array to ensure correct object at position
+    cos_array_list.get(2).should eq(tbc_list[3])
+    cos_array.get(2).should eq(tbc_list[3].cos_object)
+    cos_array.get(2).should eq(tbc_array[3])
+
+    # PDModel shall no longer exist in List
+    cos_array_list.index_of(tbc_list[position_to_remove]).should be_nil
+
+    # COSObject shall no longer exist in COSArray
+    cos_array.index_of(tbc_array[position_to_remove]).should eq(-1)
+
+    # Remove shall not remove any object (already removed)
+    cos_array_list.remove(to_be_removed).should be_false
   end
 
   it "COSArrayListTest#removeAllUniqueFromListByObject" do
+    # Create Cos::Integer objects (they implement cos_object and return self)
+    # Use different values to ensure they're not equal
+    int1 = Pdfbox::Cos::Integer.get(1000_i64) # outside cache range
+    int2 = Pdfbox::Cos::Integer.get(2000_i64)
+    int3 = Pdfbox::Cos::Integer.get(3000_i64)
+    # int2 appears twice to test duplicates
+
+    # Create Java-like list and array for comparison
+    actual_list = [int1, int2, int3, int2] # int2 appears twice
+    tbc_list = [int1, int2, int3, int2]    # comparison list
+
+    # Create COSArray with the objects
+    cos_array = Pdfbox::Cos::Array.new
+    cos_array.add(int1.cos_object)
+    cos_array.add(int2.cos_object)
+    cos_array.add(int3.cos_object)
+    cos_array.add(int2.cos_object) # int2 appears twice
+
+    # Create array of COSBase objects for comparison
+    tbc_array = [] of Pdfbox::Cos::Base
+    tbc_array << int1.cos_object
+    tbc_array << int2.cos_object
+    tbc_array << int3.cos_object
+    tbc_array << int2.cos_object
+
+    # Create COSArrayList
+    cos_array_list = Pdfbox::Pdmodel::Common::COSArrayList(Pdfbox::Cos::Integer).new(actual_list, cos_array)
+
+    position_to_remove = 2
+    to_be_removed = actual_list[position_to_remove]
+
+    # Remove element by object using removeAll with singleton list
+    to_be_removed_instances = [to_be_removed]
+    removed = cos_array_list.remove_all(to_be_removed_instances)
+
+    # Remove operation shall return true
+    removed.should be_true
+
+    # List size shall be 3
+    cos_array_list.size.should eq(3)
+
+    # COSArray size shall be 3
+    cos_array.size.should eq(3)
+
+    # Remove shall not remove any object (already removed)
+    cos_array_list.remove_all(to_be_removed_instances).should be_false
   end
 
   it "COSArrayListTest#removeMultipleFromListByObject" do
+    # Create Cos::Integer objects (they implement cos_object and return self)
+    # Use different values to ensure they're not equal
+    int1 = Pdfbox::Cos::Integer.get(1000_i64) # outside cache range
+    int2 = Pdfbox::Cos::Integer.get(2000_i64)
+    int3 = Pdfbox::Cos::Integer.get(3000_i64)
+    # int2 appears twice to test duplicates
+
+    # Create Java-like list and array for comparison
+    actual_list = [int1, int2, int3, int2] # int2 appears twice
+    tbc_list = [int1, int2, int3, int2]    # comparison list
+
+    # Create COSArray with the objects
+    cos_array = Pdfbox::Cos::Array.new
+    cos_array.add(int1.cos_object)
+    cos_array.add(int2.cos_object)
+    cos_array.add(int3.cos_object)
+    cos_array.add(int2.cos_object) # int2 appears twice
+
+    # Create array of COSBase objects for comparison
+    tbc_array = [] of Pdfbox::Cos::Base
+    tbc_array << int1.cos_object
+    tbc_array << int2.cos_object
+    tbc_array << int3.cos_object
+    tbc_array << int2.cos_object
+
+    # Create COSArrayList
+    cos_array_list = Pdfbox::Pdmodel::Common::COSArrayList(Pdfbox::Cos::Integer).new(actual_list, cos_array)
+
+    position_to_remove = 1
+    to_be_removed = tbc_list[position_to_remove]
+
+    # Remove first occurrence
+    removed = cos_array_list.remove(to_be_removed)
+    removed.should be_true
+
+    # List size shall be 3
+    cos_array_list.size.should eq(3)
+
+    # COSArray size shall be 3
+    cos_array.size.should eq(3)
+
+    # Remove second occurrence
+    removed = cos_array_list.remove(to_be_removed)
+    removed.should be_true
+
+    # List size shall be 2
+    cos_array_list.size.should eq(2)
+
+    # COSArray size shall be 2
+    cos_array.size.should eq(2)
   end
 
   it "COSArrayListTest#removeAllMultipleFromListByObject" do
+    # Create Cos::Integer objects (they implement cos_object and return self)
+    # Use different values to ensure they're not equal
+    int1 = Pdfbox::Cos::Integer.get(1000_i64) # outside cache range
+    int2 = Pdfbox::Cos::Integer.get(2000_i64)
+    int3 = Pdfbox::Cos::Integer.get(3000_i64)
+    # int2 appears twice to test duplicates
+
+    # Create Java-like list and array for comparison
+    actual_list = [int1, int2, int3, int2] # int2 appears twice
+    tbc_list = [int1, int2, int3, int2]    # comparison list
+
+    # Create COSArray with the objects
+    cos_array = Pdfbox::Cos::Array.new
+    cos_array.add(int1.cos_object)
+    cos_array.add(int2.cos_object)
+    cos_array.add(int3.cos_object)
+    cos_array.add(int2.cos_object) # int2 appears twice
+
+    # Create array of COSBase objects for comparison
+    tbc_array = [] of Pdfbox::Cos::Base
+    tbc_array << int1.cos_object
+    tbc_array << int2.cos_object
+    tbc_array << int3.cos_object
+    tbc_array << int2.cos_object
+
+    # Create COSArrayList
+    cos_array_list = Pdfbox::Pdmodel::Common::COSArrayList(Pdfbox::Cos::Integer).new(actual_list, cos_array)
+
+    position_to_remove = 1
+    to_be_removed = actual_list[position_to_remove]
+
+    # Remove element by object using removeAll with singleton list
+    to_be_removed_instances = [to_be_removed]
+    removed = cos_array_list.remove_all(to_be_removed_instances)
+
+    # Remove operation shall return true
+    removed.should be_true
+
+    # List size shall be 2
+    cos_array_list.size.should eq(2)
+
+    # COSArray size shall be 2
+    cos_array.size.should eq(2)
+
+    # Remove shall not remove any object (already removed)
+    cos_array_list.remove_all(to_be_removed_instances).should be_false
   end
 
   it "COSArrayListTest#removeFromFilteredListByIndex" do

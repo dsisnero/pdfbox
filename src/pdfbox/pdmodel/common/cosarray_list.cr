@@ -1,4 +1,6 @@
 # This is an implementation of a List that will sync its contents to a COSArray
+require "set"
+
 module Pdfbox::Pdmodel::Common
   class COSArrayList(E)
     include Enumerable(E)
@@ -200,6 +202,7 @@ module Pdfbox::Pdmodel::Common
 
     # Remove all elements from collection
     def remove_all(c : Enumerable) : Bool
+      changed = false
       c.each do |item|
         item_cos = item.responds_to?(:cos_object) ? item.cos_object : nil
         next unless item_cos
@@ -208,28 +211,34 @@ module Pdfbox::Pdmodel::Common
           if item_cos == @array.items[i]
             @array.items.delete_at(i)
             @actual.delete_at(i)
+            changed = true
           end
           i -= 1
         end
       end
-      @actual.remove_all(c)
+      changed
     end
 
     # Retain only elements in collection
     def retain_all(c : Enumerable) : Bool
+      # Build set of cos objects from collection
+      retain_cos = Set(Cos::Base).new
       c.each do |item|
-        item_cos = item.responds_to?(:cos_object) ? item.cos_object : nil
-        next unless item_cos
-        i = @array.size - 1
-        while i >= 0
-          if item_cos != @array.items[i]
-            @array.items.delete_at(i)
-            @actual.delete_at(i)
-          end
-          i -= 1
+        if item.responds_to?(:cos_object)
+          retain_cos.add(item.cos_object)
         end
       end
-      @actual.retain_all(c)
+      changed = false
+      i = @array.size - 1
+      while i >= 0
+        unless retain_cos.includes?(@array.items[i])
+          @array.items.delete_at(i)
+          @actual.delete_at(i)
+          changed = true
+        end
+        i -= 1
+      end
+      changed
     end
 
     # Clear all elements
