@@ -31,7 +31,7 @@ module Pdfbox::Pdmodel::Common
       map["Integer"].should eq 42_i64
       map["Float"].should eq 3.14
       map["String"].should eq "Hello"
-      map["Boolean"].should eq true
+      map["Boolean"].should be_true
     end
 
     it "converts map to dictionary" do

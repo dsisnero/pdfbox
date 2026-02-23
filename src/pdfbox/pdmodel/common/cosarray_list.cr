@@ -1,6 +1,8 @@
 # This is an implementation of a List that will sync its contents to a COSArray
 module Pdfbox::Pdmodel::Common
   class COSArrayList(E)
+    include Enumerable(E)
+
     @array : Cos::Array
     @actual : Array(E)
     @is_filtered : Bool = false
@@ -88,6 +90,18 @@ module Pdfbox::Pdmodel::Common
     # Convert to COSArray
     def to_list : Cos::Array
       @array
+    end
+
+    # Enumerable implementation
+    def each(& : E ->)
+      @actual.each do |item|
+        yield item
+      end
+    end
+
+    # Forward other Array-like methods
+    def to_a : Array(E)
+      @actual.dup
     end
   end
 end

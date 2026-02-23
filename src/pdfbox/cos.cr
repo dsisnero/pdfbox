@@ -624,6 +624,13 @@ module Pdfbox::Cos
     BOUNDS            = new("Bounds")
     FUNCTIONS         = new("Functions")
     IDENTITY          = new("Identity")
+    KIDS              = new("Kids")
+    NAMES             = new("Names")
+    NUMS              = new("Nums")
+    LIMITS            = new("Limits")
+    P                 = new("P")
+    S                 = new("S")
+    ST                = new("ST")
 
     def initialize(@value : ::String)
     end
