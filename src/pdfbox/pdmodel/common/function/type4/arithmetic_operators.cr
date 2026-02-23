@@ -126,7 +126,7 @@ module Pdfbox::Pdmodel::Common::Function::Type4
       def execute(context : ExecutionContext) : Nil
         num2 = context.pop_int
         num1 = context.pop_int
-        context.stack.push(num1 // num2)
+        context.stack.push(num1.unsafe_div(num2))
       end
     end
 
@@ -153,7 +153,7 @@ module Pdfbox::Pdmodel::Common::Function::Type4
       def execute(context : ExecutionContext) : Nil
         int2 = context.pop_int
         int1 = context.pop_int
-        context.stack.push(int1 % int2)
+        context.stack.push(int1.remainder(int2))
       end
     end
 
@@ -203,7 +203,8 @@ module Pdfbox::Pdmodel::Common::Function::Type4
         when Int32
           context.stack.push(num)
         when Float32
-          context.stack.push(num.round.to_f32)
+          rounded = (num + 0.5_f32).floor
+          context.stack.push(rounded)
         end
       end
     end
