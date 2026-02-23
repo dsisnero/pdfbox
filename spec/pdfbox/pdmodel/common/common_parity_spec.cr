@@ -542,9 +542,54 @@ describe "Pdfbox::Pdmodel::Common parity" do
   end
 
   it "COSArrayListTest#removeFromFilteredListByIndex" do
+    # Create annotation objects (matching Java test setup)
+    highlight = Pdfbox::Pdmodel::Interactive::Annotation::PDAnnotationHighlight.new
+    link = Pdfbox::Pdmodel::Interactive::Annotation::PDAnnotationLink.new
+    circle = Pdfbox::Pdmodel::Interactive::Annotation::PDAnnotationCircle.new
+
+    # Create filtered actual list (excluding link annotations)
+    # Java test filter excludes PDAnnotationLink, so actual_list contains highlight and circle
+    # Note: Java setup adds highlight, link, circle, link (duplicate link)
+    # Filtered list excludes both link entries, leaving highlight and circle
+    actual_list = [highlight, circle]
+    # Backing array includes all objects: highlight, link, circle, link
+    cos_array = Pdfbox::Cos::Array.new
+    cos_array.add(highlight.cos_object)
+    cos_array.add(link.cos_object)
+    cos_array.add(circle.cos_object)
+    cos_array.add(link.cos_object)
+
+    # Create COSArrayList - sizes differ (2 vs 4), so it will be marked as filtered
+    cos_array_list = Pdfbox::Pdmodel::Common::COSArrayList(Pdfbox::Pdmodel::Interactive::Annotation::PDAnnotation).new(actual_list, cos_array)
+
+    # Attempt to remove by index should raise UnsupportedOperationError
+    expect_raises(Pdfbox::Cos::UnsupportedOperationError, "removing entries from a filtered List is not permitted") do
+      cos_array_list.remove(1)
+    end
   end
 
   it "COSArrayListTest#removeFromFilteredListByObject" do
+    # Create annotation objects (matching Java test setup)
+    highlight = Pdfbox::Pdmodel::Interactive::Annotation::PDAnnotationHighlight.new
+    link = Pdfbox::Pdmodel::Interactive::Annotation::PDAnnotationLink.new
+    circle = Pdfbox::Pdmodel::Interactive::Annotation::PDAnnotationCircle.new
+
+    # Create filtered actual list (excluding link annotations)
+    actual_list = [highlight, circle]
+    # Backing array includes all objects: highlight, link, circle, link
+    cos_array = Pdfbox::Cos::Array.new
+    cos_array.add(highlight.cos_object)
+    cos_array.add(link.cos_object)
+    cos_array.add(circle.cos_object)
+    cos_array.add(link.cos_object)
+
+    # Create COSArrayList - sizes differ (2 vs 4), so it will be marked as filtered
+    cos_array_list = Pdfbox::Pdmodel::Common::COSArrayList(Pdfbox::Pdmodel::Interactive::Annotation::PDAnnotation).new(actual_list, cos_array)
+
+    # Attempt to remove object that exists in filtered list should raise UnsupportedOperationError
+    expect_raises(Pdfbox::Cos::UnsupportedOperationError, "removing entries from a filtered List is not permitted") do
+      cos_array_list.remove(circle)
+    end
   end
 
   it "COSArrayListTest#removeSingleDirectObject" do

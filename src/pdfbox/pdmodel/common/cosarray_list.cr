@@ -137,7 +137,7 @@ module Pdfbox::Pdmodel::Common
     # Add all elements from collection
     def add_all(c : Enumerable(E)) : Bool
       if @is_filtered
-        raise "Adding to a filtered List is not permitted"
+        raise Cos::UnsupportedOperationError.new("Adding to a filtered List is not permitted")
       end
       c_array = c.to_a
       if (parent_dict = @parent_dict) && !c_array.empty?
@@ -146,11 +146,11 @@ module Pdfbox::Pdmodel::Common
         end
         @parent_dict = nil
       end
-      c_array.each do |o|
-        if o.is_a?(String)
-          @array.add(Cos::String.new(o))
-        elsif o.responds_to?(:cos_object)
-          @array.add(o.cos_object)
+      c_array.each do |element|
+        if element.is_a?(String)
+          @array.add(Cos::String.new(element))
+        elsif element.responds_to?(:cos_object)
+          @array.add(element.cos_object)
         end
       end
       @actual.concat(c_array)
@@ -160,7 +160,7 @@ module Pdfbox::Pdmodel::Common
     # Add all elements from collection at specific index
     def add_all_at_index(index : Int32, c : Enumerable(E)) : Bool
       if @is_filtered
-        raise "Inserting to a filtered List is not permitted"
+        raise Cos::UnsupportedOperationError.new("Inserting to a filtered List is not permitted")
       end
       c_array = c.to_a
       if (parent_dict = @parent_dict) && !c_array.empty?
@@ -178,7 +178,7 @@ module Pdfbox::Pdmodel::Common
     # Remove element
     def remove(o) : Bool
       if @is_filtered
-        raise "removing entries from a filtered List is not permitted"
+        raise Cos::UnsupportedOperationError.new("removing entries from a filtered List is not permitted")
       end
 
       index = @actual.index(o)
@@ -194,7 +194,7 @@ module Pdfbox::Pdmodel::Common
     # Remove element at index
     def remove(index : Int32) : E
       if @is_filtered
-        raise "removing entries from a filtered List is not permitted"
+        raise Cos::UnsupportedOperationError.new("removing entries from a filtered List is not permitted")
       end
       @array.items.delete_at(index)
       @actual.delete_at(index)
@@ -255,7 +255,7 @@ module Pdfbox::Pdmodel::Common
     # Set element at index
     def set(index : Int32, element : E) : E
       if @is_filtered
-        raise "Replacing an element in a filtered List is not permitted"
+        raise Cos::UnsupportedOperationError.new("Replacing an element in a filtered List is not permitted")
       end
       if element.is_a?(String)
         cos_item = Cos::String.new(element)
@@ -278,7 +278,7 @@ module Pdfbox::Pdmodel::Common
     # Add element at index
     def add(index : Int32, element : E) : Nil
       if @is_filtered
-        raise "Adding an element in a filtered List is not permitted"
+        raise Cos::UnsupportedOperationError.new("Adding an element in a filtered List is not permitted")
       end
       if parent_dict = @parent_dict
         if dict_key = @dict_key
