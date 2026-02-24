@@ -707,6 +707,7 @@ module Pdfbox::Cos
     STYLE         = new("Style")
     PANOSE        = new("Panose")
     BASE_FONT     = new("BaseFont")
+    DESCENDANT_FONTS = new("DescendantFonts")
     TYPE1         = new("Type1")
     TO_UNICODE    = new("ToUnicode")
     WIDTHS        = new("Widths")
