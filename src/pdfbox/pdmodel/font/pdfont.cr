@@ -2,6 +2,7 @@
 # Corresponds to PDFont in Apache PDFBox
 require "../../cos"
 require "./font_descriptor"
+require "./cmap_manager"
 
 abstract class Pdfbox::Pdmodel::Font::PDFont
   Log = ::Log.for(self)
@@ -108,6 +109,24 @@ abstract class Pdfbox::Pdmodel::Font::PDFont
     @afm_standard14 = nil
     @widths = nil
     @to_unicode_cmap = nil
+  end
+
+  # Reads a CMap given a COS Stream or Name. May return nil if a predefined CMap does not exist.
+  #
+  # @param base COSName or COSStream
+  # @return the CMap if present
+  # @raises ::IO::Error if the CMap could not be read
+  protected def read_cmap(base : Cos::Base) : Fontbox::CMap::CMap?
+    if base.is_a?(Cos::Name)
+      # predefined CMap
+      name = base.to_s
+      CMapManager.get_predefined_cmap(name)
+    elsif base.is_a?(Cos::Stream)
+      # embedded CMap - not yet implemented
+      raise ::IO::Error.new("Embedded CMap not yet implemented")
+    else
+      raise ::IO::Error.new("Expected Name or Stream")
+    end
   end
 
   # Get the underlying COS dictionary
