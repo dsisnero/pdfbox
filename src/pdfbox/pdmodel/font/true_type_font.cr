@@ -301,8 +301,70 @@ class Pdfbox::Pdmodel::Font::PDTrueTypeFont < Pdfbox::Pdmodel::Font::PDSimpleFon
   end
 
   protected def encode(unicode : Int32) : Bytes
-    # TODO: Implement encoding logic
-    Bytes.new(1, 0_u8)
+    if encoding = @encoding
+      # Check if encoding contains the glyph name
+      glyph_name = glyph_list.code_point_to_name(unicode)
+      unless encoding.contains(glyph_name)
+        raise ArgumentError.new("U+%04X is not available in font %s encoding: %s" % [unicode, name, encoding.encoding_name])
+      end
+
+      inverted = encoding.name_to_code_map
+
+      unless has_glyph?(glyph_name)
+        # try unicode name
+        uni_name = uni_name_of_code_point(unicode)
+        unless has_glyph?(uni_name)
+          raise ArgumentError.new("No glyph for U+%04X in font %s" % [unicode, name])
+        end
+      end
+
+      code = inverted[glyph_name]
+      Bytes.new(1, code.to_u8)
+    else
+      # use TTF font's built-in encoding
+      ttf = @ttf
+      raise "No TrueType font loaded" if ttf.nil?
+
+      glyph_name = glyph_list.code_point_to_name(unicode)
+
+      unless has_glyph?(glyph_name)
+        raise ArgumentError.new("No glyph for U+%04X in font %s" % [unicode, name])
+      end
+
+      gid = ttf.name_to_gid(glyph_name)
+      code = gid_to_code[gid]?
+      if code.nil?
+        raise ArgumentError.new("U+%04X is not available in font %s encoding" % [unicode, name])
+      end
+
+      Bytes.new(1, code.to_u8)
+    end
+  end
+
+  private def uni_name_of_code_point(code_point : Int32) : String
+    hex = code_point.to_s(16).upcase
+    case hex.size
+    when 1
+      "uni000#{hex}"
+    when 2
+      "uni00#{hex}"
+    when 3
+      "uni0#{hex}"
+    else
+      "uni#{hex}"
+    end
+  end
+
+  private def gid_to_code : Hash(Int32, Int32)
+    unless @gid_to_code.empty?
+      return @gid_to_code
+    end
+
+    (0..255).each do |code|
+      gid = code_to_gid(code)
+      @gid_to_code[gid] = code unless @gid_to_code.has_key?(gid)
+    end
+    @gid_to_code
   end
 
   def read_code(input : IO) : Int32
