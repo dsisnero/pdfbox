@@ -177,8 +177,16 @@ describe "PDFontTest" do
 
   # Additional tests from PDFontTest.java that may have been missed
   describe "testStandard14Widths" do
-    pending "requires PDType1Font Standard 14 font implementation" do
-      # TODO: Implement when Standard 14 fonts are available
+    it "returns correct widths for standard 14 fonts" do
+      font = Pdfbox::Pdmodel::Font::PDType1Font.new(Pdfbox::Pdmodel::Font::Standard14Fonts::FontName::HELVETICA)
+      # space code 32
+      font.width(32).should be > 0.0
+      # 'A' code 65
+      font.width(65).should be > 0.0
+      # 'a' code 97
+      font.width(97).should be > 0.0
+      # ensure width for .notdef (code 0?) returns default width (should be 250 per spec)
+      # Actually .notdef is not encoded; we can skip.
     end
   end
 

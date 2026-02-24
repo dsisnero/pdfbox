@@ -81,6 +81,11 @@ module Pdfbox::Cos
       @direct = direct
     end
 
+    # Convert to integer (default 0). Subclasses may override.
+    def as_i : Int32
+      0
+    end
+
     # This will return the ObjectKey of an indirect object.
     def key : ObjectKey?
       @key
@@ -120,6 +125,10 @@ module Pdfbox::Cos
     def write_pdf(io : ::IO) : Nil
       io << "null"
     end
+
+    def as_i : Int32
+      0
+    end
   end
 
   # Boolean value in PDF document
@@ -143,6 +152,10 @@ module Pdfbox::Cos
     # Gets the boolean value as object
     def value_as_object : Bool
       @value
+    end
+
+    def as_i : Int32
+      @value ? 1 : 0
     end
 
     # Gets the boolean value for the given parameter
@@ -349,6 +362,10 @@ module Pdfbox::Cos
       @value
     end
 
+    def as_i : Int32
+      @value.to_i
+    end
+
     # Check if integer is within valid PDF range (signed 32-bit)
     def valid? : Bool
       @valid
@@ -390,6 +407,10 @@ module Pdfbox::Cos
 
     def value_as_object : Float64
       @value
+    end
+
+    def as_i : Int32
+      @value.to_i
     end
 
     # Write this float in PDF format to the given IO
@@ -511,6 +532,10 @@ module Pdfbox::Cos
     # Gets the string value as object
     def value_as_object : ::String
       value
+    end
+
+    def as_i : Int32
+      value.to_i? || 0
     end
 
     # Gets the raw bytes
@@ -658,6 +683,8 @@ module Pdfbox::Cos
     # Font-related constants
     FONT          = new("Font")
     FONT_DESC     = new("FontDescriptor")
+    BASE_FONT     = new("BaseFont")
+    TYPE1         = new("Type1")
     TO_UNICODE    = new("ToUnicode")
     WIDTHS        = new("Widths")
     MISSING_WIDTH = new("MissingWidth")
@@ -675,6 +702,10 @@ module Pdfbox::Cos
 
     def value_as_object : ::String
       @value
+    end
+
+    def as_i : Int32
+      0
     end
 
     # Write this name in PDF format to the given IO

@@ -23,11 +23,11 @@ class Pdfbox::Pdmodel::Font::GlyphList
 
   # Loads a glyph list from disk.
   private def self.load(filename : String, number_of_entries : Int32) : GlyphList
-    path = File.join(__DIR__, "../../../../resources/glyphlist", filename)
+    path = File.join(__DIR__, "../../../../../vendor/pdfbox/pdfbox/src/main/resources/org/apache/pdfbox/resources/glyphlist", filename)
     begin
       file = File.open(path, "r")
       GlyphList.new(file, number_of_entries)
-    rescue ex : Errno
+    rescue ex : File::NotFoundError
       Log.error { "GlyphList '#{path}' not found: #{ex.message}" }
       raise "GlyphList '#{filename}' not found"
     end
@@ -44,7 +44,7 @@ class Pdfbox::Pdmodel::Font::GlyphList
   #
   # @param number_of_entries number of expected values used to preallocate the correct amount of memory
   # @param input glyph list in Adobe format
-  def initialize(input : IO, number_of_entries : Int32)
+  def initialize(input : ::IO, number_of_entries : Int32)
     @name_to_unicode = Hash(String, String).new(initial_capacity: number_of_entries)
     @unicode_to_name = Hash(String, String).new(initial_capacity: number_of_entries)
     @uni_name_to_unicode_cache = Hash(String, String).new
@@ -55,14 +55,14 @@ class Pdfbox::Pdmodel::Font::GlyphList
   #
   # @param glyph_list an existing glyph list to be copied
   # @param input glyph list in Adobe format
-  def initialize(glyph_list : GlyphList, input : IO)
+  def initialize(glyph_list : GlyphList, input : ::IO)
     @name_to_unicode = glyph_list.@name_to_unicode.dup
     @unicode_to_name = glyph_list.@unicode_to_name.dup
     @uni_name_to_unicode_cache = Hash(String, String).new
     load_list(input)
   end
 
-  private def load_list(input : IO) : Nil
+  private def load_list(input : ::IO) : Nil
     input.each_line do |line|
       next if line.starts_with?('#')
       parts = line.split(';')
@@ -74,10 +74,15 @@ class Pdfbox::Pdmodel::Font::GlyphList
       unicode_list = parts[1].split(' ')
 
       code_points = unicode_list.map(&.to_i(16))
-      string = String.new(code_points)
+      string = String.build do |builder|
+        code_points.each do |cp|
+          builder << cp.chr
+        end
+      end
 
       # forward mapping
-      old_mapping = @name_to_unicode.put(name, string)
+      old_mapping = @name_to_unicode[name]?
+      @name_to_unicode[name] = string
       if old_mapping
         Log.warn { "duplicate value for #{name} -> #{parts[1]} #{old_mapping}" }
       end
@@ -96,7 +101,7 @@ class Pdfbox::Pdmodel::Font::GlyphList
   # @param code_point Unicode code point
   # @return PostScript glyph name, or ".notdef"
   def code_point_to_name(code_point : Int32) : String
-    string = String.new([code_point])
+    string = String.new(code_point.chr)
     @unicode_to_name[string]? || ".notdef"
   end
 
@@ -133,7 +138,7 @@ class Pdfbox::Pdmodel::Font::GlyphList
           if code_point > 0xD7FF && code_point < 0xE000
             Log.warn { "Unicode character name with disallowed code area: #{name}" }
           else
-            unicode = String.new([code_point])
+            unicode = String.new(code_point.chr)
           end
         rescue ArgumentError
           Log.warn { "Not a number in Unicode character name: #{name}" }

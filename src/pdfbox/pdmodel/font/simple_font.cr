@@ -153,7 +153,7 @@ abstract class Pdfbox::Pdmodel::Font::PDSimpleFont < Pdfbox::Pdmodel::Font::PDFo
 
       # the Adobe AFMs don't include .notdef, but Acrobat uses 250, test with PDFBOX-2334
       if name_in_afm == ".notdef"
-        return 250.0
+        return 250.0_f32
       end
 
       if name_in_afm == "nbspace"
@@ -271,7 +271,7 @@ abstract class Pdfbox::Pdmodel::Font::PDSimpleFont < Pdfbox::Pdmodel::Font::PDFo
   # Helper method to assign glyph list based on font name
   private def assign_glyph_list(font_name : Pdfbox::Pdmodel::Font::Standard14Fonts::FontName) : Nil
     # assign the glyph list based on the font
-    if font_name == FontName::ZAPF_DINGBATS
+    if font_name == Standard14Fonts::FontName::ZAPF_DINGBATS
       @glyph_list = GlyphList.zapf_dingbats
     else
       @glyph_list = GlyphList.adobe_glyph_list

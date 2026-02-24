@@ -1,7 +1,11 @@
 # Standard 14 PDF fonts, also known as the "base 14" fonts.
 # There are 14 font files, but Acrobat uses additional names for compatibility, e.g. Arial.
 # Corresponds to Standard14Fonts in Apache PDFBox.
+require "./pdfont"
+
 class Pdfbox::Pdmodel::Font::Standard14Fonts
+  Log = ::Log.for(self)
+
   # Class representing a standard 14 font name.
   class FontName
     getter name : String
@@ -39,6 +43,7 @@ class Pdfbox::Pdmodel::Font::Standard14Fonts
   end
 
   @@aliases = Hash(String, FontName).new
+  @@afm_cache = Hash(String, PDFont::FontMetrics).new
 
   # Static initializer
   private def self.init_aliases : Nil
@@ -126,10 +131,69 @@ class Pdfbox::Pdmodel::Font::Standard14Fonts
     @@aliases.keys.to_set
   end
 
-  # Placeholder for getAFM - returns nil for now
-  # In Java, this loads AFM metrics from resources
-  def self.get_afm(font_name : String) # TODO: Return FontMetrics type
-    nil
+  # Returns the AFM metrics for the given standard font name.
+  # Returns nil if the font is not a standard 14 font or the AFM cannot be loaded.
+  def self.get_afm(font_name : String) : PDFont::FontMetrics?
+    mapped = get_mapped_font_name(font_name)
+    return nil unless mapped
+
+    cached = @@afm_cache[mapped.to_s]?
+    return cached if cached
+
+    # Load AFM file
+    metrics = load_afm_from_file(mapped.to_s)
+    if metrics
+      @@afm_cache[mapped.to_s] = metrics
+    end
+    metrics
+  end
+
+  # Loads AFM metrics from the corresponding .afm file in the vendor resources.
+  private def self.load_afm_from_file(font_name : String) : PDFont::FontMetrics?
+    # Determine path to AFM file
+    afm_path = File.join(__DIR__, "../../../../vendor/pdfbox/pdfbox/src/main/resources/org/apache/pdfbox/resources/afm/#{font_name}.afm")
+    unless File.exists?(afm_path)
+      Log.warn { "AFM file not found: #{afm_path}" }
+      return nil
+    end
+
+    widths = Hash(String, Float32).new
+    avg_width = 0.0_f32
+    total_width = 0.0_f64
+    char_count = 0
+
+    File.each_line(afm_path) do |line|
+      line = line.strip
+      if line.starts_with?("C ")
+        # Character metric: C <code> ; WX <width> ; N <name> ; B <bbox>
+        parts = line.split(';').map(&.strip)
+        # parts[0] = "C 32"
+        # parts[1] = "WX 600"
+        # parts[2] = "N space"
+        wx_part = parts[1]?
+        name_part = parts[2]?
+        if wx_part && name_part && wx_part.starts_with?("WX ") && name_part.starts_with?("N ")
+          width_str = wx_part[3..-1]
+          name = name_part[2..-1]
+          width = width_str.to_f32
+          widths[name] = width
+          total_width += width
+          char_count += 1
+        end
+      elsif line.starts_with?("AvgWidth ")
+        # Average width entry
+        avg_width = line.split(' ')[1]?.try(&.to_f32) || 0.0_f32
+      end
+    end
+
+    if char_count > 0
+      # Use computed average if AvgWidth not found
+      avg_width = (total_width / char_count).to_f32 if avg_width == 0.0_f32
+    else
+      avg_width = 0.0_f32
+    end
+
+    PDFont::FontMetrics.new(widths, avg_width)
   end
 
   # Private constructor

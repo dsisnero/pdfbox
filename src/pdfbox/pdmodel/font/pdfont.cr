@@ -4,7 +4,10 @@ require "../../cos"
 
 abstract class Pdfbox::Pdmodel::Font::PDFont
   Log = ::Log.for(self)
-  Cos = PDFBox::Cos
+  Cos = Pdfbox::Cos
+
+  # Default font matrix for Type 1 fonts: 0.001, 0, 0, 0.001, 0, 0
+  DEFAULT_FONT_MATRIX = Matrix.new(0.001_f32, 0.0_f32, 0.0_f32, 0.001_f32, 0.0_f32, 0.0_f32)
 
   @afm_standard14 : FontMetrics?
   @widths : Array(Float32)?
@@ -12,7 +15,27 @@ abstract class Pdfbox::Pdmodel::Font::PDFont
 
   # Placeholder types for missing dependencies
   class Matrix
-    def initialize(*args); end
+    getter a : Float32
+    getter b : Float32
+    getter c : Float32
+    getter d : Float32
+    getter e : Float32
+    getter f : Float32
+
+    def initialize(a : Float32 = 0.0_f32, b : Float32 = 0.0_f32, c : Float32 = 0.0_f32,
+                   d : Float32 = 0.0_f32, e : Float32 = 0.0_f32, f : Float32 = 0.0_f32)
+      @a = a
+      @b = b
+      @c = c
+      @d = d
+      @e = e
+      @f = f
+    end
+
+    # Default font matrix for Type 1 fonts: 0.001, 0, 0, 0.001, 0, 0
+    def self.default_font_matrix : Matrix
+      new(0.001_f32, 0.0_f32, 0.0_f32, 0.001_f32, 0.0_f32, 0.0_f32)
+    end
   end
 
   class Vector
@@ -27,6 +50,19 @@ abstract class Pdfbox::Pdmodel::Font::PDFont
   end
 
   class FontMetrics
+    @widths : Hash(String, Float32)
+    @average_character_width : Float32
+
+    def initialize(@widths : Hash(String, Float32), @average_character_width : Float32)
+    end
+
+    def character_width(name : String) : Float32
+      @widths[name]? || 0.0_f32
+    end
+
+    def average_character_width : Float32
+      @average_character_width
+    end
   end
 
   module PDType1FontEmbedder
@@ -93,8 +129,8 @@ abstract class Pdfbox::Pdmodel::Font::PDFont
   # The widths of the characters. This will be nil for the standard 14 fonts.
   protected def widths : Array(Float32)
     if @widths.nil?
-      array = @dict[Cos::Name::WIDTHS]?
-      if array.is_a?(Cos::Array)
+      array = @dict[Pdfbox::Cos::Name::WIDTHS]?
+      if array.is_a?(Pdfbox::Cos::Array)
         # TODO: Implement proper conversion from COS numbers to Float32
         @widths = [] of Float32
       else
