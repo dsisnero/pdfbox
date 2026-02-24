@@ -3,6 +3,7 @@
 require "../../cos"
 require "./font_descriptor"
 require "./cmap_manager"
+require "../../../fontbox/cmap"
 
 abstract class Pdfbox::Pdmodel::Font::PDFont
   Log = ::Log.for(self)
@@ -13,7 +14,8 @@ abstract class Pdfbox::Pdmodel::Font::PDFont
 
   @afm_standard14 : FontMetrics?
   @widths : Array(Float32)?
-  @to_unicode_cmap : CMap?
+  @to_unicode_cmap : Fontbox::CMap::CMap?
+  protected getter to_unicode_cmap
 
   # Placeholder types for missing dependencies
   class Matrix
@@ -46,9 +48,6 @@ abstract class Pdfbox::Pdmodel::Font::PDFont
 
   class BoundingBox
     def initialize(*args); end
-  end
-
-  class CMap
   end
 
   class FontMetrics
@@ -108,7 +107,24 @@ abstract class Pdfbox::Pdmodel::Font::PDFont
     @code_to_width_map = Hash(Int32, Float32).new
     @afm_standard14 = nil
     @widths = nil
-    @to_unicode_cmap = nil
+    @to_unicode_cmap = load_unicode_cmap
+  end
+
+  # Loads the ToUnicode CMap from the font dictionary.
+  private def load_unicode_cmap : Fontbox::CMap::CMap?
+    to_unicode = @dict.get(Cos::Name::TO_UNICODE)
+    return nil if to_unicode.nil?
+
+    cmap = read_cmap(to_unicode)
+    return nil if cmap.nil?
+
+    if !cmap.has_unicode_mappings?
+      name = self.name
+      Log.warn { "Invalid ToUnicode CMap in font #{name}" }
+      # TODO: Implement additional Identity mapping checks from Java PDFont
+    end
+
+    cmap
   end
 
   # Reads a CMap given a COS Stream or Name. May return nil if a predefined CMap does not exist.
@@ -160,12 +176,41 @@ abstract class Pdfbox::Pdmodel::Font::PDFont
         @widths = [] of Float32
       end
     end
-    @widths.not_nil!
+    @widths.as(Array(Float32))
   end
 
   # Returns the Unicode string for the given character code.
   def to_unicode(code : Int32) : String?
-    # TODO: Implement ToUnicode CMap lookup
+    # if the font dictionary contains a ToUnicode CMap, use that CMap
+    cmap = @to_unicode_cmap
+    if cmap
+      name = cmap.name
+      if name && name.starts_with?("Identity-") &&
+         (@dict.get(Cos::Name::TO_UNICODE).is_a?(Cos::Name) || !cmap.has_unicode_mappings?)
+        # handle the undocumented case of using Identity-H/V as a ToUnicode CMap, this
+        # isn't actually valid as the Identity-x CMaps are code->CID maps, not
+        # code->Unicode maps. See sample_fonts_solidconvertor.pdf for an example.
+        # PDFBOX-3123: do this only if the /ToUnicode entry is a name
+        # PDFBOX-4322: identity streams are OK too
+        return String.new(Bytes[code].map(&.chr))
+      else
+        if code < 256 && !composite_font?
+          encoding = @dict.get(Cos::Name::ENCODING)
+          if encoding.is_a?(Cos::Name) && !encoding.to_s.starts_with?("Identity")
+            # due to the conversion to an int it is no longer possible to determine
+            # if the code is based on a one or two byte value. We should consider to
+            # refactor that part of the code.
+            # However, simple fonts with a predefined encoding are using one byte codes so that
+            # we can limit the CMap mappings to one byte codes by passing the origin length
+            return cmap.to_unicode(code, 1)
+          end
+        end
+        return cmap.to_unicode(code)
+      end
+    end
+
+    # if no value has been produced, there is no way to obtain Unicode for the character.
+    # this behaviour can be overridden in subclasses, but this method *must* return nil here
     nil
   end
 
@@ -229,6 +274,11 @@ abstract class Pdfbox::Pdmodel::Font::PDFont
 
   # Returns true if this font will be subset.
   abstract def will_be_subset? : Bool
+
+  # Returns true if this is a composite font (Type 0).
+  def composite_font? : Bool
+    false
+  end
 
   # Returns true if this is a Standard 14 font.
   def standard14? : Bool

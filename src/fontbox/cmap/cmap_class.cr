@@ -1,6 +1,7 @@
 module Fontbox
   module CMap
     class CMap
+      Log = ::Log.for(self)
       property wmode : Int32
       property cmap_name : String?
       property cmap_version : String?
@@ -258,6 +259,48 @@ module Fontbox
         code_length = range.code_length
         @max_code_length = Math.max(@max_code_length, code_length)
         @min_code_length = Math.min(@min_code_length, code_length)
+      end
+
+      # Reads a character code from a string in the content stream.
+      # See "CMap Mapping" and "Handling Undefined Characters" in PDF32000 for more details.
+      def read_code(input : IO) : Int32
+        # handle edge case where no codespace ranges defined
+        if @max_code_length <= 0 || @codespace_ranges.empty?
+          # read a single byte as fallback
+          byte = input.read_byte
+          return byte ? byte.to_i32 : -1
+        end
+
+        bytes = Bytes.new(@max_code_length, 0_u8)
+        # read initial min_code_length bytes
+        bytes_read = input.read(bytes[0, @min_code_length])
+        if bytes_read != @min_code_length
+          # not enough bytes, return what we have
+          return self.class.to_int(bytes[0, bytes_read])
+        end
+
+        # try each possible length from min_code_length to max_code_length
+        (@min_code_length - 1...@max_code_length).each do |i|
+          byte_count = i + 1
+          # check if any codespace range matches the current byte sequence
+          if @codespace_ranges.any? { |range| range.full_match?(bytes[0, byte_count], byte_count) }
+            return self.class.to_int(bytes[0, byte_count])
+          end
+          # read another byte if not yet at max
+          if byte_count < @max_code_length
+            next_byte = input.read_byte
+            break if next_byte.nil?
+            bytes[byte_count] = next_byte
+          end
+        end
+
+        # no match found, log warning as per Adobe Reader behavior
+        if Log.warn?
+          hex_string = bytes[0, @max_code_length].map { |b| "0x%02X" % b }.join(" ")
+          Log.warn { "Invalid character code sequence #{hex_string} in CMap #{@cmap_name}" }
+        end
+        # return using min_code_length as per Adobe Reader behavior
+        self.class.to_int(bytes[0, @min_code_length])
       end
 
       def use_cmap(cmap : CMap)

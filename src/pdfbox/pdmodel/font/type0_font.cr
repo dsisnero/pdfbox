@@ -29,11 +29,19 @@ class Pdfbox::Pdmodel::Font::PDType0Font < Pdfbox::Pdmodel::Font::PDFont
     def initialize(font_dictionary : Cos::Dictionary, parent_font : PDFont)
     end
 
-    def get_cid_system_info : PDCIDSystemInfo?
+    def cid_system_info : PDCIDSystemInfo?
       nil
     end
 
-    def get_font_descriptor : PDFontDescriptor?
+    def font_descriptor : PDFontDescriptor?
+      nil
+    end
+
+    def cid_font_type2? : Bool
+      false
+    end
+
+    def true_type_font
       nil
     end
 
@@ -185,7 +193,7 @@ class Pdfbox::Pdmodel::Font::PDType0Font < Pdfbox::Pdmodel::Font::PDFont
     end
 
     # check if the descendant font is CJK
-    ros = @descendant_font.get_cid_system_info
+        ros = @descendant_font.cid_system_info
     if ros
       ordering = ros.ordering
       @is_descendant_cjk = ros.registry == "Adobe" &&
@@ -211,7 +219,7 @@ class Pdfbox::Pdmodel::Font::PDType0Font < Pdfbox::Pdmodel::Font::PDFont
       # todo: not sure how to interpret the PDF spec here, do we always override? or only when Identity-H/V?
       str_name = nil
       if @is_descendant_cjk
-        ros = @descendant_font.get_cid_system_info
+        ros = @descendant_font.cid_system_info
         if ros
           str_name = "#{ros.registry}-#{ros.ordering}-#{ros.supplement}"
         end
@@ -242,8 +250,7 @@ class Pdfbox::Pdmodel::Font::PDType0Font < Pdfbox::Pdmodel::Font::PDFont
     if @c_map.nil?
       raise ::IO::Error.new("required cmap is null")
     end
-    # TODO: Implement CMap.read_code (need to add method to CMap class)
-    input.read_byte || -1
+    @c_map.read_code(input)
   end
 
   def vertical? : Bool
@@ -272,7 +279,59 @@ class Pdfbox::Pdmodel::Font::PDType0Font < Pdfbox::Pdmodel::Font::PDFont
   end
 
   def to_unicode(code : Int32) : String?
-    # TODO: Implement using CMap
+    # try to use a ToUnicode CMap
+    unicode = super(code)
+    return unicode if unicode
+
+    # Use identity mapping if the given ToUnicode CMap doesn't provide any valid mapping
+    # a predefined map shall only be used if there isn't any ToUnicode CMap
+    # PDFBOX-6022: not when there's a predefined cmap
+    if to_unicode_cmap && !is_cmap_predefined
+      return String.new(Bytes[code].map(&.chr))
+    end
+
+    if (is_cmap_predefined || is_descendant_cjk) && (ucs2 = cmap_ucs2)
+      # if the font is composite and uses a predefined cmap (excluding Identity-H/V) then
+      # or if its descendant font uses Adobe-GB1/CNS1/Japan1/Korea1
+
+      # a) Map the character code to a character identifier (CID) according to the font's CMap
+      cid = code_to_cid(code)
+
+      # e) Map the CID according to the CMap from step d), producing a Unicode value
+      return ucs2.to_unicode(cid)
+    end
+
+    # PDFBOX-5324: try to get unicode from font cmap
+    # TODO: Implement PDCIDFontType2 check and font cmap lookup
+    # if descendant_font.is_a?(PDCIDFontType2)
+    #   font = descendant_font.get_true_type_font
+    #   if font
+    #     begin
+    #       cmap = font.get_unicode_cmap_lookup(false)
+    #       if cmap
+    #         gid = if descendant_font.embedded?
+    #                 descendant_font.code_to_gid(code)
+    #               else
+    #                 descendant_font.code_to_cid(code)
+    #               end
+    #         codes = cmap.get_char_codes(gid)
+    #         if codes && !codes.empty?
+    #           return codes[0].chr
+    #         end
+    #       end
+    #     rescue ex : ::IO::Error
+    #       Log.warn { "get unicode from font cmap fail: #{ex}" }
+    #     end
+    #   end
+    # end
+
+    if Log.warn? && !@no_unicode.includes?(code)
+      # if no value has been produced, there is no way to obtain Unicode for the character.
+      cid_str = "CID+" + code_to_cid(code).to_s
+      Log.warn { "No Unicode mapping for #{cid_str} (#{code}) in font #{name}" }
+      # we keep track of which warnings have been issued, so we don't log multiple times
+      @no_unicode.add(code)
+    end
     nil
   end
 
@@ -348,6 +407,16 @@ class Pdfbox::Pdmodel::Font::PDType0Font < Pdfbox::Pdmodel::Font::PDFont
 
   def cmap_ucs2 : Fontbox::CMap::CMap?
     @c_map_ucs2
+  end
+
+  # Returns true if the font uses a predefined CMap (not Identity-H/V).
+  def is_cmap_predefined : Bool
+    @is_cmap_predefined
+  end
+
+  # Returns true if the descendant font uses CJK character collection.
+  def is_descendant_cjk : Bool
+    @is_descendant_cjk
   end
 
   def gsub_data : GsubData
