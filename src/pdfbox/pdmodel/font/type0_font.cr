@@ -8,115 +8,16 @@ require "../../../fontbox/ttf/true_type_font"
 require "../../../fontbox/ttf/ttf_tables"
 require "../../../fontbox/ttf/ttf_parser"
 require "./cmap_manager"
+require "./cid_font"
+require "./cid_font_type0"
+require "./cid_font_type2"
+require "./font_factory"
 
 class Pdfbox::Pdmodel::Font::PDType0Font < Pdfbox::Pdmodel::Font::PDFont
   include PDVectorFont
 
   Log = ::Log.for(self)
   Cos = Pdfbox::Cos
-
-  # Placeholder types for missing dependencies
-  class PDCIDFont
-    class PDCIDSystemInfo
-      getter registry : String
-      getter ordering : String
-      getter supplement : Int32
-
-      def initialize(@registry : String, @ordering : String, @supplement : Int32)
-      end
-    end
-
-    def initialize(font_dictionary : Cos::Dictionary, parent_font : PDFont)
-    end
-
-    def cid_system_info : PDCIDSystemInfo?
-      nil
-    end
-
-    def font_descriptor : PDFontDescriptor?
-      nil
-    end
-
-    def cid_font_type2? : Bool
-      false
-    end
-
-    def true_type_font
-      nil
-    end
-
-    def font_matrix : Matrix
-      Matrix.new
-    end
-
-    def get_height(code : Int32) : Float32
-      0.0_f32
-    end
-
-    def encode(unicode : Int32) : Bytes
-      Bytes.new(1, 0_u8)
-    end
-
-    def has_explicit_width(code : Int32) : Bool
-      false
-    end
-
-    def average_font_width : Float32
-      0.0_f32
-    end
-
-    def get_position_vector(code : Int32) : Vector
-      Vector.new
-    end
-
-    def get_vertical_displacement_vector_y(code : Int32) : Float32
-      0.0_f32
-    end
-
-    def get_width(code : Int32) : Float32
-      0.0_f32
-    end
-
-    def get_width_from_font(code : Int32) : Float32
-      0.0_f32
-    end
-
-    def embedded? : Bool
-      false
-    end
-
-    def damaged? : Bool
-      false
-    end
-
-    def code_to_cid(code : Int32) : Int32
-      code
-    end
-
-    def code_to_gid(code : Int32) : Int32
-      code
-    end
-
-    def bounding_box : BoundingBox
-      BoundingBox.new
-    end
-
-    def get_path(code : Int32)
-      nil
-    end
-
-    def get_normalized_path(code : Int32)
-      nil
-    end
-
-    def has_glyph(code : Int32) : Bool
-      false
-    end
-
-    def encode_glyph_id(glyph_id : Int32) : Bytes
-      Bytes.new(1, 0_u8)
-    end
-  end
 
   class GsubData
     NO_DATA_FOUND = new
@@ -163,8 +64,7 @@ class Pdfbox::Pdmodel::Font::PDType0Font < Pdfbox::Pdmodel::Font::PDFont
     if type.nil? || type != Cos::Name::FONT
       raise IO::Error.new("Missing or wrong type in descendant font dictionary")
     end
-    # TODO: Implement PDFontFactory.create_descendant_font
-    @descendant_font = PDCIDFont.new(descendant_font_dict, self)
+    @descendant_font = PDFontFactory.create_descendant_font(descendant_font_dict, self)
     read_encoding
     fetch_cmap_ucs2
   end
@@ -193,7 +93,7 @@ class Pdfbox::Pdmodel::Font::PDType0Font < Pdfbox::Pdmodel::Font::PDFont
     end
 
     # check if the descendant font is CJK
-        ros = @descendant_font.cid_system_info
+    ros = @descendant_font.cid_system_info
     if ros
       ordering = ros.ordering
       @is_descendant_cjk = ros.registry == "Adobe" &&
@@ -267,15 +167,15 @@ class Pdfbox::Pdmodel::Font::PDType0Font < Pdfbox::Pdmodel::Font::PDFont
 
   def position_vector(code : Int32) : Vector
     # units are always 1/1000 text space, font matrix is not used, see FOP-2252
-    @descendant_font.get_position_vector(code) # TODO: scale(-1 / 1000f)
+    @descendant_font.position_vector(code) # TODO: scale(-1 / 1000f)
   end
 
   def width(code : Int32) : Float32
-    @descendant_font.get_width(code)
+    @descendant_font.width(code)
   end
 
   def height(code : Int32) : Float32
-    @descendant_font.get_height(code)
+    @descendant_font.height(code)
   end
 
   def to_unicode(code : Int32) : String?
@@ -286,11 +186,11 @@ class Pdfbox::Pdmodel::Font::PDType0Font < Pdfbox::Pdmodel::Font::PDFont
     # Use identity mapping if the given ToUnicode CMap doesn't provide any valid mapping
     # a predefined map shall only be used if there isn't any ToUnicode CMap
     # PDFBOX-6022: not when there's a predefined cmap
-    if to_unicode_cmap && !is_cmap_predefined
+    if to_unicode_cmap && !cmap_predefined?
       return String.new(Bytes[code].map(&.chr))
     end
 
-    if (is_cmap_predefined || is_descendant_cjk) && (ucs2 = cmap_ucs2)
+    if (cmap_predefined? || descendant_cjk?) && (ucs2 = cmap_ucs2)
       # if the font is composite and uses a predefined cmap (excluding Identity-H/V) then
       # or if its descendant font uses Adobe-GB1/CNS1/Japan1/Korea1
 
@@ -372,7 +272,7 @@ class Pdfbox::Pdmodel::Font::PDType0Font < Pdfbox::Pdmodel::Font::PDFont
   end
 
   def width_from_font(code : Int32) : Float32
-    @descendant_font.get_width_from_font(code)
+    @descendant_font.width_from_font(code)
   end
 
   protected def get_standard14_width(code : Int32) : Float32
@@ -401,6 +301,16 @@ class Pdfbox::Pdmodel::Font::PDType0Font < Pdfbox::Pdmodel::Font::PDFont
     @descendant_font.code_to_gid(code)
   end
 
+  # Returns true if the descendant font is a Type 2 CIDFont (TrueType).
+  def cid_font_type2? : Bool
+    @descendant_font.is_a?(PDCIDFontType2)
+  end
+
+  # Returns the TrueType font if the descendant font is Type 2, otherwise nil.
+  def true_type_font
+    @descendant_font.as?(PDCIDFontType2).try(&.true_type_font)
+  end
+
   def cmap : Fontbox::CMap::CMap?
     @c_map
   end
@@ -410,12 +320,12 @@ class Pdfbox::Pdmodel::Font::PDType0Font < Pdfbox::Pdmodel::Font::PDFont
   end
 
   # Returns true if the font uses a predefined CMap (not Identity-H/V).
-  def is_cmap_predefined : Bool
+  def cmap_predefined? : Bool
     @is_cmap_predefined
   end
 
   # Returns true if the descendant font uses CJK character collection.
-  def is_descendant_cjk : Bool
+  def descendant_cjk? : Bool
     @is_descendant_cjk
   end
 
