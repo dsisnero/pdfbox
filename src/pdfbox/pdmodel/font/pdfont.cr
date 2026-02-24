@@ -1,6 +1,7 @@
 # PDF font base class
 # Corresponds to PDFont in Apache PDFBox
 require "../../cos"
+require "./font_descriptor"
 
 abstract class Pdfbox::Pdmodel::Font::PDFont
   Log = ::Log.for(self)
@@ -71,9 +72,7 @@ abstract class Pdfbox::Pdmodel::Font::PDFont
     end
   end
 
-  class PDFontDescriptor
-    def initialize(dict : Pdfbox::Cos::Dictionary); end
-  end
+  alias PDFontDescriptor = ::Pdfbox::Pdmodel::Font::PDFontDescriptor
 
   @dict : Pdfbox::Cos::Dictionary
   @code_to_width_map : Hash(Int32, Float32)
@@ -118,7 +117,12 @@ abstract class Pdfbox::Pdmodel::Font::PDFont
 
   # Get font descriptor
   def font_descriptor : PDFontDescriptor?
-    nil
+    desc_dict = @dict.get_dictionary(Pdfbox::Cos::Name::FONT_DESC)
+    if desc_dict
+      PDFontDescriptor.new(desc_dict)
+    else
+      nil
+    end
   end
 
   # Returns the AFM if this is a Standard 14 font.

@@ -683,6 +683,29 @@ module Pdfbox::Cos
     # Font-related constants
     FONT          = new("Font")
     FONT_DESC     = new("FontDescriptor")
+    FONT_NAME     = new("FontName")
+    FONT_FAMILY   = new("FontFamily")
+    FONT_WEIGHT   = new("FontWeight")
+    FONT_STRETCH  = new("FontStretch")
+    FLAGS         = new("Flags")
+    FONT_BBOX     = new("FontBBox")
+    ITALIC_ANGLE  = new("ItalicAngle")
+    ASCENT        = new("Ascent")
+    DESCENT       = new("Descent")
+    LEADING       = new("Leading")
+    CAP_HEIGHT    = new("CapHeight")
+    XHEIGHT       = new("XHeight")
+    STEM_V        = new("StemV")
+    STEM_H        = new("StemH")
+    AVG_WIDTH     = new("AvgWidth")
+    MAX_WIDTH     = new("MaxWidth")
+    CHAR_SET      = new("CharSet")
+    FONT_FILE     = new("FontFile")
+    FONT_FILE2    = new("FontFile2")
+    FONT_FILE3    = new("FontFile3")
+    CID_SET       = new("CIDSet")
+    STYLE         = new("Style")
+    PANOSE        = new("Panose")
     BASE_FONT     = new("BaseFont")
     TYPE1         = new("Type1")
     TO_UNICODE    = new("ToUnicode")
@@ -1099,6 +1122,32 @@ module Pdfbox::Cos
     def get_int(key : Name, default : Int64 = 0_i64) : Int64
       value = get_dictionary_object(key)
       return default unless value.is_a?(Integer)
+      value.value
+    end
+
+    # Get a float value, returning default if not present or not a float
+    def get_float(key : Name, default : Float64 = 0.0_f64) : Float64
+      value = get_dictionary_object(key)
+      return default unless value.is_a?(Float)
+      value.value
+    end
+
+    # Get an array value, returning nil if not present or not an array
+    def get_array(key : Name) : Array?
+      value = get_dictionary_object(key)
+      value.as?(Array) if value
+    end
+
+    # Get a stream value, returning nil if not present or not a stream
+    def get_stream(key : Name) : Stream?
+      value = get_dictionary_object(key)
+      value.as?(Stream) if value
+    end
+
+    # Get a name value as a string, returning nil if not present or not a name
+    def get_name_as_string(key : Name) : ::String?
+      value = get_dictionary_object(key)
+      return unless value.is_a?(Name)
       value.value
     end
 

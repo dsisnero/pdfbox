@@ -173,7 +173,7 @@ class Pdfbox::Pdmodel::Font::PDTrueTypeFont < Pdfbox::Pdmodel::Font::PDSimpleFon
   protected def read_encoding_from_font : Encoding
     if !embedded? && (afm = get_standard14_afm)
       # read from AFM
-      return Type1Encoding.new(afm)
+      Type1Encoding.new(afm)
     else
       # non-symbolic fonts don't have a built-in encoding per se, but their encoding is
       # assumed to be StandardEncoding by the PDF spec unless an explicit Encoding is present
@@ -209,7 +209,7 @@ class Pdfbox::Pdmodel::Font::PDTrueTypeFont < Pdfbox::Pdmodel::Font::PDSimpleFon
         end
       end
 
-      return BuiltInEncoding.new(code_to_name)
+      BuiltInEncoding.new(code_to_name)
     end
   end
 
