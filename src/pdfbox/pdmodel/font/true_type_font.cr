@@ -6,9 +6,11 @@ require "./encoding/win_ansi_encoding"
 require "./encoding/symbol_encoding"
 require "./encoding/zapf_dingbats_encoding"
 require "./standard14_fonts"
+require "../document"
 require "../../../fontbox/ttf/true_type_font"
 require "../../../fontbox/ttf/ttf_tables"
 require "../../../fontbox/ttf/ttf_parser"
+require "../../../fontbox/util/path"
 
 class Pdfbox::Pdmodel::Font::PDTrueTypeFont < Pdfbox::Pdmodel::Font::PDSimpleFont
   include PDVectorFont
@@ -18,10 +20,9 @@ class Pdfbox::Pdmodel::Font::PDTrueTypeFont < Pdfbox::Pdmodel::Font::PDSimpleFon
 
   # Placeholder types for missing dependencies
   class OpenTypeFont
-  end
-
-  class PDDocument
-    # Placeholder for PDDocument
+    def postscript? : Bool
+      false
+    end
   end
 
   class PDStream
@@ -87,6 +88,18 @@ class Pdfbox::Pdmodel::Font::PDTrueTypeFont < Pdfbox::Pdmodel::Font::PDSimpleFon
   START_RANGE_F000 = 0xF000
   START_RANGE_F100 = 0xF100
   START_RANGE_F200 = 0xF200
+
+  # Class methods for loading fonts
+  def self.load(doc : PDDocument, input : IO, encoding : Encoding) : PDTrueTypeFont
+    # TODO: Implement proper loading from IO
+    # For now, create a font with a dummy TrueTypeFont
+    ttf = Fontbox::TTF::TrueTypeFont.new(nil)
+    new(doc, ttf, encoding, true)
+  end
+
+  def self.load(doc : PDDocument, ttf : Fontbox::TTF::TrueTypeFont, encoding : Encoding) : PDTrueTypeFont
+    new(doc, ttf, encoding, false)
+  end
 
   # Instance variables
   @ttf : Fontbox::TTF::TrueTypeFont?
@@ -160,7 +173,7 @@ class Pdfbox::Pdmodel::Font::PDTrueTypeFont < Pdfbox::Pdmodel::Font::PDSimpleFon
     @is_damaged = false
     @encoding = encoding
     # TODO: Implement PDTrueTypeFontEmbedder
-    embedder = PDTrueTypeFontEmbedder.new(doc, @dict, ttf, encoding)
+    _embedder = PDTrueTypeFontEmbedder.new(doc, @dict, ttf, encoding)
     # set_font_descriptor(embedder.font_descriptor)
     if close_ttf
       ttf.close
@@ -213,9 +226,38 @@ class Pdfbox::Pdmodel::Font::PDTrueTypeFont < Pdfbox::Pdmodel::Font::PDSimpleFon
     end
   end
 
-  def get_path(name : String)
-    # TODO: Return GeneralPath type
-    nil
+  def get_path(name : String) : Fontbox::Util::Path
+    ttf = @ttf
+    return Fontbox::Util::Path.new if ttf.nil?
+
+    # handle glyph names and uniXXXX names
+    gid = ttf.name_to_gid(name)
+    if gid == 0
+      begin
+        # handle GID pseudo-names
+        gid = name.to_i
+        if gid > ttf.number_of_glyphs
+          gid = 0
+        end
+      rescue ArgumentError
+        gid = 0
+      end
+    end
+    # I'm assuming .notdef paths are not drawn, as in PDFBOX-2421
+    if gid == 0
+      return Fontbox::Util::Path.new
+    end
+
+    glyph_table = ttf.glyph
+    if glyph_table.nil?
+      raise IO::Error.new("glyf table is missing in font #{name}, please report this file")
+    end
+    glyph = glyph_table.glyph(gid)
+    if glyph.nil?
+      Fontbox::Util::Path.new
+    else
+      glyph.path
+    end
   end
 
   def has_glyph?(name : String) : Bool
@@ -378,14 +420,55 @@ class Pdfbox::Pdmodel::Font::PDTrueTypeFont < Pdfbox::Pdmodel::Font::PDSimpleFon
 
   # PDVectorFont interface implementation
 
-  def get_path(code : Int32)
-    # TODO: Implement glyph path for code
-    nil
+  def get_path(code : Int32) : Fontbox::Util::Path
+    ttf = @ttf
+    return Fontbox::Util::Path.new if ttf.nil?
+
+    if otf = @otf
+      if otf.postscript?
+        path = get_path_from_outlines(code)
+        return path || Fontbox::Util::Path.new
+      end
+    end
+
+    gid = code_to_gid(code)
+    glyph_table = ttf.glyph
+    if glyph_table.nil?
+      # needs to be caught earlier, see PDFBOX-5587 and PDFBOX-3488
+      raise IO::Error.new("glyf table is missing in font #{name}, please report this file")
+    end
+    glyph = glyph_table.glyph(gid)
+    if glyph.nil?
+      # some glyphs have no outlines (e.g. space, table, newline)
+      Fontbox::Util::Path.new
+    else
+      glyph.path
+    end
   end
 
-  def get_normalized_path(code : Int32)
-    # TODO: Implement normalized path
-    nil
+  def get_normalized_path(code : Int32) : Fontbox::Util::Path
+    ttf = @ttf
+    return Fontbox::Util::Path.new if ttf.nil?
+
+    path = nil
+    if (otf = @otf) && otf.postscript?
+      path = get_path_from_outlines(code)
+    else
+      gid = code_to_gid(code)
+      path = get_path(code)
+      # Acrobat only draws GID 0 for embedded or "Standard 14" fonts, see PDFBOX-2372
+      if gid == 0 && !embedded? && !standard14?
+        path = nil
+      end
+    end
+    if path.nil?
+      return Fontbox::Util::Path.new
+    end
+    if ttf.units_per_em != 1000
+      scale = 1000.0_f64 / ttf.units_per_em.to_f64
+      path.scale!(scale, scale)
+    end
+    path
   end
 
   def has_glyph(code : Int32) : Bool
@@ -431,6 +514,12 @@ class Pdfbox::Pdmodel::Font::PDTrueTypeFont < Pdfbox::Pdmodel::Font::PDSimpleFon
     @cmap_initialized = true
   end
 
+  private def get_path_from_outlines(code : Int32) : Fontbox::Util::Path?
+    # TODO: Implement OpenType CFF outlines
+    nil
+  end
+
+  # ameba:disable Metrics/CyclomaticComplexity
   private def code_to_gid(code : Int32) : Int32
     extract_cmap_table
 

@@ -15,6 +15,7 @@
 
 require "./gsub/glyph_substitution_data_extractor"
 require "../../pdfbox/io"
+require "../util/path"
 
 module Fontbox::TTF
   # Header table.
@@ -1958,6 +1959,10 @@ module Fontbox::TTF
       @glyph_description.not_nil! # ameba:disable Lint/NotNil
     end
 
+    def path : Fontbox::Util::Path
+      GlyphRenderer.new(description).path
+    end
+
     def x_maximum : Int16
       @x_max
     end
@@ -1972,6 +1977,124 @@ module Fontbox::TTF
 
     def y_minimum : Int16
       @y_min
+    end
+  end
+
+  # Renders glyph descriptions to paths.
+  #
+  # Ported from Apache PDFBox GlyphRenderer.
+  class GlyphRenderer
+    Log = ::Log.for(self)
+
+    @glyph_description : GlyphDescription
+
+    def initialize(@glyph_description : GlyphDescription)
+    end
+
+    private class Point
+      property x : Int32
+      property y : Int32
+      property on_curve : Bool
+      property end_of_contour : Bool
+
+      def initialize(@x, @y, @on_curve, @end_of_contour)
+      end
+
+      # this constructs an on-curve, non-endofcontour point
+      def initialize(@x, @y)
+        @on_curve = true
+        @end_of_contour = false
+      end
+    end
+
+    private def describe(gd : GlyphDescription) : Array(Point)
+      end_pt_index = 0
+      end_pt_of_contour_index = -1
+      Array.new(gd.point_count) do |i|
+        if end_pt_of_contour_index == -1
+          end_pt_of_contour_index = gd.end_pt_of_contours(end_pt_index)
+        end
+        end_pt = end_pt_of_contour_index == i
+        if end_pt
+          end_pt_index += 1
+          end_pt_of_contour_index = -1
+        end
+        Point.new(gd.x_coordinate(i), gd.y_coordinate(i),
+          (gd.flags(i) & GlyfDescript::ON_CURVE) != 0, end_pt)
+      end
+    end
+
+    private def calculate_path(points : Array(Point)) : Fontbox::Util::Path
+      path = Fontbox::Util::Path.new
+      start = 0
+      p = 0
+      len = points.size
+      while p < len
+        if points[p].end_of_contour
+          first_point = points[start]
+          last_point = points[p]
+          contour = [] of Point
+          (start..p).each do |q|
+            contour << points[q]
+          end
+          if points[start].on_curve
+            contour << first_point
+          elsif points[p].on_curve
+            contour.unshift(last_point)
+          else
+            pmid = mid_value(first_point, last_point)
+            contour.unshift(pmid)
+            contour << pmid
+          end
+          move_to(path, contour[0])
+          j = 1
+          clen = contour.size
+          while j < clen
+            pnow = contour[j]
+            if pnow.on_curve
+              line_to(path, pnow)
+            elsif j + 1 < clen && contour[j + 1].on_curve
+              quad_to(path, pnow, contour[j + 1])
+              j += 1
+            else
+              quad_to(path, pnow, mid_value(pnow, contour[j + 1]))
+            end
+            j += 1
+          end
+          path.close_path
+          start = p + 1
+        end
+        p += 1
+      end
+      path
+    end
+
+    private def move_to(path : Fontbox::Util::Path, point : Point)
+      path.move_to(point.x.to_f64, point.y.to_f64)
+      Log.trace { "moveTo: #{point.x},#{point.y}" }
+    end
+
+    private def line_to(path : Fontbox::Util::Path, point : Point)
+      path.line_to(point.x.to_f64, point.y.to_f64)
+      Log.trace { "lineTo: #{point.x},#{point.y}" }
+    end
+
+    private def quad_to(path : Fontbox::Util::Path, ctrl_point : Point, point : Point)
+      path.quad_to(ctrl_point.x.to_f64, ctrl_point.y.to_f64, point.x.to_f64, point.y.to_f64)
+      Log.trace { "quadTo: #{ctrl_point.x},#{ctrl_point.y} #{point.x},#{point.y}" }
+    end
+
+    private def mid_value(a : Int32, b : Int32) : Int32
+      a + (b - a) // 2
+    end
+
+    private def mid_value(point1 : Point, point2 : Point) : Point
+      Point.new(mid_value(point1.x, point2.x), mid_value(point1.y, point2.y))
+    end
+
+    def path : Fontbox::Util::Path
+      points = describe(@glyph_description)
+      calculate_path(points)
     end
   end
 

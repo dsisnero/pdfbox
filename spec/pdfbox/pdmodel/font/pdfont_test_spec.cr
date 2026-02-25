@@ -110,8 +110,9 @@ describe "PDFontTest" do
   end
 
   describe "testPDFBOX5486" do
-    pending "requires PDDocument and font embedding" do
-      # TODO: Implement when PDDocument and font embedding are available
+    pending "requires proper TrueTypeFont mock implementation" do
+      # TODO: Implement when TrueTypeFont mocking is available
+      # This test fails because TrueTypeFont.new requires a TTFDataStream
     end
   end
 
