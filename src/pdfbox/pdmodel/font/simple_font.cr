@@ -72,12 +72,12 @@ abstract class Pdfbox::Pdmodel::Font::PDSimpleFont < Pdfbox::Pdmodel::Font::PDFo
 
   # Returns the Encoding.
   def encoding : Pdfbox::Pdmodel::Font::Encoding
-    @encoding.not_nil!
+    @encoding || raise "PDFBox bug: encoding should not be nil"
   end
 
   # Returns the glyph list.
   def glyph_list : Pdfbox::Pdmodel::Font::GlyphList
-    @glyph_list.not_nil!
+    @glyph_list || raise "PDFBox bug: glyph list should not be nil"
   end
 
   # Returns true if the font is a symbolic (that is, it does not use the Adobe Standard Roman character set).
@@ -91,7 +91,7 @@ abstract class Pdfbox::Pdmodel::Font::PDSimpleFont < Pdfbox::Pdmodel::Font::PDFo
         @is_symbolic = true
       end
     end
-    @is_symbolic.not_nil!
+    @is_symbolic || raise "PDFBox bug: symbolic flag should not be nil"
   end
 
   # Internal implementation of symbolic?, allowing for the fact that the result may be indeterminate.
@@ -284,7 +284,7 @@ abstract class Pdfbox::Pdmodel::Font::PDSimpleFont < Pdfbox::Pdmodel::Font::PDFo
   end
 
   # Returns true if the given bounding box is non-zero.
-  private def is_non_zero_bounding_box?(bbox : BoundingBox) : Bool
+  private def non_zero_bounding_box?(bbox : BoundingBox) : Bool
     # TODO: Implement proper bounding box check
     false
   end

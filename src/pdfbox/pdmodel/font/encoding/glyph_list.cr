@@ -75,8 +75,8 @@ class Pdfbox::Pdmodel::Font::GlyphList
 
       code_points = unicode_list.map(&.to_i(16))
       string = String.build do |builder|
-        code_points.each do |cp|
-          builder << cp.chr
+        code_points.each do |code_point|
+          builder << code_point.chr
         end
       end
 

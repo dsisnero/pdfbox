@@ -60,8 +60,8 @@ module Pdfbox::Pdmodel::Font
 
       # Copy mappings from base encoding
       base_map = base.code_to_name_map
-      base_map.each do |code, name|
-        add(code, name)
+      base_map.each do |code, glyph_name|
+        add(code, glyph_name)
       end
 
       apply_differences
