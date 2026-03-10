@@ -48,21 +48,21 @@ class Pdfbox::Pdmodel::Font::PDType0Font < Pdfbox::Pdmodel::Font::PDFont
     @gsub_data = GsubData::NO_DATA_FOUND
     @cmap_lookup = nil
 
-    descendant_fonts = @dict.get_array(Cos::Name::DESCENDANT_FONTS)
+    descendant_fonts = @dict.get_array(Pdfbox::Cos::Name::DESCENDANT_FONTS)
     if descendant_fonts.nil?
-      raise IO::Error.new("Missing descendant font array")
+      raise ::IO::Error.new("Missing descendant font array")
     end
-    if descendant_fonts.empty?
-      raise IO::Error.new("Descendant font array is empty")
+    if descendant_fonts.size == 0
+      raise ::IO::Error.new("Descendant font array is empty")
     end
     descendant_font_dict_base = descendant_fonts[0]?
-    if descendant_font_dict_base.nil? || !descendant_font_dict_base.is_a?(Cos::Dictionary)
-      raise IO::Error.new("Missing descendant font dictionary")
+    if descendant_font_dict_base.nil? || !descendant_font_dict_base.is_a?(Pdfbox::Cos::Dictionary)
+      raise ::IO::Error.new("Missing descendant font dictionary")
     end
-    descendant_font_dict = descendant_font_dict_base.as(Cos::Dictionary)
-    type = descendant_font_dict[Cos::Name::TYPE]?
-    if type.nil? || type != Cos::Name::FONT
-      raise IO::Error.new("Missing or wrong type in descendant font dictionary")
+    descendant_font_dict = descendant_font_dict_base.as(Pdfbox::Cos::Dictionary)
+    type = descendant_font_dict[Pdfbox::Cos::Name::TYPE]?
+    if type.nil? || type != Pdfbox::Cos::Name::FONT
+      raise ::IO::Error.new("Missing or wrong type in descendant font dictionary")
     end
     @descendant_font = PDFontFactory.create_descendant_font(descendant_font_dict, self)
     read_encoding
@@ -71,13 +71,13 @@ class Pdfbox::Pdmodel::Font::PDType0Font < Pdfbox::Pdmodel::Font::PDFont
 
   # Returns the PostScript name of the font.
   def name : String
-    @dict.get_name_as_string(Cos::Name::BASE_FONT) || ""
+    @dict.get_name_as_string(Pdfbox::Cos::Name::BASE_FONT) || ""
   end
 
   # Reads the encoding from the font dictionary.
   private def read_encoding : Nil
-    encoding = @dict.get(Cos::Name::ENCODING)
-    if encoding.is_a?(Cos::Name)
+    encoding = @dict[Pdfbox::Cos::Name::ENCODING]?
+    if encoding.is_a?(Pdfbox::Cos::Name)
       # predefined CMap
       encoding_name = encoding.to_s
       @c_map = CMapManager.get_predefined_cmap(encoding_name)
@@ -107,8 +107,8 @@ class Pdfbox::Pdmodel::Font::PDType0Font < Pdfbox::Pdmodel::Font::PDFont
     # if the font is composite and uses a predefined cmap (excluding Identity-H/V)
     # or whose descendant CIDFont uses the Adobe-GB1, Adobe-CNS1, Adobe-Japan1, or
     # Adobe-Korea1 character collection:
-    name = @dict.get(Cos::Name::ENCODING).as?(Cos::Name)
-    if (@is_cmap_predefined && !(name == Cos::Name::IDENTITY_H || name == Cos::Name::IDENTITY_V)) ||
+    name = @dict[Pdfbox::Cos::Name::ENCODING]?.as?(Pdfbox::Cos::Name)
+    if (@is_cmap_predefined && !(name == Pdfbox::Cos::Name::IDENTITY_H || name == Pdfbox::Cos::Name::IDENTITY_V)) ||
        @is_descendant_cjk
       # a) Map the character code to a CID using the font's CMap
       # b) Obtain the ROS from the font's CIDSystemInfo
@@ -252,7 +252,7 @@ class Pdfbox::Pdmodel::Font::PDType0Font < Pdfbox::Pdmodel::Font::PDFont
   # Helper methods
 
   def descendant_font : PDCIDFont
-    descendant_font
+    @descendant_font || raise "Missing descendant font"
   end
 
   def embedded? : Bool
@@ -339,9 +339,5 @@ class Pdfbox::Pdmodel::Font::PDType0Font < Pdfbox::Pdmodel::Font::PDFont
 
   def encode_glyph_id(glyph_id : Int32) : Bytes
     descendant_font.encode_glyph_id(glyph_id)
-  end
-
-  private def descendant_font : PDCIDFont
-    @descendant_font || raise "Missing descendant font"
   end
 end
