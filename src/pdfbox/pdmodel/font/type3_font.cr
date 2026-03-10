@@ -56,7 +56,7 @@ module Pdfbox::Pdmodel::Font
 
     # Type 3 fonts do not have a built-in encoding.
     protected def read_encoding_from_font : Encoding
-      raise "not supported for Type 3 fonts"
+      raise NotImplementedError.new("not supported for Type 3 fonts")
     end
 
     # Type 3 fonts are never symbolic.
@@ -66,7 +66,7 @@ module Pdfbox::Pdmodel::Font
 
     # Type 3 fonts do not use vector paths.
     def get_path(name : String)
-      raise "not supported for Type 3 fonts"
+      raise NotImplementedError.new("not supported for Type 3 fonts")
     end
 
     # Returns true if the font contains the glyph for the given name.
@@ -77,7 +77,7 @@ module Pdfbox::Pdmodel::Font
 
     # Type 3 fonts do not use FontBox fonts.
     def font_box_font
-      raise "not supported for Type 3 fonts"
+      raise NotImplementedError.new("not supported for Type 3 fonts")
     end
 
     # Returns the position vector for the given character code.
@@ -149,7 +149,7 @@ module Pdfbox::Pdmodel::Font
 
     # Encoding not implemented for Type 3 fonts.
     protected def encode(unicode : Int32) : Bytes
-      raise "Not implemented: Type3"
+      raise NotImplementedError.new("Not implemented: Type3")
     end
 
     # Simple fonts use 1-byte codes.

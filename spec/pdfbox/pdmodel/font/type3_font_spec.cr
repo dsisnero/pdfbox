@@ -15,6 +15,12 @@ module Type3FontSpecHelpers
   end
 end
 
+class TestType3Font < Pdfbox::Pdmodel::Font::PDType3Font
+  def encode_public(unicode : Int32) : Bytes
+    encode(unicode)
+  end
+end
+
 describe Pdfbox::Pdmodel::Font::PDType3Font do
   describe "#has_glyph?" do
     it "returns true when the char proc dictionary has a stream for the glyph name" do
@@ -125,6 +131,20 @@ describe Pdfbox::Pdmodel::Font::PDType3Font do
       io = IO::Memory.new(Bytes[0x41_u8])
       font.read_code(io).should eq(65)
       font.read_code(io).should eq(-1)
+    end
+
+    it "raises NotImplementedError for unsupported Type3 vector/fontbox operations" do
+      font = Pdfbox::Pdmodel::Font::PDType3Font.new(Type3FontSpecHelpers.build_font_dict)
+
+      expect_raises(NotImplementedError, "not supported for Type 3 fonts") { font.get_path("A") }
+      expect_raises(NotImplementedError, "not supported for Type 3 fonts") { font.font_box_font }
+    end
+
+    it "raises NotImplementedError for Type3 encode" do
+      font = TestType3Font.new(Type3FontSpecHelpers.build_font_dict)
+      expect_raises(NotImplementedError, "Not implemented: Type3") do
+        font.encode_public('A'.ord)
+      end
     end
   end
 end
