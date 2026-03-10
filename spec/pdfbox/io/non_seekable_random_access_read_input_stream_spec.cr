@@ -127,6 +127,7 @@ describe Pdfbox::IO::NonSeekableRandomAccessReadInputStream do
 
   it "matches NonSeekableRandomAccessReadInputStreamTest#testPDFBOX5158 and #testPDFBOX5161" do
     temp_path = File.join("temp", "len4096.pdf")
+    Dir.mkdir_p(File.dirname(temp_path))
     File.write(temp_path, Bytes.new(4096))
     File.size(temp_path).should eq(4096)
 
