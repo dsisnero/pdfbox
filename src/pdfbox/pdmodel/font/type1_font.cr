@@ -196,7 +196,7 @@ class Pdfbox::Pdmodel::Font::PDType1Font < Pdfbox::Pdmodel::Font::PDSimpleFont
   end
 
   # Constructor from font dictionary
-  def initialize(font_dictionary : Cos::Dictionary)
+  def initialize(font_dictionary : Pdfbox::Cos::Dictionary)
     super(font_dictionary)
     @standard14 = false
     @type1font = nil

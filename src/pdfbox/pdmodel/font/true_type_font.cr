@@ -2,6 +2,8 @@
 # Corresponds to PDTrueTypeFont in Apache PDFBox
 require "./encoding"
 require "./encoding/glyph_list"
+require "./encoding/built_in_encoding"
+require "./encoding/type1_encoding"
 require "./encoding/win_ansi_encoding"
 require "./encoding/symbol_encoding"
 require "./encoding/zapf_dingbats_encoding"
@@ -26,10 +28,10 @@ class Pdfbox::Pdmodel::Font::PDTrueTypeFont < Pdfbox::Pdmodel::Font::PDSimpleFon
   end
 
   class PDStream
-    def initialize(dict : Cos::Dictionary); end
+    def initialize(dict : Pdfbox::Cos::Dictionary); end
 
-    def cos_object : Cos::Dictionary
-      Cos::Dictionary.new
+    def cos_object : Pdfbox::Cos::Dictionary
+      Pdfbox::Cos::Dictionary.new
     end
 
     def create_view
@@ -71,16 +73,16 @@ class Pdfbox::Pdmodel::Font::PDTrueTypeFont < Pdfbox::Pdmodel::Font::PDSimpleFon
     end
 
     def get_true_type_font(base_font : String, font_descriptor)
-      FontMapping(Fontbox::TTF::TrueTypeFont).new(Fontbox::TTF::TrueTypeFont.new(nil), false)
+      raise NotImplementedError.new("FontMappers#get_true_type_font(#{base_font}) not implemented")
     end
   end
 
   class PDTrueTypeFontEmbedder
-    def initialize(doc : PDDocument, dict : Cos::Dictionary, ttf : Fontbox::TTF::TrueTypeFont, encoding : Encoding)
+    def initialize(doc : PDDocument, dict : Pdfbox::Cos::Dictionary, ttf : Fontbox::TTF::TrueTypeFont, encoding : Encoding)
     end
 
     def font_descriptor : PDFontDescriptor
-      PDFontDescriptor.new(Cos::Dictionary.new)
+      PDFontDescriptor.new(Pdfbox::Cos::Dictionary.new)
     end
   end
 
@@ -91,10 +93,7 @@ class Pdfbox::Pdmodel::Font::PDTrueTypeFont < Pdfbox::Pdmodel::Font::PDSimpleFon
 
   # Class methods for loading fonts
   def self.load(doc : PDDocument, input : IO, encoding : Encoding) : PDTrueTypeFont
-    # TODO: Implement proper loading from IO
-    # For now, create a font with a dummy TrueTypeFont
-    ttf = Fontbox::TTF::TrueTypeFont.new(nil)
-    new(doc, ttf, encoding, true)
+    raise NotImplementedError.new("PDTrueTypeFont.load(PDDocument, IO, Encoding) not implemented")
   end
 
   def self.load(doc : PDDocument, ttf : Fontbox::TTF::TrueTypeFont, encoding : Encoding) : PDTrueTypeFont
@@ -127,7 +126,7 @@ class Pdfbox::Pdmodel::Font::PDTrueTypeFont < Pdfbox::Pdmodel::Font::PDSimpleFon
   end
 
   # Constructor from font dictionary
-  def initialize(font_dictionary : Cos::Dictionary)
+  def initialize(font_dictionary : Pdfbox::Cos::Dictionary)
     super(font_dictionary)
 
     ttf_font = nil
@@ -145,7 +144,7 @@ class Pdfbox::Pdmodel::Font::PDTrueTypeFont < Pdfbox::Pdmodel::Font::PDSimpleFon
 
     # Substitute with system font if not embedded
     if ttf_font.nil?
-      mapping = FontMappers.instance.get_true_type_font(get_base_font, fd)
+      mapping = FontMappers.instance.get_true_type_font(name, fd)
       ttf_font = mapping.font
 
       if mapping.fallback?
@@ -154,7 +153,7 @@ class Pdfbox::Pdmodel::Font::PDTrueTypeFont < Pdfbox::Pdmodel::Font::PDSimpleFon
         rescue
           "?"
         end
-        Log.warn { "Using fallback font #{font_name} for base font #{get_base_font}" }
+        Log.warn { "Using fallback font #{font_name} for base font #{name}" }
       end
     end
 
@@ -199,7 +198,9 @@ class Pdfbox::Pdmodel::Font::PDTrueTypeFont < Pdfbox::Pdmodel::Font::PDSimpleFon
       standard14_name = Standard14Fonts.get_mapped_font_name(name)
 
       # likewise, if the font is standard 14 then we know it's Standard Encoding
-      if standard14? && standard14_name != FontName::SYMBOL && standard14_name != FontName::ZAPF_DINGBATS
+      if standard14? &&
+         standard14_name != Standard14Fonts::FontName::SYMBOL &&
+         standard14_name != Standard14Fonts::FontName::ZAPF_DINGBATS
         return StandardEncoding::INSTANCE
       end
 
@@ -212,7 +213,7 @@ class Pdfbox::Pdmodel::Font::PDTrueTypeFont < Pdfbox::Pdmodel::Font::PDSimpleFon
         if gid > 0
           name = nil
           if post
-            name = post.get_name(gid)
+            name = post.name(gid)
           end
           if name.nil?
             # GID pseudo-name
@@ -275,7 +276,7 @@ class Pdfbox::Pdmodel::Font::PDTrueTypeFont < Pdfbox::Pdmodel::Font::PDSimpleFon
   # PDFont abstract method implementations
 
   def name : String
-    @dict[Cos::Name::BASE_FONT]?.try(&.to_s) || "Unknown"
+    @dict[Pdfbox::Cos::Name::BASE_FONT]?.try(&.to_s) || "Unknown"
   end
 
   def font_matrix : Matrix
@@ -293,7 +294,7 @@ class Pdfbox::Pdmodel::Font::PDTrueTypeFont < Pdfbox::Pdmodel::Font::PDSimpleFon
 
   def width(code : Int32) : Float32
     if has_explicit_width?(code)
-      first_char = @dict[Cos::Name::FIRST_CHAR]?.try(&.as_i) || 0
+      first_char = @dict[Pdfbox::Cos::Name::FIRST_CHAR]?.try(&.as_i) || 0
       idx = code - first_char
       if idx >= 0 && idx < widths.size
         return widths[idx]
@@ -492,19 +493,19 @@ class Pdfbox::Pdmodel::Font::PDTrueTypeFont < Pdfbox::Pdmodel::Font::PDSimpleFon
       platform_id = cmap.platform_id
       platform_encoding_id = cmap.platform_encoding_id
 
-      if platform_id == CmapTable::PLATFORM_WINDOWS
-        if platform_encoding_id == CmapTable::ENCODING_WIN_UNICODE_BMP
+      if platform_id == Fontbox::TTF::CmapTable::PLATFORM_WINDOWS
+        if platform_encoding_id == Fontbox::TTF::CmapTable::ENCODING_WIN_UNICODE_BMP
           @cmap_win_unicode = cmap
-        elsif platform_encoding_id == CmapTable::ENCODING_WIN_SYMBOL
+        elsif platform_encoding_id == Fontbox::TTF::CmapTable::ENCODING_WIN_SYMBOL
           @cmap_win_symbol = cmap
         end
-      elsif platform_id == CmapTable::PLATFORM_MACINTOSH && platform_encoding_id == CmapTable::ENCODING_MAC_ROMAN
+      elsif platform_id == Fontbox::TTF::CmapTable::PLATFORM_MACINTOSH && platform_encoding_id == Fontbox::TTF::CmapTable::ENCODING_MAC_ROMAN
         @cmap_mac_roman = cmap
-      elsif platform_id == CmapTable::PLATFORM_UNICODE
-        if platform_encoding_id == CmapTable::ENCODING_UNICODE_1_0
+      elsif platform_id == Fontbox::TTF::CmapTable::PLATFORM_UNICODE
+        if platform_encoding_id == Fontbox::TTF::CmapTable::ENCODING_UNICODE_1_0
           # PDFBOX-4755 / PDF.js #5501
           @cmap_win_unicode = cmap
-        elsif platform_encoding_id == CmapTable::ENCODING_UNICODE_2_0_BMP
+        elsif platform_encoding_id == Fontbox::TTF::CmapTable::ENCODING_UNICODE_2_0_BMP
           # PDFBOX-5484
           @cmap_win_unicode = cmap
         end

@@ -56,12 +56,22 @@ describe Pdfbox::Pdmodel::Font::PDFontFactory do
     type0.descendant_font.should be_a(Pdfbox::Pdmodel::Font::PDCIDFontType2)
   end
 
-  it "raises for direct descendant font subtype at top level" do
+  it "raises for direct CIDFontType0 subtype at top level" do
     dict = Pdfbox::Cos::Dictionary.new
     dict[Pdfbox::Cos::Name::TYPE] = Pdfbox::Cos::Name::FONT
     dict[Pdfbox::Cos::Name::SUBTYPE] = Pdfbox::Cos::Name.new("CIDFontType0")
 
-    expect_raises(Exception, "Invalid font subtype") do
+    expect_raises(::IO::Error, "Type 0 descendant font not allowed") do
+      Pdfbox::Pdmodel::Font::PDFontFactory.create_font(dict)
+    end
+  end
+
+  it "raises for direct CIDFontType2 subtype at top level" do
+    dict = Pdfbox::Cos::Dictionary.new
+    dict[Pdfbox::Cos::Name::TYPE] = Pdfbox::Cos::Name::FONT
+    dict[Pdfbox::Cos::Name::SUBTYPE] = Pdfbox::Cos::Name.new("CIDFontType2")
+
+    expect_raises(::IO::Error, "Type 2 descendant font not allowed") do
       Pdfbox::Pdmodel::Font::PDFontFactory.create_font(dict)
     end
   end

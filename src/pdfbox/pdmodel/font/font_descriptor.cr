@@ -179,7 +179,7 @@ module Pdfbox::Pdmodel::Font
     # Get the font flags.
     def flags : Int32
       if @flags == -1
-        @flags = @dic.get_int(Pdfbox::Cos::Name::FLAGS, 0)
+        @flags = @dic.get_int(Pdfbox::Cos::Name::FLAGS, 0).to_i32
       end
       @flags
     end

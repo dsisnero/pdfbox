@@ -138,7 +138,7 @@ class Pdfbox::Pdmodel::Font::GlyphList
           if code_point > 0xD7FF && code_point < 0xE000
             Log.warn { "Unicode character name with disallowed code area: #{name}" }
           else
-            unicode = String.new(code_point.chr)
+            unicode = code_point.chr.to_s
           end
         rescue ArgumentError
           Log.warn { "Not a number in Unicode character name: #{name}" }

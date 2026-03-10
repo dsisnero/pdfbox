@@ -24,14 +24,22 @@ module Pdfbox::Pdmodel::Font
       case subtype
       when "Type0"
         PDType0Font.new(dictionary)
+      when "Type1"
+        PDType1Font.new(dictionary)
+      when "MMType1"
+        # TODO: Route to PDMMType1Font when implemented.
+        PDType1Font.new(dictionary)
+      when "TrueType"
+        PDTrueTypeFont.new(dictionary)
       when "Type3"
         PDType3Font.new(dictionary)
-      when "Type1", "MMType1", "TrueType"
-        # TODO: Map these to concrete implementations as those constructors are ported.
-        raise "Font type #{subtype} not yet implemented"
+      when "CIDFontType0"
+        raise ::IO::Error.new("Type 0 descendant font not allowed")
+      when "CIDFontType2"
+        raise ::IO::Error.new("Type 2 descendant font not allowed")
       else
-        # TODO: Java defaults unknown subtypes to Type1.
-        raise "Invalid font subtype '#{subtype}'"
+        # Java fallback is Type1 for unknown subtypes.
+        PDType1Font.new(dictionary)
       end
     end
 
