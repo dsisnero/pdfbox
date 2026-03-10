@@ -56,6 +56,23 @@ describe Pdfbox::Pdmodel::Font::PDFontFactory do
     type0.descendant_font.should be_a(Pdfbox::Pdmodel::Font::PDCIDFontType2)
   end
 
+  it "fixes mismatched Type0 descendant subtype based on embedded font header" do
+    dict = FontFactorySpecHelpers.build_type0_dict("CIDFontType2")
+    descendant = dict.get_array(Pdfbox::Cos::Name::DESCENDANT_FONTS).not_nil![0].as(Pdfbox::Cos::Dictionary)
+
+    font_descriptor = Pdfbox::Cos::Dictionary.new
+    # Type1 header '%!' should map Type0 descendants to CIDFontType0.
+    font_descriptor[Pdfbox::Cos::Name::FONT_FILE2] = Pdfbox::Cos::Stream.new(data: Bytes[0x25_u8, 0x21_u8, 0_u8, 0_u8])
+    descendant[Pdfbox::Cos::Name::FONT_DESC] = font_descriptor
+
+    font = Pdfbox::Pdmodel::Font::PDFontFactory.create_font(dict)
+    type0 = font.as(Pdfbox::Pdmodel::Font::PDType0Font)
+
+    type0.descendant_font.should be_a(Pdfbox::Pdmodel::Font::PDCIDFontType0)
+    font_descriptor.get_stream(Pdfbox::Cos::Name::FONT_FILE3).should_not be_nil
+    font_descriptor.get_stream(Pdfbox::Cos::Name::FONT_FILE2).should be_nil
+  end
+
   it "raises for direct CIDFontType0 subtype at top level" do
     dict = Pdfbox::Cos::Dictionary.new
     dict[Pdfbox::Cos::Name::TYPE] = Pdfbox::Cos::Name::FONT
