@@ -16,7 +16,7 @@ module Pdfbox::Pdmodel::Font
     class PDType0Font
     end
 
-    @dict : Cos::Dictionary
+    @dict : Pdfbox::Cos::Dictionary
     @parent : PDType0Font
     @font_descriptor : PDFontDescriptor?
     @widths : Hash(Int32, Float32)
@@ -27,7 +27,7 @@ module Pdfbox::Pdmodel::Font
     @dw2 : Array(Float32) = [880.0_f32, -1000.0_f32] # default values
 
     # Constructor.
-    def initialize(font_dictionary : Cos::Dictionary, parent : PDType0Font)
+    def initialize(font_dictionary : Pdfbox::Cos::Dictionary, parent : PDType0Font)
       @dict = font_dictionary
       @parent = parent
       @widths = {} of Int32 => Float32

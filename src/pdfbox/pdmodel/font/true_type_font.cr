@@ -111,7 +111,7 @@ class Pdfbox::Pdmodel::Font::PDTrueTypeFont < Pdfbox::Pdmodel::Font::PDSimpleFon
   @cmap_mac_roman : Fontbox::TTF::CmapSubtable?
   @cmap_initialized : Bool = false
   @gid_to_code : Hash(Int32, Int32) = Hash(Int32, Int32).new
-  @font_bbox : Util::BoundingBox?
+  @font_bbox : PDFont::BoundingBox?
   @inverted_macos_roman : Hash(String, Int32) = Hash(String, Int32).new
 
   # Constructor for Standard 14 fonts
@@ -283,8 +283,8 @@ class Pdfbox::Pdmodel::Font::PDTrueTypeFont < Pdfbox::Pdmodel::Font::PDSimpleFon
     DEFAULT_FONT_MATRIX
   end
 
-  def bounding_box : Util::BoundingBox
-    @font_bbox ||= Util::BoundingBox.new # TODO: Generate bounding box
+  def bounding_box : PDFont::BoundingBox
+    @font_bbox ||= PDFont::BoundingBox.new # TODO: Generate bounding box
   end
 
   def position_vector(code : Int32) : Vector
@@ -409,7 +409,7 @@ class Pdfbox::Pdmodel::Font::PDTrueTypeFont < Pdfbox::Pdmodel::Font::PDSimpleFon
     @gid_to_code
   end
 
-  def read_code(input : IO) : Int32
+  def read_code(input : ::IO) : Int32
     # Simple fonts use 1-byte codes
     input.read_byte || -1
   end

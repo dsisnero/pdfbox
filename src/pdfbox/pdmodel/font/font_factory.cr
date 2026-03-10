@@ -20,7 +20,7 @@ module Pdfbox::Pdmodel::Font
     end
 
     # Creates a new PDFont instance with the appropriate subclass.
-    def self.create_font(dictionary : Cos::Dictionary) : PDFont
+    def self.create_font(dictionary : Pdfbox::Cos::Dictionary) : PDFont
       # TODO: Implement full font creation logic
       # For now, just create a placeholder based on subtype
       subtype = dictionary.get_name_as_string(Cos::Name::SUBTYPE)
@@ -36,7 +36,7 @@ module Pdfbox::Pdmodel::Font
     end
 
     # Creates a new PDCIDFont instance with the appropriate subclass.
-    def self.create_descendant_font(dictionary : Cos::Dictionary, parent : PDType0Font) : PDCIDFont
+    def self.create_descendant_font(dictionary : Pdfbox::Cos::Dictionary, parent : PDType0Font) : PDCIDFont
       # Check type
       type = dictionary.get(Cos::Name::TYPE)
       if type.nil? || type != Cos::Name::FONT

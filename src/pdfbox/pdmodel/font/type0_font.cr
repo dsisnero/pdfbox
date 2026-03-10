@@ -30,7 +30,7 @@ class Pdfbox::Pdmodel::Font::PDType0Font < Pdfbox::Pdmodel::Font::PDFont
   end
 
   # Instance variables
-  @descendant_font : PDCIDFont
+  @descendant_font : PDCIDFont?
   @no_unicode = Set(Int32).new
   @gsub_data : GsubData
   @cmap_lookup : CmapLookup?
@@ -42,7 +42,7 @@ class Pdfbox::Pdmodel::Font::PDType0Font < Pdfbox::Pdmodel::Font::PDFont
   @ttf : Fontbox::TTF::TrueTypeFont?
 
   # Constructor for reading a Type0 font from a PDF file.
-  def initialize(font_dictionary : Cos::Dictionary)
+  def initialize(font_dictionary : Pdfbox::Cos::Dictionary)
     super(font_dictionary)
 
     @gsub_data = GsubData::NO_DATA_FOUND
@@ -93,7 +93,7 @@ class Pdfbox::Pdmodel::Font::PDType0Font < Pdfbox::Pdmodel::Font::PDFont
     end
 
     # check if the descendant font is CJK
-    ros = @descendant_font.cid_system_info
+    ros = descendant_font.cid_system_info
     if ros
       ordering = ros.ordering
       @is_descendant_cjk = ros.registry == "Adobe" &&
@@ -119,7 +119,7 @@ class Pdfbox::Pdmodel::Font::PDType0Font < Pdfbox::Pdmodel::Font::PDFont
       # todo: not sure how to interpret the PDF spec here, do we always override? or only when Identity-H/V?
       str_name = nil
       if @is_descendant_cjk
-        ros = @descendant_font.cid_system_info
+        ros = descendant_font.cid_system_info
         if ros
           str_name = "#{ros.registry}-#{ros.ordering}-#{ros.supplement}"
         end
@@ -143,10 +143,10 @@ class Pdfbox::Pdmodel::Font::PDType0Font < Pdfbox::Pdmodel::Font::PDFont
   # PDFont abstract method implementations
 
   protected def encode(unicode : Int32) : Bytes
-    @descendant_font.encode(unicode)
+    descendant_font.encode(unicode)
   end
 
-  def read_code(input : IO) : Int32
+  def read_code(input : ::IO) : Int32
     if @c_map.nil?
       raise ::IO::Error.new("required cmap is null")
     end
@@ -158,24 +158,24 @@ class Pdfbox::Pdmodel::Font::PDType0Font < Pdfbox::Pdmodel::Font::PDFont
   end
 
   def font_matrix : Matrix
-    @descendant_font.font_matrix
+    descendant_font.font_matrix
   end
 
-  def bounding_box : Util::BoundingBox
-    @descendant_font.bounding_box
+  def bounding_box : PDFont::BoundingBox
+    descendant_font.bounding_box
   end
 
   def position_vector(code : Int32) : Vector
     # units are always 1/1000 text space, font matrix is not used, see FOP-2252
-    @descendant_font.position_vector(code) # TODO: scale(-1 / 1000f)
+    descendant_font.position_vector(code) # TODO: scale(-1 / 1000f)
   end
 
   def width(code : Int32) : Float32
-    @descendant_font.width(code)
+    descendant_font.width(code)
   end
 
   def height(code : Int32) : Float32
-    @descendant_font.height(code)
+    descendant_font.height(code)
   end
 
   def to_unicode(code : Int32) : String?
@@ -238,41 +238,41 @@ class Pdfbox::Pdmodel::Font::PDType0Font < Pdfbox::Pdmodel::Font::PDFont
   # PDVectorFont interface implementation
 
   def get_path(code : Int32)
-    @descendant_font.get_path(code)
+    descendant_font.get_path(code)
   end
 
   def get_normalized_path(code : Int32)
-    @descendant_font.get_normalized_path(code)
+    descendant_font.get_normalized_path(code)
   end
 
   def has_glyph(code : Int32) : Bool
-    @descendant_font.has_glyph(code)
+    descendant_font.has_glyph(code)
   end
 
   # Helper methods
 
   def descendant_font : PDCIDFont
-    @descendant_font
+    descendant_font
   end
 
   def embedded? : Bool
-    @descendant_font.embedded?
+    descendant_font.embedded?
   end
 
   def damaged? : Bool
-    @descendant_font.damaged?
+    descendant_font.damaged?
   end
 
   def average_font_width : Float32
-    @descendant_font.average_font_width
+    descendant_font.average_font_width
   end
 
   def has_explicit_width?(code : Int32) : Bool
-    @descendant_font.has_explicit_width(code)
+    descendant_font.has_explicit_width(code)
   end
 
   def width_from_font(code : Int32) : Float32
-    @descendant_font.width_from_font(code)
+    descendant_font.width_from_font(code)
   end
 
   protected def get_standard14_width(code : Int32) : Float32
@@ -294,21 +294,21 @@ class Pdfbox::Pdmodel::Font::PDType0Font < Pdfbox::Pdmodel::Font::PDFont
   # Public methods from Java PDType0Font
 
   def code_to_cid(code : Int32) : Int32
-    @descendant_font.code_to_cid(code)
+    descendant_font.code_to_cid(code)
   end
 
   def code_to_gid(code : Int32) : Int32
-    @descendant_font.code_to_gid(code)
+    descendant_font.code_to_gid(code)
   end
 
   # Returns true if the descendant font is a Type 2 CIDFont (TrueType).
   def cid_font_type2? : Bool
-    @descendant_font.is_a?(PDCIDFontType2)
+    descendant_font.is_a?(PDCIDFontType2)
   end
 
   # Returns the TrueType font if the descendant font is Type 2, otherwise nil.
   def true_type_font
-    @descendant_font.as?(PDCIDFontType2).try(&.true_type_font)
+    descendant_font.as?(PDCIDFontType2).try(&.true_type_font)
   end
 
   def cmap : Fontbox::CMap::CMap?
@@ -338,6 +338,10 @@ class Pdfbox::Pdmodel::Font::PDType0Font < Pdfbox::Pdmodel::Font::PDFont
   end
 
   def encode_glyph_id(glyph_id : Int32) : Bytes
-    @descendant_font.encode_glyph_id(glyph_id)
+    descendant_font.encode_glyph_id(glyph_id)
+  end
+
+  private def descendant_font : PDCIDFont
+    @descendant_font || raise "Missing descendant font"
   end
 end
