@@ -163,8 +163,8 @@ module Pdfbox::Pdmodel::Font
       data = font_file.data
       return nil if data.empty?
 
+      header = Bytes.new(4, 0_u8)
       header_size = {data.size, 4}.min
-      header = Bytes.new(header_size)
       header.copy_from(data.to_unsafe, header_size)
       header
     end
