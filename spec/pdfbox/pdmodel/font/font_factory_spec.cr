@@ -75,4 +75,36 @@ describe Pdfbox::Pdmodel::Font::PDFontFactory do
       Pdfbox::Pdmodel::Font::PDFontFactory.create_font(dict)
     end
   end
+
+  it "falls back to PDType1Font path for unknown subtype" do
+    dict = Pdfbox::Cos::Dictionary.new
+    dict[Pdfbox::Cos::Name::TYPE] = Pdfbox::Cos::Name::FONT
+    dict[Pdfbox::Cos::Name::SUBTYPE] = Pdfbox::Cos::Name.new("UnknownSubtype")
+
+    expect_raises(Exception, "Not implemented") do
+      Pdfbox::Pdmodel::Font::PDFontFactory.create_font(dict)
+    end
+  end
+
+  it "raises in create_descendant_font when dictionary type is not Font" do
+    type0_parent = Pdfbox::Pdmodel::Font::PDType0Font.new(FontFactorySpecHelpers.build_type0_dict("CIDFontType2"))
+    descendant = Pdfbox::Cos::Dictionary.new
+    descendant[Pdfbox::Cos::Name::TYPE] = Pdfbox::Cos::Name.new("NotFont")
+    descendant[Pdfbox::Cos::Name::SUBTYPE] = Pdfbox::Cos::Name.new("CIDFontType2")
+
+    expect_raises(::IO::Error, "Expected 'Font' dictionary but found 'NotFont'") do
+      Pdfbox::Pdmodel::Font::PDFontFactory.create_descendant_font(descendant, type0_parent)
+    end
+  end
+
+  it "raises in create_descendant_font for invalid descendant subtype" do
+    type0_parent = Pdfbox::Pdmodel::Font::PDType0Font.new(FontFactorySpecHelpers.build_type0_dict("CIDFontType2"))
+    descendant = Pdfbox::Cos::Dictionary.new
+    descendant[Pdfbox::Cos::Name::TYPE] = Pdfbox::Cos::Name::FONT
+    descendant[Pdfbox::Cos::Name::SUBTYPE] = Pdfbox::Cos::Name.new("InvalidCIDSubtype")
+
+    expect_raises(::IO::Error, "Invalid font type: Font") do
+      Pdfbox::Pdmodel::Font::PDFontFactory.create_descendant_font(descendant, type0_parent)
+    end
+  end
 end
