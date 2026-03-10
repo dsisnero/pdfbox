@@ -25,6 +25,12 @@ module Pdfbox::Pdmodel::Font
 
     # Creates a new PDFont instance with the appropriate subclass.
     def self.create_font(dictionary : Pdfbox::Cos::Dictionary) : PDFont
+      create_font(dictionary, nil)
+    end
+
+    # Creates a new PDFont instance with an optional resource cache.
+    # The resource cache is currently only used by Type3 font construction.
+    def self.create_font(dictionary : Pdfbox::Cos::Dictionary, resource_cache : ResourceCache?) : PDFont
       type = dictionary[Pdfbox::Cos::Name::TYPE]?
       if type.is_a?(Pdfbox::Cos::Name) && type != Pdfbox::Cos::Name::FONT
         Log.error { "Expected 'Font' dictionary but found '#{type.value}'" }
@@ -43,11 +49,11 @@ module Pdfbox::Pdmodel::Font
         end
         PDType0Font.new(dictionary)
       else
-        create_non_type0_font(subtype, dictionary)
+        create_non_type0_font(subtype, dictionary, resource_cache)
       end
     end
 
-    private def self.create_non_type0_font(subtype : String?, dictionary : Pdfbox::Cos::Dictionary) : PDFont
+    private def self.create_non_type0_font(subtype : String?, dictionary : Pdfbox::Cos::Dictionary, resource_cache : ResourceCache?) : PDFont
       case subtype
       when "Type1"
         if font_file3?(dictionary)
@@ -64,7 +70,7 @@ module Pdfbox::Pdmodel::Font
       when "TrueType"
         PDTrueTypeFont.new(dictionary)
       when "Type3"
-        PDType3Font.new(dictionary)
+        PDType3Font.new(dictionary, resource_cache)
       when "CIDFontType0"
         raise ::IO::Error.new("Type 0 descendant font not allowed")
       when "CIDFontType2"

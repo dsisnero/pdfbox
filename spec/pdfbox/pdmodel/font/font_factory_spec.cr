@@ -63,6 +63,13 @@ describe Pdfbox::Pdmodel::Font::PDFontFactory do
     font.should be_a(Pdfbox::Pdmodel::Font::PDType3Font)
   end
 
+  it "creates a PDType3Font with explicit resource cache overload" do
+    dict = FontFactorySpecHelpers.build_type3_dict
+    cache = Pdfbox::Pdmodel::Font::ResourceCache.new
+    font = Pdfbox::Pdmodel::Font::PDFontFactory.create_font(dict, cache)
+    font.should be_a(Pdfbox::Pdmodel::Font::PDType3Font)
+  end
+
   it "creates a PDType0Font with CIDFontType2 descendant for Type0 subtype" do
     font = Pdfbox::Pdmodel::Font::PDFontFactory.create_font(FontFactorySpecHelpers.build_type0_dict("CIDFontType2"))
     type0 = font.as(Pdfbox::Pdmodel::Font::PDType0Font)
