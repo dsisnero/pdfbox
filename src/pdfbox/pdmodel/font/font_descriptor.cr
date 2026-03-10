@@ -337,7 +337,7 @@ module Pdfbox::Pdmodel::Font
 
     # Get the missing width for the font from the /MissingWidth dictionary entry.
     def missing_width : Float32
-      @dic.get_float(Pdfbox::Cos::Name::MISSING_WIDTH, 0_f32)
+      @dic.get_float(Pdfbox::Cos::Name::MISSING_WIDTH, 0_f32).to_f32
     end
 
     # Set the missing width for the font.
