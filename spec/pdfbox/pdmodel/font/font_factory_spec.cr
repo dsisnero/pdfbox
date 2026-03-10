@@ -42,6 +42,19 @@ module FontFactorySpecHelpers
     dict[Pdfbox::Cos::Name::DESCENDANT_FONTS] = Pdfbox::Cos::Array.new([descendant] of Pdfbox::Cos::Base)
     dict
   end
+
+  def self.build_type1_like_dict(subtype : String, with_font_file3 : Bool) : Pdfbox::Cos::Dictionary
+    dict = Pdfbox::Cos::Dictionary.new
+    dict[Pdfbox::Cos::Name::TYPE] = Pdfbox::Cos::Name::FONT
+    dict[Pdfbox::Cos::Name::SUBTYPE] = Pdfbox::Cos::Name.new(subtype)
+
+    return dict unless with_font_file3
+
+    font_descriptor = Pdfbox::Cos::Dictionary.new
+    font_descriptor[Pdfbox::Cos::Name::FONT_FILE3] = Pdfbox::Cos::Stream.new(data: Bytes[1_u8, 0_u8, 4_u8, 1_u8])
+    dict[Pdfbox::Cos::Name::FONT_DESC] = font_descriptor
+    dict
+  end
 end
 
 describe Pdfbox::Pdmodel::Font::PDFontFactory do
@@ -122,6 +135,30 @@ describe Pdfbox::Pdmodel::Font::PDFontFactory do
 
     expect_raises(::IO::Error, "Invalid font type: Font") do
       Pdfbox::Pdmodel::Font::PDFontFactory.create_descendant_font(descendant, type0_parent)
+    end
+  end
+
+  it "routes Type1 with FontFile3 to PDType1CFont path" do
+    dict = FontFactorySpecHelpers.build_type1_like_dict("Type1", with_font_file3: true)
+
+    expect_raises(Exception, "Not implemented: PDType1CFont") do
+      Pdfbox::Pdmodel::Font::PDFontFactory.create_font(dict)
+    end
+  end
+
+  it "routes MMType1 with FontFile3 to PDType1CFont path" do
+    dict = FontFactorySpecHelpers.build_type1_like_dict("MMType1", with_font_file3: true)
+
+    expect_raises(Exception, "Not implemented: PDType1CFont") do
+      Pdfbox::Pdmodel::Font::PDFontFactory.create_font(dict)
+    end
+  end
+
+  it "routes MMType1 without FontFile3 to PDMMType1Font path" do
+    dict = FontFactorySpecHelpers.build_type1_like_dict("MMType1", with_font_file3: false)
+
+    expect_raises(Exception, "Not implemented: PDMMType1Font") do
+      Pdfbox::Pdmodel::Font::PDFontFactory.create_font(dict)
     end
   end
 end

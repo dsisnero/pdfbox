@@ -5,6 +5,8 @@ require "./pdfont"
 require "./simple_font"
 require "./true_type_font"
 require "./type0_font"
+require "./type1c_font"
+require "./mm_type1_font"
 require "./type3_font"
 require "./cid_font"
 require "./cid_font_type0"
@@ -48,10 +50,17 @@ module Pdfbox::Pdmodel::Font
     private def self.create_non_type0_font(subtype : String?, dictionary : Pdfbox::Cos::Dictionary) : PDFont
       case subtype
       when "Type1"
-        PDType1Font.new(dictionary)
+        if font_file3?(dictionary)
+          PDType1CFont.new(dictionary)
+        else
+          PDType1Font.new(dictionary)
+        end
       when "MMType1"
-        # TODO: Route to PDMMType1Font when implemented.
-        PDType1Font.new(dictionary)
+        if font_file3?(dictionary)
+          PDType1CFont.new(dictionary)
+        else
+          PDMMType1Font.new(dictionary)
+        end
       when "TrueType"
         PDTrueTypeFont.new(dictionary)
       when "Type3"
@@ -89,6 +98,11 @@ module Pdfbox::Pdmodel::Font
 
     private def self.get_font_descriptor(dictionary : Pdfbox::Cos::Dictionary) : Pdfbox::Cos::Dictionary?
       dictionary.get_dictionary(Pdfbox::Cos::Name::FONT_DESC) || get_descendant_font(dictionary).try(&.get_dictionary(Pdfbox::Cos::Name::FONT_DESC))
+    end
+
+    private def self.font_file3?(dictionary : Pdfbox::Cos::Dictionary) : Bool
+      fd = dictionary.get_dictionary(Pdfbox::Cos::Name::FONT_DESC)
+      !fd.nil? && fd.has_key?(Pdfbox::Cos::Name::FONT_FILE3)
     end
 
     private def self.get_descendant_font(dictionary : Pdfbox::Cos::Dictionary) : Pdfbox::Cos::Dictionary?
