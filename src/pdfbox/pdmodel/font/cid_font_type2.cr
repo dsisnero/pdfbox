@@ -241,6 +241,10 @@ module Pdfbox::Pdmodel::Font
 
     # PDVectorFont abstract methods
     def get_path(code : Int32)
+      if path = path_from_otf_outlines(code)
+        return path
+      end
+
       ttf = @ttf
       return Fontbox::Util::Path.new if ttf.nil?
 
@@ -253,9 +257,15 @@ module Pdfbox::Pdmodel::Font
     end
 
     def get_normalized_path(code : Int32)
-      gid = code_to_gid(code)
-      path = get_path(code)
-      return Fontbox::Util::Path.new if gid == 0 && !embedded?
+      path = if cff_postscript_font?
+               path_from_otf_outlines(code)
+             else
+               gid = code_to_gid(code)
+               unnormalized = get_path(code)
+               return Fontbox::Util::Path.new if gid == 0 && !embedded?
+               unnormalized
+             end
+      return Fontbox::Util::Path.new if path.nil?
       return path if path.empty?
 
       ttf = @ttf
@@ -273,6 +283,22 @@ module Pdfbox::Pdmodel::Font
 
     def has_glyph(code : Int32) : Bool
       code_to_gid(code) != 0
+    end
+
+    private def path_from_otf_outlines(code : Int32) : Fontbox::Util::Path?
+      return nil unless cff_postscript_font?
+      return nil unless ttf = @ttf
+      table = ttf.table(Fontbox::TTF::CFFTable::TAG).as?(Fontbox::TTF::CFFTable)
+      return nil unless table
+      ttf.read_table(table) unless table.initialized
+      cff_font = table.font
+      return nil unless cff_font
+
+      gid = code_to_gid(code)
+      cff_font.type2_char_string(gid).path
+    rescue ex : ::Exception
+      Log.warn { "Failed to read OTF CFF outlines for #{name}: #{ex.message}" }
+      nil
     end
 
     # Additional methods used by PDType0Font
