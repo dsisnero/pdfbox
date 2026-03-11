@@ -270,4 +270,155 @@ module Pdfbox::Util
       end
     end
   end
+
+  # Ported from Apache PDFBox Matrix.
+  class Matrix
+    SIZE = 9
+
+    @single : Array(Float32)
+
+    def initialize
+      @single = [1.0_f32, 0.0_f32, 0.0_f32, 0.0_f32, 1.0_f32, 0.0_f32, 0.0_f32, 0.0_f32, 1.0_f32]
+    end
+
+    def initialize(a : Float32, b : Float32, c : Float32, d : Float32, e : Float32, f : Float32)
+      @single = Array.new(SIZE, 0.0_f32)
+      @single[0] = a
+      @single[1] = b
+      @single[3] = c
+      @single[4] = d
+      @single[6] = e
+      @single[7] = f
+      @single[8] = 1.0_f32
+    end
+
+    # Internal constructor mirroring Java clone/from-array usage.
+    def initialize(@single : Array(Float32))
+    end
+
+    def self.create_matrix(base : Pdfbox::Cos::Base) : Matrix
+      array = base.as?(Pdfbox::Cos::Array)
+      return Matrix.new unless array
+      return Matrix.new if array.items.size < 6
+
+      values = Array(Float32).new(6)
+      6.times do |i|
+        item = array.get(i)
+        case item
+        when Pdfbox::Cos::Integer
+          values << item.value.to_f32
+        when Pdfbox::Cos::Float
+          values << item.value.to_f32
+        else
+          return Matrix.new
+        end
+      end
+      Matrix.new(values[0], values[1], values[2], values[3], values[4], values[5])
+    end
+
+    def clone : Matrix
+      Matrix.new(@single.dup)
+    end
+
+    def get_value(row : Int32, column : Int32) : Float32
+      @single[(row * 3) + column]
+    end
+
+    def set_value(row : Int32, column : Int32, value : Float32) : Nil
+      @single[(row * 3) + column] = value
+    end
+
+    def values : Array(Array(Float32))
+      [
+        [@single[0], @single[1], @single[2]],
+        [@single[3], @single[4], @single[5]],
+        [@single[6], @single[7], @single[8]],
+      ]
+    end
+
+    def concatenate(matrix : Matrix) : Nil
+      @single = check_float_values(multiply_arrays(matrix.@single, @single))
+    end
+
+    def translate(tx : Float32, ty : Float32) : Nil
+      @single[6] += (tx * @single[0]) + (ty * @single[3])
+      @single[7] += (tx * @single[1]) + (ty * @single[4])
+      @single[8] += (tx * @single[2]) + (ty * @single[5])
+      check_float_values(@single)
+    end
+
+    def scale(sx : Float32, sy : Float32) : Nil
+      @single[0] *= sx
+      @single[1] *= sx
+      @single[2] *= sx
+      @single[3] *= sy
+      @single[4] *= sy
+      @single[5] *= sy
+      check_float_values(@single)
+    end
+
+    def multiply(other : Matrix) : Matrix
+      Matrix.new(check_float_values(multiply_arrays(@single, other.@single)))
+    end
+
+    def self.concatenate(a : Matrix, b : Matrix) : Matrix
+      b.multiply(a)
+    end
+
+    def scaling_factor_x : Float32
+      if @single[1] != 0.0_f32
+        Math.sqrt((@single[0] * @single[0]) + (@single[1] * @single[1])).to_f32
+      else
+        @single[0]
+      end
+    end
+
+    def scaling_factor_y : Float32
+      if @single[3] != 0.0_f32
+        Math.sqrt((@single[3] * @single[3]) + (@single[4] * @single[4])).to_f32
+      else
+        @single[4]
+      end
+    end
+
+    def to_cos_array : Pdfbox::Cos::Array
+      array = Pdfbox::Cos::Array.new
+      array.add(Pdfbox::Cos::Float.new(@single[0]))
+      array.add(Pdfbox::Cos::Float.new(@single[1]))
+      array.add(Pdfbox::Cos::Float.new(@single[3]))
+      array.add(Pdfbox::Cos::Float.new(@single[4]))
+      array.add(Pdfbox::Cos::Float.new(@single[6]))
+      array.add(Pdfbox::Cos::Float.new(@single[7]))
+      array
+    end
+
+    def ==(other : Matrix) : Bool
+      @single == other.@single
+    end
+
+    def ==(other) : Bool
+      false
+    end
+
+    private def check_float_values(values : Array(Float32)) : Array(Float32)
+      unless values.all?(&.finite?)
+        raise ArgumentError.new("Multiplying two matrices produces illegal values")
+      end
+      values
+    end
+
+    private def multiply_arrays(a : Array(Float32), b : Array(Float32)) : Array(Float32)
+      c = Array.new(SIZE, 0.0_f32)
+      c[0] = (a[0] * b[0]) + (a[1] * b[3]) + (a[2] * b[6])
+      c[1] = (a[0] * b[1]) + (a[1] * b[4]) + (a[2] * b[7])
+      c[2] = (a[0] * b[2]) + (a[1] * b[5]) + (a[2] * b[8])
+      c[3] = (a[3] * b[0]) + (a[4] * b[3]) + (a[5] * b[6])
+      c[4] = (a[3] * b[1]) + (a[4] * b[4]) + (a[5] * b[7])
+      c[5] = (a[3] * b[2]) + (a[4] * b[5]) + (a[5] * b[8])
+      c[6] = (a[6] * b[0]) + (a[7] * b[3]) + (a[8] * b[6])
+      c[7] = (a[6] * b[1]) + (a[7] * b[4]) + (a[8] * b[7])
+      c[8] = (a[6] * b[2]) + (a[7] * b[5]) + (a[8] * b[8])
+      c
+    end
+  end
 end

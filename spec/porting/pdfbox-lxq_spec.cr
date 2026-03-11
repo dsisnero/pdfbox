@@ -6,6 +6,14 @@ def assert_java_sort_parity(input : Array(Int32), expected : Array(Int32))
   list.should eq(expected)
 end
 
+def assert_matrix_values_equal_to(values : Array(Float32), matrix : Pdfbox::Util::Matrix)
+  values.each_with_index do |value, i|
+    row = i // 3
+    column = i % 3
+    matrix.get_value(row, column).should be_close(value, 0.00001_f32)
+  end
+end
+
 describe "Porting parity pdfbox-lxq" do
   # Source of truth: vendor/pdfbox/pdfbox/src/test/java/org/apache/pdfbox/util ● P3
   # Ported from StringUtilTest.java
@@ -164,5 +172,132 @@ describe "Porting parity pdfbox-lxq" do
       expected.sort!
       assert_java_sort_parity(input, expected)
     end
+  end
+
+  # Ported from MatrixTest.java
+  it "MatrixTest#testConstructionAndCopy" do
+    m1 = Pdfbox::Util::Matrix.new
+    assert_matrix_values_equal_to([1.0_f32, 0.0_f32, 0.0_f32, 0.0_f32, 1.0_f32, 0.0_f32, 0.0_f32, 0.0_f32, 1.0_f32], m1)
+
+    m2 = m1.clone
+    m1.same?(m2).should be_false
+    assert_matrix_values_equal_to([1.0_f32, 0.0_f32, 0.0_f32, 0.0_f32, 1.0_f32, 0.0_f32, 0.0_f32, 0.0_f32, 1.0_f32], m2)
+  end
+
+  it "MatrixTest#testGetScalingFactor" do
+    m1 = Pdfbox::Util::Matrix.new
+    m1.scaling_factor_x.should eq(1.0_f32)
+    m1.scaling_factor_y.should eq(1.0_f32)
+
+    m2 = Pdfbox::Util::Matrix.new(2.0_f32, 4.0_f32, 4.0_f32, 2.0_f32, 0.0_f32, 0.0_f32)
+    expected = Math.sqrt(20.0).to_f32
+    m2.scaling_factor_x.should be_close(expected, 0.0_f32)
+    m2.scaling_factor_y.should be_close(expected, 0.0_f32)
+  end
+
+  it "MatrixTest#testCreateMatrixUsingInvalidInput" do
+    create_matrix = Pdfbox::Util::Matrix.create_matrix(Pdfbox::Cos::Name.new("A"))
+    assert_matrix_values_equal_to([1.0_f32, 0.0_f32, 0.0_f32, 0.0_f32, 1.0_f32, 0.0_f32, 0.0_f32, 0.0_f32, 1.0_f32], create_matrix)
+
+    cos_array = Pdfbox::Cos::Array.new
+    cos_array.add(Pdfbox::Cos::Name.new("A"))
+    create_matrix = Pdfbox::Util::Matrix.create_matrix(cos_array)
+    assert_matrix_values_equal_to([1.0_f32, 0.0_f32, 0.0_f32, 0.0_f32, 1.0_f32, 0.0_f32, 0.0_f32, 0.0_f32, 1.0_f32], create_matrix)
+
+    cos_array = Pdfbox::Cos::Array.new
+    6.times { cos_array.add(Pdfbox::Cos::Name.new("A")) }
+    create_matrix = Pdfbox::Util::Matrix.create_matrix(cos_array)
+    assert_matrix_values_equal_to([1.0_f32, 0.0_f32, 0.0_f32, 0.0_f32, 1.0_f32, 0.0_f32, 0.0_f32, 0.0_f32, 1.0_f32], create_matrix)
+  end
+
+  it "MatrixTest#testMultiplication and #testOldMultiplication" do
+    const1 = Pdfbox::Util::Matrix.new
+    const2 = Pdfbox::Util::Matrix.new
+    3.times do |x|
+      3.times do |y|
+        const1.set_value(x, y, (x + y).to_f32)
+        const2.set_value(x, y, (8 + x + y).to_f32)
+      end
+    end
+
+    m1_x_m1 = [5.0_f32, 8.0_f32, 11.0_f32, 8.0_f32, 14.0_f32, 20.0_f32, 11.0_f32, 20.0_f32, 29.0_f32]
+    m1_x_m2 = [29.0_f32, 32.0_f32, 35.0_f32, 56.0_f32, 62.0_f32, 68.0_f32, 83.0_f32, 92.0_f32, 101.0_f32]
+    m2_x_m1 = [29.0_f32, 56.0_f32, 83.0_f32, 32.0_f32, 62.0_f32, 92.0_f32, 35.0_f32, 68.0_f32, 101.0_f32]
+
+    var1 = const1.clone
+    var2 = const2.clone
+    result = var1.multiply(var2)
+    var1.should eq(const1)
+    var2.should eq(const2)
+    assert_matrix_values_equal_to(m1_x_m2, result)
+
+    var1 = const1.clone
+    var2 = const2.clone
+    var1.concatenate(var2)
+    var2.should eq(const2)
+    assert_matrix_values_equal_to(m2_x_m1, var1)
+
+    result = Pdfbox::Util::Matrix.concatenate(const1, const2)
+    assert_matrix_values_equal_to(m2_x_m1, result)
+
+    result = const1.clone.multiply(const1.clone)
+    assert_matrix_values_equal_to(m1_x_m1, result)
+  end
+
+  it "MatrixTest#testIllegalValueNaN/Infinity" do
+    m = Pdfbox::Util::Matrix.new
+    m.set_value(0, 0, Float32::MAX)
+    expect_raises(ArgumentError) { m.multiply(m) }
+
+    m = Pdfbox::Util::Matrix.new
+    m.set_value(0, 0, Float32::NAN)
+    expect_raises(ArgumentError) { m.multiply(m) }
+
+    m = Pdfbox::Util::Matrix.new
+    m.set_value(0, 0, Float32::INFINITY)
+    expect_raises(ArgumentError) { m.multiply(m) }
+
+    m = Pdfbox::Util::Matrix.new
+    m.set_value(0, 0, -Float32::INFINITY)
+    expect_raises(ArgumentError) { m.multiply(m) }
+  end
+
+  it "MatrixTest#testPdfbox2872" do
+    m = Pdfbox::Util::Matrix.new(2.0_f32, 4.0_f32, 5.0_f32, 8.0_f32, 2.0_f32, 0.0_f32)
+    array = m.to_cos_array
+    array.get(0).should eq(Pdfbox::Cos::Float.new(2.0))
+    array.get(1).should eq(Pdfbox::Cos::Float.new(4.0))
+    array.get(2).should eq(Pdfbox::Cos::Float.new(5.0))
+    array.get(3).should eq(Pdfbox::Cos::Float.new(8.0))
+    array.get(4).should eq(Pdfbox::Cos::Float.new(2.0))
+    array.get(5).should eq(Pdfbox::Cos::Float::ZERO)
+  end
+
+  it "MatrixTest#testGetValues #testScaling #testTranslation" do
+    m = Pdfbox::Util::Matrix.new(2.0_f32, 4.0_f32, 4.0_f32, 2.0_f32, 15.0_f32, 30.0_f32)
+    values = m.values
+    values[0][0].should eq(2.0_f32)
+    values[0][1].should eq(4.0_f32)
+    values[0][2].should eq(0.0_f32)
+    values[1][0].should eq(4.0_f32)
+    values[1][1].should eq(2.0_f32)
+    values[1][2].should eq(0.0_f32)
+    values[2][0].should eq(15.0_f32)
+    values[2][1].should eq(30.0_f32)
+    values[2][2].should eq(1.0_f32)
+
+    m.scale(2.0_f32, 3.0_f32)
+    m.get_value(0, 0).should eq(4.0_f32)
+    m.get_value(0, 1).should eq(8.0_f32)
+    m.get_value(1, 0).should eq(12.0_f32)
+    m.get_value(1, 1).should eq(6.0_f32)
+    m.get_value(2, 0).should eq(15.0_f32)
+    m.get_value(2, 1).should eq(30.0_f32)
+
+    m = Pdfbox::Util::Matrix.new(2.0_f32, 4.0_f32, 4.0_f32, 2.0_f32, 15.0_f32, 30.0_f32)
+    m.translate(2.0_f32, 3.0_f32)
+    m.get_value(2, 0).should eq(31.0_f32)
+    m.get_value(2, 1).should eq(44.0_f32)
+    m.get_value(2, 2).should eq(1.0_f32)
   end
 end
