@@ -142,4 +142,76 @@ module Pdfbox::Util
       (b & 0x0f_u8).to_i
     end
   end
+
+  # Ported from Apache PDFBox NumberFormatUtil.
+  module NumberFormatUtil
+    MAX_FRACTION_DIGITS = 5
+    POWER_OF_TENS       = (0..18).map { |exp| 10_i64**exp }.to_a
+    POWER_OF_TENS_INT   = (0..9).map { |exp| 10_i32**exp }.to_a
+
+    def self.format_float_fast(value : Float32, max_fraction_digits : Int32, ascii_buffer : Bytes) : Int32
+      if value.nan? || value.infinite? || value > Int64::MAX || value <= Int64::MIN || max_fraction_digits > MAX_FRACTION_DIGITS
+        return -1
+      end
+
+      offset = 0
+      integer_part = value.to_i64
+
+      if value < 0
+        ascii_buffer[offset] = '-'.ord.to_u8
+        offset += 1
+        integer_part = -integer_part
+      end
+
+      fraction_scale = POWER_OF_TENS[max_fraction_digits]
+      fraction_part = ((value.abs.to_f64 - integer_part.to_f64) * fraction_scale.to_f64 + 0.5_f64).to_i64
+
+      if fraction_part >= fraction_scale
+        integer_part += 1
+        fraction_part -= fraction_scale
+      end
+
+      offset = format_positive_number(integer_part, get_exponent(integer_part), false, ascii_buffer, offset)
+
+      if fraction_part > 0 && max_fraction_digits > 0
+        ascii_buffer[offset] = '.'.ord.to_u8
+        offset += 1
+        offset = format_positive_number(fraction_part, max_fraction_digits - 1, true, ascii_buffer, offset)
+      end
+
+      offset
+    end
+
+    private def self.format_positive_number(number : Int64, exp : Int32, omit_trailing_zeros : Bool, ascii_buffer : Bytes, start_offset : Int32) : Int32
+      offset = start_offset
+      remaining = number
+      current_exp = exp
+
+      while remaining > Int32::MAX
+        digit = remaining // POWER_OF_TENS[current_exp]
+        remaining -= digit * POWER_OF_TENS[current_exp]
+        ascii_buffer[offset] = ('0'.ord + digit).to_u8
+        offset += 1
+        current_exp -= 1
+      end
+
+      remaining_int = remaining.to_i32
+      while current_exp >= 0 && (!omit_trailing_zeros || remaining_int > 0)
+        digit = remaining_int // POWER_OF_TENS_INT[current_exp]
+        remaining_int -= digit * POWER_OF_TENS_INT[current_exp]
+        ascii_buffer[offset] = ('0'.ord + digit).to_u8
+        offset += 1
+        current_exp -= 1
+      end
+
+      offset
+    end
+
+    private def self.get_exponent(number : Int64) : Int32
+      (0...POWER_OF_TENS.size - 1).each do |exp|
+        return exp if number < POWER_OF_TENS[exp + 1]
+      end
+      POWER_OF_TENS.size - 1
+    end
+  end
 end

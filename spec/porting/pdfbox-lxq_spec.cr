@@ -89,4 +89,55 @@ describe "Porting parity pdfbox-lxq" do
       end
     end
   end
+
+  # Ported from TestNumberFormatUtil.java
+  it "TestNumberFormatUtil#testFormatOfIntegerValues" do
+    buffer = Bytes.new(64)
+
+    Pdfbox::Util::NumberFormatUtil.format_float_fast(51.0_f32, 5, buffer).should eq(2)
+    buffer[0, 2].should eq(Bytes['5'.ord.to_u8, '1'.ord.to_u8])
+
+    Pdfbox::Util::NumberFormatUtil.format_float_fast(-51.0_f32, 5, buffer).should eq(3)
+    buffer[0, 3].should eq(Bytes['-'.ord.to_u8, '5'.ord.to_u8, '1'.ord.to_u8])
+
+    Pdfbox::Util::NumberFormatUtil.format_float_fast(0.0_f32, 5, buffer).should eq(1)
+    buffer[0, 1].should eq(Bytes['0'.ord.to_u8])
+  end
+
+  it "TestNumberFormatUtil#testFormatOfRealValues" do
+    buffer = Bytes.new(64)
+
+    Pdfbox::Util::NumberFormatUtil.format_float_fast(0.7_f32, 5, buffer).should eq(3)
+    buffer[0, 3].should eq(Bytes['0'.ord.to_u8, '.'.ord.to_u8, '7'.ord.to_u8])
+
+    Pdfbox::Util::NumberFormatUtil.format_float_fast(-0.7_f32, 5, buffer).should eq(4)
+    buffer[0, 4].should eq(Bytes['-'.ord.to_u8, '0'.ord.to_u8, '.'.ord.to_u8, '7'.ord.to_u8])
+
+    Pdfbox::Util::NumberFormatUtil.format_float_fast(0.003_f32, 5, buffer).should eq(5)
+    buffer[0, 5].should eq(Bytes['0'.ord.to_u8, '.'.ord.to_u8, '0'.ord.to_u8, '0'.ord.to_u8, '3'.ord.to_u8])
+  end
+
+  it "TestNumberFormatUtil#testFormatOfRealValuesReturnsMinusOneIfItCannotBeFormatted" do
+    buffer = Bytes.new(64)
+    Pdfbox::Util::NumberFormatUtil.format_float_fast(Float32::NAN, 5, buffer).should eq(-1)
+    Pdfbox::Util::NumberFormatUtil.format_float_fast(Float32::INFINITY, 5, buffer).should eq(-1)
+    Pdfbox::Util::NumberFormatUtil.format_float_fast(-Float32::INFINITY, 5, buffer).should eq(-1)
+    Pdfbox::Util::NumberFormatUtil.format_float_fast(1.0_f32, 6, buffer).should eq(-1)
+  end
+
+  it "TestNumberFormatUtil#testRoundingUp and #testRoundingDown" do
+    buffer = Bytes.new(64)
+
+    Pdfbox::Util::NumberFormatUtil.format_float_fast(0.999999_f32, 5, buffer).should eq(1)
+    buffer[0, 1].should eq(Bytes['1'.ord.to_u8])
+
+    Pdfbox::Util::NumberFormatUtil.format_float_fast(0.125_f32, 2, buffer).should eq(4)
+    buffer[0, 4].should eq(Bytes['0'.ord.to_u8, '.'.ord.to_u8, '1'.ord.to_u8, '3'.ord.to_u8])
+
+    Pdfbox::Util::NumberFormatUtil.format_float_fast(-0.999999_f32, 5, buffer).should eq(2)
+    buffer[0, 2].should eq(Bytes['-'.ord.to_u8, '1'.ord.to_u8])
+
+    Pdfbox::Util::NumberFormatUtil.format_float_fast(0.994_f32, 2, buffer).should eq(4)
+    buffer[0, 4].should eq(Bytes['0'.ord.to_u8, '.'.ord.to_u8, '9'.ord.to_u8, '9'.ord.to_u8])
+  end
 end
