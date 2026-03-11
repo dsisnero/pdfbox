@@ -9,6 +9,71 @@ class NonClosingMemoryIO < IO::Memory
   end
 end
 
+private def parse_trailer_size(bytes : Bytes) : Int64
+  marker = "/Size ".to_slice
+  idx = bytes.size - marker.size
+  while idx >= 0
+    if bytes[idx, marker.size] == marker
+      pos = idx + marker.size
+      value = 0_i64
+      found_digit = false
+      while pos < bytes.size
+        byte = bytes[pos]
+        if byte >= '0'.ord.to_u8 && byte <= '9'.ord.to_u8
+          found_digit = true
+          value = value * 10 + (byte - '0'.ord.to_u8)
+          pos += 1
+        else
+          break
+        end
+      end
+      return value if found_digit
+    end
+    idx -= 1
+  end
+  raise "Unable to find trailer /Size entry"
+end
+
+private def max_object_number(bytes : Bytes) : Int64
+  idx = 0
+  max_obj = 0_i64
+  while idx < bytes.size
+    # Parse "<obj> <gen> obj" tokens at the byte level to avoid UTF-8 decoding.
+    start = idx
+    obj_number = 0_i64
+    has_obj_number = false
+    while idx < bytes.size && bytes[idx] >= '0'.ord.to_u8 && bytes[idx] <= '9'.ord.to_u8
+      has_obj_number = true
+      obj_number = obj_number * 10 + (bytes[idx] - '0'.ord.to_u8)
+      idx += 1
+    end
+
+    unless has_obj_number && idx < bytes.size && bytes[idx] == ' '.ord.to_u8
+      idx = start + 1
+      next
+    end
+
+    idx += 1
+    has_generation = false
+    while idx < bytes.size && bytes[idx] >= '0'.ord.to_u8 && bytes[idx] <= '9'.ord.to_u8
+      has_generation = true
+      idx += 1
+    end
+    unless has_generation && idx + 4 <= bytes.size && bytes[idx] == ' '.ord.to_u8
+      idx = start + 1
+      next
+    end
+
+    if bytes[idx + 1] == 'o'.ord.to_u8 && bytes[idx + 2] == 'b'.ord.to_u8 && bytes[idx + 3] == 'j'.ord.to_u8
+      max_obj = obj_number if obj_number > max_obj
+      idx += 4
+    else
+      idx = start + 1
+    end
+  end
+  max_obj
+end
+
 describe "Pdfbox::Pdfwriter parity" do
   # Source of truth:
   # vendor/pdfbox/pdfbox/src/test/java/org/apache/pdfbox/pdfwriter/
@@ -52,7 +117,68 @@ describe "Pdfbox::Pdfwriter parity" do
   pending "COSWriterTest#testPDFBox5485 requires COS writer object graph parity" do
   end
 
-  pending "COSWriterTest#testPDFBox5945 requires COS writer object graph parity" do
+  it "COSWriterTest#testPDFBox5945" do
+    doc = Pdfbox::Pdmodel::Document.create
+    doc.add_page(Pdfbox::Pdmodel::Page.new)
+
+    catalog = doc.document_catalog.not_nil!
+    acro_form = Pdfbox::Pdmodel::Interactive::Form::PDAcroForm.new(doc)
+    catalog.cos_object[Pdfbox::Cos::Name.new("AcroForm")] = acro_form.cos_object
+
+    text_field_dict = Pdfbox::Cos::Dictionary.new
+    text_field_dict[Pdfbox::Cos::Name.new("FT")] = Pdfbox::Cos::Name.new("Tx")
+    text_field_dict[Pdfbox::Cos::Name.new("T")] = Pdfbox::Cos::String.new("textFieldName")
+    text_field = Pdfbox::Pdmodel::Interactive::Form::PDTextField.new(acro_form, text_field_dict, nil)
+    acro_form.add_field(text_field)
+
+    initial_output = IO::Memory.new
+    doc.save(initial_output)
+    created_bytes = initial_output.to_slice
+    parse_trailer_size(created_bytes).should eq(max_object_number(created_bytes) + 1)
+  ensure
+    doc.try(&.close)
+  end
+
+  it "COSWriterTest#testPDFBox5945 incremental edit keeps trailer size aligned" do
+    create_doc = Pdfbox::Pdmodel::Document.create
+    create_doc.add_page(Pdfbox::Pdmodel::Page.new)
+
+    catalog = create_doc.document_catalog.not_nil!
+    acro_form = Pdfbox::Pdmodel::Interactive::Form::PDAcroForm.new(create_doc)
+    catalog.cos_object[Pdfbox::Cos::Name.new("AcroForm")] = acro_form.cos_object
+
+    text_field_dict = Pdfbox::Cos::Dictionary.new
+    text_field_dict[Pdfbox::Cos::Name.new("FT")] = Pdfbox::Cos::Name.new("Tx")
+    text_field_dict[Pdfbox::Cos::Name.new("T")] = Pdfbox::Cos::String.new("textFieldName")
+    text_field = Pdfbox::Pdmodel::Interactive::Form::PDTextField.new(acro_form, text_field_dict, nil)
+    acro_form.add_field(text_field)
+
+    initial_output = IO::Memory.new
+    create_doc.save(initial_output)
+    created_bytes = initial_output.to_slice
+    parse_trailer_size(created_bytes).should eq(max_object_number(created_bytes) + 1)
+
+    loaded = Pdfbox::Pdmodel::Document.load(IO::Memory.new(created_bytes))
+    loaded_catalog = loaded.document_catalog.not_nil!
+    loaded_form_dict = loaded_catalog.cos_object[Pdfbox::Cos::Name.new("AcroForm")]
+    if loaded_form_dict.is_a?(Pdfbox::Cos::Object)
+      loaded_form_dict = loaded_form_dict.object
+    end
+    loaded_form = loaded_form_dict.is_a?(Pdfbox::Cos::Dictionary) ? Pdfbox::Pdmodel::Interactive::Form::PDAcroForm.new(loaded, loaded_form_dict) : nil
+    loaded_form.should_not be_nil
+
+    loaded_field = loaded_form.not_nil!.get_field("textFieldName")
+    loaded_field.should_not be_nil
+    loaded_text_field = loaded_field.not_nil!.as(Pdfbox::Pdmodel::Interactive::Form::PDTextField)
+    loaded_text_field.field_flags = loaded_text_field.field_flags | Pdfbox::Pdmodel::Interactive::Form::PDTextField::FLAG_MULTILINE
+
+    edited_output = IO::Memory.new
+    loaded.save_incremental(edited_output)
+    edited_bytes = edited_output.to_slice
+    parse_trailer_size(edited_bytes).should eq(max_object_number(edited_bytes) + 1)
+  ensure
+    create_doc.try(&.close)
+    loaded.try(&.close)
   end
 
   pending "COSWriterTest#testPDFBox6036 requires COS writer object graph parity" do
