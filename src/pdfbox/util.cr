@@ -492,13 +492,7 @@ module Pdfbox::Util
       normalized = normalize_pdf_tz(value.strip)
       return if normalized.empty?
 
-      parse_ambiguous_big_endian_with_minute(normalized) ||
-        parse_compact_with_explicit_tz(normalized) ||
-        parse_compact_date_time(normalized) ||
-        parse_slash_date(normalized) ||
-        parse_iso_with_tz(normalized) ||
-        parse_textual_month_with_optional_tz(normalized) ||
-        parse_with_exact_formats(normalized)
+      parse_known_formats(normalized)
     end
 
     private def self.parse_ambiguous_big_endian_with_minute(normalized : String) : Time?
@@ -581,6 +575,62 @@ module Pdfbox::Util
       end
 
       build_time_with_offset(year, month, day, hour, minute, second, 0)
+    end
+
+    private def self.parse_compact_with_z_prefixed_offset(normalized : String) : Time?
+      match = normalized.match(/^(\d{8})\s+(\d{1,2}):(\d{1,2}):(\d{1,2})\s+Z([+-]\d{2})(\d{2})$/)
+      return nil unless match
+
+      ymd = match[1]
+      year = ymd[0, 4].to_i
+      month = ymd[4, 2].to_i
+      day = ymd[6, 2].to_i
+      hour = match[2].to_i
+      minute = match[3].to_i
+      second = match[4].to_i
+      sign_hour = match[5].to_i
+      tz_minute = match[6].to_i
+      offset_seconds = (sign_hour * 3600) + (sign_hour < 0 ? -tz_minute * 60 : tz_minute * 60)
+      build_time_with_offset(year, month, day, hour, minute, second, offset_seconds)
+    end
+
+    private def self.parse_known_formats(normalized : String) : Time?
+      parse_steps = [
+        ->(s : String) { parse_ambiguous_big_endian_with_minute(s) },
+        ->(s : String) { parse_compact_with_explicit_tz(s) },
+        ->(s : String) { parse_compact_with_z_prefixed_offset(s) },
+        ->(s : String) { parse_compact_date_time(s) },
+        ->(s : String) { parse_slash_date(s) },
+        ->(s : String) { parse_iso_non_padded_with_tz(s) },
+        ->(s : String) { parse_iso_with_tz(s) },
+        ->(s : String) { parse_textual_month_with_optional_tz(s) },
+        ->(s : String) { parse_with_exact_formats(s) },
+      ]
+
+      parse_steps.each do |step|
+        if parsed = step.call(normalized)
+          return parsed
+        end
+      end
+      nil
+    end
+
+    private def self.parse_iso_non_padded_with_tz(normalized : String) : Time?
+      pattern = /^(\d{4})-(\d{1,2})-(\d{1,2})T(\d{1,2}):(\d{1,2}):(\d{1,2})(?:GMT)?([+-]\d{1,2})(?::?(\d{2}))?$/
+      match = normalized.match(pattern)
+      return nil unless match
+
+      year = match[1].to_i
+      month = match[2].to_i
+      day = match[3].to_i
+      hour = match[4].to_i
+      minute = match[5].to_i
+      second = match[6].to_i
+      tz_hour = match[7].to_i
+      tz_minute = match[8]?.try(&.to_i) || 0
+      offset_seconds = (tz_hour * 3600) + (tz_hour < 0 ? -tz_minute * 60 : tz_minute * 60)
+
+      build_time_with_offset(year, month, day, hour, minute, second, offset_seconds)
     end
 
     private def self.parse_iso_with_tz(normalized : String) : Time?

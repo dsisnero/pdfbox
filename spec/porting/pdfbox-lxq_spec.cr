@@ -412,4 +412,20 @@ describe "Porting parity pdfbox-lxq" do
     cal.should_not be_nil
     Pdfbox::Util::DateConverter.to_string(cal).should eq("D:20160411160115+12'00'")
   end
+
+  it "TestDateUtil#testDateConverter non-padded and Z-prefixed offset forms" do
+    cal = Pdfbox::Util::DateConverter.to_calendar("19910706 17:7:1 Z+0600")
+    cal.should_not be_nil
+    Pdfbox::Util::DateConverter.to_string(cal).should eq("D:19910706170701+06'00'")
+
+    cal = Pdfbox::Util::DateConverter.to_calendar("1975-7-6T17:22:1-1000")
+    cal.should_not be_nil
+    Pdfbox::Util::DateConverter.to_string(cal).should eq("D:19750706172201-10'00'")
+
+    cal = Pdfbox::Util::DateConverter.to_calendar("1976-7-6T17:22:1GMT-4")
+    cal.should_not be_nil
+    Pdfbox::Util::DateConverter.to_string(cal).should eq("D:19760706172201-04'00'")
+
+    Pdfbox::Util::DateConverter.to_calendar("2076-7-6T17:22:1EDT").should be_nil
+  end
 end
