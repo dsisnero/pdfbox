@@ -88,7 +88,7 @@ module Pdfbox::IO
       while total_read < length
         slice = buffer[offset + total_read, length - total_read]
         bytes_read = read(slice)
-        raise ::IO::EOFError.new if bytes_read == 0
+        raise ::IO::EOFError.new if bytes_read <= 0
         total_read += bytes_read
       end
     end
@@ -710,7 +710,7 @@ module Pdfbox::IO
 
     def read(buffer : Bytes) : Int32
       check_closed
-      return 0 if eof?
+      return -1 if eof?
 
       number_of_bytes_read = 0
       requested_length = buffer.size

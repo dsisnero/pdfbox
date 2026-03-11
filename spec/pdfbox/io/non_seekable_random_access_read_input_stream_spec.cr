@@ -110,11 +110,51 @@ describe Pdfbox::IO::NonSeekableRandomAccessReadInputStream do
     source.close
   end
 
-  pending "matches NonSeekableRandomAccessReadInputStreamTest#testRewindAcrossBuffers and #testRewindAcrossBuffers2" do
-    # This test has multiple Java-specific behaviors that differ from Crystal:
-    # 1. Java requires two consecutive nil reads before eof? returns true
-    # 2. Java returns nil from read() even when data remains after rewind
-    # Crystal's implementation is more straightforward and correct
+  it "matches NonSeekableRandomAccessReadInputStreamTest#testRewindAcrossBuffers" do
+    ba = Bytes.new(4096 + 5)
+    rew_size = 7
+    test_val = 123_u8
+    ba[ba.size - rew_size] = test_val
+    source = build_nonseekable_source(ba)
+
+    len = source.read(Bytes.new(ba.size - rew_size))
+    len.should eq(ba.size - rew_size)
+    len = source.read(Bytes.new(rew_size))
+    len.should eq(rew_size)
+    source.read.should be_nil
+    source.eof?.should be_true
+
+    source.rewind(len)
+    source.read.should eq(test_val)
+    source.close
+  end
+
+  it "matches NonSeekableRandomAccessReadInputStreamTest#testRewindAcrossBuffers2" do
+    ba = Bytes.new(4096 * 2)
+    ba[4095] = 1_u8
+    ba[4096] = 2_u8
+    ba[4097] = 3_u8
+    ba[(4096 * 2) - 1] = 4_u8
+    source = build_nonseekable_source(ba)
+
+    source.length.should eq(0)
+    len = source.read(Bytes.new(4096 + 1))
+    source.length.should eq(4096 * 2)
+    len.should eq(4096 + 1)
+
+    source.rewind(2)
+    source.read.should eq(1_u8)
+    source.read.should eq(2_u8)
+    source.read.should eq(3_u8)
+    source.length.should eq(4096 * 2)
+
+    buf = Bytes.new(4096)
+    len = source.read(buf)
+    len.should eq(4096 - 2)
+    buf[len - 1].should eq(4_u8)
+    source.read.should be_nil
+    source.read(Bytes.new(1)).should eq(-1)
+    source.close
   end
 
   it "matches NonSeekableRandomAccessReadInputStreamTest#testAccessClosed" do
