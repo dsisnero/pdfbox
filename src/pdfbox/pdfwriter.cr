@@ -137,7 +137,7 @@ module Pdfbox::Pdfwriter
         stream_offset = @destination.pos.to_i64
         xref_writer.add_entry(stream_offset, 0_i64, :in_use)
         @destination << stream_object_number << " 0 obj\n"
-        cos_writer.write(stream)
+        cos_writer.write_stream(stream)
         @destination << '\n'
         @destination << "endobj\n"
       end

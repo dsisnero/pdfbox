@@ -116,7 +116,11 @@ private def content_stream_length(page : Pdfbox::Pdmodel::Page) : Int32?
 
   case contents
   when Pdfbox::Cos::Stream
-    contents.data.size
+    length = contents[Pdfbox::Cos::Name.new("Length")]
+    if length.is_a?(Pdfbox::Cos::Object)
+      length = length.object
+    end
+    length.as?(Pdfbox::Cos::Integer).try(&.value.to_i32) || contents.data.size
   when Pdfbox::Cos::Dictionary
     length = contents[Pdfbox::Cos::Name.new("Length")]
     if length.is_a?(Pdfbox::Cos::Object)
@@ -201,7 +205,37 @@ describe "Pdfbox::Pdfwriter parity" do
   pending "COSDocumentCompressionTest#testCompressEncryptedDoc requires encryption + compression writer parity" do
   end
 
-  pending "COSDocumentCompressionTest#testAlteredDoc requires stream-object hydration parity in parser/writer" do
+  it "COSDocumentCompressionTest#testAlteredDoc" do
+    source_path = SpecPaths.resolve("vendor/pdfbox/pdfbox/src/test/resources/input/compression/unencrypted.pdf")
+    source = Pdfbox::Pdmodel::Document.load(source_path)
+    target_output = IO::Memory.new
+
+    page = Pdfbox::Pdmodel::Page.new
+    page.media_box = Pdfbox::Pdmodel::Rectangle.new(0.0, 0.0, 100.0, 100.0)
+    source.add_page(page)
+
+    content_stream = Pdfbox::Pdmodel::PDPageContentStream.new(source, page)
+    content_stream.begin_text
+    content_stream.new_line_at_offset(20, 80)
+    content_stream.set_font(
+      Pdfbox::Pdmodel::Font::PDType1Font.new(
+        Pdfbox::Pdmodel::Font::Standard14Fonts::FontName::HELVETICA
+      ),
+      12
+    )
+    content_stream.show_text("Test")
+    content_stream.end_text
+    content_stream.close
+
+    source.save(target_output)
+    compressed = Pdfbox::Pdmodel::Document.load(IO::Memory.new(target_output.to_slice))
+
+    compressed.number_of_pages.should eq(3)
+    new_page = compressed.get_page(2)
+    content_stream_length(new_page).should eq(43)
+  ensure
+    source.try(&.close)
+    compressed.try(&.close)
   end
 
   pending "COSDocumentCompressionTest#testPDFBox5927 requires document compression writer parity" do

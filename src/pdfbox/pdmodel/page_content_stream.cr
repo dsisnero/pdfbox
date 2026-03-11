@@ -34,7 +34,10 @@ module Pdfbox::Pdmodel
       return if @closed
       @closed = true
 
-      stream = Cos::Stream.new(data: @buffer.to_slice)
+      stream = Cos::Stream.new
+      encoded_output = stream.create_output_stream(Cos::Name::FLATE_DECODE)
+      encoded_output.write(@buffer.to_slice)
+      encoded_output.close
       @page.contents = stream
     end
 
