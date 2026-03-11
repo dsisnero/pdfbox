@@ -74,6 +74,27 @@ private def max_object_number(bytes : Bytes) : Int64
   max_obj
 end
 
+private def annotation_field_name(annot : Pdfbox::Pdmodel::Interactive::Annotation::PDAnnotation) : String?
+  field = annot.cos_object[Pdfbox::Cos::Name.new("T")]
+  case field
+  when Pdfbox::Cos::String
+    field.value
+  when Pdfbox::Cos::Name
+    field.value
+  else
+    nil
+  end
+end
+
+private def as_dictionary(value : Pdfbox::Cos::Base?) : Pdfbox::Cos::Dictionary?
+  return unless value
+  if value.is_a?(Pdfbox::Cos::Object)
+    dereferenced = value.object
+    return dereferenced.as?(Pdfbox::Cos::Dictionary)
+  end
+  value.as?(Pdfbox::Cos::Dictionary)
+end
+
 describe "Pdfbox::Pdfwriter parity" do
   # Source of truth:
   # vendor/pdfbox/pdfbox/src/test/java/org/apache/pdfbox/pdfwriter/
@@ -82,10 +103,68 @@ describe "Pdfbox::Pdfwriter parity" do
   # - ContentStreamWriter token roundtrip parity is covered below.
   # - Compression/document writer parity tests are still pending broader writer stack work.
 
-  pending "COSDocumentCompressionTest#testCompressAcroformDoc requires document compression writer parity" do
+  it "COSDocumentCompressionTest#testCompressAcroformDoc" do
+    source_path = SpecPaths.resolve("vendor/pdfbox/pdfbox/src/test/resources/input/compression/acroform.pdf")
+    source = Pdfbox::Pdmodel::Document.load(source_path)
+
+    compressed_output = IO::Memory.new
+    source.save(compressed_output)
+    compressed = Pdfbox::Pdmodel::Document.load(IO::Memory.new(compressed_output.to_slice))
+
+    compressed.number_of_pages.should eq(1)
+    page = compressed.get_page(0)
+    annotations = page.annotations.to_a
+    annotations.size.should eq(13)
+    annotation_field_name(annotations[0]).should eq("TextField")
+    annotation_field_name(annotations[1]).should eq("Button")
+    annotation_field_name(annotations[2]).should eq("CheckBox1")
+    annotation_field_name(annotations[3]).should eq("CheckBox2")
+    annotation_field_name(annotations[4]).should eq("TextFieldMultiLine")
+    annotation_field_name(annotations[5]).should eq("TextFieldMultiLineRT")
+
+    parent6 = annotations[6].cos_object[Pdfbox::Cos::Name.new("Parent")]
+    parent6.should_not be_nil
+    parent6_dict = as_dictionary(parent6).not_nil!
+    parent6_dict[Pdfbox::Cos::Name.new("T")].as(Pdfbox::Cos::String).value.should eq("GroupOption")
+
+    parent7 = annotations[7].cos_object[Pdfbox::Cos::Name.new("Parent")]
+    parent7.should_not be_nil
+    parent7_dict = as_dictionary(parent7).not_nil!
+    parent7_dict[Pdfbox::Cos::Name.new("T")].as(Pdfbox::Cos::String).value.should eq("GroupOption")
+
+    annotation_field_name(annotations[8]).should eq("ListBox")
+    annotation_field_name(annotations[9]).should eq("ListBoxMultiSelect")
+    annotation_field_name(annotations[10]).should eq("ComboBox")
+    annotation_field_name(annotations[11]).should eq("ComboBoxEditable")
+    annotation_field_name(annotations[12]).should eq("Signature")
+  ensure
+    source.try(&.close)
+    compressed.try(&.close)
   end
 
-  pending "COSDocumentCompressionTest#testCompressAttachmentsDoc requires document compression writer parity" do
+  it "COSDocumentCompressionTest#testCompressAttachmentsDoc" do
+    source_path = SpecPaths.resolve("vendor/pdfbox/pdfbox/src/test/resources/input/compression/attachment.pdf")
+    source = Pdfbox::Pdmodel::Document.load(source_path)
+
+    compressed_output = IO::Memory.new
+    source.save(compressed_output)
+    compressed = Pdfbox::Pdmodel::Document.load(IO::Memory.new(compressed_output.to_slice))
+
+    compressed.number_of_pages.should eq(2)
+    names_dict = compressed.document_catalog.not_nil!.names
+    names_dict.should_not be_nil
+    embedded_tree = names_dict.not_nil!.embedded_files
+    embedded_tree.should_not be_nil
+    embedded_files = embedded_tree.not_nil!.names
+    embedded_files.should_not be_nil
+    embedded_files.not_nil!.size.should eq(1)
+    attachment = embedded_files.not_nil!["A4Unicode.pdf"]?
+    attachment.should_not be_nil
+    attachment.not_nil!.embedded_file.should_not be_nil
+    attachment.not_nil!.embedded_file.not_nil!.length.should eq(14997)
+  ensure
+    source.try(&.close)
+    compressed.try(&.close)
   end
 
   pending "COSDocumentCompressionTest#testCompressEncryptedDoc requires encryption + compression writer parity" do

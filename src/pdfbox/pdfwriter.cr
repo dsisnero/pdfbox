@@ -53,9 +53,14 @@ module Pdfbox::Pdfwriter
         catalog.cos_object.entries.each do |key, value|
           key_name = key.value
           next if key_name == "Type" || key_name == "Pages"
+          local_stack = Set(UInt64).new
+          materialized_value = materialize_for_write(
+            value,
+            local_stack
+          )
           cos_writer.write_name(key)
           @destination << ' '
-          cos_writer.write(value)
+          cos_writer.write(materialized_value)
           @destination << '\n'
         end
       end
@@ -104,9 +109,14 @@ module Pdfbox::Pdfwriter
           page_dict.entries.each do |key, value|
             key_name = key.value
             next if key_name == "Type" || key_name == "Parent" || key_name == "MediaBox"
+            local_stack = Set(UInt64).new
+            materialized_value = materialize_for_write(
+              value,
+              local_stack
+            )
             cos_writer.write_name(key)
             @destination << ' '
-            cos_writer.write(value)
+            cos_writer.write(materialized_value)
             @destination << '\n'
           end
         end
@@ -131,6 +141,54 @@ module Pdfbox::Pdfwriter
 
       # Write EOF marker
       @destination << "%%EOF\n"
+    end
+
+    private def materialize_for_write(base : Pdfbox::Cos::Base, stack : Set(UInt64)) : Pdfbox::Cos::Base
+      case base
+      when Pdfbox::Cos::Object
+        dereferenced = base.object
+        return Pdfbox::Cos::Null.instance unless dereferenced
+        materialize_for_write(dereferenced, stack)
+      when Pdfbox::Cos::Stream
+        object_id = base.object_id.to_u64
+        return Pdfbox::Cos::Null.instance if stack.includes?(object_id)
+
+        stack << object_id
+        clone = Pdfbox::Cos::Stream.new({} of Pdfbox::Cos::Name => Pdfbox::Cos::Base, base.data.dup)
+        base.entries.each do |key, value|
+          clone[key] = materialize_for_write(value, stack)
+        end
+        stack.delete(object_id)
+        clone
+      when Pdfbox::Cos::Dictionary
+        object_id = base.object_id.to_u64
+        return Pdfbox::Cos::Null.instance if stack.includes?(object_id)
+
+        stack << object_id
+        clone = Pdfbox::Cos::Dictionary.new
+        subtype = base[Pdfbox::Cos::Name.new("Subtype")]
+        is_widget_annotation = subtype.is_a?(Pdfbox::Cos::Name) && subtype.value == "Widget"
+        base.entries.each do |key, value|
+          # Avoid page back-reference loops for widget annotations while preserving field parent chains.
+          next if is_widget_annotation && key.value == "P"
+          clone[key] = materialize_for_write(value, stack)
+        end
+        stack.delete(object_id)
+        clone
+      when Pdfbox::Cos::Array
+        object_id = base.object_id.to_u64
+        return Pdfbox::Cos::Null.instance if stack.includes?(object_id)
+
+        stack << object_id
+        clone = Pdfbox::Cos::Array.new
+        base.items.each do |item|
+          clone.add(materialize_for_write(item, stack))
+        end
+        stack.delete(object_id)
+        clone
+      else
+        base
+      end
     end
 
     # Write with encryption
