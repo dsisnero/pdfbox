@@ -421,4 +421,90 @@ module Pdfbox::Util
       c
     end
   end
+
+  # Ported from Apache PDFBox DateConverter (targeted parity subset).
+  module DateConverter
+    def self.to_string(cal : Time?) : String?
+      return nil if cal.nil?
+
+      offset = cal.offset
+      sign = offset < 0 ? '-' : '+'
+      abs_offset = offset.abs
+      offset_hours = abs_offset // 3600
+      offset_minutes = (abs_offset % 3600) // 60
+
+      String.build do |io|
+        io << "D:"
+        io << cal.year.to_s.rjust(4, '0')
+        io << cal.month.to_s.rjust(2, '0')
+        io << cal.day.to_s.rjust(2, '0')
+        io << cal.hour.to_s.rjust(2, '0')
+        io << cal.minute.to_s.rjust(2, '0')
+        io << cal.second.to_s.rjust(2, '0')
+        io << sign
+        io << offset_hours.to_s.rjust(2, '0')
+        io << '\''
+        io << offset_minutes.to_s.rjust(2, '0')
+        io << '\''
+      end
+    end
+
+    def self.to_iso8601(cal : Time) : String
+      offset = cal.offset
+      sign = offset < 0 ? '-' : '+'
+      abs_offset = offset.abs
+      offset_hours = abs_offset // 3600
+      offset_minutes = (abs_offset % 3600) // 60
+
+      "%04d-%02d-%02dT%02d:%02d:%02d%c%02d:%02d" % {
+        cal.year, cal.month, cal.day,
+        cal.hour, cal.minute, cal.second,
+        sign, offset_hours, offset_minutes,
+      }
+    end
+
+    def self.to_calendar(text : String?) : Time?
+      return nil if text.nil?
+      value = text.strip
+      return nil if value.empty?
+
+      value = value[2..] if value.starts_with?("D:")
+      normalized = normalize_pdf_tz(value)
+
+      parse_formats_with_offset = [
+        "%Y%m%d%H%M%S%:z",
+        "%Y%m%d%H%M%S%z",
+        "%Y%m%d%:z",
+        "%Y%m%d%z",
+      ]
+      parse_formats_utc = [
+        "%m/%d/%Y %H:%M:%S",
+        "%m/%d/%Y",
+        "%Y%m%d%H%M%S",
+        "%Y%m%d",
+        "%Y",
+      ]
+
+      parse_formats_with_offset.each do |fmt|
+        begin
+          return Time.parse(normalized, fmt, Time::Location::UTC)
+        rescue Time::Format::Error
+        end
+      end
+
+      parse_formats_utc.each do |fmt|
+        begin
+          return Time.parse(normalized, fmt, Time::Location::UTC)
+        rescue Time::Format::Error
+        end
+      end
+
+      nil
+    end
+
+    private def self.normalize_pdf_tz(value : String) : String
+      # Convert PDF timezone form (+01'00' or -02'30') to ISO offset form (+01:00).
+      value.gsub(/([+-]\d{2})'(\d{2})'?$/, "\\1:\\2")
+    end
+  end
 end

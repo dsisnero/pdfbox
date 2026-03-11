@@ -300,4 +300,52 @@ describe "Porting parity pdfbox-lxq" do
     m.get_value(2, 1).should eq(44.0_f32)
     m.get_value(2, 2).should eq(1.0_f32)
   end
+
+  # Ported from TestDateUtil.java (targeted parity subset)
+  it "TestDateUtil#testExtract and #testDateConversion" do
+    c = Pdfbox::Util::DateConverter.to_calendar("D:05/12/2005")
+    c.should_not be_nil
+    c = c.not_nil!
+    c.year.should eq(2005)
+    c.month.should eq(5)
+    c.day.should eq(12)
+    c.hour.should eq(0)
+    c.minute.should eq(0)
+    c.second.should eq(0)
+    c.offset.should eq(0)
+
+    c = Pdfbox::Util::DateConverter.to_calendar("5/12/2005 15:57:16")
+    c.should_not be_nil
+    c = c.not_nil!
+    c.year.should eq(2005)
+    c.month.should eq(5)
+    c.day.should eq(12)
+    c.hour.should eq(15)
+    c.minute.should eq(57)
+    c.second.should eq(16)
+    c.offset.should eq(0)
+
+    c = Pdfbox::Util::DateConverter.to_calendar("D:20050526205258+01'00'")
+    c.should_not be_nil
+    c = c.not_nil!
+    c.year.should eq(2005)
+    c.month.should eq(5)
+    c.day.should eq(26)
+    c.hour.should eq(20)
+    c.minute.should eq(52)
+    c.second.should eq(58)
+    c.nanosecond.should eq(0)
+    c.offset.should eq(3600)
+  end
+
+  it "TestDateUtil#testToString null and basic toString/toISO8601 formatting" do
+    Pdfbox::Util::DateConverter.to_string(nil).should be_nil
+    Pdfbox::Util::DateConverter.to_calendar(nil).should be_nil
+    Pdfbox::Util::DateConverter.to_calendar("D:    ").should be_nil
+    Pdfbox::Util::DateConverter.to_calendar("D:").should be_nil
+
+    time = Time.parse("2015-08-28T03:14:15+09:30", "%Y-%m-%dT%H:%M:%S%:z", Time::Location::UTC)
+    Pdfbox::Util::DateConverter.to_string(time).should eq("D:20150828031415+09'30'")
+    Pdfbox::Util::DateConverter.to_iso8601(time).should eq("2015-08-28T03:14:15+09:30")
+  end
 end
