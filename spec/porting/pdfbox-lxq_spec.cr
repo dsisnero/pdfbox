@@ -1,5 +1,11 @@
 require "../spec_helper"
 
+def assert_java_sort_parity(input : Array(Int32), expected : Array(Int32))
+  list = input.dup
+  Pdfbox::Util::IterativeMergeSort.sort(list) { |a, b| a <=> b }
+  list.should eq(expected)
+end
+
 describe "Porting parity pdfbox-lxq" do
   # Source of truth: vendor/pdfbox/pdfbox/src/test/java/org/apache/pdfbox/util ● P3
   # Ported from StringUtilTest.java
@@ -139,5 +145,24 @@ describe "Porting parity pdfbox-lxq" do
 
     Pdfbox::Util::NumberFormatUtil.format_float_fast(0.994_f32, 2, buffer).should eq(4)
     buffer[0, 4].should eq(Bytes['0'.ord.to_u8, '.'.ord.to_u8, '9'.ord.to_u8, '9'.ord.to_u8])
+  end
+
+  # Ported from TestSort.java
+  it "TestSort#testSort" do
+    assert_java_sort_parity([9, 8, 7, 6, 5, 4, 3, 2, 1], [1, 2, 3, 4, 5, 6, 7, 8, 9])
+    assert_java_sort_parity([4, 3, 2, 1, 9, 8, 7, 6, 5], [1, 2, 3, 4, 5, 6, 7, 8, 9])
+    assert_java_sort_parity([] of Int32, [] of Int32)
+    assert_java_sort_parity([5], [5])
+    assert_java_sort_parity([5, 6], [5, 6])
+    assert_java_sort_parity([6, 5], [5, 6])
+
+    rnd = Random.new(12_345_i64)
+    100.times do
+      len = rnd.rand(20_000) + 2
+      input = Array(Int32).new(len) { rnd.rand(rnd.rand(100) + 1) }
+      expected = input.dup
+      expected.sort!
+      assert_java_sort_parity(input, expected)
+    end
   end
 end

@@ -214,4 +214,60 @@ module Pdfbox::Util
       POWER_OF_TENS.size - 1
     end
   end
+
+  # Ported from Apache PDFBox IterativeMergeSort.
+  module IterativeMergeSort
+    def self.sort(list : Array(T), &cmp : T, T -> Int32) : Nil forall T
+      return if list.size < 2
+
+      arr = list.dup
+      iterative_merge_sort(arr, cmp)
+      list.replace(arr)
+    end
+
+    private def self.iterative_merge_sort(arr : Array(T), cmp : Proc(T, T, Int32)) : Nil forall T
+      aux = arr.dup
+      block_size = 1
+      while block_size < arr.size
+        start = 0
+        doubled = block_size << 1
+        while start < arr.size
+          merge(arr, aux, start, start + block_size, start + doubled, cmp)
+          start += doubled
+        end
+        block_size = doubled
+      end
+    end
+
+    private def self.merge(arr : Array(T), aux : Array(T), from : Int32, mid : Int32, to : Int32, cmp : Proc(T, T, Int32)) : Nil forall T
+      return if mid >= arr.size
+      to = arr.size if to > arr.size
+
+      i = from
+      j = mid
+      k = from
+      while k < to
+        if i == mid
+          aux[k] = arr[j]
+          j += 1
+        elsif j == to
+          aux[k] = arr[i]
+          i += 1
+        elsif cmp.call(arr[j], arr[i]) < 0
+          aux[k] = arr[j]
+          j += 1
+        else
+          aux[k] = arr[i]
+          i += 1
+        end
+        k += 1
+      end
+
+      index = from
+      while index < to
+        arr[index] = aux[index]
+        index += 1
+      end
+    end
+  end
 end
