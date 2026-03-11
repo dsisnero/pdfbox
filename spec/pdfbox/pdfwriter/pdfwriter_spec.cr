@@ -114,7 +114,19 @@ describe "Pdfbox::Pdfwriter parity" do
     doc.try(&.close)
   end
 
-  pending "COSWriterTest#testPDFBox5485 requires COS writer object graph parity" do
+  it "COSWriterTest#testPDFBox5485" do
+    fixture_path = SpecPaths.resolve("vendor/pdfbox/pdfbox/src/test/resources/input/PDFBOX-3110-poems-beads.pdf")
+    source = Pdfbox::Pdmodel::Document.load(fixture_path)
+    extractor = Pdfbox::Multipdf::PageExtractor.new(source, 2, 2)
+    extracted = extractor.extract
+
+    output = IO::Memory.new
+    extracted.save(output)
+    output.to_slice.size.should be > 0
+    extracted.page_count.should eq(1)
+  ensure
+    source.try(&.close)
+    extracted.try(&.close)
   end
 
   it "COSWriterTest#testPDFBox5945" do
