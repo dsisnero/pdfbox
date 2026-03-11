@@ -394,4 +394,22 @@ describe "Porting parity pdfbox-lxq" do
 
     Pdfbox::Util::DateConverter.to_calendar("2100 Feb 29 GMT+11").should be_nil
   end
+
+  it "TestDateUtil#testDateConverter compact and textual month with time" do
+    cal = Pdfbox::Util::DateConverter.to_calendar("  20090319 200122")
+    cal.should_not be_nil
+    Pdfbox::Util::DateConverter.to_string(cal).should eq("D:20090319200122+00'00'")
+
+    cal = Pdfbox::Util::DateConverter.to_calendar("26 May 2020 11:25:10")
+    cal.should_not be_nil
+    Pdfbox::Util::DateConverter.to_string(cal).should eq("D:20200526112510+00'00'")
+
+    cal = Pdfbox::Util::DateConverter.to_calendar("26 May 2021 11:23")
+    cal.should_not be_nil
+    Pdfbox::Util::DateConverter.to_string(cal).should eq("D:20210526112300+00'00'")
+
+    cal = Pdfbox::Util::DateConverter.to_calendar("D:20160411160115+12'00'")
+    cal.should_not be_nil
+    Pdfbox::Util::DateConverter.to_string(cal).should eq("D:20160411160115+12'00'")
+  end
 end

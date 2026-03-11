@@ -494,6 +494,7 @@ module Pdfbox::Util
 
       parse_ambiguous_big_endian_with_minute(normalized) ||
         parse_compact_with_explicit_tz(normalized) ||
+        parse_compact_date_time(normalized) ||
         parse_slash_date(normalized) ||
         parse_iso_with_tz(normalized) ||
         parse_textual_month_with_optional_tz(normalized) ||
@@ -554,6 +555,34 @@ module Pdfbox::Util
       nil
     end
 
+    private def self.parse_compact_date_time(normalized : String) : Time?
+      match = normalized.match(/^(\d{8})\s+(\d{1,2}):(\d{1,2}):(\d{1,2})$/) ||
+              normalized.match(/^(\d{8})\s+(\d{6})$/)
+      return nil unless match
+
+      ymd = match[1]
+      year = ymd[0, 4].to_i
+      month = ymd[4, 2].to_i
+      day = ymd[6, 2].to_i
+
+      hour = 0
+      minute = 0
+      second = 0
+      if hms = match[2]?
+        if hms.includes?(':')
+          hour = hms.to_i
+          minute = match[3].to_i
+          second = match[4].to_i
+        else
+          hour = hms[0, 2].to_i
+          minute = hms[2, 2].to_i
+          second = hms[4, 2].to_i
+        end
+      end
+
+      build_time_with_offset(year, month, day, hour, minute, second, 0)
+    end
+
     private def self.parse_iso_with_tz(normalized : String) : Time?
       formats = {
         "%Y-%m-%dT%H:%M%:z",
@@ -576,27 +605,7 @@ module Pdfbox::Util
     end
 
     private def self.parse_textual_month_with_optional_tz(normalized : String) : Time?
-      pattern = /^(\d{4})\s+([A-Za-z]+)\s+(\d{1,2})(?:\s+(?:GMT|UTC)\s*([+-])\s*(\d{1,2})(?::?(\d{2}))?)?$/
-      match = normalized.match(pattern)
-      return nil unless match
-
-      year = match[1].to_i
-      month = month_from_name(match[2])
-      return nil unless month
-      day = match[3].to_i
-
-      sign = match[4]?
-      hours = match[5]?.try(&.to_i) || 0
-      minutes = match[6]?.try(&.to_i) || 0
-      raw_seconds = (hours * 3600) + (minutes * 60)
-      offset_seconds = sign == "-" ? -raw_seconds : raw_seconds
-
-      begin
-        location = Time::Location.fixed(offset_seconds)
-        Time.local(year, month, day, 0, 0, 0, location: location)
-      rescue ArgumentError
-        nil
-      end
+      parse_textual_month_ymd(normalized) || parse_textual_month_dmy(normalized)
     end
 
     private def self.parse_with_exact_formats(normalized : String) : Time?
@@ -612,6 +621,59 @@ module Pdfbox::Util
     private def self.month_from_name(name : String) : Int32?
       month_key = name.downcase[0, Math.min(3, name.size)]
       MONTH_NAME_TO_INDEX[month_key]?
+    end
+
+    private def self.parse_textual_month_ymd(normalized : String) : Time?
+      pattern = /^(\d{4})\s+([A-Za-z]+)\s+(\d{1,2})(?:\s+(\d{1,2}):(\d{1,2})(?::(\d{1,2}))?)?(?:\s+(?:GMT|UTC)\s*([+-])\s*(\d{1,2})(?::?(\d{2}))?)?$/
+      match = normalized.match(pattern)
+      return nil unless match
+      build_from_textual_month_match(
+        year: match[1].to_i,
+        month_name: match[2],
+        day: match[3].to_i,
+        hour: match[4]?.try(&.to_i) || 0,
+        minute: match[5]?.try(&.to_i) || 0,
+        second: match[6]?.try(&.to_i) || 0,
+        sign: match[7]?,
+        tz_hour: match[8]?.try(&.to_i) || 0,
+        tz_minute: match[9]?.try(&.to_i) || 0
+      )
+    end
+
+    private def self.parse_textual_month_dmy(normalized : String) : Time?
+      pattern = /^(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})(?:\s+(\d{1,2}):(\d{1,2})(?::(\d{1,2}))?)?(?:\s+(?:GMT|UTC)\s*([+-])\s*(\d{1,2})(?::?(\d{2}))?)?$/
+      match = normalized.match(pattern)
+      return nil unless match
+      build_from_textual_month_match(
+        year: match[3].to_i,
+        month_name: match[2],
+        day: match[1].to_i,
+        hour: match[4]?.try(&.to_i) || 0,
+        minute: match[5]?.try(&.to_i) || 0,
+        second: match[6]?.try(&.to_i) || 0,
+        sign: match[7]?,
+        tz_hour: match[8]?.try(&.to_i) || 0,
+        tz_minute: match[9]?.try(&.to_i) || 0
+      )
+    end
+
+    private def self.build_from_textual_month_match(year : Int32, month_name : String, day : Int32,
+                                                    hour : Int32, minute : Int32, second : Int32,
+                                                    sign : String?, tz_hour : Int32, tz_minute : Int32) : Time?
+      month = month_from_name(month_name)
+      return nil unless month
+      raw_seconds = (tz_hour * 3600) + (tz_minute * 60)
+      offset_seconds = sign == "-" ? -raw_seconds : raw_seconds
+      build_time_with_offset(year, month, day, hour, minute, second, offset_seconds)
+    end
+
+    private def self.build_time_with_offset(year : Int32, month : Int32, day : Int32,
+                                            hour : Int32, minute : Int32, second : Int32,
+                                            offset_seconds : Int32) : Time?
+      location = Time::Location.fixed(offset_seconds)
+      Time.local(year, month, day, hour, minute, second, location: location)
+    rescue ArgumentError
+      nil
     end
 
     private def self.normalize_pdf_tz(value : String) : String
