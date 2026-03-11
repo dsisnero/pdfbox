@@ -11,7 +11,7 @@ module Pdfbox::Pdmodel::Font
     @is_embedded : Bool = false
     @is_damaged : Bool = false
     @font_matrix : PDFont::Matrix = PDFont::Matrix.default_font_matrix
-    @font_bbox : PDFont::BoundingBox = PDFont::BoundingBox.new
+    @font_bbox : PDFont::BoundingBox?
 
     # Constructor.
     def initialize(font_dictionary : Pdfbox::Cos::Dictionary, parent : PDType0Font)
@@ -46,7 +46,25 @@ module Pdfbox::Pdmodel::Font
     end
 
     def bounding_box : PDFont::BoundingBox
-      @font_bbox
+      @font_bbox ||= generate_bounding_box
+    end
+
+    private def generate_bounding_box : PDFont::BoundingBox
+      if descriptor = font_descriptor
+        if bbox = descriptor.font_bounding_box
+          if bbox.lower_left_x != 0.0_f32 || bbox.lower_left_y != 0.0_f32 ||
+             bbox.upper_right_x != 0.0_f32 || bbox.upper_right_y != 0.0_f32
+            return PDFont::BoundingBox.new(
+              bbox.lower_left_x,
+              bbox.lower_left_y,
+              bbox.upper_right_x,
+              bbox.upper_right_y
+            )
+          end
+        end
+      end
+
+      PDFont::BoundingBox.new
     end
 
     def width_from_font(code : Int32) : Float32
