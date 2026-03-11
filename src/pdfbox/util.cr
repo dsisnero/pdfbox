@@ -424,14 +424,27 @@ module Pdfbox::Util
 
   # Ported from Apache PDFBox DateConverter (targeted parity subset).
   module DateConverter
+    MINUTES_PER_HOUR   = 60_i64
+    SECONDS_PER_MINUTE = 60_i64
+    MILLIS_PER_MINUTE  = SECONDS_PER_MINUTE * 1000_i64
+    MILLIS_PER_HOUR    = MINUTES_PER_HOUR * MILLIS_PER_MINUTE
+    HALF_DAY           = 12_i64 * MINUTES_PER_HOUR * MILLIS_PER_MINUTE
+    DAY                = 2_i64 * HALF_DAY
+
+    # Java DateConverter.formatTZoffset equivalent.
+    def self.format_tz_offset(millis : Int64, sep : String) : String
+      offset = restrain_tz_offset(millis)
+      sign = offset < 0 ? '-' : '+'
+      abs_offset = offset.abs
+      offset_hours = abs_offset // MILLIS_PER_HOUR
+      offset_minutes = (abs_offset % MILLIS_PER_HOUR) // MILLIS_PER_MINUTE
+      "#{sign}#{offset_hours.to_s.rjust(2, '0')}#{sep}#{offset_minutes.to_s.rjust(2, '0')}"
+    end
+
     def self.to_string(cal : Time?) : String?
       return nil if cal.nil?
 
-      offset = cal.offset
-      sign = offset < 0 ? '-' : '+'
-      abs_offset = offset.abs
-      offset_hours = abs_offset // 3600
-      offset_minutes = (abs_offset % 3600) // 60
+      offset = format_tz_offset((cal.offset * 1000).to_i64, "'")
 
       String.build do |io|
         io << "D:"
@@ -441,25 +454,18 @@ module Pdfbox::Util
         io << cal.hour.to_s.rjust(2, '0')
         io << cal.minute.to_s.rjust(2, '0')
         io << cal.second.to_s.rjust(2, '0')
-        io << sign
-        io << offset_hours.to_s.rjust(2, '0')
-        io << '\''
-        io << offset_minutes.to_s.rjust(2, '0')
+        io << offset
         io << '\''
       end
     end
 
     def self.to_iso8601(cal : Time) : String
-      offset = cal.offset
-      sign = offset < 0 ? '-' : '+'
-      abs_offset = offset.abs
-      offset_hours = abs_offset // 3600
-      offset_minutes = (abs_offset % 3600) // 60
+      offset = format_tz_offset((cal.offset * 1000).to_i64, ":")
 
-      "%04d-%02d-%02dT%02d:%02d:%02d%c%02d:%02d" % {
+      "%04d-%02d-%02dT%02d:%02d:%02d%s" % {
         cal.year, cal.month, cal.day,
         cal.hour, cal.minute, cal.second,
-        sign, offset_hours, offset_minutes,
+        offset,
       }
     end
 
@@ -505,6 +511,18 @@ module Pdfbox::Util
     private def self.normalize_pdf_tz(value : String) : String
       # Convert PDF timezone form (+01'00' or -02'30') to ISO offset form (+01:00).
       value.gsub(/([+-]\d{2})'(\d{2})'?$/, "\\1:\\2")
+    end
+
+    private def self.restrain_tz_offset(proposed_offset : Int64) : Int64
+      limit = 14_i64 * MILLIS_PER_HOUR
+      if proposed_offset <= limit && proposed_offset >= -limit
+        return proposed_offset
+      end
+
+      normalized = ((proposed_offset + HALF_DAY) % DAY + DAY) % DAY
+      return HALF_DAY if normalized == 0
+
+      (normalized - HALF_DAY) % HALF_DAY
     end
   end
 end

@@ -348,4 +348,14 @@ describe "Porting parity pdfbox-lxq" do
     Pdfbox::Util::DateConverter.to_string(time).should eq("D:20150828031415+09'30'")
     Pdfbox::Util::DateConverter.to_iso8601(time).should eq("2015-08-28T03:14:15+09:30")
   end
+
+  it "TestDateUtil#testFormatTZoffset targeted cases" do
+    Pdfbox::Util::DateConverter.format_tz_offset((-12.1 * 60 * 60 * 1000).to_i64, ":").should eq("-12:06")
+    Pdfbox::Util::DateConverter.format_tz_offset((12.1 * 60 * 60 * 1000).to_i64, ":").should eq("+12:06")
+    Pdfbox::Util::DateConverter.format_tz_offset(0_i64, ":").should eq("+00:00")
+    Pdfbox::Util::DateConverter.format_tz_offset((-0.5 * 60 * 60 * 1000).to_i64, ":").should eq("-00:30")
+    Pdfbox::Util::DateConverter.format_tz_offset((0.5 * 60 * 60 * 1000).to_i64, ":").should eq("+00:30")
+    Pdfbox::Util::DateConverter.format_tz_offset((14 * 60 * 60 * 1000).to_i64, ":").should eq("+14:00")
+    Pdfbox::Util::DateConverter.format_tz_offset((-14 * 60 * 60 * 1000).to_i64, ":").should eq("-14:00")
+  end
 end
