@@ -1,5 +1,14 @@
 require "../../spec_helper"
 
+class NonClosingMemoryIO < IO::Memory
+  getter close_called = false
+
+  def close : Nil
+    @close_called = true
+    raise IO::Error.new("Stream was closed")
+  end
+end
+
 describe "Pdfbox::Pdfwriter parity" do
   # Source of truth:
   # vendor/pdfbox/pdfbox/src/test/java/org/apache/pdfbox/pdfwriter/
@@ -26,7 +35,18 @@ describe "Pdfbox::Pdfwriter parity" do
   pending "COSWriterCompressionPoolTest#testPDFBox6036 requires COS writer compression pool parity" do
   end
 
-  pending "COSWriterTest#testPDFBox4321 requires COS writer object graph parity" do
+  it "COSWriterTest#testPDFBox4321" do
+    doc = Pdfbox::Pdmodel::Document.new
+    doc.add_page(Pdfbox::Pdmodel::Page.new)
+
+    output = NonClosingMemoryIO.new
+    # parity intent from Java COSWriterTest#testPDFBox4321:
+    # save must not close externally-managed output streams.
+    doc.save(output)
+    output.close_called.should be_false
+    output.to_slice.size.should be > 0
+  ensure
+    doc.try(&.close)
   end
 
   pending "COSWriterTest#testPDFBox5485 requires COS writer object graph parity" do
