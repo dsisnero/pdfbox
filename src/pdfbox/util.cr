@@ -475,42 +475,91 @@ module Pdfbox::Util
       return nil if value.empty?
 
       value = value[2..] if value.starts_with?("D:")
-      normalized = normalize_pdf_tz(value)
+      normalized = normalize_pdf_tz(value.strip)
+      return if normalized.empty?
 
-      parse_formats_with_offset = [
-        "%Y%m%d%H%M%S%:z",
-        "%Y%m%d%H%M%S%z",
-        "%Y%m%d%:z",
-        "%Y%m%d%z",
-      ]
-      parse_formats_utc = [
-        "%m/%d/%Y %H:%M:%S",
-        "%m/%d/%Y",
-        "%Y%m%d%H%M%S",
-        "%Y%m%d",
-        "%Y",
-      ]
+      parse_ambiguous_big_endian_with_minute(normalized) ||
+        parse_compact_with_explicit_tz(normalized) ||
+        parse_slash_date(normalized) ||
+        parse_with_exact_formats(normalized)
+    end
 
-      parse_formats_with_offset.each do |fmt|
+    private def self.parse_ambiguous_big_endian_with_minute(normalized : String) : Time?
+      # Java parseBigEndianDate-compatible ambiguous form: "1970 12 23:08" => HH defaults to 00.
+      if match = normalized.match(/^(\d{4})\s+(\d{1,2})\s+(\d{1,2}):(\d{1,2})$/)
+        year = match[1].to_i
+        month = match[2].to_i
+        day = match[3].to_i
+        minute = match[4].to_i
         begin
-          return Time.parse(normalized, fmt, Time::Location::UTC)
+          return Time.parse("%04d%02d%02d00%02d00+0000" % {year, month, day, minute}, "%Y%m%d%H%M%S%z", Time::Location::UTC)
         rescue Time::Format::Error
+          return nil
         end
       end
-
-      parse_formats_utc.each do |fmt|
-        begin
-          return Time.parse(normalized, fmt, Time::Location::UTC)
-        rescue Time::Format::Error
-        end
-      end
-
       nil
+    end
+
+    private def self.parse_compact_with_explicit_tz(normalized : String) : Time?
+      # Java TestDateUtil case: "20190401 6:1:1 -1130"
+      if match = normalized.match(/^(\d{4})(\d{2})(\d{2})\s+(\d{1,2}):(\d{1,2}):(\d{1,2})\s*([+-]\d{2})(\d{2})$/)
+        year = match[1].to_i
+        month = match[2].to_i
+        day = match[3].to_i
+        hour = match[4].to_i
+        minute = match[5].to_i
+        second = match[6].to_i
+        sign_hour = match[7]
+        tz_minute = match[8].to_i
+        begin
+          return Time.parse("%04d%02d%02d%02d%02d%02d%s%02d" % {year, month, day, hour, minute, second, sign_hour, tz_minute}, "%Y%m%d%H%M%S%z", Time::Location::UTC)
+        rescue Time::Format::Error
+          return nil
+        end
+      end
+      nil
+    end
+
+    private def self.parse_slash_date(normalized : String) : Time?
+      # Java-compatible slash date forms used by TestDateUtil#testExtract.
+      if match = normalized.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:\s+(\d{1,2}):(\d{1,2}):(\d{1,2}))?$/)
+        month = match[1].to_i
+        day = match[2].to_i
+        year = match[3].to_i
+        hour = match[4]?.try(&.to_i) || 0
+        minute = match[5]?.try(&.to_i) || 0
+        second = match[6]?.try(&.to_i) || 0
+        begin
+          return Time.utc(year, month, day, hour, minute, second)
+        rescue ArgumentError
+          return nil
+        end
+      end
+      nil
+    end
+
+    private def self.parse_with_exact_formats(normalized : String) : Time?
+      parse_exact(normalized, /^(\d{8})([+-]\d{2}:\d{2})$/, "%Y%m%d%:z") ||
+        parse_exact(normalized, /^(\d{8})([+-]\d{4})$/, "%Y%m%d%z") ||
+        parse_exact(normalized, /^(\d{8})(\d{6})([+-]\d{2}:\d{2})$/, "%Y%m%d%H%M%S%:z") ||
+        parse_exact(normalized, /^(\d{8})(\d{6})([+-]\d{4})$/, "%Y%m%d%H%M%S%z") ||
+        parse_exact(normalized, /^\d{14}$/, "%Y%m%d%H%M%S") ||
+        parse_exact(normalized, /^\d{8}$/, "%Y%m%d") ||
+        parse_exact(normalized, /^\d{4}$/, "%Y")
     end
 
     private def self.normalize_pdf_tz(value : String) : String
       # Convert PDF timezone form (+01'00' or -02'30') to ISO offset form (+01:00).
       value.gsub(/([+-]\d{2})'(\d{2})'?$/, "\\1:\\2")
+    end
+
+    private def self.parse_exact(text : String, guard : Regex, format : String) : Time?
+      return nil unless text.matches?(guard)
+      begin
+        Time.parse(text, format, Time::Location::UTC)
+      rescue Time::Format::Error
+        nil
+      end
     end
 
     private def self.restrain_tz_offset(proposed_offset : Int64) : Int64

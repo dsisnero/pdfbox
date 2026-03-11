@@ -358,4 +358,20 @@ describe "Porting parity pdfbox-lxq" do
     Pdfbox::Util::DateConverter.format_tz_offset((14 * 60 * 60 * 1000).to_i64, ":").should eq("+14:00")
     Pdfbox::Util::DateConverter.format_tz_offset((-14 * 60 * 60 * 1000).to_i64, ":").should eq("-14:00")
   end
+
+  it "TestDateUtil#testDateConverter additional big-endian/offset parse cases" do
+    cal = Pdfbox::Util::DateConverter.to_calendar("20170401+09'30'")
+    cal.should_not be_nil
+    Pdfbox::Util::DateConverter.to_string(cal).should eq("D:20170401000000+09'30'")
+
+    cal = Pdfbox::Util::DateConverter.to_calendar("20190401 6:1:1 -1130")
+    cal.should_not be_nil
+    Pdfbox::Util::DateConverter.to_string(cal).should eq("D:20190401060101-11'30'")
+
+    cal = Pdfbox::Util::DateConverter.to_calendar("1970 12 23:08")
+    cal.should_not be_nil
+    Pdfbox::Util::DateConverter.to_string(cal).should eq("D:19701223000800+00'00'")
+
+    Pdfbox::Util::DateConverter.to_calendar("19921301 11:25").should be_nil
+  end
 end
