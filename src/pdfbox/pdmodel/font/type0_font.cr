@@ -161,6 +161,10 @@ class Pdfbox::Pdmodel::Font::PDType0Font < Pdfbox::Pdmodel::Font::PDFont
     descendant_font.font_matrix
   end
 
+  def font_descriptor : PDFontDescriptor?
+    descendant_font.font_descriptor
+  end
+
   def bounding_box : PDFont::BoundingBox
     descendant_font.bounding_box
   end
@@ -330,6 +334,10 @@ class Pdfbox::Pdmodel::Font::PDType0Font < Pdfbox::Pdmodel::Font::PDFont
     true
   end
 
+  def standard14? : Bool
+    false
+  end
+
   # Returns the TrueType font if the descendant font is Type 2, otherwise nil.
   def true_type_font
     descendant_font.as?(PDCIDFontType2).try(&.true_type_font)
@@ -341,6 +349,10 @@ class Pdfbox::Pdmodel::Font::PDType0Font < Pdfbox::Pdmodel::Font::PDFont
 
   def cmap_ucs2 : Fontbox::CMap::CMap?
     @c_map_ucs2
+  end
+
+  def to_unicode_cmap : Fontbox::CMap::CMap?
+    @to_unicode_cmap
   end
 
   # Returns true if the font uses a predefined CMap (not Identity-H/V).

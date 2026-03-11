@@ -152,4 +152,35 @@ describe Pdfbox::Pdmodel::Font::PDType0Font do
     font = Pdfbox::Pdmodel::Font::PDType0Font.new(Type0FontSpecHelpers.build_valid_type0_dict)
     font.composite_font?.should be_true
   end
+
+  it "reports standard14? false for Type0" do
+    font = Pdfbox::Pdmodel::Font::PDType0Font.new(Type0FontSpecHelpers.build_valid_type0_dict)
+    font.standard14?.should be_false
+  end
+
+  it "delegates font_descriptor lookup to the descendant font dictionary" do
+    descendant = Pdfbox::Cos::Dictionary.new
+    descendant[Pdfbox::Cos::Name::TYPE] = Pdfbox::Cos::Name::FONT
+    descendant[Pdfbox::Cos::Name::SUBTYPE] = Pdfbox::Cos::Name.new("CIDFontType2")
+    descendant[Pdfbox::Cos::Name::BASE_FONT] = Pdfbox::Cos::Name.new("DummyCID")
+
+    descendant_descriptor = Pdfbox::Cos::Dictionary.new
+    descendant_descriptor[Pdfbox::Cos::Name::TYPE] = Pdfbox::Cos::Name.new("FontDescriptor")
+    descendant_descriptor[Pdfbox::Cos::Name::FONT_NAME] = Pdfbox::Cos::Name.new("DescendantFont")
+    descendant[Pdfbox::Cos::Name::FONT_DESC] = descendant_descriptor
+
+    dict = Pdfbox::Cos::Dictionary.new
+    dict[Pdfbox::Cos::Name::TYPE] = Pdfbox::Cos::Name::FONT
+    dict[Pdfbox::Cos::Name::SUBTYPE] = Pdfbox::Cos::Name::TYPE0
+    dict[Pdfbox::Cos::Name::BASE_FONT] = Pdfbox::Cos::Name.new("DummyType0")
+    dict[Pdfbox::Cos::Name::DESCENDANT_FONTS] = Pdfbox::Cos::Array.new([descendant] of Pdfbox::Cos::Base)
+
+    top_level_descriptor = Pdfbox::Cos::Dictionary.new
+    top_level_descriptor[Pdfbox::Cos::Name::TYPE] = Pdfbox::Cos::Name.new("FontDescriptor")
+    top_level_descriptor[Pdfbox::Cos::Name::FONT_NAME] = Pdfbox::Cos::Name.new("TopLevelFont")
+    dict[Pdfbox::Cos::Name::FONT_DESC] = top_level_descriptor
+
+    font = Pdfbox::Pdmodel::Font::PDType0Font.new(dict)
+    font.font_descriptor.not_nil!.font_name.should eq("DescendantFont")
+  end
 end
