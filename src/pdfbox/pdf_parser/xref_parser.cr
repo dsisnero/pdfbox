@@ -223,8 +223,7 @@ module Pdfbox::Pdfparser
 
       # check for trailer after xref
       str = @parser.read_string
-      bytes = str.to_slice
-      @source.seek(@source.position - bytes.size)
+      @source.seek(@source.position - str.bytesize)
 
       # signal start of new XRef
       @xref_trailer_resolver.next_xref_obj(start_byte_offset, XRefType::Table)
@@ -236,37 +235,31 @@ module Pdfbox::Pdfparser
 
       # Xref tables can have multiple sections. Each starts with a starting object id and a count.
       loop do
-        saved_pos = @source.position
         current_line = parser_as_parser.read_line
-        split_string = current_line.strip.split(/\s+/)
+        split_string = current_line.rstrip.split(/\s+/)
         if split_string.size != 2
-          # Check if we've reached the trailer
-          if split_string.size == 1 && split_string[0] == "trailer"
-            # Rewind to before the trailer line
-            @source.seek(saved_pos)
-            break
-          end
           Log.warn { "Unexpected XRefTable Entry: #{current_line}" }
           return false
         end
 
         # first obj id
-        begin
-          curr_obj_id = split_string[0].to_i64
-        rescue
+        curr_obj_id = begin
+          split_string[0].to_i64
+        rescue ex : ArgumentError
           Log.warn { "XRefTable: invalid ID for the first object: #{current_line}" }
           return false
         end
 
         # the number of objects in the xref table
-        begin
-          count = split_string[1].to_i32
-        rescue
+        count = begin
+          split_string[1].to_i32
+        rescue ex : ArgumentError
           Log.warn { "XRefTable: invalid number of objects: #{current_line}" }
           return false
         end
 
-        count.times do |i|
+        @parser.skip_spaces
+        count.times do
           break if @parser.eof?
 
           next_char = @source.peek
@@ -277,35 +270,35 @@ module Pdfbox::Pdfparser
 
           # Read xref entry line
           entry_line = parser_as_parser.read_line
-          entry_parts = entry_line.strip.split(/\s+/)
+          entry_parts = entry_line.rstrip.split(/\s+/)
           if entry_parts.size < 3
             Log.warn { "invalid xref line: #{entry_line}" }
             break
           end
 
           # This supports the corrupt table as reported in PDFBOX-474 (XXXX XXX XX n)
-          begin
-            curr_offset = entry_parts[0].to_i64
-            curr_gen_id = entry_parts[1].to_i32
-            if entry_parts.last == "n"
-              # skip 0 offsets for in-use entries (corrupt)
+          if entry_parts.last == "n"
+            begin
+              curr_offset = entry_parts[0].to_i64
+              # skip 0 offsets
               if curr_offset > 0
-                key = Cos::ObjectKey.new(curr_obj_id + i, curr_gen_id.to_i64)
+                curr_gen_id = entry_parts[1].to_i32
+                key = Cos::ObjectKey.new(curr_obj_id, curr_gen_id.to_i64)
                 @xref_trailer_resolver.add_xref(key, curr_offset)
               end
-            elsif entry_parts[2] == "f"
-              # Free entry: store offset 0
-              key = Cos::ObjectKey.new(curr_obj_id + i, curr_gen_id.to_i64)
-              @xref_trailer_resolver.add_xref(key, 0_i64)
-            else
-              Log.warn { "Invalid xref entry type: #{entry_line}" }
-              return false
+            rescue ex : ArgumentError
+              raise ::IO::Error.new(ex.message)
             end
-          rescue
-            Log.warn { "Invalid xref entry: #{entry_line}" }
-            return false
+          elsif entry_parts[2] != "f"
+            raise ::IO::Error.new("Corrupt XRefTable Entry - ObjID:#{curr_obj_id}")
           end
+
+          curr_obj_id += 1
+          @parser.skip_spaces
         end
+
+        @parser.skip_spaces
+        break unless @parser.digit?
       end
 
       true
@@ -478,7 +471,7 @@ module Pdfbox::Pdfparser
         elsif gen_number > object_key.generation
           return Cos::ObjectKey.new(object_key.number, gen_number)
         end
-      rescue ex : ::IO::Error
+      rescue ex
         # Swallow the exception, obviously there isn't any valid object number
         Log.debug { "No valid object at given location #{offset} - ignoring: #{ex.message}" }
       end
