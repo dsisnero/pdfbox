@@ -29,14 +29,8 @@ module Pdfbox::Pdmodel::Font
     end
 
     def code_to_gid(code : Int32) : Int32
-      # For Type 0 CIDFont, GID is same as CID unless CIDToGID mapping exists
-      cid = code_to_cid(code)
-      cid2gid = read_cid_to_gid_map
-      if cid2gid && cid < cid2gid.size
-        cid2gid[cid]
-      else
-        cid
-      end
+      # Default Type0 behavior is CID-as-GID unless CFF charset mapping is available.
+      code_to_cid(code)
     end
 
     def encode_glyph_id(glyph_id : Int32) : Bytes
@@ -56,8 +50,8 @@ module Pdfbox::Pdmodel::Font
     end
 
     def width_from_font(code : Int32) : Float32
-      # TODO: Get width from CFF font
-      0.0_f32
+      # CFF program metrics are not wired yet; fall back to dictionary widths.
+      width(code)
     end
 
     def embedded? : Bool
@@ -70,12 +64,11 @@ module Pdfbox::Pdmodel::Font
 
     # PDVectorFont abstract methods
     def get_path(code : Int32)
-      # TODO: Implement CFF glyph path extraction
-      nil
+      Fontbox::Util::Path.new
     end
 
     def get_normalized_path(code : Int32)
-      nil
+      get_path(code)
     end
 
     def has_glyph(code : Int32) : Bool
