@@ -167,7 +167,8 @@ class Pdfbox::Pdmodel::Font::PDType0Font < Pdfbox::Pdmodel::Font::PDFont
 
   def position_vector(code : Int32) : Vector
     # units are always 1/1000 text space, font matrix is not used, see FOP-2252
-    descendant_font.position_vector(code) # TODO: scale(-1 / 1000f)
+    vector = descendant_font.position_vector(code)
+    Vector.new(vector.x * -0.001_f32, vector.y * -0.001_f32)
   end
 
   def width(code : Int32) : Float32

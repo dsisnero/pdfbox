@@ -112,4 +112,34 @@ describe Pdfbox::Pdmodel::Font::PDType0Font do
       ttf.close
     end
   end
+
+  it "scales descendant position vectors by -1/1000 for Type0 semantics" do
+    descendant = Pdfbox::Cos::Dictionary.new
+    descendant[Pdfbox::Cos::Name::TYPE] = Pdfbox::Cos::Name::FONT
+    descendant[Pdfbox::Cos::Name::SUBTYPE] = Pdfbox::Cos::Name.new("CIDFontType2")
+    descendant[Pdfbox::Cos::Name::BASE_FONT] = Pdfbox::Cos::Name.new("DummyCID")
+    descendant[Pdfbox::Cos::Name.new("W")] = Pdfbox::Cos::Array.new([
+      Pdfbox::Cos::Integer.new(5),
+      Pdfbox::Cos::Array.new([Pdfbox::Cos::Integer.new(700)] of Pdfbox::Cos::Base),
+    ] of Pdfbox::Cos::Base)
+    descendant[Pdfbox::Cos::Name.new("W2")] = Pdfbox::Cos::Array.new([
+      Pdfbox::Cos::Integer.new(5),
+      Pdfbox::Cos::Array.new([
+        Pdfbox::Cos::Integer.new(-600),
+        Pdfbox::Cos::Integer.new(300),
+        Pdfbox::Cos::Integer.new(900),
+      ] of Pdfbox::Cos::Base),
+    ] of Pdfbox::Cos::Base)
+
+    dict = Pdfbox::Cos::Dictionary.new
+    dict[Pdfbox::Cos::Name::TYPE] = Pdfbox::Cos::Name::FONT
+    dict[Pdfbox::Cos::Name::SUBTYPE] = Pdfbox::Cos::Name::TYPE0
+    dict[Pdfbox::Cos::Name::BASE_FONT] = Pdfbox::Cos::Name.new("DummyType0")
+    dict[Pdfbox::Cos::Name::DESCENDANT_FONTS] = Pdfbox::Cos::Array.new([descendant] of Pdfbox::Cos::Base)
+
+    font = Pdfbox::Pdmodel::Font::PDType0Font.new(dict)
+    vector = font.position_vector(5)
+    vector.x.should be_close(-0.3_f32, 0.00001_f32)
+    vector.y.should be_close(-0.9_f32, 0.00001_f32)
+  end
 end
