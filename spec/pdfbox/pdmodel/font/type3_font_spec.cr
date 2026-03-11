@@ -102,6 +102,22 @@ describe Pdfbox::Pdmodel::Font::PDType3Font do
     end
   end
 
+  describe "Type3 dictionary encoding semantics" do
+    it "treats Differences as complete encoding when BaseEncoding is absent" do
+      dict = Type3FontSpecHelpers.build_font_dict
+      encoding_dict = Pdfbox::Cos::Dictionary.new
+      encoding_dict[Pdfbox::Cos::Name::DIFFERENCES] = Pdfbox::Cos::Array.new([
+        Pdfbox::Cos::Integer.new(65),
+        Pdfbox::Cos::Name.new("A"),
+      ] of Pdfbox::Cos::Base)
+      dict[Pdfbox::Cos::Name::ENCODING] = encoding_dict
+
+      font = Pdfbox::Pdmodel::Font::PDType3Font.new(dict)
+      font.encoding.get_name(65).should eq("A")
+      font.encoding.get_name(66).should eq(".notdef")
+    end
+  end
+
   describe "#font_bounding_box" do
     it "returns rectangle from FONT_BBOX array" do
       dict = Type3FontSpecHelpers.build_font_dict

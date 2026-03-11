@@ -19,11 +19,36 @@ module Pdfbox::Pdmodel::Font
   # This will perform the encoding from a dictionary.
   # Corresponds to org.apache.pdfbox.pdmodel.font.encoding.DictionaryEncoding in Apache PDFBox.
   class DictionaryEncoding < Encoding
+    Log = ::Log.for(self)
+
     # Singleton instance? Not used; this class is instantiated per font encoding.
 
     @encoding : Cos::Dictionary
     @base_encoding : Encoding?
     @differences : Hash(Int32, String)
+
+    # Creates a new DictionaryEncoding for a Type 3 font from a PDF.
+    #
+    # @param font_encoding The Type 3 encoding dictionary.
+    def initialize(font_encoding : Cos::Dictionary)
+      @encoding = font_encoding
+      @differences = Hash(Int32, String).new
+
+      base = nil
+      name = get_cos_name(Cos::Name::BASE_ENCODING)
+      if name
+        base = Encoding.get_instance(name)
+        if base
+          Log.warn { "/BaseEncoding in type 3 font" }
+          base.code_to_name_map.each do |code, glyph_name|
+            add(code, glyph_name)
+          end
+        end
+      end
+
+      @base_encoding = base
+      apply_differences
+    end
 
     # Creates a new DictionaryEncoding from a PDF.
     #

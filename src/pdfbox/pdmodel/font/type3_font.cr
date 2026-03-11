@@ -49,7 +49,7 @@ module Pdfbox::Pdmodel::Font
           Log.warn { "Unknown encoding: #{encoding_base}" }
         end
       elsif encoding_base.is_a?(Pdfbox::Cos::Dictionary)
-        @encoding = DictionaryEncoding.new(encoding_base, true, nil)
+        @encoding = DictionaryEncoding.new(encoding_base)
       end
       @glyph_list = GlyphList.adobe_glyph_list
     end
