@@ -2,26 +2,19 @@
 # Corresponds to PDType3Font in Apache PDFBox
 require "./simple_font"
 require "./type3_char_proc"
+require "../resources"
+require "../resource_cache"
 
 module Pdfbox::Pdmodel::Font
-  # Placeholder types until pdmodel resources/cache are ported.
-  class PDResources
-    def initialize(dict : Pdfbox::Cos::Dictionary, resource_cache : ResourceCache? = nil)
-    end
-  end
-
-  class ResourceCache
-  end
-
   class PDType3Font < PDSimpleFont
     Log = ::Log.for(self)
     Cos = Pdfbox::Cos
 
-    @resources : PDResources?
+    @resources : Pdfbox::Pdmodel::PDResources?
     @char_procs : Pdfbox::Cos::Dictionary?
     @font_matrix : Matrix?
     @font_bbox : BoundingBox?
-    @resource_cache : ResourceCache?
+    @resource_cache : Pdfbox::Pdmodel::ResourceCache?
 
     # Constructor.
     def initialize(font_dictionary : Pdfbox::Cos::Dictionary)
@@ -29,7 +22,7 @@ module Pdfbox::Pdmodel::Font
     end
 
     # Constructor with resource cache.
-    def initialize(font_dictionary : Pdfbox::Cos::Dictionary, resource_cache : ResourceCache?)
+    def initialize(font_dictionary : Pdfbox::Cos::Dictionary, resource_cache : Pdfbox::Pdmodel::ResourceCache?)
       super(font_dictionary)
       @resource_cache = resource_cache
       read_encoding
@@ -201,11 +194,11 @@ module Pdfbox::Pdmodel::Font
     end
 
     # Returns the optional resources of the type3 stream.
-    def resources : PDResources?
+    def resources : Pdfbox::Pdmodel::PDResources?
       if @resources.nil?
         resources_dict = @dict.get_dictionary(Pdfbox::Cos::Name::RESOURCES)
         if resources_dict
-          @resources = PDResources.new(resources_dict, @resource_cache)
+          @resources = Pdfbox::Pdmodel::PDResources.new(resources_dict, @resource_cache)
         end
       end
       @resources

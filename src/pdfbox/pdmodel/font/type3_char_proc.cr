@@ -2,6 +2,7 @@
 # Corresponds to PDType3CharProc in Apache PDFBox
 require "../common/pdrectangle"
 require "../common/pdstream"
+require "../resources"
 require "../../pdf_parser/pdf_stream_parser"
 require "../../io"
 
@@ -14,7 +15,7 @@ module Pdfbox::Pdmodel::Font
     module PDContentStream
       abstract def contents : Pdfbox::IO::RandomAccessInputStream
       abstract def contents_for_random_access : Pdfbox::IO::RandomAccessRead
-      abstract def resources : PDResources?
+      abstract def resources : Pdfbox::Pdmodel::PDResources?
       abstract def bounding_box : Common::PDRectangle?
       abstract def matrix : PDFont::Matrix
     end
@@ -53,13 +54,13 @@ module Pdfbox::Pdmodel::Font
       Pdfbox::IO::RandomAccessReadBuffer.new(@char_stream.create_input_stream.getb_to_end)
     end
 
-    def resources : PDResources?
+    def resources : Pdfbox::Pdmodel::PDResources?
       if @char_stream.has_key?(Pdfbox::Cos::Name::RESOURCES)
         # PDFBOX-5294
         Log.warn { "Using resources dictionary found in charproc entry" }
         Log.warn { "This should have been in the font or in the page dictionary" }
         dict = @char_stream.get_dictionary(Pdfbox::Cos::Name::RESOURCES)
-        dict ? PDResources.new(dict) : nil
+        dict ? Pdfbox::Pdmodel::PDResources.new(dict) : nil
       else
         @font.resources
       end

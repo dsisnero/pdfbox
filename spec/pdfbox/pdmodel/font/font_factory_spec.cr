@@ -65,7 +65,7 @@ describe Pdfbox::Pdmodel::Font::PDFontFactory do
 
   it "creates a PDType3Font with explicit resource cache overload" do
     dict = FontFactorySpecHelpers.build_type3_dict
-    cache = Pdfbox::Pdmodel::Font::ResourceCache.new
+    cache = Pdfbox::Pdmodel::ResourceCache.new
     font = Pdfbox::Pdmodel::Font::PDFontFactory.create_font(dict, cache)
     font.should be_a(Pdfbox::Pdmodel::Font::PDType3Font)
   end

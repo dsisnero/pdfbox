@@ -30,7 +30,7 @@ module Pdfbox::Pdmodel::Font
 
     # Creates a new PDFont instance with an optional resource cache.
     # The resource cache is currently only used by Type3 font construction.
-    def self.create_font(dictionary : Pdfbox::Cos::Dictionary, resource_cache : ResourceCache?) : PDFont
+    def self.create_font(dictionary : Pdfbox::Cos::Dictionary, resource_cache : Pdfbox::Pdmodel::ResourceCache?) : PDFont
       type = dictionary[Pdfbox::Cos::Name::TYPE]?
       if type.is_a?(Pdfbox::Cos::Name) && type != Pdfbox::Cos::Name::FONT
         Log.error { "Expected 'Font' dictionary but found '#{type.value}'" }
@@ -53,7 +53,7 @@ module Pdfbox::Pdmodel::Font
       end
     end
 
-    private def self.create_non_type0_font(subtype : String?, dictionary : Pdfbox::Cos::Dictionary, resource_cache : ResourceCache?) : PDFont
+    private def self.create_non_type0_font(subtype : String?, dictionary : Pdfbox::Cos::Dictionary, resource_cache : Pdfbox::Pdmodel::ResourceCache?) : PDFont
       case subtype
       when "Type1"
         if font_file3?(dictionary)
