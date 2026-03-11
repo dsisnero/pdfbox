@@ -651,6 +651,8 @@ module Pdfbox::Util
         ->(s : String) { parse_compact_date_time(s) },
         ->(s : String) { parse_time_then_slash_date(s) },
         ->(s : String) { parse_slash_date(s) },
+        ->(s : String) { parse_alpha_with_tz_year_end(s) },
+        ->(s : String) { parse_iso_non_padded_with_named_tz(s) },
         ->(s : String) { parse_iso_non_padded_with_tz(s) },
         ->(s : String) { parse_iso_with_tz(s) },
         ->(s : String) { parse_alpha_start_legacy_formats(s) },
@@ -700,6 +702,46 @@ module Pdfbox::Util
       end
 
       nil
+    end
+
+    private def self.parse_alpha_with_tz_year_end(normalized : String) : Time?
+      # Java ALPHA_START_FORMATS: "EEEE MMM dd HH:mm:ss z yy" (also handles 4-digit year).
+      pattern = /^([A-Za-z]+)\s+([A-Za-z]+)\s+(\d{1,2})\s+(\d{1,2}):(\d{1,2}):(\d{1,2})\s+(?:GMT|UTC)?([+-]\d{1,2})(?::?(\d{2}))?\s+(\d{2}|\d{4})$/
+      match = normalized.match(pattern)
+      return nil unless match
+
+      month = month_from_name(match[2])
+      return nil unless month
+      day = match[3].to_i
+      hour = match[4].to_i
+      minute = match[5].to_i
+      second = match[6].to_i
+      tz_hour = match[7].to_i
+      tz_minute = match[8]?.try(&.to_i) || 0
+      year_token = match[9]
+      year = year_token.size == 2 ? expand_two_digit_year(year_token.to_i) : year_token.to_i
+      offset_seconds = (tz_hour * 3600) + (tz_hour < 0 ? -tz_minute * 60 : tz_minute * 60)
+
+      build_time_with_offset(year, month, day, hour, minute, second, offset_seconds)
+    end
+
+    private def self.parse_iso_non_padded_with_named_tz(normalized : String) : Time?
+      # Java accepts "...EST" but not unknown IDs like "...EDT".
+      pattern = /^(\d{4})-(\d{1,2})-(\d{1,2})T(\d{1,2}):(\d{1,2}):(\d{1,2})([A-Za-z]{3})$/
+      match = normalized.match(pattern)
+      return nil unless match
+
+      year = match[1].to_i
+      month = match[2].to_i
+      day = match[3].to_i
+      hour = match[4].to_i
+      minute = match[5].to_i
+      second = match[6].to_i
+      named_tz = match[7].upcase
+      offset_seconds = parse_named_tz_offset(named_tz)
+      return nil unless offset_seconds
+
+      build_time_with_offset(year, month, day, hour, minute, second, offset_seconds)
     end
 
     private def self.parse_iso_non_padded_with_tz(normalized : String) : Time?

@@ -496,4 +496,16 @@ describe "Porting parity pdfbox-lxq" do
     cal.should_not be_nil
     Pdfbox::Util::DateConverter.to_string(cal).should eq("D:20450101000000+00'00'")
   end
+
+  it "TestDateUtil#testDateConverter timezone-bearing legacy alpha and ISO variants" do
+    cal = Pdfbox::Util::DateConverter.to_calendar("Friday July 6 17:22:1 GMT+08:00 1979")
+    cal.should_not be_nil
+    Pdfbox::Util::DateConverter.to_string(cal).should eq("D:19790706172201+08'00'")
+
+    cal = Pdfbox::Util::DateConverter.to_calendar("1960-7-6T17:22:1EST")
+    cal.should_not be_nil
+    Pdfbox::Util::DateConverter.to_string(cal).should eq("D:19600706172201-05'00'")
+
+    Pdfbox::Util::DateConverter.to_calendar("2076-7-6T17:22:1EDT").should be_nil
+  end
 end
