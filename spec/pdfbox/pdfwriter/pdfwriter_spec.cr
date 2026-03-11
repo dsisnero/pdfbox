@@ -241,7 +241,25 @@ describe "Pdfbox::Pdfwriter parity" do
   pending "COSDocumentCompressionTest#testPDFBox5927 requires document compression writer parity" do
   end
 
-  pending "COSWriterCompressionPoolTest#testPDFBox6036 requires COS writer compression pool parity" do
+  it "COSWriterCompressionPoolTest#testPDFBox6036" do
+    i = 1
+    while i <= 222_222
+      document = Pdfbox::Pdmodel::Document.create
+      outline = Pdfbox::Pdmodel::DocumentOutline.new
+      document.document_catalog.not_nil!.set_document_outline(outline)
+
+      j = 0
+      while j < i
+        outline.add_last(Pdfbox::Pdmodel::OutlineItem.new)
+        j += 1
+      end
+
+      Pdfbox::Pdfwriter::Compress::COSWriterCompressionPool.new(
+        document,
+        Pdfbox::Pdfwriter::Compress::CompressParameters::DEFAULT_COMPRESSION
+      )
+      i *= 2
+    end
   end
 
   it "COSWriterTest#testPDFBox4321" do

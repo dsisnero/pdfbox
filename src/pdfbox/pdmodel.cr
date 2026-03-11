@@ -748,6 +748,19 @@ module Pdfbox::Pdmodel
       DocumentOutline.new(outlines_dict)
     end
 
+    def document_outline=(outline : DocumentOutline) : DocumentOutline
+      @cos_dict[Cos::Name.new("Outlines")] = outline.cos_object
+      outline
+    end
+
+    # Java API compatibility wrapper.
+    # ameba:disable Naming/AccessorMethodName
+    def set_document_outline(outline : DocumentOutline) : Nil
+      self.document_outline = outline
+    end
+
+    # ameba:enable Naming/AccessorMethodName
+
     # Get document names dictionary
     def names : DocumentNameDictionary?
       names_dict = @cos_dict[Cos::Name.new("Names")]
@@ -1714,7 +1727,17 @@ module Pdfbox::Pdmodel
 
     @cos_dict : Cos::Dictionary
 
+    def initialize
+      @cos_dict = Cos::Dictionary.new
+      @cos_dict[Cos::Name.new("Type")] = Cos::Name.new("Outlines")
+    end
+
     def initialize(@cos_dict : Cos::Dictionary)
+      @cos_dict[Cos::Name.new("Type")] = Cos::Name.new("Outlines")
+    end
+
+    def cos_object : Cos::Dictionary
+      @cos_dict
     end
 
     # Get the first child outline item
@@ -1731,6 +1754,33 @@ module Pdfbox::Pdmodel
 
       OutlineItem.new(first_dict)
     end
+
+    def last_child : OutlineItem?
+      last_dict = @cos_dict[Cos::Name.new("Last")]
+      return unless last_dict
+
+      if last_dict.is_a?(Cos::Object)
+        last_dict = last_dict.object
+      end
+
+      return unless last_dict.is_a?(Cos::Dictionary)
+      OutlineItem.new(last_dict)
+    end
+
+    def add_last(new_child : OutlineItem) : Nil
+      if new_child.next_sibling || new_child.previous_sibling
+        raise ArgumentError.new("A single node with no siblings is required")
+      end
+
+      new_child.parent = self
+      if previous_last = last_child
+        previous_last.next_sibling = new_child
+        new_child.previous_sibling = previous_last
+      else
+        @cos_dict[Cos::Name.new("First")] = new_child.cos_object
+      end
+      @cos_dict[Cos::Name.new("Last")] = new_child.cos_object
+    end
   end
 
   # Individual outline item (bookmark)
@@ -1740,7 +1790,35 @@ module Pdfbox::Pdmodel
 
     @cos_dict : Cos::Dictionary
 
+    def initialize
+      @cos_dict = Cos::Dictionary.new
+    end
+
     def initialize(@cos_dict : Cos::Dictionary)
+    end
+
+    def cos_object : Cos::Dictionary
+      @cos_dict
+    end
+
+    def parent : DocumentOutline | OutlineItem?
+      parent_dict = @cos_dict[Cos::Name.new("Parent")]
+      return unless parent_dict
+      if parent_dict.is_a?(Cos::Object)
+        parent_dict = parent_dict.object
+      end
+      return unless parent_dict.is_a?(Cos::Dictionary)
+      type = parent_dict[Cos::Name.new("Type")]
+      if type.is_a?(Cos::Name) && type.value == "Outlines"
+        DocumentOutline.new(parent_dict)
+      else
+        OutlineItem.new(parent_dict)
+      end
+    end
+
+    def parent=(outline_node : DocumentOutline | OutlineItem) : DocumentOutline | OutlineItem
+      @cos_dict[Cos::Name.new("Parent")] = outline_node.cos_object
+      outline_node
     end
 
     # Get the title of this outline item
@@ -1776,6 +1854,15 @@ module Pdfbox::Pdmodel
       OutlineItem.new(next_dict)
     end
 
+    def next_sibling=(outline_node : OutlineItem?) : OutlineItem?
+      if outline_node
+        @cos_dict[Cos::Name.new("Next")] = outline_node.cos_object
+      else
+        @cos_dict.delete(Cos::Name.new("Next"))
+      end
+      outline_node
+    end
+
     # Get the previous sibling outline item
     def previous_sibling : OutlineItem?
       prev_dict = @cos_dict[Cos::Name.new("Prev")]
@@ -1789,6 +1876,15 @@ module Pdfbox::Pdmodel
       return unless prev_dict.is_a?(Cos::Dictionary)
 
       OutlineItem.new(prev_dict)
+    end
+
+    def previous_sibling=(outline_node : OutlineItem?) : OutlineItem?
+      if outline_node
+        @cos_dict[Cos::Name.new("Prev")] = outline_node.cos_object
+      else
+        @cos_dict.delete(Cos::Name.new("Prev"))
+      end
+      outline_node
     end
 
     # Get the first child outline item

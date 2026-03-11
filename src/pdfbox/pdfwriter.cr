@@ -5,6 +5,7 @@
 require "./cos"
 require "./content_stream/operator"
 require "./content_stream/operator_name"
+require "./pdfwriter/compress"
 
 module Pdfbox::Pdfwriter
   # Base class for PDF writing errors
