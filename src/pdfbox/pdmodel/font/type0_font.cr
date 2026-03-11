@@ -316,6 +316,11 @@ class Pdfbox::Pdmodel::Font::PDType0Font < Pdfbox::Pdmodel::Font::PDFont
     descendant_font.code_to_gid(code)
   end
 
+  def to_s : String
+    descendant_name = @descendant_font.try(&.class.name.split("::").last?) || "nil"
+    "#{self.class.name.split("::").last}/#{descendant_name}, PostScript name: #{name}"
+  end
+
   # Returns true if the descendant font is a Type 2 CIDFont (TrueType).
   def cid_font_type2? : Bool
     descendant_font.is_a?(PDCIDFontType2)

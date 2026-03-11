@@ -142,4 +142,9 @@ describe Pdfbox::Pdmodel::Font::PDType0Font do
     vector.x.should be_close(-0.3_f32, 0.00001_f32)
     vector.y.should be_close(-0.9_f32, 0.00001_f32)
   end
+
+  it "matches Java-style to_s shape with descendant type and base name" do
+    font = Pdfbox::Pdmodel::Font::PDType0Font.new(Type0FontSpecHelpers.build_valid_type0_dict)
+    font.to_s.should eq("PDType0Font/PDCIDFontType2, PostScript name: DummyType0")
+  end
 end
