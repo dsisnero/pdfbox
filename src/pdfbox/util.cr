@@ -424,12 +424,26 @@ module Pdfbox::Util
 
   # Ported from Apache PDFBox DateConverter (targeted parity subset).
   module DateConverter
-    MINUTES_PER_HOUR   = 60_i64
-    SECONDS_PER_MINUTE = 60_i64
-    MILLIS_PER_MINUTE  = SECONDS_PER_MINUTE * 1000_i64
-    MILLIS_PER_HOUR    = MINUTES_PER_HOUR * MILLIS_PER_MINUTE
-    HALF_DAY           = 12_i64 * MINUTES_PER_HOUR * MILLIS_PER_MINUTE
-    DAY                = 2_i64 * HALF_DAY
+    MINUTES_PER_HOUR    = 60_i64
+    SECONDS_PER_MINUTE  = 60_i64
+    MILLIS_PER_MINUTE   = SECONDS_PER_MINUTE * 1000_i64
+    MILLIS_PER_HOUR     = MINUTES_PER_HOUR * MILLIS_PER_MINUTE
+    HALF_DAY            = 12_i64 * MINUTES_PER_HOUR * MILLIS_PER_MINUTE
+    DAY                 = 2_i64 * HALF_DAY
+    MONTH_NAME_TO_INDEX = {
+      "jan" => 1,
+      "feb" => 2,
+      "mar" => 3,
+      "apr" => 4,
+      "may" => 5,
+      "jun" => 6,
+      "jul" => 7,
+      "aug" => 8,
+      "sep" => 9,
+      "oct" => 10,
+      "nov" => 11,
+      "dec" => 12,
+    }
 
     # Java DateConverter.formatTZoffset equivalent.
     def self.format_tz_offset(millis : Int64, sep : String) : String
@@ -481,6 +495,8 @@ module Pdfbox::Util
       parse_ambiguous_big_endian_with_minute(normalized) ||
         parse_compact_with_explicit_tz(normalized) ||
         parse_slash_date(normalized) ||
+        parse_iso_with_tz(normalized) ||
+        parse_textual_month_with_optional_tz(normalized) ||
         parse_with_exact_formats(normalized)
     end
 
@@ -538,6 +554,51 @@ module Pdfbox::Util
       nil
     end
 
+    private def self.parse_iso_with_tz(normalized : String) : Time?
+      formats = {
+        "%Y-%m-%dT%H:%M%:z",
+        "%Y-%m-%dT%H:%M.%N%:z",
+        "%Y-%m-%dT%H:%M:%S%:z",
+        "%Y-%m-%dT%H:%M:%S.%N%:z",
+        "%Y-%m-%dT%H:%M%z",
+        "%Y-%m-%dT%H:%M.%N%z",
+        "%Y-%m-%dT%H:%M:%S%z",
+        "%Y-%m-%dT%H:%M:%S.%N%z",
+      }
+
+      formats.each do |fmt|
+        begin
+          return Time.parse(normalized, fmt, Time::Location::UTC)
+        rescue Time::Format::Error
+        end
+      end
+      nil
+    end
+
+    private def self.parse_textual_month_with_optional_tz(normalized : String) : Time?
+      pattern = /^(\d{4})\s+([A-Za-z]+)\s+(\d{1,2})(?:\s+(?:GMT|UTC)\s*([+-])\s*(\d{1,2})(?::?(\d{2}))?)?$/
+      match = normalized.match(pattern)
+      return nil unless match
+
+      year = match[1].to_i
+      month = month_from_name(match[2])
+      return nil unless month
+      day = match[3].to_i
+
+      sign = match[4]?
+      hours = match[5]?.try(&.to_i) || 0
+      minutes = match[6]?.try(&.to_i) || 0
+      raw_seconds = (hours * 3600) + (minutes * 60)
+      offset_seconds = sign == "-" ? -raw_seconds : raw_seconds
+
+      begin
+        location = Time::Location.fixed(offset_seconds)
+        Time.local(year, month, day, 0, 0, 0, location: location)
+      rescue ArgumentError
+        nil
+      end
+    end
+
     private def self.parse_with_exact_formats(normalized : String) : Time?
       parse_exact(normalized, /^(\d{8})([+-]\d{2}:\d{2})$/, "%Y%m%d%:z") ||
         parse_exact(normalized, /^(\d{8})([+-]\d{4})$/, "%Y%m%d%z") ||
@@ -546,6 +607,11 @@ module Pdfbox::Util
         parse_exact(normalized, /^\d{14}$/, "%Y%m%d%H%M%S") ||
         parse_exact(normalized, /^\d{8}$/, "%Y%m%d") ||
         parse_exact(normalized, /^\d{4}$/, "%Y")
+    end
+
+    private def self.month_from_name(name : String) : Int32?
+      month_key = name.downcase[0, Math.min(3, name.size)]
+      MONTH_NAME_TO_INDEX[month_key]?
     end
 
     private def self.normalize_pdf_tz(value : String) : String
