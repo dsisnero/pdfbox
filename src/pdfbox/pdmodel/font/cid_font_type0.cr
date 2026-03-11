@@ -7,6 +7,7 @@ module Pdfbox::Pdmodel::Font
     Log = ::Log.for(self)
     Cos = Pdfbox::Cos
 
+    @parent : PDType0Font
     @is_embedded : Bool = false
     @is_damaged : Bool = false
     @font_matrix : PDFont::Matrix = PDFont::Matrix.default_font_matrix
@@ -15,6 +16,7 @@ module Pdfbox::Pdmodel::Font
     # Constructor.
     def initialize(font_dictionary : Pdfbox::Cos::Dictionary, parent : PDType0Font)
       super(font_dictionary, parent)
+      @parent = parent
       # TODO: Implement CFF font parsing
       @is_embedded = !font_descriptor.nil? && !font_descriptor.try(&.font_file3).nil?
       @is_damaged = false
@@ -23,8 +25,7 @@ module Pdfbox::Pdmodel::Font
     # Abstract method implementations
 
     def code_to_cid(code : Int32) : Int32
-      # For Type 0 CIDFont, code is CID
-      code
+      @parent.cmap.try(&.to_cid(code)) || code
     end
 
     def code_to_gid(code : Int32) : Int32
@@ -39,14 +40,11 @@ module Pdfbox::Pdmodel::Font
     end
 
     def encode_glyph_id(glyph_id : Int32) : Bytes
-      # Type 0 CIDFont uses CFF encoding
-      # For now, return single byte
-      Bytes.new(1, glyph_id.to_u8)
+      raise NotImplementedError.new("Unsupported operation")
     end
 
     protected def encode(unicode : Int32) : Bytes
-      # TODO: Implement proper encoding for Type 0 CIDFont
-      Bytes.new(1, 0_u8)
+      raise NotImplementedError.new("Unsupported operation")
     end
 
     def font_matrix : PDFont::Matrix
