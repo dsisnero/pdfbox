@@ -9,9 +9,9 @@ module Pdfbox::Pdmodel::Font
     # Creates a CIDSystemInfo with the given registry, ordering, and supplement.
     def initialize(registry : String, ordering : String, supplement : Int32)
       @dictionary = Pdfbox::Cos::Dictionary.new
-      @dictionary[Pdfbox::Cos::Name::REGISTRY] = Pdfbox::Cos::Name.get_pdf_name(registry)
-      @dictionary[Pdfbox::Cos::Name::ORDERING] = Pdfbox::Cos::Name.get_pdf_name(ordering)
-      @dictionary[Pdfbox::Cos::Name::SUPPLEMENT] = Pdfbox::Cos::Integer.get(supplement.to_i64)
+      @dictionary.set_string(Pdfbox::Cos::Name::REGISTRY, registry)
+      @dictionary.set_string(Pdfbox::Cos::Name::ORDERING, ordering)
+      @dictionary.set_int(Pdfbox::Cos::Name::SUPPLEMENT, supplement)
     end
 
     # Creates a CIDSystemInfo from an existing COS dictionary.

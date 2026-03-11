@@ -1185,8 +1185,14 @@ module Pdfbox::Cos
     # Get a name value as a string, returning nil if not present or not a name
     def get_name_as_string(key : Name) : ::String?
       value = get_dictionary_object(key)
-      return unless value.is_a?(Name)
-      value.value
+      case value
+      when Name
+        value.value
+      when String
+        value.value
+      else
+        nil
+      end
     end
 
     # Get a date value, returning default if not present or not a valid date string
