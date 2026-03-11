@@ -478,4 +478,22 @@ describe "Porting parity pdfbox-lxq" do
     Pdfbox::Util::DateConverter.parse_tz_offset_seconds("1400").should eq(+14 * 3600)
     Pdfbox::Util::DateConverter.parse_tz_offset_seconds("-1400").should eq(-14 * 3600)
   end
+
+  it "TestDateUtil#testDateConverter digit-start legacy variants" do
+    cal = Pdfbox::Util::DateConverter.to_calendar("9:47 5/12/2002")
+    cal.should_not be_nil
+    Pdfbox::Util::DateConverter.to_string(cal).should eq("D:20020512094700+00'00'")
+
+    cal = Pdfbox::Util::DateConverter.to_calendar("200312172:2:3")
+    cal.should_not be_nil
+    Pdfbox::Util::DateConverter.to_string(cal).should eq("D:20031217020203+00'00'")
+
+    cal = Pdfbox::Util::DateConverter.to_calendar("1/1/47 00:00:00")
+    cal.should_not be_nil
+    Pdfbox::Util::DateConverter.to_string(cal).should eq("D:19470101000000+00'00'")
+
+    cal = Pdfbox::Util::DateConverter.to_calendar("1/1/45")
+    cal.should_not be_nil
+    Pdfbox::Util::DateConverter.to_string(cal).should eq("D:20450101000000+00'00'")
+  end
 end

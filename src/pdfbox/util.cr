@@ -554,20 +554,32 @@ module Pdfbox::Util
 
     private def self.parse_slash_date(normalized : String) : Time?
       # Java-compatible slash date forms used by TestDateUtil#testExtract.
-      if match = normalized.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:\s+(\d{1,2}):(\d{1,2}):(\d{1,2}))?$/)
+      if match = normalized.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2}|\d{4})(?:\s+(\d{1,2}):(\d{1,2})(?::(\d{1,2}))?)?$/)
         month = match[1].to_i
         day = match[2].to_i
-        year = match[3].to_i
+        year_token = match[3]
+        year = year_token.size == 2 ? expand_two_digit_year(year_token.to_i) : year_token.to_i
         hour = match[4]?.try(&.to_i) || 0
         minute = match[5]?.try(&.to_i) || 0
         second = match[6]?.try(&.to_i) || 0
-        begin
-          return Time.utc(year, month, day, hour, minute, second)
-        rescue ArgumentError
-          return nil
-        end
+        return build_time_with_offset(year, month, day, hour, minute, second, 0)
       end
       nil
+    end
+
+    private def self.parse_time_then_slash_date(normalized : String) : Time?
+      # Java DIGIT_START_FORMATS: "H:m M/d/yy"
+      match = normalized.match(/^(\d{1,2}):(\d{1,2})\s+(\d{1,2})\/(\d{1,2})\/(\d{2}|\d{4})$/)
+      return nil unless match
+
+      hour = match[1].to_i
+      minute = match[2].to_i
+      month = match[3].to_i
+      day = match[4].to_i
+      year_token = match[5]
+      year = year_token.size == 2 ? expand_two_digit_year(year_token.to_i) : year_token.to_i
+
+      build_time_with_offset(year, month, day, hour, minute, 0, 0)
     end
 
     private def self.parse_compact_date_time(normalized : String) : Time?
@@ -615,12 +627,29 @@ module Pdfbox::Util
       build_time_with_offset(year, month, day, hour, minute, second, offset_seconds)
     end
 
+    private def self.parse_compact_ymd_colon_time(normalized : String) : Time?
+      # Java DIGIT_START_FORMATS: "yyyymmddhh:mm:ss" (lenient hour field width)
+      match = normalized.match(/^(\d{8})(\d{1,2}):(\d{1,2}):(\d{1,2})$/)
+      return nil unless match
+
+      ymd = match[1]
+      year = ymd[0, 4].to_i
+      month = ymd[4, 2].to_i
+      day = ymd[6, 2].to_i
+      hour = match[2].to_i
+      minute = match[3].to_i
+      second = match[4].to_i
+      build_time_with_offset(year, month, day, hour, minute, second, 0)
+    end
+
     private def self.parse_known_formats(normalized : String) : Time?
       parse_steps = [
         ->(s : String) { parse_ambiguous_big_endian_with_minute(s) },
         ->(s : String) { parse_compact_with_explicit_tz(s) },
         ->(s : String) { parse_compact_with_z_prefixed_offset(s) },
+        ->(s : String) { parse_compact_ymd_colon_time(s) },
         ->(s : String) { parse_compact_date_time(s) },
+        ->(s : String) { parse_time_then_slash_date(s) },
         ->(s : String) { parse_slash_date(s) },
         ->(s : String) { parse_iso_non_padded_with_tz(s) },
         ->(s : String) { parse_iso_with_tz(s) },
@@ -832,6 +861,17 @@ module Pdfbox::Util
       rescue Time::Format::Error
         nil
       end
+    end
+
+    private def self.expand_two_digit_year(two_digit_year : Int32) : Int32
+      current_year = Time.utc.year
+      low = current_year - 79
+      high = current_year + 20
+      century = current_year - (current_year % 100)
+      candidate = century + two_digit_year
+      candidate += 100 if candidate < low
+      candidate -= 100 if candidate > high
+      candidate
     end
 
     private def self.restrain_tz_offset(proposed_offset : Int64) : Int64
