@@ -15,6 +15,7 @@ module Pdfbox::Pdmodel::Font
     @font_matrix : PDFont::Matrix = PDFont::Matrix.default_font_matrix
     @font_bbox : PDFont::BoundingBox?
     @cid2gid : Array(Int32)?
+    @no_mapping = Set(Int32).new
 
     # Constructor.
     def initialize(font_dictionary : Pdfbox::Cos::Dictionary, parent : PDType0Font)
@@ -77,7 +78,14 @@ module Pdfbox::Pdmodel::Font
       end
 
       unicode = @parent.to_unicode(code)
-      return cid if unicode.nil?
+      if unicode.nil?
+        unless @no_mapping.includes?(code)
+          @no_mapping.add(code)
+          Log.warn { "Failed to find a character mapping for #{code} in #{name}" }
+        end
+        return cid
+      end
+      Log.warn { "Trying to map multi-byte character using 'cmap', result will be poor" } if unicode.size > 1
 
       gid = gid_from_unicode(unicode)
       gid.nil? ? cid : gid
