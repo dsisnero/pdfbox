@@ -86,7 +86,7 @@ module Fontbox::TTF
     it "PDFBox-5328: gets multiple encodings from cmap table" do
       expected_char_codes = [19981, 63847]
       gid = 8712
-      font_file = File.join("vendor", "pdfbox", "fontbox", "target", "fonts", "NotoSansSC-Regular.otf")
+      font_file = SpecPaths.resolve(File.join("vendor", "pdfbox", "fontbox", "target", "fonts", "NotoSansSC-Regular.otf"))
       otf = TTFParser.new(false).parse(Pdfbox::IO::RandomAccessReadBufferedFile.new(font_file))
 
       unicode_cmap_lookup = otf.unicode_cmap_lookup
@@ -115,7 +115,7 @@ module Fontbox::TTF
     end
 
     it "PDFBox-4106: vertical substitution changes glyph IDs" do
-      ipa_font = File.join("vendor", "pdfbox", "fontbox", "target", "fonts", "ipag00303", "ipag.ttf")
+      ipa_font = SpecPaths.resolve(File.join("vendor", "pdfbox", "fontbox", "target", "fonts", "ipag00303", "ipag.ttf"))
       ttf = TTFParser.new.parse(Pdfbox::IO::RandomAccessReadBufferedFile.new(ipa_font))
 
       unicode_cmap_lookup1 = ttf.unicode_cmap_lookup

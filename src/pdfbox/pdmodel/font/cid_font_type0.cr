@@ -13,7 +13,7 @@ module Pdfbox::Pdmodel::Font
     @font_bbox : PDFont::BoundingBox = PDFont::BoundingBox.new
 
     # Constructor.
-    def initialize(font_dictionary : Cos::Dictionary, parent : PDType0Font)
+    def initialize(font_dictionary : Pdfbox::Cos::Dictionary, parent : PDType0Font)
       super(font_dictionary, parent)
       # TODO: Implement CFF font parsing
       @is_embedded = !font_descriptor.nil? && !font_descriptor.try(&.font_file3).nil?

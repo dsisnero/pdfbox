@@ -16,7 +16,7 @@ module Pdfbox::Pdmodel::Font
     @cid2gid : Array(Int32)?
 
     # Constructor.
-    def initialize(font_dictionary : Cos::Dictionary, parent : PDType0Font)
+    def initialize(font_dictionary : Pdfbox::Cos::Dictionary, parent : PDType0Font)
       super(font_dictionary, parent)
       # TODO: Implement TrueType font parsing
       @is_embedded = !font_descriptor.nil? && !font_descriptor.try(&.font_file2).nil?
@@ -25,7 +25,7 @@ module Pdfbox::Pdmodel::Font
     end
 
     # Constructor with pre-loaded TrueType font.
-    def initialize(font_dictionary : Cos::Dictionary, parent : PDType0Font, true_type_font : Fontbox::TTF::TrueTypeFont)
+    def initialize(font_dictionary : Pdfbox::Cos::Dictionary, parent : PDType0Font, true_type_font : Fontbox::TTF::TrueTypeFont)
       super(font_dictionary, parent)
       @ttf = true_type_font
       @is_embedded = true

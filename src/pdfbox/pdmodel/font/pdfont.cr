@@ -1,9 +1,10 @@
 # PDF font base class
 # Corresponds to PDFont in Apache PDFBox
-require "../../cos"
+require "../../cos.cr"
 require "./font_descriptor"
 require "./cmap_manager"
 require "../../../fontbox/cmap"
+require "../../../fontbox/util/bounding_box"
 
 abstract class Pdfbox::Pdmodel::Font::PDFont
   Log = ::Log.for(self)
@@ -40,14 +41,31 @@ abstract class Pdfbox::Pdmodel::Font::PDFont
     def self.default_font_matrix : Matrix
       new(0.001_f32, 0.0_f32, 0.0_f32, 0.001_f32, 0.0_f32, 0.0_f32)
     end
+
+    def transform(vector : Vector) : Vector
+      Vector.new(
+        @a * vector.x + @c * vector.y + @e,
+        @b * vector.x + @d * vector.y + @f
+      )
+    end
   end
 
   class Vector
-    def initialize(*args); end
+    getter x : Float32
+    getter y : Float32
+
+    def initialize(@x : Float32 = 0.0_f32, @y : Float32 = 0.0_f32)
+    end
   end
 
-  class BoundingBox
-    def initialize(*args); end
+  class BoundingBox < Fontbox::Util::BoundingBox
+    def initialize
+      super()
+    end
+
+    def initialize(lower_left_x : Float32, lower_left_y : Float32, upper_right_x : Float32, upper_right_y : Float32)
+      super(lower_left_x, lower_left_y, upper_right_x, upper_right_y)
+    end
   end
 
   class FontMetrics
@@ -112,7 +130,7 @@ abstract class Pdfbox::Pdmodel::Font::PDFont
 
   # Loads the ToUnicode CMap from the font dictionary.
   private def load_unicode_cmap : Fontbox::CMap::CMap?
-    to_unicode = @dict.get(Cos::Name::TO_UNICODE)
+    to_unicode = @dict[Pdfbox::Cos::Name.new("ToUnicode")]
     return nil if to_unicode.nil?
 
     cmap = read_cmap(to_unicode)
@@ -132,12 +150,12 @@ abstract class Pdfbox::Pdmodel::Font::PDFont
   # @param base COSName or COSStream
   # @return the CMap if present
   # @raises ::IO::Error if the CMap could not be read
-  protected def read_cmap(base : Cos::Base) : Fontbox::CMap::CMap?
-    if base.is_a?(Cos::Name)
+  protected def read_cmap(base : Pdfbox::Cos::Base) : Fontbox::CMap::CMap?
+    if base.is_a?(Pdfbox::Cos::Name)
       # predefined CMap
       name = base.to_s
       CMapManager.get_predefined_cmap(name)
-    elsif base.is_a?(Cos::Stream)
+    elsif base.is_a?(Pdfbox::Cos::Stream)
       # embedded CMap - not yet implemented
       raise ::IO::Error.new("Embedded CMap not yet implemented")
     else
@@ -170,8 +188,16 @@ abstract class Pdfbox::Pdmodel::Font::PDFont
     if @widths.nil?
       array = @dict[Pdfbox::Cos::Name::WIDTHS]?
       if array.is_a?(Pdfbox::Cos::Array)
-        # TODO: Implement proper conversion from COS numbers to Float32
-        @widths = [] of Float32
+        @widths = array.items.map do |item|
+          case item
+          when Pdfbox::Cos::Integer
+            item.value.to_f32
+          when Pdfbox::Cos::Float
+            item.value.to_f32
+          else
+            0.0_f32
+          end
+        end
       else
         @widths = [] of Float32
       end
@@ -186,7 +212,7 @@ abstract class Pdfbox::Pdmodel::Font::PDFont
     if cmap
       name = cmap.name
       if name && name.starts_with?("Identity-") &&
-         (@dict.get(Cos::Name::TO_UNICODE).is_a?(Cos::Name) || !cmap.has_unicode_mappings?)
+         (@dict[Pdfbox::Cos::Name.new("ToUnicode")].is_a?(Pdfbox::Cos::Name) || !cmap.has_unicode_mappings?)
         # handle the undocumented case of using Identity-H/V as a ToUnicode CMap, this
         # isn't actually valid as the Identity-x CMaps are code->CID maps, not
         # code->Unicode maps. See sample_fonts_solidconvertor.pdf for an example.
@@ -195,8 +221,8 @@ abstract class Pdfbox::Pdmodel::Font::PDFont
         return String.new(Bytes[code].map(&.chr))
       else
         if code < 256 && !composite_font?
-          encoding = @dict.get(Cos::Name::ENCODING)
-          if encoding.is_a?(Cos::Name) && !encoding.to_s.starts_with?("Identity")
+          encoding = @dict[Pdfbox::Cos::Name::ENCODING]
+          if encoding.is_a?(Pdfbox::Cos::Name) && !encoding.to_s.starts_with?("Identity")
             # due to the conversion to an int it is no longer possible to determine
             # if the code is based on a one or two byte value. We should consider to
             # refactor that part of the code.
@@ -261,7 +287,7 @@ abstract class Pdfbox::Pdmodel::Font::PDFont
   protected abstract def encode(unicode : Int32) : Bytes
 
   # Reads a character code from a content stream.
-  abstract def read_code(input : IO) : Int32
+  abstract def read_code(input : ::IO) : Int32
 
   # Returns true if this font is vertical.
   abstract def vertical? : Bool

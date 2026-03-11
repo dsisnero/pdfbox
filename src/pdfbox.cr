@@ -16,7 +16,7 @@ module Pdfbox
 end
 
 # Require all PDFBox modules
-require "./pdfbox/cos"
+require "./pdfbox/cos.cr"
 require "./pdfbox/pdmodel"
 require "./pdfbox/io"
 require "./pdfbox/loader"

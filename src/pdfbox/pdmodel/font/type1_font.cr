@@ -196,7 +196,7 @@ class Pdfbox::Pdmodel::Font::PDType1Font < Pdfbox::Pdmodel::Font::PDSimpleFont
   end
 
   # Constructor from font dictionary
-  def initialize(font_dictionary : Cos::Dictionary)
+  def initialize(font_dictionary : Pdfbox::Cos::Dictionary)
     super(font_dictionary)
     @standard14 = false
     @type1font = nil
@@ -356,7 +356,7 @@ class Pdfbox::Pdmodel::Font::PDType1Font < Pdfbox::Pdmodel::Font::PDSimpleFont
     bytes
   end
 
-  def read_code(input : IO) : Int32
+  def read_code(input : ::IO) : Int32
     # Simple fonts use 1-byte codes
     input.read_byte || -1
   end

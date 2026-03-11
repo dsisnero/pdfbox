@@ -37,4 +37,6 @@ Metrics/CyclomaticComplexity:
   - src/pdfbox/pdf_parser/pdf_xref_stream_parser.cr
   - src/pdfbox/pdf_parser/xref_parser.cr
   - src/pdfbox/pdmodel/common/function/pdfunction.cr
-
+  - src/pdfbox/pdmodel/font/cid_font.cr
+  - src/pdfbox/pdmodel/font/encoding/glyph_list.cr
+  - src/pdfbox/pdmodel/font/simple_font.cr

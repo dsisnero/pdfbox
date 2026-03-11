@@ -188,6 +188,22 @@ module Pdfbox::Cos
 
   # Marker module for numeric types (Integer and Float)
   module Number
+    # Shared numeric conversions used by PDF model code.
+    def to_i : Int32
+      as_i
+    end
+
+    def to_f32 : Float32
+      case self
+      when Pdfbox::Cos::Integer
+        value.to_f32
+      when Pdfbox::Cos::Float
+        value.to_f32
+      else
+        0.0_f32
+      end
+    end
+
     def self.get(number : ::String) : Integer | Float
       return parse_single_char(number) if number.size == 1
       return parse_float(number) if number.includes?('.') || number.includes?('e') || number.includes?('E')
@@ -707,15 +723,36 @@ module Pdfbox::Cos
     STYLE            = new("Style")
     PANOSE           = new("Panose")
     BASE_FONT        = new("BaseFont")
+    NAME             = new("Name")
+    RESOURCES        = new("Resources")
     DESCENDANT_FONTS = new("DescendantFonts")
+    TYPE0            = new("Type0")
     TYPE1            = new("Type1")
+    MM_TYPE1         = new("MMType1")
+    TYPE3            = new("Type3")
+    TRUE_TYPE        = new("TrueType")
+    OPEN_TYPE        = new("OpenType")
+    CID_FONT_TYPE0   = new("CIDFontType0")
+    CID_FONT_TYPE2   = new("CIDFontType2")
     TO_UNICODE       = new("ToUnicode")
+    FONT_MATRIX      = new("FontMatrix")
+    CHAR_PROCS       = new("CharProcs")
+    FILESPEC         = new("Filespec")
+    CIDSYSTEMINFO    = new("CIDSystemInfo")
+    CID_TO_GID_MAP   = new("CIDToGIDMap")
     WIDTHS           = new("Widths")
+    W                = new("W")
+    W2               = new("W2")
+    DW               = new("DW")
+    DW2              = new("DW2")
     MISSING_WIDTH    = new("MissingWidth")
     FIRST_CHAR       = new("FirstChar")
     LAST_CHAR        = new("LastChar")
     IDENTITY_H       = new("Identity-H")
     IDENTITY_V       = new("Identity-V")
+    REGISTRY         = new("Registry")
+    ORDERING         = new("Ordering")
+    SUPPLEMENT       = new("Supplement")
 
     def initialize(@value : ::String)
     end

@@ -31,7 +31,7 @@ module Pdfbox::Pdmodel::Font
     # Sets the WMode (writing mode) of this CMap.
     #
     # @param w_mode 1 for vertical, 0 for horizontal (default)
-    def set_w_mode(w_mode : Int32) : Nil
+    def w_mode=(w_mode : Int32) : Nil
       @w_mode = w_mode
     end
 
@@ -133,10 +133,9 @@ module Pdfbox::Pdmodel::Font
     # allow_cid_to_unicode_range returns true if the CID and Unicode destination string are allowed to follow one another
     # according to the Adobe 1.7 specification as described in Section 5.9, Example 5.16.
     private def allow_cid_to_unicode_range(prev : Tuple(Int32, String)?, next_entry : Tuple(Int32, String)?) : Bool
-      return false if prev.nil? || next_entry.nil?
-
-      prev_cid, prev_text = prev.not_nil!
-      next_cid, next_text = next_entry.not_nil!
+      return false unless prev && next_entry
+      prev_cid, prev_text = prev
+      next_cid, next_text = next_entry
 
       allow_code_range(prev_cid, next_cid) && allow_destination_range(prev_text, next_text)
     end

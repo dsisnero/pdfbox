@@ -1994,8 +1994,8 @@ module Fontbox::TTF
     private class Point
       property x : Int32
       property y : Int32
-      property on_curve : Bool
-      property end_of_contour : Bool
+      property? on_curve : Bool
+      property? end_of_contour : Bool
 
       def initialize(@x, @y, @on_curve, @end_of_contour)
       end
@@ -2030,16 +2030,16 @@ module Fontbox::TTF
       p = 0
       len = points.size
       while p < len
-        if points[p].end_of_contour
+        if points[p].end_of_contour?
           first_point = points[start]
           last_point = points[p]
           contour = [] of Point
-          (start..p).each do |q|
-            contour << points[q]
+          (start..p).each do |point_index|
+            contour << points[point_index]
           end
-          if points[start].on_curve
+          if points[start].on_curve?
             contour << first_point
-          elsif points[p].on_curve
+          elsif points[p].on_curve?
             contour.unshift(last_point)
           else
             pmid = mid_value(first_point, last_point)
@@ -2051,9 +2051,9 @@ module Fontbox::TTF
           clen = contour.size
           while j < clen
             pnow = contour[j]
-            if pnow.on_curve
+            if pnow.on_curve?
               line_to(path, pnow)
-            elsif j + 1 < clen && contour[j + 1].on_curve
+            elsif j + 1 < clen && contour[j + 1].on_curve?
               quad_to(path, pnow, contour[j + 1])
               j += 1
             else

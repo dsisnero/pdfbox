@@ -33,7 +33,7 @@ abstract class Pdfbox::Pdmodel::Font::PDSimpleFont < Pdfbox::Pdmodel::Font::PDFo
     encoding_base = @dict[Pdfbox::Cos::Name::ENCODING]?
     if encoding_base.is_a?(Pdfbox::Cos::Name)
       encoding_name = encoding_base
-      if font_name == FontName::ZAPF_DINGBATS && !embedded?
+      if font_name == Standard14Fonts::FontName::ZAPF_DINGBATS && !embedded?
         # PDFBOX- and PDF.js issue 16464: ignore other encodings
         # this segment will work only if read_encoding() is called after the data
         # for get_name() and embedded?() is available
@@ -51,7 +51,8 @@ abstract class Pdfbox::Pdmodel::Font::PDSimpleFont < Pdfbox::Pdmodel::Font::PDFo
       symbolic = symbolic_flag
 
       base_encoding = encoding_dict[Pdfbox::Cos::Name::BASE_ENCODING]?
-      has_valid_base_encoding = !base_encoding.nil? && !Encoding.get_instance(base_encoding).nil?
+      has_valid_base_encoding = base_encoding.is_a?(Pdfbox::Cos::Name) &&
+                                !Encoding.get_instance(base_encoding).nil?
 
       if !has_valid_base_encoding && symbolic == true
         built_in = read_encoding_from_font
@@ -72,12 +73,12 @@ abstract class Pdfbox::Pdmodel::Font::PDSimpleFont < Pdfbox::Pdmodel::Font::PDFo
 
   # Returns the Encoding.
   def encoding : Pdfbox::Pdmodel::Font::Encoding
-    @encoding.not_nil!
+    @encoding || raise "PDFBox bug: encoding should not be nil"
   end
 
   # Returns the glyph list.
   def glyph_list : Pdfbox::Pdmodel::Font::GlyphList
-    @glyph_list.not_nil!
+    @glyph_list || raise "PDFBox bug: glyph list should not be nil"
   end
 
   # Returns true if the font is a symbolic (that is, it does not use the Adobe Standard Roman character set).
@@ -91,7 +92,7 @@ abstract class Pdfbox::Pdmodel::Font::PDSimpleFont < Pdfbox::Pdmodel::Font::PDFo
         @is_symbolic = true
       end
     end
-    @is_symbolic.not_nil!
+    @is_symbolic || raise "PDFBox bug: symbolic flag should not be nil"
   end
 
   # Internal implementation of symbolic?, allowing for the fact that the result may be indeterminate.
@@ -101,7 +102,7 @@ abstract class Pdfbox::Pdmodel::Font::PDSimpleFont < Pdfbox::Pdmodel::Font::PDFo
 
     if standard14?
       mapped_name = Standard14Fonts.get_mapped_font_name(name)
-      mapped_name == FontName::SYMBOL || mapped_name == FontName::ZAPF_DINGBATS
+      mapped_name == Standard14Fonts::FontName::SYMBOL || mapped_name == Standard14Fonts::FontName::ZAPF_DINGBATS
     else
       if @encoding.nil?
         # check, should never happen
@@ -180,6 +181,7 @@ abstract class Pdfbox::Pdmodel::Font::PDSimpleFont < Pdfbox::Pdmodel::Font::PDFo
         # we also require that the differences are actually different, see PDFBOX-1900 with
         # the file from PDFBOX-2192 on Windows
         base_encoding = dictionary.base_encoding
+        return false if base_encoding.nil?
         dictionary.differences.each do |key, value|
           if value != base_encoding.get_name(key)
             return false
@@ -269,7 +271,7 @@ abstract class Pdfbox::Pdmodel::Font::PDSimpleFont < Pdfbox::Pdmodel::Font::PDFo
   end
 
   # Helper method to assign glyph list based on font name
-  private def assign_glyph_list(font_name : Pdfbox::Pdmodel::Font::Standard14Fonts::FontName) : Nil
+  private def assign_glyph_list(font_name : Pdfbox::Pdmodel::Font::Standard14Fonts::FontName?) : Nil
     # assign the glyph list based on the font
     if font_name == Standard14Fonts::FontName::ZAPF_DINGBATS
       @glyph_list = GlyphList.zapf_dingbats
@@ -284,7 +286,7 @@ abstract class Pdfbox::Pdmodel::Font::PDSimpleFont < Pdfbox::Pdmodel::Font::PDFo
   end
 
   # Returns true if the given bounding box is non-zero.
-  private def is_non_zero_bounding_box?(bbox : BoundingBox) : Bool
+  private def non_zero_bounding_box?(bbox : BoundingBox) : Bool
     # TODO: Implement proper bounding box check
     false
   end

@@ -1,6 +1,6 @@
 # CIDSystemInfo for CID fonts
 # Corresponds to PDCIDSystemInfo in Apache PDFBox
-require "../../cos"
+require "../../cos.cr"
 
 module Pdfbox::Pdmodel::Font
   class PDCIDSystemInfo
@@ -11,7 +11,7 @@ module Pdfbox::Pdmodel::Font
       @dictionary = Pdfbox::Cos::Dictionary.new
       @dictionary[Pdfbox::Cos::Name::REGISTRY] = Pdfbox::Cos::Name.get_pdf_name(registry)
       @dictionary[Pdfbox::Cos::Name::ORDERING] = Pdfbox::Cos::Name.get_pdf_name(ordering)
-      @dictionary[Pdfbox::Cos::Name::SUPPLEMENT] = Pdfbox::Cos::Number.new(supplement)
+      @dictionary[Pdfbox::Cos::Name::SUPPLEMENT] = Pdfbox::Cos::Integer.get(supplement.to_i64)
     end
 
     # Creates a CIDSystemInfo from an existing COS dictionary.
@@ -31,7 +31,7 @@ module Pdfbox::Pdmodel::Font
 
     # Returns the supplement.
     def supplement : Int32
-      @dictionary.get_int(Pdfbox::Cos::Name::SUPPLEMENT, 0)
+      @dictionary.get_int(Pdfbox::Cos::Name::SUPPLEMENT, 0).to_i32
     end
 
     # Returns the underlying COS dictionary.

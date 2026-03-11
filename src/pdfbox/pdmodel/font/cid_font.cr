@@ -1,6 +1,6 @@
 # CIDFont abstract base class
 # Corresponds to PDCIDFont in Apache PDFBox
-require "../../cos"
+require "../../cos.cr"
 require "./font_descriptor"
 require "./vector_font"
 require "./cid_system_info"
@@ -12,12 +12,7 @@ module Pdfbox::Pdmodel::Font
     Log = ::Log.for(self)
     Cos = Pdfbox::Cos
 
-    # Forward declaration for parent Type 0 font
-    class PDType0Font
-    end
-
-    @dict : Cos::Dictionary
-    @parent : PDType0Font
+    @dict : Pdfbox::Cos::Dictionary
     @font_descriptor : PDFontDescriptor?
     @widths : Hash(Int32, Float32)
     @default_width : Float32 = 0.0_f32
@@ -27,9 +22,8 @@ module Pdfbox::Pdmodel::Font
     @dw2 : Array(Float32) = [880.0_f32, -1000.0_f32] # default values
 
     # Constructor.
-    def initialize(font_dictionary : Cos::Dictionary, parent : PDType0Font)
+    def initialize(font_dictionary : Pdfbox::Cos::Dictionary, parent)
       @dict = font_dictionary
-      @parent = parent
       @widths = {} of Int32 => Float32
       @vertical_displacement_y = {} of Int32 => Float32
       @position_vectors = {} of Int32 => PDFont::Vector
@@ -39,7 +33,7 @@ module Pdfbox::Pdmodel::Font
 
     # Returns the PostScript name of the font.
     def base_font : String
-      @dict.get_name_as_string(Cos::Name::BASE_FONT) || ""
+      @dict.get_name_as_string(Pdfbox::Cos::Name::BASE_FONT) || ""
     end
 
     # Returns the name of this font (same as base font).
@@ -52,7 +46,7 @@ module Pdfbox::Pdmodel::Font
       if fd = @font_descriptor
         return fd
       end
-      fd_dict = @dict.get_dictionary(Cos::Name::FONT_DESC)
+      fd_dict = @dict.get_dictionary(Pdfbox::Cos::Name::FONT_DESC)
       if fd_dict
         @font_descriptor = PDFontDescriptor.new(fd_dict)
       else
@@ -60,14 +54,9 @@ module Pdfbox::Pdmodel::Font
       end
     end
 
-    # Returns the parent Type 0 font.
-    def parent : PDType0Font
-      @parent
-    end
-
     # Reads the widths from the font dictionary (W array).
     private def read_widths : Nil
-      w_array = @dict.get_array(Cos::Name::W)
+      w_array = @dict.get_array(Pdfbox::Cos::Name.new("W"))
       return unless w_array
 
       size = w_array.size
@@ -76,23 +65,23 @@ module Pdfbox::Pdmodel::Font
         first_code_base = w_array[counter]?
         counter += 1
         break unless first_code_base
-        unless first_code_base.is_a?(Cos::Number)
+        unless first_code_base.is_a?(Pdfbox::Cos::Number)
           Log.warn { "Expected a number array member, got #{first_code_base}" }
           next
         end
-        first_code = first_code_base.as(Cos::Number).to_i
+        first_code = first_code_base.as(Pdfbox::Cos::Number).to_i
         next_base = w_array[counter]?
         counter += 1
         break unless next_base
 
-        if next_base.is_a?(Cos::Array)
-          array = next_base.as(Cos::Array)
+        if next_base.is_a?(Pdfbox::Cos::Array)
+          array = next_base.as(Pdfbox::Cos::Array)
           array_size = array.size
           (0...array_size).each do |i|
             width_base = array[i]?
             next unless width_base
-            if width_base.is_a?(Cos::Number)
-              width = width_base.as(Cos::Number).to_f32
+            if width_base.is_a?(Pdfbox::Cos::Number)
+              width = width_base.as(Pdfbox::Cos::Number).to_f32
               @widths[first_code + i] = width
             else
               Log.warn { "Expected a number array member, got #{width_base}" }
@@ -107,12 +96,12 @@ module Pdfbox::Pdmodel::Font
           range_width_base = w_array[counter]?
           counter += 1
           break unless range_width_base
-          unless second_code_base.is_a?(Cos::Number) && range_width_base.is_a?(Cos::Number)
+          unless second_code_base.is_a?(Pdfbox::Cos::Number) && range_width_base.is_a?(Pdfbox::Cos::Number)
             Log.warn { "Expected two numbers, got #{second_code_base} and #{range_width_base}" }
             next
           end
-          second_code = second_code_base.as(Cos::Number).to_i
-          range_width = range_width_base.as(Cos::Number).to_f32
+          second_code = second_code_base.as(Pdfbox::Cos::Number).to_i
+          range_width = range_width_base.as(Pdfbox::Cos::Number).to_f32
           start_range = first_code
           end_range = second_code
           (start_range..end_range).each do |cid|
@@ -125,18 +114,18 @@ module Pdfbox::Pdmodel::Font
     # Reads vertical displacements from the font dictionary (DW2 and W2 arrays).
     private def read_vertical_displacements : Nil
       # default position vector and vertical displacement vector
-      dw2_array = @dict.get_array(Cos::Name::DW2)
+      dw2_array = @dict.get_array(Pdfbox::Cos::Name.new("DW2"))
       if dw2_array && dw2_array.size >= 2
         base0 = dw2_array[0]?
         base1 = dw2_array[1]?
-        if base0.is_a?(Cos::Number) && base1.is_a?(Cos::Number)
-          @dw2[0] = base0.as(Cos::Number).to_f32
-          @dw2[1] = base1.as(Cos::Number).to_f32
+        if base0.is_a?(Pdfbox::Cos::Number) && base1.is_a?(Pdfbox::Cos::Number)
+          @dw2[0] = base0.as(Pdfbox::Cos::Number).to_f32
+          @dw2[1] = base1.as(Pdfbox::Cos::Number).to_f32
         end
       end
 
       # vertical metrics for individual CIDs.
-      w2_array = @dict.get_array(Cos::Name::W2)
+      w2_array = @dict.get_array(Pdfbox::Cos::Name.new("W2"))
       return unless w2_array
 
       i = 0
@@ -144,15 +133,15 @@ module Pdfbox::Pdmodel::Font
         c_base = w2_array[i]?
         break unless c_base
         i += 1
-        unless c_base.is_a?(Cos::Number)
+        unless c_base.is_a?(Pdfbox::Cos::Number)
           Log.warn { "Expected a number in W2 array, got #{c_base}" }
           next
         end
-        c = c_base.as(Cos::Number).to_i
+        c = c_base.as(Pdfbox::Cos::Number).to_i
         next_base = w2_array[i]?
         break unless next_base
-        if next_base.is_a?(Cos::Array)
-          array = next_base.as(Cos::Array)
+        if next_base.is_a?(Pdfbox::Cos::Array)
+          array = next_base.as(Pdfbox::Cos::Array)
           i += 1
           array_size = array.size
           j = 0
@@ -162,26 +151,26 @@ module Pdfbox::Pdmodel::Font
             v1x_base = array[j + 1]?
             v1y_base = array[j + 2]?
             break unless w1y_base && v1x_base && v1y_base
-            unless w1y_base.is_a?(Cos::Number) && v1x_base.is_a?(Cos::Number) && v1y_base.is_a?(Cos::Number)
+            unless w1y_base.is_a?(Pdfbox::Cos::Number) && v1x_base.is_a?(Pdfbox::Cos::Number) && v1y_base.is_a?(Pdfbox::Cos::Number)
               Log.warn { "Expected three numbers in W2 subarray" }
               j += 3
               next
             end
-            w1y = w1y_base.as(Cos::Number).to_f32
-            v1x = v1x_base.as(Cos::Number).to_f32
-            v1y = v1y_base.as(Cos::Number).to_f32
+            w1y = w1y_base.as(Pdfbox::Cos::Number).to_f32
+            v1x = v1x_base.as(Pdfbox::Cos::Number).to_f32
+            v1y = v1y_base.as(Pdfbox::Cos::Number).to_f32
             @vertical_displacement_y[cid] = w1y
             @position_vectors[cid] = PDFont::Vector.new(v1x, v1y)
             j += 3
           end
         else
           # range format: c, c1, w1y, v1x, v1y
-          unless next_base.is_a?(Cos::Number)
+          unless next_base.is_a?(Pdfbox::Cos::Number)
             Log.warn { "Expected a number for second code in W2 range, got #{next_base}" }
             i += 1
             next
           end
-          second_code = next_base.as(Cos::Number).to_i
+          second_code = next_base.as(Pdfbox::Cos::Number).to_i
           i += 1 # move to w1y
           w1y_base = w2_array[i]?
           i += 1
@@ -190,13 +179,13 @@ module Pdfbox::Pdmodel::Font
           v1y_base = w2_array[i]?
           i += 1
           break unless w1y_base && v1x_base && v1y_base
-          unless w1y_base.is_a?(Cos::Number) && v1x_base.is_a?(Cos::Number) && v1y_base.is_a?(Cos::Number)
+          unless w1y_base.is_a?(Pdfbox::Cos::Number) && v1x_base.is_a?(Pdfbox::Cos::Number) && v1y_base.is_a?(Pdfbox::Cos::Number)
             Log.warn { "Expected three numbers in W2 range" }
             next
           end
-          w1y = w1y_base.as(Cos::Number).to_f32
-          v1x = v1x_base.as(Cos::Number).to_f32
-          v1y = v1y_base.as(Cos::Number).to_f32
+          w1y = w1y_base.as(Pdfbox::Cos::Number).to_f32
+          v1x = v1x_base.as(Pdfbox::Cos::Number).to_f32
+          v1y = v1y_base.as(Pdfbox::Cos::Number).to_f32
           (c..second_code).each do |cid_val|
             @vertical_displacement_y[cid_val] = w1y
             @position_vectors[cid_val] = PDFont::Vector.new(v1x, v1y)
@@ -208,9 +197,9 @@ module Pdfbox::Pdmodel::Font
     # Returns the default width (DW entry, default 1000).
     private def default_width : Float32
       if @default_width == 0.0_f32
-        base = @dict[Cos::Name::DW]?
-        if base.is_a?(Cos::Number)
-          @default_width = base.as(Cos::Number).to_f32
+        base = @dict[Pdfbox::Cos::Name.new("DW")]?
+        if base.is_a?(Pdfbox::Cos::Number)
+          @default_width = base.as(Pdfbox::Cos::Number).to_f32
         else
           @default_width = 1000.0_f32
         end
@@ -273,7 +262,7 @@ module Pdfbox::Pdmodel::Font
 
     # Returns the CIDSystemInfo, or nil if missing.
     def cid_system_info : PDCIDSystemInfo?
-      cid_system_info_dict = @dict.get_dictionary(Cos::Name::CIDSYSTEMINFO)
+      cid_system_info_dict = @dict.get_dictionary(Pdfbox::Cos::Name.new("CIDSystemInfo"))
       if cid_system_info_dict
         PDCIDSystemInfo.new(cid_system_info_dict)
       else
@@ -295,10 +284,10 @@ module Pdfbox::Pdmodel::Font
 
     # Reads the CIDToGID mapping stream.
     protected def read_cid_to_gid_map : Array(Int32)?
-      stream = @dict.get_stream(Cos::Name::CID_TO_GID_MAP)
+      stream = @dict.get_stream(Pdfbox::Cos::Name.new("CIDToGIDMap"))
       return unless stream
 
-      bytes = stream.read_all
+      bytes = stream.data
       number_of_ints = bytes.size // 2
       cid2gid = Array(Int32).new(number_of_ints, 0)
       offset = 0

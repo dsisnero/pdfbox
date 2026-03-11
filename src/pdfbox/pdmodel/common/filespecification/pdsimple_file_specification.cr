@@ -18,8 +18,8 @@ module Pdfbox::Pdmodel::Common::Filespecification
     end
 
     # Set the file name
-    def file=(file_name : String)
-      @file = Cos::String.new(file_name)
+    def file=(value : String)
+      @file = Cos::String.new(value)
     end
 
     # Get the underlying COS object
