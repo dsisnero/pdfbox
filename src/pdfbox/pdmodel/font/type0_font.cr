@@ -326,6 +326,10 @@ class Pdfbox::Pdmodel::Font::PDType0Font < Pdfbox::Pdmodel::Font::PDFont
     descendant_font.is_a?(PDCIDFontType2)
   end
 
+  def composite_font? : Bool
+    true
+  end
+
   # Returns the TrueType font if the descendant font is Type 2, otherwise nil.
   def true_type_font
     descendant_font.as?(PDCIDFontType2).try(&.true_type_font)

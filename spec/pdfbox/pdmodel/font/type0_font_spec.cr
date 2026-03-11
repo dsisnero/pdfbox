@@ -147,4 +147,9 @@ describe Pdfbox::Pdmodel::Font::PDType0Font do
     font = Pdfbox::Pdmodel::Font::PDType0Font.new(Type0FontSpecHelpers.build_valid_type0_dict)
     font.to_s.should eq("PDType0Font/PDCIDFontType2, PostScript name: DummyType0")
   end
+
+  it "reports composite_font? true for Type0" do
+    font = Pdfbox::Pdmodel::Font::PDType0Font.new(Type0FontSpecHelpers.build_valid_type0_dict)
+    font.composite_font?.should be_true
+  end
 end
