@@ -1,0 +1,3 @@
+id	path	test_name	status	notes
+vendor/pdfbox/pdfbox/src/test/java/org/apache/pdfbox/pdmodel/font/PDType3FontTest.java:Type3FontSpec	vendor/pdfbox/pdfbox/src/test/java/org/apache/pdfbox/pdmodel/font/PDType3FontTest.java	Type3FontSpec	ported	spec/pdfbox/pdmodel/font/type3_font_spec.cr covers width, matrix, bbox, unsupported operations, and encode semantics
+vendor/pdfbox/pdfbox/src/test/java/org/apache/pdfbox/pdmodel/font/PDFontFactoryTest.java:FontFactorySpec	vendor/pdfbox/pdfbox/src/test/java/org/apache/pdfbox/pdmodel/font/PDFontFactoryTest.java	FontFactorySpec	ported	spec/pdfbox/pdmodel/font/font_factory_spec.cr covers Type3, Type0/CID, subtype fallback, and Type1/MMType1 routing branches
