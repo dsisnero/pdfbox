@@ -312,10 +312,17 @@ class Pdfbox::Pdmodel::Font::PDType0Font < Pdfbox::Pdmodel::Font::PDFont
   end
 
   def add_to_subset(code_point : Int32) : Nil
+    raise "This font was created with subsetting disabled" unless will_be_subset?
+    raise "Subsetting not yet implemented"
+  end
+
+  def add_glyphs_to_subset(glyph_ids : Set(Int32)) : Nil
+    raise "This font was created with subsetting disabled" unless will_be_subset?
     raise "Subsetting not yet implemented"
   end
 
   def subset : Nil
+    raise "This font was created with subsetting disabled" unless will_be_subset?
     raise "Subsetting not yet implemented"
   end
 

@@ -224,4 +224,17 @@ describe Pdfbox::Pdmodel::Font::PDType0Font do
     font = Pdfbox::Pdmodel::Font::PDType0Font.new(dict)
     font.font_descriptor.not_nil!.font_name.should eq("DescendantFont")
   end
+
+  it "matches Java subsetting-disabled error semantics" do
+    font = Pdfbox::Pdmodel::Font::PDType0Font.new(Type0FontSpecHelpers.build_valid_type0_dict)
+    expect_raises(Exception, "This font was created with subsetting disabled") do
+      font.add_to_subset('A'.ord)
+    end
+    expect_raises(Exception, "This font was created with subsetting disabled") do
+      font.add_glyphs_to_subset(Set{1, 2, 3})
+    end
+    expect_raises(Exception, "This font was created with subsetting disabled") do
+      font.subset
+    end
+  end
 end
