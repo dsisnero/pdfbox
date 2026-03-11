@@ -69,4 +69,48 @@ describe "CID descendant font parity slices" do
       ttf.close
     end
   end
+
+  it "extracts and normalizes Type2 glyph paths using units-per-em scaling" do
+    type0_dict = CIDFontTypeSpecHelpers.build_type0_dict("CIDFontType2")
+    parent = Pdfbox::Pdmodel::Font::PDType0Font.new(type0_dict)
+    descendant_dict = type0_dict.get_array(Pdfbox::Cos::Name::DESCENDANT_FONTS).not_nil![0].as(Pdfbox::Cos::Dictionary)
+    ttf_path = SpecPaths.resolve("vendor/pdfbox/fontbox/src/test/resources/ttf/LiberationSans-Regular.ttf")
+    ttf = Fontbox::TTF::TTFParser.new.parse_embedded(File.open(ttf_path))
+    begin
+      font = Pdfbox::Pdmodel::Font::PDCIDFontType2.new(descendant_dict, parent, ttf)
+      units_per_em = ttf.units_per_em
+      units_per_em.should be > 1000
+
+      glyph_code = -1
+      raw_bounds = nil
+      normalized_bounds = nil
+      max_gid = {ttf.number_of_glyphs, 2048}.min
+      (1...max_gid).each do |gid|
+        raw_path = font.get_path(gid)
+        norm_path = font.get_normalized_path(gid)
+        next if raw_path.empty? || norm_path.empty?
+        rb = raw_path.bounds
+        nb = norm_path.bounds
+        next if rb.width <= 0 || rb.height <= 0
+        glyph_code = gid
+        raw_bounds = rb
+        normalized_bounds = nb
+        break
+      end
+
+      glyph_code.should be > 0
+      raw_bounds.should_not be_nil
+      normalized_bounds.should_not be_nil
+
+      scale = 1000.0 / units_per_em.to_f64
+      raw_w = raw_bounds.not_nil!.width
+      raw_h = raw_bounds.not_nil!.height
+      norm_w = normalized_bounds.not_nil!.width
+      norm_h = normalized_bounds.not_nil!.height
+      norm_w.should be_close(raw_w * scale, 0.01)
+      norm_h.should be_close(raw_h * scale, 0.01)
+    ensure
+      ttf.close
+    end
+  end
 end

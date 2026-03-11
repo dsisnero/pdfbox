@@ -127,12 +127,34 @@ module Pdfbox::Pdmodel::Font
 
     # PDVectorFont abstract methods
     def get_path(code : Int32)
-      # TODO: Implement TrueType glyph path extraction
-      nil
+      ttf = @ttf
+      return Fontbox::Util::Path.new if ttf.nil?
+
+      gid = code_to_gid(code)
+      glyph_table = ttf.glyph
+      return Fontbox::Util::Path.new if glyph_table.nil?
+
+      glyph = glyph_table.glyph(gid)
+      glyph ? glyph.path : Fontbox::Util::Path.new
     end
 
     def get_normalized_path(code : Int32)
-      nil
+      gid = code_to_gid(code)
+      path = get_path(code)
+      return Fontbox::Util::Path.new if gid == 0 && !embedded?
+      return path if path.empty?
+
+      ttf = @ttf
+      return path if ttf.nil?
+
+      units_per_em = ttf.units_per_em
+      return path if units_per_em <= 0 || units_per_em == 1000
+
+      normalized = Fontbox::Util::Path.new
+      normalized.append(path)
+      scale = 1000.0 / units_per_em.to_f64
+      normalized.scale!(scale, scale)
+      normalized
     end
 
     def has_glyph(code : Int32) : Bool

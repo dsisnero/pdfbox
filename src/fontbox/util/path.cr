@@ -93,16 +93,19 @@ module Fontbox
       def scale!(sx : Float64, sy : Float64) : Nil
         scaled = [] of Command
         @commands.each do |cmd|
-          scaled << case cmd
-          when MoveTo
-            MoveTo.new(cmd.x * sx, cmd.y * sy)
-          when LineTo
-            LineTo.new(cmd.x * sx, cmd.y * sy)
-          when CurveTo
-            CurveTo.new(cmd.x1 * sx, cmd.y1 * sy, cmd.x2 * sx, cmd.y2 * sy, cmd.x3 * sx, cmd.y3 * sy)
-          when ClosePath
-            cmd
-          end
+          transformed = case cmd
+                        when MoveTo
+                          MoveTo.new(cmd.x * sx, cmd.y * sy)
+                        when LineTo
+                          LineTo.new(cmd.x * sx, cmd.y * sy)
+                        when CurveTo
+                          CurveTo.new(cmd.x1 * sx, cmd.y1 * sy, cmd.x2 * sx, cmd.y2 * sy, cmd.x3 * sx, cmd.y3 * sy)
+                        when ClosePath
+                          cmd
+                        else
+                          raise "Unknown path command type: #{cmd.class}"
+                        end
+          scaled << transformed
         end
         @commands = scaled
         if cp = @current_point
