@@ -95,6 +95,37 @@ private def as_dictionary(value : Pdfbox::Cos::Base?) : Pdfbox::Cos::Dictionary?
   value.as?(Pdfbox::Cos::Dictionary)
 end
 
+private def content_stream_length(page : Pdfbox::Pdmodel::Page) : Int32?
+  page_dict = page.cos_object
+  return unless page_dict
+
+  contents = page_dict[Pdfbox::Cos::Name.new("Contents")]
+  return unless contents
+  if contents.is_a?(Pdfbox::Cos::Object)
+    contents = contents.object
+  end
+
+  if contents.is_a?(Pdfbox::Cos::Array)
+    first = contents[0]?
+    return unless first
+    if first.is_a?(Pdfbox::Cos::Object)
+      first = first.object
+    end
+    contents = first
+  end
+
+  case contents
+  when Pdfbox::Cos::Stream
+    contents.data.size
+  when Pdfbox::Cos::Dictionary
+    length = contents[Pdfbox::Cos::Name.new("Length")]
+    if length.is_a?(Pdfbox::Cos::Object)
+      length = length.object
+    end
+    length.as?(Pdfbox::Cos::Integer).try(&.value.to_i32)
+  end
+end
+
 describe "Pdfbox::Pdfwriter parity" do
   # Source of truth:
   # vendor/pdfbox/pdfbox/src/test/java/org/apache/pdfbox/pdfwriter/
@@ -170,7 +201,7 @@ describe "Pdfbox::Pdfwriter parity" do
   pending "COSDocumentCompressionTest#testCompressEncryptedDoc requires encryption + compression writer parity" do
   end
 
-  pending "COSDocumentCompressionTest#testAlteredDoc requires document compression writer parity" do
+  pending "COSDocumentCompressionTest#testAlteredDoc requires stream-object hydration parity in parser/writer" do
   end
 
   pending "COSDocumentCompressionTest#testPDFBox5927 requires document compression writer parity" do

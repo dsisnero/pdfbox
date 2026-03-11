@@ -84,6 +84,8 @@ module Pdfbox::Pdfwriter
       @destination << "endobj\n"
 
       # Write each page object
+      deferred_stream_objects = [] of Tuple(Int32, Pdfbox::Cos::Stream)
+      next_object_number = 3 + @document.page_count
       @document.page_count.times do |i|
         page_offset = @destination.pos.to_i64
         xref_writer.add_entry(page_offset, 0_i64, :in_use)
@@ -116,11 +118,27 @@ module Pdfbox::Pdfwriter
             )
             cos_writer.write_name(key)
             @destination << ' '
-            cos_writer.write(materialized_value)
+            if key_name == "Contents" && materialized_value.is_a?(Pdfbox::Cos::Stream)
+              stream_object_number = next_object_number
+              next_object_number += 1
+              deferred_stream_objects << {stream_object_number, materialized_value}
+              @destination << stream_object_number << " 0 R"
+            else
+              cos_writer.write(materialized_value)
+            end
             @destination << '\n'
           end
         end
         @destination << ">>\n"
+        @destination << "endobj\n"
+      end
+
+      deferred_stream_objects.each do |stream_object_number, stream|
+        stream_offset = @destination.pos.to_i64
+        xref_writer.add_entry(stream_offset, 0_i64, :in_use)
+        @destination << stream_object_number << " 0 obj\n"
+        cos_writer.write(stream)
+        @destination << '\n'
         @destination << "endobj\n"
       end
 

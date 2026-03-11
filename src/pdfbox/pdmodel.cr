@@ -8,6 +8,7 @@ require "./pdmodel/interactive"
 require "./pdmodel/graphics"
 require "./pdmodel/document_interchange"
 require "./pdmodel/font"
+require "./pdmodel/page_content_stream"
 
 module Pdfbox::Pdmodel
   # Main PDF document class
@@ -440,6 +441,14 @@ module Pdfbox::Pdmodel
 
       if contents.is_a?(Cos::Object)
         contents = contents.object
+      end
+
+      if contents.is_a?(Cos::Array)
+        first = contents[0]?
+        if first.is_a?(Cos::Object)
+          first = first.object
+        end
+        return first.as?(Cos::Stream)
       end
 
       contents.as?(Cos::Stream)
