@@ -308,7 +308,7 @@ class Pdfbox::Pdmodel::Font::PDType0Font < Pdfbox::Pdmodel::Font::PDFont
   end
 
   protected def get_standard14_width(code : Int32) : Float32
-    raise "not supported"
+    raise NotImplementedError.new("not supported")
   end
 
   def add_to_subset(code_point : Int32) : Nil

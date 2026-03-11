@@ -26,6 +26,10 @@ class TestableType0Font < Pdfbox::Pdmodel::Font::PDType0Font
   def force_cmap(cmap : Fontbox::CMap::CMap?) : Nil
     @c_map = cmap
   end
+
+  def call_standard14_width(code : Int32) : Float32
+    get_standard14_width(code)
+  end
 end
 
 describe Pdfbox::Pdmodel::Font::PDType0Font do
@@ -235,6 +239,13 @@ describe Pdfbox::Pdmodel::Font::PDType0Font do
     end
     expect_raises(Exception, "This font was created with subsetting disabled") do
       font.subset
+    end
+  end
+
+  it "raises unsupported for Standard14 width lookup in Type0 fonts" do
+    font = TestableType0Font.new(Type0FontSpecHelpers.build_valid_type0_dict)
+    expect_raises(NotImplementedError, "not supported") do
+      font.call_standard14_width(65)
     end
   end
 end
