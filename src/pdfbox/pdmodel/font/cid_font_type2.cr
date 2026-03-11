@@ -107,6 +107,16 @@ module Pdfbox::Pdmodel::Font
       width
     end
 
+    def height(code : Int32) : Float32
+      ttf = @ttf
+      return 0.0_f32 if ttf.nil?
+      hhea = ttf.horizontal_header
+      return 0.0_f32 if hhea.nil?
+      units_per_em = ttf.units_per_em
+      return 0.0_f32 if units_per_em <= 0
+      (hhea.ascender + -hhea.descender).to_f32 / units_per_em.to_f32
+    end
+
     def embedded? : Bool
       @is_embedded
     end
@@ -126,7 +136,7 @@ module Pdfbox::Pdmodel::Font
     end
 
     def has_glyph(code : Int32) : Bool
-      true
+      code_to_gid(code) != 0
     end
 
     # Additional methods used by PDType0Font

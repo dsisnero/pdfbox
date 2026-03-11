@@ -79,7 +79,7 @@ module Pdfbox::Pdmodel::Font
     end
 
     def has_glyph(code : Int32) : Bool
-      true
+      code_to_gid(code) != 0
     end
 
     # Override parent methods for Type 0 specific logic
