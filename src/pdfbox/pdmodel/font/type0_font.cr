@@ -70,8 +70,13 @@ class Pdfbox::Pdmodel::Font::PDType0Font < Pdfbox::Pdmodel::Font::PDFont
   end
 
   # Returns the PostScript name of the font.
-  def name : String
+  def base_font : String
     @dict.get_name_as_string(Pdfbox::Cos::Name::BASE_FONT) || ""
+  end
+
+  # Returns the PostScript name of the font.
+  def name : String
+    base_font
   end
 
   # Reads the encoding from the font dictionary.

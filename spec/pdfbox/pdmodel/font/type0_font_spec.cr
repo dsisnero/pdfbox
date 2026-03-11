@@ -158,6 +158,12 @@ describe Pdfbox::Pdmodel::Font::PDType0Font do
     font.standard14?.should be_false
   end
 
+  it "exposes base_font separately from name for Java API parity" do
+    font = Pdfbox::Pdmodel::Font::PDType0Font.new(Type0FontSpecHelpers.build_valid_type0_dict)
+    font.base_font.should eq("DummyType0")
+    font.name.should eq(font.base_font)
+  end
+
   it "delegates font_descriptor lookup to the descendant font dictionary" do
     descendant = Pdfbox::Cos::Dictionary.new
     descendant[Pdfbox::Cos::Name::TYPE] = Pdfbox::Cos::Name::FONT
