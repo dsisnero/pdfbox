@@ -3,6 +3,8 @@
 # This module contains PDF writing functionality,
 # corresponding to the pdfwriter package in Apache PDFBox.
 require "./cos"
+require "./content_stream/operator"
+require "./content_stream/operator_name"
 
 module Pdfbox::Pdfwriter
   # Base class for PDF writing errors
@@ -248,6 +250,68 @@ module Pdfbox::Pdfwriter
     # Write a COS object reference
     def write_object_reference(ref : Pdfbox::Cos::Object) : Nil
       @destination << ref.object_number << ' ' << ref.generation_number << " R"
+    end
+  end
+
+  # Writes parsed content stream tokens back into a content stream.
+  # Ported from Apache PDFBox ContentStreamWriter.
+  class ContentStreamWriter
+    include Pdfbox::ContentStream::OperatorName
+
+    SPACE = Bytes[32_u8]
+    EOL   = Bytes[0x0A_u8]
+
+    def initialize(@output : ::IO)
+    end
+
+    def write_token(token : Pdfbox::Cos::Base | Pdfbox::ContentStream::Operator) : Nil
+      write_object(token)
+    end
+
+    def write_tokens(*tokens : Pdfbox::Cos::Base | Pdfbox::ContentStream::Operator) : Nil
+      tokens.each { |token| write_object(token) }
+      @output.write(EOL)
+    end
+
+    def write_tokens(tokens : Array(Pdfbox::Cos::Base | Pdfbox::ContentStream::Operator)) : Nil
+      tokens.each { |token| write_object(token) }
+    end
+
+    private def write_object(token : Pdfbox::Cos::Base | Pdfbox::ContentStream::Operator) : Nil
+      case token
+      in Pdfbox::Cos::Base
+        write_operand(token)
+      in Pdfbox::ContentStream::Operator
+        write_operator(token)
+      end
+    end
+
+    private def write_operator(op : Pdfbox::ContentStream::Operator) : Nil
+      if op.name == BEGIN_INLINE_IMAGE
+        @output << BEGIN_INLINE_IMAGE
+        @output.write(EOL)
+        parameters = op.image_parameters || Pdfbox::Cos::Dictionary.new
+        parameters.entries.each do |key, value|
+          key.write_pdf(@output)
+          @output.write(SPACE)
+          write_operand(value)
+          @output.write(EOL)
+        end
+        @output << BEGIN_INLINE_IMAGE_DATA
+        @output.write(EOL)
+        @output.write(op.image_data || Bytes.empty)
+        @output.write(EOL)
+        @output << END_INLINE_IMAGE
+        @output.write(EOL)
+      else
+        @output << op.name
+        @output.write(EOL)
+      end
+    end
+
+    private def write_operand(operand : Pdfbox::Cos::Base) : Nil
+      operand.write_pdf(@output)
+      @output.write(SPACE)
     end
   end
 
