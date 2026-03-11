@@ -508,4 +508,18 @@ describe "Porting parity pdfbox-lxq" do
 
     Pdfbox::Util::DateConverter.to_calendar("2076-7-6T17:22:1EDT").should be_nil
   end
+
+  it "TestDateUtil#testDateConverter invalid/bad inputs return nil" do
+    Pdfbox::Util::DateConverter.to_calendar("Tuesday, May 32 2000 11:27 UCT").should be_nil
+    Pdfbox::Util::DateConverter.to_calendar("32 May 2000 11:25").should be_nil
+    Pdfbox::Util::DateConverter.to_calendar("Tuesday, May 32 2000 11:25").should be_nil
+    Pdfbox::Util::DateConverter.to_calendar("19921232 11:25").should be_nil
+    Pdfbox::Util::DateConverter.to_calendar("19921001 11:60").should be_nil
+    Pdfbox::Util::DateConverter.to_calendar("19920401 24:25").should be_nil
+    Pdfbox::Util::DateConverter.to_calendar("20070430193647+713'00' illegal tz hr").should be_nil
+    Pdfbox::Util::DateConverter.to_calendar("nodigits").should be_nil
+    Pdfbox::Util::DateConverter.to_calendar("Unknown").should be_nil
+    Pdfbox::Util::DateConverter.to_calendar("333three digit year").should be_nil
+    Pdfbox::Util::DateConverter.to_calendar("2012 Feb 30 GMT+11").should be_nil
+  end
 end

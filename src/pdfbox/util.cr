@@ -697,7 +697,7 @@ module Pdfbox::Util
       formats.each do |fmt|
         begin
           return Time.parse(prepared, fmt, Time::Location::UTC)
-        rescue Time::Format::Error
+        rescue Time::Format::Error | ArgumentError
         end
       end
 
