@@ -2,12 +2,25 @@ require "../../../spec_helper"
 require "../../../../src/pdfbox/pdmodel/font/type0_font"
 require "../../../../src/fontbox/ttf/ttf_parser"
 
+class TestableCIDFontType2 < Pdfbox::Pdmodel::Font::PDCIDFontType2
+  def force_embedded(value : Bool) : Nil
+    @is_embedded = value
+  end
+end
+
 module CIDFontTypeSpecHelpers
-  def self.build_type0_dict(cid_subtype : String, cid_to_gid_bytes : Bytes? = nil) : Pdfbox::Cos::Dictionary
+  def self.build_type0_dict(cid_subtype : String, cid_to_gid_bytes : Bytes? = nil, embedded : Bool = false) : Pdfbox::Cos::Dictionary
     descendant = Pdfbox::Cos::Dictionary.new
     descendant[Pdfbox::Cos::Name::TYPE] = Pdfbox::Cos::Name::FONT
     descendant[Pdfbox::Cos::Name::SUBTYPE] = Pdfbox::Cos::Name.new(cid_subtype)
     descendant[Pdfbox::Cos::Name::BASE_FONT] = Pdfbox::Cos::Name.new("DummyCID")
+    if embedded
+      fd = Pdfbox::Cos::Dictionary.new
+      embedded_stream = Pdfbox::Cos::Stream.new
+      embedded_stream.data = Bytes[0x00_u8]
+      fd[Pdfbox::Cos::Name::FONT_FILE2] = embedded_stream
+      descendant[Pdfbox::Cos::Name::FONT_DESC] = fd
+    end
     if cid_to_gid_bytes
       descendant[Pdfbox::Cos::Name.new("CIDToGIDMap")] = Pdfbox::Cos::Stream.new({} of Pdfbox::Cos::Name => Pdfbox::Cos::Base, cid_to_gid_bytes)
     end
@@ -23,7 +36,7 @@ end
 
 describe "CID descendant font parity slices" do
   it "uses CIDToGID map bounds and two-byte glyph-id encoding for CIDFontType2" do
-    dict = CIDFontTypeSpecHelpers.build_type0_dict("CIDFontType2", Bytes[0x00_u8, 0x02_u8, 0x00_u8, 0x03_u8])
+    dict = CIDFontTypeSpecHelpers.build_type0_dict("CIDFontType2", Bytes[0x00_u8, 0x02_u8, 0x00_u8, 0x03_u8], embedded: true)
     font = Pdfbox::Pdmodel::Font::PDType0Font.new(dict).descendant_font.as(Pdfbox::Pdmodel::Font::PDCIDFontType2)
 
     font.code_to_cid(7).should eq(7)
@@ -133,6 +146,33 @@ describe "CID descendant font parity slices" do
       norm_h = normalized_bounds.not_nil!.height
       norm_w.should be_close(raw_w * scale, 0.01)
       norm_h.should be_close(raw_h * scale, 0.01)
+    ensure
+      ttf.close
+    end
+  end
+
+  it "uses Java non-embedded code_to_gid fallback when CIDToGID should not be trusted" do
+    descendant = Pdfbox::Cos::Dictionary.new
+    descendant[Pdfbox::Cos::Name::TYPE] = Pdfbox::Cos::Name::FONT
+    descendant[Pdfbox::Cos::Name::SUBTYPE] = Pdfbox::Cos::Name.new("CIDFontType2")
+    descendant[Pdfbox::Cos::Name::BASE_FONT] = Pdfbox::Cos::Name.new("DummyCID")
+    cid_to_gid_bytes = Bytes[0x00_u8, 0x02_u8, 0x00_u8, 0x03_u8]
+    descendant[Pdfbox::Cos::Name.new("CIDToGIDMap")] = Pdfbox::Cos::Stream.new({} of Pdfbox::Cos::Name => Pdfbox::Cos::Base, cid_to_gid_bytes)
+
+    dict = Pdfbox::Cos::Dictionary.new
+    dict[Pdfbox::Cos::Name::TYPE] = Pdfbox::Cos::Name::FONT
+    dict[Pdfbox::Cos::Name::SUBTYPE] = Pdfbox::Cos::Name::TYPE0
+    dict[Pdfbox::Cos::Name::BASE_FONT] = Pdfbox::Cos::Name.new("DummyType0")
+    dict[Pdfbox::Cos::Name::DESCENDANT_FONTS] = Pdfbox::Cos::Array.new([descendant] of Pdfbox::Cos::Base)
+
+    parent = Pdfbox::Pdmodel::Font::PDType0Font.new(dict)
+    ttf_path = SpecPaths.resolve("vendor/pdfbox/fontbox/src/test/resources/ttf/LiberationSans-Regular.ttf")
+    ttf = Fontbox::TTF::TTFParser.new.parse_embedded(File.open(ttf_path))
+    begin
+      font = TestableCIDFontType2.new(descendant, parent, ttf)
+      font.force_embedded(false)
+      # Java behavior: with non-embedded font and mismatched names, ignore CIDToGID map.
+      font.code_to_gid(1).should eq(1)
     ensure
       ttf.close
     end

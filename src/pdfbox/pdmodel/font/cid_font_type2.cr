@@ -55,6 +55,11 @@ module Pdfbox::Pdmodel::Font
 
     def code_to_gid(code : Int32) : Int32
       cid = code_to_cid(code)
+
+      unless embedded?
+        return non_embedded_gid(code, cid)
+      end
+
       if cid2gid = @cid2gid
         return cid < cid2gid.size ? cid2gid[cid] : 0
       end
@@ -64,6 +69,37 @@ module Pdfbox::Pdmodel::Font
       end
 
       cid
+    end
+
+    private def non_embedded_gid(code : Int32, cid : Int32) : Int32
+      if mapped_gid = gid_from_non_embedded_cid_to_gid_map(cid)
+        return mapped_gid
+      end
+
+      unicode = @parent.to_unicode(code)
+      return cid if unicode.nil?
+
+      gid = gid_from_unicode(unicode)
+      gid.nil? ? cid : gid
+    end
+
+    private def gid_from_non_embedded_cid_to_gid_map(cid : Int32) : Int32?
+      return nil unless cid2gid = @cid2gid
+      return nil if damaged?
+      return nil unless ttf = @ttf
+      return nil unless name == ttf.name
+      cid < cid2gid.size ? cid2gid[cid] : 0
+    end
+
+    private def gid_from_unicode(unicode : String) : Int32?
+      return nil unless ttf = @ttf
+      begin
+        cmap = ttf.unicode_cmap_lookup(false)
+        cmap.glyph_id(unicode.char_at(0).ord.to_i32)
+      rescue ex : ::IO::Error
+        Log.warn { "Failed to map non-embedded Unicode in #{name}: #{ex.message}" }
+        nil
+      end
     end
 
     def encode_glyph_id(glyph_id : Int32) : Bytes
