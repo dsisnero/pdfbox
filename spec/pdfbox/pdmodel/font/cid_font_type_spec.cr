@@ -112,6 +112,33 @@ describe "CID descendant font parity slices" do
     bbox.upper_right_y.should eq(789.0_f32)
   end
 
+  it "parses embedded FontFile3 CFF data for CIDFontType0" do
+    descendant = Pdfbox::Cos::Dictionary.new
+    descendant[Pdfbox::Cos::Name::TYPE] = Pdfbox::Cos::Name::FONT
+    descendant[Pdfbox::Cos::Name::SUBTYPE] = Pdfbox::Cos::Name.new("CIDFontType0")
+    descendant[Pdfbox::Cos::Name::BASE_FONT] = Pdfbox::Cos::Name.new("DummyCID")
+
+    cff_path = SpecPaths.resolve("spec/resources/fontbox/cff/FoglihtenNo07.otf")
+    cff_bytes = File.read(cff_path).to_slice
+    embedded_stream = Pdfbox::Cos::Stream.new
+    embedded_stream.data = cff_bytes
+    fd = Pdfbox::Cos::Dictionary.new
+    fd[Pdfbox::Cos::Name::FONT_FILE3] = embedded_stream
+    descendant[Pdfbox::Cos::Name::FONT_DESC] = fd
+
+    dict = Pdfbox::Cos::Dictionary.new
+    dict[Pdfbox::Cos::Name::TYPE] = Pdfbox::Cos::Name::FONT
+    dict[Pdfbox::Cos::Name::SUBTYPE] = Pdfbox::Cos::Name::TYPE0
+    dict[Pdfbox::Cos::Name::BASE_FONT] = Pdfbox::Cos::Name.new("DummyType0")
+    dict[Pdfbox::Cos::Name::DESCENDANT_FONTS] = Pdfbox::Cos::Array.new([descendant] of Pdfbox::Cos::Base)
+
+    font = Pdfbox::Pdmodel::Font::PDType0Font.new(dict).descendant_font.as(Pdfbox::Pdmodel::Font::PDCIDFontType0)
+    font.embedded?.should be_true
+    font.damaged?.should be_false
+    font.bounding_box.width.should be >= 0.0_f32
+    font.bounding_box.height.should be >= 0.0_f32
+  end
+
   it "uses gid!=0 for has_glyph in CIDFontType0 and CIDFontType2" do
     type2_dict = CIDFontTypeSpecHelpers.build_type0_dict("CIDFontType2", Bytes[0x00_u8, 0x00_u8, 0x00_u8, 0x01_u8])
     type2_font = Pdfbox::Pdmodel::Font::PDType0Font.new(type2_dict).descendant_font
