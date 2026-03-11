@@ -123,6 +123,15 @@ describe Pdfbox::Pdmodel::Font::PDFontFactory do
     end
   end
 
+  it "falls back to PDType1Font path when subtype is missing" do
+    dict = Pdfbox::Cos::Dictionary.new
+    dict[Pdfbox::Cos::Name::TYPE] = Pdfbox::Cos::Name::FONT
+
+    expect_raises(Exception, "Not implemented") do
+      Pdfbox::Pdmodel::Font::PDFontFactory.create_font(dict)
+    end
+  end
+
   it "raises in create_descendant_font when dictionary type is not Font" do
     type0_parent = Pdfbox::Pdmodel::Font::PDType0Font.new(FontFactorySpecHelpers.build_type0_dict("CIDFontType2"))
     descendant = Pdfbox::Cos::Dictionary.new

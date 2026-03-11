@@ -77,6 +77,7 @@ module Pdfbox::Pdmodel::Font
         raise ::IO::Error.new("Type 2 descendant font not allowed")
       else
         # Java fallback is Type1 for unknown subtypes.
+        Log.warn { "Invalid font subtype '#{subtype}'" }
         PDType1Font.new(dictionary)
       end
     end
