@@ -86,8 +86,20 @@ module Pdfbox::Pdmodel::Font
     end
 
     def width_from_font(code : Int32) : Float32
-      # CFF program metrics are not wired yet; fall back to dictionary widths.
-      width(code)
+      cid = code_to_cid(code)
+      width = if cid_font = @cid_font
+                cid_font.type2_char_string(cid).width.to_f32
+              elsif embedded? && (t1_font = @t1_font)
+                t1_font.type2_char_string(cid).width.to_f32
+              elsif t1_font = @t1_font
+                t1_font.type1_char_string(glyph_name(code)).width.to_f32
+              else
+                return width(code)
+              end
+
+      # Match Java normalization: apply CFF FontMatrix then scale to 1000 units.
+      transformed = font_matrix.transform(PDFont::Vector.new(width, 0.0_f32))
+      transformed.x * 1000.0_f32
     end
 
     def embedded? : Bool
