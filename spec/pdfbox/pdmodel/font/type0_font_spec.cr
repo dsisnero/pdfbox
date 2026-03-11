@@ -22,6 +22,10 @@ class TestableType0Font < Pdfbox::Pdmodel::Font::PDType0Font
   def force_descendant_font(font : Pdfbox::Pdmodel::Font::PDCIDFont) : Nil
     @descendant_font = font
   end
+
+  def force_cmap(cmap : Fontbox::CMap::CMap?) : Nil
+    @c_map = cmap
+  end
 end
 
 describe Pdfbox::Pdmodel::Font::PDType0Font do
@@ -141,6 +145,37 @@ describe Pdfbox::Pdmodel::Font::PDType0Font do
     vector = font.position_vector(5)
     vector.x.should be_close(-0.3_f32, 0.00001_f32)
     vector.y.should be_close(-0.9_f32, 0.00001_f32)
+  end
+
+  it "uses vertical displacement semantics for Type0 displacement when cmap wmode is 1" do
+    descendant = Pdfbox::Cos::Dictionary.new
+    descendant[Pdfbox::Cos::Name::TYPE] = Pdfbox::Cos::Name::FONT
+    descendant[Pdfbox::Cos::Name::SUBTYPE] = Pdfbox::Cos::Name.new("CIDFontType2")
+    descendant[Pdfbox::Cos::Name::BASE_FONT] = Pdfbox::Cos::Name.new("DummyCID")
+    descendant[Pdfbox::Cos::Name.new("W2")] = Pdfbox::Cos::Array.new([
+      Pdfbox::Cos::Integer.new(5),
+      Pdfbox::Cos::Array.new([
+        Pdfbox::Cos::Integer.new(-600),
+        Pdfbox::Cos::Integer.new(300),
+        Pdfbox::Cos::Integer.new(900),
+      ] of Pdfbox::Cos::Base),
+    ] of Pdfbox::Cos::Base)
+
+    dict = Pdfbox::Cos::Dictionary.new
+    dict[Pdfbox::Cos::Name::TYPE] = Pdfbox::Cos::Name::FONT
+    dict[Pdfbox::Cos::Name::SUBTYPE] = Pdfbox::Cos::Name::TYPE0
+    dict[Pdfbox::Cos::Name::BASE_FONT] = Pdfbox::Cos::Name.new("DummyType0")
+    dict[Pdfbox::Cos::Name::DESCENDANT_FONTS] = Pdfbox::Cos::Array.new([descendant] of Pdfbox::Cos::Base)
+
+    font = TestableType0Font.new(dict)
+    cmap = Fontbox::CMap::CMap.new
+    cmap.wmode = 1
+    cmap.add_cid_mapping(Bytes[5_u8], 5)
+    font.force_cmap(cmap)
+
+    displacement = font.displacement(5)
+    displacement.x.should eq(0.0_f32)
+    displacement.y.should be_close(-0.6_f32, 0.00001_f32)
   end
 
   it "matches Java-style to_s shape with descendant type and base name" do

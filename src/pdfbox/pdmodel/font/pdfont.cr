@@ -269,6 +269,12 @@ abstract class Pdfbox::Pdmodel::Font::PDFont
   # Returns the advance width of the given character, in glyph space.
   abstract def width(code : Int32) : Float32
 
+  # Returns the displacement vector (w0, w1) in text space.
+  # For horizontal text only the x component is used, for vertical text only the y component.
+  def displacement(code : Int32) : Vector
+    Vector.new(width(code) / 1000.0_f32, 0.0_f32)
+  end
+
   # Returns true if the Font dictionary specifies an explicit width for the given glyph.
   abstract def has_explicit_width?(code : Int32) : Bool
 

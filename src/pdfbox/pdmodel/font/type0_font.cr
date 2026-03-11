@@ -159,7 +159,7 @@ class Pdfbox::Pdmodel::Font::PDType0Font < Pdfbox::Pdmodel::Font::PDFont
   end
 
   def vertical? : Bool
-    !@c_map.nil? && @c_map.wmode == 1
+    @c_map.try(&.wmode) == 1
   end
 
   def font_matrix : Matrix
@@ -182,6 +182,14 @@ class Pdfbox::Pdmodel::Font::PDType0Font < Pdfbox::Pdmodel::Font::PDFont
 
   def width(code : Int32) : Float32
     descendant_font.width(code)
+  end
+
+  def displacement(code : Int32) : Vector
+    if vertical?
+      Vector.new(0.0_f32, descendant_font.vertical_displacement_vector_y(code) / 1000.0_f32)
+    else
+      super(code)
+    end
   end
 
   def height(code : Int32) : Float32

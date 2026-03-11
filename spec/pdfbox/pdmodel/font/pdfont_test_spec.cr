@@ -36,7 +36,7 @@ class MockFont < Pdfbox::Pdmodel::Font::PDFont
   end
 
   def width(code : Int32) : Float32
-    500.0
+    500.0_f32
   end
 
   def has_explicit_width?(code : Int32) : Bool
@@ -44,7 +44,7 @@ class MockFont < Pdfbox::Pdmodel::Font::PDFont
   end
 
   def width_from_font(code : Int32) : Float32
-    500.0
+    500.0_f32
   end
 
   def embedded? : Bool
@@ -56,11 +56,11 @@ class MockFont < Pdfbox::Pdmodel::Font::PDFont
   end
 
   def average_font_width : Float32
-    500.0
+    500.0_f32
   end
 
   protected def get_standard14_width(code : Int32) : Float32
-    500.0
+    500.0_f32
   end
 
   protected def encode(unicode : Int32) : Bytes
@@ -99,6 +99,13 @@ describe "PDFontTest" do
       font = MockFont.new
       font.name.should eq("MockFont")
       font.cos_object.should be_a(Pdfbox::Cos::Dictionary)
+    end
+
+    it "uses width-based default displacement for horizontal fonts" do
+      font = MockFont.new
+      displacement = font.displacement(65)
+      displacement.x.should eq(0.5_f32)
+      displacement.y.should eq(0.0_f32)
     end
   end
 
