@@ -296,4 +296,19 @@ describe "CID descendant font parity slices" do
       font.encode_unicode('A'.ord)
     end
   end
+
+  it "uses identity CID->GID for embedded OpenType CFF fonts when no CIDToGID map exists" do
+    type0_dict = CIDFontTypeSpecHelpers.build_type0_dict("CIDFontType2")
+    parent = Pdfbox::Pdmodel::Font::PDType0Font.new(type0_dict)
+    descendant_dict = type0_dict.get_array(Pdfbox::Cos::Name::DESCENDANT_FONTS).not_nil![0].as(Pdfbox::Cos::Dictionary)
+    otf_path = SpecPaths.resolve("spec/resources/fontbox/cff/FoglihtenNo07.otf")
+    otf = Fontbox::TTF::TTFParser.new.parse_embedded(File.open(otf_path))
+    begin
+      font = TestableCIDFontType2.new(descendant_dict, parent, otf)
+      cid = 50_000
+      font.code_to_gid(cid).should eq(cid)
+    ensure
+      otf.close
+    end
+  end
 end

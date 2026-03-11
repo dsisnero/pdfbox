@@ -2,6 +2,7 @@
 # Corresponds to PDCIDFontType2 in Apache PDFBox
 require "./cid_font"
 require "../../../fontbox/ttf/true_type_font"
+require "../../../fontbox/ttf/ttf_tables"
 
 module Pdfbox::Pdmodel::Font
   class PDCIDFontType2 < PDCIDFont
@@ -64,6 +65,9 @@ module Pdfbox::Pdmodel::Font
       if cid2gid = @cid2gid
         return cid < cid2gid.size ? cid2gid[cid] : 0
       end
+
+      # Identity is the default for CFF-based OpenType fonts.
+      return cid if cff_postscript_font?
 
       if ttf = @ttf
         return cid < ttf.number_of_glyphs ? cid : 0
@@ -154,6 +158,11 @@ module Pdfbox::Pdmodel::Font
     rescue ex : ::IO::Error
       Log.warn { "Failed to get cmap lookup for #{name}: #{ex.message}" }
       nil
+    end
+
+    private def cff_postscript_font? : Bool
+      return false unless ttf = @ttf
+      !ttf.table(Fontbox::TTF::CFFTable::TAG).nil?
     end
 
     private def unicode_char(unicode : Int32) : String
