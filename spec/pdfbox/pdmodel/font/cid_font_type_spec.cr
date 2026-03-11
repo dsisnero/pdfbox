@@ -6,6 +6,10 @@ class TestableCIDFontType2 < Pdfbox::Pdmodel::Font::PDCIDFontType2
   def force_embedded(value : Bool) : Nil
     @is_embedded = value
   end
+
+  def encode_unicode(unicode : Int32) : Bytes
+    encode(unicode)
+  end
 end
 
 module CIDFontTypeSpecHelpers
@@ -107,6 +111,35 @@ describe "CID descendant font parity slices" do
     end
   end
 
+  it "prefers non-zero FontDescriptor FontBBox for CIDFontType2 bounding_box" do
+    descendant = Pdfbox::Cos::Dictionary.new
+    descendant[Pdfbox::Cos::Name::TYPE] = Pdfbox::Cos::Name::FONT
+    descendant[Pdfbox::Cos::Name::SUBTYPE] = Pdfbox::Cos::Name.new("CIDFontType2")
+    descendant[Pdfbox::Cos::Name::BASE_FONT] = Pdfbox::Cos::Name.new("DummyCID")
+
+    fd = Pdfbox::Cos::Dictionary.new
+    fd[Pdfbox::Cos::Name::FONT_BBOX] = Pdfbox::Cos::Array.new([
+      Pdfbox::Cos::Float.new(-10.0_f32),
+      Pdfbox::Cos::Float.new(-20.0_f32),
+      Pdfbox::Cos::Float.new(300.0_f32),
+      Pdfbox::Cos::Float.new(700.0_f32),
+    ] of Pdfbox::Cos::Base)
+    descendant[Pdfbox::Cos::Name::FONT_DESC] = fd
+
+    dict = Pdfbox::Cos::Dictionary.new
+    dict[Pdfbox::Cos::Name::TYPE] = Pdfbox::Cos::Name::FONT
+    dict[Pdfbox::Cos::Name::SUBTYPE] = Pdfbox::Cos::Name::TYPE0
+    dict[Pdfbox::Cos::Name::BASE_FONT] = Pdfbox::Cos::Name.new("DummyType0")
+    dict[Pdfbox::Cos::Name::DESCENDANT_FONTS] = Pdfbox::Cos::Array.new([descendant] of Pdfbox::Cos::Base)
+
+    font = Pdfbox::Pdmodel::Font::PDType0Font.new(dict).descendant_font.as(Pdfbox::Pdmodel::Font::PDCIDFontType2)
+    bbox = font.bounding_box
+    bbox.lower_left_x.should eq(-10.0_f32)
+    bbox.lower_left_y.should eq(-20.0_f32)
+    bbox.upper_right_x.should eq(300.0_f32)
+    bbox.upper_right_y.should eq(700.0_f32)
+  end
+
   it "extracts and normalizes Type2 glyph paths using units-per-em scaling" do
     type0_dict = CIDFontTypeSpecHelpers.build_type0_dict("CIDFontType2")
     parent = Pdfbox::Pdmodel::Font::PDType0Font.new(type0_dict)
@@ -175,6 +208,35 @@ describe "CID descendant font parity slices" do
       font.code_to_gid(1).should eq(1)
     ensure
       ttf.close
+    end
+  end
+
+  it "encodes non-embedded CIDFontType2 Unicode values via TrueType cmap lookup" do
+    type0_dict = CIDFontTypeSpecHelpers.build_type0_dict("CIDFontType2")
+    parent = Pdfbox::Pdmodel::Font::PDType0Font.new(type0_dict)
+    descendant_dict = type0_dict.get_array(Pdfbox::Cos::Name::DESCENDANT_FONTS).not_nil![0].as(Pdfbox::Cos::Dictionary)
+    ttf_path = SpecPaths.resolve("vendor/pdfbox/fontbox/src/test/resources/ttf/LiberationSans-Regular.ttf")
+    ttf = Fontbox::TTF::TTFParser.new.parse_embedded(File.open(ttf_path))
+    begin
+      font = TestableCIDFontType2.new(descendant_dict, parent, ttf)
+      font.force_embedded(false)
+      expected_gid = ttf.unicode_cmap_lookup(false).glyph_id('A'.ord)
+      expected_gid.should be > 0
+      font.encode_unicode('A'.ord).should eq(font.encode_glyph_id(expected_gid))
+    ensure
+      ttf.close
+    end
+  end
+
+  it "matches Java encode error message shape when glyph is missing" do
+    type0_dict = CIDFontTypeSpecHelpers.build_type0_dict("CIDFontType2")
+    parent = Pdfbox::Pdmodel::Font::PDType0Font.new(type0_dict)
+    descendant_dict = type0_dict.get_array(Pdfbox::Cos::Name::DESCENDANT_FONTS).not_nil![0].as(Pdfbox::Cos::Dictionary)
+    font = TestableCIDFontType2.new(descendant_dict, parent)
+    font.force_embedded(false)
+
+    expect_raises(ArgumentError, /No glyph for U\+0041 \(A\) in font DummyCID/) do
+      font.encode_unicode('A'.ord)
     end
   end
 end

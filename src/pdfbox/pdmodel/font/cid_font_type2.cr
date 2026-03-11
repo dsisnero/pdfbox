@@ -13,7 +13,7 @@ module Pdfbox::Pdmodel::Font
     @is_embedded : Bool = false
     @is_damaged : Bool = false
     @font_matrix : PDFont::Matrix = PDFont::Matrix.default_font_matrix
-    @font_bbox : PDFont::BoundingBox = PDFont::BoundingBox.new
+    @font_bbox : PDFont::BoundingBox?
     @cid2gid : Array(Int32)?
 
     # Constructor.
@@ -108,18 +108,49 @@ module Pdfbox::Pdmodel::Font
     end
 
     protected def encode(unicode : Int32) : Bytes
-      glyph_id = 0
-      if ttf = @ttf
-        begin
-          glyph_id = ttf.unicode_cmap_lookup(false).glyph_id(unicode)
-        rescue ex : IO::Error
-          Log.warn { "Failed to map Unicode U+#{unicode.to_s(16).upcase.rjust(4, '0')} in #{name}: #{ex.message}" }
+      cid = -1
+      if embedded?
+        cmap_name = @parent.cmap.try(&.name)
+        if cmap_name && cmap_name.starts_with?("Identity-")
+          if cmap = unicode_cmap_lookup
+            cid = cmap.glyph_id(unicode)
+          end
+        else
+          if cmap_ucs2 = @parent.cmap_ucs2
+            cid = cmap_ucs2.to_cid(unicode)
+          end
         end
+
+        if cid == -1
+          if to_unicode_cmap = @parent.to_unicode_cmap
+            if codes = to_unicode_cmap.codes_from_unicode(unicode_char(unicode))
+              return codes
+            end
+          end
+          cid = 0
+        end
+      else
+        cid = unicode_cmap_lookup.try(&.glyph_id(unicode)) || 0
       end
-      if glyph_id == 0
-        raise ArgumentError.new("No glyph for U+#{unicode.to_s(16).upcase.rjust(4, '0')} in font #{name}")
+
+      if cid == 0
+        raise ArgumentError.new("No glyph for U+#{unicode.to_s(16).upcase.rjust(4, '0')} (#{unicode_char(unicode)}) in font #{name}")
       end
-      encode_glyph_id(glyph_id)
+      encode_glyph_id(cid)
+    end
+
+    private def unicode_cmap_lookup : Fontbox::TTF::CmapLookup?
+      return nil unless ttf = @ttf
+      ttf.unicode_cmap_lookup(false)
+    rescue ex : ::IO::Error
+      Log.warn { "Failed to get cmap lookup for #{name}: #{ex.message}" }
+      nil
+    end
+
+    private def unicode_char(unicode : Int32) : String
+      ((unicode & 0xFFFF).chr).to_s
+    rescue ArgumentError
+      "\uFFFD"
     end
 
     def font_matrix : PDFont::Matrix
@@ -127,7 +158,36 @@ module Pdfbox::Pdmodel::Font
     end
 
     def bounding_box : PDFont::BoundingBox
-      @font_bbox
+      @font_bbox ||= generate_bounding_box
+    end
+
+    private def generate_bounding_box : PDFont::BoundingBox
+      if descriptor = font_descriptor
+        if bbox = descriptor.font_bounding_box
+          if bbox.lower_left_x != 0.0_f32 || bbox.lower_left_y != 0.0_f32 ||
+             bbox.upper_right_x != 0.0_f32 || bbox.upper_right_y != 0.0_f32
+            return PDFont::BoundingBox.new(
+              bbox.lower_left_x,
+              bbox.lower_left_y,
+              bbox.upper_right_x,
+              bbox.upper_right_y
+            )
+          end
+        end
+      end
+
+      if ttf = @ttf
+        if header = ttf.header
+          return PDFont::BoundingBox.new(
+            header.x_min.to_f32,
+            header.y_min.to_f32,
+            header.x_max.to_f32,
+            header.y_max.to_f32
+          )
+        end
+      end
+
+      PDFont::BoundingBox.new
     end
 
     def width_from_font(code : Int32) : Float32
