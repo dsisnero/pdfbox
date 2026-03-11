@@ -135,6 +135,7 @@ describe "CID descendant font parity slices" do
     font = Pdfbox::Pdmodel::Font::PDType0Font.new(dict).descendant_font.as(Pdfbox::Pdmodel::Font::PDCIDFontType0)
     font.embedded?.should be_true
     font.damaged?.should be_false
+    font.has_glyph(0).should be_false
     font.bounding_box.width.should be >= 0.0_f32
     font.bounding_box.height.should be >= 0.0_f32
   end

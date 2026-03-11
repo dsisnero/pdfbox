@@ -137,6 +137,16 @@ module Pdfbox::Pdmodel::Font
     end
 
     def has_glyph(code : Int32) : Bool
+      cid = code_to_cid(code)
+      if cid_font = @cid_font
+        return cid_font.type2_char_string(cid).gid != 0
+      end
+      if t1_font = @t1_font
+        if embedded?
+          return t1_font.type2_char_string(cid).gid != 0
+        end
+        return t1_font.name_to_gid(glyph_name(code)) != 0
+      end
       code_to_gid(code) != 0
     end
 
