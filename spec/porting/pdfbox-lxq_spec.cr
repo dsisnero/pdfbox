@@ -428,4 +428,30 @@ describe "Porting parity pdfbox-lxq" do
 
     Pdfbox::Util::DateConverter.to_calendar("2076-7-6T17:22:1EDT").should be_nil
   end
+
+  it "TestDateUtil#testDateConverter alpha-start legacy textual variants" do
+    cal = Pdfbox::Util::DateConverter.to_calendar("Tuesday, 6 Jul 1971 5:22:1 PM")
+    cal.should_not be_nil
+    Pdfbox::Util::DateConverter.to_string(cal).should eq("D:19710706172201+00'00'")
+
+    cal = Pdfbox::Util::DateConverter.to_calendar("Thu, July 6, 1972 5:22:1 pm")
+    cal.should_not be_nil
+    Pdfbox::Util::DateConverter.to_string(cal).should eq("D:19720706172201+00'00'")
+
+    cal = Pdfbox::Util::DateConverter.to_calendar("Wednesday, Jul 6, 1977")
+    cal.should_not be_nil
+    Pdfbox::Util::DateConverter.to_string(cal).should eq("D:19770706000000+00'00'")
+
+    cal = Pdfbox::Util::DateConverter.to_calendar("Thu Jul 6, 1978 17:22:1")
+    cal.should_not be_nil
+    Pdfbox::Util::DateConverter.to_string(cal).should eq("D:19780706172201+00'00'")
+
+    cal = Pdfbox::Util::DateConverter.to_calendar("Sun, Jul 6, 1980 at 4:23pm")
+    cal.should_not be_nil
+    Pdfbox::Util::DateConverter.to_string(cal).should eq("D:19800706162300+00'00'")
+
+    cal = Pdfbox::Util::DateConverter.to_calendar("Monday, July 6, 1981")
+    cal.should_not be_nil
+    Pdfbox::Util::DateConverter.to_string(cal).should eq("D:19810706000000+00'00'")
+  end
 end

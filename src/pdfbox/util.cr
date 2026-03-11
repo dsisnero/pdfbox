@@ -603,6 +603,7 @@ module Pdfbox::Util
         ->(s : String) { parse_slash_date(s) },
         ->(s : String) { parse_iso_non_padded_with_tz(s) },
         ->(s : String) { parse_iso_with_tz(s) },
+        ->(s : String) { parse_alpha_start_legacy_formats(s) },
         ->(s : String) { parse_textual_month_with_optional_tz(s) },
         ->(s : String) { parse_with_exact_formats(s) },
       ]
@@ -612,6 +613,42 @@ module Pdfbox::Util
           return parsed
         end
       end
+      nil
+    end
+
+    private def self.parse_alpha_start_legacy_formats(normalized : String) : Time?
+      prepared = normalized
+        .gsub(",", " ")
+        .gsub(/\bat\b/i, " ")
+        .gsub(/\s+/, " ")
+        .strip
+
+      return nil if prepared.empty?
+
+      formats = {
+        "%A %d %b %Y %I:%M:%S %p",
+        "%a %d %b %Y %I:%M:%S %p",
+        "%A %B %d %Y %I:%M:%S %p",
+        "%a %B %d %Y %I:%M:%S %p",
+        "%A %b %d %Y %H:%M:%S",
+        "%a %b %d %Y %H:%M:%S",
+        "%A %B %d %Y %H:%M:%S",
+        "%a %B %d %Y %H:%M:%S",
+        "%A %b %d %Y %I:%M%p",
+        "%a %b %d %Y %I:%M%p",
+        "%A %b %d %Y",
+        "%a %b %d %Y",
+        "%A %B %d %Y",
+        "%a %B %d %Y",
+      }
+
+      formats.each do |fmt|
+        begin
+          return Time.parse(prepared, fmt, Time::Location::UTC)
+        rescue Time::Format::Error
+        end
+      end
+
       nil
     end
 
