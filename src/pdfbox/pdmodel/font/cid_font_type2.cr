@@ -96,6 +96,7 @@ module Pdfbox::Pdmodel::Font
       return nil if damaged?
       return nil unless ttf = @ttf
       return nil unless name == ttf.name
+      Log.warn { "Using non-embedded GIDs in font #{name}" }
       cid < cid2gid.size ? cid2gid[cid] : 0
     end
 
