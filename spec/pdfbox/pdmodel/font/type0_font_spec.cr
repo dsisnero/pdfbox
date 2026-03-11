@@ -1,5 +1,6 @@
 require "../../../spec_helper"
 require "../../../../src/pdfbox/pdmodel/font/type0_font"
+require "../../../../src/fontbox/ttf/ttf_parser"
 
 module Type0FontSpecHelpers
   def self.build_valid_type0_dict(cid_subtype : String = "CIDFontType2") : Pdfbox::Cos::Dictionary
@@ -14,6 +15,12 @@ module Type0FontSpecHelpers
     dict[Pdfbox::Cos::Name::BASE_FONT] = Pdfbox::Cos::Name.new("DummyType0")
     dict[Pdfbox::Cos::Name::DESCENDANT_FONTS] = Pdfbox::Cos::Array.new([descendant] of Pdfbox::Cos::Base)
     dict
+  end
+end
+
+class TestableType0Font < Pdfbox::Pdmodel::Font::PDType0Font
+  def force_descendant_font(font : Pdfbox::Pdmodel::Font::PDCIDFont) : Nil
+    @descendant_font = font
   end
 end
 
@@ -68,6 +75,41 @@ describe Pdfbox::Pdmodel::Font::PDType0Font do
 
     expect_raises(IO::Error, "Missing or wrong type in descendant font dictionary") do
       Pdfbox::Pdmodel::Font::PDType0Font.new(dict)
+    end
+  end
+
+  it "uses TrueType cmap fallback for to_unicode when ToUnicode/predefined maps are unavailable" do
+    dict = Type0FontSpecHelpers.build_valid_type0_dict("CIDFontType2")
+    font = TestableType0Font.new(dict)
+    descendant_dict = dict.get_array(Pdfbox::Cos::Name::DESCENDANT_FONTS).not_nil![0].as(Pdfbox::Cos::Dictionary)
+    ttf_path = SpecPaths.resolve("vendor/pdfbox/fontbox/src/test/resources/ttf/LiberationSans-Regular.ttf")
+    ttf = Fontbox::TTF::TTFParser.new.parse_embedded(File.open(ttf_path))
+    begin
+      descendant = Pdfbox::Pdmodel::Font::PDCIDFontType2.new(descendant_dict, font, ttf)
+      font.force_descendant_font(descendant)
+      cmap = ttf.unicode_cmap_lookup(false)
+
+      test_gid = -1
+      expected_unicode = nil
+      max_gid = {ttf.number_of_glyphs, 2048}.min
+      (1...max_gid).each do |gid|
+        codes = cmap.char_codes(gid)
+        next if codes.nil? || codes.empty?
+        cp = codes[0]
+        begin
+          expected_unicode = cp.chr.to_s
+          test_gid = gid
+          break
+        rescue ArgumentError
+          next
+        end
+      end
+
+      test_gid.should be > 0
+      expected_unicode.should_not be_nil
+      font.to_unicode(test_gid).should eq(expected_unicode)
+    ensure
+      ttf.close
     end
   end
 end

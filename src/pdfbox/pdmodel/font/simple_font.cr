@@ -235,7 +235,7 @@ abstract class Pdfbox::Pdmodel::Font::PDSimpleFont < Pdfbox::Pdmodel::Font::PDFo
     end
 
     # if no value has been produced, there is no way to obtain Unicode for the character.
-    if Log.warn? && !@no_unicode.includes?(code)
+    if !@no_unicode.includes?(code)
       # we keep track of which warnings have been issued, so we don't log multiple times
       @no_unicode.add(code)
       if name

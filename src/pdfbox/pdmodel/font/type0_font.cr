@@ -187,7 +187,7 @@ class Pdfbox::Pdmodel::Font::PDType0Font < Pdfbox::Pdmodel::Font::PDFont
     # a predefined map shall only be used if there isn't any ToUnicode CMap
     # PDFBOX-6022: not when there's a predefined cmap
     if to_unicode_cmap && !cmap_predefined?
-      return String.new(Bytes[code].map(&.chr))
+      return identity_char_from_code(code)
     end
 
     if (cmap_predefined? || descendant_cjk?) && (ucs2 = cmap_ucs2)
@@ -202,30 +202,11 @@ class Pdfbox::Pdmodel::Font::PDType0Font < Pdfbox::Pdmodel::Font::PDFont
     end
 
     # PDFBOX-5324: try to get unicode from font cmap
-    # TODO: Implement PDCIDFontType2 check and font cmap lookup
-    # if descendant_font.is_a?(PDCIDFontType2)
-    #   font = descendant_font.get_true_type_font
-    #   if font
-    #     begin
-    #       cmap = font.get_unicode_cmap_lookup(false)
-    #       if cmap
-    #         gid = if descendant_font.embedded?
-    #                 descendant_font.code_to_gid(code)
-    #               else
-    #                 descendant_font.code_to_cid(code)
-    #               end
-    #         codes = cmap.get_char_codes(gid)
-    #         if codes && !codes.empty?
-    #           return codes[0].chr
-    #         end
-    #       end
-    #     rescue ex : ::IO::Error
-    #       Log.warn { "get unicode from font cmap fail: #{ex}" }
-    #     end
-    #   end
-    # end
+    if unicode_from_font = unicode_from_type2_font_cmap(code)
+      return unicode_from_font
+    end
 
-    if Log.warn? && !@no_unicode.includes?(code)
+    if !@no_unicode.includes?(code)
       # if no value has been produced, there is no way to obtain Unicode for the character.
       cid_str = "CID+" + code_to_cid(code).to_s
       Log.warn { "No Unicode mapping for #{cid_str} (#{code}) in font #{name}" }
@@ -233,6 +214,39 @@ class Pdfbox::Pdmodel::Font::PDType0Font < Pdfbox::Pdmodel::Font::PDFont
       @no_unicode.add(code)
     end
     nil
+  end
+
+  private def unicode_from_type2_font_cmap(code : Int32) : String?
+    return nil unless type2 = descendant_font.as?(PDCIDFontType2)
+    return nil unless font = type2.true_type_font
+
+    begin
+      cmap = font.unicode_cmap_lookup(false)
+      gid = if descendant_font.embedded?
+              descendant_font.code_to_gid(code)
+            else
+              descendant_font.code_to_cid(code)
+            end
+      codes = cmap.char_codes(gid)
+      return nil if codes.nil? || codes.empty?
+
+      first_code = codes[0]
+      begin
+        first_code.chr.to_s
+      rescue ex : ArgumentError
+        Log.warn { "Invalid Unicode code point #{first_code} from font cmap in #{name}: #{ex.message}" }
+        nil
+      end
+    rescue ex : ::IO::Error
+      Log.warn { "get unicode from font cmap fail: #{ex}" }
+      nil
+    end
+  end
+
+  private def identity_char_from_code(code : Int32) : String
+    (code & 0xFFFF).chr.to_s
+  rescue ArgumentError
+    "\uFFFD"
   end
 
   # PDVectorFont interface implementation
@@ -268,7 +282,7 @@ class Pdfbox::Pdmodel::Font::PDType0Font < Pdfbox::Pdmodel::Font::PDFont
   end
 
   def has_explicit_width?(code : Int32) : Bool
-    descendant_font.has_explicit_width(code)
+    descendant_font.has_explicit_width?(code)
   end
 
   def width_from_font(code : Int32) : Float32

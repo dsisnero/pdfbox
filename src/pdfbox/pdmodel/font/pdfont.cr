@@ -218,7 +218,7 @@ abstract class Pdfbox::Pdmodel::Font::PDFont
         # code->Unicode maps. See sample_fonts_solidconvertor.pdf for an example.
         # PDFBOX-3123: do this only if the /ToUnicode entry is a name
         # PDFBOX-4322: identity streams are OK too
-        return String.new(Bytes[code].map(&.chr))
+        return identity_char_from_code(code)
       else
         if code < 256 && !composite_font?
           encoding = @dict[Pdfbox::Cos::Name::ENCODING]
@@ -238,6 +238,12 @@ abstract class Pdfbox::Pdmodel::Font::PDFont
     # if no value has been produced, there is no way to obtain Unicode for the character.
     # this behaviour can be overridden in subclasses, but this method *must* return nil here
     nil
+  end
+
+  private def identity_char_from_code(code : Int32) : String
+    (code & 0xFFFF).chr.to_s
+  rescue ArgumentError
+    "\uFFFD"
   end
 
   # Returns the Unicode string for the given character code using a custom glyph list.
