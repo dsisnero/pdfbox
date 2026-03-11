@@ -455,6 +455,27 @@ module Pdfbox::Util
       "#{sign}#{offset_hours.to_s.rjust(2, '0')}#{sep}#{offset_minutes.to_s.rjust(2, '0')}"
     end
 
+    # Targeted Java DateConverter.parseTZoffset parity helper.
+    # Returns seconds offset from UTC; unknown/invalid timezone text returns 0 (UTC).
+    def self.parse_tz_offset_seconds(text : String?) : Int32
+      return 0 if text.nil?
+      value = text.strip
+      return 0 if value.empty?
+
+      if offset = parse_named_tz_offset(value)
+        return offset
+      end
+
+      core = strip_gmt_utc_prefix(value)
+      return 0 if core == "Z"
+
+      if offset = parse_numeric_tz_offset(core)
+        return offset
+      end
+
+      0
+    end
+
     def self.to_string(cal : Time?) : String?
       return nil if cal.nil?
 
@@ -703,6 +724,42 @@ module Pdfbox::Util
         parse_exact(normalized, /^\d{14}$/, "%Y%m%d%H%M%S") ||
         parse_exact(normalized, /^\d{8}$/, "%Y%m%d") ||
         parse_exact(normalized, /^\d{4}$/, "%Y")
+    end
+
+    private def self.parse_named_tz_offset(value : String) : Int32?
+      named = {
+        "PST"                => -8 * 3600,
+        "EST"                => -5 * 3600,
+        "America/Chicago"    => -6 * 3600,
+        "Europe/Moscow"      => +3 * 3600,
+        "Australia/Adelaide" => (9 * 3600) + (30 * 60),
+      }
+      named[value]?
+    end
+
+    private def self.strip_gmt_utc_prefix(value : String) : String
+      stripped = value
+      if stripped.starts_with?("GMT")
+        stripped = stripped[3..].strip
+      elsif stripped.starts_with?("UTC")
+        stripped = stripped[3..].strip
+      end
+      stripped = stripped.gsub("'", "")
+      stripped
+    end
+
+    private def self.parse_numeric_tz_offset(value : String) : Int32?
+      return 0 if value == "Z"
+      match = value.match(/^([+-])?\s*(\d{1,2})(?::?(\d{2}))?$/)
+      return nil unless match
+
+      sign = match[1]? || "+"
+      hours = match[2].to_i64
+      minutes = match[3]?.try(&.to_i64) || 0_i64
+      total_millis = (hours * MILLIS_PER_HOUR) + (minutes * MILLIS_PER_MINUTE)
+      total_millis = -total_millis if sign == "-"
+      restrained = restrain_tz_offset(total_millis)
+      (restrained // 1000).to_i32
     end
 
     private def self.month_from_name(name : String) : Int32?

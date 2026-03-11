@@ -454,4 +454,28 @@ describe "Porting parity pdfbox-lxq" do
     cal.should_not be_nil
     Pdfbox::Util::DateConverter.to_string(cal).should eq("D:19810706000000+00'00'")
   end
+
+  it "TestDateUtil#testParseTZ targeted cases" do
+    Pdfbox::Util::DateConverter.parse_tz_offset_seconds("+00:00").should eq(0)
+    Pdfbox::Util::DateConverter.parse_tz_offset_seconds("-0000").should eq(0)
+    Pdfbox::Util::DateConverter.parse_tz_offset_seconds("+1:00").should eq(3600)
+    Pdfbox::Util::DateConverter.parse_tz_offset_seconds("-1:00").should eq(-3600)
+    Pdfbox::Util::DateConverter.parse_tz_offset_seconds("-0130").should eq(-5400)
+    Pdfbox::Util::DateConverter.parse_tz_offset_seconds("1159").should eq((11 * 3600) + (59 * 60))
+    Pdfbox::Util::DateConverter.parse_tz_offset_seconds("1230").should eq((12 * 3600) + (30 * 60))
+    Pdfbox::Util::DateConverter.parse_tz_offset_seconds("-12:30").should eq(-(12 * 3600) - (30 * 60))
+    Pdfbox::Util::DateConverter.parse_tz_offset_seconds("Z").should eq(0)
+    Pdfbox::Util::DateConverter.parse_tz_offset_seconds("PST").should eq(-8 * 3600)
+    Pdfbox::Util::DateConverter.parse_tz_offset_seconds("EDT").should eq(0)
+    Pdfbox::Util::DateConverter.parse_tz_offset_seconds("GMT-0300").should eq(-3 * 3600)
+    Pdfbox::Util::DateConverter.parse_tz_offset_seconds("GMT+11:00").should eq(+11 * 3600)
+    Pdfbox::Util::DateConverter.parse_tz_offset_seconds("America/Chicago").should eq(-6 * 3600)
+    Pdfbox::Util::DateConverter.parse_tz_offset_seconds("Europe/Moscow").should eq(+3 * 3600)
+    Pdfbox::Util::DateConverter.parse_tz_offset_seconds("Australia/Adelaide").should eq((9 * 3600) + (30 * 60))
+    Pdfbox::Util::DateConverter.parse_tz_offset_seconds("+11'00'").should eq(+11 * 3600)
+    Pdfbox::Util::DateConverter.parse_tz_offset_seconds("+12:00").should eq(+12 * 3600)
+    Pdfbox::Util::DateConverter.parse_tz_offset_seconds("-12:00").should eq(-12 * 3600)
+    Pdfbox::Util::DateConverter.parse_tz_offset_seconds("1400").should eq(+14 * 3600)
+    Pdfbox::Util::DateConverter.parse_tz_offset_seconds("-1400").should eq(-14 * 3600)
+  end
 end
