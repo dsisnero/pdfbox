@@ -613,7 +613,7 @@ pdfbox/src/test/java/org/apache/pdfbox/pdmodel/fdf/FDFFieldTest.java::test::test
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/fdf/FDFFieldTest.java::test::testCOSNameValue	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/fdf/FDFFieldTest.java::test::testCOSStringValue	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/fdf/FDFFieldTest.java::test::testTextAsCOSStreamValue	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/font/PDFontTest.java::test::PDFBOX5920TrueType	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/font/PDFontTest.java::test::PDFBOX5920TrueType	partial	temp/test_pdfbox5920.cr	TrueType font loading works, space_width calculation matches Java (277.83 vs 278.0), but get_string_width returns 0.0 instead of expected 20064.0
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/font/PDFontTest.java::test::PDFBOX5920Type0	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/font/PDFontTest.java::test::testDeleteFont	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/font/PDFontTest.java::test::testFullEmbeddingTTC	missing	-	baseline

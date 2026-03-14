@@ -93,7 +93,7 @@ abstract class Pdfbox::Pdmodel::Font::PDSimpleFont < Pdfbox::Pdmodel::Font::PDFo
         @is_symbolic = true
       end
     end
-    @is_symbolic || raise "PDFBox bug: symbolic flag should not be nil"
+    @is_symbolic.not_nil!
   end
 
   # Internal implementation of symbolic?, allowing for the fact that the result may be indeterminate.
