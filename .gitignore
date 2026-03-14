@@ -32,3 +32,8 @@ cff_parser/
 
 # Crystal compiler cache
 .crystal-cache/
+
+# Dolt database files (added by bd init)
+.dolt/
+*.db
+scripts/

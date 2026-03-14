@@ -396,4 +396,26 @@ class Pdfbox::Pdmodel::Font::PDType0Font < Pdfbox::Pdmodel::Font::PDFont
   def encode_glyph_id(glyph_id : Int32) : Bytes
     descendant_font.encode_glyph_id(glyph_id)
   end
+
+  # Loads a TTF to be embedded into a document as a Type 0 font.
+  #
+  # @param doc The PDF document that will hold the embedded font.
+  # @param input An input stream of a TrueType font.
+  # @param embed_subset True if the font will be subset before embedding.
+  # @return A Type0 font with a CIDFontType2 descendant.
+  def self.load(doc : Pdfbox::Pdmodel::PDDocument, input : IO, embed_subset : Bool = true) : self
+    # TODO: Implement TrueType font parsing and embedding
+    raise "PDType0Font.load not yet implemented"
+  end
+
+  # Loads a TTF to be embedded into a document as a vertical Type 0 font.
+  #
+  # @param doc The PDF document that will hold the embedded font.
+  # @param input An input stream of a TrueType font.
+  # @param embed_subset True if the font will be subset before embedding.
+  # @return A Type0 font with a CIDFontType2 descendant.
+  def self.load_vertical(doc : Pdfbox::Pdmodel::PDDocument, input : IO, embed_subset : Bool = true) : self
+    # TODO: Implement vertical TrueType font parsing and embedding
+    raise "PDType0Font.load_vertical not yet implemented"
+  end
 end
