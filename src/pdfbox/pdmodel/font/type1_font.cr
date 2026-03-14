@@ -307,7 +307,9 @@ class Pdfbox::Pdmodel::Font::PDType1Font < Pdfbox::Pdmodel::Font::PDSimpleFont
     end
 
     width = if generic_font = @generic_font
-              generic_font.get_width(name)
+              font_width = generic_font.get_width(name)
+              # If generic font returns 0, fall back to Standard 14 width
+              font_width == 0.0_f32 ? get_standard14_width(code) : font_width
             else
               get_standard14_width(code)
             end

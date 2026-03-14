@@ -217,14 +217,60 @@ describe "PDFontTest" do
   end
 
   describe "testWidthDetermination" do
-    pending "requires font width determination logic" do
-      # TODO: Implement when font width determination is available
+    it "determines correct widths for characters in Standard 14 fonts" do
+      # Test with Helvetica (Standard 14 font)
+      font = Pdfbox::Pdmodel::Font::PDType1Font.new(Pdfbox::Pdmodel::Font::Standard14Fonts::FontName::HELVETICA)
+
+      # Space should have a width
+      space_width = font.width(32) # ASCII space
+      space_width.should be > 0.0
+
+      # 'A' should have a width
+      a_width = font.width(65) # ASCII 'A'
+      a_width.should be > 0.0
+
+      # Different characters should have different widths (in proportional font)
+      # 'i' should be narrower than 'W' in Helvetica
+      i_width = font.width(105) # ASCII 'i'
+      w_width = font.width(87)  # ASCII 'W'
+      i_width.should be < w_width
+
+      # Width from font should match width method for Standard 14 fonts
+      font.width_from_font(65).should be_close(a_width, 0.001)
     end
   end
 
   describe "testWidthDetermination2" do
-    pending "requires font width determination logic" do
-      # TODO: Implement when font width determination is available
+    it "handles width determination for different Standard 14 fonts" do
+      # Test with different Standard 14 fonts
+      helvetica = Pdfbox::Pdmodel::Font::PDType1Font.new(Pdfbox::Pdmodel::Font::Standard14Fonts::FontName::HELVETICA)
+      times = Pdfbox::Pdmodel::Font::PDType1Font.new(Pdfbox::Pdmodel::Font::Standard14Fonts::FontName::TIMES_ROMAN)
+      courier = Pdfbox::Pdmodel::Font::PDType1Font.new(Pdfbox::Pdmodel::Font::Standard14Fonts::FontName::COURIER)
+
+      # Get width of 'A' in each font
+      helvetica_a_width = helvetica.width(65)
+      times_a_width = times.width(65)
+      courier_a_width = courier.width(65)
+
+      # All should have positive widths
+      helvetica_a_width.should be > 0.0
+      times_a_width.should be > 0.0
+      courier_a_width.should be > 0.0
+
+      # Courier is monospace, so all characters should have same width
+      courier_i_width = courier.width(105) # 'i'
+      courier_w_width = courier.width(87)  # 'W'
+      courier_i_width.should be_close(courier_w_width, 0.001)
+      courier_a_width.should be_close(courier_w_width, 0.001)
+
+      # Helvetica and Times are proportional, so widths differ
+      helvetica_i_width = helvetica.width(105)
+      helvetica_w_width = helvetica.width(87)
+      helvetica_i_width.should be < helvetica_w_width
+
+      times_i_width = times.width(105)
+      times_w_width = times.width(87)
+      times_i_width.should be < times_w_width
     end
   end
 
