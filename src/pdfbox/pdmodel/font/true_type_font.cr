@@ -92,8 +92,16 @@ class Pdfbox::Pdmodel::Font::PDTrueTypeFont < Pdfbox::Pdmodel::Font::PDSimpleFon
   START_RANGE_F200 = 0xF200
 
   # Class methods for loading fonts
-  def self.load(doc : PDDocument, input : IO, encoding : Encoding) : PDTrueTypeFont
-    raise NotImplementedError.new("PDTrueTypeFont.load(PDDocument, IO, Encoding) not implemented")
+  def self.load(doc : PDDocument, input : ::IO, encoding : Encoding) : PDTrueTypeFont
+    # Read the font data into a RandomAccessReadBuffer
+    random_access_read = Pdfbox::IO::RandomAccessReadBuffer.new(input)
+
+    # Parse the TrueType font
+    parser = Fontbox::TTF::TTFParser.new
+    ttf = parser.parse(random_access_read)
+
+    # Create the PDTrueTypeFont
+    load(doc, ttf, encoding)
   end
 
   def self.load(doc : PDDocument, ttf : Fontbox::TTF::TrueTypeFont, encoding : Encoding) : PDTrueTypeFont
@@ -412,7 +420,8 @@ class Pdfbox::Pdmodel::Font::PDTrueTypeFont < Pdfbox::Pdmodel::Font::PDSimpleFon
 
   def read_code(input : ::IO) : Int32
     # Simple fonts use 1-byte codes
-    input.read_byte || -1
+    byte = input.read_byte
+    byte.nil? ? -1 : byte.to_i32
   end
 
   def vertical? : Bool

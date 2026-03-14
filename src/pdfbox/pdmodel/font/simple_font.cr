@@ -1,6 +1,7 @@
 # Simple font base class
 # Corresponds to PDSimpleFont in Apache PDFBox
 require "./encoding"
+require "./pdfont"
 
 abstract class Pdfbox::Pdmodel::Font::PDSimpleFont < Pdfbox::Pdmodel::Font::PDFont
   Log = ::Log.for(self)
