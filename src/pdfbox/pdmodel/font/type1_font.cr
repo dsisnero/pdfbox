@@ -124,6 +124,7 @@ class Pdfbox::Pdmodel::Font::PDType1Font < Pdfbox::Pdmodel::Font::PDSimpleFont
   @font_matrix : Matrix?
   @font_bbox : BoundingBox?
   @standard14 : Bool = false
+  @afm_standard14 : PDFont::FontMetrics?
 
   # Constructor for Standard 14 fonts
   def initialize(base_font : Standard14Fonts::FontName)
@@ -215,6 +216,20 @@ class Pdfbox::Pdmodel::Font::PDType1Font < Pdfbox::Pdmodel::Font::PDSimpleFont
 
   def standard14? : Bool
     @standard14
+  end
+
+  protected def get_standard14_width(code : Int32) : Float32
+    return 0.0_f32 unless afm = @afm_standard14
+
+    # Get glyph name from encoding
+    name = encoding.get_name(code)
+    return 0.0_f32 if name.empty?
+
+    # Get width from AFM
+    width = afm.character_width(name)
+
+    # Transform width if needed
+    transform_width(width)
   end
 
   protected def read_encoding_from_font : Encoding

@@ -199,8 +199,20 @@ describe "PDFontTest" do
   end
 
   describe "testStandard14WidthsBadInput" do
-    pending "requires PDType1Font Standard 14 font implementation" do
-      # TODO: Implement when Standard 14 fonts are available
+    it "handles bad input codes gracefully" do
+      font = Pdfbox::Pdmodel::Font::PDType1Font.new(Pdfbox::Pdmodel::Font::Standard14Fonts::FontName::HELVETICA)
+
+      # Test with negative code (should return 0 or default width)
+      font.width(-1).should be >= 0.0
+
+      # Test with code 0 (.notdef - may or may not have a width)
+      font.width(0).should be >= 0.0
+
+      # Test with very large code (outside encoding range)
+      font.width(1000).should be >= 0.0
+
+      # The font should not raise an exception for any input
+      # (implicitly tested by the fact that we get here without raising)
     end
   end
 
