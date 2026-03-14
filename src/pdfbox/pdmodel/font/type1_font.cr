@@ -347,10 +347,10 @@ class Pdfbox::Pdmodel::Font::PDType1Font < Pdfbox::Pdmodel::Font::PDSimpleFont
                  end
 
     # Get glyph name from Unicode
-    name = glyph_list.to_glyph_name(unicode)
+    name = glyph_list.code_point_to_name(unicode)
     if name == ".notdef"
       # Try to get from Adobe Glyph List as fallback
-      name = GlyphList.adobe_glyph_list.to_glyph_name(unicode)
+      name = GlyphList.adobe_glyph_list.code_point_to_name(unicode)
     end
 
     # Apply alternative name mapping
@@ -375,7 +375,8 @@ class Pdfbox::Pdmodel::Font::PDType1Font < Pdfbox::Pdmodel::Font::PDSimpleFont
 
   def read_code(input : ::IO) : Int32
     # Simple fonts use 1-byte codes
-    input.read_byte || -1
+    byte = input.read_byte
+    byte ? byte.to_i32 : -1
   end
 
   # PDVectorFont interface implementation

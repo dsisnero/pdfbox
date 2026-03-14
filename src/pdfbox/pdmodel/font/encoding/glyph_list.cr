@@ -101,7 +101,7 @@ class Pdfbox::Pdmodel::Font::GlyphList
   # @param code_point Unicode code point
   # @return PostScript glyph name, or ".notdef"
   def code_point_to_name(code_point : Int32) : String
-    string = String.new(code_point.chr)
+    string = code_point.chr.to_s
     @unicode_to_name[string]? || ".notdef"
   end
 

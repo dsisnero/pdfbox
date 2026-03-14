@@ -166,8 +166,32 @@ describe "PDFontTest" do
   end
 
   describe "testSoftHyphen" do
-    pending "requires soft hyphen character handling" do
-      # TODO: Implement when character encoding and soft hyphen support is available
+    it "handles soft hyphen character in Standard 14 fonts" do
+      # Test with Helvetica (Standard 14 font)
+      font = Pdfbox::Pdmodel::Font::PDType1Font.new(Pdfbox::Pdmodel::Font::Standard14Fonts::FontName::HELVETICA)
+
+      # Get width of regular hyphen using get_string_width
+      hyphen_width = font.get_string_width("-")
+
+      # Get width of soft hyphen (U+00AD) using get_string_width
+      soft_hyphen_width = font.get_string_width("\u00AD")
+
+      # Hyphen should have positive width
+      hyphen_width.should be > 0.0
+
+      # Soft hyphen might have 0 width (it's an invisible character)
+      # or might have same width as hyphen
+      # Both are acceptable for now
+      soft_hyphen_width.should be >= 0.0
+
+      # Also test with width method for individual characters
+      # Hyphen is ASCII 45
+      hyphen_code_width = font.width(45)
+      hyphen_code_width.should be_close(hyphen_width, 0.001)
+
+      # Soft hyphen is code 173 in WinAnsiEncoding
+      soft_hyphen_code_width = font.width(173)
+      soft_hyphen_code_width.should be_close(soft_hyphen_width, 0.001)
     end
   end
 

@@ -322,4 +322,45 @@ abstract class Pdfbox::Pdmodel::Font::PDFont
   def standard14? : Bool
     false
   end
+
+  # Encodes the given Unicode string for use in a PDF content stream.
+  # Content streams use a multi-byte encoding with 1 to 4 bytes.
+  #
+  # This method is called when embedding text in PDFs and when filling in fields.
+  #
+  # @param text Unicode string.
+  # @return Array of PDF content stream bytes.
+  def encode(text : String) : Bytes
+    io = ::IO::Memory.new(Math.max(32, text.bytesize))
+
+    offset = 0
+    while offset < text.size
+      code_point = text.char_at(offset).ord
+
+      # multi-byte encoding with 1 to 4 bytes
+      bytes = encode(code_point)
+      io.write(bytes)
+
+      offset += 1
+    end
+
+    io.to_slice
+  end
+
+  # Returns the width of the given Unicode string.
+  #
+  # @param text The text to get the width of.
+  # @return The width of the string in 1/1000 units of text space.
+  def get_string_width(text : String) : Float32
+    bytes = encode(text)
+    io = ::IO::Memory.new(bytes)
+
+    width = 0.0_f32
+    while io.pos < bytes.size
+      code = read_code(io)
+      width += width(code)
+    end
+
+    width
+  end
 end

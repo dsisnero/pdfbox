@@ -67,6 +67,14 @@ module Pdfbox::Pdmodel::Font
       @inverted.dup
     end
 
+    # Gets the character code for a glyph name.
+    #
+    # @param name PostScript glyph name
+    # @return character code, or -1 if not found
+    def get_code(name : String) : Int32
+      @inverted[name]? || -1
+    end
+
     # This will add a character encoding. An already existing mapping is preserved when creating
     # the reverse mapping. Should only be used during construction of the class.
     #
