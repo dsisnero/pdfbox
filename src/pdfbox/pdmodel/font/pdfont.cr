@@ -94,6 +94,7 @@ abstract class Pdfbox::Pdmodel::Font::PDFont
 
   @dict : Pdfbox::Cos::Dictionary
   @code_to_width_map : Hash(Int32, Float32)
+  @font_width_of_space : Float32 = -1.0_f32
 
   # Constructor for embedding.
   protected def initialize
@@ -362,5 +363,48 @@ abstract class Pdfbox::Pdmodel::Font::PDFont
     end
 
     width
+  end
+
+  # Returns the width of the space character.
+  #
+  # @return the width of the space character
+  def space_width : Float32
+    if @font_width_of_space == -1.0_f32
+      begin
+        if !@to_unicode_cmap.nil? && @dict.has_key?(Pdfbox::Cos::Name.new("ToUnicode"))
+          space_mapping = @to_unicode_cmap.as(Fontbox::CMap::CMap).space_mapping
+          if space_mapping > -1
+            @font_width_of_space = width(space_mapping)
+          end
+        else
+          begin
+            # PDFBOX-5920: try with encoding, which gets the correct code
+            @font_width_of_space = get_string_width(" ")
+          rescue ex : ArgumentError | NotImplementedError
+            # Happens if space is not available in the font
+            # or if encoding isn't implemented
+            Log.debug { ex.message }
+          end
+          if @font_width_of_space <= 0
+            @font_width_of_space = width(32)
+          end
+        end
+
+        # try to get it from the font itself
+        if @font_width_of_space <= 0
+          @font_width_of_space = width_from_font(32)
+          # use the average font width as fall back
+          if @font_width_of_space <= 0
+            @font_width_of_space = average_font_width
+          end
+        end
+      rescue e : Exception
+        Log.error { "Can't determine the width of the space character for font #{name}, assuming 250" }
+        Log.error { e }
+        @font_width_of_space = 250.0_f32
+      end
+      Log.debug { "Space width for font #{name} is #{@font_width_of_space}" }
+    end
+    @font_width_of_space
   end
 end

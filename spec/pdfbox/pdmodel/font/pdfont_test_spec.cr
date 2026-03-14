@@ -375,4 +375,19 @@ describe "PDFontTest" do
       # TODO: Implement when font matrix handling is available
     end
   end
+
+  describe "space_width" do
+    it "returns width for space character" do
+      font = MockFont.new
+      # MockFont returns 500.0 for all widths
+      font.space_width.should eq(500.0_f32)
+    end
+
+    it "caches the space width" do
+      font = MockFont.new
+      first_call = font.space_width
+      second_call = font.space_width
+      first_call.should eq(second_call)
+    end
+  end
 end
