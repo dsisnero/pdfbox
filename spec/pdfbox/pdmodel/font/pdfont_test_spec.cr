@@ -390,4 +390,28 @@ describe "PDFontTest" do
       first_call.should eq(second_call)
     end
   end
+
+  describe "PDFBOX5920TrueType" do
+    pending "requires PDTrueTypeFont.load implementation" do
+      it "calculates correct string width for TrueType font" do
+        # Test will be implemented when PDTrueTypeFont.load is fully working
+      end
+
+      it "calculates correct space width for TrueType font" do
+        # Test will be implemented when PDTrueTypeFont.load is fully working
+      end
+    end
+  end
+
+  describe "PDFBOX5920Type0" do
+    pending "requires PDType0Font.load implementation" do
+      it "calculates correct string width for Type0 font" do
+        # Test will be implemented when PDType0Font.load is implemented
+      end
+
+      it "calculates correct space width for Type0 font" do
+        # Test will be implemented when PDType0Font.load is implemented
+      end
+    end
+  end
 end

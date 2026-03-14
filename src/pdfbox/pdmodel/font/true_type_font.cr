@@ -309,8 +309,8 @@ class Pdfbox::Pdmodel::Font::PDTrueTypeFont < Pdfbox::Pdmodel::Font::PDSimpleFon
       end
     end
 
-    # TODO: Get width from font
-    0.0_f32
+    # Get width from font
+    width_from_font(code)
   end
 
   def width_from_font(code : Int32) : Float32
