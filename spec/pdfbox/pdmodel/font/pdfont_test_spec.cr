@@ -117,9 +117,23 @@ describe "PDFontTest" do
   end
 
   describe "testPDFBOX5486" do
-    pending "requires proper TrueTypeFont mock implementation" do
-      # TODO: Implement when TrueTypeFont mocking is available
-      # This test fails because TrueTypeFont.new requires a TTFDataStream
+    it "checks has_glyph and get_path for TrueType font" do
+      font_path = "vendor/pdfbox/pdfbox/target/classes/org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf"
+      pending("Font file not found: #{font_path}") unless File.exists?(font_path)
+
+      File.open(font_path, "r") do |file|
+        doc = Pdfbox::Pdmodel::PDDocument.new(Bytes.new(0))
+        encoding = Pdfbox::Pdmodel::Font::WinAnsiEncoding::INSTANCE
+        font = Pdfbox::Pdmodel::Font::PDTrueTypeFont.load(doc, file, encoding)
+
+        # Check that font has glyph "A"
+        font.has_glyph?("A").should be_true
+
+        # Check that get_path doesn't throw an error
+        path = font.get_path("A")
+        # Just verify we got a Path object back
+        path.should be_a(Fontbox::Util::Path)
+      end
     end
   end
 
