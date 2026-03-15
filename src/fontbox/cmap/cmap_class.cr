@@ -295,10 +295,8 @@ module Fontbox
         end
 
         # no match found, log warning as per Adobe Reader behavior
-        if Log.warn?
-          hex_string = bytes[0, @max_code_length].map { |b| "0x%02X" % b }.join(" ")
-          Log.warn { "Invalid character code sequence #{hex_string} in CMap #{@cmap_name}" }
-        end
+        hex_string = bytes[0, @max_code_length].map { |b| "0x%02X" % b }.join(" ")
+        Log.warn { "Invalid character code sequence #{hex_string} in CMap #{@cmap_name}" }
         # return using min_code_length as per Adobe Reader behavior
         self.class.to_int(bytes[0, @min_code_length])
       end

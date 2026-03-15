@@ -7,6 +7,8 @@ require "./encoding/type1_encoding"
 require "./encoding/win_ansi_encoding"
 require "./encoding/symbol_encoding"
 require "./encoding/zapf_dingbats_encoding"
+require "./encoding/mac_roman_encoding"
+require "./encoding/macos_roman_encoding"
 require "./standard14_fonts"
 require "../document"
 require "../../../fontbox/ttf/true_type_font"
@@ -91,6 +93,25 @@ class Pdfbox::Pdmodel::Font::PDTrueTypeFont < Pdfbox::Pdmodel::Font::PDSimpleFon
   START_RANGE_F100 = 0xF100
   START_RANGE_F200 = 0xF200
 
+  # Static inverted MacOS Roman mapping
+  private INVERTED_MACOS_ROMAN = begin
+    inverted = Hash(String, Int32).new
+    # We need to check if MacOSRomanEncoding exists
+    begin
+      macos_roman = MacOSRomanEncoding::INSTANCE
+      macos_roman.code_to_name_map.each do |code, name|
+        inverted[name] = code unless inverted.has_key?(name)
+      end
+    rescue
+      # If MacOSRomanEncoding doesn't exist, use MacRomanEncoding
+      mac_roman = MacRomanEncoding::INSTANCE
+      mac_roman.code_to_name_map.each do |code, name|
+        inverted[name] = code unless inverted.has_key?(name)
+      end
+    end
+    inverted
+  end
+
   # Class methods for loading fonts
   def self.load(doc : PDDocument, input : ::IO, encoding : Encoding) : PDTrueTypeFont
     # Read the font data into a RandomAccessReadBuffer
@@ -119,7 +140,6 @@ class Pdfbox::Pdmodel::Font::PDTrueTypeFont < Pdfbox::Pdmodel::Font::PDSimpleFon
   @cmap_initialized : Bool = false
   @gid_to_code : Hash(Int32, Int32) = Hash(Int32, Int32).new
   @font_bbox : PDFont::BoundingBox?
-  @inverted_macos_roman : Hash(String, Int32) = Hash(String, Int32).new
 
   # Constructor for Standard 14 fonts
   def initialize(base_font : Standard14Fonts::FontName)
@@ -556,7 +576,7 @@ class Pdfbox::Pdmodel::Font::PDTrueTypeFont < Pdfbox::Pdmodel::Font::PDSimpleFon
 
         # (1, 0) - (Macintosh, Roman)
         if gid == 0 && (cmap = @cmap_mac_roman)
-          mac_code = @inverted_macos_roman[name]?
+          mac_code = INVERTED_MACOS_ROMAN[name]?
           if mac_code
             gid = cmap.glyph_id(mac_code)
           end

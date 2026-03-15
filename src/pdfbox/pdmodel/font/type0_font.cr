@@ -180,7 +180,7 @@ class Pdfbox::Pdmodel::Font::PDType0Font < Pdfbox::Pdmodel::Font::PDFont
     if @c_map.nil?
       raise ::IO::Error.new("required cmap is null")
     end
-    @c_map.read_code(input)
+    @c_map.as(Fontbox::CMap::CMap).read_code(input)
   end
 
   def vertical? : Bool
@@ -428,7 +428,7 @@ class Pdfbox::Pdmodel::Font::PDType0Font < Pdfbox::Pdmodel::Font::PDFont
   # @param input An input stream of a TrueType font.
   # @param embed_subset True if the font will be subset before embedding.
   # @return A Type0 font with a CIDFontType2 descendant.
-  def self.load(doc : Pdfbox::Pdmodel::PDDocument, input : IO, embed_subset : Bool = true) : self
+  def self.load(doc : Pdfbox::Pdmodel::PDDocument, input : ::IO, embed_subset : Bool = true) : self
     # Convert IO to RandomAccessReadBuffer
     random_access_read = Pdfbox::IO::RandomAccessReadBuffer.new(input)
 
