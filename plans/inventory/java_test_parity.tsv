@@ -618,7 +618,7 @@ pdfbox/src/test/java/org/apache/pdfbox/pdmodel/font/PDFontTest.java::test::PDFBO
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/font/PDFontTest.java::test::testDeleteFont	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/font/PDFontTest.java::test::testFullEmbeddingTTC	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/font/PDFontTest.java::test::testPDFBOX4115	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/font/PDFontTest.java::test::testPDFBOX5486	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/font/PDFontTest.java::test::testPDFBOX5486	ported	spec/pdfbox/pdmodel/font/pdfont_test_spec.cr	testPDFBOX5486 test checks has_glyph? and get_path for TrueType fonts
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/font/PDFontTest.java::test::testPDFBox3747	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/font/PDFontTest.java::test::testPDFBox3826	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/font/PDFontTest.java::test::testPDFBox5484	missing	-	baseline
