@@ -1,12 +1,18 @@
 # Missing Infrastructure for PDFBox Crystal Port
 
+## Status: 1313 passing, 0 failures, 42 pending
+
 ## Critical Missing Components
 
 ### 1. PDFTextStripper Implementation
 **Status**: Partial (basic structure created)
-**Files**: `src/pdfbox/text/pdf_text_stripper.cr`, `src/pdfbox/text/text_position.cr`
+**Files**:
+- `src/pdfbox/text/pdf_text_stripper.cr` - Basic structure
+- `src/pdfbox/text/text_position.cr` - Text position tracking
+- `src/pdfbox/text.cr` - Text module
+
 **Missing**:
-- Content stream processing engine
+- Content stream processing engine (LegacyPDFStreamEngine)
 - Text position extraction from content streams
 - Text ordering and positioning logic
 - Character/glyph extraction logic
@@ -31,7 +37,7 @@
 - Full PDF serialization
 - Object reference handling
 - Cross-reference table generation
-- Compression support
+- Compression support (FlateDecode)
 - Incremental save support
 
 **Java Reference**: `vendor/pdfbox/pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java` (save methods)
@@ -92,9 +98,9 @@ These tests are pending due to missing infrastructure:
 
 ## Next Steps
 
-1. Fix bead system (database issue) to use proper issue tracking
-2. Start implementing PDPageTree with full Java parity
-3. Implement PDDocument.save() with full PDF serialization
-4. Implement LegacyPDFStreamEngine for content stream processing
-5. Complete PDFTextStripper with full text extraction
+1. Implement PDPageTree with full Java parity (see vendor/pdfbox/pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPageTree.java)
+2. Implement PDDocument.save() with full PDF serialization (see vendor/pdfbox/pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java)
+3. Implement LegacyPDFStreamEngine for content stream processing (see vendor/pdfbox/pdfbox/src/main/java/org/apache/pdfbox/text/LegacyPDFStreamEngine.java)
+4. Complete PDFTextStripper with full text extraction (see vendor/pdfbox/pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java)
+5. Implement PDCIDFontType2Embedder for Type0 font support
 6. Enable pending tests as infrastructure is completed
