@@ -644,7 +644,7 @@ pdfbox/src/test/java/org/apache/pdfbox/pdmodel/font/TestFontEmbedding.java::test
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/font/TestFontEmbedding.java::test::testSurrogatePairCharacterExceptionIsValidCodePoint	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/font/TestFontEncoding.java::test::testAdd	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/font/TestFontEncoding.java::test::testOverwrite	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/font/TestFontEncoding.java::test::testPDFBox3884	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/font/TestFontEncoding.java::test::testPDFBox3884	partial	-	Can create PDF with PDPageContentStream, but PDFTextStripper not implemented for verification
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/font/TestToUnicodeWriter.java::test::testAllowCIDToUnicodeRange	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/font/TestToUnicodeWriter.java::test::testAllowCodeRange	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/font/TestToUnicodeWriter.java::test::testAllowDestinationRange	missing	-	baseline
