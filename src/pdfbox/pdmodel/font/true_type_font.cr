@@ -465,7 +465,7 @@ class Pdfbox::Pdmodel::Font::PDTrueTypeFont < Pdfbox::Pdmodel::Font::PDSimpleFon
     glyph_table = ttf.glyph
     if glyph_table.nil?
       # needs to be caught earlier, see PDFBOX-5587 and PDFBOX-3488
-      raise IO::Error.new("glyf table is missing in font #{name}, please report this file")
+      raise ::IO::Error.new("glyf table is missing in font #{name}, please report this file")
     end
     glyph = glyph_table.glyph(gid)
     if glyph.nil?

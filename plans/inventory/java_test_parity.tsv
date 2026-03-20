@@ -621,7 +621,7 @@ pdfbox/src/test/java/org/apache/pdfbox/pdmodel/font/PDFontTest.java::test::testP
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/font/PDFontTest.java::test::testPDFBOX5486	ported	spec/pdfbox/pdmodel/font/pdfont_test_spec.cr	testPDFBOX5486 test checks has_glyph? and get_path for TrueType fonts
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/font/PDFontTest.java::test::testPDFBox3747	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/font/PDFontTest.java::test::testPDFBox3826	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/font/PDFontTest.java::test::testPDFBox5484	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/font/PDFontTest.java::test::testPDFBox5484	ported	spec/pdfbox/pdmodel/font/pdfont_test_spec.cr	testPDFBox5484 tests symbol font encoding handling with PDFBOX-5484.ttf font
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/font/PDFontTest.java::test::testPDFBox988	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/font/PDFontTest.java::test::testPDFox4318	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/font/PDFontTest.java::test::testPDFox5048	missing	-	baseline
