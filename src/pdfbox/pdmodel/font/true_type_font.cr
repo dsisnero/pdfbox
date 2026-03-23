@@ -80,11 +80,70 @@ class Pdfbox::Pdmodel::Font::PDTrueTypeFont < Pdfbox::Pdmodel::Font::PDSimpleFon
   end
 
   class PDTrueTypeFontEmbedder
-    def initialize(doc : PDDocument, dict : Pdfbox::Cos::Dictionary, ttf : Fontbox::TTF::TrueTypeFont, encoding : Encoding)
+    getter font_descriptor : PDFontDescriptor
+    @font_descriptor : PDFontDescriptor
+
+    def initialize(doc : PDDocument, dict : Pdfbox::Cos::Dictionary, ttf : Fontbox::TTF::TrueTypeFont, encoding : Pdfbox::Pdmodel::Font::Encoding::Encoding, pd_font : PDTrueTypeFont)
+      # Set font subtype
+      dict[Pdfbox::Cos::Name.new("Subtype")] = Pdfbox::Cos::Name.new("TrueType")
+
+      # Set encoding
+      dict[Pdfbox::Cos::Name.new("Encoding")] = encoding.cos_object
+
+      # Create font descriptor
+      @font_descriptor = PDFontDescriptor.new(Pdfbox::Cos::Dictionary.new)
+
+      # Set symbolic/non-symbolic flags
+      if encoding.is_a?(Pdfbox::Pdmodel::Font::Encoding::SymbolEncoding) || encoding.is_a?(Pdfbox::Pdmodel::Font::Encoding::ZapfDingbatsEncoding)
+        @font_descriptor.symbolic = true
+        @font_descriptor.non_symbolic = false
+      else
+        @font_descriptor.symbolic = false
+        @font_descriptor.non_symbolic = true
+      end
+
+      # Calculate and set widths
+      set_widths(dict, ttf, encoding, pd_font)
+
+      # Set font descriptor
+      dict[Pdfbox::Cos::Name.new("FontDescriptor")] = @font_descriptor.cos_object
     end
 
     def font_descriptor : PDFontDescriptor
-      PDFontDescriptor.new(Pdfbox::Cos::Dictionary.new)
+      @font_descriptor
+    end
+
+    private def set_widths(dict : Pdfbox::Cos::Dictionary, ttf : Fontbox::TTF::TrueTypeFont, encoding : Pdfbox::Pdmodel::Font::Encoding::Encoding, pd_font : PDTrueTypeFont) : Nil
+      # Get horizontal metrics
+      hmtx = ttf.horizontal_metrics
+      return unless hmtx
+
+      # Get units per em
+      units_per_em = ttf.units_per_em.to_f32
+      scaling = 1000.0_f32 / units_per_em
+
+      # Get first and last character codes
+      # For WinAnsiEncoding, this is typically 32-255
+      first_char = 32
+      last_char = 255
+
+      # Calculate widths array
+      widths = [] of Int32
+      (first_char..last_char).each do |code|
+        # Get glyph ID from encoding
+        gid = pd_font.code_to_gid(code)
+
+        # Get advance width
+        advance_width = hmtx.advance_width(gid).to_f32
+        # Scale to 1000 units and round
+        scaled_width = (advance_width * scaling).round.to_i32
+        widths << scaled_width
+      end
+
+      # Set widths in dictionary
+      dict[Pdfbox::Cos::Name.new("FirstChar")] = Pdfbox::Cos::Integer.new(first_char)
+      dict[Pdfbox::Cos::Name.new("LastChar")] = Pdfbox::Cos::Integer.new(last_char)
+      dict[Pdfbox::Cos::Name.new("Widths")] = Pdfbox::Cos::Array.new(widths.map { |width| Pdfbox::Cos::Integer.new(width) })
     end
   end
 
@@ -98,13 +157,13 @@ class Pdfbox::Pdmodel::Font::PDTrueTypeFont < Pdfbox::Pdmodel::Font::PDSimpleFon
     inverted = Hash(String, Int32).new
     # We need to check if MacOSRomanEncoding exists
     begin
-      macos_roman = MacOSRomanEncoding::INSTANCE
+      macos_roman = Pdfbox::Pdmodel::Font::Encoding::MacOSRomanEncoding::INSTANCE
       macos_roman.code_to_name_map.each do |code, name|
         inverted[name] = code unless inverted.has_key?(name)
       end
     rescue
       # If MacOSRomanEncoding doesn't exist, use MacRomanEncoding
-      mac_roman = MacRomanEncoding::INSTANCE
+      mac_roman = Pdfbox::Pdmodel::Font::Encoding::MacRomanEncoding::INSTANCE
       mac_roman.code_to_name_map.each do |code, name|
         inverted[name] = code unless inverted.has_key?(name)
       end
@@ -113,7 +172,7 @@ class Pdfbox::Pdmodel::Font::PDTrueTypeFont < Pdfbox::Pdmodel::Font::PDSimpleFon
   end
 
   # Class methods for loading fonts
-  def self.load(doc : PDDocument, input : ::IO, encoding : Encoding) : PDTrueTypeFont
+  def self.load(doc : PDDocument, input : ::IO, encoding : Pdfbox::Pdmodel::Font::Encoding::Encoding) : PDTrueTypeFont
     # Read the font data into a RandomAccessReadBuffer
     random_access_read = Pdfbox::IO::RandomAccessReadBuffer.new(input)
 
@@ -125,7 +184,7 @@ class Pdfbox::Pdmodel::Font::PDTrueTypeFont < Pdfbox::Pdmodel::Font::PDSimpleFon
     load(doc, ttf, encoding)
   end
 
-  def self.load(doc : PDDocument, ttf : Fontbox::TTF::TrueTypeFont, encoding : Encoding) : PDTrueTypeFont
+  def self.load(doc : PDDocument, ttf : Fontbox::TTF::TrueTypeFont, encoding : Pdfbox::Pdmodel::Font::Encoding::Encoding) : PDTrueTypeFont
     new(doc, ttf, encoding, false)
   end
 
@@ -192,7 +251,7 @@ class Pdfbox::Pdmodel::Font::PDTrueTypeFont < Pdfbox::Pdmodel::Font::PDSimpleFon
   end
 
   # Constructor for embedding (placeholder)
-  protected def initialize(doc : PDDocument, ttf : Fontbox::TTF::TrueTypeFont, encoding : Encoding, close_ttf : Bool)
+  protected def initialize(doc : PDDocument, ttf : Fontbox::TTF::TrueTypeFont, encoding : Pdfbox::Pdmodel::Font::Encoding::Encoding, close_ttf : Bool)
     super() # embedding constructor
     @ttf = ttf
     @otf = ttf.is_a?(OpenTypeFont) && ttf.is_supported_otf? ? ttf : nil
@@ -200,7 +259,7 @@ class Pdfbox::Pdmodel::Font::PDTrueTypeFont < Pdfbox::Pdmodel::Font::PDSimpleFon
     @is_damaged = false
     @encoding = encoding
     # TODO: Implement PDTrueTypeFontEmbedder
-    _embedder = PDTrueTypeFontEmbedder.new(doc, @dict, ttf, encoding)
+    _embedder = PDTrueTypeFontEmbedder.new(doc, @dict, ttf, encoding, self)
     # set_font_descriptor(embedder.font_descriptor)
     if close_ttf
       ttf.close
@@ -210,16 +269,16 @@ class Pdfbox::Pdmodel::Font::PDTrueTypeFont < Pdfbox::Pdmodel::Font::PDSimpleFon
 
   # Abstract method implementations
 
-  protected def read_encoding_from_font : Encoding
+  protected def read_encoding_from_font : Pdfbox::Pdmodel::Font::Encoding::Encoding
     if !embedded? && (afm = get_standard14_afm)
       # read from AFM
-      Type1Encoding.new(afm)
+      Pdfbox::Pdmodel::Font::Encoding::Type1Encoding.new(afm)
     else
       # non-symbolic fonts don't have a built-in encoding per se, but their encoding is
       # assumed to be StandardEncoding by the PDF spec unless an explicit Encoding is present
       # which will override this anyway
       if symbolic_flag == false
-        return StandardEncoding::INSTANCE
+        return Pdfbox::Pdmodel::Font::Encoding::StandardEncoding::INSTANCE
       end
 
       # normalise the standard 14 name, e.g "Symbol,Italic" -> "Symbol"
@@ -229,7 +288,7 @@ class Pdfbox::Pdmodel::Font::PDTrueTypeFont < Pdfbox::Pdmodel::Font::PDSimpleFon
       if standard14? &&
          standard14_name != Standard14Fonts::FontName::SYMBOL &&
          standard14_name != Standard14Fonts::FontName::ZAPF_DINGBATS
-        return StandardEncoding::INSTANCE
+        return Pdfbox::Pdmodel::Font::Encoding::StandardEncoding::INSTANCE
       end
 
       # synthesize an encoding, so that getEncoding() is always usable
@@ -251,7 +310,7 @@ class Pdfbox::Pdmodel::Font::PDTrueTypeFont < Pdfbox::Pdmodel::Font::PDSimpleFon
         end
       end
 
-      BuiltInEncoding.new(code_to_name)
+      Pdfbox::Pdmodel::Font::Encoding::BuiltInEncoding.new(code_to_name)
     end
   end
 
@@ -339,15 +398,15 @@ class Pdfbox::Pdmodel::Font::PDTrueTypeFont < Pdfbox::Pdmodel::Font::PDSimpleFon
 
     if ttf = @ttf
       width = if hm = ttf.horizontal_metrics
-                hm.advance_width(gid).to_f32
+                hm.advance_width(gid).to_f64
               else
-                0.0_f32
+                0.0_f64
               end
-      units_per_em = ttf.units_per_em
+      units_per_em = ttf.units_per_em.to_f64
       if units_per_em != 1000
-        width *= 1000.0_f32 / units_per_em.to_f32
+        width *= 1000.0_f64 / units_per_em
       end
-      return width
+      return width.to_f32
     end
 
     0.0_f32
@@ -550,7 +609,7 @@ class Pdfbox::Pdmodel::Font::PDTrueTypeFont < Pdfbox::Pdmodel::Font::PDSimpleFon
   end
 
   # ameba:disable Metrics/CyclomaticComplexity
-  private def code_to_gid(code : Int32) : Int32
+  protected def code_to_gid(code : Int32) : Int32
     extract_cmap_table
 
     ttf = @ttf
@@ -591,7 +650,7 @@ class Pdfbox::Pdmodel::Font::PDTrueTypeFont < Pdfbox::Pdmodel::Font::PDSimpleFon
       # PDFBOX-4755 / PDF.js #5501
       # PDFBOX-3965: fallback for font that has the symbol flag but isn't
       if cmap = @cmap_win_unicode
-        if encoding.is_a?(WinAnsiEncoding) || encoding.is_a?(MacRomanEncoding)
+        if encoding.is_a?(Pdfbox::Pdmodel::Font::Encoding::WinAnsiEncoding) || encoding.is_a?(Pdfbox::Pdmodel::Font::Encoding::MacRomanEncoding)
           name = encoding.get_name(code)
           if name == ".notdef"
             return 0

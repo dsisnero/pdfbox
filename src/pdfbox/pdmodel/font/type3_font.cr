@@ -37,18 +37,18 @@ module Pdfbox::Pdmodel::Font
     protected def read_encoding : Nil
       encoding_base = @dict[Pdfbox::Cos::Name::ENCODING]
       if encoding_base.is_a?(Pdfbox::Cos::Name)
-        @encoding = Encoding.get_instance(encoding_base)
+        @encoding = Encoding::Encoding.get_instance(encoding_base)
         if @encoding.nil?
           Log.warn { "Unknown encoding: #{encoding_base}" }
         end
       elsif encoding_base.is_a?(Pdfbox::Cos::Dictionary)
-        @encoding = DictionaryEncoding.new(encoding_base)
+        @encoding = Pdfbox::Pdmodel::Font::Encoding::DictionaryEncoding.new(encoding_base)
       end
       @glyph_list = GlyphList.adobe_glyph_list
     end
 
     # Type 3 fonts do not have a built-in encoding.
-    protected def read_encoding_from_font : Encoding
+    protected def read_encoding_from_font : Pdfbox::Pdmodel::Font::Encoding::Encoding
       raise NotImplementedError.new("not supported for Type 3 fonts")
     end
 

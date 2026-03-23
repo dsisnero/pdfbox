@@ -1,6 +1,6 @@
 require "../encoding"
 
-module Pdfbox::Pdmodel::Font
+module Pdfbox::Pdmodel::Font::Encoding
   # An encoding for a Type 1 font.
   # Corresponds to org.apache.pdfbox.pdmodel.font.encoding.Type1Encoding.
   class Type1Encoding < Encoding

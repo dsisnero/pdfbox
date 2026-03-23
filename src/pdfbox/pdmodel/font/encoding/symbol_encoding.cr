@@ -1,7 +1,7 @@
 # Symbol encoding
 # Corresponds to SymbolEncoding in Apache PDFBox.
 
-class Pdfbox::Pdmodel::Font::Encoding::SymbolEncoding < Pdfbox::Pdmodel::Font::Encoding
+class Pdfbox::Pdmodel::Font::Encoding::SymbolEncoding < Pdfbox::Pdmodel::Font::Encoding::Encoding
   # Singleton instance of this class.
   INSTANCE = new
 

@@ -137,11 +137,11 @@ class Pdfbox::Pdmodel::Font::PDType1Font < Pdfbox::Pdmodel::Font::PDSimpleFont
 
     case base_font
     when Standard14Fonts::FontName::ZAPF_DINGBATS
-      @encoding = Encoding::ZapfDingbatsEncoding::INSTANCE
+      @encoding = Pdfbox::Pdmodel::Font::Encoding::ZapfDingbatsEncoding::INSTANCE
     when Standard14Fonts::FontName::SYMBOL
-      @encoding = Encoding::SymbolEncoding::INSTANCE
+      @encoding = Pdfbox::Pdmodel::Font::Encoding::SymbolEncoding::INSTANCE
     else
-      @encoding = WinAnsiEncoding::INSTANCE
+      @encoding = Pdfbox::Pdmodel::Font::Encoding::WinAnsiEncoding::INSTANCE
       @dict[Pdfbox::Cos::Name::ENCODING] = Pdfbox::Cos::Name::WIN_ANSI_ENCODING
     end
 
@@ -182,7 +182,7 @@ class Pdfbox::Pdmodel::Font::PDType1Font < Pdfbox::Pdmodel::Font::PDSimpleFont
   end
 
   # Constructor with encoding (placeholder)
-  protected def initialize(doc : PDDocument, pfb_in : IO, encoding : Encoding)
+  protected def initialize(doc : PDDocument, pfb_in : IO, encoding : Pdfbox::Pdmodel::Font::Encoding::Encoding)
     super() # embedding constructor
     @standard14 = false
     @type1font = nil
@@ -232,7 +232,7 @@ class Pdfbox::Pdmodel::Font::PDType1Font < Pdfbox::Pdmodel::Font::PDSimpleFont
     transform_width(width)
   end
 
-  protected def read_encoding_from_font : Encoding
+  protected def read_encoding_from_font : Pdfbox::Pdmodel::Font::Encoding::Encoding
     # TODO: Implement encoding extraction from font file
     Encoding::StandardEncoding::INSTANCE
   end

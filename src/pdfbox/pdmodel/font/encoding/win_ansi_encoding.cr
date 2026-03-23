@@ -15,7 +15,7 @@
 
 require "../encoding"
 
-module Pdfbox::Pdmodel::Font
+module Pdfbox::Pdmodel::Font::Encoding
   # This is the WinAnsiEncoding.
   # Corresponds to org.apache.pdfbox.pdmodel.font.encoding.WinAnsiEncoding in Apache PDFBox.
   class WinAnsiEncoding < Encoding

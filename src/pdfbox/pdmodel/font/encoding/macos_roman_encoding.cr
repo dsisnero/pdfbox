@@ -15,7 +15,7 @@
 
 require "./mac_roman_encoding"
 
-module Pdfbox::Pdmodel::Font
+module Pdfbox::Pdmodel::Font::Encoding
   # This is the Mac OS Roman encoding, which is similar to the
   # MacRomanEncoding with the addition of 15 entries
   # Corresponds to org.apache.pdfbox.pdmodel.font.encoding.MacOSRomanEncoding in Apache PDFBox.

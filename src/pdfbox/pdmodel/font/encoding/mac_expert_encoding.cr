@@ -15,7 +15,7 @@
 
 require "../encoding"
 
-module Pdfbox::Pdmodel::Font
+module Pdfbox::Pdmodel::Font::Encoding
   # This is an interface to a text encoder.
   # Corresponds to org.apache.pdfbox.pdmodel.font.encoding.MacExpertEncoding in Apache PDFBox.
   class MacExpertEncoding < Encoding

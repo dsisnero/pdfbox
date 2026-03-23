@@ -123,7 +123,7 @@ describe "PDFontTest" do
 
       File.open(font_path, "r") do |file|
         doc = Pdfbox::Pdmodel::PDDocument.new(Bytes.new(0))
-        encoding = Pdfbox::Pdmodel::Font::WinAnsiEncoding::INSTANCE
+        encoding = Pdfbox::Pdmodel::Font::Encoding::WinAnsiEncoding::INSTANCE
         font = Pdfbox::Pdmodel::Font::PDTrueTypeFont.load(doc, file, encoding)
 
         # Check that font has glyph "A"
@@ -221,7 +221,7 @@ describe "PDFontTest" do
         ttf_parser = Fontbox::TTF::TTFParser.new
         ttf = ttf_parser.parse(random_access_read)
 
-        encoding = Pdfbox::Pdmodel::Font::WinAnsiEncoding::INSTANCE
+        encoding = Pdfbox::Pdmodel::Font::Encoding::WinAnsiEncoding::INSTANCE
         font = Pdfbox::Pdmodel::Font::PDTrueTypeFont.load(doc, ttf, encoding)
 
         # Test that getPath works with glyph name "oslash"
@@ -435,7 +435,7 @@ describe "PDFontTest" do
 
       File.open(font_path, "r") do |file|
         doc = Pdfbox::Pdmodel::PDDocument.new(Bytes.new(0))
-        encoding = Pdfbox::Pdmodel::Font::WinAnsiEncoding::INSTANCE
+        encoding = Pdfbox::Pdmodel::Font::Encoding::WinAnsiEncoding::INSTANCE
         font = Pdfbox::Pdmodel::Font::PDTrueTypeFont.load(doc, file, encoding)
 
         # Expected value from Java test: 20064.0f
@@ -451,7 +451,7 @@ describe "PDFontTest" do
 
       File.open(font_path, "r") do |file|
         doc = Pdfbox::Pdmodel::PDDocument.new(Bytes.new(0))
-        encoding = Pdfbox::Pdmodel::Font::WinAnsiEncoding::INSTANCE
+        encoding = Pdfbox::Pdmodel::Font::Encoding::WinAnsiEncoding::INSTANCE
         font = Pdfbox::Pdmodel::Font::PDTrueTypeFont.load(doc, file, encoding)
 
         # Expected value from Java test: 278.0f

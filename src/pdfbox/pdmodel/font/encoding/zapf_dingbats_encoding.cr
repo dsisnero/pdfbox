@@ -1,7 +1,7 @@
 # ZapfDingbats encoding
 # Corresponds to ZapfDingbatsEncoding in Apache PDFBox.
 
-class Pdfbox::Pdmodel::Font::Encoding::ZapfDingbatsEncoding < Pdfbox::Pdmodel::Font::Encoding
+class Pdfbox::Pdmodel::Font::Encoding::ZapfDingbatsEncoding < Pdfbox::Pdmodel::Font::Encoding::Encoding
   # Singleton instance of this class.
   INSTANCE = new
 

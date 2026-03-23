@@ -15,7 +15,7 @@
 
 require "../encoding"
 
-module Pdfbox::Pdmodel::Font
+module Pdfbox::Pdmodel::Font::Encoding
   # This will perform the encoding from a dictionary.
   # Corresponds to org.apache.pdfbox.pdmodel.font.encoding.DictionaryEncoding in Apache PDFBox.
   class DictionaryEncoding < Encoding

@@ -1,6 +1,6 @@
 require "../encoding"
 
-module Pdfbox::Pdmodel::Font
+module Pdfbox::Pdmodel::Font::Encoding
   # A font's built-in encoding.
   # Corresponds to org.apache.pdfbox.pdmodel.font.encoding.BuiltInEncoding.
   class BuiltInEncoding < Encoding

@@ -6,7 +6,7 @@ require "./pdfont"
 abstract class Pdfbox::Pdmodel::Font::PDSimpleFont < Pdfbox::Pdmodel::Font::PDFont
   Log = ::Log.for(self)
 
-  protected getter encoding : Pdfbox::Pdmodel::Font::Encoding?
+  protected getter encoding : Pdfbox::Pdmodel::Font::Encoding::Encoding?
   protected getter glyph_list : Pdfbox::Pdmodel::Font::GlyphList?
 
   @is_symbolic : Bool?
@@ -40,7 +40,7 @@ abstract class Pdfbox::Pdmodel::Font::PDSimpleFont < Pdfbox::Pdmodel::Font::PDFo
         # for get_name() and embedded?() is available
         @encoding = Encoding::ZapfDingbatsEncoding::INSTANCE
       else
-        @encoding = Encoding.get_instance(encoding_name)
+        @encoding = Encoding::Encoding.get_instance(encoding_name)
         if @encoding.nil?
           Log.warn { "Unknown encoding: #{encoding_name}" }
           @encoding = read_encoding_from_font # fallback
@@ -53,14 +53,14 @@ abstract class Pdfbox::Pdmodel::Font::PDSimpleFont < Pdfbox::Pdmodel::Font::PDFo
 
       base_encoding = encoding_dict[Pdfbox::Cos::Name::BASE_ENCODING]?
       has_valid_base_encoding = base_encoding.is_a?(Pdfbox::Cos::Name) &&
-                                !Encoding.get_instance(base_encoding).nil?
+                                !Encoding::Encoding.get_instance(base_encoding).nil?
 
       if !has_valid_base_encoding && symbolic == true
         built_in = read_encoding_from_font
       end
 
       symbolic = false if symbolic.nil?
-      @encoding = DictionaryEncoding.new(encoding_dict, !symbolic, built_in)
+      @encoding = Pdfbox::Pdmodel::Font::Encoding::DictionaryEncoding.new(encoding_dict, !symbolic, built_in)
     else
       @encoding = read_encoding_from_font
     end
@@ -70,10 +70,10 @@ abstract class Pdfbox::Pdmodel::Font::PDSimpleFont < Pdfbox::Pdmodel::Font::PDFo
   end
 
   # Called by read_encoding if the encoding needs to be extracted from the font file.
-  protected abstract def read_encoding_from_font : Pdfbox::Pdmodel::Font::Encoding
+  protected abstract def read_encoding_from_font : Pdfbox::Pdmodel::Font::Encoding::Encoding
 
   # Returns the Encoding.
-  def encoding : Pdfbox::Pdmodel::Font::Encoding
+  def encoding : Pdfbox::Pdmodel::Font::Encoding::Encoding
     @encoding || raise "PDFBox bug: encoding should not be nil"
   end
 
@@ -113,17 +113,17 @@ abstract class Pdfbox::Pdmodel::Font::PDSimpleFont < Pdfbox::Pdmodel::Font::PDFo
 
         # TTF without its non-symbolic flag set must be symbolic
         true
-      elsif @encoding.is_a?(WinAnsiEncoding) ||
-            @encoding.is_a?(MacRomanEncoding) ||
-            @encoding.is_a?(StandardEncoding)
+      elsif @encoding.is_a?(Pdfbox::Pdmodel::Font::Encoding::WinAnsiEncoding) ||
+            @encoding.is_a?(Pdfbox::Pdmodel::Font::Encoding::MacRomanEncoding) ||
+            @encoding.is_a?(Pdfbox::Pdmodel::Font::Encoding::StandardEncoding)
         false
-      elsif @encoding.is_a?(DictionaryEncoding)
+      elsif @encoding.is_a?(Pdfbox::Pdmodel::Font::Encoding::DictionaryEncoding)
         # each name in Differences array must also be in the latin character set
-        @encoding.as(DictionaryEncoding).differences.each_value do |name|
+        @encoding.as(Pdfbox::Pdmodel::Font::Encoding::DictionaryEncoding).differences.each_value do |name|
           next if name == ".notdef"
-          unless WinAnsiEncoding::INSTANCE.contains(name) &&
-                 MacRomanEncoding::INSTANCE.contains(name) &&
-                 StandardEncoding::INSTANCE.contains(name)
+          unless Pdfbox::Pdmodel::Font::Encoding::WinAnsiEncoding::INSTANCE.contains(name) &&
+                 Pdfbox::Pdmodel::Font::Encoding::MacRomanEncoding::INSTANCE.contains(name) &&
+                 Pdfbox::Pdmodel::Font::Encoding::StandardEncoding::INSTANCE.contains(name)
             return true
           end
         end
@@ -176,8 +176,8 @@ abstract class Pdfbox::Pdmodel::Font::PDSimpleFont < Pdfbox::Pdmodel::Font::PDFo
   def standard14? : Bool
     # this logic is based on Acrobat's behaviour, see PDFBOX-2372
     # the Encoding entry cannot have Differences if we want "standard 14" font handling
-    if encoding.is_a?(DictionaryEncoding)
-      dictionary = encoding.as(DictionaryEncoding)
+    if encoding.is_a?(Pdfbox::Pdmodel::Font::Encoding::DictionaryEncoding)
+      dictionary = encoding.as(Pdfbox::Pdmodel::Font::Encoding::DictionaryEncoding)
       unless dictionary.differences.empty?
         # we also require that the differences are actually different, see PDFBOX-1900 with
         # the file from PDFBOX-2192 on Windows

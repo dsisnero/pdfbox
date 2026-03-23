@@ -15,7 +15,7 @@
 
 require "../encoding"
 
-module Pdfbox::Pdmodel::Font
+module Pdfbox::Pdmodel::Font::Encoding
   # This is the StandardEncoding.
   # Corresponds to org.apache.pdfbox.pdmodel.font.encoding.StandardEncoding in Apache PDFBox.
   class StandardEncoding < Encoding

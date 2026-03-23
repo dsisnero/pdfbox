@@ -15,7 +15,7 @@
 
 require "../encoding"
 
-module Pdfbox::Pdmodel::Font
+module Pdfbox::Pdmodel::Font::Encoding
   # This is the MacRomanEncoding.
   # Corresponds to org.apache.pdfbox.pdmodel.font.encoding.MacRomanEncoding in Apache PDFBox.
   class MacRomanEncoding < Encoding
