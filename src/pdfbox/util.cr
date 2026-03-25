@@ -296,6 +296,16 @@ module Pdfbox::Util
     def initialize(@single : Array(Float32))
     end
 
+    # Create a translation matrix
+    def self.translate(tx : Float32, ty : Float32) : Matrix
+      Matrix.new(1.0_f32, 0.0_f32, 0.0_f32, 1.0_f32, tx, ty)
+    end
+
+    # Create an identity matrix
+    def self.identity : Matrix
+      Matrix.new
+    end
+
     def self.create_matrix(base : Pdfbox::Cos::Base) : Matrix
       array = base.as?(Pdfbox::Cos::Array)
       return Matrix.new unless array
@@ -379,6 +389,16 @@ module Pdfbox::Util
       else
         @single[4]
       end
+    end
+
+    # Get the X translation value
+    def translate_x : Float32
+      @single[6]
+    end
+
+    # Get the Y translation value
+    def translate_y : Float32
+      @single[7]
     end
 
     def to_cos_array : Pdfbox::Cos::Array

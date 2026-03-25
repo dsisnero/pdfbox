@@ -1,14 +1,16 @@
 # PDDocument implementation for PDFBox Crystal
 require "./encryption"
+require "./page_tree"
 require "../cos"
 
 module Pdfbox::Pdmodel
   class PDDocument
     @access_permission = Encryption::AccessPermission.new
     @cos_document = Cos::Document.new
-    @pages : Array(Page) = [] of Page
+    @page_tree : PDPageTree
 
     def initialize(@data : Bytes = Bytes.new(0), @password : String = "")
+      @page_tree = PDPageTree.new
     end
 
     def document : Cos::Document
@@ -20,11 +22,11 @@ module Pdfbox::Pdmodel
     end
 
     def pages : PDPageTree
-      PDPageTree.new(@pages)
+      @page_tree
     end
 
     def add_page(page : Page) : Nil
-      @pages << page
+      @page_tree.add(page)
     end
 
     def save(output : ::IO) : Nil
@@ -57,16 +59,6 @@ module Pdfbox::Pdmodel
 
     def close : Nil
       # nothing
-    end
-  end
-
-  # Simple page tree implementation
-  class PDPageTree
-    def initialize(@pages : Array(Page))
-    end
-
-    def each_page(&block : Page ->)
-      @pages.each(&block)
     end
   end
 end

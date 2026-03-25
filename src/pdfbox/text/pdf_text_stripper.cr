@@ -17,15 +17,16 @@ require "../pdmodel"
 require "../pdmodel/document"
 require "../pdmodel/font"
 require "./text_position"
+require "../contentstream/legacy_pdf_stream_engine"
 
 module Pdfbox::Text
   # This class will take a pdf document and strip out all of the text and ignore the formatting and such.
   # Corresponds to org.apache.pdfbox.text.PDFTextStripper in Apache PDFBox.
-  class PDFTextStripper
+  class PDFTextStripper < Contentstream::LegacyPDFStreamEngine
     Log = ::Log.for(self)
 
     @output : ::IO::Memory?
-    @document : Pdfbox::Pdmodel::PDDocument?
+    @document : Pdfbox::Pdmodel::Document?
     @current_page_no : Int32 = 1
     @line_separator : String = "\n"
     @page_start : String = ""
@@ -37,12 +38,13 @@ module Pdfbox::Text
     @end_bookmark : Pdfbox::Pdmodel::Page? = nil
     @start_page_number : Int32 = 1
     @end_page_number : Int32 = -1
+    @text_positions : Array(TextPosition) = [] of TextPosition
 
     # Get the text from a PDF document
     #
     # @param doc The document to extract text from
     # @return The extracted text
-    def get_text(doc : Pdfbox::Pdmodel::PDDocument) : String
+    def get_text(doc : Pdfbox::Pdmodel::Document) : String
       output = ::IO::Memory.new
       write_text(doc, output)
       output.to_s
@@ -52,7 +54,7 @@ module Pdfbox::Text
     #
     # @param doc The document to extract text from
     # @param output_stream The output stream to write to
-    def write_text(doc : Pdfbox::Pdmodel::PDDocument, output_stream : ::IO) : Nil
+    def write_text(doc : Pdfbox::Pdmodel::Document, output_stream : ::IO) : Nil
       reset_engine
       @document = doc
       @output = output_stream.as(::IO::Memory?)
@@ -82,7 +84,14 @@ module Pdfbox::Text
         # TODO: Find page number in tree
       end
 
-      pages.each_page do |page|
+      pages.each do |page|
+        process_page(page)
+      end
+    end
+
+    # Process all pages from an array
+    def process_pages(pages : Array(Pdfbox::Pdmodel::Page)) : Nil
+      pages.each do |page|
         process_page(page)
       end
     end
@@ -102,40 +111,39 @@ module Pdfbox::Text
         return
       end
 
-      # Process the page content
-      # Extract text from page content stream
-      extract_text_from_page(page)
-    end
+      # Clear text positions for new page
+      @text_positions.clear
 
-    private def extract_text_from_page(page : Pdfbox::Pdmodel::Page) : Nil
-      # Get the page's content stream
-      cos_page = page.cos_object
-      return unless cos_page
+      # Process the page content using the parent engine
+      super(page)
 
-      # Get content from page
-      contents = cos_page[Cos::Name.new("Contents")]?
-      return unless contents
-
-      # For now, just add a placeholder
-      # In a full implementation, this would parse the content stream
-      # and extract text positions
+      # Write collected text positions to output
       output = @output
       if output
-        output << "TEXT_EXTRACTED"
+        @text_positions.each do |text_pos|
+          output << text_pos.unicode
+        end
+        output << @line_separator
       end
     end
 
+    # Override process_text_position to collect text positions
+    def process_text_position(text : TextPosition) : Nil
+      @text_positions << text
+    end
+
     # Called at the start of document processing
-    def start_document(doc : Pdfbox::Pdmodel::PDDocument) : Nil
+    def start_document(doc : Pdfbox::Pdmodel::Document) : Nil
     end
 
     # Called at the end of document processing
-    def end_document(doc : Pdfbox::Pdmodel::PDDocument) : Nil
+    def end_document(doc : Pdfbox::Pdmodel::Document) : Nil
     end
 
     private def reset_engine
-      @current_page_no = 1
+      @current_page_no = 0
       @document = nil
+      @text_positions.clear
     end
   end
 

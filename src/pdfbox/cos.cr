@@ -818,6 +818,12 @@ module Pdfbox::Cos
       self
     end
 
+    # Insert item at index
+    def add(index : Int, item : Base) : self
+      @items.insert(index, item)
+      self
+    end
+
     def [](index : Int) : Base
       @items[index]
     end
