@@ -430,9 +430,15 @@ module Pdfbox::Contentstream
       font = graphics_state.font
       return unless font
 
-      font_size = graphics_state.font_size
-      horizontal_scaling = graphics_state.horizontal_scaling / 100.0
-      char_spacing = graphics_state.character_spacing
+      state = graphics_state
+      font_size = state.font_size
+      horizontal_scaling = state.horizontal_scaling / 100.0
+      char_spacing = state.character_spacing
+      parameters = Util::Matrix.new(
+        (font_size * horizontal_scaling).to_f32, 0.0_f32,
+        0.0_f32, font_size.to_f32,
+        0.0_f32, state.text_rise.to_f32
+      )
       input = ::IO::Memory.new(bytes)
 
       until input.pos >= input.size
@@ -441,23 +447,28 @@ module Pdfbox::Contentstream
         break if code < 0
 
         code_length = (input.pos - before).to_i32
-        displacement = font.displacement(code)
-        width = displacement.x * font_size * horizontal_scaling + char_spacing
+        word_spacing = code_length == 1 && code == 32 ? state.word_spacing : 0.0
+        ctm = state.current_transformation_matrix
+        text_rendering_matrix = parameters.multiply(text_matrix).multiply(ctm)
 
-        # Add word spacing for space character
-        if code_length == 1 && code == 32
-          width += graphics_state.word_spacing
+        if font.vertical?
+          text_rendering_matrix.translate(font.position_vector(code).x, font.position_vector(code).y)
         end
 
-        # Calculate text rendering matrix
-        td = Util::Matrix.translate(width.to_f32, 0.0_f32)
-        text_rendering_matrix = td.multiply(text_matrix).multiply(graphics_state.current_transformation_matrix)
+        displacement = font.displacement(code)
 
-        # Call show_glyph for the character
         show_glyph(text_rendering_matrix, font, code, displacement)
 
-        # Update text matrix
-        self.text_matrix = text_matrix.multiply(td)
+        tx : Float64
+        ty : Float64
+        if font.vertical?
+          tx = 0.0
+          ty = displacement.y.to_f64 * font_size + char_spacing + word_spacing
+        else
+          tx = (displacement.x.to_f64 * font_size + char_spacing + word_spacing) * horizontal_scaling
+          ty = 0.0
+        end
+        text_matrix.translate(tx.to_f32, ty.to_f32)
       end
     end
 

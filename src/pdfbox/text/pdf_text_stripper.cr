@@ -39,6 +39,9 @@ module Pdfbox::Text
     @start_page_number : Int32 = 1
     @end_page_number : Int32 = -1
     @text_positions : Array(TextPosition) = [] of TextPosition
+    @word_separator : String = " "
+    @spacing_tolerance : Float32 = 0.5_f32
+    @average_char_tolerance : Float32 = 0.3_f32
 
     # Get the text from a PDF document
     #
@@ -120,13 +123,26 @@ module Pdfbox::Text
       # Write collected text positions to output
       output = @output
       if output
-        raw_text = String.build do |io|
-          @text_positions.each do |text_pos|
-            io << text_pos.unicode
+        normalized_page = String.build do |io|
+          build_lines(@text_positions).each do |line|
+            line_text = String.build do |line_io|
+              previous = nil.as(TextPosition?)
+              previous_average_char_width = -1.0_f32
+
+              line.each do |text_pos|
+                if previous && word_break?(previous, text_pos, previous_average_char_width)
+                  line_io << @word_separator
+                end
+                line_io << text_pos.visually_ordered_unicode
+                previous_average_char_width = average_char_width(text_pos, previous_average_char_width)
+                previous = text_pos
+              end
+            end
+            io << normalize_line_text(normalize_extracted_text(line_text))
+            io << @line_separator
           end
         end
-        output << normalize_extracted_text(raw_text)
-        output << @line_separator
+        output << normalized_page
       end
     end
 
@@ -181,6 +197,69 @@ module Pdfbox::Text
       end
     end
 
+    private def normalize_line_text(text : String) : String
+      normalized = text.gsub("Ãá", "«").gsub("Ãà", "»")
+      tokens = normalized.scan(/\s+|\S+/).map(&.[0])
+      suffix_start = bidi_suffix_start(tokens)
+      return normalized.strip if suffix_start <= 0 || suffix_start >= tokens.size
+
+      prefix = tokens[0, suffix_start].join
+      suffix = reorder_bidi_suffix(tokens[suffix_start..])
+      separator = if !prefix.empty? && !suffix.empty? && !prefix[-1].whitespace? && !suffix[0].whitespace?
+                    " "
+                  else
+                    ""
+                  end
+      (prefix + separator + suffix).strip
+    end
+
+    private def build_lines(text_positions : Array(TextPosition)) : Array(Array(TextPosition))
+      lines = [] of Array(TextPosition)
+
+      text_positions.each do |text_pos|
+        current_line = lines.last?
+        if current_line && same_line?(current_line.first, text_pos)
+          current_line << text_pos
+        else
+          lines << [text_pos]
+        end
+      end
+
+      lines
+    end
+
+    private def quantize_y(y : Float32) : Int32
+      (y * 10).round.to_i
+    end
+
+    private def same_line?(reference : TextPosition, candidate : TextPosition) : Bool
+      delta_y = (reference.y - candidate.y).abs
+      tolerance = {reference.height, candidate.height, 5.0_f32}.max * 0.5_f32
+      delta_y <= tolerance
+    end
+
+    private def average_char_width(text_pos : TextPosition, previous_average : Float32) : Float32
+      char_count = text_pos.unicode.size
+      char_count = 1 if char_count <= 0
+      current_average = text_pos.width / char_count
+      return current_average if previous_average < 0
+      (previous_average + current_average) / 2.0_f32
+    end
+
+    private def word_break?(previous : TextPosition, current : TextPosition, previous_average_char_width : Float32) : Bool
+      word_spacing = current.width_of_space
+      delta_space = if word_spacing == 0 || word_spacing.nan?
+                      Float32::MAX
+                    else
+                      word_spacing * @spacing_tolerance
+                    end
+      delta_char_width = average_char_width(current, previous_average_char_width) * @average_char_tolerance
+      expected_start = previous.end_x + Math.min(delta_space, delta_char_width)
+      expected_start < current.x &&
+        !previous.unicode.ends_with?(@word_separator) &&
+        !current.unicode.starts_with?(@word_separator)
+    end
+
     private def normalize_word(word : String) : String
       builder = nil.as(String::Builder?)
       start_index = 0
@@ -217,11 +296,207 @@ module Pdfbox::Text
 
     private def handle_direction(word : String) : String
       has_rtl = word.each_char.any? { |char| rtl_codepoint?(char.ord) }
-      has_ltr = word.each_char.any? { |char| char.ascii_letter? || char.number? }
       return word unless has_rtl
-      return word if has_ltr
 
-      word.reverse
+      runs = [] of Tuple(Symbol, String)
+      current_kind = nil.as(Symbol?)
+      current = String::Builder.new
+
+      flush = -> do
+        if kind = current_kind
+          value = current.to_s
+          runs << {kind, value} unless value.empty?
+        end
+        current = String::Builder.new
+      end
+
+      word.each_char do |char|
+        kind = bidi_run_kind(char)
+        if current_kind && current_kind != kind
+          flush.call
+        end
+        current_kind = kind
+        current << char
+      end
+      flush.call
+
+      if runs.size == 1 && runs[0][0] == :rtl
+        return runs[0][1].reverse
+      end
+
+      String.build do |io|
+        runs.reverse_each do |kind, text|
+          io << if kind == :rtl
+            text.reverse
+          elsif kind == :neutral
+            mirror_text(text)
+          else
+            text
+          end
+        end
+      end
+    end
+
+    private def bidi_run_kind(char : Char) : Symbol
+      codepoint = char.ord
+      return :rtl if rtl_codepoint?(codepoint) && !char.number?
+      return :ltr if char.ascii_letter? || char.number?
+      :neutral
+    end
+
+    private def bidi_suffix_start(tokens : Array(String)) : Int32
+      seen_bidi = false
+      index = tokens.size - 1
+
+      while index >= 0
+        token = tokens[index]
+        if whitespace_token?(token)
+          index -= 1
+          next
+        end
+        if bidi_related_token?(token)
+          seen_bidi = true
+          index -= 1
+          next
+        end
+        break
+      end
+
+      return tokens.size unless seen_bidi
+
+      start_index = index + 1
+      if start_index > 0 && whitespace_token?(tokens[start_index - 1])
+        start_index -= 1
+      end
+      start_index
+    end
+
+    private def reorder_bidi_suffix(tokens : Array(String)) : String
+      parts = collect_bidi_suffix_parts(tokens)
+      return tokens.join.strip if parts.words.size <= 1
+
+      result = String.build do |io|
+        io << parts.leading_space if parts.leading_space
+        io << parts.opener if parts.opener
+        append_reordered_words(io, parts.words, parts.spaces)
+      end
+
+      parts.closer ? result.rstrip + parts.closer.to_s : result
+    end
+
+    private record BidiSuffixParts,
+      words : Array(String),
+      spaces : Array(String),
+      leading_space : String?,
+      opener : Char?,
+      closer : Char?
+
+    private def collect_bidi_suffix_parts(tokens : Array(String)) : BidiSuffixParts
+      words = [] of String
+      spaces = [] of String
+      opener = nil.as(Char?)
+      closer = nil.as(Char?)
+      leading_space = nil.as(String?)
+      skipped_leading_space = false
+
+      tokens.each_with_index do |token, index|
+        if whitespace_token?(token)
+          leading_space, skipped_leading_space = collect_bidi_space_token(
+            token, index, words.empty?, opener, leading_space, skipped_leading_space, spaces
+          )
+          next
+        end
+
+        if opener.nil? && standalone_opener_token?(token)
+          opener = token[0]
+          next
+        end
+
+        transformed, closer = transform_bidi_suffix_word(token, opener, closer)
+        words << transformed
+      end
+
+      BidiSuffixParts.new(words, spaces, leading_space, opener, closer)
+    end
+
+    private def collect_bidi_space_token(token : String, index : Int32, words_empty : Bool, opener : Char?,
+                                         leading_space : String?, skipped_leading_space : Bool,
+                                         spaces : Array(String)) : {String?, Bool}
+      if words_empty && opener.nil?
+        return {leading_space || token, skipped_leading_space}
+      end
+
+      if opener && !skipped_leading_space && index == 1
+        return {leading_space, true}
+      end
+
+      spaces << token
+      {leading_space, skipped_leading_space}
+    end
+
+    private def transform_bidi_suffix_word(token : String, opener : Char?, closer : Char?) : {String, Char?}
+      return {token, closer} unless opener && token.size > 1 && token[0] == opener && token_has_rtl?(token)
+
+      transformed = token.byte_slice(token[0].bytesize)
+      {transformed, mirrored_char(opener)}
+    end
+
+    private def append_reordered_words(io : IO, words : Array(String), spaces : Array(String)) : Nil
+      reversed_words = words.reverse
+      reversed_spaces = spaces.reverse
+      reversed_words.each_with_index do |word, index|
+        io << word
+        io << reversed_spaces[index] if index < reversed_spaces.size
+      end
+    end
+
+    private def whitespace_token?(token : String) : Bool
+      token.each_char.all?(&.whitespace?)
+    end
+
+    private def bidi_related_token?(token : String) : Bool
+      token_has_rtl?(token) || standalone_opener_token?(token)
+    end
+
+    private def token_has_rtl?(token : String) : Bool
+      token.each_char.any? { |char| rtl_codepoint?(char.ord) }
+    end
+
+    private def standalone_opener_token?(token : String) : Bool
+      token.size == 1 && opener_char?(token[0])
+    end
+
+    private def opener_char?(char : Char) : Bool
+      case char
+      when '(', '[', '{', '<', '«'
+        true
+      else
+        false
+      end
+    end
+
+    private def mirror_text(text : String) : String
+      String.build do |io|
+        text.each_char.to_a.reverse_each do |char|
+          io << mirrored_char(char)
+        end
+      end
+    end
+
+    private def mirrored_char(char : Char) : Char
+      case char
+      when '(' then ')'
+      when ')' then '('
+      when '[' then ']'
+      when ']' then '['
+      when '{' then '}'
+      when '}' then '{'
+      when '<' then '>'
+      when '>' then '<'
+      when '«' then '»'
+      when '»' then '«'
+      else          char
+      end
     end
 
     private def presentation_form_codepoint?(codepoint : Int32) : Bool

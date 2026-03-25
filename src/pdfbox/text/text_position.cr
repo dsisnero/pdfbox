@@ -76,6 +76,22 @@ module Pdfbox::Text
       @unicode
     end
 
+    # Matches org.apache.pdfbox.text.TextPosition#getVisuallyOrderedUnicode.
+    def visually_ordered_unicode : String
+      text = unicode
+      byte_index = 0
+
+      text.each_char do |char|
+        next_index = byte_index + char.bytesize
+        if rtl_directionality?(char.ord) && (byte_index != 0 || next_index < text.bytesize)
+          return text.reverse
+        end
+        byte_index = next_index
+      end
+
+      text
+    end
+
     def font : Pdfbox::Pdmodel::Font::PDFont?
       @font
     end
@@ -95,13 +111,13 @@ module Pdfbox::Text
     private def get_x_rot(rotation : Int32) : Float32
       case rotation
       when 0, 360
-        text_matrix.get_value(0, 2)
+        text_matrix.translate_x
       when 90
-        text_matrix.get_value(1, 2)
+        text_matrix.translate_y
       when 180
-        text_matrix.get_value(0, 2)
+        page_width - text_matrix.translate_x
       when 270
-        text_matrix.get_value(1, 2)
+        page_height - text_matrix.translate_y
       else
         0.0_f32
       end
@@ -110,16 +126,22 @@ module Pdfbox::Text
     private def get_y_lower_left_rot(rotation : Int32) : Float32
       case rotation
       when 0, 360
-        text_matrix.get_value(1, 2)
+        text_matrix.translate_y
       when 90
-        page_width - text_matrix.get_value(0, 2)
+        page_width - text_matrix.translate_x
       when 180
-        page_height - text_matrix.get_value(1, 2)
+        page_height - text_matrix.translate_y
       when 270
-        text_matrix.get_value(0, 2)
+        text_matrix.translate_x
       else
         0.0_f32
       end
+    end
+
+    private def rtl_directionality?(codepoint : Int32) : Bool
+      (0x0590 <= codepoint && codepoint <= 0x08FF) ||
+        (0xFB1D <= codepoint && codepoint <= 0xFDFF) ||
+        (0xFE70 <= codepoint && codepoint <= 0xFEFF)
     end
   end
 end
