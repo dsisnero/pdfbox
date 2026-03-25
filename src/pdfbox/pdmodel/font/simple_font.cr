@@ -213,15 +213,31 @@ abstract class Pdfbox::Pdmodel::Font::PDSimpleFont < Pdfbox::Pdmodel::Font::PDFo
   def to_unicode(code : Int32, custom_glyph_list : GlyphList) : String?
     # allow the glyph list to be overridden for the purpose of extracting Unicode
     # we only do this when the font's glyph list is the AGL, to avoid breaking Zapf Dingbats
-    unicode_glyph_list = if @glyph_list == GlyphList.adobe_glyph_list
+    current_glyph_list = glyph_list
+    unicode_glyph_list = if current_glyph_list == GlyphList.adobe_glyph_list
                            custom_glyph_list
                          else
-                           @glyph_list
+                           current_glyph_list
                          end
 
     # first try to use a ToUnicode CMap
-    unicode = super.to_unicode(code)
-    return unicode unless unicode.nil?
+    # Call parent class's to_unicode method directly
+    cmap = @to_unicode_cmap
+    if cmap
+      name = cmap.name
+      if name && name.starts_with?("Identity-") &&
+         (@dict[Pdfbox::Cos::Name.new("ToUnicode")].is_a?(Pdfbox::Cos::Name) || !cmap.has_unicode_mappings?)
+        return identity_char_from_code(code)
+      else
+        if code < 256 && !composite_font?
+          encoding_value = @dict[Pdfbox::Cos::Name::ENCODING]
+          if encoding_value.is_a?(Pdfbox::Cos::Name) && !encoding_value.to_s.starts_with?("Identity")
+            return cmap.to_unicode(code, 1)
+          end
+        end
+        return cmap.to_unicode(code)
+      end
+    end
 
     # if the font is a "simple font" and uses MacRoman/MacExpert/WinAnsi[Encoding]
     # or has Differences with names from only Adobe Standard and/or Symbol, then:

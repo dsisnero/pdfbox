@@ -2,9 +2,9 @@
 # Corresponds to org.apache.pdfbox.pdmodel.common.COSObjectable in Apache PDFBox
 module Pdfbox::Pdmodel::Common
   module COSObjectable
-    # Convert this standard java object to a COS object.
+    # Convert this object to a COS object.
     #
-    # @return The cos object that matches this Java object.
+    # @return The cos object that represents this object.
     abstract def cos_object : Cos::Base
   end
 end

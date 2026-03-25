@@ -18,7 +18,7 @@ class MockPDCIDFont < Pdfbox::Pdmodel::Font::PDCIDFont
     Bytes[glyph_id.to_u8]
   end
 
-  protected def encode(unicode : Int32) : Bytes
+  def encode(unicode : Int32) : Bytes
     Bytes[unicode.to_u8]
   end
 

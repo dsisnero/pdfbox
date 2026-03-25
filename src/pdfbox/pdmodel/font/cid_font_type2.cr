@@ -120,7 +120,7 @@ module Pdfbox::Pdmodel::Font
       Bytes[((glyph_id >> 8) & 0xff).to_u8, (glyph_id & 0xff).to_u8]
     end
 
-    protected def encode(unicode : Int32) : Bytes
+    def encode(unicode : Int32) : Bytes
       cid = -1
       if embedded?
         cmap_name = @parent.cmap.try(&.name)

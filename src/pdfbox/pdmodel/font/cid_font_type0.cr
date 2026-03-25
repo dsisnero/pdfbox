@@ -46,7 +46,7 @@ module Pdfbox::Pdmodel::Font
       raise NotImplementedError.new("Unsupported operation")
     end
 
-    protected def encode(unicode : Int32) : Bytes
+    def encode(unicode : Int32) : Bytes
       raise NotImplementedError.new("Unsupported operation")
     end
 

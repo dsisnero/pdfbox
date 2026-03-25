@@ -241,9 +241,9 @@ module Pdfbox::Pdmodel::Font::Encoding
       end
     end
 
-    # Convert this standard java object to a COS object.
+    # Convert this object to a COS object.
     #
-    # @return The cos object that matches this Java object.
+    # @return The cos object that represents this object.
     def cos_object : Cos::Base
       Cos::Name::MAC_ROMAN_ENCODING
     end

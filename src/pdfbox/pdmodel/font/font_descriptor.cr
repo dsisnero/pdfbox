@@ -32,7 +32,7 @@ module Pdfbox::Pdmodel::Font
       @dic = desc
     end
 
-    # Convert this standard java object to a COS object.
+    # Convert this object to a COS object.
     def cos_object : Pdfbox::Cos::Dictionary
       @dic
     end
@@ -211,7 +211,7 @@ module Pdfbox::Pdmodel::Font
 
     # Get the italic angle for the font.
     def italic_angle : Float32
-      @dic.get_float(Pdfbox::Cos::Name::ITALIC_ANGLE, 0_f32)
+      @dic.get_float(Pdfbox::Cos::Name::ITALIC_ANGLE, 0_f64).to_f32
     end
 
     # Set the italic angle for the font.
@@ -221,7 +221,7 @@ module Pdfbox::Pdmodel::Font
 
     # Get the ascent for the font.
     def ascent : Float32
-      @dic.get_float(Pdfbox::Cos::Name::ASCENT, 0_f32)
+      @dic.get_float(Pdfbox::Cos::Name::ASCENT, 0_f64).to_f32
     end
 
     # Set the ascent for the font.
@@ -231,7 +231,7 @@ module Pdfbox::Pdmodel::Font
 
     # Get the descent for the font.
     def descent : Float32
-      @dic.get_float(Pdfbox::Cos::Name::DESCENT, 0_f32)
+      @dic.get_float(Pdfbox::Cos::Name::DESCENT, 0_f64).to_f32
     end
 
     # Set the descent for the font.
@@ -241,7 +241,7 @@ module Pdfbox::Pdmodel::Font
 
     # Get the leading for the font.
     def leading : Float32
-      @dic.get_float(Pdfbox::Cos::Name::LEADING, 0_f32)
+      @dic.get_float(Pdfbox::Cos::Name::LEADING, 0_f64).to_f32
     end
 
     # Set the leading for the font.
@@ -256,7 +256,7 @@ module Pdfbox::Pdmodel::Font
         # the Scheherazade font. PDFBOX-429 was logged for this.
         # We are not sure if returning the absolute value
         # is the correct fix, but it seems to work.
-        @cap_height = @dic.get_float(Pdfbox::Cos::Name::CAP_HEIGHT, 0_f32).abs
+        @cap_height = @dic.get_float(Pdfbox::Cos::Name::CAP_HEIGHT, 0_f64).abs.to_f32
       end
       @cap_height
     end
@@ -274,7 +274,7 @@ module Pdfbox::Pdmodel::Font
         # the Scheherazade font. PDFBOX-429 was logged for this.
         # We are not sure if returning the absolute value
         # is the correct fix, but it seems to work.
-        @x_height = @dic.get_float(Pdfbox::Cos::Name::XHEIGHT, 0_f32).abs
+        @x_height = @dic.get_float(Pdfbox::Cos::Name::XHEIGHT, 0_f64).abs.to_f32
       end
       @x_height
     end
@@ -287,7 +287,7 @@ module Pdfbox::Pdmodel::Font
 
     # Get the stemV for the font.
     def stem_v : Float32
-      @dic.get_float(Pdfbox::Cos::Name::STEM_V, 0_f32)
+      @dic.get_float(Pdfbox::Cos::Name::STEM_V, 0_f64).to_f32
     end
 
     # Set the stem V for the font.
@@ -297,7 +297,7 @@ module Pdfbox::Pdmodel::Font
 
     # Get the stemH for the font.
     def stem_h : Float32
-      @dic.get_float(Pdfbox::Cos::Name::STEM_H, 0_f32)
+      @dic.get_float(Pdfbox::Cos::Name::STEM_H, 0_f64).to_f32
     end
 
     # Set the stem H for the font.
@@ -307,7 +307,7 @@ module Pdfbox::Pdmodel::Font
 
     # Get the average width for the font.
     def average_width : Float32
-      @dic.get_float(Pdfbox::Cos::Name::AVG_WIDTH, 0_f32)
+      @dic.get_float(Pdfbox::Cos::Name::AVG_WIDTH, 0_f64).to_f32
     end
 
     # Set the average width for the font.
@@ -317,7 +317,7 @@ module Pdfbox::Pdmodel::Font
 
     # Get the max width for the font.
     def max_width : Float32
-      @dic.get_float(Pdfbox::Cos::Name::MAX_WIDTH, 0_f32)
+      @dic.get_float(Pdfbox::Cos::Name::MAX_WIDTH, 0_f64).to_f32
     end
 
     # Set the max width for the font.
@@ -337,7 +337,7 @@ module Pdfbox::Pdmodel::Font
 
     # Get the missing width for the font from the /MissingWidth dictionary entry.
     def missing_width : Float32
-      @dic.get_float(Pdfbox::Cos::Name::MISSING_WIDTH, 0_f32).to_f32
+      @dic.get_float(Pdfbox::Cos::Name::MISSING_WIDTH, 0_f64).to_f32
     end
 
     # Set the missing width for the font.

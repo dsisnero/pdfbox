@@ -21,9 +21,9 @@ abstract class Pdfbox::Pdmodel::Common::PDNameTreeNode(T)
     @parent = nil
   end
 
-  # Convert this standard java object to a COS object.
+  # Convert this object to a COS object.
   #
-  # @return The cos object that matches this Java object.
+  # @return The cos object that represents this object.
   def cos_object : Cos::Dictionary
     @node
   end

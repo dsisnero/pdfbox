@@ -42,6 +42,10 @@ module Pdfbox::Pdmodel::Font
           SymbolEncoding::INSTANCE
         elsif name == Cos::Name::ZAPF_DINGBATS_ENCODING
           ZapfDingbatsEncoding::INSTANCE
+        elsif name == Cos::Name::IDENTITY_H
+          IdentityEncoding::IDENTITY_H
+        elsif name == Cos::Name::IDENTITY_V
+          IdentityEncoding::IDENTITY_V
         else
           nil
         end
@@ -139,3 +143,5 @@ module Pdfbox::Pdmodel::Font
     end
   end
 end
+
+require "./encoding/*"

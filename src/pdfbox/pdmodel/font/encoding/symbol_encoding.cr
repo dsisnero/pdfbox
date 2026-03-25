@@ -22,6 +22,7 @@ class Pdfbox::Pdmodel::Font::Encoding::SymbolEncoding < Pdfbox::Pdmodel::Font::E
     {0o115, "Mu"},
     {0o116, "Nu"},
     {0o127, "Omega"},
+    {0o127, "Ohm"}, # Ohm sign (U+2126) maps to Omega in Symbol font
     {0o117, "Omicron"},
     {0o106, "Phi"},
     {0o120, "Pi"},
@@ -165,9 +166,9 @@ class Pdfbox::Pdmodel::Font::Encoding::SymbolEncoding < Pdfbox::Pdmodel::Font::E
     end
   end
 
-  # Convert this standard java object to a COS object.
+  # Convert this object to a COS object.
   #
-  # @return The cos object that matches this Java object.
+  # @return The cos object that represents this object.
   def cos_object : Cos::Base
     Cos::Name::SYMBOL_ENCODING
   end

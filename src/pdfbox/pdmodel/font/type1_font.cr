@@ -138,8 +138,10 @@ class Pdfbox::Pdmodel::Font::PDType1Font < Pdfbox::Pdmodel::Font::PDSimpleFont
     case base_font
     when Standard14Fonts::FontName::ZAPF_DINGBATS
       @encoding = Pdfbox::Pdmodel::Font::Encoding::ZapfDingbatsEncoding::INSTANCE
+      @dict[Pdfbox::Cos::Name::ENCODING] = Pdfbox::Cos::Name.new("ZapfDingbatsEncoding")
     when Standard14Fonts::FontName::SYMBOL
       @encoding = Pdfbox::Pdmodel::Font::Encoding::SymbolEncoding::INSTANCE
+      @dict[Pdfbox::Cos::Name::ENCODING] = Pdfbox::Cos::Name.new("SymbolEncoding")
     else
       @encoding = Pdfbox::Pdmodel::Font::Encoding::WinAnsiEncoding::INSTANCE
       @dict[Pdfbox::Cos::Name::ENCODING] = Pdfbox::Cos::Name::WIN_ANSI_ENCODING
@@ -208,8 +210,30 @@ class Pdfbox::Pdmodel::Font::PDType1Font < Pdfbox::Pdmodel::Font::PDSimpleFont
     @code_to_bytes_map = Hash(Int32, Bytes).new
     @font_matrix = nil
     @font_bbox = nil
-    # TODO: Implement font loading from dictionary
-    raise "Not implemented"
+
+    # Try to determine if this is a Standard 14 font
+    base_font = get_base_font
+    standard14_name = Standard14Fonts.get_mapped_font_name(base_font)
+    if standard14_name != base_font
+      # This is a Standard 14 font
+      @standard14 = true
+      @afm_standard14 = Standard14Fonts.get_afm(standard14_name.to_s)
+    end
+
+    # Set up encoding
+    if base_font.includes?("ZapfDingbats")
+      @encoding = Encoding::ZapfDingbatsEncoding::INSTANCE
+    elsif base_font == "Symbol"
+      @encoding = Encoding::SymbolEncoding::INSTANCE
+    else
+      @encoding = Encoding::WinAnsiEncoding::INSTANCE
+    end
+
+    # Assign glyph list
+    assign_glyph_list(standard14_name)
+
+    # Create font matrix transform
+    @font_matrix_transform = AffineTransform.from_font_matrix(font_matrix)
   end
 
   # Abstract method implementations
@@ -333,7 +357,7 @@ class Pdfbox::Pdmodel::Font::PDType1Font < Pdfbox::Pdmodel::Font::PDSimpleFont
     end
   end
 
-  protected def encode(unicode : Int32) : Bytes
+  def encode(unicode : Int32) : Bytes
     # Check cache
     if cached = @code_to_bytes_map[unicode]?
       return cached
@@ -399,7 +423,12 @@ class Pdfbox::Pdmodel::Font::PDType1Font < Pdfbox::Pdmodel::Font::PDSimpleFont
   # Helper methods
 
   private def get_base_font : String
-    @dict[Pdfbox::Cos::Name::BASE_FONT]?.try(&.to_s) || ""
+    base_font_obj = @dict[Pdfbox::Cos::Name::BASE_FONT]?
+    if base_font_obj.is_a?(Pdfbox::Cos::Name)
+      base_font_obj.value
+    else
+      ""
+    end
   end
 
   # TODO: Add remaining methods from Java PDType1Font

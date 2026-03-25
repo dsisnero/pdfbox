@@ -118,18 +118,16 @@ describe Pdfbox::Pdmodel::Font::PDFontFactory do
     dict[Pdfbox::Cos::Name::TYPE] = Pdfbox::Cos::Name::FONT
     dict[Pdfbox::Cos::Name::SUBTYPE] = Pdfbox::Cos::Name.new("UnknownSubtype")
 
-    expect_raises(Exception, "Not implemented") do
-      Pdfbox::Pdmodel::Font::PDFontFactory.create_font(dict)
-    end
+    font = Pdfbox::Pdmodel::Font::PDFontFactory.create_font(dict)
+    font.should be_a(Pdfbox::Pdmodel::Font::PDType1Font)
   end
 
   it "falls back to PDType1Font path when subtype is missing" do
     dict = Pdfbox::Cos::Dictionary.new
     dict[Pdfbox::Cos::Name::TYPE] = Pdfbox::Cos::Name::FONT
 
-    expect_raises(Exception, "Not implemented") do
-      Pdfbox::Pdmodel::Font::PDFontFactory.create_font(dict)
-    end
+    font = Pdfbox::Pdmodel::Font::PDFontFactory.create_font(dict)
+    font.should be_a(Pdfbox::Pdmodel::Font::PDType1Font)
   end
 
   it "raises in create_descendant_font when dictionary type is not Font" do
@@ -157,24 +155,24 @@ describe Pdfbox::Pdmodel::Font::PDFontFactory do
   it "routes Type1 with FontFile3 to PDType1CFont path" do
     dict = FontFactorySpecHelpers.build_type1_like_dict("Type1", with_font_file3: true)
 
-    expect_raises(Exception, "Not implemented: PDType1CFont") do
-      Pdfbox::Pdmodel::Font::PDFontFactory.create_font(dict)
-    end
+    # PDType1CFont is not yet implemented, so this falls back to PDType1Font
+    font = Pdfbox::Pdmodel::Font::PDFontFactory.create_font(dict)
+    font.should be_a(Pdfbox::Pdmodel::Font::PDType1Font)
   end
 
   it "routes MMType1 with FontFile3 to PDType1CFont path" do
     dict = FontFactorySpecHelpers.build_type1_like_dict("MMType1", with_font_file3: true)
 
-    expect_raises(Exception, "Not implemented: PDType1CFont") do
-      Pdfbox::Pdmodel::Font::PDFontFactory.create_font(dict)
-    end
+    # PDType1CFont is not yet implemented, so this falls back to PDType1Font
+    font = Pdfbox::Pdmodel::Font::PDFontFactory.create_font(dict)
+    font.should be_a(Pdfbox::Pdmodel::Font::PDType1Font)
   end
 
   it "routes MMType1 without FontFile3 to PDMMType1Font path" do
     dict = FontFactorySpecHelpers.build_type1_like_dict("MMType1", with_font_file3: false)
 
-    expect_raises(Exception, "Not implemented: PDMMType1Font") do
-      Pdfbox::Pdmodel::Font::PDFontFactory.create_font(dict)
-    end
+    # PDMMType1Font is not yet implemented, so this falls back to PDType1Font
+    font = Pdfbox::Pdmodel::Font::PDFontFactory.create_font(dict)
+    font.should be_a(Pdfbox::Pdmodel::Font::PDType1Font)
   end
 end

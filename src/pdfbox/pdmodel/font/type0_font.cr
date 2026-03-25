@@ -172,7 +172,7 @@ class Pdfbox::Pdmodel::Font::PDType0Font < Pdfbox::Pdmodel::Font::PDFont
 
   # PDFont abstract method implementations
 
-  protected def encode(unicode : Int32) : Bytes
+  def encode(unicode : Int32) : Bytes
     descendant_font.encode(unicode)
   end
 

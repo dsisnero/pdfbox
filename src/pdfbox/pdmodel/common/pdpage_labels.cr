@@ -102,9 +102,9 @@ class Pdfbox::Pdmodel::Common::PDPageLabels
     @labels[start_page] = item
   end
 
-  # Convert this standard java object to a COS object.
+  # Convert this object to a COS object.
   #
-  # @return The cos object that matches this Java object.
+  # @return The cos object that represents this object.
   def cos_object : Cos::Base
     arr = Cos::Array.new
     @labels.each do |key, value|

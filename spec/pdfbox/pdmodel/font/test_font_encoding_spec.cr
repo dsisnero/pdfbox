@@ -50,28 +50,32 @@ describe "TestFontEncoding" do
   # ilde.
   # @throws IOException
   describe "test_pdfbox_3884" do
-    pending "PDFBox 3884 test requires PDType1Font and PDPageContentStream" do
-      # This test requires PDType1Font which hasn't been ported yet
-      # baos = ByteArrayOutputStream.new
-      # doc = PDDocument.new
-      # begin
-      #   page = PDPage.new
-      #   doc.add_page(page)
-      #   cs = PDPageContentStream.new(doc, page)
-      #   begin
-      #     cs.set_font(PDType1Font.new(FontName::HELVETICA), 20)
-      #     cs.begin_text
-      #     cs.new_line_at_offset(100, 700)
-      #     # first tilde is "asciitilde" (from the keyboard), 2nd tilde is "tilde"
-      #     # using ˜ would bring IllegalArgumentException prior to bugfix
-      #     cs.show_text("~˜")
-      #     cs.end_text
-      #   ensure
-      #     cs.close
-      #   end
-      # ensure
-      #   doc.close
-      # end
+    it "should handle multiple Unicode names for same codepoint" do
+      doc = Pdfbox::Pdmodel::Document.new
+      begin
+        page = Pdfbox::Pdmodel::Page.new
+        doc.add_page(page)
+        cs = Pdfbox::Pdmodel::PDPageContentStream.new(doc, page)
+        begin
+          font = Pdfbox::Pdmodel::Font::PDType1Font.new(Pdfbox::Pdmodel::Font::Standard14Fonts::FontName::HELVETICA)
+          cs.set_font(font, 20)
+          cs.begin_text
+          cs.new_line_at_offset(100, 700)
+          # first tilde is "asciitilde" (from the keyboard), 2nd tilde is "tilde"
+          # using ˜ would bring IllegalArgumentException prior to bugfix
+          cs.show_text("~˜")
+          cs.end_text
+        ensure
+          cs.close
+        end
+
+        # Save and verify the document can be written
+        output = IO::Memory.new
+        doc.save(output)
+        output.to_slice.size.should be > 0
+      ensure
+        doc.close
+      end
     end
   end
 end

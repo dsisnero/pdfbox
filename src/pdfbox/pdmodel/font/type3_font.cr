@@ -141,7 +141,7 @@ module Pdfbox::Pdmodel::Font
     end
 
     # Encoding not implemented for Type 3 fonts.
-    protected def encode(unicode : Int32) : Bytes
+    def encode(unicode : Int32) : Bytes
       raise NotImplementedError.new("Not implemented: Type3")
     end
 

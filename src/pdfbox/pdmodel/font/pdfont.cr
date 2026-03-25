@@ -48,6 +48,19 @@ abstract class Pdfbox::Pdmodel::Font::PDFont
         @b * vector.x + @d * vector.y + @f
       )
     end
+
+    # Transform a point (x, y) using this matrix
+    def transform_point(x : Float64, y : Float64) : Vector
+      Vector.new(
+        (@a * x + @c * y + @e).to_f32,
+        (@b * x + @d * y + @f).to_f32
+      )
+    end
+
+    # Get the X scale factor
+    def scale_x : Float32
+      @a
+    end
   end
 
   class Vector
@@ -297,7 +310,11 @@ abstract class Pdfbox::Pdmodel::Font::PDFont
   protected abstract def get_standard14_width(code : Int32) : Float32
 
   # Encodes the given Unicode code point for use in a PDF content stream.
-  protected abstract def encode(unicode : Int32) : Bytes
+  # Encode a single Unicode code point to bytes.
+  #
+  # @param unicode Unicode code point.
+  # @return Array of PDF content stream bytes.
+  abstract def encode(unicode : Int32) : Bytes
 
   # Reads a character code from a content stream.
   abstract def read_code(input : ::IO) : Int32

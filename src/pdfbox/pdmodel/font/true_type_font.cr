@@ -430,7 +430,7 @@ class Pdfbox::Pdmodel::Font::PDTrueTypeFont < Pdfbox::Pdmodel::Font::PDSimpleFon
     0.0_f32
   end
 
-  protected def encode(unicode : Int32) : Bytes
+  def encode(unicode : Int32) : Bytes
     if encoding = @encoding
       # Check if encoding contains the glyph name
       glyph_name = glyph_list.code_point_to_name(unicode)
