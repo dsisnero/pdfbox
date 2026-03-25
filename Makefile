@@ -7,11 +7,11 @@ update:
 	BEADS_DIR=$$(pwd)/.beads shards update
 
 format:
-	crystal tool format --check
+	crystal tool format --check src spec
 
 lint:
-	ameba --fix
-	ameba
+	ameba --fix src spec
+	ameba src spec
 
 test:
 	crystal spec -Dpreview_mt -Dexecution_context
