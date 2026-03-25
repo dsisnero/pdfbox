@@ -176,8 +176,9 @@ abstract class Pdfbox::Pdmodel::Font::PDSimpleFont < Pdfbox::Pdmodel::Font::PDFo
   def standard14? : Bool
     # this logic is based on Acrobat's behaviour, see PDFBOX-2372
     # the Encoding entry cannot have Differences if we want "standard 14" font handling
-    if encoding.is_a?(Pdfbox::Pdmodel::Font::Encoding::DictionaryEncoding)
-      dictionary = encoding.as(Pdfbox::Pdmodel::Font::Encoding::DictionaryEncoding)
+    current_encoding = @encoding
+    if current_encoding.is_a?(Pdfbox::Pdmodel::Font::Encoding::DictionaryEncoding)
+      dictionary = current_encoding.as(Pdfbox::Pdmodel::Font::Encoding::DictionaryEncoding)
       unless dictionary.differences.empty?
         # we also require that the differences are actually different, see PDFBOX-1900 with
         # the file from PDFBOX-2192 on Windows
