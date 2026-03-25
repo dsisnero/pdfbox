@@ -207,5 +207,16 @@ module Pdfbox::Pdmodel::Common
     def self.a6 : PDRectangle
       A6
     end
+
+    # Returns the four corner points of this rectangle as a path.
+    # Points are returned in order: lower-left, lower-right, upper-right, upper-left.
+    # Used for clipping path initialization.
+    def to_path : Array(Tuple(Float32, Float32))
+      x1 = lower_left_x
+      y1 = lower_left_y
+      x2 = upper_right_x
+      y2 = upper_right_y
+      [{x1, y1}, {x2, y1}, {x2, y2}, {x1, y2}]
+    end
   end
 end
