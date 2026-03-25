@@ -384,7 +384,7 @@ module Pdfbox::Contentstream
     # Show text string
     def show_text_string(obj : Cos::Base) : Nil
       if obj.is_a?(Cos::String)
-        show_text(obj.value.to_slice)
+        show_text(obj.bytes)
       end
     end
 
@@ -433,17 +433,20 @@ module Pdfbox::Contentstream
       font_size = graphics_state.font_size
       horizontal_scaling = graphics_state.horizontal_scaling / 100.0
       char_spacing = graphics_state.character_spacing
-      word_spacing = graphics_state.word_spacing
+      input = ::IO::Memory.new(bytes)
 
-      # Process each character
-      bytes.each do |byte|
-        code = byte.to_i32
+      until input.pos >= input.size
+        before = input.pos
+        code = font.read_code(input)
+        break if code < 0
+
+        code_length = (input.pos - before).to_i32
         displacement = font.displacement(code)
         width = displacement.x * font_size * horizontal_scaling + char_spacing
 
         # Add word spacing for space character
-        if code == 32 # space
-          width += word_spacing
+        if code_length == 1 && code == 32
+          width += graphics_state.word_spacing
         end
 
         # Calculate text rendering matrix

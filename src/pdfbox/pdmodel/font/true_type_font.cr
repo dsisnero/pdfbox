@@ -222,8 +222,15 @@ class Pdfbox::Pdmodel::Font::PDTrueTypeFont < Pdfbox::Pdmodel::Font::PDSimpleFon
     # Check for embedded font in font descriptor
     fd = font_descriptor
     if fd
-      # TODO: Implement embedded font loading from FontFile2 stream
-      # For now, just set as not embedded
+      if font_file2 = fd.font_file2
+        begin
+          parser = Fontbox::TTF::TTFParser.new(true)
+          ttf_font = parser.parse_embedded(font_file2.create_input_stream)
+        rescue ex : ::IO::Error
+          Log.warn(exception: ex) { "Could not read embedded TTF for font #{name}" }
+          font_is_damaged = true
+        end
+      end
     end
 
     @is_embedded = !ttf_font.nil?

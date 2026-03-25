@@ -56,6 +56,9 @@ class Pdfbox::Pdmodel::Font::PDType0Font < Pdfbox::Pdmodel::Font::PDFont
       raise ::IO::Error.new("Descendant font array is empty")
     end
     descendant_font_dict_base = descendant_fonts[0]?
+    if descendant_font_dict_base.is_a?(Pdfbox::Cos::Object)
+      descendant_font_dict_base = descendant_font_dict_base.object
+    end
     if descendant_font_dict_base.nil? || !descendant_font_dict_base.is_a?(Pdfbox::Cos::Dictionary)
       raise ::IO::Error.new("Missing descendant font dictionary")
     end
@@ -109,7 +112,7 @@ class Pdfbox::Pdmodel::Font::PDType0Font < Pdfbox::Pdmodel::Font::PDFont
     encoding = @dict[Pdfbox::Cos::Name::ENCODING]?
     if encoding.is_a?(Pdfbox::Cos::Name)
       # predefined CMap
-      encoding_name = encoding.to_s
+      encoding_name = encoding.value
       @c_map = CMapManager.get_predefined_cmap(encoding_name)
       @is_cmap_predefined = true
     elsif !encoding.nil?
@@ -154,7 +157,7 @@ class Pdfbox::Pdmodel::Font::PDType0Font < Pdfbox::Pdmodel::Font::PDFont
           str_name = "#{ros.registry}-#{ros.ordering}-#{ros.supplement}"
         end
       elsif name
-        str_name = name.to_s
+        str_name = name.value
       end
 
       # try to find the corresponding Unicode (UC2) CMap

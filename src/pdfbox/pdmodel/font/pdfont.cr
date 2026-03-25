@@ -165,13 +165,19 @@ abstract class Pdfbox::Pdmodel::Font::PDFont
   # @return the CMap if present
   # @raises ::IO::Error if the CMap could not be read
   protected def read_cmap(base : Pdfbox::Cos::Base) : Fontbox::CMap::CMap?
+    if base.is_a?(Pdfbox::Cos::Object)
+      resolved = base.object
+      return nil unless resolved
+      return read_cmap(resolved)
+    end
+
     if base.is_a?(Pdfbox::Cos::Name)
       # predefined CMap
-      name = base.to_s
+      name = base.value
       CMapManager.get_predefined_cmap(name)
     elsif base.is_a?(Pdfbox::Cos::Stream)
-      # embedded CMap - not yet implemented
-      raise ::IO::Error.new("Embedded CMap not yet implemented")
+      random_access = Pdfbox::IO::RandomAccessReadBuffer.create_buffer_from_stream(base.create_input_stream)
+      CMapManager.parse_cmap(random_access)
     else
       raise ::IO::Error.new("Expected Name or Stream")
     end

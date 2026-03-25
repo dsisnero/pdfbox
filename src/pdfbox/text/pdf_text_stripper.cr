@@ -120,9 +120,12 @@ module Pdfbox::Text
       # Write collected text positions to output
       output = @output
       if output
-        @text_positions.each do |text_pos|
-          output << text_pos.unicode
+        raw_text = String.build do |io|
+          @text_positions.each do |text_pos|
+            io << text_pos.unicode
+          end
         end
+        output << normalize_extracted_text(raw_text)
         output << @line_separator
       end
     end
@@ -144,6 +147,92 @@ module Pdfbox::Text
       @current_page_no = 0
       @document = nil
       @text_positions.clear
+    end
+
+    private def normalize_extracted_text(text : String) : String
+      String.build do |io|
+        token = String::Builder.new
+        in_whitespace = nil
+
+        flush = -> do
+          value = token.to_s
+          unless value.empty?
+            io << if in_whitespace == true
+              value
+            else
+              normalize_word(value)
+            end
+          end
+          token = String::Builder.new
+        end
+
+        text.each_char do |char|
+          whitespace = char.whitespace?
+          if in_whitespace.nil?
+            in_whitespace = whitespace
+          elsif in_whitespace != whitespace
+            flush.call
+            in_whitespace = whitespace
+          end
+          token << char
+        end
+
+        flush.call
+      end
+    end
+
+    private def normalize_word(word : String) : String
+      builder = nil.as(String::Builder?)
+      start_index = 0
+      byte_offset = 0
+
+      word.each_char do |char|
+        codepoint = char.ord
+        unless presentation_form_codepoint?(codepoint)
+          byte_offset += char.bytesize
+          next
+        end
+
+        builder ||= String::Builder.new(word.size * 2)
+        if current = builder
+          current << word.byte_slice(0, start_index) if start_index == 0 && byte_offset > 0
+
+          normalized = char.to_s.unicode_normalize(:nfkc).strip
+          normalized = normalized.reverse if codepoint >= 0xFB1D && normalized.size > 1
+          current << normalized
+        end
+        start_index = byte_offset + char.bytesize
+        byte_offset = start_index
+      end
+
+      normalized_word = if builder
+                          builder << word.byte_slice(start_index)
+                          builder.to_s
+                        else
+                          word
+                        end
+
+      handle_direction(normalized_word)
+    end
+
+    private def handle_direction(word : String) : String
+      has_rtl = word.each_char.any? { |char| rtl_codepoint?(char.ord) }
+      has_ltr = word.each_char.any? { |char| char.ascii_letter? || char.number? }
+      return word unless has_rtl
+      return word if has_ltr
+
+      word.reverse
+    end
+
+    private def presentation_form_codepoint?(codepoint : Int32) : Bool
+      (0xFB00 <= codepoint && codepoint <= 0xFDFF) ||
+        (0xFE70 <= codepoint && codepoint <= 0xFEFF)
+    end
+
+    private def rtl_codepoint?(codepoint : Int32) : Bool
+      (0x0590 <= codepoint && codepoint <= 0x08FF) ||
+        (0xFB1D <= codepoint && codepoint <= 0xFDFF) ||
+        (0xFE70 <= codepoint && codepoint <= 0xFEFF)
     end
   end
 
