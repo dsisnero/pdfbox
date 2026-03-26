@@ -916,7 +916,7 @@ pdfbox/src/test/java/org/apache/pdfbox/text/BidiTest.java::test::testNotSorted	m
 pdfbox/src/test/java/org/apache/pdfbox/text/BidiTest.java::test::testSorted	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/text/PDFTextStripperByAreaTest.java::test::testSomeMethod	ported	spec/pdfbox/text/pdf_text_stripper_by_area_spec.cr	Ported against eu-001.pdf with Java rectangle coverage for page 1 and page 3 region extraction
 pdfbox/src/test/java/org/apache/pdfbox/text/TestTextStripper.java::test::testExtract	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/text/TestTextStripper.java::test::testIgnoreContentStreamSpaceGlyphs	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/text/TestTextStripper.java::test::testIgnoreContentStreamSpaceGlyphs	ported	spec/pdfbox/text/pdf_text_stripper_spec.cr	Ported exactly from Java with overlapping Helvetica/Times content stream text and ignore-space-glyph sorting expectations
 pdfbox/src/test/java/org/apache/pdfbox/text/TestTextStripper.java::test::testStartEndPage	ported	spec/pdfbox/text/pdf_text_stripper_spec.cr	Ported with Java start/end page assertions on eu-001.pdf, including trimmed text prefix/suffix and exact length
 pdfbox/src/test/java/org/apache/pdfbox/text/TestTextStripper.java::test::testStripByOutlineItems	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/text/TestTextStripper.java::test::testTabula	missing	-	baseline

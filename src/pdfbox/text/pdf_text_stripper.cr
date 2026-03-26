@@ -44,6 +44,7 @@ module Pdfbox::Text
     @average_char_tolerance : Float32 = 0.3_f32
     @sort_by_position : Bool = false
     @suppress_duplicate_overlapping_text : Bool = true
+    @ignore_content_stream_space_glyphs : Bool = false
     @character_list_mapping = {} of String => Array({Float32, Float32})
 
     # Get the text from a PDF document
@@ -132,6 +133,7 @@ module Pdfbox::Text
 
     # Override process_text_position to collect text positions
     def process_text_position(text : TextPosition) : Nil
+      return if text.unicode == " " && @ignore_content_stream_space_glyphs
       return if suppress_duplicate_overlapping_text?(text)
       @text_positions << text
     end
@@ -181,6 +183,14 @@ module Pdfbox::Text
 
     def page_end : String
       @page_end
+    end
+
+    def ignore_content_stream_space_glyphs=(value : Bool) : Bool
+      @ignore_content_stream_space_glyphs = value
+    end
+
+    def ignore_content_stream_space_glyphs? : Bool
+      @ignore_content_stream_space_glyphs
     end
 
     def sort_by_position=(value : Bool) : Bool
@@ -401,11 +411,16 @@ module Pdfbox::Text
 
       String.build do |io|
         build_lines(text_positions).each do |line|
+          ordered_line = if @sort_by_position && @ignore_content_stream_space_glyphs
+                           line.sort_by(&.x_dir_adj)
+                         else
+                           line
+                         end
           line_text = String.build do |line_io|
             previous = nil.as(TextPosition?)
             previous_average_char_width = -1.0_f32
 
-            line.each do |text_pos|
+            ordered_line.each do |text_pos|
               if previous && word_break?(previous, text_pos, previous_average_char_width)
                 line_io << @word_separator
               end

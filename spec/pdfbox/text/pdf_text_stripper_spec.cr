@@ -35,4 +35,49 @@ describe Pdfbox::Text::PDFTextStripper do
       doc.close
     end
   end
+
+  it "ignores content-stream space glyphs like the Java fixture" do
+    doc = Pdfbox::Pdmodel::Document.create
+    begin
+      page = Pdfbox::Pdmodel::Page.new
+
+      content_stream = Pdfbox::Pdmodel::PDPageContentStream.new(doc, page)
+      begin
+        font_height = 8
+        x = 50
+        y = page.media_box.not_nil!.height - 50
+        font = Pdfbox::Pdmodel::Font::PDType1Font.new(Pdfbox::Pdmodel::Font::Standard14Fonts::FontName::HELVETICA)
+        content_stream.begin_text
+        content_stream.set_font(font, font_height)
+        content_stream.new_line_at_offset(x, y)
+        content_stream.show_text("(                                      )")
+        content_stream.end_text
+
+        indent = 6
+        overlap_x = x + indent * font.average_font_width / 1000.0_f32 * font_height
+        overlap_font = Pdfbox::Pdmodel::Font::PDType1Font.new(Pdfbox::Pdmodel::Font::Standard14Fonts::FontName::TIMES_ROMAN)
+        content_stream.begin_text
+        content_stream.set_font(overlap_font, font_height * 2)
+        content_stream.new_line_at_offset(overlap_x, y)
+        content_stream.show_text("overlap")
+        content_stream.end_text
+      ensure
+        content_stream.close
+      end
+
+      doc.add_page(page)
+
+      stripper = Pdfbox::Text::PDFTextStripper.new
+      stripper.line_separator = "\n"
+      stripper.page_end = "\n"
+      stripper.start_page = 1
+      stripper.end_page = 1
+      stripper.sort_by_position = true
+      stripper.ignore_content_stream_space_glyphs = true
+
+      stripper.get_text(doc).should eq("( overlap )\n")
+    ensure
+      doc.close
+    end
+  end
 end
