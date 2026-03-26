@@ -36,6 +36,7 @@ module Pdfbox::Text
     getter font_size_pt : Int32
     getter x : Float32
     getter y : Float32
+    @direction : Float32 = -1.0_f32
 
     def initialize(page_rotation : Int32, page_width : Float32, page_height : Float32, text_matrix : Pdfbox::Util::Matrix,
                    end_x : Float32, end_y : Float32, max_height : Float32, individual_width : Float32,
@@ -108,6 +109,65 @@ module Pdfbox::Text
       @widths.sum
     end
 
+    def dir : Float32
+      if @direction < 0
+        a = text_matrix.get_value(1, 1)
+        b = text_matrix.get_value(1, 0)
+        c = text_matrix.get_value(0, 1)
+        d = text_matrix.get_value(0, 0)
+
+        @direction = if a > 0 && b.abs < d && c.abs < a && d > 0
+                       0.0_f32
+                     elsif a < 0 && b.abs < d.abs && c.abs < a.abs && d < 0
+                       180.0_f32
+                     elsif a.abs < c.abs && b > 0 && c < 0 && d.abs < b
+                       90.0_f32
+                     elsif a.abs < c && b < 0 && c > 0 && d.abs < b.abs
+                       270.0_f32
+                     else
+                       0.0_f32
+                     end
+      end
+      @direction
+    end
+
+    def x_dir_adj : Float32
+      get_x_rot(dir.round.to_i)
+    end
+
+    def y_dir_adj : Float32
+      direction = dir.round.to_i
+      if direction == 0 || direction == 180
+        page_height - get_y_lower_left_rot(direction)
+      else
+        page_width - get_y_lower_left_rot(direction)
+      end
+    end
+
+    def width_dir_adj : Float32
+      get_width_rot(dir.round.to_i)
+    end
+
+    def height_dir : Float32
+      @max_height
+    end
+
+    def completely_contains(other : TextPosition) : Bool
+      this_left = x_dir_adj
+      this_right = this_left + width_dir_adj
+      other_left = other.x_dir_adj
+      other_right = other_left + other.width_dir_adj
+      return false if this_left > other_left || other_right > this_right
+
+      this_top = y_dir_adj
+      this_bottom = this_top + height_dir
+      other_top = other.y_dir_adj
+      other_bottom = other_top + other.height_dir
+      return false if this_top > other_top || other_bottom > this_bottom
+
+      true
+    end
+
     private def get_x_rot(rotation : Int32) : Float32
       case rotation
       when 0, 360
@@ -135,6 +195,15 @@ module Pdfbox::Text
         text_matrix.translate_x
       else
         0.0_f32
+      end
+    end
+
+    private def get_width_rot(rotation : Int32) : Float32
+      case rotation
+      when 90, 270
+        (end_y - text_matrix.translate_y).abs.to_f32
+      else
+        (end_x - text_matrix.translate_x).abs.to_f32
       end
     end
 

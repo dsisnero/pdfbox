@@ -70,12 +70,123 @@ class Pdfbox::Pdmodel::Font::PDTrueTypeFont < Pdfbox::Pdmodel::Font::PDSimpleFon
   end
 
   class FontMappers
+    @@font_cache = {} of String => Fontbox::TTF::TrueTypeFont
+    private FALLBACK_TTF_PATH = File.expand_path(
+      "../../../../vendor/pdfbox/pdfbox/src/main/resources/org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf",
+      __DIR__
+    )
+    private SYSTEM_FONT_DIRS = [
+      "/System/Library/Fonts/Supplemental",
+      "/Library/Fonts",
+      File.expand_path("~/Library/Fonts"),
+    ]
+
     def self.instance
       FontMappers.new
     end
 
     def get_true_type_font(base_font : String, font_descriptor)
-      raise NotImplementedError.new("FontMappers#get_true_type_font(#{base_font}) not implemented")
+      requested = font_request_names(base_font, font_descriptor)
+      requested.each do |font_path|
+        font = load_true_type_font(font_path)
+        return FontMapping(Fontbox::TTF::TrueTypeFont).new(font, font_path == FALLBACK_TTF_PATH) if font
+      end
+
+      FontMapping(Fontbox::TTF::TrueTypeFont).new(load_last_resort_true_type_font(base_font), true)
+    end
+
+    private def font_request_names(base_font : String, font_descriptor) : Array(String)
+      requested_names = [] of String
+      candidate_names(base_font, font_descriptor).each do |font_name|
+        next if font_name.empty?
+        font_paths_for_name(font_name).each do |path|
+          requested_names << path unless requested_names.includes?(path)
+        end
+      end
+      requested_names << FALLBACK_TTF_PATH unless requested_names.includes?(FALLBACK_TTF_PATH)
+      requested_names
+    end
+
+    private def candidate_names(base_font : String, font_descriptor) : Array(String)
+      base_name = normalize_font_name(base_font)
+      family_name = normalize_font_name(font_descriptor.try(&.font_family) || "")
+      bold = font_descriptor.try(&.force_bold?) || base_name.includes?("bold") || family_name.includes?("bold")
+      italic = font_descriptor.try(&.italic?) || base_name.includes?("italic") || base_name.includes?("oblique")
+
+      names = [] of String
+      add_candidate_name(names, base_name)
+      add_candidate_name(names, family_name)
+
+      [base_name, family_name].each do |name|
+        next if name.empty?
+        add_candidate_name(names, styled_variant(name, bold, italic))
+        add_candidate_name(names, styled_variant(strip_style_suffix(name), bold, italic))
+      end
+
+      names
+    end
+
+    private def add_candidate_name(names : Array(String), name : String) : Nil
+      normalized = normalize_font_name(name)
+      return if normalized.empty? || names.includes?(normalized)
+      names << normalized
+    end
+
+    private def normalize_font_name(name) : String
+      name.to_s.gsub(/\A[A-Z]{6}\+/, "").gsub(',', ' ').gsub('-', ' ').squeeze(' ').strip
+    end
+
+    private def strip_style_suffix(name : String) : String
+      name.gsub(/\b(Bold|Italic|Oblique)\b/i, "").squeeze(' ').strip
+    end
+
+    private def styled_variant(name : String, bold : Bool, italic : Bool) : String
+      base = strip_style_suffix(name)
+      return "" if base.empty?
+      parts = [base]
+      parts << "Bold" if bold
+      parts << "Italic" if italic
+      parts.join(' ')
+    end
+
+    private def font_paths_for_name(font_name : String) : Array(String)
+      basenames = [font_name, font_name.gsub(' ', ""), font_name.gsub(' ', "-")]
+      extensions = [".ttf", ".otf", ".ttc"]
+      paths = [] of String
+
+      SYSTEM_FONT_DIRS.each do |dir|
+        next unless Dir.exists?(dir)
+        basenames.each do |basename|
+          extensions.each do |ext|
+            path = File.join(dir, "#{basename}#{ext}")
+            paths << path if File.exists?(path)
+          end
+        end
+      end
+
+      paths
+    end
+
+    private def load_true_type_font(path : String) : Fontbox::TTF::TrueTypeFont?
+      return @@font_cache[path]? if @@font_cache.has_key?(path)
+      return nil unless File.exists?(path)
+
+      font = File.open(path) do |io|
+        parser = Fontbox::TTF::TTFParser.new
+        parser.parse(Pdfbox::IO::RandomAccessReadBuffer.new(io))
+      end
+      @@font_cache[path] = font
+      font
+    rescue ex : ::Exception
+      Log.warn(exception: ex) { "Could not load substitute TrueType font #{path}" }
+      nil
+    end
+
+    private def load_last_resort_true_type_font(base_font : String) : Fontbox::TTF::TrueTypeFont
+      font = load_true_type_font(FALLBACK_TTF_PATH)
+      return font if font
+
+      raise ::IO::Error.new("Fallback TrueType font not found for #{base_font}: #{FALLBACK_TTF_PATH}")
     end
   end
 
@@ -379,11 +490,37 @@ class Pdfbox::Pdmodel::Font::PDTrueTypeFont < Pdfbox::Pdmodel::Font::PDSimpleFon
   end
 
   def bounding_box : PDFont::BoundingBox
-    @font_bbox ||= PDFont::BoundingBox.new # TODO: Generate bounding box
+    @font_bbox ||= generate_bounding_box
   end
 
   def position_vector(code : Int32) : Vector
     Vector.new # TODO: Implement
+  end
+
+  private def generate_bounding_box : PDFont::BoundingBox
+    if descriptor = font_descriptor
+      if bbox = descriptor.font_bounding_box
+        return PDFont::BoundingBox.new(
+          bbox.lower_left_x,
+          bbox.lower_left_y,
+          bbox.upper_right_x,
+          bbox.upper_right_y
+        )
+      end
+    end
+
+    if ttf = @ttf
+      if header = ttf.header
+        return PDFont::BoundingBox.new(
+          header.x_min.to_f32,
+          header.y_min.to_f32,
+          header.x_max.to_f32,
+          header.y_max.to_f32
+        )
+      end
+    end
+
+    PDFont::BoundingBox.new
   end
 
   def width(code : Int32) : Float32

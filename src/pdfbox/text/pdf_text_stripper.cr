@@ -42,6 +42,9 @@ module Pdfbox::Text
     @word_separator : String = " "
     @spacing_tolerance : Float32 = 0.5_f32
     @average_char_tolerance : Float32 = 0.3_f32
+    @sort_by_position : Bool = false
+    @suppress_duplicate_overlapping_text : Bool = true
+    @character_list_mapping = {} of String => Array({Float32, Float32})
 
     # Get the text from a PDF document
     #
@@ -123,31 +126,13 @@ module Pdfbox::Text
       # Write collected text positions to output
       output = @output
       if output
-        normalized_page = String.build do |io|
-          build_lines(@text_positions).each do |line|
-            line_text = String.build do |line_io|
-              previous = nil.as(TextPosition?)
-              previous_average_char_width = -1.0_f32
-
-              line.each do |text_pos|
-                if previous && word_break?(previous, text_pos, previous_average_char_width)
-                  line_io << @word_separator
-                end
-                line_io << text_pos.visually_ordered_unicode
-                previous_average_char_width = average_char_width(text_pos, previous_average_char_width)
-                previous = text_pos
-              end
-            end
-            io << normalize_line_text(normalize_extracted_text(line_text))
-            io << @line_separator
-          end
-        end
-        output << normalized_page
+        output << render_text_positions(@text_positions)
       end
     end
 
     # Override process_text_position to collect text positions
     def process_text_position(text : TextPosition) : Nil
+      return if suppress_duplicate_overlapping_text?(text)
       @text_positions << text
     end
 
@@ -163,6 +148,45 @@ module Pdfbox::Text
       @current_page_no = 0
       @document = nil
       @text_positions.clear
+      @character_list_mapping.clear
+    end
+
+    def suppress_duplicate_overlapping_text=(value : Bool) : Bool
+      @suppress_duplicate_overlapping_text = value
+    end
+
+    def line_separator=(value : String) : String
+      @line_separator = value
+    end
+
+    def sort_by_position=(value : Bool) : Bool
+      @sort_by_position = value
+    end
+
+    def sort_by_position? : Bool
+      @sort_by_position
+    end
+
+    private def suppress_duplicate_overlapping_text?(text : TextPosition) : Bool
+      return false unless @suppress_duplicate_overlapping_text
+
+      text_character = text.unicode
+      return false if text_character.empty?
+
+      char_count = text_character.size
+      char_count = 1 if char_count <= 0
+      tolerance = text.width / char_count / 3.0_f32
+
+      same_text_characters = @character_list_mapping[text_character]? || [] of {Float32, Float32}
+      same_text_characters.each do |(x, y)|
+        if (text.x - x).abs <= tolerance && (text.y - y).abs <= tolerance
+          return true
+        end
+      end
+
+      same_text_characters << {text.x, text.y}
+      @character_list_mapping[text_character] = same_text_characters
+      false
     end
 
     private def normalize_extracted_text(text : String) : String
@@ -234,8 +258,155 @@ module Pdfbox::Text
 
     private def same_line?(reference : TextPosition, candidate : TextPosition) : Bool
       delta_y = (reference.y - candidate.y).abs
-      tolerance = {reference.height, candidate.height, 5.0_f32}.max * 0.5_f32
+      tolerance = {reference.height, candidate.height, 5.0_f32}.max * 0.25_f32
       delta_y <= tolerance
+    end
+
+    private def sort_text_positions!(text_positions : Array(TextPosition)) : Nil
+      sorted = stable_merge_sort(text_positions)
+      text_positions.clear
+      text_positions.concat(sorted)
+      remove_contained_spaces(text_positions)
+    end
+
+    private def stable_merge_sort(text_positions : Array(TextPosition)) : Array(TextPosition)
+      size = text_positions.size
+      return text_positions.dup if size <= 1
+
+      midpoint = size // 2
+      left = stable_merge_sort(text_positions[0, midpoint])
+      right = stable_merge_sort(text_positions[midpoint, size - midpoint])
+      merge_text_positions(left, right)
+    end
+
+    private def merge_text_positions(left : Array(TextPosition), right : Array(TextPosition)) : Array(TextPosition)
+      merged = Array(TextPosition).new(left.size + right.size)
+      left_index = 0
+      right_index = 0
+
+      while left_index < left.size && right_index < right.size
+        if compare_text_positions(left[left_index], right[right_index]) <= 0
+          merged << left[left_index]
+          left_index += 1
+        else
+          merged << right[right_index]
+          right_index += 1
+        end
+      end
+
+      while left_index < left.size
+        merged << left[left_index]
+        left_index += 1
+      end
+
+      while right_index < right.size
+        merged << right[right_index]
+        right_index += 1
+      end
+
+      merged
+    end
+
+    private def float_compare(left : Float32, right : Float32) : Int32
+      return 0 if left == right
+      return 1 if left.nan?
+      return -1 if right.nan?
+
+      if left < right
+        -1
+      else
+        1
+      end
+    end
+
+    private def compare_text_positions(left : TextPosition, right : TextPosition) : Int32
+      cmp = float_compare(left.dir, right.dir)
+      return cmp if cmp != 0
+
+      left_y_bottom = left.y_dir_adj
+      right_y_bottom = right.y_dir_adj
+      left_y_top = left_y_bottom - left.height_dir
+      right_y_top = right_y_bottom - right.height_dir
+      y_difference = (left_y_bottom - right_y_bottom).abs
+
+      if y_difference < 0.1_f32 ||
+         (right_y_bottom >= left_y_top && right_y_bottom <= left_y_bottom) ||
+         (left_y_bottom >= right_y_top && left_y_bottom <= right_y_bottom)
+        0
+      elsif left_y_bottom < right_y_bottom
+        -1
+      else
+        1
+      end
+    end
+
+    private def remove_contained_spaces(text_positions : Array(TextPosition)) : Nil
+      return if text_positions.empty?
+
+      filtered = [] of TextPosition
+      previous_position = text_positions.first
+      filtered << previous_position
+
+      text_positions.each_with_index do |position, index|
+        next if index == 0
+
+        if position.unicode == " " && previous_position.completely_contains(position)
+          next
+        end
+
+        filtered << position
+        previous_position = position
+      end
+
+      text_positions.clear
+      text_positions.concat(filtered)
+    end
+
+    private def overlap?(y1 : Float32, height1 : Float32, y2 : Float32, height2 : Float32) : Bool
+      within?(y1, y2, 0.1_f32) ||
+        (y2 <= y1 && y2 >= y1 - height1) ||
+        (y1 <= y2 && y1 >= y2 - height2)
+    end
+
+    private def within?(first : Float32, second : Float32, variance : Float32) : Bool
+      (first - second).abs <= variance
+    end
+
+    protected def render_text_positions(text_positions : Array(TextPosition)) : String
+      sort_text_positions!(text_positions) if @sort_by_position
+
+      String.build do |io|
+        build_lines(text_positions).each do |line|
+          line_text = String.build do |line_io|
+            previous = nil.as(TextPosition?)
+            previous_average_char_width = -1.0_f32
+
+            line.each do |text_pos|
+              if previous && word_break?(previous, text_pos, previous_average_char_width)
+                line_io << @word_separator
+              end
+              line_io << text_pos.visually_ordered_unicode
+              previous_average_char_width = average_char_width(text_pos, previous_average_char_width)
+              previous = text_pos
+            end
+          end
+          io << normalize_line_text(normalize_extracted_text(line_text))
+          io << @line_separator
+        end
+      end
+    end
+
+    protected def collected_text_positions : Array(TextPosition)
+      @text_positions
+    end
+
+    protected def line_groups_for(text_positions : Array(TextPosition)) : Array(Array(TextPosition))
+      build_lines(text_positions)
+    end
+
+    protected def ordered_text_positions(text_positions : Array(TextPosition)) : Array(TextPosition)
+      return text_positions.dup unless @sort_by_position
+      stable_merge_sort(text_positions)
     end
 
     private def average_char_width(text_pos : TextPosition, previous_average : Float32) : Float32
@@ -441,7 +612,7 @@ module Pdfbox::Text
       {transformed, mirrored_char(opener)}
     end
 
-    private def append_reordered_words(io : IO, words : Array(String), spaces : Array(String)) : Nil
+    private def append_reordered_words(io : ::IO, words : Array(String), spaces : Array(String)) : Nil
       reversed_words = words.reverse
       reversed_spaces = spaces.reverse
       reversed_words.each_with_index do |word, index|

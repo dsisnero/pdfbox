@@ -15,6 +15,7 @@
 
 require "./text/text_position"
 require "./text/pdf_text_stripper"
+require "./text/pdf_text_stripper_by_area"
 
 module Pdfbox::Text
 end

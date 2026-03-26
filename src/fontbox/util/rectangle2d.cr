@@ -61,6 +61,11 @@ module Fontbox
         @height = max_y - min_y
       end
 
+      # Returns whether the rectangle contains the specified point.
+      def contains(x : Float64, y : Float64) : Bool
+        x >= @x && x < @x + @width && y >= @y && y < @y + @height
+      end
+
       def to_s(io : IO) : Nil
         io << "Rectangle2D(" << @x << ", " << @y << ", " << @width << ", " << @height << ")"
       end
