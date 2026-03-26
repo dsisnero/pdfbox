@@ -912,8 +912,8 @@ pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/pagenavigation/PDTran
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/pagenavigation/PDTransitionTest.java::test::getStyle	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/pagenavigation/PDTransitionTest.java::test::motion	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/rendering/TestQuality.java::test::testPDFBox4831	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/text/BidiTest.java::test::testNotSorted	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/text/BidiTest.java::test::testSorted	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/text/BidiTest.java::test::testNotSorted	ported	spec/pdfbox/text/bidi_text_stripper_spec.cr	Ported against BidiSample.pdf with Java unsorted fixture output
+pdfbox/src/test/java/org/apache/pdfbox/text/BidiTest.java::test::testSorted	ported	spec/pdfbox/text/bidi_text_stripper_spec.cr	Ported against BidiSample.pdf sorted fixture output with sort_by_position enabled
 pdfbox/src/test/java/org/apache/pdfbox/text/PDFTextStripperByAreaTest.java::test::testSomeMethod	ported	spec/pdfbox/text/pdf_text_stripper_by_area_spec.cr	Ported against eu-001.pdf with Java rectangle coverage for page 1 and page 3 region extraction
 pdfbox/src/test/java/org/apache/pdfbox/text/TestTextStripper.java::test::testExtract	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/text/TestTextStripper.java::test::testIgnoreContentStreamSpaceGlyphs	ported	spec/pdfbox/text/pdf_text_stripper_spec.cr	Ported exactly from Java with overlapping Helvetica/Times content stream text and ignore-space-glyph sorting expectations
