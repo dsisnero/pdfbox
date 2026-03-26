@@ -1631,6 +1631,42 @@ module Pdfbox::Pdmodel
       end
     end
 
+    def destination : Cos::Base?
+      destination = @cos_dict[Cos::Name.new("Dest")]
+      if destination.is_a?(Cos::Object)
+        destination = destination.object
+      end
+      destination
+    end
+
+    def find_destination_page(document : Document) : Page?
+      dest = destination
+      return nil unless dest
+
+      case dest
+      when Cos::Array
+        page_entry = dest[0]?
+        return nil unless page_entry
+
+        if page_entry.is_a?(Cos::Object)
+          page_entry = page_entry.object
+        end
+
+        case page_entry
+        when Cos::Dictionary
+          Page.new(page_entry)
+        when Cos::Integer
+          page_number = page_entry.value.to_i
+          return nil if page_number < 0 || page_number >= document.page_count
+          document.get_page(page_number)
+        else
+          nil
+        end
+      else
+        nil
+      end
+    end
+
     # Get the next sibling outline item
     def next_sibling : OutlineItem?
       next_dict = @cos_dict[Cos::Name.new("Next")]

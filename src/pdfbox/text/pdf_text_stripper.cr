@@ -34,8 +34,10 @@ module Pdfbox::Text
     @article_start : String = ""
     @article_end : String = ""
     @add_more_formatting : Bool = false
-    @start_bookmark : Pdfbox::Pdmodel::Page? = nil
-    @end_bookmark : Pdfbox::Pdmodel::Page? = nil
+    @start_bookmark : Pdfbox::Pdmodel::OutlineItem? = nil
+    @end_bookmark : Pdfbox::Pdmodel::OutlineItem? = nil
+    @start_bookmark_page_number : Int32 = -1
+    @end_bookmark_page_number : Int32 = -1
     @start_page_number : Int32 = 1
     @end_page_number : Int32 = -1
     @text_positions : Array(TextPosition) = [] of TextPosition
@@ -80,26 +82,43 @@ module Pdfbox::Text
 
     # Process all pages in the document
     def process_pages(pages : Pdfbox::Pdmodel::PDPageTree) : Nil
-      # Calculate start and end bookmark page numbers
-      start_bookmark_page = @start_bookmark
-      if start_bookmark_page
-        # TODO: Find page number in tree
-      end
+      start_bookmark_page = @start_bookmark.try { |bookmark| @document.try { |doc| bookmark.find_destination_page(doc) } }
+      @start_bookmark_page_number = start_bookmark_page ? pages.index_of(start_bookmark_page) + 1 : -1
 
-      end_bookmark_page = @end_bookmark
-      if end_bookmark_page
-        # TODO: Find page number in tree
+      end_bookmark_page = @end_bookmark.try { |bookmark| @document.try { |doc| bookmark.find_destination_page(doc) } }
+      @end_bookmark_page_number = end_bookmark_page ? pages.index_of(end_bookmark_page) + 1 : -1
+
+      if @start_bookmark_page_number == -1 && @end_bookmark_page_number == -1
+        if same_orphan_bookmark_special_case?
+          @start_bookmark_page_number = 0
+          @end_bookmark_page_number = 0
+        end
       end
 
       pages.each do |page|
-        process_page(page)
+        process_page(page) if page.has_contents?
+        @current_page_no += 1
       end
     end
 
     # Process all pages from an array
     def process_pages(pages : Array(Pdfbox::Pdmodel::Page)) : Nil
+      start_bookmark_page = @start_bookmark.try { |bookmark| @document.try { |doc| bookmark.find_destination_page(doc) } }
+      @start_bookmark_page_number = start_bookmark_page ? page_number_for(pages, start_bookmark_page) : -1
+
+      end_bookmark_page = @end_bookmark.try { |bookmark| @document.try { |doc| bookmark.find_destination_page(doc) } }
+      @end_bookmark_page_number = end_bookmark_page ? page_number_for(pages, end_bookmark_page) : -1
+
+      if @start_bookmark_page_number == -1 && @end_bookmark_page_number == -1
+        if same_orphan_bookmark_special_case?
+          @start_bookmark_page_number = 0
+          @end_bookmark_page_number = 0
+        end
+      end
+
       pages.each do |page|
-        process_page(page)
+        process_page(page) if page.has_contents?
+        @current_page_no += 1
       end
     end
 
@@ -107,8 +126,6 @@ module Pdfbox::Text
     #
     # @param page The page to process
     def process_page(page : Pdfbox::Pdmodel::Page) : Nil
-      @current_page_no += 1
-
       # Check if we should process this page based on page number range
       if @start_page_number > 0 && @current_page_no < @start_page_number
         return
@@ -118,8 +135,17 @@ module Pdfbox::Text
         return
       end
 
+      if @start_bookmark_page_number >= 0 && @current_page_no < @start_bookmark_page_number
+        return
+      end
+
+      if @end_bookmark_page_number >= 0 && @current_page_no > @end_bookmark_page_number
+        return
+      end
+
       # Clear text positions for new page
       @text_positions.clear
+      @character_list_mapping.clear
 
       # Process the page content using the parent engine
       super(page)
@@ -147,8 +173,10 @@ module Pdfbox::Text
     end
 
     private def reset_engine
-      @current_page_no = 0
+      @current_page_no = 1
       @document = nil
+      @start_bookmark_page_number = -1
+      @end_bookmark_page_number = -1
       @text_positions.clear
       @character_list_mapping.clear
     end
@@ -175,6 +203,22 @@ module Pdfbox::Text
 
     def end_page : Int32
       @end_page_number
+    end
+
+    def start_bookmark=(value : Pdfbox::Pdmodel::OutlineItem?) : Pdfbox::Pdmodel::OutlineItem?
+      @start_bookmark = value
+    end
+
+    def start_bookmark : Pdfbox::Pdmodel::OutlineItem?
+      @start_bookmark
+    end
+
+    def end_bookmark=(value : Pdfbox::Pdmodel::OutlineItem?) : Pdfbox::Pdmodel::OutlineItem?
+      @end_bookmark = value
+    end
+
+    def end_bookmark : Pdfbox::Pdmodel::OutlineItem?
+      @end_bookmark
     end
 
     def page_end=(value : String) : String
@@ -221,6 +265,18 @@ module Pdfbox::Text
       same_text_characters << {text.x, text.y}
       @character_list_mapping[text_character] = same_text_characters
       false
+    end
+
+    private def page_number_for(pages : Array(Pdfbox::Pdmodel::Page), target_page : Pdfbox::Pdmodel::Page) : Int32
+      index = pages.index { |page| page.cos_object == target_page.cos_object }
+      index ? index.to_i32 + 1 : -1
+    end
+
+    private def same_orphan_bookmark_special_case? : Bool
+      start_bookmark = @start_bookmark
+      end_bookmark = @end_bookmark
+      return false unless start_bookmark && end_bookmark
+      start_bookmark.cos_object == end_bookmark.cos_object
     end
 
     private def normalize_extracted_text(text : String) : String

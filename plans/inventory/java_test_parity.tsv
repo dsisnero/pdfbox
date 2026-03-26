@@ -918,7 +918,7 @@ pdfbox/src/test/java/org/apache/pdfbox/text/PDFTextStripperByAreaTest.java::test
 pdfbox/src/test/java/org/apache/pdfbox/text/TestTextStripper.java::test::testExtract	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/text/TestTextStripper.java::test::testIgnoreContentStreamSpaceGlyphs	ported	spec/pdfbox/text/pdf_text_stripper_spec.cr	Ported exactly from Java with overlapping Helvetica/Times content stream text and ignore-space-glyph sorting expectations
 pdfbox/src/test/java/org/apache/pdfbox/text/TestTextStripper.java::test::testStartEndPage	ported	spec/pdfbox/text/pdf_text_stripper_spec.cr	Ported with Java start/end page assertions on eu-001.pdf, including trimmed text prefix/suffix and exact length
-pdfbox/src/test/java/org/apache/pdfbox/text/TestTextStripper.java::test::testStripByOutlineItems	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/text/TestTextStripper.java::test::testStripByOutlineItems	ported	spec/pdfbox/text/pdf_text_stripper_spec.cr	Ported against with_outline.pdf with Java-equivalent bookmark destination page checks and outline-vs-page-range extraction assertions
 pdfbox/src/test/java/org/apache/pdfbox/text/TestTextStripper.java::test::testTabula	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/util/MatrixTest.java::test::testConstructionAndCopy	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/util/MatrixTest.java::test::testCreateMatrixUsingInvalidInput	missing	-	baseline
