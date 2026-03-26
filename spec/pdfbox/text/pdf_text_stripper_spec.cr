@@ -17,4 +17,22 @@ describe Pdfbox::Text::PDFTextStripper do
       doc.close
     end
   end
+
+  it "extracts only page 2 of eu-001.pdf like the Java fixture" do
+    pdf_path = SpecPaths.resolve("vendor/pdfbox/pdfbox/src/test/resources/input/eu-001.pdf")
+
+    doc = Pdfbox::Pdmodel::Document.load(pdf_path)
+    begin
+      stripper = Pdfbox::Text::PDFTextStripper.new
+      stripper.start_page = 2
+      stripper.end_page = 2
+
+      text = stripper.get_text(doc).gsub('\r', "").strip
+      text.starts_with?("Pesticides").should be_true
+      text.ends_with?("1 000 10 10").should be_true
+      text.size.should eq(1378)
+    ensure
+      doc.close
+    end
+  end
 end

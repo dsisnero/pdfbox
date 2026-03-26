@@ -159,6 +159,30 @@ module Pdfbox::Text
       @line_separator = value
     end
 
+    def start_page=(value : Int) : Int32
+      @start_page_number = value.to_i32
+    end
+
+    def start_page : Int32
+      @start_page_number
+    end
+
+    def end_page=(value : Int) : Int32
+      @end_page_number = value.to_i32
+    end
+
+    def end_page : Int32
+      @end_page_number
+    end
+
+    def page_end=(value : String) : String
+      @page_end = value
+    end
+
+    def page_end : String
+      @page_end
+    end
+
     def sort_by_position=(value : Bool) : Bool
       @sort_by_position = value
     end
@@ -225,7 +249,7 @@ module Pdfbox::Text
       normalized = text.gsub("Ãá", "«").gsub("Ãà", "»")
       tokens = normalized.scan(/\s+|\S+/).map(&.[0])
       suffix_start = bidi_suffix_start(tokens)
-      return normalized.strip if suffix_start <= 0 || suffix_start >= tokens.size
+      return normalized if suffix_start <= 0 || suffix_start >= tokens.size
 
       prefix = tokens[0, suffix_start].join
       suffix = reorder_bidi_suffix(tokens[suffix_start..])
@@ -234,7 +258,7 @@ module Pdfbox::Text
                   else
                     ""
                   end
-      (prefix + separator + suffix).strip
+      prefix + separator + suffix
     end
 
     private def build_lines(text_positions : Array(TextPosition)) : Array(Array(TextPosition))
