@@ -47,7 +47,7 @@ module Pdfbox::Text
     @sort_by_position : Bool = false
     @suppress_duplicate_overlapping_text : Bool = true
     @ignore_content_stream_space_glyphs : Bool = false
-    @character_list_mapping = {} of String => Array({Float32, Float32})
+    @character_list_mapping = {} of String => Hash(Float32, Set(Float32))
 
     # Get the text from a PDF document
     #
@@ -255,14 +255,20 @@ module Pdfbox::Text
       char_count = 1 if char_count <= 0
       tolerance = text.width / char_count / 3.0_f32
 
-      same_text_characters = @character_list_mapping[text_character]? || [] of {Float32, Float32}
-      same_text_characters.each do |(x, y)|
-        if (text.x - x).abs <= tolerance && (text.y - y).abs <= tolerance
-          return true
+      text_x = text.x
+      text_y = text.y
+      same_text_characters = @character_list_mapping[text_character]? || {} of Float32 => Set(Float32)
+
+      same_text_characters.each do |x, y_set|
+        next unless x >= text_x - tolerance && x < text_x + tolerance
+
+        y_set.each do |y|
+          return true if y >= text_y - tolerance && y < text_y + tolerance
         end
       end
 
-      same_text_characters << {text.x, text.y}
+      same_text_characters[text_x] ||= Set(Float32).new
+      same_text_characters[text_x] << text_y
       @character_list_mapping[text_character] = same_text_characters
       false
     end
@@ -329,27 +335,41 @@ module Pdfbox::Text
 
     private def build_lines(text_positions : Array(TextPosition)) : Array(Array(TextPosition))
       lines = [] of Array(TextPosition)
+      current_line = [] of TextPosition
+      max_y_for_line = Float32::MIN
+      max_height_for_line = -1.0_f32
 
       text_positions.each do |text_pos|
-        current_line = lines.last?
-        if current_line && same_line?(current_line.first, text_pos)
+        if current_line.empty?
           current_line << text_pos
+          max_y_for_line = text_pos.y
+          max_height_for_line = text_pos.height
+        elsif overlap?(text_pos.y, text_pos.height, max_y_for_line, max_height_for_line) &&
+              !backward_staggered_line_break?(current_line.last, text_pos)
+          current_line << text_pos
+          max_y_for_line = text_pos.y if text_pos.y >= max_y_for_line
+          max_height_for_line = Math.max(max_height_for_line, text_pos.height)
         else
-          lines << [text_pos]
+          lines << current_line
+          current_line = [text_pos]
+          max_y_for_line = text_pos.y
+          max_height_for_line = text_pos.height
         end
       end
 
+      lines << current_line unless current_line.empty?
       lines
     end
 
-    private def quantize_y(y : Float32) : Int32
-      (y * 10).round.to_i
-    end
+    private def backward_staggered_line_break?(previous : TextPosition, candidate : TextPosition) : Bool
+      return false if @ignore_content_stream_space_glyphs
+      return false if token_has_rtl?(previous.unicode) || token_has_rtl?(candidate.unicode)
 
-    private def same_line?(reference : TextPosition, candidate : TextPosition) : Bool
-      delta_y = (reference.y - candidate.y).abs
-      tolerance = {reference.height, candidate.height, 5.0_f32}.max * 0.25_f32
-      delta_y <= tolerance
+      x_reset_threshold = Math.max(previous.width_of_space.abs * 3.0_f32, previous.width * 1.5_f32)
+      y_drop_threshold = Math.min(previous.height, candidate.height) * 0.12_f32
+
+      candidate.x + x_reset_threshold < previous.x &&
+        candidate.y > previous.y + y_drop_threshold
     end
 
     private def sort_text_positions!(text_positions : Array(TextPosition)) : Nil

@@ -1162,18 +1162,32 @@ module Pdfbox::Cos
       value.value
     end
 
-    # Get an integer value, returning default if not present or not an integer
+    # Get an integer value, returning default if not present or not a number.
+    # Accepts both COSInteger and COSFloat, matching Java's instanceof COSNumber check.
     def get_int(key : Name, default : Int64 = 0_i64) : Int64
       value = get_dictionary_object(key)
-      return default unless value.is_a?(Integer)
-      value.value
+      case value
+      when Integer
+        value.value
+      when Float
+        value.value.to_i64
+      else
+        default
+      end
     end
 
-    # Get a float value, returning default if not present or not a float
+    # Get a float value, returning default if not present or not a number.
+    # Accepts both COSInteger and COSFloat, matching Java's instanceof COSNumber check.
     def get_float(key : Name, default : Float64 = 0.0_f64) : Float64
       value = get_dictionary_object(key)
-      return default unless value.is_a?(Float)
-      value.value
+      case value
+      when Float
+        value.value
+      when Integer
+        value.value.to_f64
+      else
+        default
+      end
     end
 
     # Get an array value, returning nil if not present or not an array
