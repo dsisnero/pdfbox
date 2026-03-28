@@ -1,12 +1,50 @@
 require "../../spec_helper"
 
+class PDFTabulaTextStripperSpec < Pdfbox::Text::PDFTextStripper
+  def compute_font_height(font : Pdfbox::Pdmodel::Font::PDFont) : Float64
+    bbox = font.bounding_box
+    if bbox.lower_left_y < -32768
+      bbox = Pdfbox::Pdmodel::Font::PDFont::BoundingBox.new(
+        bbox.lower_left_x,
+        -(bbox.lower_left_y + 65536),
+        bbox.upper_right_x,
+        bbox.upper_right_y
+      )
+    end
+
+    glyph_height = bbox.height / 2.0
+
+    if font_descriptor = font.font_descriptor
+      cap_height = font_descriptor.cap_height
+      if cap_height != 0 && (cap_height < glyph_height || glyph_height == 0)
+        glyph_height = cap_height.to_f
+      end
+
+      ascent = font_descriptor.ascent
+      descent = font_descriptor.descent
+      # PDFBOX-3464, PDFBOX-4480, PDFBOX-4553:
+      # Sometimes even CapHeight has very high value, but Ascent and Descent are ok
+      if ascent > 0 && descent < 0 &&
+         ((ascent - descent) / 2 < glyph_height || glyph_height == 0)
+        glyph_height = (ascent - descent) / 2
+      end
+    end
+
+    if font.is_a?(Pdfbox::Pdmodel::Font::PDType3Font)
+      font.font_matrix.transform_point(0.0, glyph_height.to_f64).y.to_f64
+    else
+      glyph_height / 1000.0
+    end
+  end
+end
+
 describe Pdfbox::Text::PDFTextStripper do
   it "extracts text from hello3.pdf using the Java fixture" do
     pdf_path = SpecPaths.resolve("vendor/pdfbox/pdfbox/src/test/resources/input/hello3.pdf")
     expected_path = SpecPaths.resolve("vendor/pdfbox/pdfbox/src/test/resources/input/hello3.pdf.txt")
 
     expected = File.read(expected_path, encoding: "UTF-8")
-    expected = expected[1..] if expected.starts_with?('\uFEFF')
+    expected = expected[1..] if expected.starts_with?("\uFEFF")
     expected = expected.strip
 
     doc = Pdfbox::Pdmodel::Document.load(pdf_path)
@@ -131,6 +169,23 @@ describe Pdfbox::Text::PDFTextStripper do
       stripper.start_bookmark = orphan
       stripper.end_bookmark = orphan
       stripper.get_text(doc).should eq("")
+    ensure
+      doc.close
+    end
+  end
+
+  it "extracts eu-001.pdf with tabula font-height behavior like the Java fixture" do
+    pdf_path = SpecPaths.resolve("vendor/pdfbox/pdfbox/src/test/resources/input/eu-001.pdf")
+    expected_path = SpecPaths.resolve("vendor/pdfbox/pdfbox/src/test/resources/input/eu-001.pdf-tabula.txt")
+
+    expected = File.read(expected_path, encoding: "UTF-8")
+    expected = expected[1..] if expected.starts_with?("\uFEFF")
+
+    doc = Pdfbox::Pdmodel::Document.load(pdf_path)
+    begin
+      stripper = PDFTabulaTextStripperSpec.new
+      actual = stripper.get_text(doc)
+      actual.should eq(expected)
     ensure
       doc.close
     end

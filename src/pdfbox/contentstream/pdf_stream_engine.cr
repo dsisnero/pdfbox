@@ -197,7 +197,8 @@ module Pdfbox::Contentstream
           if a && b && c && d && e && f
             matrix = Util::Matrix.new(a.to_f32, b.to_f32, c.to_f32, d.to_f32, e.to_f32, f.to_f32)
             ctm = graphics_state.current_transformation_matrix
-            graphics_state.current_transformation_matrix = ctm.multiply(matrix)
+            ctm.concatenate(matrix)
+            graphics_state.current_transformation_matrix = ctm
           end
         end
       when "BT"
@@ -280,7 +281,7 @@ module Pdfbox::Contentstream
           if a && b && c && d && e && f
             matrix = Util::Matrix.new(a.to_f32, b.to_f32, c.to_f32, d.to_f32, e.to_f32, f.to_f32)
             self.text_matrix = matrix
-            self.text_line_matrix = matrix
+            self.text_line_matrix = matrix.clone
           end
         end
       when "T*"
@@ -376,8 +377,10 @@ module Pdfbox::Contentstream
     # Move text position
     def move_text(tx : Float64, ty : Float64) : Nil
       matrix = Util::Matrix.translate(tx.to_f32, ty.to_f32)
-      new_matrix = text_line_matrix.multiply(matrix)
-      self.text_matrix = new_matrix
+      text_line = text_line_matrix
+      text_line.concatenate(matrix)
+      new_matrix = text_line
+      self.text_matrix = new_matrix.clone
       self.text_line_matrix = new_matrix
     end
 
@@ -421,8 +424,7 @@ module Pdfbox::Contentstream
 
     # Apply text position adjustment from TJ operator
     def apply_text_adjustment(tx : Float64, ty : Float64) : Nil
-      matrix = Util::Matrix.translate(tx.to_f32, ty.to_f32)
-      self.text_matrix = text_matrix.multiply(matrix)
+      text_matrix.translate(tx.to_f32, ty.to_f32)
     end
 
     # Show text bytes
@@ -577,9 +579,9 @@ module Pdfbox::Contentstream
 
     def clone : GraphicsState
       state = GraphicsState.new
-      state.current_transformation_matrix = @current_transformation_matrix
-      state.text_matrix = @text_matrix
-      state.text_line_matrix = @text_line_matrix
+      state.current_transformation_matrix = @current_transformation_matrix.clone
+      state.text_matrix = @text_matrix.clone
+      state.text_line_matrix = @text_line_matrix.clone
       state.font_size = @font_size
       state.horizontal_scaling = @horizontal_scaling
       state.character_spacing = @character_spacing

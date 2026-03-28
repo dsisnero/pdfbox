@@ -160,13 +160,16 @@ module Pdfbox::Contentstream
 
       # Adjust for cropbox if needed
       translate_matrix = @translate_matrix
+      page_size = @page_size
       translated_text_rendering_matrix = if translate_matrix.nil?
                                            text_rendering_matrix
                                          else
+                                           return text_rendering_matrix unless page_size
+                                           next_x -= page_size.lower_left_x.to_f32
+                                           next_y -= page_size.lower_left_y.to_f32
                                            Util::Matrix.concatenate(translate_matrix, text_rendering_matrix)
                                          end
 
-      page_size = @page_size
       if page_size
         process_text_position(Text::TextPosition.new(
           @page_rotation,

@@ -32,6 +32,7 @@ Metrics/CyclomaticComplexity:
   - src/pdfbox/pdf_parser/cos_parser.cr
   - src/pdfbox/pdf_parser/endstream_filter_stream.cr
   - src/pdfbox/contentstream/pdf_stream_engine.cr
+  - src/pdfbox/contentstream/legacy_pdf_stream_engine.cr
   - src/pdfbox/pdf_parser/parser.cr
   - src/pdfbox/pdf_parser/pdf_io.cr
   - src/pdfbox/pdf_parser/pdf_stream_parser.cr
