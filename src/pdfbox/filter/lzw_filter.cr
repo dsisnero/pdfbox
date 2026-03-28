@@ -54,6 +54,7 @@ module Pdfbox::Filter
 
     def encode(input : Bytes) : Bytes
       code_table = create_code_table
+      code_lookup = create_code_lookup
       chunk = 9
       writer = BitWriter.new
 
@@ -67,15 +68,18 @@ module Pdfbox::Filter
           found_code = byte.to_i
         else
           pattern << byte
-          new_found_code = find_pattern_code(code_table, pattern)
+          new_found_code = find_pattern_code(code_lookup, pattern)
           if new_found_code == -1
             chunk = calculate_chunk(code_table.size - 1, true)
             writer.write_bits(found_code, chunk)
-            code_table << bytes_from(pattern)
+            bytes_pattern = bytes_from(pattern)
+            code_table << bytes_pattern
+            code_lookup[bytes_pattern] = code_table.size - 1
 
             if code_table.size == 4096
               writer.write_bits(CLEAR_TABLE, chunk)
               code_table = create_code_table
+              code_lookup = create_code_lookup
             end
 
             pattern = [byte]
@@ -109,17 +113,20 @@ module Pdfbox::Filter
       code_table
     end
 
-    private def find_pattern_code(code_table : Array(Bytes?), pattern : Array(UInt8)) : Int32
+    private def create_code_lookup : Hash(Bytes, Int32)
+      code_lookup = {} of Bytes => Int32
+      256.times do |i|
+        key = Bytes[i.to_u8]
+        code_lookup[key] = i
+      end
+      code_lookup
+    end
+
+    private def find_pattern_code(code_lookup : Hash(Bytes, Int32), pattern : Array(UInt8)) : Int32
       return pattern[0].to_i if pattern.size == 1
 
       bytes_pattern = bytes_from(pattern)
-      i = 257
-      while i < code_table.size
-        entry = code_table[i]
-        return i if entry && entry == bytes_pattern
-        i += 1
-      end
-      -1
+      code_lookup[bytes_pattern]? || -1
     end
 
     private def calculate_chunk(tab_size : Int32, early_change : Bool) : Int32
