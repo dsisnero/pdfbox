@@ -10,6 +10,8 @@ require "./pdmodel/document_interchange"
 require "./pdmodel/font"
 require "./pdmodel/page_content_stream"
 require "./pdmodel/page"
+require "./pdmodel/page_layout"
+require "./pdmodel/page_mode"
 
 module Pdfbox::Pdmodel
   # Main PDF document class

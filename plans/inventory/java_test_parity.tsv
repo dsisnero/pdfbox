@@ -399,13 +399,13 @@ pdfbox/src/test/java/org/apache/pdfbox/encryption/TestSymmetricKeyEncryption.jav
 pdfbox/src/test/java/org/apache/pdfbox/encryption/TestSymmetricKeyEncryption.java::test::testPermissions	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/encryption/TestSymmetricKeyEncryption.java::test::testProtection	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/encryption/TestSymmetricKeyEncryption.java::test::testProtectionInnerAttachment	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/filter/PredictorTest.java::test::testCalcSetBitSeq	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/filter/PredictorTest.java::test::testGetBitSeq	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/filter/TestFilters.java::test::testEmptyFilterList	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/filter/TestFilters.java::test::testFilters	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/filter/TestFilters.java::test::testPDFBOX1977	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/filter/TestFilters.java::test::testPDFBOX4517	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/filter/TestFilters.java::test::testRLE	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/filter/PredictorTest.java::test::testCalcSetBitSeq	ported	spec/pdfbox/filter/predictor_spec.cr	Ported Predictor calc_set_bit_seq vectors from Java PredictorTest
+pdfbox/src/test/java/org/apache/pdfbox/filter/PredictorTest.java::test::testGetBitSeq	ported	spec/pdfbox/filter/predictor_spec.cr	Ported Predictor get_bit_seq vectors from Java PredictorTest
+pdfbox/src/test/java/org/apache/pdfbox/filter/TestFilters.java::test::testEmptyFilterList	ported	spec/pdfbox/filter/filter_spec.cr	Ported empty filter list decode error parity from Java TestFilters
+pdfbox/src/test/java/org/apache/pdfbox/filter/TestFilters.java::test::testFilters	ported	spec/pdfbox/filter/filter_spec.cr	Ported randomized deterministic and nondeterministic round-trip coverage across all implemented filters; LZW encoder lookup now avoids pathological scan time
+pdfbox/src/test/java/org/apache/pdfbox/filter/TestFilters.java::test::testPDFBOX1977	ported	spec/pdfbox/filter/filter_spec.cr	Ported Java PDFBOX-1977 LZW regression vector round-trip coverage
+pdfbox/src/test/java/org/apache/pdfbox/filter/TestFilters.java::test::testPDFBOX4517	ported	spec/pdfbox/filter/test_filters_spec.cr	Ported encrypted identity-filter fixture load parity from Java TestFilters
+pdfbox/src/test/java/org/apache/pdfbox/filter/TestFilters.java::test::testRLE	ported	spec/pdfbox/filter/run_length_decode_filter_spec.cr	Ported simple and corner-case RLE round-trip vectors from Java TestFilters
 pdfbox/src/test/java/org/apache/pdfbox/multipdf/MergeAcroFormsTest.java::test::testAPEntry	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/multipdf/MergeAcroFormsTest.java::test::testAnnotsEntry	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/multipdf/MergeAcroFormsTest.java::test::testLegacyModeMerge	missing	-	baseline
@@ -477,28 +477,28 @@ pdfbox/src/test/java/org/apache/pdfbox/pdfparser/TestPDFParser.java::test::testP
 pdfbox/src/test/java/org/apache/pdfbox/pdfparser/TestPDFParser.java::test::testPDFBox5025	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdfparser/TestPDFParser.java::test::testPDFParserMissingCatalog	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdfparser/TestPDFParser.java::test::testParseGenko	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdfwriter/COSDocumentCompressionTest.java::test::testAlteredDoc	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdfwriter/COSDocumentCompressionTest.java::test::testCompressAcroformDoc	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdfwriter/COSDocumentCompressionTest.java::test::testCompressAttachmentsDoc	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdfwriter/COSDocumentCompressionTest.java::test::testAlteredDoc	ported	spec/pdfbox/pdfwriter/pdfwriter_spec.cr	Ported Java altered document compression round-trip with added page content stream length assertion
+pdfbox/src/test/java/org/apache/pdfbox/pdfwriter/COSDocumentCompressionTest.java::test::testCompressAcroformDoc	ported	spec/pdfbox/pdfwriter/pdfwriter_spec.cr	Ported AcroForm compression round-trip assertions from Java COSDocumentCompressionTest
+pdfbox/src/test/java/org/apache/pdfbox/pdfwriter/COSDocumentCompressionTest.java::test::testCompressAttachmentsDoc	ported	spec/pdfbox/pdfwriter/pdfwriter_spec.cr	Ported embedded-file compression round-trip assertions from Java COSDocumentCompressionTest
 pdfbox/src/test/java/org/apache/pdfbox/pdfwriter/COSDocumentCompressionTest.java::test::testCompressEncryptedDoc	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdfwriter/COSDocumentCompressionTest.java::test::testPDFBox5927	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdfwriter/COSWriterCompressionPoolTest.java::test::testPDFBox6036	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdfwriter/COSWriterTest.java::test::testPDFBox4321	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdfwriter/COSWriterTest.java::test::testPDFBox5485	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdfwriter/COSWriterTest.java::test::testPDFBox5945	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdfwriter/COSWriterCompressionPoolTest.java::test::testPDFBox6036	ported	spec/pdfbox/pdfwriter/pdfwriter_spec.cr	Ported iterative compression-pool traversal parity from Java COSWriterCompressionPoolTest
+pdfbox/src/test/java/org/apache/pdfbox/pdfwriter/COSWriterTest.java::test::testPDFBox4321	ported	spec/pdfbox/pdfwriter/pdfwriter_spec.cr	Ported non-closing external output stream contract parity from Java COSWriterTest
+pdfbox/src/test/java/org/apache/pdfbox/pdfwriter/COSWriterTest.java::test::testPDFBox5485	ported	spec/pdfbox/pdfwriter/pdfwriter_spec.cr	Ported page extraction and writer regression coverage from Java COSWriterTest
+pdfbox/src/test/java/org/apache/pdfbox/pdfwriter/COSWriterTest.java::test::testPDFBox5945	ported	spec/pdfbox/pdfwriter/pdfwriter_spec.cr	Ported trailer size alignment parity for initial and incremental saves from Java COSWriterTest
 pdfbox/src/test/java/org/apache/pdfbox/pdfwriter/COSWriterTest.java::test::testPDFBox6036	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdfwriter/ContentStreamWriterTest.java::test::testPDFBox4750	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/PageLayoutTest.java::test::fromStringInputNotNullOutputIllegalArgumentException	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/PageLayoutTest.java::test::testValues	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/PageModeTest.java::test::fromStringInputNotNullOutputIllegalArgumentException	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/PageModeTest.java::test::fromStringInputNotNullOutputIllegalArgumentException2	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/PageModeTest.java::test::fromStringInputNotNullOutputNotNull	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/PageModeTest.java::test::fromStringInputNotNullOutputNotNull2	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/PageModeTest.java::test::fromStringInputNotNullOutputNotNull3	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/PageModeTest.java::test::fromStringInputNotNullOutputNotNull4	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/PageModeTest.java::test::fromStringInputNotNullOutputNotNull5	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/PageModeTest.java::test::fromStringInputNotNullOutputNotNull6	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/PageModeTest.java::test::stringValueOutputNotNull	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdfwriter/ContentStreamWriterTest.java::test::testPDFBox4750	ported	spec/pdfbox/pdfwriter/pdfwriter_spec.cr	Ported inline-image content stream writer round-trip regression from Java ContentStreamWriterTest
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/PageLayoutTest.java::test::fromStringInputNotNullOutputIllegalArgumentException	ported	spec/pdfbox/pdmodel/page_layout_spec.cr	Ported invalid PageLayout.from_string exception parity from Java PageLayoutTest
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/PageLayoutTest.java::test::testValues	ported	spec/pdfbox/pdmodel/page_layout_spec.cr	Ported PageLayout string round-trip completeness parity from Java PageLayoutTest
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/PageModeTest.java::test::fromStringInputNotNullOutputIllegalArgumentException	ported	spec/pdfbox/pdmodel/page_mode_spec.cr	Ported empty-string PageMode.from_string exception parity from Java PageModeTest
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/PageModeTest.java::test::fromStringInputNotNullOutputIllegalArgumentException2	ported	spec/pdfbox/pdmodel/page_mode_spec.cr	Ported invalid-string PageMode.from_string exception parity from Java PageModeTest
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/PageModeTest.java::test::fromStringInputNotNullOutputNotNull	ported	spec/pdfbox/pdmodel/page_mode_spec.cr	Ported FullScreen PageMode.from_string parity from Java PageModeTest
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/PageModeTest.java::test::fromStringInputNotNullOutputNotNull2	ported	spec/pdfbox/pdmodel/page_mode_spec.cr	Ported UseThumbs PageMode.from_string parity from Java PageModeTest
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/PageModeTest.java::test::fromStringInputNotNullOutputNotNull3	ported	spec/pdfbox/pdmodel/page_mode_spec.cr	Ported UseOC PageMode.from_string parity from Java PageModeTest
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/PageModeTest.java::test::fromStringInputNotNullOutputNotNull4	ported	spec/pdfbox/pdmodel/page_mode_spec.cr	Ported UseNone PageMode.from_string parity from Java PageModeTest
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/PageModeTest.java::test::fromStringInputNotNullOutputNotNull5	ported	spec/pdfbox/pdmodel/page_mode_spec.cr	Ported UseAttachments PageMode.from_string parity from Java PageModeTest
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/PageModeTest.java::test::fromStringInputNotNullOutputNotNull6	ported	spec/pdfbox/pdmodel/page_mode_spec.cr	Ported UseOutlines PageMode.from_string parity from Java PageModeTest
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/PageModeTest.java::test::stringValueOutputNotNull	ported	spec/pdfbox/pdmodel/page_mode_spec.cr	Ported PageMode.string_value parity from Java PageModeTest
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestFDF.java::test::testLoad2	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestFDF.java::test::testPDFBox5894	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDDocument.java::test::testDeleteBadFile	missing	-	baseline
