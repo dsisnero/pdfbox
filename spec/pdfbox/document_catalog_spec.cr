@@ -2,7 +2,7 @@ require "../spec_helper"
 
 describe Pdfbox::Pdmodel::DocumentCatalog do
   describe "#page_labels" do
-    it "retrieves page labels from test_pagelabels.pdf" do
+    it "TestPDDocumentCatalog#retrievePageLabels" do
       # Load PDF from test resources
       pdf_path = File.expand_path("../resources/pdfbox/pdmodel/test_pagelabels.pdf", __DIR__)
       doc = Pdfbox::Pdmodel::Document.load(pdf_path)
@@ -34,7 +34,7 @@ describe Pdfbox::Pdmodel::DocumentCatalog do
   end
 
   describe "#page_labels with malformed PDF" do
-    it "handles malformed PDF without exception" do
+    it "TestPDDocumentCatalog#retrievePageLabelsOnMalformedPdf" do
       pdf_path = File.expand_path("../resources/pdfbox/pdmodel/badpagelabels.pdf", __DIR__)
       doc = Pdfbox::Pdmodel::Document.load(pdf_path)
 
@@ -53,15 +53,14 @@ describe Pdfbox::Pdmodel::DocumentCatalog do
   end
 
   describe "#page_count" do
-    it "retrieves correct number of pages from test.unc.pdf" do
+    it "TestPDDocumentCatalog#retrieveNumberOfPages" do
       pdf_path = File.expand_path("../resources/pdfbox/pdmodel/test.unc.pdf", __DIR__)
       doc = Pdfbox::Pdmodel::Document.load(pdf_path)
       doc.page_count.should eq(4)
     end
   end
 
-  it "handles output intents" do
-    # Test from TestPDDocumentCatalog.handleOutputIntents
+  it "TestPDDocumentCatalog#handleOutputIntents" do
     pdf_path = File.expand_path("../resources/pdfbox/pdmodel/test.unc.pdf", __DIR__)
     icc_path = File.expand_path("../resources/pdfbox/pdmodel/sRGB.icc", __DIR__)
 
@@ -100,9 +99,7 @@ describe Pdfbox::Pdmodel::DocumentCatalog do
     doc.close if doc.responds_to?(:close)
   end
 
-  it "handles open action with boolean" do
-    # Test from TestPDDocumentCatalog.handleBooleanInOpenAction
-    # PDFBOX-3772 -- allow for COSBoolean
+  it "TestPDDocumentCatalog#handleBooleanInOpenAction" do
     doc = Pdfbox::Pdmodel::Document.create
     doc.should_not be_nil
 

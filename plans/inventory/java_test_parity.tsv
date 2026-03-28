@@ -507,11 +507,11 @@ pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDDocument.java::test::testSa
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDDocument.java::test::testSaveLoadFile	ported	spec/pdfbox/document_spec.cr	Ported no-compression file save/load parity with header and EOF assertions
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDDocument.java::test::testSaveLoadStream	ported	spec/pdfbox/document_spec.cr	Ported no-compression stream save/load parity with header and EOF assertions
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDDocument.java::test::testVersions	ported	spec/pdfbox/document_spec.cr	Ported Java PDDocument version semantics including header/catalog interplay and default compressed save version 1.6 behavior
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDDocumentCatalog.java::test::handleBooleanInOpenAction	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDDocumentCatalog.java::test::handleOutputIntents	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDDocumentCatalog.java::test::retrieveNumberOfPages	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDDocumentCatalog.java::test::retrievePageLabels	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDDocumentCatalog.java::test::retrievePageLabelsOnMalformedPdf	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDDocumentCatalog.java::test::handleBooleanInOpenAction	ported	spec/pdfbox/document_catalog_spec.cr	Ported COSBoolean OpenAction handling parity
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDDocumentCatalog.java::test::handleOutputIntents	ported	spec/pdfbox/document_catalog_spec.cr	Ported output intent retrieval, add, and replace parity
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDDocumentCatalog.java::test::retrieveNumberOfPages	ported	spec/pdfbox/document_catalog_spec.cr	Ported page count retrieval parity for test.unc.pdf
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDDocumentCatalog.java::test::retrievePageLabels	ported	spec/pdfbox/document_catalog_spec.cr	Ported page label extraction parity for test_pagelabels.pdf
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDDocumentCatalog.java::test::retrievePageLabelsOnMalformedPdf	ported	spec/pdfbox/document_catalog_spec.cr	Ported malformed page label retrieval parity without raising
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDDocumentInformation.java::test::testMetadataExtraction	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDDocumentInformation.java::test::testPDFBox3068	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPage.java::test::testAddingPageAfterCreatingAnnotation	missing	-	baseline
