@@ -118,11 +118,19 @@ module Pdfbox::Pdmodel
       end
     end
 
+    def save(filename : String, _parameters : Pdfbox::Pdfwriter::Compress::CompressParameters) : Nil
+      save(filename)
+    end
+
     # Save the document to an IO stream
     def save(io : ::IO) : Nil
       # Use writer to write PDF
       writer = Pdfbox::Pdfwriter::Writer.new(io, self)
       writer.write
+    end
+
+    def save(io : ::IO, _parameters : Pdfbox::Pdfwriter::Compress::CompressParameters) : Nil
+      save(io)
     end
 
     # Save the document incrementally.

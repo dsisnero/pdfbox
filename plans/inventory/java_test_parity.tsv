@@ -501,11 +501,11 @@ pdfbox/src/test/java/org/apache/pdfbox/pdmodel/PageModeTest.java::test::fromStri
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/PageModeTest.java::test::stringValueOutputNotNull	ported	spec/pdfbox/pdmodel/page_mode_spec.cr	Ported PageMode.string_value parity from Java PageModeTest
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestFDF.java::test::testLoad2	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestFDF.java::test::testPDFBox5894	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDDocument.java::test::testDeleteBadFile	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDDocument.java::test::testDeleteGoodFile	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDDocument.java::test::testDeleteBadFile	ported	spec/pdfbox/document_spec.cr	Ported delete-after-failed-load parity using malformed PDF file fixture created in temp
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDDocument.java::test::testDeleteGoodFile	ported	spec/pdfbox/document_spec.cr	Ported delete-after-successful-load-and-close parity using saved temporary PDF
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDDocument.java::test::testSaveArabicLocale	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDDocument.java::test::testSaveLoadFile	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDDocument.java::test::testSaveLoadStream	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDDocument.java::test::testSaveLoadFile	ported	spec/pdfbox/document_spec.cr	Ported no-compression file save/load parity with header and EOF assertions
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDDocument.java::test::testSaveLoadStream	ported	spec/pdfbox/document_spec.cr	Ported no-compression stream save/load parity with header and EOF assertions
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDDocument.java::test::testVersions	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDDocumentCatalog.java::test::handleBooleanInOpenAction	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDDocumentCatalog.java::test::handleOutputIntents	missing	-	baseline

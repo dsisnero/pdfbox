@@ -30,6 +30,59 @@ describe Pdfbox::Pdmodel::Document do
   end
 
   describe "#save and .load" do
+    it "TestPDDocument#testSaveLoadStream" do
+      baos = IO::Memory.new
+
+      doc = Pdfbox::Pdmodel::Document.new
+      begin
+        doc.add_page(Pdfbox::Pdmodel::Page.new)
+        doc.save(baos, Pdfbox::Pdfwriter::Compress::CompressParameters::NO_COMPRESSION)
+      ensure
+        doc.close
+      end
+
+      pdf = baos.to_slice
+      pdf.size.should be > 200
+      String.new(pdf[0, 8]).should eq("%PDF-1.4")
+      String.new(pdf[pdf.size - 6, 6]).should eq("%%EOF\n")
+
+      load_doc = Pdfbox::Pdmodel::Document.load(IO::Memory.new(pdf))
+      begin
+        load_doc.number_of_pages.should eq(1)
+      ensure
+        load_doc.close
+      end
+    end
+
+    it "TestPDDocument#testSaveLoadFile" do
+      target_file = ""
+      target_file = (SpecPaths::PROJECT_ROOT / "temp" / "pddocument-saveloadfile.pdf").to_s
+
+      doc = Pdfbox::Pdmodel::Document.new
+      begin
+        doc.add_page(Pdfbox::Pdmodel::Page.new)
+        doc.save(target_file, Pdfbox::Pdfwriter::Compress::CompressParameters::NO_COMPRESSION)
+      ensure
+        doc.close
+      end
+
+      File.size(target_file).should be > 200
+      pdf = File.read(target_file).to_slice
+      pdf.size.should be > 200
+      String.new(pdf[0, 8]).should eq("%PDF-1.4")
+      String.new(pdf[pdf.size - 6, 6]).should eq("%%EOF\n")
+
+      load_doc = Pdfbox::Pdmodel::Document.load(target_file)
+      begin
+        load_doc.number_of_pages.should eq(1)
+      ensure
+        load_doc.close
+      end
+    ensure
+      path = target_file.not_nil!
+      File.delete(path) if File.exists?(path)
+    end
+
     it "saves and loads a document with one page" do
       # Create PDF with one blank page
       doc = Pdfbox::Pdmodel::Document.new
@@ -93,6 +146,36 @@ describe Pdfbox::Pdmodel::Document do
       expect_raises(Pdfbox::Pdfparser::SyntaxError) do
         Pdfbox::Pdmodel::Document.load(IO::Memory.new(invalid_pdf))
       end
+    end
+
+    it "TestPDDocument#testDeleteBadFile" do
+      path = (SpecPaths::PROJECT_ROOT / "temp" / "testDeleteBadFile.pdf").to_s
+      File.write(path, "<script language='JavaScript'>")
+
+      expect_raises(Pdfbox::Pdfparser::SyntaxError) do
+        Pdfbox::Pdmodel::Document.load(path)
+      end
+
+      File.delete(path)
+      File.exists?(path).should be_false
+    end
+
+    it "TestPDDocument#testDeleteGoodFile" do
+      path = (SpecPaths::PROJECT_ROOT / "temp" / "testDeleteGoodFile.pdf").to_s
+
+      doc = Pdfbox::Pdmodel::Document.new
+      begin
+        doc.add_page(Pdfbox::Pdmodel::Page.new)
+        doc.save(path)
+      ensure
+        doc.close
+      end
+
+      loaded = Pdfbox::Pdmodel::Document.load(path)
+      loaded.close
+
+      File.delete(path)
+      File.exists?(path).should be_false
     end
   end
 
