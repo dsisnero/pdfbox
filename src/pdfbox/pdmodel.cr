@@ -16,6 +16,8 @@ require "./pdmodel/page_mode"
 module Pdfbox::Pdmodel
   # Main PDF document class
   class Document
+    Log = ::Log.for(self)
+
     @cos_document : Cos::Dictionary?
     @version : String
     @pages : Array(Page)
@@ -26,49 +28,66 @@ module Pdfbox::Pdmodel
     @current_access_permission : Encryption::AccessPermission?
     @all_security_to_be_removed : Bool = false
 
-    def initialize(@cos_document : Cos::Dictionary? = nil, @version : String = "1.4", @trailer : Cos::Dictionary? = nil)
+    def initialize(cos_document : Cos::Dictionary? = nil, version : String = "1.4", trailer : Cos::Dictionary? = nil)
+      @version = version
+      @trailer = trailer
+      @cos_document = cos_document || self.class.build_default_catalog_dictionary
       @pages = [] of Page
       @catalog = @cos_document ? DocumentCatalog.new(@cos_document.as(Cos::Dictionary), self) : nil
       @encryption = nil
       @document_id = nil
       @current_access_permission = nil
 
-      # Extract encryption dictionary and document ID from trailer
-      if trailer = @trailer
-        # Get /Encrypt dictionary
-        if encrypt_entry = trailer[Cos::Name.new("Encrypt")]
-          # Resolve indirect reference if needed
-          if encrypt_entry.is_a?(Cos::Object)
-            encrypt_entry = encrypt_entry.object
-          end
-          if encrypt_entry.is_a?(Cos::Dictionary)
-            @encryption = Encryption::PDEncryption.new(encrypt_entry)
-          end
-        end
-
-        # Get /ID array (first element is used as document ID)
-        if id_entry = trailer[Cos::Name.new("ID")]
-          if id_entry.is_a?(Cos::Object)
-            id_entry = id_entry.object
-          end
-          if id_entry.is_a?(Cos::Array) && id_entry.size > 0
-            id_first = id_entry[0]
-            if id_first.is_a?(Cos::String)
-              @document_id = id_first.bytes
-            end
-          end
-        end
+      if cos_document.nil?
+        @catalog.try(&.version=(@version))
       end
+
+      load_trailer_state
     end
 
-    # Get PDF version (e.g., "1.4")
-    def version : String
+    def self.build_default_catalog_dictionary : Cos::Dictionary
+      catalog_dict = Cos::Dictionary.new
+      catalog_dict[Cos::Name.new("Type")] = Cos::Name.new("Catalog")
+
+      pages_dict = Cos::Dictionary.new
+      pages_dict[Cos::Name.new("Type")] = Cos::Name.new("Pages")
+      pages_dict[Cos::Name.new("Kids")] = Cos::Array.new
+      pages_dict[Cos::Name.new("Count")] = Cos::Integer.new(0)
+
+      catalog_dict[Cos::Name.new("Pages")] = pages_dict
+      catalog_dict
+    end
+
+    # Get the effective PDF version (e.g., 1.4f).
+    def version : Float32
+      header_version = header_version_as_float
+      return header_version if header_version < 1.4_f32
+
+      catalog_version = document_catalog.try(&.version)
+      return header_version unless catalog_version
+
+      parsed_catalog_version = catalog_version.to_f32?
+      unless parsed_catalog_version
+        Log.error { "Can't extract the version number of the document catalog: #{catalog_version.inspect}" }
+        return header_version
+      end
+
+      Math.max(parsed_catalog_version, header_version).to_f32
+    end
+
+    # Get the header PDF version string (e.g., "1.4")
+    def header_version : String
       @version
     end
 
-    # Set PDF version (e.g., "1.5")
-    def version=(version : String) : String
+    # Set the header PDF version string directly.
+    def header_version=(version : String) : String
       @version = version
+    end
+
+    def version=(new_version : Number) : Float32
+      set_version(new_version.to_f32)
+      version
     end
 
     # Load a PDF document from a file
@@ -96,41 +115,30 @@ module Pdfbox::Pdmodel
 
     # Create a new empty PDF document
     def self.create : Document
-      # Create a minimal catalog dictionary
-      catalog_dict = Cos::Dictionary.new
-      catalog_dict[Cos::Name.new("Type")] = Cos::Name.new("Catalog")
-
-      # Create pages dictionary
-      pages_dict = Cos::Dictionary.new
-      pages_dict[Cos::Name.new("Type")] = Cos::Name.new("Pages")
-      pages_dict[Cos::Name.new("Kids")] = Cos::Array.new
-      pages_dict[Cos::Name.new("Count")] = Cos::Integer.new(0)
-
-      catalog_dict[Cos::Name.new("Pages")] = pages_dict
-
-      Document.new(catalog_dict)
+      Document.new
     end
 
     # Save the document to a file
     def save(filename : String) : Nil
       File.open(filename, "w") do |file|
-        save(file)
+        save(file, Pdfbox::Pdfwriter::Compress::CompressParameters::DEFAULT_COMPRESSION)
       end
     end
 
-    def save(filename : String, _parameters : Pdfbox::Pdfwriter::Compress::CompressParameters) : Nil
-      save(filename)
+    def save(filename : String, parameters : Pdfbox::Pdfwriter::Compress::CompressParameters) : Nil
+      File.open(filename, "w") do |file|
+        save(file, parameters)
+      end
     end
 
     # Save the document to an IO stream
     def save(io : ::IO) : Nil
-      # Use writer to write PDF
-      writer = Pdfbox::Pdfwriter::Writer.new(io, self)
-      writer.write
+      save(io, Pdfbox::Pdfwriter::Compress::CompressParameters::DEFAULT_COMPRESSION)
     end
 
-    def save(io : ::IO, _parameters : Pdfbox::Pdfwriter::Compress::CompressParameters) : Nil
-      save(io)
+    def save(io : ::IO, parameters : Pdfbox::Pdfwriter::Compress::CompressParameters) : Nil
+      writer = Pdfbox::Pdfwriter::Writer.new(io, self, parameters)
+      writer.write
     end
 
     # Save the document incrementally.
@@ -213,6 +221,26 @@ module Pdfbox::Pdmodel
     def document_catalog : DocumentCatalog?
       @catalog
     end
+
+    # ameba:disable Naming/AccessorMethodName
+    def set_version(new_version : Number) : Nil
+      current_version = version
+      proposed_version = new_version.to_f32
+      return if proposed_version == current_version
+
+      if proposed_version < current_version
+        Log.error { "It's not allowed to downgrade the version of a pdf." }
+        return
+      end
+
+      if header_version_as_float >= 1.4_f32
+        @catalog.try(&.version=(format_version_number(proposed_version)))
+      else
+        @version = format_version_number(proposed_version)
+      end
+    end
+
+    # ameba:enable Naming/AccessorMethodName
 
     # Get a page by index (0-based)
     def page(index : Int) : Page?
@@ -337,6 +365,43 @@ module Pdfbox::Pdmodel
         next unless page_dict
         @pages << Page.new(page_dict)
       end
+    end
+
+    private def header_version_as_float : Float32
+      @version.to_f32? || 1.4_f32
+    end
+
+    private def format_version_number(number : Float32) : String
+      "%.1f" % number
+    end
+
+    private def load_trailer_state : Nil
+      trailer = @trailer
+      return unless trailer
+
+      load_encryption_from_trailer(trailer)
+      load_document_id_from_trailer(trailer)
+    end
+
+    private def load_encryption_from_trailer(trailer : Cos::Dictionary) : Nil
+      encrypt_entry = dereference_base(trailer[Cos::Name.new("Encrypt")])
+      return unless encrypt_entry.is_a?(Cos::Dictionary)
+
+      @encryption = Encryption::PDEncryption.new(encrypt_entry)
+    end
+
+    private def load_document_id_from_trailer(trailer : Cos::Dictionary) : Nil
+      id_entry = dereference_base(trailer[Cos::Name.new("ID")])
+      return unless id_entry.is_a?(Cos::Array) && id_entry.size > 0
+
+      id_first = id_entry[0]
+      @document_id = id_first.bytes if id_first.is_a?(Cos::String)
+    end
+
+    private def dereference_base(base : Cos::Base?) : Cos::Base?
+      return unless base
+      return base.object if base.is_a?(Cos::Object)
+      base
     end
 
     private def dereference_dictionary(base : Cos::Base) : Cos::Dictionary?
@@ -533,6 +598,20 @@ module Pdfbox::Pdmodel
         # Fallback: try to get from /Pages tree
         0
       end
+    end
+
+    def version : String?
+      @cos_dict.get_name_as_string(Cos::Name.new("Version"))
+    end
+
+    def version=(version : String?) : String?
+      key = Cos::Name.new("Version")
+      if version
+        @cos_dict.set_name(key, version)
+      else
+        @cos_dict.delete(key)
+      end
+      version
     end
 
     # Get document outline (bookmarks)

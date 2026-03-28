@@ -128,15 +128,59 @@ describe Pdfbox::Pdmodel::Document do
   end
 
   describe "#version" do
-    it "returns default version 1.4" do
+    it "TestPDDocument#testVersions" do
       doc = Pdfbox::Pdmodel::Document.new
-      doc.version.should eq("1.4")
-    end
+      begin
+        doc.version.should be_close(1.4_f32, 0.0_f32)
+        doc.header_version.should eq("1.4")
+        doc.document_catalog.not_nil!.version.should eq("1.4")
 
-    it "allows setting version" do
+        doc.header_version = "1.3"
+        doc.document_catalog.not_nil!.version = nil
+
+        doc.version.should be_close(1.3_f32, 0.0_f32)
+        doc.header_version.should eq("1.3")
+        doc.document_catalog.not_nil!.version.should be_nil
+      ensure
+        doc.close
+      end
+
       doc = Pdfbox::Pdmodel::Document.new
-      doc.version = "1.5"
-      doc.version.should eq("1.5")
+      begin
+        doc.set_version(1.3_f32)
+
+        doc.version.should be_close(1.4_f32, 0.0_f32)
+        doc.header_version.should eq("1.4")
+        doc.document_catalog.not_nil!.version.should eq("1.4")
+
+        doc.set_version(1.5_f32)
+
+        doc.version.should be_close(1.5_f32, 0.0_f32)
+        doc.header_version.should eq("1.4")
+        doc.document_catalog.not_nil!.version.should eq("1.5")
+      ensure
+        doc.close
+      end
+
+      baos = IO::Memory.new
+      doc = Pdfbox::Pdmodel::Document.new
+      begin
+        doc.add_page(Pdfbox::Pdmodel::Page.new)
+        doc.save(baos)
+      ensure
+        doc.close
+      end
+
+      loaded = Pdfbox::Pdmodel::Document.load(IO::Memory.new(baos.to_slice))
+      begin
+        loaded.document_catalog.not_nil!.version.should eq("1.6")
+        loaded.header_version.should eq("1.6")
+        loaded.version.should be_close(1.6_f32, 0.0_f32)
+      ensure
+        loaded.close
+      end
+
+      String.new(baos.to_slice[0, 8]).should eq("%PDF-1.6")
     end
   end
 

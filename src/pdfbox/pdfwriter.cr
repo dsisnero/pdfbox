@@ -21,8 +21,9 @@ module Pdfbox::Pdfwriter
   class Writer
     @destination : ::IO
     @document : Pdfbox::Pdmodel::Document
+    @parameters : Pdfbox::Pdfwriter::Compress::CompressParameters
 
-    def initialize(@destination : ::IO, @document : Pdfbox::Pdmodel::Document)
+    def initialize(@destination : ::IO, @document : Pdfbox::Pdmodel::Document, @parameters : Pdfbox::Pdfwriter::Compress::CompressParameters = Pdfbox::Pdfwriter::Compress::CompressParameters::DEFAULT_COMPRESSION)
     end
 
     # Write PDF header with version (e.g., "1.4")
@@ -34,55 +35,12 @@ module Pdfbox::Pdfwriter
 
     # Write the PDF document
     def write : Nil
-      write_header(@document.version)
+      write_header(header_version_for_write)
       cos_writer = COSWriter.new(@destination)
-
-      # Create xref writer
       xref_writer = XRefWriter.new(@destination)
-
-      # Object 0: free entry (required by PDF spec)
       xref_writer.add_entry(0_i64, 65535_i64, :free)
-
-      # Write catalog object (object 1)
-      catalog_offset = @destination.pos.to_i64
-      xref_writer.add_entry(catalog_offset, 0_i64, :in_use)
-      @destination << "1 0 obj\n"
-      @destination << "<<\n"
-      @destination << "/Type /Catalog\n"
-      @destination << "/Pages 2 0 R\n"
-      if catalog = @document.document_catalog
-        catalog.cos_object.entries.each do |key, value|
-          key_name = key.value
-          next if key_name == "Type" || key_name == "Pages"
-          local_stack = Set(UInt64).new
-          materialized_value = materialize_for_write(
-            value,
-            local_stack
-          )
-          cos_writer.write_name(key)
-          @destination << ' '
-          cos_writer.write(materialized_value)
-          @destination << '\n'
-        end
-      end
-      @destination << ">>\n"
-      @destination << "endobj\n"
-
-      # Write pages object (object 2)
-      pages_offset = @destination.pos.to_i64
-      xref_writer.add_entry(pages_offset, 0_i64, :in_use)
-      @destination << "2 0 obj\n"
-      @destination << "<<\n"
-      @destination << "/Type /Pages\n"
-      @destination << "/Kids ["
-      # Add page references (object 3..)
-      @document.page_count.times do |i|
-        @destination << " " << (3 + i) << " 0 R"
-      end
-      @destination << " ]\n"
-      @destination << "/Count " << @document.page_count << "\n"
-      @destination << ">>\n"
-      @destination << "endobj\n"
+      write_catalog_object(cos_writer, xref_writer)
+      write_pages_object(xref_writer)
 
       # Write each page object
       deferred_stream_objects = [] of Tuple(Int32, Pdfbox::Cos::Stream)
@@ -160,6 +118,72 @@ module Pdfbox::Pdfwriter
 
       # Write EOF marker
       @destination << "%%EOF\n"
+    end
+
+    private def write_catalog_object(cos_writer : COSWriter, xref_writer : XRefWriter) : Nil
+      catalog_offset = @destination.pos.to_i64
+      xref_writer.add_entry(catalog_offset, 0_i64, :in_use)
+      @destination << "1 0 obj\n"
+      @destination << "<<\n"
+      @destination << "/Type /Catalog\n"
+      @destination << "/Pages 2 0 R\n"
+      if version = catalog_version_for_write
+        @destination << "/Version /" << version << "\n"
+      end
+      write_catalog_entries(cos_writer)
+      @destination << ">>\n"
+      @destination << "endobj\n"
+    end
+
+    private def write_catalog_entries(cos_writer : COSWriter) : Nil
+      catalog = @document.document_catalog
+      return unless catalog
+
+      catalog.cos_object.entries.each do |key, value|
+        key_name = key.value
+        next if key_name == "Type" || key_name == "Pages" || key_name == "Version"
+        write_materialized_entry(cos_writer, key, value)
+      end
+    end
+
+    private def write_pages_object(xref_writer : XRefWriter) : Nil
+      pages_offset = @destination.pos.to_i64
+      xref_writer.add_entry(pages_offset, 0_i64, :in_use)
+      @destination << "2 0 obj\n"
+      @destination << "<<\n"
+      @destination << "/Type /Pages\n"
+      @destination << "/Kids ["
+      @document.page_count.times do |i|
+        @destination << " " << (3 + i) << " 0 R"
+      end
+      @destination << " ]\n"
+      @destination << "/Count " << @document.page_count << "\n"
+      @destination << ">>\n"
+      @destination << "endobj\n"
+    end
+
+    private def write_materialized_entry(cos_writer : COSWriter, key : Pdfbox::Cos::Name, value : Pdfbox::Cos::Base) : Nil
+      local_stack = Set(UInt64).new
+      materialized_value = materialize_for_write(value, local_stack)
+      cos_writer.write_name(key)
+      @destination << ' '
+      cos_writer.write(materialized_value)
+      @destination << '\n'
+    end
+
+    private def header_version_for_write : String
+      current_header = @document.header_version.to_f32? || 1.4_f32
+      return format_version(Math.max(current_header, 1.6_f32)) if @parameters.compress?
+      @document.header_version
+    end
+
+    private def catalog_version_for_write : String?
+      return format_version(Math.max(@document.version, 1.6_f32)) if @parameters.compress?
+      @document.document_catalog.try(&.version)
+    end
+
+    private def format_version(value : Float32) : String
+      "%.1f" % value
     end
 
     private def materialize_for_write(base : Pdfbox::Cos::Base, stack : Set(UInt64)) : Pdfbox::Cos::Base

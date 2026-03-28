@@ -506,7 +506,7 @@ pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDDocument.java::test::testDe
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDDocument.java::test::testSaveArabicLocale	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDDocument.java::test::testSaveLoadFile	ported	spec/pdfbox/document_spec.cr	Ported no-compression file save/load parity with header and EOF assertions
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDDocument.java::test::testSaveLoadStream	ported	spec/pdfbox/document_spec.cr	Ported no-compression stream save/load parity with header and EOF assertions
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDDocument.java::test::testVersions	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDDocument.java::test::testVersions	ported	spec/pdfbox/document_spec.cr	Ported Java PDDocument version semantics including header/catalog interplay and default compressed save version 1.6 behavior
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDDocumentCatalog.java::test::handleBooleanInOpenAction	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDDocumentCatalog.java::test::handleOutputIntents	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDDocumentCatalog.java::test::retrieveNumberOfPages	missing	-	baseline
