@@ -259,7 +259,19 @@ module Pdfbox::Pdmodel
       else
         stream.data = @buffer.to_slice
       end
-      @page.contents = stream
+      assign_stream(stream)
+    end
+
+    def transform(matrix : Pdfbox::Util::Matrix) : Nil
+      write_operands(
+        matrix.get_value(0, 0),
+        matrix.get_value(0, 1),
+        matrix.get_value(1, 0),
+        matrix.get_value(1, 1),
+        matrix.get_value(2, 0),
+        matrix.get_value(2, 1)
+      )
+      write_operator(CONCAT)
     end
 
     private def raise_if_in_text_mode(message : String) : Nil
@@ -356,10 +368,55 @@ module Pdfbox::Pdmodel
       when Int
         value.to_s
       when Float32, Float64
-        rounded = value.round
-        rounded == value ? rounded.to_i.to_s : value.to_s
+        float_value = value.to_f32
+        rounded = float_value.round
+        return rounded.to_i.to_s if rounded == float_value
+
+        ascii_buffer = Bytes.new(32, 0_u8)
+        used = Pdfbox::Util::NumberFormatUtil.format_float_fast(float_value, 5, ascii_buffer)
+        return String.new(ascii_buffer[0, used]) if used >= 0
+
+        formatted = "%.5f" % float_value
+        formatted = formatted.gsub(/\.?0+$/, "")
+        formatted == "-0" ? "0" : formatted
       else
         value.to_s
+      end
+    end
+
+    private def assign_stream(stream : Cos::Stream) : Nil
+      cos_page = @page.cos_object || raise "Page is missing COS dictionary"
+      key = Cos::Name.new("Contents")
+      existing = cos_page[key]?
+
+      case @append_mode
+      when AppendMode::OVERWRITE
+        cos_page[key] = stream
+      when AppendMode::PREPEND
+        array = contents_array_for(existing)
+        array.items.unshift(stream)
+        cos_page[key] = array
+      when AppendMode::APPEND
+        array = contents_array_for(existing)
+        array.items << stream
+        cos_page[key] = array
+      end
+    end
+
+    private def contents_array_for(existing : Cos::Base?) : Cos::Array
+      return Cos::Array.new unless existing
+
+      if existing.is_a?(Cos::Object)
+        existing = existing.object
+      end
+
+      case existing
+      when Cos::Array
+        existing
+      when Cos::Stream
+        Cos::Array.new([existing])
+      else
+        Cos::Array.new
       end
     end
   end

@@ -301,6 +301,12 @@ module Pdfbox::Util
       Matrix.new(1.0_f32, 0.0_f32, 0.0_f32, 1.0_f32, tx, ty)
     end
 
+    def self.get_rotate_instance(theta : Float64, x : Float32, y : Float32) : Matrix
+      cos = Math.cos(theta).to_f32
+      sin = Math.sin(theta).to_f32
+      Matrix.new(cos, sin, -sin, cos, x, y)
+    end
+
     # Create an identity matrix
     def self.identity : Matrix
       Matrix.new
@@ -389,6 +395,14 @@ module Pdfbox::Util
       else
         @single[4]
       end
+    end
+
+    def shear_y : Float32
+      @single[1]
+    end
+
+    def scale_y : Float32
+      @single[4]
     end
 
     # Get the X translation value

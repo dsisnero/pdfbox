@@ -417,7 +417,7 @@ module Pdfbox::Contentstream
 
           apply_text_adjustment(tx, ty)
         elsif item.is_a?(Cos::String)
-          show_text(item.value.to_slice)
+          show_text(item.bytes)
         end
       end
     end

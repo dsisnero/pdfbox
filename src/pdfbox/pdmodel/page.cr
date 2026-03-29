@@ -70,13 +70,31 @@ module Pdfbox::Pdmodel
 
     # Get page rotation
     def rotation : Int32
-      # TODO: Implement rotation retrieval
-      0
+      cos_page = @cos_page
+      return 0 unless cos_page
+
+      rotate = cos_page[Cos::Name.new("Rotate")]?
+      return 0 unless rotate
+
+      if rotate.is_a?(Cos::Object)
+        rotate = rotate.object
+      end
+
+      case rotate
+      when Cos::Integer
+        rotate.value.to_i32
+      when Cos::Float
+        rotate.value.to_i32
+      else
+        0
+      end
     end
 
     # Set page rotation
     def rotation=(degrees : Int32) : Int32
-      # TODO: Implement rotation setting
+      cos_page = @cos_page || default_page_dictionary
+      @cos_page = cos_page
+      cos_page[Cos::Name.new("Rotate")] = Cos::Integer.new(degrees)
       degrees
     end
 
@@ -127,6 +145,12 @@ module Pdfbox::Pdmodel
       @cos_page = cos_page
       cos_page[Cos::Name.new("Contents")] = stream
       stream
+    end
+
+    def contents_base : Cos::Base?
+      cos_page = @cos_page
+      return unless cos_page
+      cos_page[Cos::Name.new("Contents")]?
     end
 
     def has_contents? : Bool

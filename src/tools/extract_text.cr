@@ -98,6 +98,8 @@ module Tools
     private def build_stripper : Pdfbox::Text::PDFTextStripper
       stripper = if @to_html
                    Tools::PDFText2HTML.new
+                 elsif @rotation_magic
+                   FilteredTextStripper.new
                  else
                    Pdfbox::Text::PDFTextStripper.new
                  end
@@ -180,7 +182,7 @@ module Tools
       if @to_html
         stripper.write_text(document, output)
       else
-        extract_pages(@start_page, Math.min(@end_page, document.number_of_pages), stripper, document, output)
+        extract_pages(@start_page, Math.min(@end_page, document.number_of_pages), stripper, document, output, @rotation_magic, @always_next)
       end
 
       extract_embedded_pdfs(document, stripper, output)
@@ -188,12 +190,21 @@ module Tools
     end
 
     private def extract_pages(start_page : Int32, end_page : Int32, stripper : Pdfbox::Text::PDFTextStripper,
-                              document : Pdfbox::Pdmodel::Document, output : IO) : Nil
+                              document : Pdfbox::Pdmodel::Document, output : IO,
+                              rotation_magic : Bool, always_next : Bool) : Nil
       page = start_page
       while page <= end_page
         stripper.start_page = page
         stripper.end_page = page
-        stripper.write_text(document, output)
+        begin
+          if rotation_magic
+            extract_rotated_page(page, stripper, document, output)
+          else
+            stripper.write_text(document, output)
+          end
+        rescue ex : IO::Error
+          raise ex unless always_next
+        end
         page += 1
       end
     end
@@ -226,12 +237,61 @@ module Tools
           if @to_html
             stripper.write_text(sub_document, output)
           else
-            extract_pages(1, sub_document.number_of_pages, stripper, sub_document, output)
+            extract_pages(1, sub_document.number_of_pages, stripper, sub_document, output, @rotation_magic, @always_next)
           end
         ensure
           sub_document.close
         end
       end
+    end
+
+    private def extract_rotated_page(page_number : Int32, stripper : Pdfbox::Text::PDFTextStripper,
+                                     document : Pdfbox::Pdmodel::Document, output : IO) : Nil
+      page = document.pages[page_number - 1]? || raise "Expected page #{page_number}"
+      original_rotation = page.rotation
+      begin
+        page.rotation = 0
+
+        angle_collector = AngleCollector.new
+        angle_collector.start_page = page_number
+        angle_collector.end_page = page_number
+        angle_collector.write_text(document, NullWriter.new)
+
+        angle_collector.angles.each do |angle|
+          content_stream = Pdfbox::Pdmodel::PDPageContentStream.new(
+            document, page, Pdfbox::Pdmodel::PDPageContentStream::AppendMode::PREPEND, false
+          )
+          begin
+            content_stream.transform(Pdfbox::Util::Matrix.get_rotate_instance(-angle * Math::PI / 180.0_f64, 0.0_f32, 0.0_f32))
+          ensure
+            content_stream.close
+          end
+
+          stripper.write_text(document, output)
+          remove_prepended_content(page)
+        end
+      ensure
+        page.rotation = original_rotation
+      end
+    end
+
+    private def remove_prepended_content(page : Pdfbox::Pdmodel::Page) : Nil
+      contents = page.contents_base
+      return unless contents
+      if contents.is_a?(Pdfbox::Cos::Object)
+        contents = contents.object
+      end
+      return unless contents.is_a?(Pdfbox::Cos::Array)
+      contents.items.shift?
+    end
+
+    def self.get_angle(text : Pdfbox::Text::TextPosition) : Int32
+      matrix = text.text_matrix.clone
+      if font = text.font
+        font_matrix = font.font_matrix
+        matrix.concatenate(Pdfbox::Util::Matrix.new(font_matrix.a, font_matrix.b, font_matrix.c, font_matrix.d, font_matrix.e, font_matrix.f))
+      end
+      (Math.atan2(matrix.shear_y, matrix.scale_y) * 180.0_f64 / Math::PI).round.to_i32
     end
 
     private class NonClosingIO < IO
@@ -248,6 +308,38 @@ module Tools
 
       def flush : Nil
         @io.flush
+      end
+
+      def close : Nil
+      end
+    end
+
+    class AngleCollector < Pdfbox::Text::PDFTextStripper
+      getter angles = Set(Int32).new
+
+      def process_text_position(text : Pdfbox::Text::TextPosition) : Nil
+        angle = ExtractText.get_angle(text)
+        angle = (angle + 360) % 360
+        @angles << angle
+      end
+    end
+
+    class FilteredTextStripper < Pdfbox::Text::PDFTextStripper
+      def process_text_position(text : Pdfbox::Text::TextPosition) : Nil
+        angle = ExtractText.get_angle(text)
+        super(text) if angle == 0
+      end
+    end
+
+    class NullWriter < IO
+      def read(slice : Bytes) : Int32
+        0
+      end
+
+      def write(slice : Bytes) : Nil
+      end
+
+      def flush : Nil
       end
 
       def close : Nil

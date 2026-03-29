@@ -967,7 +967,7 @@ tools/src/test/java/org/apache/pdfbox/tools/TestExtractText.java::test::testPDFB
 tools/src/test/java/org/apache/pdfbox/tools/TestExtractText.java::test::testPDFBoxRepeatableSubcommandAddFileName	ported	spec/tools/extract_text_spec.cr	baseline
 tools/src/test/java/org/apache/pdfbox/tools/TestExtractText.java::test::testPDFBoxRepeatableSubcommandAddFileNameOutfile	ported	spec/tools/extract_text_spec.cr	baseline
 tools/src/test/java/org/apache/pdfbox/tools/TestExtractText.java::test::testPDFBoxRepeatableSubcommandAddFileNameOutfileAppend	ported	spec/tools/extract_text_spec.cr	baseline
-tools/src/test/java/org/apache/pdfbox/tools/TestExtractText.java::test::testRotationMagic	missing	-	baseline
+tools/src/test/java/org/apache/pdfbox/tools/TestExtractText.java::test::testRotationMagic	ported	spec/tools/extract_text_spec.cr	baseline
 tools/src/test/java/org/apache/pdfbox/tools/TestPDFText2HTML.java::test::testEscapeTitle	ported	spec/tools/pdf_text_2_html_spec.cr	baseline
 tools/src/test/java/org/apache/pdfbox/tools/TestPDFText2HTML.java::test::testStyle	ported	spec/tools/pdf_text_2_html_spec.cr	baseline
 tools/src/test/java/org/apache/pdfbox/tools/TestTextToPdf.java::test::testCreateEmptyPdf	missing	-	baseline

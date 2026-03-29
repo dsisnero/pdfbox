@@ -4,6 +4,7 @@ require "file_utils"
 
 private TESTFILE1 = SpecPaths.resolve("vendor/pdfbox/tools/src/test/resources/org/apache/pdfbox/testPDFPackage.pdf")
 private TESTFILE2 = SpecPaths.resolve("vendor/pdfbox/tools/src/test/resources/org/apache/pdfbox/hello3.pdf")
+private TESTFILE3 = SpecPaths.resolve("vendor/pdfbox/tools/src/test/resources/org/apache/pdfbox/AngledExample.pdf")
 
 private def extract_text_temp_file(name : String) : String
   dir = (SpecPaths::PROJECT_ROOT / "temp" / "extract-text-spec").to_s
@@ -117,5 +118,20 @@ describe Tools::ExtractText do
     result.should contain("Hello")
     result.should contain("World.")
     result.should contain("PDF file: #{Path[TESTFILE2]}")
+  end
+
+  it "TestExtractText#testRotationMagic" do
+    outfile = extract_text_temp_file("rotation-outfile.txt")
+    File.delete?(outfile)
+    stdout_io = IO::Memory.new
+    stderr_io = IO::Memory.new
+
+    code = Tools::PDFBox.main(["export:text", "-rotationMagic", "-i", TESTFILE3, "-o", outfile],
+      stdout_io: stdout_io, stderr_io: stderr_io, headless: true)
+
+    code.should eq(0)
+    result = File.read(outfile)
+    result.should contain("Horizontal Text")
+    result.should contain("Vertical Text")
   end
 end
