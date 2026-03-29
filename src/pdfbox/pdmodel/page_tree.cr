@@ -348,7 +348,7 @@ module Pdfbox::Pdmodel
       found = false
       kids.size.times do |i|
         page_dict = kids[i]?
-        if page_dict.is_a?(Cos::Dictionary) && page_dict == next_page_dict
+        if page_dict.is_a?(Cos::Dictionary) && page_dict.same?(next_page_dict)
           new_page_dict = new_page.cos_object
           if new_page_dict
             kids.add(i, new_page_dict)
@@ -377,7 +377,7 @@ module Pdfbox::Pdmodel
       found = false
       kids.size.times do |i|
         page_dict = kids[i]?
-        if page_dict.is_a?(Cos::Dictionary) && page_dict == prev_page_dict
+        if page_dict.is_a?(Cos::Dictionary) && page_dict.same?(prev_page_dict)
           new_page_dict = new_page.cos_object
           if new_page_dict
             kids.add(i + 1, new_page_dict)
@@ -488,6 +488,7 @@ module Pdfbox::Pdmodel
       getter? found : Bool = false
 
       @searched : Cos::Dictionary
+      @visited_index : Int32 = -1
 
       def initialize(page : Page)
         cos_page = page.cos_object
@@ -495,8 +496,11 @@ module Pdfbox::Pdmodel
       end
 
       def visit_page(current : Cos::Dictionary) : Nil
-        @index += 1
-        @found = @searched.same?(current)
+        @visited_index += 1
+        return unless @searched.same?(current)
+
+        @index = @visited_index
+        @found = true
       end
     end
   end

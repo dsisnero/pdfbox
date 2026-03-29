@@ -525,12 +525,12 @@ pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageContentStream.java::tes
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageContentStream.java::test::testSetRGBandGColors	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageTransitions.java::test::readTransitions	ported	spec/pdfbox/pdmodel/page_transitions_spec.cr	Ported page transition fixture read parity for transitions_test.pdf
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageTransitions.java::test::saveAndReadTransitions	ported	spec/pdfbox/pdmodel/page_transitions_spec.cr	Ported page transition save/load parity for Fly transition with NONE direction
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageTree.java::test::indexOfPageFromOutlineDestination	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageTree.java::test::negative	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageTree.java::test::positiveMultipleLevel	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageTree.java::test::positiveSingleLevel	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageTree.java::test::testInsertAfterBlankPage	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageTree.java::test::testInsertBeforeBlankPage	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageTree.java::test::indexOfPageFromOutlineDestination	ported	spec/pdfbox/pdmodel/page_tree_spec.cr	Ported outline destination page index parity using with_outline.pdf
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageTree.java::test::negative	ported	spec/pdfbox/pdmodel/page_tree_spec.cr	Ported missing-page index parity returning -1
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageTree.java::test::positiveMultipleLevel	ported	spec/pdfbox/pdmodel/page_tree_spec.cr	Ported multi-level page tree index parity using page_tree_multiple_levels.pdf
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageTree.java::test::positiveSingleLevel	ported	spec/pdfbox/pdmodel/page_tree_spec.cr	Ported single-level page tree index parity using with_outline.pdf
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageTree.java::test::testInsertAfterBlankPage	ported	spec/pdfbox/pdmodel/page_tree_spec.cr	Ported insertAfter blank page ordering parity
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageTree.java::test::testInsertBeforeBlankPage	ported	spec/pdfbox/pdmodel/page_tree_spec.cr	Ported insertBefore blank page ordering parity
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageTree.java::test::testNodeLoop	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/COSArrayListTest.java::test::getFromList	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/COSArrayListTest.java::test::removeAllMultipleFromListByObject	missing	-	baseline

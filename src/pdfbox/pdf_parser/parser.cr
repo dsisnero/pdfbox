@@ -76,41 +76,71 @@ module Pdfbox::Pdfparser
       line = read_line
       unless line.starts_with?("%PDF-")
         if @lenient
-          # Java parity: in lenient mode, scan the initial bytes for a PDF header marker.
-          original_pos = source.position
-          begin
-            source.seek(0_i64)
-            read_size = Math.min(4096_i64, source.length).to_i
-            buffer = Bytes.new(read_size)
-            actual = source.read(buffer)
-            window = if actual && actual > 0
-                       String.new(buffer[0, actual], "ISO-8859-1")
-                     else
-                       ""
-                     end
-            if header_index = window.index("%PDF-")
-              source.seek(header_index.to_i64)
-              line = read_line
-            else
-              raise SyntaxError.new("Invalid PDF header: #{line.inspect}")
-            end
-          ensure
-            # read_line above already positioned source correctly when header is found;
-            # if not found, restore for consistent error behavior.
-            source.seek(original_pos) unless line.starts_with?("%PDF-")
-          end
+          line = locate_lenient_pdf_header(line)
         else
           raise SyntaxError.new("Invalid PDF header: #{line.inspect}")
         end
       end
       # Extract version: %PDF-1.4
-      version = line[5..]
+      version = extract_header_version(line)
       # Optional: read binary comment line (second line starting with %)
       # Check if next byte is '%' (binary comment)
       if source.peek == '%'.ord
         read_line # skip binary comment line
       end
       version
+    end
+
+    private def locate_lenient_pdf_header(original_line : String) : String
+      original_pos = source.position
+      begin
+        source.seek(0_i64)
+        read_size = Math.min(4096_i64, source.length).to_i
+        buffer = Bytes.new(read_size)
+        actual = source.read(buffer)
+        window = if actual && actual > 0
+                   String.new(buffer[0, actual], "ISO-8859-1")
+                 else
+                   ""
+                 end
+
+        if header_index = window.index("%PDF-")
+          source.seek(header_index.to_i64)
+          return read_line
+        end
+
+        if malformed_index = malformed_pdf_header_index(window)
+          source.seek(malformed_index.to_i64)
+          return read_line
+        end
+
+        raise SyntaxError.new("Invalid PDF header: #{original_line.inspect}")
+      ensure
+        source.seek(original_pos) unless line_starts_with_lenient_pdf_header?(source, original_pos)
+      end
+    end
+
+    private def malformed_pdf_header_index(window : String) : Int32?
+      regex = /%P.F-\d\.\d/
+      match = regex.match(window)
+      match.try(&.begin(0))
+    end
+
+    private def extract_header_version(line : String) : String
+      return line[5..] if line.starts_with?("%PDF-")
+      return line[5..] if /^%P.F-\d\.\d/.matches?(line)
+      line[5..]
+    end
+
+    private def line_starts_with_lenient_pdf_header?(source, original_pos : Int64) : Bool
+      current_pos = source.position
+      begin
+        source.seek(original_pos)
+        current_line = read_line
+        current_line.starts_with?("%PDF-") || /^%P.F-\d\.\d/.matches?(current_line)
+      ensure
+        source.seek(current_pos)
+      end
     end
 
     protected def read_line : String
