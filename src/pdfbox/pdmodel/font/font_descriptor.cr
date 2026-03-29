@@ -131,11 +131,11 @@ module Pdfbox::Pdmodel::Font
 
     # Set the font name.
     def font_name=(font_name : String?)
-      name = nil
       if font_name
-        name = Pdfbox::Cos::Name.get_pdf_name(font_name)
+        @dic[Pdfbox::Cos::Name::FONT_NAME] = Pdfbox::Cos::Name.new(font_name)
+      else
+        @dic.delete(Pdfbox::Cos::Name::FONT_NAME)
       end
-      @dic[Pdfbox::Cos::Name::FONT_NAME] = name
     end
 
     # A string representing the preferred font family.
@@ -145,11 +145,11 @@ module Pdfbox::Pdmodel::Font
 
     # Set the font family.
     def font_family=(font_family : String?)
-      name = nil
       if font_family
-        name = Pdfbox::Cos::String.new(font_family)
+        @dic[Pdfbox::Cos::Name::FONT_FAMILY] = Pdfbox::Cos::String.new(font_family)
+      else
+        @dic.delete(Pdfbox::Cos::Name::FONT_FAMILY)
       end
-      @dic[Pdfbox::Cos::Name::FONT_FAMILY] = name
     end
 
     # The weight of the font.
@@ -169,11 +169,11 @@ module Pdfbox::Pdmodel::Font
 
     # Set the font stretch.
     def font_stretch=(font_stretch : String?)
-      name = nil
       if font_stretch
-        name = Pdfbox::Cos::Name.get_pdf_name(font_stretch)
+        @dic[Pdfbox::Cos::Name::FONT_STRETCH] = Pdfbox::Cos::Name.new(font_stretch)
+      else
+        @dic.delete(Pdfbox::Cos::Name::FONT_STRETCH)
       end
-      @dic[Pdfbox::Cos::Name::FONT_STRETCH] = name
     end
 
     # Get the font flags.

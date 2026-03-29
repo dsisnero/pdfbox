@@ -134,6 +134,7 @@ class Pdfbox::Pdmodel::Font::PDType1Font < Pdfbox::Pdmodel::Font::PDSimpleFont
 
     @dict[Pdfbox::Cos::Name::SUBTYPE] = Pdfbox::Cos::Name::TYPE1
     @dict[Pdfbox::Cos::Name::BASE_FONT] = Pdfbox::Cos::Name.new(base_font.to_s)
+    @dict[Pdfbox::Cos::Name::FONT_DESC] = build_standard14_font_descriptor(base_font).cos_object
 
     case base_font
     when Standard14Fonts::FontName::ZAPF_DINGBATS
@@ -259,6 +260,15 @@ class Pdfbox::Pdmodel::Font::PDType1Font < Pdfbox::Pdmodel::Font::PDSimpleFont
   protected def read_encoding_from_font : Pdfbox::Pdmodel::Font::Encoding::Encoding
     # TODO: Implement encoding extraction from font file
     Encoding::StandardEncoding::INSTANCE
+  end
+
+  private def build_standard14_font_descriptor(base_font : Standard14Fonts::FontName) : PDFontDescriptor
+    descriptor = PDFontDescriptor.new(Pdfbox::Cos::Dictionary.new)
+    name = base_font.to_s
+    descriptor.font_name = name
+    descriptor.italic = name.includes?("Italic") || name.includes?("Oblique")
+    descriptor.force_bold = name.includes?("Bold")
+    descriptor
   end
 
   def get_path(name : String)

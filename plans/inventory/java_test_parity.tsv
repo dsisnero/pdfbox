@@ -968,8 +968,8 @@ tools/src/test/java/org/apache/pdfbox/tools/TestExtractText.java::test::testPDFB
 tools/src/test/java/org/apache/pdfbox/tools/TestExtractText.java::test::testPDFBoxRepeatableSubcommandAddFileNameOutfile	missing	-	baseline
 tools/src/test/java/org/apache/pdfbox/tools/TestExtractText.java::test::testPDFBoxRepeatableSubcommandAddFileNameOutfileAppend	missing	-	baseline
 tools/src/test/java/org/apache/pdfbox/tools/TestExtractText.java::test::testRotationMagic	missing	-	baseline
-tools/src/test/java/org/apache/pdfbox/tools/TestPDFText2HTML.java::test::testEscapeTitle	missing	-	baseline
-tools/src/test/java/org/apache/pdfbox/tools/TestPDFText2HTML.java::test::testStyle	missing	-	baseline
+tools/src/test/java/org/apache/pdfbox/tools/TestPDFText2HTML.java::test::testEscapeTitle	ported	spec/tools/pdf_text_2_html_spec.cr	baseline
+tools/src/test/java/org/apache/pdfbox/tools/TestPDFText2HTML.java::test::testStyle	ported	spec/tools/pdf_text_2_html_spec.cr	baseline
 tools/src/test/java/org/apache/pdfbox/tools/TestTextToPdf.java::test::testCreateEmptyPdf	missing	-	baseline
 tools/src/test/java/org/apache/pdfbox/tools/TestTextToPdf.java::test::testFormFeed	missing	-	baseline
 tools/src/test/java/org/apache/pdfbox/tools/TestTextToPdf.java::test::testLeadingTrailingSpaces	missing	-	baseline

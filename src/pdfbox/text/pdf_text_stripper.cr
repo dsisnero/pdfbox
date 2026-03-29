@@ -23,13 +23,16 @@ module Pdfbox::Text
   # This class will take a pdf document and strip out all of the text and ignore the formatting and such.
   # Corresponds to org.apache.pdfbox.text.PDFTextStripper in Apache PDFBox.
   class PDFTextStripper < Contentstream::LegacyPDFStreamEngine
-    Log = ::Log.for(self)
+    Log            = ::Log.for(self)
+    LINE_SEPARATOR = "\n"
 
     @output : ::IO::Memory?
     @document : Pdfbox::Pdmodel::Document?
     @current_page_no : Int32 = 1
     @line_separator : String = "\n"
     @page_start : String = ""
+    @page_end : String = ""
+    @paragraph_start : String = ""
     @paragraph_end : String = ""
     @article_start : String = ""
     @article_end : String = ""
@@ -46,7 +49,9 @@ module Pdfbox::Text
     @average_char_tolerance : Float32 = 0.3_f32
     @sort_by_position : Bool = false
     @suppress_duplicate_overlapping_text : Bool = true
+    @should_separate_by_beads : Bool = true
     @ignore_content_stream_space_glyphs : Bool = false
+    @in_paragraph : Bool = false
     @character_list_mapping = {} of String => Hash(Float32, Set(Float32))
 
     # Get the text from a PDF document
@@ -172,11 +177,61 @@ module Pdfbox::Text
     def end_document(doc : Pdfbox::Pdmodel::Document) : Nil
     end
 
+    protected def start_article : Nil
+      start_article(true)
+    end
+
+    protected def start_article(is_ltr : Bool) : Nil
+      write_string_raw(@article_start)
+    end
+
+    protected def end_article : Nil
+      write_string_raw(@article_end)
+    end
+
+    protected def write_string(text : String, text_positions : Array(TextPosition)) : Nil
+      write_string(text)
+    end
+
+    protected def write_string(text : String) : Nil
+      write_string_raw(text)
+    end
+
+    protected def write_string_raw(text : String) : Nil
+      @output.try(&.<< text)
+    end
+
+    protected def write_paragraph_start : Nil
+      if @in_paragraph
+        write_paragraph_end
+        @in_paragraph = false
+      end
+      write_string_raw(@paragraph_start)
+      @in_paragraph = true
+    end
+
+    protected def write_paragraph_end : Nil
+      unless @in_paragraph
+        write_paragraph_start
+      end
+      write_string_raw(@paragraph_end)
+      @in_paragraph = false
+    end
+
+    protected def write_page_start : Nil
+      write_string_raw(@page_start)
+    end
+
+    protected def write_page_end : Nil
+      write_string_raw(@page_end)
+    end
+
     private def reset_engine
       @current_page_no = 1
       @document = nil
       @start_bookmark_page_number = -1
       @end_bookmark_page_number = -1
+      @in_paragraph = false
       @text_positions.clear
       @character_list_mapping.clear
     end
@@ -187,6 +242,10 @@ module Pdfbox::Text
 
     def line_separator=(value : String) : String
       @line_separator = value
+    end
+
+    def line_separator : String
+      @line_separator
     end
 
     def start_page=(value : Int) : Int32
@@ -227,6 +286,54 @@ module Pdfbox::Text
 
     def page_end : String
       @page_end
+    end
+
+    def paragraph_start=(value : String) : String
+      @paragraph_start = value
+    end
+
+    def paragraph_start : String
+      @paragraph_start
+    end
+
+    def paragraph_end=(value : String) : String
+      @paragraph_end = value
+    end
+
+    def paragraph_end : String
+      @paragraph_end
+    end
+
+    def page_start=(value : String) : String
+      @page_start = value
+    end
+
+    def page_start : String
+      @page_start
+    end
+
+    def article_start=(value : String) : String
+      @article_start = value
+    end
+
+    def article_start : String
+      @article_start
+    end
+
+    def article_end=(value : String) : String
+      @article_end = value
+    end
+
+    def article_end : String
+      @article_end
+    end
+
+    def should_separate_by_beads=(value : Bool) : Bool
+      @should_separate_by_beads = value
+    end
+
+    def should_separate_by_beads? : Bool
+      @should_separate_by_beads
     end
 
     def ignore_content_stream_space_glyphs=(value : Bool) : Bool

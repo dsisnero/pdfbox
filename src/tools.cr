@@ -4,6 +4,7 @@
 # corresponding to the tools module in Apache PDFBox.
 require "./tools/imageio"
 require "./tools/version"
+require "./tools/pdf_text_2_html"
 require "./tools/pdfbox"
 
 module Tools
