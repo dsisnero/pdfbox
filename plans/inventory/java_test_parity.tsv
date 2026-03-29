@@ -531,7 +531,7 @@ pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageTree.java::test::positi
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageTree.java::test::positiveSingleLevel	ported	spec/pdfbox/pdmodel/page_tree_spec.cr	Ported single-level page tree index parity using with_outline.pdf
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageTree.java::test::testInsertAfterBlankPage	ported	spec/pdfbox/pdmodel/page_tree_spec.cr	Ported insertAfter blank page ordering parity
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageTree.java::test::testInsertBeforeBlankPage	ported	spec/pdfbox/pdmodel/page_tree_spec.cr	Ported insertBefore blank page ordering parity
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageTree.java::test::testNodeLoop	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageTree.java::test::testNodeLoop	ported	spec/pdfbox/pdmodel/page_tree_nodeloop_spec.cr	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/COSArrayListTest.java::test::getFromList	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/COSArrayListTest.java::test::removeAllMultipleFromListByObject	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/COSArrayListTest.java::test::removeAllUniqueFromListByObject	missing	-	baseline

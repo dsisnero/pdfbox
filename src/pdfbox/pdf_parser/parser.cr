@@ -1641,86 +1641,104 @@ module Pdfbox::Pdfparser
       Log.debug { "xref_offset: #{xref_offset}" }
 
       catalog_dict = if xref_offset
-                       Log.debug { "Before collect_xref_sections, xref_offset=#{xref_offset}" }
-                       sections = collect_xref_sections(xref_offset)
+                       begin
+                         Log.debug { "Before collect_xref_sections, xref_offset=#{xref_offset}" }
+                         sections = collect_xref_sections(xref_offset)
 
-                       # Try to use resolver's results first
-                       resolver_xref_table = xref_resolver.xref_table
-                       resolver_trailer = xref_resolver.trailer
-                       Log.debug { "resolver_xref_table size: #{resolver_xref_table.try(&.size) || 0}, resolver_trailer keys: #{resolver_trailer.try(&.entries).try(&.keys).try(&.map(&.value)) || [] of String}" }
+                         # Try to use resolver's results first
+                         resolver_xref_table = xref_resolver.xref_table
+                         resolver_trailer = xref_resolver.trailer
+                         Log.debug { "resolver_xref_table size: #{resolver_xref_table.try(&.size) || 0}, resolver_trailer keys: #{resolver_trailer.try(&.entries).try(&.keys).try(&.map(&.value)) || [] of String}" }
 
-                       if resolver_xref_table && resolver_trailer && resolver_trailer.has_key?(Pdfbox::Cos::Name.new("Root"))
-                         xref = XRef.new
-                         xref.update_from_hash(resolver_xref_table)
-                         trailer = resolver_trailer
+                         if resolver_xref_table && resolver_trailer && resolver_trailer.has_key?(Pdfbox::Cos::Name.new("Root"))
+                           xref = XRef.new
+                           xref.update_from_hash(resolver_xref_table)
+                           trailer = resolver_trailer
 
-                         Log.debug { "Using resolver xref table with #{xref.size} entries" }
-                         # Debug: check for object 141
-                         if resolver_xref_table
-                           resolver_xref_table.each do |key, offset|
-                             if key.number == 141
-                               Log.debug { "Found object 141 in resolver xref table: offset #{offset}, generation #{key.generation}" }
+                           Log.debug { "Using resolver xref table with #{xref.size} entries" }
+                           if resolver_xref_table
+                             resolver_xref_table.each do |key, offset|
+                               if key.number == 141
+                                 Log.debug { "Found object 141 in resolver xref table: offset #{offset}, generation #{key.generation}" }
+                               end
+                             end
+                           end
+                         else
+                           xref, trailer = merge_xref_sections(sections)
+
+                           Log.debug { "Using merged xref sections with #{xref.size} entries" }
+                         end
+
+                         @trailer = trailer
+                         @xref = xref
+
+                         if @lenient
+                           Log.debug { "Parser lenient mode enabled, performing brute-force search for object streams" }
+                           brute_force_parser.bf_search_for_obj_streams_xref(xref)
+                           Log.debug { "After brute-force search, xref entries: #{xref.size}" }
+
+                           if trailer.nil? || !trailer.has_key?(Pdfbox::Cos::Name.new("Root"))
+                             Log.debug { "Trailer missing Root, attempting brute-force trailer search" }
+                             if brute_force_parser.bf_find_trailer(trailer ||= Pdfbox::Cos::Dictionary.new)
+                               Log.debug { "Brute-force trailer search succeeded" }
+                               @trailer = trailer
+                             else
+                               Log.debug { "Brute-force trailer search failed" }
                              end
                            end
                          end
-                       else
-                         xref, trailer = merge_xref_sections(sections)
 
-                         Log.debug { "Using merged xref sections with #{xref.size} entries" }
-                       end
-
-                       @trailer = trailer
-                       @xref = xref
-
-                       # Brute-force search for object streams in lenient mode
-                       if @lenient
-                         Log.debug { "Parser lenient mode enabled, performing brute-force search for object streams" }
-                         brute_force_parser.bf_search_for_obj_streams_xref(xref)
-                         Log.debug { "After brute-force search, xref entries: #{xref.size}" }
-
-                         # If trailer missing Root, try brute force to find it
-                         if trailer.nil? || !trailer.has_key?(Pdfbox::Cos::Name.new("Root"))
-                           Log.debug { "Trailer missing Root, attempting brute-force trailer search" }
-                           if brute_force_parser.bf_find_trailer(trailer ||= Pdfbox::Cos::Dictionary.new)
-                             Log.debug { "Brute-force trailer search succeeded" }
-                             @trailer = trailer
-                           else
-                             Log.debug { "Brute-force trailer search failed" }
+                         Log.debug { "final xref entries: #{xref.size}" }
+                         compressed_count = xref.entries.count { |_, offset| offset < 0 }
+                         Log.debug { "compressed xref entries (count: #{compressed_count}):" }
+                         xref.each_entry do |obj_num, entry|
+                           if entry.compressed?
+                             Log.debug { "  object #{obj_num}: obj_stream=#{entry.offset}, index=#{entry.generation}" }
                            end
                          end
-                       end
 
-                       # Debug logging for compressed entries
-                       Log.debug { "final xref entries: #{xref.size}" }
-                       compressed_count = xref.entries.count { |_, offset| offset < 0 }
-                       Log.debug { "compressed xref entries (count: #{compressed_count}):" }
-                       xref.each_entry do |obj_num, entry|
-                         if entry.compressed?
-                           Log.debug { "  object #{obj_num}: obj_stream=#{entry.offset}, index=#{entry.generation}" }
+                         Log.debug { "checking xref entries for objects 15-20 and PageLabels objects:" }
+                         [15, 16, 17, 18, 19, 20, 1350, 1352, 1358, 1360].each do |obj_num|
+                           if entry = xref[obj_num.to_i64]
+                             Log.debug { "  object #{obj_num}: offset #{entry.offset}, type: #{entry.type}" }
+                           else
+                             Log.debug { "  object #{obj_num}: not found in xref" }
+                           end
                          end
-                       end
+                         Log.debug { "trailer: #{trailer.inspect}" }
 
-                       # Debug: print xref entries for objects around 17 and PageLabels objects
-                       Log.debug { "checking xref entries for objects 15-20 and PageLabels objects:" }
-                       [15, 16, 17, 18, 19, 20, 1350, 1352, 1358, 1360].each do |obj_num|
-                         if entry = xref[obj_num.to_i64]
-                           Log.debug { "  object #{obj_num}: offset #{entry.offset}, type: #{entry.type}" }
+                         found_catalog_dict = parse_catalog_from_trailer(trailer, xref)
+                         if found_catalog_dict
+                           begin
+                             pages = parse_pages_from_catalog(found_catalog_dict, xref)
+                           rescue ex
+                             raise ex unless @lenient
+                             Log.warn { "Skipping page tree parsing in lenient mode: #{ex.message}" }
+                           end
+                         end
+                         found_catalog_dict
+                       rescue ex
+                         raise ex unless @lenient
+                         Log.warn { "XRef parsing failed in lenient mode, attempting brute-force trailer reconstruction: #{ex.message}" }
+                         xref = XRef.new
+                         @xref = xref
+                         trailer = brute_force_parser.rebuild_trailer(xref)
+                         if trailer
+                           @trailer = trailer
+                           found_catalog_dict = parse_catalog_from_trailer(trailer, xref)
+                           if found_catalog_dict
+                             begin
+                               pages = parse_pages_from_catalog(found_catalog_dict, xref)
+                             rescue ex
+                               Log.warn { "Skipping page tree parsing in lenient mode: #{ex.message}" }
+                             end
+                           end
+                           found_catalog_dict
                          else
-                           Log.debug { "  object #{obj_num}: not found in xref" }
+                           Log.error { "Failed to reconstruct trailer using brute force after xref parse failure" }
+                           nil
                          end
                        end
-                       Log.debug { "trailer: #{trailer.inspect}" }
-
-                       found_catalog_dict = parse_catalog_from_trailer(trailer, xref)
-                       if found_catalog_dict
-                         begin
-                           pages = parse_pages_from_catalog(found_catalog_dict, xref)
-                         rescue ex
-                           raise ex unless @lenient
-                           Log.warn { "Skipping page tree parsing in lenient mode: #{ex.message}" }
-                         end
-                       end
-                       found_catalog_dict
                      else
                        # No startxref found, use brute force to rebuild trailer
                        Log.warn { "No startxref found, attempting brute-force trailer reconstruction" }
