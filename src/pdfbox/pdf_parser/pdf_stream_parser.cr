@@ -28,6 +28,18 @@ module Pdfbox::Pdfparser
       initialize(content.to_slice)
     end
 
+    # Constructor that takes a page and parses its decoded content stream.
+    def initialize(page : Pdfbox::Pdmodel::Page)
+      contents = page.contents
+      if contents
+        io = contents.create_input_stream
+        bytes = io.gets_to_end.to_slice
+        initialize(bytes)
+      else
+        initialize(Bytes.empty)
+      end
+    end
+
     # Parse all tokens in the stream
     # Returns array of tokens (COS objects or Operators)
     def parse : Array(Pdfbox::Cos::Base | Pdfbox::ContentStream::Operator)

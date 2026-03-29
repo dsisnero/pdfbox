@@ -1,42 +1,287 @@
+require "../content_stream/operator_name"
+require "../util"
+
 module Pdfbox::Pdmodel
-  # Minimal PDPageContentStream implementation for text-writing parity paths.
+  class IllegalStateError < Exception
+  end
+
+  # Minimal PDPageContentStream parity surface for the upstream pdmodel tests.
   class PDPageContentStream
-    @page : Page
+    include Pdfbox::ContentStream::OperatorName
+
+    enum AppendMode
+      OVERWRITE
+      APPEND
+      PREPEND
+    end
+
     @buffer : ::IO::Memory
     @closed = false
     @font_name : String?
+    @in_text_mode = false
 
     def initialize(@document : Document, @page : Page)
+      @append_mode = AppendMode::OVERWRITE
+      @compress = true
+      @buffer = ::IO::Memory.new
+    end
+
+    def initialize(@document : Document, @page : Page, @append_mode : AppendMode, @compress : Bool)
       @buffer = ::IO::Memory.new
     end
 
     def begin_text : Nil
-      @buffer << "BT\n"
+      raise IllegalStateError.new("Error: Nested beginText() calls are not allowed.") if @in_text_mode
+      @in_text_mode = true
+      write_operator(BEGIN_TEXT)
     end
 
-    def new_line_at_offset(tx : Float64 | Int, ty : Float64 | Int) : Nil
-      @buffer << format_number(tx) << ' ' << format_number(ty) << " Td\n"
+    def end_text : Nil
+      raise IllegalStateError.new("Error: You must call beginText() before calling endText.") unless @in_text_mode
+      @in_text_mode = false
+      write_operator(END_TEXT)
     end
 
-    def set_font(font : Font::PDFont, font_size : Float64 | Int) : Nil
-      # Add font to page resources
+    def new_line_at_offset(tx : Number, ty : Number) : Nil
+      write_operands(tx, ty)
+      write_operator(MOVE_TEXT)
+    end
+
+    def set_font(font : Font::PDFont, font_size : Number) : Nil
       add_font_to_resources(font)
-      @buffer << "/#{@font_name} " << format_number(font_size) << " Tf\n"
+      @buffer << "/#{@font_name} " << format_number(font_size) << ' ' << SET_FONT_AND_SIZE << '\n'
     end
 
     def show_text(text : String) : Nil
-      # Get the current font from the page resources
       font = get_current_font
-      if font
-        # Encode the text using the font's encoding
-        encoded = encode_text(text, font)
-        escaped = String.new(encoded).gsub("\\", "\\\\").gsub("(", "\\(").gsub(")", "\\)")
-        @buffer << '(' << escaped << ") Tj\n"
-      else
-        # Fallback: write text as-is (UTF-8)
-        escaped = text.gsub("\\", "\\\\").gsub("(", "\\(").gsub(")", "\\)")
-        @buffer << '(' << escaped << ") Tj\n"
+      escaped = if font
+                  encoded = encode_text(text, font)
+                  String.new(encoded).gsub("\\", "\\\\").gsub("(", "\\(").gsub(")", "\\)")
+                else
+                  text.gsub("\\", "\\\\").gsub("(", "\\(").gsub(")", "\\)")
+                end
+      @buffer << '(' << escaped << ") " << SHOW_TEXT << '\n'
+    end
+
+    def non_stroking_color(gray : Number) : Nil
+      validate_color_component(gray, "g")
+      write_operands(gray)
+      write_operator(NON_STROKING_GRAY)
+    end
+
+    def non_stroking_color(r : Number, g : Number, b : Number) : Nil
+      validate_color_component(r, "r")
+      validate_color_component(g, "g")
+      validate_color_component(b, "b")
+      write_operands(r, g, b)
+      write_operator(NON_STROKING_RGB)
+    end
+
+    def non_stroking_color(c : Number, m : Number, y : Number, k : Number) : Nil
+      validate_color_component(c, "c")
+      validate_color_component(m, "m")
+      validate_color_component(y, "y")
+      validate_color_component(k, "k")
+      write_operands(c, m, y, k)
+      write_operator(NON_STROKING_CMYK)
+    end
+
+    def stroking_color(gray : Number) : Nil
+      validate_color_component(gray, "g")
+      write_operands(gray)
+      write_operator(STROKING_COLOR_GRAY)
+    end
+
+    def stroking_color(r : Number, g : Number, b : Number) : Nil
+      validate_color_component(r, "r")
+      validate_color_component(g, "g")
+      validate_color_component(b, "b")
+      write_operands(r, g, b)
+      write_operator(STROKING_COLOR_RGB)
+    end
+
+    def stroking_color(c : Number, m : Number, y : Number, k : Number) : Nil
+      validate_color_component(c, "c")
+      validate_color_component(m, "m")
+      validate_color_component(y, "y")
+      validate_color_component(k, "k")
+      write_operands(c, m, y, k)
+      write_operator(STROKING_COLOR_CMYK)
+    end
+
+    def draw_image(_image : Graphics::Image::PDImageXObject, _x : Number, _y : Number, _width : Number, _height : Number) : Nil
+      raise_if_in_text_mode("drawImage is not allowed within a text block.")
+    end
+
+    def draw_image(_image : Graphics::Image::PDImageXObject, _matrix : Pdfbox::Util::Matrix) : Nil
+      raise_if_in_text_mode("drawImage is not allowed within a text block.")
+    end
+
+    def draw_image(_image : Graphics::Image::PDInlineImage, _x : Number, _y : Number, _width : Number, _height : Number) : Nil
+      raise_if_in_text_mode("drawImage is not allowed within a text block.")
+    end
+
+    def add_rect(_x : Number, _y : Number, _width : Number, _height : Number) : Nil
+      raise_if_in_text_mode("addRect is not allowed within a text block.")
+      write_operator(APPEND_RECT)
+    end
+
+    def curve_to(_x1 : Number, _y1 : Number, _x2 : Number, _y2 : Number, _x3 : Number, _y3 : Number) : Nil
+      raise_if_in_text_mode("curveTo is not allowed within a text block.")
+      write_operator(CURVE_TO)
+    end
+
+    def curve_to1(_x1 : Number, _y1 : Number, _x3 : Number, _y3 : Number) : Nil
+      raise_if_in_text_mode("curveTo1 is not allowed within a text block.")
+      write_operator(CURVE_TO_REPLICATE_FINAL_POINT)
+    end
+
+    def curve_to2(_x2 : Number, _y2 : Number, _x3 : Number, _y3 : Number) : Nil
+      raise_if_in_text_mode("curveTo2 is not allowed within a text block.")
+      write_operator(CURVE_TO_REPLICATE_INITIAL_POINT)
+    end
+
+    def move_to(_x : Number, _y : Number) : Nil
+      raise_if_in_text_mode("moveTo is not allowed within a text block.")
+      write_operator(MOVE_TO)
+    end
+
+    def line_to(_x : Number, _y : Number) : Nil
+      raise_if_in_text_mode("lineTo is not allowed within a text block.")
+      write_operator(LINE_TO)
+    end
+
+    def shading_fill(_shading : Graphics::Shading::PDShadingType1) : Nil
+      raise_if_in_text_mode("shadingFill is not allowed within a text block.")
+      write_operator(SHADING_FILL)
+    end
+
+    def stroke : Nil
+      raise_if_in_text_mode("stroke is not allowed within a text block.")
+      write_operator(STROKE_PATH)
+    end
+
+    def close_and_stroke : Nil
+      raise_if_in_text_mode("closeAndStroke is not allowed within a text block.")
+      write_operator(CLOSE_AND_STROKE)
+    end
+
+    def close_and_fill_and_stroke : Nil
+      raise_if_in_text_mode("closeAndFillAndStroke is not allowed within a text block.")
+      write_operator(CLOSE_FILL_NON_ZERO_AND_STROKE)
+    end
+
+    def close_and_fill_and_stroke_even_odd : Nil
+      raise_if_in_text_mode("closeAndFillAndStrokeEvenOdd is not allowed within a text block.")
+      write_operator(CLOSE_FILL_EVEN_ODD_AND_STROKE)
+    end
+
+    def fill : Nil
+      raise_if_in_text_mode("fill is not allowed within a text block.")
+      write_operator(FILL_NON_ZERO)
+    end
+
+    def fill_and_stroke : Nil
+      raise_if_in_text_mode("fillAndStroke is not allowed within a text block.")
+      write_operator(FILL_NON_ZERO_AND_STROKE)
+    end
+
+    def fill_and_stroke_even_odd : Nil
+      raise_if_in_text_mode("fillAndStrokeEvenOdd is not allowed within a text block.")
+      write_operator(FILL_EVEN_ODD_AND_STROKE)
+    end
+
+    def fill_even_odd : Nil
+      raise_if_in_text_mode("fillEvenOdd is not allowed within a text block.")
+      write_operator(FILL_EVEN_ODD)
+    end
+
+    def close_path : Nil
+      raise_if_in_text_mode("closePath is not allowed within a text block.")
+      write_operator(CLOSE_PATH)
+    end
+
+    def clip : Nil
+      raise_if_in_text_mode("clip is not allowed within a text block.")
+      write_operator(CLIP_NON_ZERO)
+    end
+
+    def clip_even_odd : Nil
+      raise_if_in_text_mode("clipEvenOdd is not allowed within a text block.")
+      write_operator(CLIP_EVEN_ODD)
+    end
+
+    def line_cap_style(style : Int) : Nil
+      write_operands(style)
+      write_operator(SET_LINE_CAPSTYLE)
+    end
+
+    def line_join_style(style : Int) : Nil
+      write_operands(style)
+      write_operator(SET_LINE_JOINSTYLE)
+    end
+
+    def line_width(width : Number) : Nil
+      write_operands(width)
+      write_operator(SET_LINE_WIDTH)
+    end
+
+    def line_dash_pattern(pattern : Enumerable(Number), phase : Number) : Nil
+      @buffer << '['
+      first = true
+      pattern.each do |value|
+        @buffer << ' ' unless first
+        @buffer << format_number(value)
+        first = false
       end
+      @buffer << "] " << format_number(phase) << ' ' << SET_LINE_DASHPATTERN << '\n'
+    end
+
+    def miter_limit(limit : Number) : Nil
+      write_operands(limit)
+      write_operator(SET_LINE_MITERLIMIT)
+    end
+
+    def graphics_state_parameters(state : Graphics::State::PDExtendedGraphicsState) : Nil
+      resource_name = add_ext_gstate_to_resources(state)
+      @buffer << "/#{resource_name} " << SET_GRAPHICS_STATE_PARAMS << '\n'
+    end
+
+    def close : Nil
+      return if @closed
+      @closed = true
+
+      stream = Cos::Stream.new
+      if @compress
+        encoded_output = stream.create_output_stream(Cos::Name::FLATE_DECODE)
+        encoded_output.write(@buffer.to_slice)
+        encoded_output.close
+      else
+        stream.data = @buffer.to_slice
+      end
+      @page.contents = stream
+    end
+
+    private def raise_if_in_text_mode(message : String) : Nil
+      raise IllegalStateError.new("Error: #{message}") if @in_text_mode
+    end
+
+    private def validate_color_component(value : Number, component : String) : Nil
+      numeric = value.to_f64
+      return if 0.0_f64 <= numeric <= 1.0_f64
+      raise ArgumentError.new("Parameters must be within 0..1, #{component}=#{numeric}")
+    end
+
+    private def write_operands(*values : Number) : Nil
+      values.each_with_index do |value, index|
+        @buffer << ' ' unless index == 0
+        @buffer << format_number(value)
+      end
+      @buffer << ' '
+    end
+
+    private def write_operator(name : String) : Nil
+      @buffer << name << '\n'
     end
 
     private def get_current_font : Font::PDFont?
@@ -49,96 +294,72 @@ module Pdfbox::Pdmodel
       resources = cos_page[Cos::Name.new("Resources")]?
       return nil unless resources
 
-      if resources.is_a?(Cos::Object)
-        resources = resources.object
-      end
-
+      resources = resources.object if resources.is_a?(Cos::Object)
       return nil unless resources.is_a?(Cos::Dictionary)
 
       fonts = resources[Cos::Name.new("Font")]?
       return nil unless fonts
 
-      if fonts.is_a?(Cos::Object)
-        fonts = fonts.object
-      end
-
+      fonts = fonts.object if fonts.is_a?(Cos::Object)
       return nil unless fonts.is_a?(Cos::Dictionary)
 
       font_dict = fonts[Cos::Name.new(font_name)]?
       return nil unless font_dict
 
-      if font_dict.is_a?(Cos::Object)
-        font_dict = font_dict.object
-      end
-
+      font_dict = font_dict.object if font_dict.is_a?(Cos::Object)
       return nil unless font_dict.is_a?(Cos::Dictionary)
 
       Font::PDFontFactory.create_font(font_dict)
     end
 
     private def encode_text(text : String, font : Font::PDFont) : Bytes
-      # Use the font's public encode method
       font.encode(text)
-    end
-
-    def end_text : Nil
-      @buffer << "ET\n"
-    end
-
-    def close : Nil
-      return if @closed
-      @closed = true
-
-      stream = Cos::Stream.new
-      encoded_output = stream.create_output_stream(Cos::Name::FLATE_DECODE)
-      encoded_output.write(@buffer.to_slice)
-      encoded_output.close
-      @page.contents = stream
     end
 
     private def add_font_to_resources(font : Font::PDFont) : Nil
       return if @font_name
+      fonts = ensure_resource_subdictionary("Font")
+      font_name = "F#{fonts.size + 1}"
+      @font_name = font_name
+      fonts[Cos::Name.new(font_name)] = font.cos_object
+    end
 
-      # Get or create page resources
-      cos_page = @page.cos_object
-      return unless cos_page
+    private def add_ext_gstate_to_resources(state : Graphics::State::PDExtendedGraphicsState) : String
+      ext_gstates = ensure_resource_subdictionary("ExtGState")
+      resource_name = "gs#{ext_gstates.size + 1}"
+      ext_gstates[Cos::Name.new(resource_name)] = state.cos_object
+      resource_name
+    end
+
+    private def ensure_resource_subdictionary(name : String) : Cos::Dictionary
+      cos_page = @page.cos_object || raise "Page is missing COS dictionary"
 
       resources = cos_page[Cos::Name.new("Resources")]?
       unless resources
         resources = Cos::Dictionary.new
         cos_page[Cos::Name.new("Resources")] = resources
       end
+      resources = resources.object if resources.is_a?(Cos::Object)
+      resources = resources.as(Cos::Dictionary)
 
-      if resources.is_a?(Cos::Object)
-        resources = resources.object
+      subdict = resources[Cos::Name.new(name)]?
+      unless subdict
+        subdict = Cos::Dictionary.new
+        resources[Cos::Name.new(name)] = subdict
       end
-
-      return unless resources.is_a?(Cos::Dictionary)
-
-      # Get or create font dictionary
-      fonts = resources[Cos::Name.new("Font")]?
-      unless fonts
-        fonts = Cos::Dictionary.new
-        resources[Cos::Name.new("Font")] = fonts
-      end
-
-      if fonts.is_a?(Cos::Object)
-        fonts = fonts.object
-      end
-
-      return unless fonts.is_a?(Cos::Dictionary)
-
-      # Generate font name and add to resources
-      font_name = "F#{fonts.size + 1}"
-      @font_name = font_name
-      fonts[Cos::Name.new(font_name)] = font.cos_object
+      subdict = subdict.object if subdict.is_a?(Cos::Object)
+      subdict.as(Cos::Dictionary)
     end
 
-    private def format_number(value : Float64 | Int) : String
-      if value.is_a?(Int)
+    private def format_number(value : Number) : String
+      case value
+      when Int
         value.to_s
+      when Float32, Float64
+        rounded = value.round
+        rounded == value ? rounded.to_i.to_s : value.to_s
       else
-        value.round == value ? value.to_i.to_s : value.to_s
+        value.to_s
       end
     end
   end

@@ -518,11 +518,11 @@ pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPage.java::test::testAdding
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageAnnotationsFiltering.java::test::validateAllFiltered	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageAnnotationsFiltering.java::test::validateNoFiltering	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageAnnotationsFiltering.java::test::validateSelectedFew	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageContentStream.java::test::testCloseContract	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageContentStream.java::test::testGeneralGraphicStateOperatorTextMode	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageContentStream.java::test::testMissingContentStream	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageContentStream.java::test::testSetCmykColors	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageContentStream.java::test::testSetRGBandGColors	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageContentStream.java::test::testCloseContract	ported	spec/pdfbox/pdmodel/page_content_stream_spec.cr	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageContentStream.java::test::testGeneralGraphicStateOperatorTextMode	ported	spec/pdfbox/pdmodel/page_content_stream_spec.cr	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageContentStream.java::test::testMissingContentStream	ported	spec/pdfbox/pdmodel/page_content_stream_spec.cr	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageContentStream.java::test::testSetCmykColors	ported	spec/pdfbox/pdmodel/page_content_stream_spec.cr	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageContentStream.java::test::testSetRGBandGColors	ported	spec/pdfbox/pdmodel/page_content_stream_spec.cr	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageTransitions.java::test::readTransitions	ported	spec/pdfbox/pdmodel/page_transitions_spec.cr	Ported page transition fixture read parity for transitions_test.pdf
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageTransitions.java::test::saveAndReadTransitions	ported	spec/pdfbox/pdmodel/page_transitions_spec.cr	Ported page transition save/load parity for Fly transition with NONE direction
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageTree.java::test::indexOfPageFromOutlineDestination	ported	spec/pdfbox/pdmodel/page_tree_spec.cr	Ported outline destination page index parity using with_outline.pdf
