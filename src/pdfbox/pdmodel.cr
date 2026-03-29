@@ -1388,20 +1388,35 @@ module Pdfbox::Pdmodel
       end
     end
 
+    def subtype : String?
+      subtype_value = @cos_dict[Cos::Name.new("Subtype")]?
+      return unless subtype_value
+
+      if subtype_value.is_a?(Cos::Object)
+        subtype_value = subtype_value.object
+      end
+
+      case subtype_value
+      when Cos::Name
+        subtype_value.value
+      when Cos::String
+        subtype_value.value
+      end
+    end
+
     # Create input stream for embedded file data
     def create_input_stream : ::IO?
       stream = self.stream
       return unless stream
 
-      ::IO::Memory.new(stream.data)
+      stream.create_input_stream
     end
 
     # Get embedded file data as bytes
     def to_byte_array : Bytes
-      stream = self.stream
-      return Bytes.empty unless stream
-
-      stream.data
+      io = create_input_stream
+      return Bytes.empty unless io
+      io.gets_to_end.to_slice
     end
   end
 

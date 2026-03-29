@@ -26,7 +26,7 @@ module Pdfbox::Text
     Log            = ::Log.for(self)
     LINE_SEPARATOR = "\n"
 
-    @output : ::IO::Memory?
+    @output : ::IO?
     @document : Pdfbox::Pdmodel::Document?
     @current_page_no : Int32 = 1
     @line_separator : String = "\n"
@@ -71,7 +71,7 @@ module Pdfbox::Text
     def write_text(doc : Pdfbox::Pdmodel::Document, output_stream : ::IO) : Nil
       reset_engine
       @document = doc
-      @output = output_stream.as(::IO::Memory?)
+      @output = output_stream
 
       if @add_more_formatting
         @paragraph_end = @line_separator

@@ -41,17 +41,23 @@ module Tools
 
     def execute(args : Array(String)) : Int32
       return subcommand_required if args.empty?
-
-      command = args.first
-      case command
-      when "version"
-        Version.new(@out).call("version")
-      when "debug"
-        handle_debug
-      else
-        @err.puts("Command '#{command}' not yet implemented")
-        0
+      exit_code = 0
+      command_groups(args).each do |group|
+        command = group.first
+        command_args = group[1..]
+        exit_code = case command
+                    when "version"
+                      Version.new(@out).call("version")
+                    when "debug"
+                      handle_debug
+                    when "export:text"
+                      ExtractText.new(@out, @err).call(command_args)
+                    else
+                      @err.puts("Command '#{command}' not yet implemented")
+                      0
+                    end
       end
+      exit_code
     end
 
     def self.main(args : Array(String), stdout_io : IO = STDOUT, stderr_io : IO = STDERR, headless : Bool = headless?) : Int32
@@ -70,6 +76,21 @@ module Tools
         @out.puts("debug")
       end
       0
+    end
+
+    private def command_groups(args : Array(String)) : Array(Array(String))
+      groups = [] of Array(String)
+      current = [] of String
+      args.each_with_index do |arg, index|
+        if index > 0 && available_subcommands.includes?(arg)
+          groups << current unless current.empty?
+          current = [arg]
+        else
+          current << arg
+        end
+      end
+      groups << current unless current.empty?
+      groups
     end
   end
 end
