@@ -109,9 +109,9 @@ abstract class Pdfbox::Pdmodel::Common::PDNameTreeNode(T)
         first_kid = kids_list.get(0)
         last_kid = kids_list.get(kids_list.size - 1)
         lower_limit = first_kid.lower_limit
-        self.lower_limit = lower_limit if lower_limit
+        self.lower_limit = lower_limit
         upper_limit = last_kid.upper_limit
-        self.upper_limit = upper_limit if upper_limit
+        self.upper_limit = upper_limit
       else
         names_map = names
         if names_map && !names_map.empty?
@@ -230,7 +230,7 @@ abstract class Pdfbox::Pdmodel::Common::PDNameTreeNode(T)
   end
 
   # Set the highest value for the key in the map.
-  private def upper_limit=(upper : String) : Nil
+  private def upper_limit=(upper : String?) : Nil
     arr = @node[Cos::Name::LIMITS].as?(Cos::Array)
     if arr.nil?
       arr = Cos::Array.new
@@ -238,7 +238,7 @@ abstract class Pdfbox::Pdmodel::Common::PDNameTreeNode(T)
       arr.add(Cos::Null::INSTANCE)
       @node[Cos::Name::LIMITS] = arr
     end
-    arr[1] = Cos::String.new(upper)
+    arr[1] = upper.nil? ? Cos::Null::INSTANCE : Cos::String.new(upper)
   end
 
   # Get the lowest value for a key in the name map.
@@ -254,7 +254,7 @@ abstract class Pdfbox::Pdmodel::Common::PDNameTreeNode(T)
   end
 
   # Set the lowest value for the key in the map.
-  private def lower_limit=(lower : String) : Nil
+  private def lower_limit=(lower : String?) : Nil
     arr = @node[Cos::Name::LIMITS].as?(Cos::Array)
     if arr.nil?
       arr = Cos::Array.new
@@ -262,6 +262,6 @@ abstract class Pdfbox::Pdmodel::Common::PDNameTreeNode(T)
       arr.add(Cos::Null::INSTANCE)
       @node[Cos::Name::LIMITS] = arr
     end
-    arr[0] = Cos::String.new(lower)
+    arr[0] = lower.nil? ? Cos::Null::INSTANCE : Cos::String.new(lower)
   end
 end

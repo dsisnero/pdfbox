@@ -7,7 +7,8 @@ describe "Pdfbox::Pdmodel::Common parity" do
   #
   # Existing Crystal coverage already present:
   # - TestEmbeddedFiles -> spec/pdfbox/pdmodel/common/embedded_files_spec.cr
-  # - TestPDNumberTreeNode -> spec/pdfbox/pdmodel/common/number_tree_node_spec.cr
+  # - TestPDNameTreeNode -> spec/pdfbox/pdmodel/common/pdname_tree_node_spec.cr
+  # - TestPDNumberTreeNode -> spec/pdfbox/pdmodel/common/pdnumber_tree_node_spec.cr
   #
   # Remaining tests below are blocked by unported APIs (COSArrayList wrappers,
   # annotation filtering/list mutation semantics, immutable rectangle variant, PDStream API,
@@ -73,82 +74,6 @@ describe "Pdfbox::Pdmodel::Common parity" do
       range = Pdfbox::Pdmodel::PDRange.new
       range.to_s.should contain("0.0")
       range.to_s.should contain("1.0")
-    end
-  end
-
-  describe "PDNameTreeNode" do
-    node5 = nil.as(Pdfbox::Pdmodel::Common::PDIntegerNameTreeNode?)
-    node24 = nil.as(Pdfbox::Pdmodel::Common::PDIntegerNameTreeNode?)
-    node2 = nil.as(Pdfbox::Pdmodel::Common::PDIntegerNameTreeNode?)
-    node4 = nil.as(Pdfbox::Pdmodel::Common::PDIntegerNameTreeNode?)
-    node1 = nil.as(Pdfbox::Pdmodel::Common::PDIntegerNameTreeNode?)
-
-    before_each do
-      # Build node5 (leaf with names)
-      node5 = Pdfbox::Pdmodel::Common::PDIntegerNameTreeNode.new
-      names = {} of String => Pdfbox::Cos::Integer
-      names["Actinium"] = Pdfbox::Cos::Integer.new(89)
-      names["Aluminum"] = Pdfbox::Cos::Integer.new(13)
-      names["Americium"] = Pdfbox::Cos::Integer.new(95)
-      names["Antimony"] = Pdfbox::Cos::Integer.new(51)
-      names["Argon"] = Pdfbox::Cos::Integer.new(18)
-      names["Arsenic"] = Pdfbox::Cos::Integer.new(33)
-      names["Astatine"] = Pdfbox::Cos::Integer.new(85)
-      node5.not_nil!.names = names
-
-      # Build node24 (leaf with names)
-      node24 = Pdfbox::Pdmodel::Common::PDIntegerNameTreeNode.new
-      names = {} of String => Pdfbox::Cos::Integer
-      names["Xenon"] = Pdfbox::Cos::Integer.new(54)
-      names["Ytterbium"] = Pdfbox::Cos::Integer.new(70)
-      names["Yttrium"] = Pdfbox::Cos::Integer.new(39)
-      names["Zinc"] = Pdfbox::Cos::Integer.new(30)
-      names["Zirconium"] = Pdfbox::Cos::Integer.new(40)
-      node24.not_nil!.names = names
-
-      # Build node2 (parent of node5)
-      node2 = Pdfbox::Pdmodel::Common::PDIntegerNameTreeNode.new
-      kids = node2.not_nil!.kids
-      if kids.nil?
-        kids = Pdfbox::Pdmodel::Common::COSArrayList(Pdfbox::Pdmodel::Common::PDIntegerNameTreeNode).new
-      end
-      kids.add(node5.not_nil!)
-      node2.not_nil!.kids = kids
-
-      # Build node4 (parent of node24)
-      node4 = Pdfbox::Pdmodel::Common::PDIntegerNameTreeNode.new
-      kids = node4.not_nil!.kids
-      if kids.nil?
-        kids = Pdfbox::Pdmodel::Common::COSArrayList(Pdfbox::Pdmodel::Common::PDIntegerNameTreeNode).new
-      end
-      kids.add(node24.not_nil!)
-      node4.not_nil!.kids = kids
-
-      # Build node1 (root parent of node2 and node4)
-      node1 = Pdfbox::Pdmodel::Common::PDIntegerNameTreeNode.new
-      kids = node1.not_nil!.kids
-      if kids.nil?
-        kids = Pdfbox::Pdmodel::Common::COSArrayList(Pdfbox::Pdmodel::Common::PDIntegerNameTreeNode).new
-      end
-      kids.add(node2.not_nil!)
-      kids.add(node4.not_nil!)
-      node1.not_nil!.kids = kids
-    end
-
-    it "testUpperLimit" do
-      node5.not_nil!.upper_limit.should eq("Astatine")
-      node2.not_nil!.upper_limit.should eq("Astatine")
-      node24.not_nil!.upper_limit.should eq("Zirconium")
-      node4.not_nil!.upper_limit.should eq("Zirconium")
-      node1.not_nil!.upper_limit.should be_nil
-    end
-
-    it "testLowerLimit" do
-      node5.not_nil!.lower_limit.should eq("Actinium")
-      node2.not_nil!.lower_limit.should eq("Actinium")
-      node24.not_nil!.lower_limit.should eq("Xenon")
-      node4.not_nil!.lower_limit.should eq("Xenon")
-      node1.not_nil!.lower_limit.should be_nil
     end
   end
 

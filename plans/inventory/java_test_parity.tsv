@@ -553,11 +553,11 @@ pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/PDStreamTest.java::test::t
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/PDStreamTest.java::test::testCreateInputStreamNullStopFilters	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/TestEmbeddedFiles.java::test::testNullEmbeddedFile	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/TestEmbeddedFiles.java::test::testOSSpecificAttachments	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/TestPDNameTreeNode.java::test::testLowerLimit	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/TestPDNameTreeNode.java::test::testUpperLimit	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/TestPDNumberTreeNode.java::test::testGetValue	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/TestPDNumberTreeNode.java::test::testLowerLimit	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/TestPDNumberTreeNode.java::test::testUpperLimit	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/TestPDNameTreeNode.java::test::testLowerLimit	ported	spec/pdfbox/pdmodel/common/pdname_tree_node_spec.cr	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/TestPDNameTreeNode.java::test::testUpperLimit	ported	spec/pdfbox/pdmodel/common/pdname_tree_node_spec.cr	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/TestPDNumberTreeNode.java::test::testGetValue	ported	spec/pdfbox/pdmodel/common/pdnumber_tree_node_spec.cr	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/TestPDNumberTreeNode.java::test::testLowerLimit	ported	spec/pdfbox/pdmodel/common/pdnumber_tree_node_spec.cr	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/TestPDNumberTreeNode.java::test::testUpperLimit	ported	spec/pdfbox/pdmodel/common/pdnumber_tree_node_spec.cr	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/function/TestPDFunctionType4.java::test::testFunctionArgumentOrder	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/function/TestPDFunctionType4.java::test::testFunctionSimple	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/function/type4/TestOperators.java::test::testAbs	missing	-	baseline

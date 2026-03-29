@@ -83,82 +83,40 @@ module Pdfbox::Pdmodel::Common
       node1.not_nil!.kids = kids.to_a
     end
 
-    describe "#value" do
-      it "retrieves value from leaf node" do
-        node5.not_nil!.value(4).should eq PDTest.new(51)
-      end
-
-      it "retrieves value from tree" do
-        node1.not_nil!.value(9).should eq PDTest.new(70)
-      end
-
-      it "returns nil when no kids or numbers" do
-        node1.not_nil!.kids = nil
-        node1.not_nil!.numbers = nil
-        node1.not_nil!.value(0).should be_nil
-      end
+    it "TestPDNumberTreeNode#testGetValue" do
+      node5.not_nil!.value(4).should eq PDTest.new(51)
+      node1.not_nil!.value(9).should eq PDTest.new(70)
+      node1.not_nil!.kids = nil
+      node1.not_nil!.numbers = nil
+      node1.not_nil!.value(0).should be_nil
     end
 
-    describe "#upper_limit" do
-      it "returns correct upper limit for leaf node" do
-        node5.not_nil!.upper_limit.should eq 7
-        node2.not_nil!.upper_limit.should eq 7
-      end
-
-      it "returns correct upper limit for other leaf" do
-        node24.not_nil!.upper_limit.should eq 12
-        node4.not_nil!.upper_limit.should eq 12
-      end
-
-      it "returns correct upper limit for root" do
-        node1.not_nil!.upper_limit.should eq 12
-      end
-
-      it "returns nil when numbers empty" do
-        node24.not_nil!.numbers = {} of Int32 => PDTest
-        node24.not_nil!.upper_limit.should be_nil
-      end
-
-      it "returns nil when numbers nil" do
-        node5.not_nil!.numbers = nil
-        node5.not_nil!.upper_limit.should be_nil
-      end
-
-      it "returns nil when kids nil" do
-        node1.not_nil!.kids = nil
-        node1.not_nil!.upper_limit.should be_nil
-      end
+    it "TestPDNumberTreeNode#testUpperLimit" do
+      node5.not_nil!.upper_limit.should eq 7
+      node2.not_nil!.upper_limit.should eq 7
+      node24.not_nil!.upper_limit.should eq 12
+      node4.not_nil!.upper_limit.should eq 12
+      node1.not_nil!.upper_limit.should eq 12
+      node24.not_nil!.numbers = {} of Int32 => PDTest
+      node24.not_nil!.upper_limit.should be_nil
+      node5.not_nil!.numbers = nil
+      node5.not_nil!.upper_limit.should be_nil
+      node1.not_nil!.kids = nil
+      node1.not_nil!.upper_limit.should be_nil
     end
 
-    describe "#lower_limit" do
-      it "returns correct lower limit for leaf node" do
-        node5.not_nil!.lower_limit.should eq 1
-        node2.not_nil!.lower_limit.should eq 1
-      end
-
-      it "returns correct lower limit for other leaf" do
-        node24.not_nil!.lower_limit.should eq 8
-        node4.not_nil!.lower_limit.should eq 8
-      end
-
-      it "returns correct lower limit for root" do
-        node1.not_nil!.lower_limit.should eq 1
-      end
-
-      it "returns nil when numbers empty" do
-        node24.not_nil!.numbers = {} of Int32 => PDTest
-        node24.not_nil!.lower_limit.should be_nil
-      end
-
-      it "returns nil when numbers nil" do
-        node5.not_nil!.numbers = nil
-        node5.not_nil!.lower_limit.should be_nil
-      end
-
-      it "returns nil when kids nil" do
-        node1.not_nil!.kids = nil
-        node1.not_nil!.lower_limit.should be_nil
-      end
+    it "TestPDNumberTreeNode#testLowerLimit" do
+      node5.not_nil!.lower_limit.should eq 1
+      node2.not_nil!.lower_limit.should eq 1
+      node24.not_nil!.lower_limit.should eq 8
+      node4.not_nil!.lower_limit.should eq 8
+      node1.not_nil!.lower_limit.should eq 1
+      node24.not_nil!.numbers = {} of Int32 => PDTest
+      node24.not_nil!.lower_limit.should be_nil
+      node5.not_nil!.numbers = nil
+      node5.not_nil!.lower_limit.should be_nil
+      node1.not_nil!.kids = nil
+      node1.not_nil!.lower_limit.should be_nil
     end
   end
 end
