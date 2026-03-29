@@ -957,10 +957,10 @@ pdfbox/src/test/java/org/apache/pdfbox/util/TestNumberFormatUtil.java::test::tes
 pdfbox/src/test/java/org/apache/pdfbox/util/TestNumberFormatUtil.java::test::testRoundingDown	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/util/TestNumberFormatUtil.java::test::testRoundingUp	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/util/TestSort.java::test::testSort	missing	-	baseline
-tools/src/test/java/org/apache/pdfbox/tools/PDFBoxHeadlessTest.java::test::isHeadlessPDFBoxTest	missing	-	baseline
-tools/src/test/java/org/apache/pdfbox/tools/PDFBoxHeadlessTest.java::test::isHeadlessTest	missing	-	baseline
-tools/src/test/java/org/apache/pdfbox/tools/PDFBoxNonHeadlessTest.java::test::isNonHeadlessPDFBoxTest	missing	-	baseline
-tools/src/test/java/org/apache/pdfbox/tools/PDFBoxNonHeadlessTest.java::test::isNonHeadlessTest	missing	-	baseline
+tools/src/test/java/org/apache/pdfbox/tools/PDFBoxHeadlessTest.java::test::isHeadlessPDFBoxTest	ported	spec/tools/pdfbox_cli_spec.cr	baseline
+tools/src/test/java/org/apache/pdfbox/tools/PDFBoxHeadlessTest.java::test::isHeadlessTest	ported	spec/tools/pdfbox_cli_spec.cr	baseline
+tools/src/test/java/org/apache/pdfbox/tools/PDFBoxNonHeadlessTest.java::test::isNonHeadlessPDFBoxTest	ported	spec/tools/pdfbox_cli_spec.cr	baseline
+tools/src/test/java/org/apache/pdfbox/tools/PDFBoxNonHeadlessTest.java::test::isNonHeadlessTest	ported	spec/tools/pdfbox_cli_spec.cr	baseline
 tools/src/test/java/org/apache/pdfbox/tools/TestExtractText.java::test::testAddFileName	missing	-	baseline
 tools/src/test/java/org/apache/pdfbox/tools/TestExtractText.java::test::testEmbeddedPDFs	missing	-	baseline
 tools/src/test/java/org/apache/pdfbox/tools/TestExtractText.java::test::testPDFBoxRepeatableSubcommand	missing	-	baseline
