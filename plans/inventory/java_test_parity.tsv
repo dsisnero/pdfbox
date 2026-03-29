@@ -512,8 +512,8 @@ pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDDocumentCatalog.java::test:
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDDocumentCatalog.java::test::retrieveNumberOfPages	ported	spec/pdfbox/document_catalog_spec.cr	Ported page count retrieval parity for test.unc.pdf
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDDocumentCatalog.java::test::retrievePageLabels	ported	spec/pdfbox/document_catalog_spec.cr	Ported page label extraction parity for test_pagelabels.pdf
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDDocumentCatalog.java::test::retrievePageLabelsOnMalformedPdf	ported	spec/pdfbox/document_catalog_spec.cr	Ported malformed page label retrieval parity without raising
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDDocumentInformation.java::test::testMetadataExtraction	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDDocumentInformation.java::test::testPDFBox3068	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDDocumentInformation.java::test::testMetadataExtraction	ported	spec/pdfbox/document_information_spec.cr	Ported metadata extraction parity for hello3.pdf including custom metadata keys and values
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDDocumentInformation.java::test::testPDFBox3068	ported	spec/pdfbox/document_information_spec.cr	Ported indirect /Info /Title resolution parity for PDFBOX-3068.pdf
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPage.java::test::testAddingPageAfterCreatingAnnotation	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageAnnotationsFiltering.java::test::validateAllFiltered	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageAnnotationsFiltering.java::test::validateNoFiltering	missing	-	baseline

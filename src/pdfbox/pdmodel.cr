@@ -1944,6 +1944,14 @@ module Pdfbox::Pdmodel
       set_string(Cos::Name.new("Trapped"), trapped)
     end
 
+    def metadata_keys : Array(String)
+      @info_dict.entries.keys.map(&.value)
+    end
+
+    def custom_metadata_value(field_name : String) : String?
+      string(Cos::Name.new(field_name))
+    end
+
     private def string(name : Cos::Name) : String?
       value = @info_dict[name]
       return unless value
