@@ -523,8 +523,8 @@ pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageContentStream.java::tes
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageContentStream.java::test::testMissingContentStream	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageContentStream.java::test::testSetCmykColors	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageContentStream.java::test::testSetRGBandGColors	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageTransitions.java::test::readTransitions	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageTransitions.java::test::saveAndReadTransitions	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageTransitions.java::test::readTransitions	ported	spec/pdfbox/pdmodel/page_transitions_spec.cr	Ported page transition fixture read parity for transitions_test.pdf
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageTransitions.java::test::saveAndReadTransitions	ported	spec/pdfbox/pdmodel/page_transitions_spec.cr	Ported page transition save/load parity for Fly transition with NONE direction
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageTree.java::test::indexOfPageFromOutlineDestination	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageTree.java::test::negative	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageTree.java::test::positiveMultipleLevel	missing	-	baseline

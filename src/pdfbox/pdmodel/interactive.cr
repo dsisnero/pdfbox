@@ -6,6 +6,7 @@ require "./interactive/annotation/pdannotation_link"
 require "./interactive/annotation/pdannotation_circle"
 require "./interactive/annotation/pdannotation_square"
 require "./interactive/form"
+require "./interactive/pagenavigation"
 
 module Pdfbox::Pdmodel::Interactive
 end

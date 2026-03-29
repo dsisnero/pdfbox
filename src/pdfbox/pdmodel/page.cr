@@ -192,6 +192,40 @@ module Pdfbox::Pdmodel
       cos_page[Cos::Name.new("Annots")] = array
     end
 
+    def transition : Interactive::Pagenavigation::PDTransition?
+      cos_page = @cos_page
+      return unless cos_page
+
+      transition_value = cos_page[Cos::Name.new("Trans")]
+      return unless transition_value
+
+      if transition_value.is_a?(Cos::Object)
+        transition_value = transition_value.object
+      end
+
+      return unless transition_value.is_a?(Cos::Dictionary)
+
+      Interactive::Pagenavigation::PDTransition.new(transition_value)
+    end
+
+    def transition=(transition : Interactive::Pagenavigation::PDTransition?) : Interactive::Pagenavigation::PDTransition?
+      cos_page = @cos_page || default_page_dictionary
+      @cos_page = cos_page
+
+      key = Cos::Name.new("Trans")
+      if transition
+        cos_page[key] = transition.cos_object
+      else
+        cos_page.delete(key)
+      end
+      transition
+    end
+
+    def set_transition(transition : Interactive::Pagenavigation::PDTransition, duration : Int | Float) : Nil
+      self.transition = transition
+      (@cos_page || default_page_dictionary).set_float(Cos::Name.new("Dur"), duration.to_f64)
+    end
+
     private def default_page_dictionary : Cos::Dictionary
       dict = Cos::Dictionary.new
       dict[Cos::Name.new("Type")] = Cos::Name.new("Page")
