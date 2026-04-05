@@ -11,6 +11,8 @@ license: MIT
 dependencies:
   crimage:
     github: naqvis/crimage
+  bidi:
+    github: dsisnero/bidi
 
 development_dependencies:
   ameba:

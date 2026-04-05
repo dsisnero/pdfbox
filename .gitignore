@@ -1,4 +1,8 @@
-/lib/
+/lib/*
+!/lib/bidi/
+/lib/bidi/*
+!/lib/bidi/src/
+!/lib/bidi/src/**
 /bin/
 /.shards/
 *.dwarf

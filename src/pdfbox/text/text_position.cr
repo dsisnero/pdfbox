@@ -20,6 +20,40 @@ module Pdfbox::Text
   # Represents a position of text in a PDF document.
   # Corresponds to org.apache.pdfbox.text.TextPosition in Apache PDFBox.
   class TextPosition
+    DIACRITICS = {
+      0x0060 => "\u0300",
+      0x02CB => "\u0300",
+      0x0027 => "\u0301",
+      0x02B9 => "\u0301",
+      0x02CA => "\u0301",
+      0x005E => "\u0302",
+      0x02C6 => "\u0302",
+      0x007E => "\u0303",
+      0x02C9 => "\u0304",
+      0x00B0 => "\u030A",
+      0x02BA => "\u030B",
+      0x02C7 => "\u030C",
+      0x02C8 => "\u030D",
+      0x0022 => "\u030E",
+      0x02BB => "\u0312",
+      0x02BC => "\u0313",
+      0x0486 => "\u0313",
+      0x055A => "\u0313",
+      0x02BD => "\u0314",
+      0x0485 => "\u0314",
+      0x0559 => "\u0314",
+      0x02D4 => "\u031D",
+      0x02D5 => "\u031E",
+      0x02D6 => "\u031F",
+      0x02D7 => "\u0320",
+      0x02B2 => "\u0321",
+      0x02CC => "\u0329",
+      0x02B7 => "\u032B",
+      0x02CD => "\u0331",
+      0x005F => "\u0332",
+      0x204E => "\u0359",
+    }
+
     getter text_matrix : Pdfbox::Util::Matrix
     getter end_x : Float32
     getter end_y : Float32
@@ -27,9 +61,9 @@ module Pdfbox::Text
     getter max_height : Float32
     getter page_height : Float32
     getter page_width : Float32
-    getter widths : Array(Float32)
+    property widths : Array(Float32)
     getter width_of_space : Float32
-    getter unicode : String
+    property unicode : String
     getter char_codes : Array(Int32)
     getter font : Pdfbox::Pdmodel::Font::PDFont?
     getter font_size : Float32
@@ -106,7 +140,7 @@ module Pdfbox::Text
     end
 
     def width : Float32
-      @widths.sum
+      get_width_rot(rotation)
     end
 
     def dir : Float32
@@ -152,6 +186,34 @@ module Pdfbox::Text
       @max_height
     end
 
+    def contains(other : TextPosition) : Bool
+      this_x_start = x_dir_adj
+      this_width = width_dir_adj
+      this_x_end = this_x_start + this_width
+
+      other_x_start = other.x_dir_adj
+      other_x_end = other_x_start + other.width_dir_adj
+      return false if other_x_end <= this_x_start || other_x_start >= this_x_end
+
+      this_y_start = y_dir_adj
+      other_y_start = other.y_dir_adj
+      return false if other_y_start + other.height_dir < this_y_start || other_y_start > this_y_start + height_dir
+
+      if other_x_start > this_x_start && other_x_end > this_x_end
+        overlap = this_x_end - other_x_start
+        overlap_percent = overlap / this_width
+        return overlap_percent > 0.15_f32
+      end
+
+      if other_x_start < this_x_start && other_x_end < this_x_end
+        overlap = other_x_end - this_x_start
+        overlap_percent = overlap / this_width
+        return overlap_percent > 0.15_f32
+      end
+
+      true
+    end
+
     def completely_contains(other : TextPosition) : Bool
       this_left = x_dir_adj
       this_right = this_left + width_dir_adj
@@ -166,6 +228,115 @@ module Pdfbox::Text
       return false if this_top > other_top || other_bottom > this_bottom
 
       true
+    end
+
+    def merge_diacritic(diacritic : TextPosition) : Nil
+      return if diacritic.unicode.size > 1
+
+      diac_x_start = diacritic.x_dir_adj
+      diac_x_end = diac_x_start + diacritic.widths[0]
+      curr_char_x_start = x_dir_adj
+
+      str_len = unicode.size
+      was_added = false
+
+      str_len.times do |i|
+        break if was_added
+        break if i >= widths.size
+
+        curr_char_x_end = curr_char_x_start + widths[i]
+
+        if diac_x_start < curr_char_x_start && diac_x_end <= curr_char_x_end
+          if i == 0
+            insert_diacritic(i, diacritic)
+          else
+            distance_overlapping1 = diac_x_end - curr_char_x_start
+            percentage1 = distance_overlapping1 / widths[i]
+
+            distance_overlapping2 = curr_char_x_start - diac_x_start
+            percentage2 = distance_overlapping2 / widths[i - 1]
+
+            if percentage1 >= percentage2
+              insert_diacritic(i, diacritic)
+            else
+              insert_diacritic(i - 1, diacritic)
+            end
+          end
+          was_added = true
+        elsif diac_x_start < curr_char_x_start
+          insert_diacritic(i, diacritic)
+          was_added = true
+        elsif diac_x_end <= curr_char_x_end
+          insert_diacritic(i, diacritic)
+          was_added = true
+        elsif i == str_len - 1
+          insert_diacritic(i, diacritic)
+          was_added = true
+        end
+
+        curr_char_x_start += widths[i]
+      end
+    end
+
+    def diacritic? : Bool
+      text = unicode
+      return false unless text.size == 1
+      return false if text == "ー"
+
+      diacritic_codepoint?(text[0].ord)
+    end
+
+    private def diacritic_codepoint?(codepoint : Int32) : Bool
+      (0x0300 <= codepoint && codepoint <= 0x036F) ||
+        (0x0483 <= codepoint && codepoint <= 0x0489) ||
+        (0x0591 <= codepoint && codepoint <= 0x05C7) ||
+        (0x0610 <= codepoint && codepoint <= 0x061A) ||
+        (0x064B <= codepoint && codepoint <= 0x065F) ||
+        codepoint == 0x0670 ||
+        (0x06D6 <= codepoint && codepoint <= 0x06ED) ||
+        (0x08D3 <= codepoint && codepoint <= 0x08FF) ||
+        (0x1AB0 <= codepoint && codepoint <= 0x1AFF) ||
+        (0x1DC0 <= codepoint && codepoint <= 0x1DFF) ||
+        (0x20D0 <= codepoint && codepoint <= 0x20FF) ||
+        (0x2B0 <= codepoint && codepoint <= 0x02FF) ||
+        (0xFC5E <= codepoint && codepoint <= 0xFC63) ||
+        (0xFE70 <= codepoint && codepoint <= 0xFE7F) ||
+        (0xFE20 <= codepoint && codepoint <= 0xFE2F) ||
+        DIACRITICS.has_key?(codepoint)
+    end
+
+    private def insert_diacritic(index : Int32, diacritic : TextPosition) : Nil
+      widths2 = Array(Float32).new(widths.size + 1, 0.0_f32)
+      index.times { |i| widths2[i] = widths[i] }
+      widths2[index] = widths[index]
+      widths2[index + 1] = 0.0_f32
+      ((index + 1)...widths.size).each do |i|
+        widths2[i + 1] = widths[i]
+      end
+
+      chars = unicode.chars
+      rebuilt = String.build do |io|
+        index.times { |i| io << chars[i] }
+        io << chars[index]
+
+        suffix_start = index + 1
+        if index < chars.size - 1 && chars[index].ord.in?(0xD800..0xDBFF) && chars[index + 1].ord.in?(0xDC00..0xDFFF)
+          io << chars[index + 1]
+          suffix_start += 1
+        end
+
+        io << combine_diacritic(diacritic.unicode)
+        (suffix_start...chars.size).each { |i| io << chars[i] }
+      end
+
+      self.unicode = rebuilt
+      self.widths = widths2
+    end
+
+    private def combine_diacritic(str : String) : String
+      codepoint = str[0].ord
+      return DIACRITICS[codepoint] if DIACRITICS.has_key?(codepoint)
+      str.unicode_normalize(:nfkc).strip
     end
 
     private def get_x_rot(rotation : Int32) : Float32
