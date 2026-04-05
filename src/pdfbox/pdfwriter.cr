@@ -22,8 +22,18 @@ module Pdfbox::Pdfwriter
     @destination : ::IO
     @document : Pdfbox::Pdmodel::Document
     @parameters : Pdfbox::Pdfwriter::Compress::CompressParameters
+    @will_encrypt : Bool = false
+    @security_handler : Pdfbox::Pdmodel::Encryption::SecurityHandler?
 
     def initialize(@destination : ::IO, @document : Pdfbox::Pdmodel::Document, @parameters : Pdfbox::Pdfwriter::Compress::CompressParameters = Pdfbox::Pdfwriter::Compress::CompressParameters::DEFAULT_COMPRESSION)
+      # Check if document has encryption
+      if encryption = @document.encryption
+        @security_handler = encryption.security_handler
+        @will_encrypt = !@security_handler.nil?
+
+        # Prepare document for encryption if we have a security handler
+        @security_handler.try(&.prepare_document_for_encryption(@document))
+      end
     end
 
     # Write PDF header with version (e.g., "1.4")
@@ -36,19 +46,32 @@ module Pdfbox::Pdfwriter
     # Write the PDF document
     def write : Nil
       write_header(header_version_for_write)
-      cos_writer = COSWriter.new(@destination)
+      cos_writer = COSWriter.new(@destination, @will_encrypt, @security_handler)
       xref_writer = XRefWriter.new(@destination)
       xref_writer.add_entry(0_i64, 65535_i64, :free)
       write_catalog_object(cos_writer, xref_writer)
       write_pages_object(xref_writer)
 
+      # Write encryption dictionary object if document is encrypted
+      has_encryption = !@document.encryption.nil?
+      if encryption = @document.encryption
+        encryption_object_number = 3
+        encryption_offset = @destination.pos.to_i64
+        xref_writer.add_entry(encryption_offset, 0_i64, :in_use)
+
+        @destination << encryption_object_number << " 0 obj\n"
+        cos_writer.write(encryption.dictionary)
+        @destination << "\nendobj\n"
+      end
+
       # Write each page object
       deferred_stream_objects = [] of Tuple(Int32, Pdfbox::Cos::Stream)
-      next_object_number = 3 + @document.page_count
+      page_start = has_encryption ? 4 : 3
+      next_object_number = page_start + @document.page_count
       @document.page_count.times do |i|
         page_offset = @destination.pos.to_i64
         xref_writer.add_entry(page_offset, 0_i64, :in_use)
-        obj_num = 3 + i
+        obj_num = page_start + i
         page = @document.get_page(i)
         @destination << obj_num << " 0 obj\n"
         @destination << "<<\n"
@@ -96,7 +119,7 @@ module Pdfbox::Pdfwriter
         stream_offset = @destination.pos.to_i64
         xref_writer.add_entry(stream_offset, 0_i64, :in_use)
         @destination << stream_object_number << " 0 obj\n"
-        cos_writer.write_stream(stream)
+        cos_writer.write_stream(stream, stream_object_number.to_i64, 0_i64)
         @destination << '\n'
         @destination << "endobj\n"
       end
@@ -110,6 +133,12 @@ module Pdfbox::Pdfwriter
       @destination << "<<\n"
       @destination << "/Size " << (xref_writer.size) << "\n" # includes object 0
       @destination << "/Root 1 0 R\n"
+
+      # Add encryption dictionary reference to trailer if document is encrypted
+      if encryption = @document.encryption
+        @destination << "/Encrypt 3 0 R\n"
+      end
+
       @destination << ">>\n"
 
       # Write startxref
@@ -153,8 +182,12 @@ module Pdfbox::Pdfwriter
       @destination << "<<\n"
       @destination << "/Type /Pages\n"
       @destination << "/Kids ["
+
+      # Page object numbers start at 3, but if we have encryption, it's at 3
+      # and pages start at 4
+      page_start = @document.encryption ? 4 : 3
       @document.page_count.times do |i|
-        @destination << " " << (3 + i) << " 0 R"
+        @destination << " " << (page_start + i) << " 0 R"
       end
       @destination << " ]\n"
       @destination << "/Count " << @document.page_count << "\n"
@@ -260,8 +293,10 @@ module Pdfbox::Pdfwriter
   # COS object writer
   class COSWriter
     @destination : ::IO
+    @will_encrypt : Bool = false
+    @security_handler : Pdfbox::Pdmodel::Encryption::SecurityHandler?
 
-    def initialize(@destination : ::IO)
+    def initialize(@destination : ::IO, @will_encrypt : Bool = false, @security_handler : Pdfbox::Pdmodel::Encryption::SecurityHandler? = nil)
     end
 
     # Write a COS object
@@ -340,7 +375,12 @@ module Pdfbox::Pdfwriter
     end
 
     # Write a COS stream
-    def write_stream(stream : Pdfbox::Cos::Stream) : Nil
+    def write_stream(stream : Pdfbox::Cos::Stream, obj_num : Int64 = 0_i64, gen_num : Int64 = 0_i64) : Nil
+      # Encrypt stream if needed
+      if @will_encrypt && (handler = @security_handler)
+        handler.encrypt_stream(stream, obj_num, gen_num)
+      end
+
       # Write stream dictionary
       write_dictionary(stream)
       @destination << '\n' << "stream" << '\n'

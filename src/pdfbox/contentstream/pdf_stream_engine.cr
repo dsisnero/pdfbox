@@ -19,7 +19,7 @@ module Pdfbox::Contentstream
     Log = ::Log.for(self)
 
     @operators = {} of String => OperatorProcessor
-    @graphics_stack = [] of GraphicsState
+    @graphics_stack = [] of GraphicsState | Pdmodel::Graphics::State::PDGraphicsState
     @resources : Pdmodel::Resources?
     @current_page : Pdmodel::Page?
     @is_processing_page : Bool = false
@@ -43,7 +43,7 @@ module Pdfbox::Contentstream
       @graphics_stack.clear
       @graphics_stack << GraphicsState.new
       @resources = nil
-      @initial_matrix = Util::Matrix.identity
+      @initial_matrix = page.matrix
     end
 
     # This will initialize and process the contents of the stream.
@@ -58,32 +58,37 @@ module Pdfbox::Contentstream
 
     # Get the graphics state
     def graphics_state : GraphicsState
-      @graphics_stack.last
+      @graphics_stack.last.as(GraphicsState)
+    end
+
+    # Get the graphics state (internal, used by process_operator)
+    private def base_graphics_state : GraphicsState
+      @graphics_stack.last.as(GraphicsState)
     end
 
     # Get the text matrix
     def text_matrix : Util::Matrix
-      graphics_state.text_matrix
+      base_graphics_state.text_matrix
     end
 
     # Set the text matrix
     def text_matrix=(matrix : Util::Matrix) : Nil
-      graphics_state.text_matrix = matrix
+      base_graphics_state.text_matrix = matrix
     end
 
     # Get the text line matrix
     def text_line_matrix : Util::Matrix
-      graphics_state.text_line_matrix
+      base_graphics_state.text_line_matrix
     end
 
     # Set the text line matrix
     def text_line_matrix=(matrix : Util::Matrix) : Nil
-      graphics_state.text_line_matrix = matrix
+      base_graphics_state.text_line_matrix = matrix
     end
 
     # Save the graphics state
     def save_graphics_state : Nil
-      @graphics_stack << graphics_state.clone
+      @graphics_stack << base_graphics_state.clone
     end
 
     # Restore the graphics state
@@ -120,6 +125,16 @@ module Pdfbox::Contentstream
 
     # Process a content stream
     private def process_stream(page : Pdmodel::Page) : Nil
+      parent_resources = @resources
+      parent_initial_matrix = @initial_matrix
+      saved_stack = @graphics_stack.map(&.clone)
+
+      @resources = page.resources || Pdmodel::Resources.new(Cos::Dictionary.new)
+      ctm = base_graphics_state.current_transformation_matrix
+      ctm.concatenate(page.matrix)
+      base_graphics_state.current_transformation_matrix = ctm
+      @initial_matrix = base_graphics_state.current_transformation_matrix.clone
+
       # Get the page's content stream
       cos_page = page.cos_object
       return unless cos_page
@@ -152,6 +167,10 @@ module Pdfbox::Contentstream
         bytes = input.getb_to_end
         process_stream_operators(bytes)
       end
+    ensure
+      @initial_matrix = parent_initial_matrix
+      @resources = parent_resources
+      @graphics_stack = saved_stack.not_nil!
     end
 
     # Process operators from content stream bytes
@@ -196,9 +215,9 @@ module Pdfbox::Contentstream
           f = to_float(arguments[5])
           if a && b && c && d && e && f
             matrix = Util::Matrix.new(a.to_f32, b.to_f32, c.to_f32, d.to_f32, e.to_f32, f.to_f32)
-            ctm = graphics_state.current_transformation_matrix
+            ctm = base_graphics_state.current_transformation_matrix
             ctm.concatenate(matrix)
-            graphics_state.current_transformation_matrix = ctm
+            base_graphics_state.current_transformation_matrix = ctm
           end
         end
       when "BT"
@@ -209,25 +228,25 @@ module Pdfbox::Contentstream
         # Set character spacing
         if arguments.size >= 1
           spacing = to_float(arguments[0])
-          graphics_state.character_spacing = spacing if spacing
+          base_graphics_state.character_spacing = spacing if spacing
         end
       when "Tw"
         # Set word spacing
         if arguments.size >= 1
           spacing = to_float(arguments[0])
-          graphics_state.word_spacing = spacing if spacing
+          base_graphics_state.word_spacing = spacing if spacing
         end
       when "Tz"
         # Set horizontal scaling
         if arguments.size >= 1
           scaling = to_float(arguments[0])
-          graphics_state.horizontal_scaling = scaling if scaling
+          base_graphics_state.horizontal_scaling = scaling if scaling
         end
       when "TL"
         # Set text leading
         if arguments.size >= 1
           leading = to_float(arguments[0])
-          graphics_state.text_leading = leading if leading
+          base_graphics_state.text_leading = leading if leading
         end
       when "Tf"
         # Set font and size
@@ -242,13 +261,13 @@ module Pdfbox::Contentstream
         # Set text rendering mode
         if arguments.size >= 1
           mode = to_int(arguments[0])
-          graphics_state.text_rendering_mode = mode if mode
+          base_graphics_state.text_rendering_mode = mode if mode
         end
       when "Ts"
         # Set text rise
         if arguments.size >= 1
           rise = to_float(arguments[0])
-          graphics_state.text_rise = rise if rise
+          base_graphics_state.text_rise = rise if rise
         end
       when "Td"
         # Move text position
@@ -266,7 +285,7 @@ module Pdfbox::Contentstream
           ty = to_float(arguments[1])
           if tx && ty
             move_text(tx, ty)
-            graphics_state.text_leading = -ty
+            base_graphics_state.text_leading = -ty
           end
         end
       when "Tm"
@@ -286,7 +305,7 @@ module Pdfbox::Contentstream
         end
       when "T*"
         # Move to next line
-        leading = graphics_state.text_leading
+        leading = base_graphics_state.text_leading
         move_text(0, -leading)
       when "Tj"
         # Show text
@@ -303,7 +322,7 @@ module Pdfbox::Contentstream
         end
       when "'"
         # Move to next line and show text
-        leading = graphics_state.text_leading
+        leading = base_graphics_state.text_leading
         move_text(0, -leading)
         if arguments.size >= 1
           show_text_string(arguments[0])
@@ -313,11 +332,15 @@ module Pdfbox::Contentstream
         if arguments.size >= 3
           word_spacing = to_float(arguments[0])
           char_spacing = to_float(arguments[1])
-          graphics_state.word_spacing = word_spacing if word_spacing
-          graphics_state.character_spacing = char_spacing if char_spacing
-          leading = graphics_state.text_leading
+          base_graphics_state.word_spacing = word_spacing if word_spacing
+          base_graphics_state.character_spacing = char_spacing if char_spacing
+          leading = base_graphics_state.text_leading
           move_text(0, -leading)
           show_text_string(arguments[2])
+        end
+      when "Do"
+        if arguments.size >= 1 && arguments[0].is_a?(Cos::Name)
+          show_xobject(arguments[0].as(Cos::Name))
         end
       else
         # Unknown operator - ignore
@@ -338,10 +361,7 @@ module Pdfbox::Contentstream
 
     # Set font and size
     def set_font(font_name : String, font_size : Float64) : Nil
-      page = @current_page
-      return unless page
-
-      resources = page.resources
+      resources = @resources || @current_page.try(&.resources)
       return unless resources
 
       # Get font from resources dictionary
@@ -369,9 +389,76 @@ module Pdfbox::Contentstream
       # Create font from dictionary
       font = Pdmodel::Font::PDFontFactory.create_font(font_dict)
       if font
-        graphics_state.font = font
-        graphics_state.font_size = font_size
+        base_graphics_state.font = font
+        base_graphics_state.font_size = font_size
       end
+    end
+
+    private def show_xobject(name : Cos::Name) : Nil
+      resources = @resources
+      return unless resources
+
+      xobject = resources.xobject(name)
+      return unless xobject.is_a?(Cos::Stream)
+
+      subtype = xobject[Cos::Name.new("Subtype")]
+      if subtype.is_a?(Cos::Object)
+        subtype = subtype.object
+      end
+
+      return unless subtype.is_a?(Cos::Name)
+      return if subtype.value == "Image"
+      return unless subtype.value == "Form"
+
+      process_form_xobject(xobject)
+    end
+
+    private def process_form_xobject(stream : Cos::Stream) : Nil
+      parent_resources = @resources
+      parent_initial_matrix = @initial_matrix
+      saved_stack = @graphics_stack.map(&.clone)
+
+      form_resources = stream[Cos::Name.new("Resources")]
+      if form_resources.is_a?(Cos::Object)
+        form_resources = form_resources.object
+      end
+      @resources = form_resources.is_a?(Cos::Dictionary) ? Pdmodel::Resources.new(form_resources) : parent_resources
+
+      form_matrix = matrix_from_cos_array(stream[Cos::Name.new("Matrix")])
+      if form_matrix
+        ctm = base_graphics_state.current_transformation_matrix
+        ctm.concatenate(form_matrix)
+        base_graphics_state.current_transformation_matrix = ctm
+      end
+      @initial_matrix = base_graphics_state.current_transformation_matrix.clone
+
+      input = stream.create_input_stream
+      process_stream_operators(input.getb_to_end)
+    ensure
+      @initial_matrix = parent_initial_matrix
+      @resources = parent_resources
+      @graphics_stack = saved_stack.not_nil!
+    end
+
+    private def matrix_from_cos_array(base : Cos::Base?) : Util::Matrix?
+      return unless base
+      if base.is_a?(Cos::Object)
+        base = base.object
+      end
+      return unless base.is_a?(Cos::Array)
+      return unless base.size >= 6
+
+      values = base.items[0, 6].map { |item| to_float(item) }
+      return unless values.all?
+
+      Util::Matrix.new(
+        values[0].not_nil!.to_f32,
+        values[1].not_nil!.to_f32,
+        values[2].not_nil!.to_f32,
+        values[3].not_nil!.to_f32,
+        values[4].not_nil!.to_f32,
+        values[5].not_nil!.to_f32
+      )
     end
 
     # Move text position
@@ -393,12 +480,12 @@ module Pdfbox::Contentstream
 
     # Show text strings with adjustments
     def show_text_strings(array : Cos::Array) : Nil
-      font = graphics_state.font
+      font = base_graphics_state.font
       return unless font
 
       is_vertical = font.vertical?
-      font_size = graphics_state.font_size
-      horizontal_scaling = graphics_state.horizontal_scaling / 100.0
+      font_size = base_graphics_state.font_size
+      horizontal_scaling = base_graphics_state.horizontal_scaling / 100.0
 
       array.items.each do |item|
         if item.is_a?(Cos::Integer) || item.is_a?(Cos::Float)
@@ -429,10 +516,10 @@ module Pdfbox::Contentstream
 
     # Show text bytes
     def show_text(bytes : Bytes) : Nil
-      font = graphics_state.font
+      font = base_graphics_state.font
       return unless font
 
-      state = graphics_state
+      state = base_graphics_state
       font_size = state.font_size
       horizontal_scaling = state.horizontal_scaling / 100.0
       char_spacing = state.character_spacing

@@ -126,6 +126,25 @@ class Pdfbox::Pdmodel::Font::PDType1Font < Pdfbox::Pdmodel::Font::PDSimpleFont
   @standard14 : Bool = false
   @afm_standard14 : PDFont::FontMetrics?
 
+  # FontBBox values from AFM files for Standard 14 fonts.
+  # Extracted from vendor/pdfbox/pdfbox/target/classes/org/apache/pdfbox/resources/afm/
+  STANDARD14_FONT_BBOX = {
+    "Helvetica"             => {-166_f32, -225_f32, 1000_f32, 931_f32},
+    "Helvetica-Bold"        => {-170_f32, -228_f32, 1003_f32, 962_f32},
+    "Helvetica-Oblique"     => {-170_f32, -225_f32, 1116_f32, 931_f32},
+    "Helvetica-BoldOblique" => {-174_f32, -228_f32, 1114_f32, 962_f32},
+    "Courier"               => {-23_f32, -250_f32, 715_f32, 805_f32},
+    "Courier-Bold"          => {-113_f32, -250_f32, 749_f32, 801_f32},
+    "Courier-Oblique"       => {-27_f32, -250_f32, 849_f32, 805_f32},
+    "Courier-BoldOblique"   => {-57_f32, -250_f32, 869_f32, 801_f32},
+    "Times-Roman"           => {-168_f32, -218_f32, 1000_f32, 898_f32},
+    "Times-Bold"            => {-168_f32, -218_f32, 1000_f32, 935_f32},
+    "Times-Italic"          => {-169_f32, -217_f32, 1010_f32, 883_f32},
+    "Times-BoldItalic"      => {-200_f32, -218_f32, 996_f32, 921_f32},
+    "Symbol"                => {-180_f32, -293_f32, 1090_f32, 1010_f32},
+    "ZapfDingbats"          => {-1_f32, -143_f32, 981_f32, 820_f32},
+  } of String => {Float32, Float32, Float32, Float32}
+
   # Constructor for Standard 14 fonts
   def initialize(base_font : Standard14Fonts::FontName)
     super(base_font)
@@ -146,6 +165,11 @@ class Pdfbox::Pdmodel::Font::PDType1Font < Pdfbox::Pdmodel::Font::PDSimpleFont
     else
       @encoding = Pdfbox::Pdmodel::Font::Encoding::WinAnsiEncoding::INSTANCE
       @dict[Pdfbox::Cos::Name::ENCODING] = Pdfbox::Cos::Name::WIN_ANSI_ENCODING
+    end
+
+    # Load FontBBox from AFM data for Standard 14 fonts
+    if bbox = STANDARD14_FONT_BBOX[base_font.to_s]?
+      @font_bbox = BoundingBox.new(bbox[0], bbox[1], bbox[2], bbox[3])
     end
 
     # todo: could load the PFB font here if we wanted to support Standard 14 embedding

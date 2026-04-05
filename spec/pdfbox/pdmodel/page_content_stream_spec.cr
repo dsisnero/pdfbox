@@ -188,4 +188,73 @@ describe Pdfbox::Pdmodel::PDPageContentStream do
   ensure
     doc.try(&.close)
   end
+
+  it "TestPDPageContentStream#testDrawImage" do
+    doc = Pdfbox::Pdmodel::Document.new
+    page = Pdfbox::Pdmodel::Page.new
+    doc.add_page(page)
+
+    content_stream = Pdfbox::Pdmodel::PDPageContentStream.new(doc, page)
+    image = Pdfbox::Pdmodel::Graphics::Image::PDImageXObject.new(doc)
+    content_stream.draw_image(image, 10, 20, 100, 200)
+    content_stream.close
+
+    page_tokens = Pdfbox::Pdfparser::PDFStreamParser.new(page).parse
+
+    # q (save graphics state)
+    token_operator_name(page_tokens[0]).should eq(Pdfbox::ContentStream::OperatorName::SAVE)
+
+    # 100 0 0 200 10 20 cm (concatenate matrix)
+    page_tokens[1].as(Pdfbox::Cos::Number).to_f32.should eq(100.0_f32)
+    page_tokens[2].as(Pdfbox::Cos::Number).to_f32.should eq(0.0_f32)
+    page_tokens[3].as(Pdfbox::Cos::Number).to_f32.should eq(0.0_f32)
+    page_tokens[4].as(Pdfbox::Cos::Number).to_f32.should eq(200.0_f32)
+    page_tokens[5].as(Pdfbox::Cos::Number).to_f32.should eq(10.0_f32)
+    page_tokens[6].as(Pdfbox::Cos::Number).to_f32.should eq(20.0_f32)
+    token_operator_name(page_tokens[7]).should eq(Pdfbox::ContentStream::OperatorName::CONCAT)
+
+    # /Im1 Do (draw image object)
+    page_tokens[8].as(Pdfbox::Cos::Name).value.should eq("Im1")
+    token_operator_name(page_tokens[9]).should eq(Pdfbox::ContentStream::OperatorName::DRAW_OBJECT)
+
+    # Q (restore graphics state)
+    token_operator_name(page_tokens[10]).should eq(Pdfbox::ContentStream::OperatorName::RESTORE)
+  ensure
+    doc.try(&.close)
+  end
+
+  it "TestPDPageContentStream#testDrawImageWithMatrix" do
+    doc = Pdfbox::Pdmodel::Document.new
+    page = Pdfbox::Pdmodel::Page.new
+    doc.add_page(page)
+
+    content_stream = Pdfbox::Pdmodel::PDPageContentStream.new(doc, page)
+    image = Pdfbox::Pdmodel::Graphics::Image::PDImageXObject.new(doc)
+    matrix = Pdfbox::Util::Matrix.new(2.0_f32, 0.0_f32, 0.0_f32, 3.0_f32, 50.0_f32, 60.0_f32)
+    content_stream.draw_image(image, matrix)
+    content_stream.close
+
+    page_tokens = Pdfbox::Pdfparser::PDFStreamParser.new(page).parse
+
+    # q
+    token_operator_name(page_tokens[0]).should eq(Pdfbox::ContentStream::OperatorName::SAVE)
+
+    # 2 0 0 3 50 60 cm
+    page_tokens[1].as(Pdfbox::Cos::Number).to_f32.should eq(2.0_f32)
+    page_tokens[2].as(Pdfbox::Cos::Number).to_f32.should eq(0.0_f32)
+    page_tokens[3].as(Pdfbox::Cos::Number).to_f32.should eq(0.0_f32)
+    page_tokens[4].as(Pdfbox::Cos::Number).to_f32.should eq(3.0_f32)
+    page_tokens[5].as(Pdfbox::Cos::Number).to_f32.should eq(50.0_f32)
+    page_tokens[6].as(Pdfbox::Cos::Number).to_f32.should eq(60.0_f32)
+    token_operator_name(page_tokens[7]).should eq(Pdfbox::ContentStream::OperatorName::CONCAT)
+
+    # /Im1 Do
+    page_tokens[8].as(Pdfbox::Cos::Name).value.should eq("Im1")
+    token_operator_name(page_tokens[9]).should eq(Pdfbox::ContentStream::OperatorName::DRAW_OBJECT)
+
+    # Q
+    token_operator_name(page_tokens[10]).should eq(Pdfbox::ContentStream::OperatorName::RESTORE)
+  ensure
+    doc.try(&.close)
+  end
 end

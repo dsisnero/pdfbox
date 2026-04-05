@@ -109,12 +109,31 @@ module Pdfbox::Pdmodel
       write_operator(STROKING_COLOR_CMYK)
     end
 
-    def draw_image(_image : Graphics::Image::PDImageXObject, _x : Number, _y : Number, _width : Number, _height : Number) : Nil
+    def draw_image(image : Graphics::Image::PDImageXObject, x : Number, y : Number, width : Number, height : Number) : Nil
       raise_if_in_text_mode("drawImage is not allowed within a text block.")
+      write_operator(SAVE)
+      write_operands(width, 0, 0, height, x, y)
+      write_operator(CONCAT)
+      resource_name = add_image_to_xobject_resources(image)
+      @buffer << '/' << resource_name << ' ' << DRAW_OBJECT << '\n'
+      write_operator(RESTORE)
     end
 
-    def draw_image(_image : Graphics::Image::PDImageXObject, _matrix : Pdfbox::Util::Matrix) : Nil
+    def draw_image(image : Graphics::Image::PDImageXObject, matrix : Pdfbox::Util::Matrix) : Nil
       raise_if_in_text_mode("drawImage is not allowed within a text block.")
+      write_operator(SAVE)
+      write_operands(
+        matrix.get_value(0, 0),
+        matrix.get_value(0, 1),
+        matrix.get_value(1, 0),
+        matrix.get_value(1, 1),
+        matrix.get_value(2, 0),
+        matrix.get_value(2, 1)
+      )
+      write_operator(CONCAT)
+      resource_name = add_image_to_xobject_resources(image)
+      @buffer << '/' << resource_name << ' ' << DRAW_OBJECT << '\n'
+      write_operator(RESTORE)
     end
 
     def draw_image(_image : Graphics::Image::PDInlineImage, _x : Number, _y : Number, _width : Number, _height : Number) : Nil
@@ -334,6 +353,13 @@ module Pdfbox::Pdmodel
       font_name = "F#{fonts.size + 1}"
       @font_name = font_name
       fonts[Cos::Name.new(font_name)] = font.cos_object
+    end
+
+    private def add_image_to_xobject_resources(image : Graphics::Image::PDImageXObject) : String
+      xobjects = ensure_resource_subdictionary("XObject")
+      resource_name = "Im#{xobjects.size + 1}"
+      xobjects[Cos::Name.new(resource_name)] = image.cos_object
+      resource_name
     end
 
     private def add_ext_gstate_to_resources(state : Graphics::State::PDExtendedGraphicsState) : String

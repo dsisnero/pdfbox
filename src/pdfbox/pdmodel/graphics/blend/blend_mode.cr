@@ -21,51 +21,50 @@ module Pdfbox::Pdmodel::Graphics::Blend
       Color
       Luminosity
 
-      COS_NAME_MAP = {
-        "Normal"     => Normal,
-        "Compatible" => Normal,
-        "Multiply"   => Multiply,
-        "Screen"     => Screen,
-        "Overlay"    => Overlay,
-        "Darken"     => Darken,
-        "Lighten"    => Lighten,
-        "ColorDodge" => ColorDodge,
-        "ColorBurn"  => ColorBurn,
-        "HardLight"  => HardLight,
-        "SoftLight"  => SoftLight,
-        "Difference" => Difference,
-        "Exclusion"  => Exclusion,
-        "Hue"        => Hue,
-        "Saturation" => Saturation,
-        "Color"      => Color,
-        "Luminosity" => Luminosity,
-      }
-
-      MODE_TO_COS_NAME = {
-        Normal     => "Normal",
-        Multiply   => "Multiply",
-        Screen     => "Screen",
-        Overlay    => "Overlay",
-        Darken     => "Darken",
-        Lighten    => "Lighten",
-        ColorDodge => "ColorDodge",
-        ColorBurn  => "ColorBurn",
-        HardLight  => "HardLight",
-        SoftLight  => "SoftLight",
-        Difference => "Difference",
-        Exclusion  => "Exclusion",
-        Hue        => "Hue",
-        Saturation => "Saturation",
-        Color      => "Color",
-        Luminosity => "Luminosity",
-      }
-
       def self.from_cos_name(name : String) : Mode
-        COS_NAME_MAP.fetch(name, Normal)
+        case name
+        when "Compatible" then Normal
+        when "Multiply"   then Multiply
+        when "Screen"     then Screen
+        when "Overlay"    then Overlay
+        when "Darken"     then Darken
+        when "Lighten"    then Lighten
+        when "ColorDodge" then ColorDodge
+        when "ColorBurn"  then ColorBurn
+        when "HardLight"  then HardLight
+        when "SoftLight"  then SoftLight
+        when "Difference" then Difference
+        when "Exclusion"  then Exclusion
+        when "Hue"        then Hue
+        when "Saturation" then Saturation
+        when "Color"      then Color
+        when "Luminosity" then Luminosity
+        else
+          Normal
+        end
       end
 
       def to_cos_name : String
-        MODE_TO_COS_NAME.fetch(self, "Normal")
+        case self
+        when Normal     then "Normal"
+        when Multiply   then "Multiply"
+        when Screen     then "Screen"
+        when Overlay    then "Overlay"
+        when Darken     then "Darken"
+        when Lighten    then "Lighten"
+        when ColorDodge then "ColorDodge"
+        when ColorBurn  then "ColorBurn"
+        when HardLight  then "HardLight"
+        when SoftLight  then "SoftLight"
+        when Difference then "Difference"
+        when Exclusion  then "Exclusion"
+        when Hue        then "Hue"
+        when Saturation then "Saturation"
+        when Color      then "Color"
+        when Luminosity then "Luminosity"
+        else
+          "Normal"
+        end
       end
 
       # Returns true for separable blend modes.

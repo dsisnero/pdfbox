@@ -708,9 +708,9 @@ pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/LosslessFactoryTes
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/LosslessFactoryTest.java::test::testCreateLosslessFromTransparentGIF	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObjectTest.java::test::testCreateFromByteArray	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObjectTest.java::test::testCreateFromByteArrayWithCustomFactory	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObjectTest.java::test::testCreateFromFile	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObjectTest.java::test::testCreateFromFileByContent	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObjectTest.java::test::testCreateFromFileByExtension	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObjectTest.java::test::testCreateFromFile	partial	spec/pdfbox/pdmodel/graphics/image/pd_image_xobject_spec.cr	create_from_file with JPEG/PNG, properties, drawImage round-trip; pixel-level ARGB comparison and CCITT/TIFF/GIF formats remain pending
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObjectTest.java::test::testCreateFromFileByContent	partial	spec/pdfbox/pdmodel/graphics/image/pd_image_xobject_spec.cr	create_from_file with JPEG/PNG, properties, drawImage round-trip; pixel-level ARGB comparison and CCITT/TIFF/GIF formats remain pending
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObjectTest.java::test::testCreateFromFileByExtension	partial	spec/pdfbox/pdmodel/graphics/image/pd_image_xobject_spec.cr	create_from_file with JPEG/PNG, properties, drawImage round-trip; pixel-level ARGB comparison and CCITT/TIFF/GIF formats remain pending
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/PDInlineImageTest.java::test::testInlineImage	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/PDInlineImageTest.java::test::testShortCCITT1	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/PDInlineImageTest.java::test::testShortCCITT2	missing	-	baseline

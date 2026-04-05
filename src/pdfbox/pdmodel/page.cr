@@ -4,6 +4,7 @@
 # Corresponds to PDPage in Apache PDFBox.
 
 require "../cos"
+require "../util"
 
 module Pdfbox::Pdmodel
   # PDF page class
@@ -58,14 +59,48 @@ module Pdfbox::Pdmodel
 
     # Get page crop box
     def crop_box : Rectangle?
-      # TODO: Implement crop box retrieval
-      nil
+      cos_page = @cos_page
+      return media_box unless cos_page
+
+      crop_box = cos_page[Cos::Name.new("CropBox")]?
+      return media_box unless crop_box
+
+      if crop_box.is_a?(Cos::Object)
+        crop_box = crop_box.object
+      end
+
+      return media_box unless crop_box.is_a?(Cos::Array)
+      return media_box unless crop_box.size == 4
+
+      llx = to_float(crop_box[0]?)
+      lly = to_float(crop_box[1]?)
+      urx = to_float(crop_box[2]?)
+      ury = to_float(crop_box[3]?)
+      return media_box unless llx && lly && urx && ury
+
+      Rectangle.new(llx, lly, urx, ury)
     end
 
     # Set page crop box
     def crop_box=(rect : Rectangle) : Rectangle
-      # TODO: Implement crop box setting
+      cos_page = @cos_page || default_page_dictionary
+      @cos_page = cos_page
+
+      cos_page[Cos::Name.new("CropBox")] = Cos::Array.new([
+        Cos::Float.new(rect.lower_left_x),
+        Cos::Float.new(rect.lower_left_y),
+        Cos::Float.new(rect.upper_right_x),
+        Cos::Float.new(rect.upper_right_y),
+      ])
       rect
+    end
+
+    def bbox : Rectangle?
+      crop_box
+    end
+
+    def matrix : Util::Matrix
+      Util::Matrix.new
     end
 
     # Get page rotation
@@ -114,6 +149,13 @@ module Pdfbox::Pdmodel
       return unless resources_value.is_a?(Cos::Dictionary)
 
       Resources.new(resources_value)
+    end
+
+    # Set page resources
+    def resources=(resources : Resources) : Nil
+      cos_page = @cos_page || default_page_dictionary
+      @cos_page = cos_page
+      cos_page[Cos::Name.new("Resources")] = resources.cos_object
     end
 
     # Get page contents stream
@@ -270,6 +312,15 @@ module Pdfbox::Pdmodel
       when Cos::Float
         base.value
       end
+    end
+
+    # Get XMP metadata from page
+    # Java equivalent: PDPage.getMetadata()
+    def metadata : Pdmodel::Common::PDMetadata?
+      cos_page = @cos_page
+      return unless cos_page
+      meta_obj = cos_page.get_stream(Cos::Name.new("Metadata"))
+      meta_obj ? Pdmodel::Common::PDMetadata.new(meta_obj) : nil
     end
   end
 end

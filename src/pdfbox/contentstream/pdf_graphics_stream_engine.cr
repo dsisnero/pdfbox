@@ -12,6 +12,7 @@ require "../pdmodel/graphics/color/pddevice_gray"
 require "../pdmodel/graphics/color/pddevice_rgb"
 require "../pdmodel/graphics/color/pddevice_cmyk"
 require "../pdmodel/graphics/state/pd_graphics_state"
+require "../pdmodel/graphics/state/pd_soft_mask"
 require "../pdmodel/graphics/state/rendering_intent"
 require "../pdmodel/graphics/state/rendering_mode"
 require "../pdmodel/graphics/state/pd_text_state"
@@ -25,7 +26,7 @@ module Pdfbox::Contentstream
   # Provides callback methods for rendering paths, text, images, and other content.
   abstract class PDFGraphicsStreamEngine < PDFStreamEngine
     # Current line path being built
-    @line_path : Path2D?
+    @line_path : Path2D
     # Winding rule for clipping
     @clip_winding_rule : Int32 = -1
 
@@ -33,6 +34,7 @@ module Pdfbox::Contentstream
     def initialize(@page : Pdmodel::Page?)
       super()
       @line_path = Path2D.new
+      @graphics_state_stack = [] of Pdmodel::Graphics::State::PDGraphicsState
       register_operators
     end
 
@@ -43,12 +45,24 @@ module Pdfbox::Contentstream
 
     # Returns the current graphics state.
     def graphics_state : Pdmodel::Graphics::State::PDGraphicsState
-      @graphics_stack.last.as(Pdmodel::Graphics::State::PDGraphicsState)
+      (@graphics_state_stack.last? || @graphics_stack.last).as(Pdmodel::Graphics::State::PDGraphicsState)
+    end
+
+    # Save the graphics state - override to use properly typed stack
+    def save_graphics_state : Nil
+      @graphics_state_stack << graphics_state
+    end
+
+    # Restore the graphics state - override to use properly typed stack
+    def restore_graphics_state : Nil
+      if @graphics_state_stack.size > 0
+        @graphics_state_stack.pop
+      end
     end
 
     # Returns the current line path.
     def line_path : Path2D
-      @line_path
+      @line_path.not_nil! # ameba:disable Lint/NotNil
     end
 
     # --- Abstract callback methods that subclasses must implement ---
@@ -310,10 +324,16 @@ module Pdfbox::Contentstream
 
   # Base class for graphics stream engine operators
   abstract class GraphicsOperatorProcessor < OperatorProcessor
-    @engine : PDFGraphicsStreamEngine
+    def initialize(engine : PDFGraphicsStreamEngine)
+      super(engine)
+    end
 
-    def initialize(@engine : PDFGraphicsStreamEngine)
-      super(@engine)
+    def context : PDFGraphicsStreamEngine
+      @engine.as(PDFGraphicsStreamEngine)
+    end
+
+    def get_graphics_context : PDFGraphicsStreamEngine
+      @engine.as(PDFGraphicsStreamEngine)
     end
   end
 
@@ -326,8 +346,8 @@ module Pdfbox::Contentstream
     def process(arguments : Array(Cos::Base)) : Nil
       x = arguments[0].as(Cos::Number).value.to_f32
       y = arguments[1].as(Cos::Number).value.to_f32
-      @engine.add_move_to(x, y)
-      @engine.move_to(x, y)
+      context.add_move_to(x, y)
+      context.move_to(x, y)
     end
   end
 
@@ -340,8 +360,8 @@ module Pdfbox::Contentstream
     def process(arguments : Array(Cos::Base)) : Nil
       x = arguments[0].as(Cos::Number).value.to_f32
       y = arguments[1].as(Cos::Number).value.to_f32
-      @engine.add_line_to(x, y)
-      @engine.line_to(x, y)
+      context.add_line_to(x, y)
+      context.line_to(x, y)
     end
   end
 
@@ -358,8 +378,8 @@ module Pdfbox::Contentstream
       y2 = arguments[3].as(Cos::Number).value.to_f32
       x3 = arguments[4].as(Cos::Number).value.to_f32
       y3 = arguments[5].as(Cos::Number).value.to_f32
-      @engine.add_curve_to(x1, y1, x2, y2, x3, y3)
-      @engine.curve_to(x1, y1, x2, y2, x3, y3)
+      context.add_curve_to(x1, y1, x2, y2, x3, y3)
+      context.curve_to(x1, y1, x2, y2, x3, y3)
     end
   end
 
@@ -374,12 +394,12 @@ module Pdfbox::Contentstream
       y2 = arguments[1].as(Cos::Number).value.to_f32
       x3 = arguments[2].as(Cos::Number).value.to_f32
       y3 = arguments[3].as(Cos::Number).value.to_f32
-      current = @engine.current_point
+      current = context.current_point
       if current
         x1 = current[0]
         y1 = current[1]
-        @engine.add_curve_to(x1, y1, x2, y2, x3, y3)
-        @engine.curve_to(x1, y1, x2, y2, x3, y3)
+        context.add_curve_to(x1, y1, x2, y2, x3, y3)
+        context.curve_to(x1, y1, x2, y2, x3, y3)
       end
     end
   end
@@ -395,8 +415,8 @@ module Pdfbox::Contentstream
       y1 = arguments[1].as(Cos::Number).value.to_f32
       x3 = arguments[2].as(Cos::Number).value.to_f32
       y3 = arguments[3].as(Cos::Number).value.to_f32
-      @engine.add_curve_to(x1, y1, x3, y3, x3, y3)
-      @engine.curve_to(x1, y1, x3, y3, x3, y3)
+      context.add_curve_to(x1, y1, x3, y3, x3, y3)
+      context.curve_to(x1, y1, x3, y3, x3, y3)
     end
   end
 
@@ -407,8 +427,8 @@ module Pdfbox::Contentstream
     end
 
     def process(arguments : Array(Cos::Base)) : Nil
-      @engine.add_close_path
-      @engine.close_path
+      context.add_close_path
+      context.close_path
     end
   end
 
@@ -427,8 +447,8 @@ module Pdfbox::Contentstream
       p1 = {x + w, y}
       p2 = {x + w, y + h}
       p3 = {x, y + h}
-      @engine.add_rectangle_to_path(p0, p1, p2, p3)
-      @engine.append_rectangle(p0, p1, p2, p3)
+      context.add_rectangle_to_path(p0, p1, p2, p3)
+      context.append_rectangle(p0, p1, p2, p3)
     end
   end
 
@@ -439,7 +459,7 @@ module Pdfbox::Contentstream
     end
 
     def process(arguments : Array(Cos::Base)) : Nil
-      @engine.stroke_path
+      context.stroke_path
     end
   end
 
@@ -450,9 +470,9 @@ module Pdfbox::Contentstream
     end
 
     def process(arguments : Array(Cos::Base)) : Nil
-      @engine.add_close_path
-      @engine.close_path
-      @engine.stroke_path
+      context.add_close_path
+      context.close_path
+      context.stroke_path
     end
   end
 
@@ -463,7 +483,7 @@ module Pdfbox::Contentstream
     end
 
     def process(arguments : Array(Cos::Base)) : Nil
-      @engine.fill_path(0) # WIND_NON_ZERO
+      context.fill_path(0) # WIND_NON_ZERO
     end
   end
 
@@ -474,7 +494,7 @@ module Pdfbox::Contentstream
     end
 
     def process(arguments : Array(Cos::Base)) : Nil
-      @engine.fill_path(1) # WIND_EVEN_ODD
+      context.fill_path(1) # WIND_EVEN_ODD
     end
   end
 
@@ -485,7 +505,7 @@ module Pdfbox::Contentstream
     end
 
     def process(arguments : Array(Cos::Base)) : Nil
-      @engine.fill_and_stroke_path(0)
+      context.fill_and_stroke_path(0)
     end
   end
 
@@ -496,7 +516,7 @@ module Pdfbox::Contentstream
     end
 
     def process(arguments : Array(Cos::Base)) : Nil
-      @engine.fill_and_stroke_path(1)
+      context.fill_and_stroke_path(1)
     end
   end
 
@@ -507,9 +527,9 @@ module Pdfbox::Contentstream
     end
 
     def process(arguments : Array(Cos::Base)) : Nil
-      @engine.add_close_path
-      @engine.close_path
-      @engine.fill_and_stroke_path(0)
+      context.add_close_path
+      context.close_path
+      context.fill_and_stroke_path(0)
     end
   end
 
@@ -520,9 +540,9 @@ module Pdfbox::Contentstream
     end
 
     def process(arguments : Array(Cos::Base)) : Nil
-      @engine.add_close_path
-      @engine.close_path
-      @engine.fill_and_stroke_path(1)
+      context.add_close_path
+      context.close_path
+      context.fill_and_stroke_path(1)
     end
   end
 
@@ -533,7 +553,7 @@ module Pdfbox::Contentstream
     end
 
     def process(arguments : Array(Cos::Base)) : Nil
-      @engine.end_path
+      context.end_path
     end
   end
 
@@ -544,7 +564,7 @@ module Pdfbox::Contentstream
     end
 
     def process(arguments : Array(Cos::Base)) : Nil
-      @engine.clip(0)
+      context.clip(0)
     end
   end
 
@@ -555,7 +575,7 @@ module Pdfbox::Contentstream
     end
 
     def process(arguments : Array(Cos::Base)) : Nil
-      @engine.clip(1)
+      context.clip(1)
     end
   end
 
@@ -566,8 +586,8 @@ module Pdfbox::Contentstream
     end
 
     def process(arguments : Array(Cos::Base)) : Nil
-      shading_name = arguments[0].as(Cos::Name).name
-      @engine.shading_fill(shading_name)
+      shading_name = arguments[0].as(Cos::Name).value
+      context.shading_fill(shading_name)
     end
   end
 
@@ -578,7 +598,7 @@ module Pdfbox::Contentstream
     end
 
     def process(arguments : Array(Cos::Base)) : Nil
-      @engine.save_graphics_state
+      context.save_graphics_state
     end
   end
 
@@ -589,7 +609,7 @@ module Pdfbox::Contentstream
     end
 
     def process(arguments : Array(Cos::Base)) : Nil
-      @engine.restore_graphics_state
+      context.restore_graphics_state
     end
   end
 
@@ -607,7 +627,7 @@ module Pdfbox::Contentstream
       e = arguments[4].as(Cos::Number).value.to_f32
       f = arguments[5].as(Cos::Number).value.to_f32
       matrix = Util::Matrix.new(a, b, c, d, e, f)
-      @engine.graphics_state.current_transformation_matrix.concatenate(matrix)
+      context.graphics_state.current_transformation_matrix.concatenate(matrix)
     end
   end
 
@@ -619,7 +639,7 @@ module Pdfbox::Contentstream
 
     def process(arguments : Array(Cos::Base)) : Nil
       width = arguments[0].as(Cos::Number).value.to_f32
-      @engine.graphics_state.line_width = width
+      context.graphics_state.line_width = width
     end
   end
 
@@ -631,7 +651,7 @@ module Pdfbox::Contentstream
 
     def process(arguments : Array(Cos::Base)) : Nil
       cap = arguments[0].as(Cos::Number).value.to_i32
-      @engine.graphics_state.line_cap = cap
+      context.graphics_state.line_cap = cap
     end
   end
 
@@ -643,7 +663,7 @@ module Pdfbox::Contentstream
 
     def process(arguments : Array(Cos::Base)) : Nil
       join = arguments[0].as(Cos::Number).value.to_i32
-      @engine.graphics_state.line_join = join
+      context.graphics_state.line_join = join
     end
   end
 
@@ -655,7 +675,7 @@ module Pdfbox::Contentstream
 
     def process(arguments : Array(Cos::Base)) : Nil
       limit = arguments[0].as(Cos::Number).value.to_f32
-      @engine.graphics_state.miter_limit = limit
+      context.graphics_state.miter_limit = limit
     end
   end
 
@@ -668,7 +688,7 @@ module Pdfbox::Contentstream
     def process(arguments : Array(Cos::Base)) : Nil
       dash_array = arguments[0].as(Cos::Array)
       phase = arguments[1].as(Cos::Number).value.to_i32
-      @engine.graphics_state.line_dash_pattern = Pdmodel::Graphics::PDLineDashPattern.new(dash_array, phase)
+      context.graphics_state.line_dash_pattern = Pdmodel::Graphics::PDLineDashPattern.new(dash_array, phase)
     end
   end
 
@@ -680,7 +700,7 @@ module Pdfbox::Contentstream
 
     def process(arguments : Array(Cos::Base)) : Nil
       flatness = arguments[0].as(Cos::Number).value.to_f64
-      @engine.graphics_state.flatness = flatness
+      context.graphics_state.flatness = flatness
     end
   end
 
@@ -691,8 +711,8 @@ module Pdfbox::Contentstream
     end
 
     def process(arguments : Array(Cos::Base)) : Nil
-      intent_name = arguments[0].as(Cos::Name).name
-      @engine.graphics_state.rendering_intent = Pdmodel::Graphics::State::RenderingIntent.from_string(intent_name)
+      intent_name = arguments[0].as(Cos::Name).value
+      context.graphics_state.rendering_intent = Pdmodel::Graphics::State::RenderingIntent.from_string(intent_name)
     end
   end
 
@@ -714,9 +734,9 @@ module Pdfbox::Contentstream
     end
 
     def process(arguments : Array(Cos::Base)) : Nil
-      @engine.graphics_state.text_matrix = Util::Matrix.identity
-      @engine.graphics_state.text_line_matrix = Util::Matrix.identity
-      @engine.begin_text
+      context.graphics_state.text_matrix = Util::Matrix.identity
+      context.graphics_state.text_line_matrix = Util::Matrix.identity
+      context.begin_text
     end
   end
 
@@ -727,7 +747,7 @@ module Pdfbox::Contentstream
     end
 
     def process(arguments : Array(Cos::Base)) : Nil
-      @engine.end_text
+      context.end_text
     end
   end
 
@@ -738,15 +758,15 @@ module Pdfbox::Contentstream
     end
 
     def process(arguments : Array(Cos::Base)) : Nil
-      font_name = arguments[0].as(Cos::Name).name
+      font_arg = arguments[0].as(Cos::Name)
       font_size = arguments[1].as(Cos::Number).value.to_f32
-      resources = @engine.resources
+      resources = context.resources
       if resources
-        font = resources.get_font(font_name)
-        if font
-          @engine.graphics_state.text_state.font = font
-          @engine.graphics_state.text_state.font_size = font_size
+        font = resources.font(font_arg)
+        if font.is_a?(Pdfbox::Pdmodel::Font::PDFont)
+          context.graphics_state.text_state.font = font
         end
+        context.graphics_state.text_state.font_size = font_size
       end
     end
   end
@@ -804,9 +824,9 @@ module Pdfbox::Contentstream
     def process(arguments : Array(Cos::Base)) : Nil
       tx = arguments[0].as(Cos::Number).value.to_f32
       ty = arguments[1].as(Cos::Number).value.to_f32
-      @engine.graphics_state.text_matrix = @engine.graphics_state.text_line_matrix.clone
-      @engine.graphics_state.text_matrix.translate(tx, ty)
-      @engine.graphics_state.text_line_matrix = @engine.graphics_state.text_matrix.clone
+      context.graphics_state.text_matrix = context.graphics_state.text_line_matrix.clone
+      context.graphics_state.text_matrix.try(&.translate(tx, ty))
+      context.graphics_state.text_line_matrix = context.graphics_state.text_matrix.clone
     end
   end
 
@@ -819,10 +839,10 @@ module Pdfbox::Contentstream
     def process(arguments : Array(Cos::Base)) : Nil
       tx = arguments[0].as(Cos::Number).value.to_f32
       ty = arguments[1].as(Cos::Number).value.to_f32
-      @engine.graphics_state.text_state.leading = -ty
-      @engine.graphics_state.text_matrix = @engine.graphics_state.text_line_matrix.clone
-      @engine.graphics_state.text_matrix.translate(tx, ty)
-      @engine.graphics_state.text_line_matrix = @engine.graphics_state.text_matrix.clone
+      context.graphics_state.text_state.leading = -ty
+      context.graphics_state.text_matrix = context.graphics_state.text_line_matrix.clone
+      context.graphics_state.text_matrix.try(&.translate(tx, ty))
+      context.graphics_state.text_line_matrix = context.graphics_state.text_matrix.clone
     end
   end
 
@@ -834,7 +854,7 @@ module Pdfbox::Contentstream
 
     def process(arguments : Array(Cos::Base)) : Nil
       spacing = arguments[0].as(Cos::Number).value.to_f32
-      @engine.graphics_state.text_state.character_spacing = spacing
+      context.graphics_state.text_state.character_spacing = spacing
     end
   end
 
@@ -846,7 +866,7 @@ module Pdfbox::Contentstream
 
     def process(arguments : Array(Cos::Base)) : Nil
       spacing = arguments[0].as(Cos::Number).value.to_f32
-      @engine.graphics_state.text_state.word_spacing = spacing
+      context.graphics_state.text_state.word_spacing = spacing
     end
   end
 
@@ -858,7 +878,7 @@ module Pdfbox::Contentstream
 
     def process(arguments : Array(Cos::Base)) : Nil
       scaling = arguments[0].as(Cos::Number).value.to_f32
-      @engine.graphics_state.text_state.horizontal_scaling = scaling
+      context.graphics_state.text_state.horizontal_scaling = scaling
     end
   end
 
@@ -870,7 +890,7 @@ module Pdfbox::Contentstream
 
     def process(arguments : Array(Cos::Base)) : Nil
       leading = arguments[0].as(Cos::Number).value.to_f32
-      @engine.graphics_state.text_state.leading = leading
+      context.graphics_state.text_state.leading = leading
     end
   end
 
@@ -882,7 +902,7 @@ module Pdfbox::Contentstream
 
     def process(arguments : Array(Cos::Base)) : Nil
       mode = arguments[0].as(Cos::Number).value.to_i32
-      @engine.graphics_state.text_state.rendering_mode = Pdmodel::Graphics::State::RenderingMode.from_int(mode)
+      context.graphics_state.text_state.rendering_mode = Pdmodel::Graphics::State::RenderingMode.from_int(mode)
     end
   end
 
@@ -894,7 +914,7 @@ module Pdfbox::Contentstream
 
     def process(arguments : Array(Cos::Base)) : Nil
       rise = arguments[0].as(Cos::Number).value.to_f32
-      @engine.graphics_state.text_state.rise = rise
+      context.graphics_state.text_state.rise = rise
     end
   end
 
@@ -905,10 +925,10 @@ module Pdfbox::Contentstream
     end
 
     def process(arguments : Array(Cos::Base)) : Nil
-      leading = @engine.graphics_state.text_state.leading
-      @engine.graphics_state.text_matrix = @engine.graphics_state.text_line_matrix.clone
-      @engine.graphics_state.text_matrix.translate(0.0_f32, -leading)
-      @engine.graphics_state.text_line_matrix = @engine.graphics_state.text_matrix.clone
+      leading = context.graphics_state.text_state.leading
+      context.graphics_state.text_matrix = context.graphics_state.text_line_matrix.clone
+      context.graphics_state.text_matrix.try(&.translate(0.0_f32, -leading))
+      context.graphics_state.text_line_matrix = context.graphics_state.text_matrix.clone
     end
   end
 
@@ -942,8 +962,8 @@ module Pdfbox::Contentstream
 
     def process(arguments : Array(Cos::Base)) : Nil
       gray = arguments[0].as(Cos::Number).value.to_f32
-      @engine.graphics_state.stroking_color_space = Pdmodel::Graphics::Color::PDDeviceGray::INSTANCE
-      @engine.graphics_state.stroking_color = Pdmodel::Graphics::Color::PDColor.new([gray], Pdmodel::Graphics::Color::PDDeviceGray::INSTANCE)
+      context.graphics_state.stroking_color_space = Pdmodel::Graphics::Color::PDDeviceGray::INSTANCE
+      context.graphics_state.stroking_color = Pdmodel::Graphics::Color::PDColor.new([gray], Pdmodel::Graphics::Color::PDDeviceGray::INSTANCE)
     end
   end
 
@@ -955,8 +975,8 @@ module Pdfbox::Contentstream
 
     def process(arguments : Array(Cos::Base)) : Nil
       gray = arguments[0].as(Cos::Number).value.to_f32
-      @engine.graphics_state.non_stroking_color_space = Pdmodel::Graphics::Color::PDDeviceGray::INSTANCE
-      @engine.graphics_state.non_stroking_color = Pdmodel::Graphics::Color::PDColor.new([gray], Pdmodel::Graphics::Color::PDDeviceGray::INSTANCE)
+      context.graphics_state.non_stroking_color_space = Pdmodel::Graphics::Color::PDDeviceGray::INSTANCE
+      context.graphics_state.non_stroking_color = Pdmodel::Graphics::Color::PDColor.new([gray], Pdmodel::Graphics::Color::PDDeviceGray::INSTANCE)
     end
   end
 
@@ -970,8 +990,8 @@ module Pdfbox::Contentstream
       r = arguments[0].as(Cos::Number).value.to_f32
       g = arguments[1].as(Cos::Number).value.to_f32
       b = arguments[2].as(Cos::Number).value.to_f32
-      @engine.graphics_state.stroking_color_space = Pdmodel::Graphics::Color::PDDeviceRGB::INSTANCE
-      @engine.graphics_state.stroking_color = Pdmodel::Graphics::Color::PDColor.new([r, g, b], Pdmodel::Graphics::Color::PDDeviceRGB::INSTANCE)
+      context.graphics_state.stroking_color_space = Pdmodel::Graphics::Color::PDDeviceRGB::INSTANCE
+      context.graphics_state.stroking_color = Pdmodel::Graphics::Color::PDColor.new([r, g, b], Pdmodel::Graphics::Color::PDDeviceRGB::INSTANCE)
     end
   end
 
@@ -985,8 +1005,8 @@ module Pdfbox::Contentstream
       r = arguments[0].as(Cos::Number).value.to_f32
       g = arguments[1].as(Cos::Number).value.to_f32
       b = arguments[2].as(Cos::Number).value.to_f32
-      @engine.graphics_state.non_stroking_color_space = Pdmodel::Graphics::Color::PDDeviceRGB::INSTANCE
-      @engine.graphics_state.non_stroking_color = Pdmodel::Graphics::Color::PDColor.new([r, g, b], Pdmodel::Graphics::Color::PDDeviceRGB::INSTANCE)
+      context.graphics_state.non_stroking_color_space = Pdmodel::Graphics::Color::PDDeviceRGB::INSTANCE
+      context.graphics_state.non_stroking_color = Pdmodel::Graphics::Color::PDColor.new([r, g, b], Pdmodel::Graphics::Color::PDDeviceRGB::INSTANCE)
     end
   end
 
@@ -1001,8 +1021,8 @@ module Pdfbox::Contentstream
       m = arguments[1].as(Cos::Number).value.to_f32
       y = arguments[2].as(Cos::Number).value.to_f32
       k = arguments[3].as(Cos::Number).value.to_f32
-      @engine.graphics_state.stroking_color_space = Pdmodel::Graphics::Color::PDDeviceCMYK::INSTANCE
-      @engine.graphics_state.stroking_color = Pdmodel::Graphics::Color::PDColor.new([c, m, y, k], Pdmodel::Graphics::Color::PDDeviceCMYK::INSTANCE)
+      context.graphics_state.stroking_color_space = Pdmodel::Graphics::Color::PDDeviceCMYK::INSTANCE
+      context.graphics_state.stroking_color = Pdmodel::Graphics::Color::PDColor.new([c, m, y, k], Pdmodel::Graphics::Color::PDDeviceCMYK::INSTANCE)
     end
   end
 
@@ -1017,8 +1037,8 @@ module Pdfbox::Contentstream
       m = arguments[1].as(Cos::Number).value.to_f32
       y = arguments[2].as(Cos::Number).value.to_f32
       k = arguments[3].as(Cos::Number).value.to_f32
-      @engine.graphics_state.non_stroking_color_space = Pdmodel::Graphics::Color::PDDeviceCMYK::INSTANCE
-      @engine.graphics_state.non_stroking_color = Pdmodel::Graphics::Color::PDColor.new([c, m, y, k], Pdmodel::Graphics::Color::PDDeviceCMYK::INSTANCE)
+      context.graphics_state.non_stroking_color_space = Pdmodel::Graphics::Color::PDDeviceCMYK::INSTANCE
+      context.graphics_state.non_stroking_color = Pdmodel::Graphics::Color::PDColor.new([c, m, y, k], Pdmodel::Graphics::Color::PDDeviceCMYK::INSTANCE)
     end
   end
 
@@ -1073,7 +1093,37 @@ module Pdfbox::Contentstream
     end
 
     def process(arguments : Array(Cos::Base)) : Nil
-      # TODO: Implement XObject drawing
+      return if arguments.empty?
+      name_arg = arguments[0]
+      return unless name_arg.is_a?(Cos::Name)
+
+      page = context.page
+      return unless page
+
+      resources = page.resources
+      return unless resources
+
+      xobject = resources.xobject(name_arg)
+      return unless xobject
+
+      # Resolve indirect references
+      if xobject.is_a?(Cos::Object)
+        xobject = xobject.object
+      end
+
+      return unless xobject.is_a?(Cos::Dictionary)
+
+      subtype = xobject[Cos::Name.new("Subtype")]?
+      return unless subtype.is_a?(Cos::Name)
+
+      case subtype.value
+      when "Image"
+        doc = Pdmodel::Document.new # Use page's document context
+        image = Pdmodel::Graphics::Image::PDImageXObject.new(doc, xobject, xobject.as?(Cos::Stream))
+        context.draw_image(image)
+      when "Form"
+        # Form XObject handling - not yet implemented
+      end
     end
   end
 end
