@@ -27,6 +27,46 @@ describe Pdfbox::Pdmodel::Document do
       doc = Pdfbox::Pdmodel::Document.new
       doc.page_count.should eq(0)
     end
+
+    it "exposes Java-shaped document accessors" do
+      doc = Pdfbox::Pdmodel::Document.new
+      page = doc.add_page
+
+      doc.get_number_of_pages.should eq(1)
+      doc.get_page(0).should eq(page)
+      doc.get_pages.should eq([page])
+      doc.get_document_catalog.should eq(doc.document_catalog)
+      doc.get_document.should_not be_nil
+    end
+  end
+
+  describe "Java-shaped state accessors" do
+    it "gets and sets document id and security-removal flags" do
+      doc = Pdfbox::Pdmodel::Document.new
+      id = Bytes[0x01_u8, 0x02_u8, 0x03_u8]
+
+      doc.set_document_id(id)
+      doc.get_document_id.should eq(id)
+
+      doc.set_all_security_to_be_removed(true)
+      doc.is_all_security_to_be_removed.should be_true
+    end
+
+    it "gets and sets document information through the trailer" do
+      trailer = Pdfbox::Cos::Dictionary.new
+      doc = Pdfbox::Pdmodel::Document.new(nil, "1.4", trailer)
+      info = Pdfbox::Pdmodel::DocumentInformation.new
+      info.title = "Spec Title"
+
+      doc.set_document_information(info)
+
+      loaded = doc.get_document_information
+      loaded.should_not be_nil
+      loaded.not_nil!.title.should eq("Spec Title")
+
+      doc.set_document_information(nil)
+      doc.get_document_information.should be_nil
+    end
   end
 
   describe "#save and .load" do

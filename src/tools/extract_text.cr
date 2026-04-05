@@ -98,6 +98,8 @@ module Tools
     private def build_stripper : Pdfbox::Text::PDFTextStripper
       stripper = if @to_html
                    Tools::PDFText2HTML.new
+                 elsif @to_md
+                   Tools::PDFText2Markdown.new
                  elsif @rotation_magic
                    FilteredTextStripper.new
                  else

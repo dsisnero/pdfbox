@@ -1,5 +1,6 @@
 # Loader for encryption tests
 require "./pdmodel"
+require "./pdf_parser/fdf_parser"
 require "./pdf_parser/parser"
 require "./io"
 
@@ -18,6 +19,30 @@ module Pdfbox
     def self.load_pdf(path : String, password : String = "") : Pdmodel::Document
       data = File.read(path).to_slice
       load_pdf(data, password)
+    end
+
+    def self.load_fdf(path : String) : Pdmodel::Fdf::FDFDocument
+      File.open(path) do |file|
+        load_fdf(file)
+      end
+    end
+
+    def self.load_xfdf(path : String) : Pdmodel::Fdf::FDFDocument
+      File.open(path) do |file|
+        load_xfdf(file)
+      end
+    end
+
+    def self.load_fdf(input : ::IO) : Pdmodel::Fdf::FDFDocument
+      read_buffer = Pdfbox::IO::RandomAccessReadBuffer.new(input)
+      parser = Pdfbox::Pdfparser::FDFParser.new(read_buffer)
+      parser.parse
+    ensure
+      read_buffer.try(&.close)
+    end
+
+    def self.load_xfdf(input : ::IO) : Pdmodel::Fdf::FDFDocument
+      Pdmodel::Fdf::FDFDocument.from_xfdf(input.gets_to_end)
     end
   end
 end

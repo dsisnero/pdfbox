@@ -22,5 +22,8 @@ module Pdfbox::Pdmodel::Common::Filespecification
 
     # Set the file name
     abstract def file=(value : String)
+
+    # Get the underlying COS object
+    abstract def cos_object : Cos::Base
   end
 end

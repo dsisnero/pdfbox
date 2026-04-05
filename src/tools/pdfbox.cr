@@ -9,7 +9,7 @@ module Tools
 
     def self.headless? : Bool
       value = ENV["JAVA_AWT_HEADLESS"]?
-      value && value.downcase == "true"
+      value ? value.downcase == "true" : false
     end
 
     def available_subcommands : Array(String)
@@ -47,14 +47,48 @@ module Tools
         command_args = group[1..]
         exit_code = case command
                     when "version"
-                      Version.new(@out).call("version")
+                      Tools::Version.new(@out).call("version")
                     when "debug"
                       handle_debug
                     when "export:text"
                       ExtractText.new(@out, @err).call(command_args)
+                    when "export:xmp"
+                      ExtractXMP.new(@out, @err).call(command_args)
+                    when "export:images"
+                      ExtractImages.new(@out, @err).call(command_args)
+                    when "decrypt"
+                      Decrypt.new(@out, @err).call(command_args)
+                    when "encrypt"
+                      Encrypt.new(@out, @err).call(command_args)
+                    when "export:fdf"
+                      ExportFDF.new(@out, @err).call(command_args)
+                    when "export:xfdf"
+                      ExportXFDF.new(@out, @err).call(command_args)
+                    when "import:fdf"
+                      ImportFDF.new(@out, @err).call(command_args)
+                    when "import:xfdf"
+                      ImportXFDF.new(@out, @err).call(command_args)
+                    when "merge"
+                      Tools::Merge.new(@out, @err).call(command_args)
+                    when "split"
+                      Tools::Split.new(@out, @err).call(command_args)
+                    when "overlay"
+                      Tools::Overlay.new(@out, @err).call(command_args)
+                    when "print"
+                      Tools::PrintPDF.new(@out, @err).call(command_args)
+                    when "render"
+                      PDFToImage.new(@out, @err).call(command_args)
+                    when "fromimage"
+                      Tools::ImageToPDF.new(@out, @err).call(command_args)
+                    when "fromtext"
+                      Tools::TextToPDF.new(@out, @err).call(command_args)
+                    when "decode"
+                      Tools::WriteDecodedDoc.new(@out, @err).call(command_args)
+                    when "help"
+                      show_help
                     else
-                      @err.puts("Command '#{command}' not yet implemented")
-                      0
+                      @err.puts("Unknown subcommand: #{command}")
+                      1
                     end
       end
       exit_code
@@ -67,6 +101,12 @@ module Tools
     private def subcommand_required : Int32
       @err.puts("Error: Subcommand required")
       2
+    end
+
+    private def show_help : Int32
+      @out.puts("pdfbox [COMMAND] [OPTIONS]")
+      @out.puts("See 'pdfbox help <command>' to read about a specific subcommand")
+      0
     end
 
     private def handle_debug : Int32

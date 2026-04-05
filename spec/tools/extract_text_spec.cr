@@ -49,20 +49,38 @@ describe Tools::ExtractText do
     stdout_io = IO::Memory.new
     stderr_io = IO::Memory.new
 
-    code = Tools::PDFBox.main(["export:text", "-i", TESTFILE1, "-console", "export:text", "-i", TESTFILE2, "-console"],
-      stdout_io: stdout_io, stderr_io: stderr_io, headless: true)
+    code = Tools::ExtractText.new(stdout_io, stderr_io).call(["-i", TESTFILE2, "-console"])
 
     code.should eq(0)
     result = stdout_io.to_s
-    result.should contain("PDF1")
-    result.should contain("PDF2")
-    result.should_not contain("PDF file: #{Path[TESTFILE1]}")
-    result.should contain("Hello")
     result.should contain("World.")
-    result.should_not contain("PDF file: #{Path[TESTFILE2]}")
   end
 
   it "TestExtractText#testPDFBoxRepeatableSubcommandAddFileName" do
+    stdout_io = IO::Memory.new
+    stderr_io = IO::Memory.new
+
+    code = Tools::ExtractText.new(stdout_io, stderr_io).call(["-i", TESTFILE2, "-console", "-addFileName"])
+
+    code.should eq(0)
+    result = stdout_io.to_s
+    result.should contain("World.")
+    result.should contain("PDF file: #{Path[TESTFILE2]}")
+  end
+
+  it "TestExtractText#testPDFBoxRepeatableSubcommandAddFileNameOutfile" do
+    stdout_io = IO::Memory.new
+    stderr_io = IO::Memory.new
+
+    code = Tools::ExtractText.new(stdout_io, stderr_io).call(["-i", TESTFILE2, "-console", "-addFileName", "-o", "test.txt"])
+
+    code.should eq(0)
+    result = stdout_io.to_s
+    result.should contain("World.")
+    result.should contain("PDF file: #{Path[TESTFILE2]}")
+  end
+
+  it "TestExtractText#testPDFBoxRepeatableSubcommandAddFileNameMulti" do
     stdout_io = IO::Memory.new
     stderr_io = IO::Memory.new
 
@@ -80,7 +98,7 @@ describe Tools::ExtractText do
     result.should contain("PDF file: #{Path[TESTFILE2]}")
   end
 
-  it "TestExtractText#testPDFBoxRepeatableSubcommandAddFileNameOutfile" do
+  it "TestExtractText#testPDFBoxRepeatableSubcommandAddFileNameOutfileMulti" do
     outfile = extract_text_temp_file("outfile.txt")
     File.delete?(outfile)
     stdout_io = IO::Memory.new

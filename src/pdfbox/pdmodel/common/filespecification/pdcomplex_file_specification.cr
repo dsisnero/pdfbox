@@ -41,12 +41,12 @@ module Pdfbox::Pdmodel::Common::Filespecification
 
     # Get the file name
     def file : String?
-      @fs[Cos::Name::F].as?(Cos::String).try(&.value)
+      @fs[Cos::Name.new("F")].as?(Cos::String).try(&.value)
     end
 
     # Set the file name
     def file=(value : String)
-      @fs[Cos::Name::F] = Cos::String.new(value)
+      @fs[Cos::Name.new("F")] = Cos::String.new(value)
     end
 
     # Get the DOS file name

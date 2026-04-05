@@ -5,6 +5,7 @@
 require "./pdmodel/common"
 require "./pdmodel/encryption"
 require "./pdmodel/interactive"
+require "./pdmodel/fdf"
 require "./pdmodel/graphics"
 require "./pdmodel/document_interchange"
 require "./pdmodel/font"
@@ -137,6 +138,13 @@ module Pdfbox::Pdmodel
     end
 
     def save(io : ::IO, parameters : Pdfbox::Pdfwriter::Compress::CompressParameters) : Nil
+      # Prepare encryption if document is protected
+      if encrypted? && (encryption = self.encryption) && (handler = encryption.security_handler)
+        if handler.is_a?(Pdfbox::Pdmodel::Encryption::StandardSecurityHandler)
+          handler.prepare_document_for_encryption(self)
+        end
+      end
+
       writer = Pdfbox::Pdfwriter::Writer.new(io, self, parameters)
       writer.write
     end
@@ -217,9 +225,21 @@ module Pdfbox::Pdmodel
       page_count
     end
 
+    def get_number_of_pages : Int32 # ameba:disable Naming/AccessorMethodName
+      page_count
+    end
+
     # Get the document catalog
     def document_catalog : DocumentCatalog?
       @catalog
+    end
+
+    def get_document_catalog : DocumentCatalog? # ameba:disable Naming/AccessorMethodName
+      document_catalog
+    end
+
+    def get_document : Cos::Dictionary? # ameba:disable Naming/AccessorMethodName
+      @cos_document
     end
 
     # ameba:disable Naming/AccessorMethodName
@@ -251,6 +271,10 @@ module Pdfbox::Pdmodel
       page(index) || raise IndexError.new
     end
 
+    def get_pages : Array(Page) # ameba:disable Naming/AccessorMethodName
+      pages
+    end
+
     # Remove a page from the document
     def remove_page(page : Page) : Bool
       ensure_pages_loaded
@@ -275,9 +299,30 @@ module Pdfbox::Pdmodel
       @encryption
     end
 
+    def encryption=(encryption : Encryption::PDEncryption) : Encryption::PDEncryption
+      @encryption = encryption
+    end
+
+    # Returns true if the document is encrypted.
+    def encrypted? : Bool
+      !@encryption.nil?
+    end
+
     # Get the document ID bytes, required for password validation
     def document_id : Bytes?
       @document_id
+    end
+
+    def get_document_id : Bytes? # ameba:disable Naming/AccessorMethodName
+      @document_id
+    end
+
+    def document_id=(document_id : Bytes?) : Bytes?
+      @document_id = document_id
+    end
+
+    def set_document_id(document_id : Bytes?) : Nil # ameba:disable Naming/AccessorMethodName
+      @document_id = document_id
     end
 
     # Attempt to decrypt the document with the given password
@@ -300,6 +345,34 @@ module Pdfbox::Pdmodel
       true
     end
 
+    # Protects the document with a protection policy.
+    # The document content will be really encrypted when it is saved.
+    #
+    # @param policy The protection policy.
+    def protect(policy : Encryption::ProtectionPolicy) : Nil
+      if @all_security_to_be_removed
+        # In Java: LOG.warn("do not call setAllSecurityToBeRemoved(true) before calling protect(), "
+        #                 + "as protect() implies setAllSecurityToBeRemoved(false)")
+        @all_security_to_be_removed = false
+      end
+
+      unless @encryption
+        @encryption = Encryption::PDEncryption.new
+      end
+
+      # For StandardProtectionPolicy, create a StandardSecurityHandler
+      if policy.is_a?(Encryption::StandardProtectionPolicy)
+        security_handler = Encryption::StandardSecurityHandler.new(policy)
+      else
+        raise ::IO::Error.new("Unsupported protection policy type: #{policy.class}")
+      end
+
+      # Set the security handler on the encryption
+      if encryption = @encryption
+        encryption.security_handler = security_handler
+      end
+    end
+
     # Get document information (metadata)
     def document_information : DocumentInformation?
       trailer = @trailer
@@ -319,6 +392,20 @@ module Pdfbox::Pdmodel
       DocumentInformation.new(info_dict)
     end
 
+    def get_document_information : DocumentInformation? # ameba:disable Naming/AccessorMethodName
+      document_information
+    end
+
+    def set_document_information(info : DocumentInformation?) : Nil # ameba:disable Naming/AccessorMethodName
+      trailer = (@trailer ||= Cos::Dictionary.new)
+      key = Cos::Name.new("Info")
+      if info
+        trailer[key] = info.cos_object
+      else
+        trailer.delete(key)
+      end
+    end
+
     # Get current access permissions for encrypted documents
     def current_access_permission : Encryption::AccessPermission
       @current_access_permission || Encryption::AccessPermission.new
@@ -329,6 +416,10 @@ module Pdfbox::Pdmodel
     end
 
     def all_security_to_be_removed? : Bool
+      @all_security_to_be_removed
+    end
+
+    def is_all_security_to_be_removed : Bool # ameba:disable Naming/PredicateName
       @all_security_to_be_removed
     end
 
@@ -458,6 +549,16 @@ module Pdfbox::Pdmodel
     def to_a : Array(Float64)
       [@lower_left_x, @lower_left_y, @upper_right_x, @upper_right_y]
     end
+
+    # Java: createRetranslatedRectangle - returns a rectangle with lower-left at (0,0)
+    def create_retranslated_rectangle : Rectangle
+      Rectangle.new(
+        0.0,
+        0.0,
+        width,
+        height
+      )
+    end
   end
 
   # Common page sizes
@@ -465,23 +566,32 @@ module Pdfbox::Pdmodel
     # US Letter: 8.5 x 11 inches
     LETTER = Rectangle.from_dimensions(612.0, 792.0) # 72 DPI
 
+    # US Tabloid: 11 x 17 inches
+    TABLOID = Rectangle.from_dimensions(792.0, 1224.0)
+
     # US Legal: 8.5 x 14 inches
     LEGAL = Rectangle.from_dimensions(612.0, 1008.0)
 
-    # A4: 210 x 297 mm
-    A4 = Rectangle.from_dimensions(595.0, 842.0)
-
-    # A3: 297 x 420 mm
-    A3 = Rectangle.from_dimensions(842.0, 1190.0)
-
-    # A2: 420 x 594 mm
-    A2 = Rectangle.from_dimensions(1190.0, 1684.0)
+    # A0: 841 x 1189 mm
+    A0 = Rectangle.from_dimensions(2384.0, 3370.0)
 
     # A1: 594 x 841 mm
     A1 = Rectangle.from_dimensions(1684.0, 2384.0)
 
-    # A0: 841 x 1189 mm
-    A0 = Rectangle.from_dimensions(2384.0, 3370.0)
+    # A2: 420 x 594 mm
+    A2 = Rectangle.from_dimensions(1190.0, 1684.0)
+
+    # A3: 297 x 420 mm
+    A3 = Rectangle.from_dimensions(842.0, 1190.0)
+
+    # A4: 210 x 297 mm
+    A4 = Rectangle.from_dimensions(595.0, 842.0)
+
+    # A5: 148 x 210 mm
+    A5 = Rectangle.from_dimensions(420.0, 595.0)
+
+    # A6: 105 x 148 mm
+    A6 = Rectangle.from_dimensions(298.0, 420.0)
   end
 
   # Range class for specifying numeric ranges [min, max]
@@ -657,6 +767,39 @@ module Pdfbox::Pdmodel
       DocumentNameDictionary.new(names_dict, self)
     end
 
+    def acro_form : Interactive::Form::PDAcroForm?
+      form_dict = @cos_dict[Cos::Name.new("AcroForm")]
+      form_dict = form_dict.object if form_dict.is_a?(Cos::Object)
+      return unless form_dict.is_a?(Cos::Dictionary)
+      return unless @document
+      document = @document
+      return nil unless document
+
+      Interactive::Form::PDAcroForm.new(document, form_dict)
+    end
+
+    def acro_form=(form : Interactive::Form::PDAcroForm) : Interactive::Form::PDAcroForm
+      @cos_dict[Cos::Name.new("AcroForm")] = form.cos_object
+      form
+    end
+
+    def viewer_preferences : Interactive::PDViewerPreferences?
+      prefs = @cos_dict.get_dictionary(Cos::Name.new("ViewerPreferences"))
+      prefs ? Interactive::PDViewerPreferences.new(prefs) : nil
+    end
+
+    def viewer_preferences=(preferences : Interactive::PDViewerPreferences) : Interactive::PDViewerPreferences
+      @cos_dict[Cos::Name.new("ViewerPreferences")] = preferences.cos_object
+      preferences
+    end
+
+    # Get XMP metadata from document catalog
+    # Java equivalent: PDDocumentCatalog.getMetadata()
+    def metadata : Pdmodel::Common::PDMetadata?
+      meta_obj = @cos_dict.get_stream(Cos::Name.new("Metadata"))
+      meta_obj ? Pdmodel::Common::PDMetadata.new(meta_obj) : nil
+    end
+
     # Get output intents
     def output_intents : Array(OutputIntent)
       output_intents_value = @cos_dict[Cos::Name.new("OutputIntents")]
@@ -734,20 +877,7 @@ module Pdfbox::Pdmodel
 
     @cos_dict : Cos::Dictionary
 
-    def initialize(@cos_dict : Cos::Dictionary)
-    end
-
-    # Create a new output intent with ICC profile
-    def self.create(document : Document, icc_profile_data : Bytes) : self
-      dict = Cos::Dictionary.new
-      dict[Cos::Name.new("Type")] = Cos::Name.new("OutputIntent")
-      dict[Cos::Name.new("S")] = Cos::Name.new("GTS_PDFA1")
-
-      # Create a stream for the ICC profile
-      stream = Cos::Stream.new(data: icc_profile_data)
-      dict[Cos::Name.new("DestOutputProfile")] = stream
-
-      new(dict)
+    def initialize(@cos_dict : Cos::Dictionary = Cos::Dictionary.new)
     end
 
     # Get the underlying COS dictionary
@@ -2116,7 +2246,7 @@ module Pdfbox::Pdmodel
 
     @cos_dict : Cos::Dictionary
 
-    def initialize(@cos_dict : Cos::Dictionary)
+    def initialize(@cos_dict : Cos::Dictionary = Cos::Dictionary.new)
     end
 
     # Get the underlying COS dictionary
@@ -2147,6 +2277,52 @@ module Pdfbox::Pdmodel
       return unless font_dict.is_a?(Cos::Dictionary)
 
       Font::Font.new(font_dict)
+    end
+
+    def xobject(name : Cos::Name) : Cos::Base?
+      xobjects_dict = @cos_dict[Cos::Name.new("XObject")]
+      return unless xobjects_dict
+
+      if xobjects_dict.is_a?(Cos::Object)
+        xobjects_dict = xobjects_dict.object
+      end
+
+      return unless xobjects_dict.is_a?(Cos::Dictionary)
+
+      xobject = xobjects_dict[name]?
+      return unless xobject
+
+      if xobject.is_a?(Cos::Object)
+        xobject.object
+      else
+        xobject
+      end
+    end
+
+    # Add an XObject to the resources with the given prefix, returns the resource name.
+    # Java: PDResources.add(PDFormXObject, String)
+    def add(xobject : Cos::Stream, prefix : String) : Cos::Name
+      xobjects_dict = @cos_dict[Cos::Name.new("XObject")]?
+      unless xobjects_dict
+        xobjects_dict = Cos::Dictionary.new
+        @cos_dict[Cos::Name.new("XObject")] = xobjects_dict
+      end
+
+      if xobjects_dict.is_a?(Cos::Object)
+        xobjects_dict = xobjects_dict.object
+      end
+
+      return Cos::Name.new("#{prefix}0") unless xobjects_dict.is_a?(Cos::Dictionary)
+
+      # Find the next available name
+      index = 1
+      while xobjects_dict.has_key?(Cos::Name.new("#{prefix}#{index}"))
+        index += 1
+      end
+
+      name = Cos::Name.new("#{prefix}#{index}")
+      xobjects_dict[name] = xobject
+      name
     end
   end
 end
