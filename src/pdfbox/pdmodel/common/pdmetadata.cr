@@ -23,7 +23,7 @@ module Pdfbox::Pdmodel::Common
 
     # Extract the XMP metadata
     # Returns a stream to get the xmp data from
-    def export_xmp_metadata : IO
+    def export_xmp_metadata : ::IO
       create_input_stream
     end
 
