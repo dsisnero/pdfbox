@@ -164,6 +164,13 @@ module Pdfbox::Pdmodel::Encryption
       @bytes
     end
 
+    def has_any_revision3_permission_set? : Bool
+      can_assemble_document? ||
+        can_extract_for_accessibility? ||
+        can_fill_in_form? ||
+        can_print_faithful?
+    end
+
     def self.owner_access_permission : AccessPermission
       ap = new
       ap.can_assemble_document = true
@@ -182,11 +189,14 @@ module Pdfbox::Pdmodel::Encryption
   end
 
   class StandardProtectionPolicy < ProtectionPolicy
-    def initialize(@length : Int32 = 40)
-    end
+    property owner_password : String
+    property user_password : String
+    property permissions : AccessPermission
+    property encryption_key_length : Int32 = 256
+    property? prefer_aes : Bool = false
+    property? encrypt_metadata : Bool = true
 
-    def length : Int32
-      @length
+    def initialize(@owner_password : String, @user_password : String, @permissions : AccessPermission)
     end
   end
 
@@ -232,6 +242,9 @@ module Pdfbox::Pdmodel::Encryption
     def prepare_for_decryption(encryption : PDEncryption, document_id : Bytes?, material : DecryptionMaterial) : Nil
     end
 
+    def prepare_document_for_encryption(document : Pdfbox::Pdmodel::Document) : Nil
+    end
+
     def current_access_permission : AccessPermission
       @current_access_permission || AccessPermission.new
     end
@@ -260,11 +273,143 @@ module Pdfbox::Pdmodel::Encryption
       @string_filter_name = name
     end
 
-    def decrypt(obj : Pdfbox::Cos::Base?, _obj_num : Int64, _gen_num : Int64) : Pdfbox::Cos::Base?
-      obj
+    def decrypt(obj : Pdfbox::Cos::Base?, obj_num : Int64, gen_num : Int64) : Pdfbox::Cos::Base?
+      return obj unless obj
+
+      case obj
+      when Pdfbox::Cos::String
+        decrypt_string(obj, obj_num, gen_num)
+      when Pdfbox::Cos::Stream
+        decrypt_stream(obj, obj_num, gen_num)
+        obj
+      when Pdfbox::Cos::Array
+        decrypt_array(obj, obj_num, gen_num)
+      when Pdfbox::Cos::Dictionary
+        decrypt_dictionary(obj, obj_num, gen_num)
+      else
+        obj
+      end
     end
 
-    def decrypt_stream(stream : Pdfbox::Cos::Stream, _obj_num : Int64, _gen_num : Int64) : Nil
+    def decrypt_stream(stream : Pdfbox::Cos::Stream, obj_num : Int64, gen_num : Int64) : Nil
+      # Empty streams don't need to be decrypted
+      return if stream.data.empty?
+
+      # Get encryption key
+      enc_key = @encryption_key
+      return unless enc_key
+
+      # Generate object key
+      object_key = compute_object_key(enc_key, obj_num, gen_num)
+
+      # Decrypt the stream data
+      rc4 = RC4.new(object_key)
+      decrypted_data = rc4.process(stream.data)
+
+      # Replace stream data with decrypted data
+      stream.data = decrypted_data
+    end
+
+    private def decrypt_string(string : Pdfbox::Cos::String, obj_num : Int64, gen_num : Int64) : Pdfbox::Cos::String
+      # Get encryption key
+      enc_key = @encryption_key
+      return string unless enc_key
+
+      # Generate object key
+      object_key = compute_object_key(enc_key, obj_num, gen_num)
+
+      # Decrypt the string data
+      rc4 = RC4.new(object_key)
+      decrypted_bytes = rc4.process(string.bytes)
+
+      # Create new string with decrypted data
+      Pdfbox::Cos::String.new(decrypted_bytes)
+    end
+
+    private def decrypt_array(array : Pdfbox::Cos::Array, obj_num : Int64, gen_num : Int64) : Pdfbox::Cos::Array
+      # Decrypt each element in the array
+      array.items.each_with_index do |element, i|
+        decrypted = decrypt(element, obj_num, gen_num)
+        array[i] = decrypted.as(Pdfbox::Cos::Base) if decrypted.is_a?(Pdfbox::Cos::Base)
+      end
+      array
+    end
+
+    private def decrypt_dictionary(dict : Pdfbox::Cos::Dictionary, obj_num : Int64, gen_num : Int64) : Pdfbox::Cos::Dictionary
+      # Decrypt each value in the dictionary
+      dict.entries.each do |key, value|
+        dict[key] = decrypt(value, obj_num, gen_num)
+      end
+      dict
+    end
+
+    def encrypt_stream(stream : Pdfbox::Cos::Stream, obj_num : Int64, gen_num : Int64) : Nil
+      # Empty streams don't need to be encrypted
+      return if stream.data.empty?
+
+      # Get encryption key
+      enc_key = @encryption_key
+      return unless enc_key
+
+      # Generate object key
+      object_key = compute_object_key(enc_key, obj_num, gen_num)
+
+      # Encrypt the stream data
+      rc4 = RC4.new(object_key)
+      encrypted_data = rc4.process(stream.data)
+
+      # Replace stream data with encrypted data
+      stream.data = encrypted_data
+    end
+
+    protected def encrypt_data(obj_num : Int64, gen_num : Int64, input : ::IO, output : ::IO, decrypt : Bool) : Nil
+      # Get encryption key
+      enc_key = @encryption_key
+      return unless enc_key
+
+      # Determine whether we're using Algorithm 1 (for RC4 and AES-128), or 1.A (for AES-256)
+      if @use_aes && enc_key.size == 32
+        encrypt_data_aes256(input, output, decrypt)
+      else
+        object_key = compute_object_key(enc_key, obj_num, gen_num)
+
+        if @use_aes
+          encrypt_data_aes_other(object_key, input, output, decrypt)
+        else
+          encrypt_data_rc4(object_key, input, output)
+        end
+      end
+      output.flush
+    end
+
+    private def compute_object_key(encryption_key : Bytes, obj_num : Int64, gen_num : Int64) : Bytes
+      # Algorithm 3.1 from PDF Reference
+      # 1. Use the encryption key
+      # 2. Append the low-order 3 bytes of obj_num and low-order 2 bytes of gen_num
+      # 3. Compute MD5 hash
+      # 4. Use first (n+5) bytes as key (where n is encryption key length)
+
+      md5 = Digest::MD5.new
+      md5.update(encryption_key)
+
+      # Append low-order 3 bytes of object number
+      md5.update(Bytes[
+        (obj_num & 0xFF).to_u8,
+        ((obj_num >> 8) & 0xFF).to_u8,
+        ((obj_num >> 16) & 0xFF).to_u8,
+      ])
+
+      # Append low-order 2 bytes of generation number
+      md5.update(Bytes[
+        (gen_num & 0xFF).to_u8,
+        ((gen_num >> 8) & 0xFF).to_u8,
+      ])
+
+      digest = md5.final
+
+      # Use first (n+5) bytes as key, where n is encryption key length
+      key_length = encryption_key.size
+      digest[0, Math.min(key_length + 5, digest.size)]
     end
   end
 
@@ -293,8 +438,47 @@ module Pdfbox::Pdmodel::Encryption
     # Hashes used for Algorithm 2.B, depending on remainder from E modulo 3
     HASHES_2B = ["SHA-256", "SHA-384", "SHA-512"]
 
-    def initialize(@policy : StandardProtectionPolicy = StandardProtectionPolicy.new)
+    def initialize(policy : StandardProtectionPolicy? = nil)
       super()
+      @policy = policy || StandardProtectionPolicy.new("", "", AccessPermission.new)
+    end
+
+    private def compute_version_number : Int32
+      # For now, default to version 4 (supports 128-bit encryption)
+      REVISION_4
+    end
+
+    private def compute_revision_number(version : Int32) : Int32
+      policy = @policy.as(StandardProtectionPolicy)
+      permissions = policy.permissions
+
+      if version < REVISION_2 && !permissions.has_any_revision3_permission_set?
+        return REVISION_2
+      end
+
+      if version == REVISION_5
+        # note about revision 5: "Shall not be used. This value was used by a deprecated Adobe extension."
+        return REVISION_6
+      end
+
+      if version == REVISION_4
+        return REVISION_4
+      end
+
+      if version == REVISION_2 || version == REVISION_3 || permissions.has_any_revision3_permission_set?
+        return REVISION_3
+      end
+
+      REVISION_2
+    end
+
+    private def get_key_length : Int32
+      policy = @policy.as(StandardProtectionPolicy)
+      policy.encryption_key_length
+    end
+
+    private def get_protection_policy : StandardProtectionPolicy
+      @policy.as(StandardProtectionPolicy)
     end
 
     def prepare_for_decryption(encryption : PDEncryption, document_id : Bytes?, material : DecryptionMaterial) : Nil
@@ -343,8 +527,53 @@ module Pdfbox::Pdmodel::Encryption
     end
 
     def prepare_document_for_encryption(document : Pdfbox::Pdmodel::Document) : Nil
-      # TODO: implement
-      raise "Not implemented: prepare_document_for_encryption"
+      encryption = document.encryption
+      if encryption.nil?
+        encryption = PDEncryption.new
+      end
+
+      version = compute_version_number
+      revision = compute_revision_number(version)
+      encryption.filter = FILTER
+      encryption.version = version
+
+      if version != REVISION_4 && version != REVISION_5
+        # remove CF, StmF, and StrF entries that may be left from a previous encryption
+        encryption.remove_v45_filters
+      end
+
+      encryption.revision = revision
+      encryption.length = get_key_length
+
+      policy = @policy.as(StandardProtectionPolicy)
+      owner_password = policy.owner_password
+      user_password = policy.user_password
+
+      owner_password = "" if owner_password.nil?
+      user_password = "" if user_password.nil?
+
+      # If no owner password is set, use the user password instead.
+      if owner_password.empty?
+        owner_password = user_password
+      end
+
+      permission_int = policy.permissions.permission_bytes
+      encryption.permissions = permission_int
+
+      length = get_key_length // 8
+
+      if revision == REVISION_6
+        # TODO: Implement SASLPrep for revision 6
+        # owner_password = SaslPrep.sasl_prep_stored(owner_password)
+        # user_password = SaslPrep.sasl_prep_stored(user_password)
+        prepare_encryption_dict_rev6(owner_password, user_password, encryption, permission_int)
+      else
+        prepare_encryption_dict_rev234(owner_password, user_password, encryption, permission_int, document, revision, length)
+      end
+
+      document.encryption = encryption
+      # TODO: Set encryption dictionary on document's COSDocument
+      # document.document.set_encryption_dictionary(encryption.dictionary)
     end
 
     def owner_password?(owner_password : Bytes, user : Bytes, owner : Bytes, permissions : Int32, id : Bytes, enc_revision : Int32, key_length_in_bytes : Int32, encrypt_metadata : Bool) : Bool
@@ -544,6 +773,195 @@ module Pdfbox::Pdmodel::Encryption
       else
         Bytes.new(0)
       end
+    end
+
+    private def prepare_encryption_dict_rev234(owner_password : String, user_password : String, encryption : PDEncryption, permission_int : Int32, document : Pdfbox::Pdmodel::Document, revision : Int32, length : Int32) : Nil
+      # Generate document ID if not present
+      # For now, use a simple fixed ID
+      document_id = Bytes[0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF, 0xFE, 0xDC, 0xBA, 0x98, 0x76, 0x54, 0x32, 0x10]
+
+      # Convert passwords to bytes based on revision
+      owner_password_bytes = password_to_bytes(owner_password, revision)
+      user_password_bytes = password_to_bytes(user_password, revision)
+
+      # Compute encryption key
+      encrypt_metadata = true # Default to encrypting metadata
+      enc_key = compute_encrypted_key_rev234(owner_password_bytes, Bytes.new(0), permission_int, document_id, encrypt_metadata, length, revision)
+
+      # Set encryption key
+      set_encryption_key(enc_key)
+
+      # Compute owner key (O)
+      owner_key = compute_owner_password(owner_password_bytes, user_password_bytes, revision, length)
+      encryption.owner_key = owner_key
+
+      # Compute user key (U)
+      user_key = compute_user_password(user_password_bytes, owner_key, permission_int, document_id, revision, length, encrypt_metadata)
+      encryption.user_key = user_key
+
+      # Set other encryption parameters
+      encryption.encrypt_metadata = encrypt_metadata
+
+      # For revision 4, set up crypt filters
+      if revision == REVISION_4
+        setup_crypt_filters_rev4(encryption)
+      end
+    end
+
+    private def prepare_encryption_dict_rev6(owner_password : String, user_password : String, encryption : PDEncryption, permission_int : Int32) : Nil
+      # Revision 6 encryption (AES-256)
+      # TODO: Implement SASLPrep for revision 6
+      # owner_password = SaslPrep.sasl_prep_stored(owner_password)
+      # user_password = SaslPrep.sasl_prep_stored(user_password)
+
+      # Generate random 256-bit file encryption key
+      encryption_key = Bytes.new(32)
+      Random::Secure.random_bytes(encryption_key)
+      @encryption_key = encryption_key
+
+      # Set AES-256 encryption
+      @use_aes = true
+
+      # Convert passwords to UTF-8 bytes (revision 5/6 uses UTF-8)
+      owner_password_bytes = owner_password.to_slice
+      user_password_bytes = user_password.to_slice
+
+      # Generate random salts
+      user_salt = Bytes.new(8)
+      owner_salt = Bytes.new(8)
+      user_key_salt = Bytes.new(8)
+      owner_key_salt = Bytes.new(8)
+      Random::Secure.random_bytes(user_salt)
+      Random::Secure.random_bytes(owner_salt)
+      Random::Secure.random_bytes(user_key_salt)
+      Random::Secure.random_bytes(owner_key_salt)
+
+      # Compute user key (U)
+      user_input = concat(user_password_bytes, user_salt)
+      hash_u = compute_hash2b(user_input, user_password_bytes, nil)
+      u = concat(hash_u, user_salt, user_key_salt)
+
+      # Compute owner key (O)
+      owner_input = concat(owner_password_bytes, owner_salt, u)
+      hash_o = compute_hash2b(owner_input, owner_password_bytes, u)
+      o = concat(hash_o, owner_salt, owner_key_salt)
+
+      # Compute user encryption key (UE)
+      ue_input = concat(user_password_bytes, user_key_salt)
+      ue_hash = compute_hash2b(ue_input, user_password_bytes, nil)
+      ue = encrypt_aes256_key(encryption_key, ue_hash)
+
+      # Compute owner encryption key (OE)
+      oe_input = concat(owner_password_bytes, owner_key_salt, u)
+      oe_hash = compute_hash2b(oe_input, owner_password_bytes, u)
+      oe = encrypt_aes256_key(encryption_key, oe_hash)
+
+      # Set encryption dictionary values
+      encryption.revision = REVISION_6
+      encryption.length = 256 # 256-bit encryption
+      encryption.owner_key = o
+      encryption.user_key = u
+      encryption.user_encryption_key = ue
+      encryption.owner_encryption_key = oe
+      encryption.permissions = permission_int
+      encryption.encrypt_metadata = @policy.as(StandardProtectionPolicy).encrypt_metadata?
+
+      # Set up AESV3 crypt filter
+      setup_crypt_filters_rev6(encryption)
+
+      # Validate permissions
+      validate_perms(encryption, permission_int, @policy.as(StandardProtectionPolicy).encrypt_metadata?)
+    end
+
+    private def encrypt_aes256_key(key : Bytes, hash : Bytes) : Bytes
+      # Encrypt key using AES-256 in CBC mode with zero IV
+      cipher = OpenSSL::Cipher.new("AES-256-CBC")
+      cipher.encrypt
+      cipher.key = hash
+      cipher.iv = Bytes.new(16, 0_u8) # Zero IV
+      cipher.padding = false
+
+      cipher.update(key) + cipher.final
+    end
+
+    private def setup_crypt_filters_rev6(encryption : PDEncryption) : Nil
+      # Create crypt filter dictionary for revision 6 (AES-256)
+      std_crypt_filter = PDCryptFilterDictionary.new
+      std_crypt_filter.length = 256                                         # 256-bit encryption
+      std_crypt_filter.crypt_filter_method = Pdfbox::Cos::Name.new("AESV3") # AES-256
+      std_crypt_filter.encrypt_metadata = @policy.as(StandardProtectionPolicy).encrypt_metadata?
+
+      encryption.std_crypt_filter_dictionary = std_crypt_filter
+      encryption.stream_filter_name = PDEncryption::STD_CF
+      encryption.string_filter_name = PDEncryption::STD_CF
+    end
+
+    private def validate_perms(encryption : PDEncryption, permissions : Int32, encrypt_metadata : Bool) : Nil
+      # Validate permissions for revision 5/6
+      # Create 16-byte Perms string and encrypt it
+      perms = Bytes.new(16, 0_u8)
+
+      # Set permissions (little-endian)
+      perms[0] = (permissions & 0xFF).to_u8
+      perms[1] = ((permissions >> 8) & 0xFF).to_u8
+      perms[2] = ((permissions >> 16) & 0xFF).to_u8
+      perms[3] = ((permissions >> 24) & 0xFF).to_u8
+
+      # Set encrypt_metadata flag
+      perms[8] = encrypt_metadata ? 0xFF_u8 : 0x00_u8
+      perms[9] = 0xFF_u8  # Always 0xFF for "adbe"
+      perms[10] = 0xFF_u8 # Always 0xFF for "adbe"
+
+      # Get encryption key
+      encryption_key = @encryption_key
+      return unless encryption_key
+
+      # Encrypt perms with AES-256 in ECB mode
+      cipher = OpenSSL::Cipher.new("AES-256-ECB")
+      cipher.encrypt
+      cipher.key = encryption_key
+      cipher.padding = false
+
+      encrypted_perms = cipher.update(perms) + cipher.final
+
+      # Store encrypted perms in encryption dictionary
+      # Note: This would need to be stored in the encryption dictionary
+      # For now, we'll just validate that we can decrypt it
+      cipher = OpenSSL::Cipher.new("AES-256-ECB")
+      cipher.decrypt
+      cipher.key = encryption_key
+      cipher.padding = false
+
+      decrypted_perms = cipher.update(encrypted_perms) + cipher.final
+
+      # Verify decryption
+      unless decrypted_perms == perms
+        raise "Permissions validation failed for revision 5/6 encryption"
+      end
+    end
+
+    private def setup_crypt_filters_rev4(encryption : PDEncryption) : Nil
+      # Create crypt filter dictionary for revision 4
+      std_crypt_filter = PDCryptFilterDictionary.new
+
+      policy = @policy.as(StandardProtectionPolicy)
+      if policy.prefer_aes?
+        # Use AES encryption
+        std_crypt_filter.length = policy.encryption_key_length
+        std_crypt_filter.crypt_filter_method = Pdfbox::Cos::Name.new("AESV2") # AES-128
+        @use_aes = true
+      else
+        # Use RC4 encryption
+        std_crypt_filter.length = 128                                      # 128-bit encryption
+        std_crypt_filter.crypt_filter_method = Pdfbox::Cos::Name.new("V2") # RC4
+        @use_aes = false
+      end
+
+      std_crypt_filter.encrypt_metadata = policy.encrypt_metadata?
+
+      encryption.std_crypt_filter_dictionary = std_crypt_filter
+      encryption.stream_filter_name = PDEncryption::STD_CF
+      encryption.string_filter_name = PDEncryption::STD_CF
     end
 
     private def compute_encrypted_key_rev234(password : Bytes, o : Bytes, permissions : Int32, id : Bytes, encrypt_metadata : Bool, length : Int32, enc_revision : Int32) : Bytes
@@ -752,9 +1170,100 @@ module Pdfbox::Pdmodel::Encryption
       result
     end
 
+    protected def encrypt_data_rc4(key : Bytes, input : ::IO, output : ::IO) : Nil
+      # Read all input data
+      data = Bytes.new(input.size.to_i32)
+      input.read_fully(data)
+
+      rc4 = RC4.new(key)
+      result = rc4.process(data)
+      output.write(result)
+    end
+
     private def encrypt_data_rc4(key : Bytes, data : Bytes) : Bytes
       rc4 = RC4.new(key)
       rc4.process(data)
+    end
+
+    private def encrypt_data_aes_other(key : Bytes, input : ::IO, output : ::IO, decrypt : Bool) : Nil
+      # AES with key length other than 256 bits (typically AES-128)
+      iv = Bytes.new(16, 0_u8)
+
+      unless prepare_aes_initialization_vector(decrypt, iv, input, output)
+        return
+      end
+
+      cipher = create_cipher(key, iv, decrypt)
+
+      buffer = Bytes.new(256)
+      while (n = input.read(buffer)) > 0
+        dst = cipher.update(buffer[0, n])
+        output.write(dst) if dst && !dst.empty?
+      end
+
+      final = cipher.final
+      output.write(final) if final && !final.empty?
+    end
+
+    private def encrypt_data_aes256(input : ::IO, output : ::IO, decrypt : Bool) : Nil
+      # AES-256 encryption
+      iv = Bytes.new(16, 0_u8)
+
+      unless prepare_aes_initialization_vector(decrypt, iv, input, output)
+        return
+      end
+
+      encryption_key = @encryption_key
+      return unless encryption_key
+
+      cipher = create_cipher(encryption_key, iv, decrypt)
+
+      # Read and process in chunks
+      buffer = Bytes.new(4096)
+      while (n = input.read(buffer)) > 0
+        dst = cipher.update(buffer[0, n])
+        output.write(dst) if dst && !dst.empty?
+      end
+
+      final = cipher.final
+      output.write(final) if final && !final.empty?
+    end
+
+    private def prepare_aes_initialization_vector(decrypt : Bool, iv : Bytes, input : ::IO, output : ::IO) : Bool
+      # For encryption: generate random IV and write it to output
+      # For decryption: read IV from input
+      if decrypt
+        # Read IV from input
+        bytes_read = input.read(iv)
+        return false if bytes_read != 16
+      else
+        # Generate random IV for encryption
+        Random::Secure.random_bytes(iv)
+        output.write(iv)
+      end
+      true
+    end
+
+    private def create_cipher(key : Bytes, iv : Bytes, decrypt : Bool) : OpenSSL::Cipher
+      # Determine cipher based on key length
+      cipher_name = if key.size == 32
+                      "AES-256-CBC"
+                    else
+                      "AES-128-CBC"
+                    end
+
+      cipher = OpenSSL::Cipher.new(cipher_name)
+
+      if decrypt
+        cipher.decrypt
+      else
+        cipher.encrypt
+      end
+
+      cipher.key = key
+      cipher.iv = iv
+      cipher.padding = false # PDF uses no padding
+      cipher
     end
   end
 
@@ -1032,6 +1541,11 @@ module Pdfbox::Pdmodel::Encryption
 
     def encrypt_metadata? : Bool
       get_boolean(Pdfbox::Cos::Name.new("EncryptMetadata"), true)
+    end
+
+    def encrypt_metadata=(encrypt_metadata : Bool) : Bool
+      @dictionary[Pdfbox::Cos::Name.new("EncryptMetadata")] = Pdfbox::Cos::Boolean.get(encrypt_metadata)
+      encrypt_metadata
     end
 
     def stream_filter_name : Pdfbox::Cos::Name?

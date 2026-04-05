@@ -92,7 +92,7 @@ module Pdfbox::Pdmodel::Interactive::Form
 
     # Set NeedAppearances flag
     def need_appearances=(value : Bool)
-      @dictionary[Cos::Name.new("NeedAppearances")] = Cos::Boolean.new(value)
+      @dictionary[Cos::Name.new("NeedAppearances")] = Cos::Boolean.get(value)
     end
 
     # Add a field to the form
@@ -103,6 +103,25 @@ module Pdfbox::Pdmodel::Interactive::Form
         @dictionary[Cos::Name.new("Fields")] = fields_array
       end
       fields_array.add(field.cos_object)
+    end
+
+    def import_fdf(fdf : Pdfbox::Pdmodel::Fdf::FDFDocument) : Nil
+      fdf.catalog.fdf.fields.try(&.each do |field|
+        next unless name = field.partial_field_name
+        get_field(name).try(&.import_fdf(field))
+      end)
+    end
+
+    def export_fdf : Pdfbox::Pdmodel::Fdf::FDFDocument
+      fdf = Pdfbox::Pdmodel::Fdf::FDFDocument.new
+      exported_fields = fields.map(&.export_fdf)
+      fdf.catalog.fdf.fields = exported_fields unless exported_fields.empty?
+
+      if document_id = @document.document_id
+        hex = document_id.hexstring
+        fdf.catalog.fdf.id = [hex, hex]
+      end
+      fdf
     end
   end
 end

@@ -943,6 +943,18 @@ module Pdfbox::Cos
       @items.size
     end
 
+    def each(&block : Base ->) : Nil
+      @items.each { |item| yield item }
+    end
+
+    def <<(item : Base) : self
+      add(item)
+    end
+
+    def empty? : Bool
+      @items.empty?
+    end
+
     # Remove element at index and return it
     def delete_at(index : Int) : Base
       @items.delete_at(index)
@@ -1000,6 +1012,14 @@ module Pdfbox::Cos
 
     def []?(key : Name) : Base?
       @entries[key]?
+    end
+
+    def [](key : ::String) : Base?
+      @entries[Name.new(key)]?
+    end
+
+    def []?(key : ::String) : Base?
+      @entries[Name.new(key)]?
     end
 
     def has_key?(key : Name) : Bool
