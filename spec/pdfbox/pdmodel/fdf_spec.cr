@@ -82,8 +82,8 @@ describe Pdfbox::Pdmodel::Fdf::FDFDocument do
 
     serialized.should contain("/Pages [")
     serialized.should contain("/Info <<")
-    parsed.catalog.fdf.pages.not_nil!.size.should eq(1)
-    parsed.catalog.fdf.pages.not_nil!.first.page_info.not_nil!.cos_object[Pdfbox::Cos::Name.new("Label")].as(Pdfbox::Cos::String).value.should eq("Cover")
+    parsed.catalog.fdf.pages.as(Array).size.should eq(1)
+    parsed.catalog.fdf.pages.as(Array).first.page_info.not_nil!.cos_object[Pdfbox::Cos::Name.new("Label")].as(Pdfbox::Cos::String).value.should eq("Cover")
   end
 
   it "round-trips page templates with named references, fields, and rename through fdf serialization" do
@@ -117,13 +117,13 @@ describe Pdfbox::Pdmodel::Fdf::FDFDocument do
     serialized.should contain("/F (template.pdf)")
     serialized.should contain("/Rename true")
 
-    parsed_page = parsed.catalog.fdf.pages.not_nil!.first
-    parsed_template = parsed_page.templates.not_nil!.first
+    parsed_page = parsed.catalog.fdf.pages.as(Array).first
+    parsed_template = parsed_page.templates.as(Array).first
     parsed_template.should_rename?.should be_true
     parsed_template.template_reference.not_nil!.name.should eq("TemplatePage")
     parsed_template.template_reference.not_nil!.file_specification.not_nil!.file.should eq("template.pdf")
-    parsed_template.fields.not_nil!.first.partial_field_name.should eq("templateField")
-    parsed_template.fields.not_nil!.first.value.should eq("FromTemplate")
+    parsed_template.fields.as(Array).first.partial_field_name.should eq("templateField")
+    parsed_template.fields.as(Array).first.value.should eq("FromTemplate")
   end
 
   it "round-trips javascript before, after, and doc actions through fdf serialization" do
@@ -163,7 +163,7 @@ describe Pdfbox::Pdmodel::Fdf::FDFDocument do
     serialized.should contain("(PlainOption)")
     serialized.should contain("[(ExportValue) (/Helv 10 Tf 0 g)]")
 
-    parsed_options = parsed.catalog.fdf.fields.not_nil!.first.options.not_nil!
+    parsed_options = parsed.catalog.fdf.fields.as(Array).first.options.as(Array)
     parsed_options.first.should eq("PlainOption")
     parsed_option_element = parsed_options.last.as(Pdfbox::Pdmodel::Fdf::FDFOptionElement)
     parsed_option_element.option.should eq("ExportValue")
@@ -199,9 +199,9 @@ describe Pdfbox::Pdmodel::Fdf::FDFDocument do
     serialized.should contain("/S /A")
     serialized.should contain("/FB true")
 
-    parsed_field = parsed.catalog.fdf.fields.not_nil!.first
+    parsed_field = parsed.catalog.fdf.fields.as(Array).first
     parsed_field.appearance_stream_reference.not_nil!.name.should eq("ButtonFace")
-    parsed_icon_fit = parsed_field.icon_fit.not_nil!
+    parsed_icon_fit = parsed_field.icon_fit.as(Pdfbox::Pdmodel::Fdf::FDFIconFit)
     parsed_icon_fit.scale_option.should eq(Pdfbox::Pdmodel::Fdf::FDFIconFit::SCALE_OPTION_ONLY_WHEN_ICON_IS_SMALLER)
     parsed_icon_fit.scale_type.should eq(Pdfbox::Pdmodel::Fdf::FDFIconFit::SCALE_TYPE_ANAMORPHIC)
     parsed_icon_fit.should_scale_to_fit_annotation?.should be_true
@@ -233,7 +233,7 @@ describe Pdfbox::Pdmodel::Fdf::FDFDocument do
     serialized.should contain("/AA <<")
     serialized.should contain("/F <<")
 
-    parsed_field = parsed.catalog.fdf.fields.not_nil!.first
+    parsed_field = parsed.catalog.fdf.fields.as(Array).first
     parsed_field.action.should be_a(Pdfbox::Pdmodel::Interactive::Action::PDActionJavaScript)
     parsed_field.action.as(Pdfbox::Pdmodel::Interactive::Action::PDActionJavaScript).action.should eq("app.alert('primary')")
     parsed_field.additional_actions.not_nil!.f.should be_a(Pdfbox::Pdmodel::Interactive::Action::PDActionJavaScript)
@@ -277,7 +277,7 @@ describe Pdfbox::Pdmodel::Fdf::FDFDocument do
     serialized.should contain("/URI (https://example.com/form)")
     serialized.should contain("/IsMap true")
 
-    parsed_action = parsed.catalog.fdf.fields.not_nil!.first.action
+    parsed_action = parsed.catalog.fdf.fields.as(Array).first.action
     parsed_action.should be_a(Pdfbox::Pdmodel::Interactive::Action::PDActionURI)
     parsed_action.as(Pdfbox::Pdmodel::Interactive::Action::PDActionURI).uri.should eq("https://example.com/form")
     parsed_action.as(Pdfbox::Pdmodel::Interactive::Action::PDActionURI).track_mouse_position?.should be_true
@@ -337,7 +337,7 @@ describe Pdfbox::Pdmodel::Fdf::FDFDocument do
     serialized.should contain("/NewWindow false")
     serialized.should contain("/Win <<")
 
-    parsed_action = parsed.catalog.fdf.fields.not_nil!.first.action
+    parsed_action = parsed.catalog.fdf.fields.as(Array).first.action
     parsed_action.should be_a(Pdfbox::Pdmodel::Interactive::Action::PDActionLaunch)
     launch = parsed_action.as(Pdfbox::Pdmodel::Interactive::Action::PDActionLaunch)
     launch.file.not_nil!.file.should eq("launch-target.pdf")
@@ -430,10 +430,93 @@ describe Pdfbox::Pdmodel::Fdf::FDFDocument do
     from_factory.should be_a(Pdfbox::Pdmodel::Interactive::Action::PDActionSubmitForm)
     submit = from_factory.as(Pdfbox::Pdmodel::Interactive::Action::PDActionSubmitForm)
     submit.file.not_nil!.file.should eq("submit-endpoint")
-    submit.fields.not_nil!.size.should eq(2)
-    submit.fields.not_nil![0].as(Pdfbox::Cos::String).value.should eq("FieldOne")
-    submit.fields.not_nil![1].as(Pdfbox::Cos::String).value.should eq("FieldTwo")
+    submit.fields.as(Pdfbox::Cos::Array).size.should eq(2)
+    submit.fields.as(Pdfbox::Cos::Array)[0].as(Pdfbox::Cos::String).value.should eq("FieldOne")
+    submit.fields.as(Pdfbox::Cos::Array)[1].as(Pdfbox::Cos::String).value.should eq("FieldTwo")
     submit.flags.should eq(5)
+  end
+
+  it "routes reset-form actions through the lightweight action factory" do
+    action = Pdfbox::Pdmodel::Interactive::Action::PDActionResetForm.new
+    action.fields = Pdfbox::Cos::Array.new([Pdfbox::Cos::String.new("FieldOne"), Pdfbox::Cos::String.new("FieldTwo")])
+    action.flags = 9
+
+    from_factory = Pdfbox::Pdmodel::Interactive::Action::PDActionFactory.create_action(action.cos_object)
+
+    from_factory.should be_a(Pdfbox::Pdmodel::Interactive::Action::PDActionResetForm)
+    reset = from_factory.as(Pdfbox::Pdmodel::Interactive::Action::PDActionResetForm)
+    reset.fields.as(Pdfbox::Cos::Array).size.should eq(2)
+    reset.fields.as(Pdfbox::Cos::Array)[0].as(Pdfbox::Cos::String).value.should eq("FieldOne")
+    reset.fields.as(Pdfbox::Cos::Array)[1].as(Pdfbox::Cos::String).value.should eq("FieldTwo")
+    reset.flags.should eq(9)
+  end
+
+  it "routes movie actions through the lightweight action factory" do
+    action = Pdfbox::Pdmodel::Interactive::Action::PDActionMovie.new
+
+    from_factory = Pdfbox::Pdmodel::Interactive::Action::PDActionFactory.create_action(action.cos_object)
+
+    from_factory.should be_a(Pdfbox::Pdmodel::Interactive::Action::PDActionMovie)
+    movie = from_factory.as(Pdfbox::Pdmodel::Interactive::Action::PDActionMovie)
+    subtype = movie.cos_object[Pdfbox::Cos::Name.new("S")]
+    subtype.should_not be_nil
+    subtype.as(Pdfbox::Cos::Name).value.should eq("Movie")
+  end
+
+  it "routes sound actions through the lightweight action factory" do
+    stream = Pdfbox::Cos::Stream.new
+    output = stream.create_output_stream
+    output.write("beep".to_slice)
+    output.close
+
+    action = Pdfbox::Pdmodel::Interactive::Action::PDActionSound.new
+    action.sound = stream
+    action.volume = 0.25
+    action.synchronous = true
+    action.repeat = true
+    action.mix = false
+
+    from_factory = Pdfbox::Pdmodel::Interactive::Action::PDActionFactory.create_action(action.cos_object)
+
+    from_factory.should be_a(Pdfbox::Pdmodel::Interactive::Action::PDActionSound)
+    sound = from_factory.as(Pdfbox::Pdmodel::Interactive::Action::PDActionSound)
+    sound.sound.should be_a(Pdfbox::Cos::Stream)
+    sound.sound.as(Pdfbox::Cos::Stream).create_input_stream.gets_to_end.should eq("beep")
+    sound.volume.should eq(0.25)
+    sound.synchronous.should be_true
+    sound.repeat.should be_true
+    sound.mix.should be_false
+  end
+
+  it "validates and normalizes sound volume like Java" do
+    action = Pdfbox::Pdmodel::Interactive::Action::PDActionSound.new
+
+    expect_raises(ArgumentError, "volume outside of the range -1.0 to 1.0") do
+      action.volume = 1.5
+    end
+
+    action.cos_object.set_float("Volume", 3.0)
+    action.volume.should eq(1.0)
+  end
+
+  it "routes thread actions through the lightweight action factory" do
+    file_spec = Pdfbox::Pdmodel::Common::Filespecification::PDSimpleFileSpecification.new
+    file_spec.file = "thread-target.pdf"
+
+    action = Pdfbox::Pdmodel::Interactive::Action::PDActionThread.new
+    action.file = file_spec
+    action.d = Pdfbox::Cos::String.new("ArticleThread")
+    action.b = Pdfbox::Cos::Integer.new(2)
+
+    from_factory = Pdfbox::Pdmodel::Interactive::Action::PDActionFactory.create_action(action.cos_object)
+
+    from_factory.should be_a(Pdfbox::Pdmodel::Interactive::Action::PDActionThread)
+    thread = from_factory.as(Pdfbox::Pdmodel::Interactive::Action::PDActionThread)
+    thread.file.not_nil!.file.should eq("thread-target.pdf")
+    thread.d.should be_a(Pdfbox::Cos::String)
+    thread.d.as(Pdfbox::Cos::String).value.should eq("ArticleThread")
+    thread.b.should be_a(Pdfbox::Cos::Integer)
+    thread.b.as(Pdfbox::Cos::Integer).value.should eq(2_i64)
   end
 
   it "routes goto actions through the lightweight action factory" do
@@ -501,7 +584,7 @@ describe Pdfbox::Pdmodel::Fdf::FDFDocument do
     serialized.should contain("/D [")
     serialized.should contain("/XYZ")
 
-    parsed_action = parsed.catalog.fdf.fields.not_nil!.first.action
+    parsed_action = parsed.catalog.fdf.fields.as(Array).first.action
     parsed_action.should be_a(Pdfbox::Pdmodel::Interactive::Action::PDActionGoTo)
     parsed_destination = parsed_action.as(Pdfbox::Pdmodel::Interactive::Action::PDActionGoTo).destination
     parsed_destination.should be_a(Pdfbox::Pdmodel::Interactive::DocumentNavigation::Destination::PDPageXYZDestination)
@@ -509,6 +592,39 @@ describe Pdfbox::Pdmodel::Fdf::FDFDocument do
     xyz.left.should eq(12)
     xyz.top.should eq(34)
     xyz.zoom.should eq(1.5)
+  end
+
+  it "round-trips thread field actions through fdf serialization" do
+    document = Pdfbox::Pdmodel::Fdf::FDFDocument.new
+
+    file_spec = Pdfbox::Pdmodel::Common::Filespecification::PDSimpleFileSpecification.new
+    file_spec.file = "thread-destination.pdf"
+
+    action = Pdfbox::Pdmodel::Interactive::Action::PDActionThread.new
+    action.file = file_spec
+    action.d = Pdfbox::Cos::String.new("ThreadDest")
+    action.b = Pdfbox::Cos::Integer.new(4)
+
+    field = Pdfbox::Pdmodel::Fdf::FDFField.new("thread")
+    field.action = action
+    document.catalog.fdf.fields = [field]
+
+    serialized = document.to_fdf
+    parsed = Pdfbox::Pdmodel::Fdf::FDFDocument.from_fdf(serialized)
+
+    serialized.should contain("/S /Thread")
+    serialized.should contain("/F (thread-destination.pdf)")
+    serialized.should contain("/D (ThreadDest)")
+    serialized.should contain("/B 4")
+
+    parsed_action = parsed.catalog.fdf.fields.as(Array).first.action
+    parsed_action.should be_a(Pdfbox::Pdmodel::Interactive::Action::PDActionThread)
+    thread = parsed_action.as(Pdfbox::Pdmodel::Interactive::Action::PDActionThread)
+    thread.file.not_nil!.file.should eq("thread-destination.pdf")
+    thread.d.should be_a(Pdfbox::Cos::String)
+    thread.d.as(Pdfbox::Cos::String).value.should eq("ThreadDest")
+    thread.b.should be_a(Pdfbox::Cos::Integer)
+    thread.b.as(Pdfbox::Cos::Integer).value.should eq(4_i64)
   end
 
   it "creates fit destinations through the lightweight destination factory" do
@@ -565,7 +681,7 @@ describe Pdfbox::Pdmodel::Fdf::FDFDocument do
 
     serialized.should contain("/FitBH")
 
-    parsed_action = parsed.catalog.fdf.fields.not_nil!.first.action
+    parsed_action = parsed.catalog.fdf.fields.as(Array).first.action
     parsed_action.should be_a(Pdfbox::Pdmodel::Interactive::Action::PDActionGoTo)
     parsed_destination = parsed_action.as(Pdfbox::Pdmodel::Interactive::Action::PDActionGoTo).destination
     parsed_destination.should be_a(Pdfbox::Pdmodel::Interactive::DocumentNavigation::Destination::PDPageFitWidthDestination)
@@ -605,7 +721,7 @@ describe Pdfbox::Pdmodel::Fdf::FDFDocument do
     serialized.should contain("/D [5 /FitR 10 20 30 40]")
     serialized.should contain("/NewWindow false")
 
-    parsed_action = parsed.catalog.fdf.fields.not_nil!.first.action
+    parsed_action = parsed.catalog.fdf.fields.as(Array).first.action
     parsed_action.should be_a(Pdfbox::Pdmodel::Interactive::Action::PDActionRemoteGoTo)
     remote_goto = parsed_action.as(Pdfbox::Pdmodel::Interactive::Action::PDActionRemoteGoTo)
     remote_goto.file.not_nil!.file.should eq("remote-target.pdf")
@@ -640,7 +756,7 @@ describe Pdfbox::Pdmodel::Fdf::FDFDocument do
     serialized.should contain("/S /ImportData")
     serialized.should contain("/F (import-form.fdf)")
 
-    parsed_action = parsed.catalog.fdf.fields.not_nil!.first.action
+    parsed_action = parsed.catalog.fdf.fields.as(Array).first.action
     parsed_action.should be_a(Pdfbox::Pdmodel::Interactive::Action::PDActionImportData)
     parsed_action.as(Pdfbox::Pdmodel::Interactive::Action::PDActionImportData).file.not_nil!.file.should eq("import-form.fdf")
   end
@@ -667,7 +783,7 @@ describe Pdfbox::Pdmodel::Fdf::FDFDocument do
     serialized.should contain("/T [(FieldA) (FieldB)]")
     serialized.should contain("/H false")
 
-    parsed_action = parsed.catalog.fdf.fields.not_nil!.first.action
+    parsed_action = parsed.catalog.fdf.fields.as(Array).first.action
     parsed_action.should be_a(Pdfbox::Pdmodel::Interactive::Action::PDActionHide)
     hide = parsed_action.as(Pdfbox::Pdmodel::Interactive::Action::PDActionHide)
     hide.h.should be_false
@@ -725,7 +841,7 @@ describe Pdfbox::Pdmodel::Fdf::FDFDocument do
     serialized.should contain("/A 5")
     serialized.should contain("/NewWindow false")
 
-    parsed_action = parsed.catalog.fdf.fields.not_nil!.first.action
+    parsed_action = parsed.catalog.fdf.fields.as(Array).first.action
     parsed_action.should be_a(Pdfbox::Pdmodel::Interactive::Action::PDActionEmbeddedGoTo)
     embedded = parsed_action.as(Pdfbox::Pdmodel::Interactive::Action::PDActionEmbeddedGoTo)
     embedded.file.not_nil!.file.should eq("embedded-target.pdf")
@@ -738,12 +854,12 @@ describe Pdfbox::Pdmodel::Fdf::FDFDocument do
     fit_rect.right.should eq(30)
     fit_rect.top.should eq(40)
 
-    parsed_target = embedded.target_directory.not_nil!
+    parsed_target = embedded.target_directory.as(Pdfbox::Pdmodel::Interactive::Action::PDTargetDirectory)
     parsed_target.relationship.not_nil!.value.should eq("C")
     parsed_target.filename.should eq("child.pdf")
     parsed_target.page_number.should eq(7)
     parsed_target.annotation_index.should eq(5)
-    parsed_nested = parsed_target.target_directory.not_nil!
+    parsed_nested = parsed_target.target_directory.as(Pdfbox::Pdmodel::Interactive::Action::PDTargetDirectory)
     parsed_nested.relationship.not_nil!.value.should eq("P")
     parsed_nested.named_destination.not_nil!.named_destination.should eq("NestedDest")
     parsed_nested.annotation_name.should eq("AnnotName")
@@ -776,14 +892,99 @@ describe Pdfbox::Pdmodel::Fdf::FDFDocument do
     serialized.should contain("/Fields [(FieldOne) (FieldTwo)]")
     serialized.should contain("/Flags 17")
 
-    parsed_action = parsed.catalog.fdf.fields.not_nil!.first.action
+    parsed_action = parsed.catalog.fdf.fields.as(Array).first.action
     parsed_action.should be_a(Pdfbox::Pdmodel::Interactive::Action::PDActionSubmitForm)
     submit = parsed_action.as(Pdfbox::Pdmodel::Interactive::Action::PDActionSubmitForm)
     submit.file.not_nil!.file.should eq("https://example.com/submit")
     submit.flags.should eq(17)
-    submit.fields.not_nil!.size.should eq(2)
-    submit.fields.not_nil![0].as(Pdfbox::Cos::String).value.should eq("FieldOne")
-    submit.fields.not_nil![1].as(Pdfbox::Cos::String).value.should eq("FieldTwo")
+    submit.fields.as(Pdfbox::Cos::Array).size.should eq(2)
+    submit.fields.as(Pdfbox::Cos::Array)[0].as(Pdfbox::Cos::String).value.should eq("FieldOne")
+    submit.fields.as(Pdfbox::Cos::Array)[1].as(Pdfbox::Cos::String).value.should eq("FieldTwo")
+  end
+
+  it "round-trips reset-form field actions through fdf serialization" do
+    document = Pdfbox::Pdmodel::Fdf::FDFDocument.new
+
+    fields = Pdfbox::Cos::Array.new
+    fields.add(Pdfbox::Cos::String.new("FieldOne"))
+    fields.add(Pdfbox::Cos::String.new("FieldTwo"))
+
+    action = Pdfbox::Pdmodel::Interactive::Action::PDActionResetForm.new
+    action.fields = fields
+    action.flags = 33
+
+    field = Pdfbox::Pdmodel::Fdf::FDFField.new("resetForm")
+    field.action = action
+    document.catalog.fdf.fields = [field]
+
+    serialized = document.to_fdf
+    parsed = Pdfbox::Pdmodel::Fdf::FDFDocument.from_fdf(serialized)
+
+    serialized.should contain("/S /ResetForm")
+    serialized.should contain("/Fields [(FieldOne) (FieldTwo)]")
+    serialized.should contain("/Flags 33")
+
+    parsed_action = parsed.catalog.fdf.fields.as(Array).first.action
+    parsed_action.should be_a(Pdfbox::Pdmodel::Interactive::Action::PDActionResetForm)
+    reset = parsed_action.as(Pdfbox::Pdmodel::Interactive::Action::PDActionResetForm)
+    reset.flags.should eq(33)
+    reset.fields.as(Pdfbox::Cos::Array).size.should eq(2)
+    reset.fields.as(Pdfbox::Cos::Array)[0].as(Pdfbox::Cos::String).value.should eq("FieldOne")
+    reset.fields.as(Pdfbox::Cos::Array)[1].as(Pdfbox::Cos::String).value.should eq("FieldTwo")
+  end
+
+  it "round-trips movie field actions through fdf serialization" do
+    document = Pdfbox::Pdmodel::Fdf::FDFDocument.new
+
+    action = Pdfbox::Pdmodel::Interactive::Action::PDActionMovie.new
+
+    field = Pdfbox::Pdmodel::Fdf::FDFField.new("movie")
+    field.action = action
+    document.catalog.fdf.fields = [field]
+
+    serialized = document.to_fdf
+    parsed = Pdfbox::Pdmodel::Fdf::FDFDocument.from_fdf(serialized)
+
+    serialized.should contain("/S /Movie")
+
+    parsed_action = parsed.catalog.fdf.fields.as(Array).first.action
+    parsed_action.should be_a(Pdfbox::Pdmodel::Interactive::Action::PDActionMovie)
+    movie = parsed_action.as(Pdfbox::Pdmodel::Interactive::Action::PDActionMovie)
+    subtype = movie.cos_object[Pdfbox::Cos::Name.new("Subtype")]
+    if subtype
+      subtype.as(Pdfbox::Cos::Name).value.should eq("Movie")
+    end
+  end
+
+  it "round-trips sound field actions through fdf serialization" do
+    document = Pdfbox::Pdmodel::Fdf::FDFDocument.new
+
+    action = Pdfbox::Pdmodel::Interactive::Action::PDActionSound.new
+    action.volume = -0.5
+    action.synchronous = true
+    action.repeat = true
+    action.mix = false
+
+    field = Pdfbox::Pdmodel::Fdf::FDFField.new("sound")
+    field.action = action
+    document.catalog.fdf.fields = [field]
+
+    serialized = document.to_fdf
+    parsed = Pdfbox::Pdmodel::Fdf::FDFDocument.from_fdf(serialized)
+
+    serialized.should contain("/S /Sound")
+    serialized.should contain("/Volume -0.5")
+    serialized.should contain("/Synchronous true")
+    serialized.should contain("/Repeat true")
+    serialized.should contain("/Mix false")
+
+    parsed_action = parsed.catalog.fdf.fields.as(Array).first.action
+    parsed_action.should be_a(Pdfbox::Pdmodel::Interactive::Action::PDActionSound)
+    sound = parsed_action.as(Pdfbox::Pdmodel::Interactive::Action::PDActionSound)
+    sound.volume.should eq(-0.5)
+    sound.synchronous.should be_true
+    sound.repeat.should be_true
+    sound.mix.should be_false
   end
 
   it "round-trips field appearance dictionaries through fdf serialization" do
@@ -829,10 +1030,10 @@ describe Pdfbox::Pdmodel::Fdf::FDFDocument do
     serialized.should contain("/R <<")
     serialized.should contain("/D <<")
 
-    parsed_appearance = parsed.catalog.fdf.fields.not_nil!.first.appearance_dictionary.not_nil!
-    parsed_appearance.normal_appearance.not_nil!.sub_dictionary[Pdfbox::Cos::Name.new("default")].cos_object[Pdfbox::Cos::Name.new("State")].as(Pdfbox::Cos::String).value.should eq("normal")
-    parsed_appearance.rollover_appearance.not_nil!.sub_dictionary[Pdfbox::Cos::Name.new("hover")].cos_object[Pdfbox::Cos::Name.new("State")].as(Pdfbox::Cos::String).value.should eq("rollover")
-    parsed_appearance.down_appearance.not_nil!.sub_dictionary[Pdfbox::Cos::Name.new("pressed")].cos_object[Pdfbox::Cos::Name.new("State")].as(Pdfbox::Cos::String).value.should eq("down")
+    parsed_appearance = parsed.catalog.fdf.fields.as(Array).first.appearance_dictionary.as(Pdfbox::Pdmodel::Interactive::Annotation::PDAppearanceDictionary)
+    parsed_appearance.normal_appearance.as(Pdfbox::Pdmodel::Interactive::Annotation::PDAppearanceEntry).sub_dictionary[Pdfbox::Cos::Name.new("default")].cos_object[Pdfbox::Cos::Name.new("State")].as(Pdfbox::Cos::String).value.should eq("normal")
+    parsed_appearance.rollover_appearance.as(Pdfbox::Pdmodel::Interactive::Annotation::PDAppearanceEntry).sub_dictionary[Pdfbox::Cos::Name.new("hover")].cos_object[Pdfbox::Cos::Name.new("State")].as(Pdfbox::Cos::String).value.should eq("rollover")
+    parsed_appearance.down_appearance.as(Pdfbox::Pdmodel::Interactive::Annotation::PDAppearanceEntry).sub_dictionary[Pdfbox::Cos::Name.new("pressed")].cos_object[Pdfbox::Cos::Name.new("State")].as(Pdfbox::Cos::String).value.should eq("down")
   end
 
   it "falls back to normal appearance for rollover and down entries" do
@@ -847,7 +1048,7 @@ describe Pdfbox::Pdmodel::Fdf::FDFDocument do
     appearance_dictionary = Pdfbox::Pdmodel::Interactive::Annotation::PDAppearanceDictionary.new
     appearance_dictionary.normal_appearance = normal_entry
 
-    appearance_dictionary.rollover_appearance.not_nil!.cos_object.should eq(normal_entry.cos_object)
-    appearance_dictionary.down_appearance.not_nil!.cos_object.should eq(normal_entry.cos_object)
+    appearance_dictionary.rollover_appearance.as(Pdfbox::Pdmodel::Interactive::Annotation::PDAppearanceEntry).cos_object.should eq(normal_entry.cos_object)
+    appearance_dictionary.down_appearance.as(Pdfbox::Pdmodel::Interactive::Annotation::PDAppearanceEntry).cos_object.should eq(normal_entry.cos_object)
   end
 end

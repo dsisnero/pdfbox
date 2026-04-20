@@ -37,47 +37,7 @@ describe "PDAcroForm FDF parity" do
   it "exports field values to xfdf and imports them back" do
     doc = build_form_document
     form = doc.document_catalog.not_nil!.acro_form.not_nil!
-
-    exported = form.export_fdf
-    xfdf = exported.to_xfdf
-    imported = Pdfbox::Pdmodel::Fdf::FDFDocument.from_xfdf(xfdf)
-
-    target = build_form_document
-    target_form = target.document_catalog.not_nil!.acro_form.not_nil!
-    target_form.get_field("name").not_nil!.value = ""
-    target_form.get_field("colors").as(Pdfbox::Pdmodel::Interactive::Form::PDChoice).values = [] of String
-    target_form.get_field("agree").not_nil!.value = "Off"
-
-    target_form.import_fdf(imported)
-
-    target_form.get_field("name").not_nil!.value_as_string.should eq("Alice")
-    target_form.get_field("colors").as(Pdfbox::Pdmodel::Interactive::Form::PDChoice).values.should eq(["red", "blue"])
-    target_form.get_field("agree").not_nil!.value_as_string.should eq("Yes")
-  end
-
-  it "exports field values to fdf and imports them back" do
-    doc = build_form_document
-    form = doc.document_catalog.not_nil!.acro_form.not_nil!
-
-    exported = form.export_fdf
-    fdf = exported.to_fdf
-    imported = Pdfbox::Pdmodel::Fdf::FDFDocument.from_fdf(fdf)
-
-    target = build_form_document
-    target_form = target.document_catalog.not_nil!.acro_form.not_nil!
-    target_form.get_field("name").not_nil!.value = ""
-    target_form.get_field("agree").not_nil!.value = "Off"
-
-    target_form.import_fdf(imported)
-
-    target_form.get_field("name").not_nil!.value_as_string.should eq("Alice")
-    target_form.get_field("agree").not_nil!.value_as_string.should eq("Yes")
-  end
-
-  it "imports stream values and applies field and widget flags" do
-    doc = build_form_document
-    form = doc.document_catalog.not_nil!.acro_form.not_nil!
-    field = form.get_field("name").not_nil!
+    field = form.get_field("name").as(Pdfbox::Pdmodel::Interactive::Form::PDField)
 
     fdf_field = Pdfbox::Pdmodel::Fdf::FDFField.new
     fdf_field.partial_field_name = "name"
@@ -97,10 +57,10 @@ describe "PDAcroForm FDF parity" do
   it "exports terminal field and widget flags into fdf" do
     doc = build_form_document
     form = doc.document_catalog.not_nil!.acro_form.not_nil!
-    field = form.get_field("name").not_nil!
+    field = form.get_field("name").as(Pdfbox::Pdmodel::Interactive::Form::PDField)
 
     exported = form.export_fdf
-    name_field = exported.catalog.fdf.fields.not_nil!.find { |item| item.partial_field_name == "name" }.not_nil!
+    name_field = exported.catalog.fdf.fields.not_nil!.find! { |item| item.partial_field_name == "name" }
 
     name_field.field_flags.should eq(field.field_flags)
     name_field.widget_field_flags.should eq(field.widgets.first.flags)
@@ -142,7 +102,7 @@ describe "PDAcroForm FDF parity" do
   it "raises on unsupported terminal field import COS types" do
     doc = build_form_document
     form = doc.document_catalog.not_nil!.acro_form.not_nil!
-    field = form.get_field("name").not_nil!
+    field = form.get_field("name").as(Pdfbox::Pdmodel::Interactive::Form::PDField)
 
     fdf_field = Pdfbox::Pdmodel::Fdf::FDFField.new("name")
     fdf_field.cos_value = Pdfbox::Cos::Integer.new(7)

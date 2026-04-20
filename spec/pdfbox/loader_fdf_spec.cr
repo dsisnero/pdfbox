@@ -7,8 +7,8 @@ describe Pdfbox::Loader do
 
     document = Pdfbox::Loader.load_fdf(io)
 
-    document.catalog.fdf.fields.not_nil!.first.partial_field_name.should eq("name")
-    document.catalog.fdf.fields.not_nil!.first.value.should eq("Alice")
+    document.catalog.fdf.fields.as(Array).first.partial_field_name.should eq("name")
+    document.catalog.fdf.fields.as(Array).first.value.should eq("Alice")
   end
 
   it "loads xfdf from io" do
@@ -16,7 +16,7 @@ describe Pdfbox::Loader do
 
     document = Pdfbox::Loader.load_xfdf(io)
 
-    document.catalog.fdf.fields.not_nil!.first.partial_field_name.should eq("name")
-    document.catalog.fdf.fields.not_nil!.first.value.should eq("Alice")
+    document.catalog.fdf.fields.as(Array).first.partial_field_name.should eq("name")
+    document.catalog.fdf.fields.as(Array).first.value.should eq("Alice")
   end
 end
