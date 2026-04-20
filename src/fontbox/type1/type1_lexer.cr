@@ -35,7 +35,7 @@ module Fontbox::Type1
     # Checks if the kind of the next token equals the given one without consuming it
     def peek_kind(kind : Kind) : Bool
       token = @ahead_token
-      token && token.kind == kind
+      !token.nil? && token.kind == kind
     end
 
     private def char : Char

@@ -39,7 +39,7 @@ module Fontbox::CFF
     # @param font_name Name of the font.
     # @param glyph_name Name of the glyph.
     # @param sequence Type 1 char string sequence
-    def initialize(@font : Type1CharStringReader, @font_name : String, @glyph_name : String, sequence : Array(CharStringCommand | Int32 | Float64) = [] of CharStringCommand | Int32 | Float64)
+    def initialize(@font : Type1CharStringReader, @font_name : String, @glyph_name : String, sequence : Array(CharStringCommand | Int32 | Float64))
       @type1_sequence.concat(sequence)
       @current = Fontbox::Util::Point2D.new(0.0, 0.0)
     end

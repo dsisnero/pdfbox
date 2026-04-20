@@ -117,7 +117,7 @@ module Fontbox::TTF
       font
     end
 
-    def new_font(raf : TTFDataStream) : TrueTypeFont
+    protected def new_font(raf : TTFDataStream) : TrueTypeFont
       TrueTypeFont.new(raf)
     end
 
@@ -154,7 +154,7 @@ module Fontbox::TTF
       # TODO: Check for other required tables
     end
 
-    private def parse_table_headers(raf : TTFDataStream) : FontHeaders
+    def parse_table_headers(raf : TTFDataStream) : FontHeaders
       out_headers = FontHeaders.new
       font = create_font_with_tables(raf)
 
@@ -176,25 +176,18 @@ module Fontbox::TTF
         out_headers.os2_windows = os2_table.as(OS2WindowsMetricsTable)
       end
 
-      # Check for CFF table (OpenType PostScript)
+      # Check for CFF table (OpenType PostScript). In this Crystal port we use the
+      # presence of a CFF table as the OpenType/CFF signal for header scanning.
       has_cff = font.table(CFFTable::TAG) != nil
-      # TODO: Implement OpenTypeFont check
-      is_otf = false
-      is_otf_and_post_script = false
-      if is_otf
-        # TODO: Handle OpenType font
-        nil
-      elsif !is_otf && has_cff
-        out_headers.error = "True Type fonts using CFF outlines are not supported"
-        return out_headers
-      else
+      is_otf_and_post_script = has_cff
+      out_headers.open_type_post_script = is_otf_and_post_script
+      unless is_otf_and_post_script
         # non-OTF with possible gcid table
         gcid_table = font.table("gcid")
         if gcid_table && gcid_table.length >= FontHeaders::BYTES_GCID
           out_headers.non_otf_gcid142 = font.table_n_bytes(gcid_table, FontHeaders::BYTES_GCID)
         end
       end
-      out_headers.is_otf_and_post_script = is_otf_and_post_script
 
       # Check mandatory tables
       mandatory_tables = [
@@ -255,6 +248,8 @@ module Fontbox::TTF
         table = VerticalOriginTable.new
       when GlyphSubstitutionTable::TAG
         table = GlyphSubstitutionTable.new
+      when OTLTable::TAG
+        table = OTLTable.new
       when CFFTable::TAG
         table = CFFTable.new
       else

@@ -67,6 +67,10 @@ module Fontbox::TTF
       end
     end
 
+    def add_glyph_id(gid : Int32) : Nil
+      @glyph_ids.add(gid)
+    end
+
     # Returns a map of new GID to old GID.
     #
     # @return Hash mapping new glyph IDs to original glyph IDs.
@@ -80,6 +84,10 @@ module Fontbox::TTF
         result[new_gid] = old_gid
       end
       result
+    end
+
+    def unicode_to_gid : Hash(Int32, Int32)
+      @uni_to_gid
     end
 
     # Write subset font to stream.
@@ -299,7 +307,7 @@ module Fontbox::TTF
     end
 
     private def write_sint16(io : IO, value : Int32)
-      io.write_bytes(value.to_i16, IO::ByteFormat::BigEndian)
+      io.write_bytes((value & 0xFFFF).to_u16, IO::ByteFormat::BigEndian)
     end
 
     private def write_uint8(io : IO, value : UInt32)
@@ -500,6 +508,9 @@ module Fontbox::TTF
           return
         end
       end
+      if @uni_to_gid.keys.any? { |code_point| code_point > 0xFFFF }
+        return build_cmap_table_format12
+      end
 
       entries = @uni_to_gid.to_a.sort_by { |code_point, _| code_point }
       # map old GID to new GID
@@ -589,6 +600,56 @@ module Fontbox::TTF
       io.to_slice
     end
 
+    private def build_cmap_table_format12 : Bytes
+      entries = @uni_to_gid.to_a.sort_by(&.[0])
+      gid_map = @gid_map.as(Hash(Int32, Int32))
+      groups = [] of {Int32, Int32, Int32}
+
+      start_char = entries[0][0]
+      end_char = entries[0][0]
+      start_gid = gid_map[entries[0][1]]
+      previous_gid = start_gid
+
+      i = 1
+      while i < entries.size
+        char_code = entries[i][0]
+        gid = gid_map[entries[i][1]]
+        if char_code == end_char + 1 && gid == previous_gid + 1
+          end_char = char_code
+          previous_gid = gid
+        else
+          groups << {start_char, end_char, start_gid}
+          start_char = char_code
+          end_char = char_code
+          start_gid = gid
+          previous_gid = gid
+        end
+        i += 1
+      end
+      groups << {start_char, end_char, start_gid}
+
+      io = IO::Memory.new(64)
+      write_uint16(io, 0_u32)
+      write_uint16(io, 1_u32)
+      write_uint16(io, 3_u32)
+      write_uint16(io, 10_u32)
+      write_uint32(io, 12_u64)
+
+      length = 16 + groups.size * 12
+      write_uint16(io, 12_u32)
+      write_uint16(io, 0_u32)
+      write_uint32(io, length.to_u64)
+      write_uint32(io, 0_u64)
+      write_uint32(io, groups.size.to_u64)
+      groups.each do |group|
+        write_uint32(io, group[0].to_u64)
+        write_uint32(io, group[1].to_u64)
+        write_uint32(io, group[2].to_u64)
+      end
+
+      io.to_slice
+    end
+
     private def build_hmtx_table : Bytes
       hm = @ttf.horizontal_metrics.as(HorizontalMetricsTable)
       hhea = @ttf.horizontal_header.as(HorizontalHeaderTable)
@@ -606,14 +667,19 @@ module Fontbox::TTF
       # write hMetrics pairs
       sorted.each_with_index do |old_gid, new_gid|
         break if new_gid >= hmetrics
-        write_uint16(io, hm.advance_width(old_gid).to_u32)
-        write_sint16(io, hm.left_side_bearing(old_gid).to_i32)
+        if @invisible_glyph_ids.includes?(old_gid)
+          write_uint16(io, 0_u32)
+          write_sint16(io, 0)
+        else
+          write_uint16(io, hm.advance_width(old_gid).to_u32)
+          write_sint16(io, hm.left_side_bearing(old_gid).to_i32)
+        end
       end
 
       # write leftSideBearings for remaining glyphs
       sorted.each_with_index do |old_gid, new_gid|
         next if new_gid < hmetrics
-        write_sint16(io, hm.left_side_bearing(old_gid).to_i32)
+        write_sint16(io, @invisible_glyph_ids.includes?(old_gid) ? 0 : hm.left_side_bearing(old_gid).to_i32)
       end
       io.to_slice
     end

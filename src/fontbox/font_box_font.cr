@@ -11,7 +11,7 @@ module Fontbox
     abstract def font_matrix : Array(Float32)
 
     # Returns the path for the character with the given name
-    abstract def path(name : String) : Path
+    abstract def path(name : String) : Util::Path
 
     # Returns the advance width for the character with the given name
     abstract def width(name : String) : Float32

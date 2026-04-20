@@ -25,6 +25,7 @@ module Fontbox::TTF
     @tables = Hash(String, TTFTable).new
     @data : TTFDataStream
     @post_script_names : Hash(String, Int32)?
+    @from_collection : Bool = false
 
     @enabled_gsub_features = [] of String
 
@@ -62,6 +63,18 @@ module Fontbox::TTF
     # Gets the original data size.
     def original_data_size : Int64
       @data.original_data_size
+    end
+
+    def original_data : IO
+      @data.original_data
+    end
+
+    def from_collection? : Bool
+      @from_collection
+    end
+
+    def from_collection=(value : Bool) : Bool
+      @from_collection = value
     end
 
     # Gets a table by tag.
@@ -244,8 +257,10 @@ module Fontbox::TTF
 
     # Gets the font name.
     def name : String
-      # TODO: Implement name retrieval from naming table
-      ""
+      naming_table = naming
+      return "" unless naming_table
+
+      naming_table.postscript_name || naming_table.font_family || ""
     end
 
     # Gets the cmap table.

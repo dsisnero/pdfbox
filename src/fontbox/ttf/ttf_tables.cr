@@ -3888,6 +3888,10 @@ module Fontbox::TTF
     end
   end
 
+  class OTLTable < TTFTable
+    TAG = "JSTF"
+  end
+
   module Model
     abstract class GsubData
       abstract def language : Language

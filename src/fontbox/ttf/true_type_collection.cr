@@ -58,7 +58,7 @@ module Fontbox::TTF
       if @num_fonts <= 0 || @num_fonts > 1024
         raise IO::Error.new("Invalid number of fonts #{@num_fonts}")
       end
-      @font_offsets = Array(Int64).new(@num_fonts)
+      @font_offsets = Array(Int64).new(@num_fonts, 0_i64)
       @num_fonts.times do |i|
         @font_offsets[i] = stream.read_unsigned_int.to_i64
       end
@@ -90,7 +90,7 @@ module Fontbox::TTF
     def process_all_fonts(true_type_font_processor : TrueTypeFontProcessor) : Nil
       @num_fonts.times do |i|
         font = font_at_index(i)
-        true_type_font_processor.process(font)
+        true_type_font_processor.call(font)
       end
     end
 
@@ -106,23 +106,24 @@ module Fontbox::TTF
         ttc.@num_fonts.times do |i|
           parser = ttc.create_font_parser_at_index_and_seek(i)
           headers = parser.parse_table_headers(TTCDataStream.new(ttc.@stream))
-          true_type_font_processor.process(headers)
+          true_type_font_processor.call(headers)
         end
       ensure
         ttc.close
       end
     end
 
-    private def font_at_index(idx : Int32) : TrueTypeFont
+    def font_at_index(idx : Int32) : TrueTypeFont
       parser = create_font_parser_at_index_and_seek(idx)
-      parser.parse(TTCDataStream.new(@stream))
+      font = parser.parse(TTCDataStream.new(@stream))
+      font.from_collection = true
+      font
     end
 
-    private def create_font_parser_at_index_and_seek(idx : Int32) : TTFParser
+    def create_font_parser_at_index_and_seek(idx : Int32) : TTFParser
       @stream.seek(@font_offsets[idx])
       parser = if @stream.read_tag == "OTTO"
-                 # TODO: Implement OTFParser
-                 raise "OTFParser not implemented"
+                 OTFParser.new(false)
                else
                  TTFParser.new(false)
                end
@@ -138,7 +139,7 @@ module Fontbox::TTF
     def font_by_name(name : String) : TrueTypeFont?
       @num_fonts.times do |i|
         font = font_at_index(i)
-        if font.get_name == name
+        if font.name == name
           return font
         end
       end

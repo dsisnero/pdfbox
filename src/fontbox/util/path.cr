@@ -147,6 +147,21 @@ module Fontbox
         @commands.empty?
       end
 
+      def each_command(& : Symbol, Array(Float64) ->) : Nil
+        @commands.each do |cmd|
+          case cmd
+          when MoveTo
+            yield :move_to, [cmd.x, cmd.y]
+          when LineTo
+            yield :line_to, [cmd.x, cmd.y]
+          when CurveTo
+            yield :curve_to, [cmd.x1, cmd.y1, cmd.x2, cmd.y2, cmd.x3, cmd.y3]
+          when ClosePath
+            yield :close_path, [] of Float64
+          end
+        end
+      end
+
       private def compute_bounds : Nil
         min_x = Float64::MAX
         min_y = Float64::MAX
