@@ -204,17 +204,17 @@ describe Pdfbox::Text::PDFTextStripper do
 
     doc = Pdfbox::Pdmodel::Document.load(pdf_path)
     begin
-      outline = doc.document_catalog.not_nil!.document_outline.not_nil!
-      oi0 = outline.first_child.not_nil!
-      oi2 = oi0.next_sibling.not_nil!
-      oi3 = oi2.next_sibling.not_nil!
-      oi4 = oi3.next_sibling.not_nil!
+      outline = doc.document_catalog.as(Pdfbox::Cos::Dictionary).document_outline.as(Pdfbox::Cos::Dictionary)
+      oi0 = outline.first_child.as(Pdfbox::Cos::Dictionary)
+      oi2 = oi0.next_sibling.as(Pdfbox::Cos::Dictionary)
+      oi3 = oi2.next_sibling.as(Pdfbox::Cos::Dictionary)
+      oi4 = oi3.next_sibling.as(Pdfbox::Cos::Dictionary)
 
       pages = doc.pages
-      pages.index { |page| page.cos_object == oi0.find_destination_page(doc).not_nil!.cos_object }.should eq(0)
-      pages.index { |page| page.cos_object == oi2.find_destination_page(doc).not_nil!.cos_object }.should eq(2)
-      pages.index { |page| page.cos_object == oi3.find_destination_page(doc).not_nil!.cos_object }.should eq(3)
-      pages.index { |page| page.cos_object == oi4.find_destination_page(doc).not_nil!.cos_object }.should eq(4)
+      pages.index { |page| page.cos_object == oi0.find_destination_page(doc).as(Pdfbox::Pdmodel::PDPage).cos_object }.should eq(0)
+      pages.index { |page| page.cos_object == oi2.find_destination_page(doc).as(Pdfbox::Pdmodel::PDPage).cos_object }.should eq(2)
+      pages.index { |page| page.cos_object == oi3.find_destination_page(doc).as(Pdfbox::Pdmodel::PDPage).cos_object }.should eq(3)
+      pages.index { |page| page.cos_object == oi4.find_destination_page(doc).as(Pdfbox::Pdmodel::PDPage).cos_object }.should eq(4)
 
       stripper = Pdfbox::Text::PDFTextStripper.new
 

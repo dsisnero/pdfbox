@@ -15,7 +15,7 @@ describe Pdfbox::Text::PDFTextStripperByArea do
 
       page0 = doc.pages[0]
       page0.should_not be_nil
-      stripper.extract_regions(page0.not_nil!)
+      stripper.extract_regions(page0)
       stripper.get_text_for_region(region_name).strip.should eq(
         "In the following tables you will find the 91 E-PRTR pollutants and their thresholds broken down by the 7 groups used in all the searches of the E-PRTR website."
       )
@@ -25,7 +25,7 @@ describe Pdfbox::Text::PDFTextStripperByArea do
 
       page2 = doc.pages[2]
       page2.should_not be_nil
-      stripper.extract_regions(page2.not_nil!)
+      stripper.extract_regions(page2)
       stripper.get_text_for_region(region_name).strip.should eq("Inorganic substances")
       stripper.regions.size.should eq(1)
     ensure
