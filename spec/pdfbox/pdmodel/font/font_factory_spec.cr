@@ -155,17 +155,15 @@ describe Pdfbox::Pdmodel::Font::PDFontFactory do
   it "routes Type1 with FontFile3 to PDType1CFont path" do
     dict = FontFactorySpecHelpers.build_type1_like_dict("Type1", with_font_file3: true)
 
-    # PDType1CFont is not yet implemented, so this falls back to PDType1Font
     font = Pdfbox::Pdmodel::Font::PDFontFactory.create_font(dict)
-    font.should be_a(Pdfbox::Pdmodel::Font::PDType1Font)
+    font.should be_a(Pdfbox::Pdmodel::Font::PDType1CFont)
   end
 
   it "routes MMType1 with FontFile3 to PDType1CFont path" do
     dict = FontFactorySpecHelpers.build_type1_like_dict("MMType1", with_font_file3: true)
 
-    # PDType1CFont is not yet implemented, so this falls back to PDType1Font
     font = Pdfbox::Pdmodel::Font::PDFontFactory.create_font(dict)
-    font.should be_a(Pdfbox::Pdmodel::Font::PDType1Font)
+    font.should be_a(Pdfbox::Pdmodel::Font::PDType1CFont)
   end
 
   it "routes MMType1 without FontFile3 to PDMMType1Font path" do

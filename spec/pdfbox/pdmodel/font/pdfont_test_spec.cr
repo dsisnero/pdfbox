@@ -89,6 +89,9 @@ class MockFont < Pdfbox::Pdmodel::Font::PDFont
 end
 
 describe "PDFontTest" do
+  # Keep this file aligned with vendor/pdfbox/pdfbox/src/test/java/org/apache/pdfbox/pdmodel/font/PDFontTest.java.
+  # If a spec here is not a direct Java test port, it should stay clearly narrower or be marked as
+  # supplemental source-derived coverage.
   before_all do
     # Create output directory if it doesn't exist
     Dir.mkdir_p("target/test-output")
@@ -111,8 +114,14 @@ describe "PDFontTest" do
 
   # Test of the error reported in PDFBOX-988
   describe "testPDFBox988" do
-    pending "requires PDF rendering and PDType1Font" do
-      # TODO: Implement when PDType1Font and PDF rendering are available
+    it "renders the upstream crash fixture without raising" do
+      pdf_path = "vendor/pdfbox/pdfbox/src/test/resources/org/apache/pdfbox/pdmodel/font/F001u_3_7j.pdf"
+      doc = Pdfbox::Pdmodel::Document.load(pdf_path)
+      begin
+        Pdfbox::Rendering::PDFRenderer.new(doc).render_image(0)
+      ensure
+        doc.close
+      end
     end
   end
 
@@ -138,74 +147,359 @@ describe "PDFontTest" do
   end
 
   describe "testPDFBox3747" do
-    pending "requires font embedding and TrueType collection handling" do
-      # TODO: Implement when TrueType collection support is available
+    it "keeps text extraction stable after Type0 embedding" do
+      font_path = "vendor/pdfbox/pdfbox/src/main/resources/org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf"
+      baos = IO::Memory.new
+      font_doc = Pdfbox::Pdmodel::PDDocument.new(Bytes.new(0))
+
+      File.open(font_path, "r") do |file|
+        font = Pdfbox::Pdmodel::Font::PDType0Font.load(font_doc, file, false)
+        doc = Pdfbox::Pdmodel::Document.new
+        begin
+          page = Pdfbox::Pdmodel::Page.new
+          doc.add_page(page)
+          cs = Pdfbox::Pdmodel::PDPageContentStream.new(doc, page)
+          begin
+            cs.begin_text
+            cs.new_line_at_offset(10, 700)
+            cs.set_font(font, 10)
+            cs.show_text("PDFBOX-3747")
+            cs.end_text
+          ensure
+            cs.close
+          end
+          doc.save(baos)
+        ensure
+          doc.close
+        end
+      end
+
+      baos.rewind
+      loaded = Pdfbox::Pdmodel::Document.load(baos)
+      begin
+        Pdfbox::Text::PDFTextStripper.new.get_text(loaded).strip.should eq("PDFBOX-3747")
+      ensure
+        loaded.close
+      end
     end
   end
 
   describe "testPDFBox3826" do
-    pending "requires font file detection and embedding" do
-      # TODO: Implement when font file detection is available
+    it "reuses parsed TTFs across subset and full-embed paths" do
+      font_path = "vendor/pdfbox/pdfbox/target/classes/org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf"
+      font_file_size = File.size(font_path)
+
+      parser = Fontbox::TTF::TTFParser.new
+      ttf = parser.parse(Pdfbox::IO::RandomAccessReadBufferedFile.new(font_path))
+      baos = IO::Memory.new
+      font_doc = Pdfbox::Pdmodel::PDDocument.new(Bytes.new(0))
+
+      begin
+        doc = Pdfbox::Pdmodel::Document.new
+        begin
+          page = Pdfbox::Pdmodel::Page.new
+          doc.add_page(page)
+          cs = Pdfbox::Pdmodel::PDPageContentStream.new(doc, page)
+          begin
+            font = Pdfbox::Pdmodel::Font::PDType0Font.load(font_doc, ttf, true)
+            cs.begin_text
+            cs.new_line_at_offset(10, 700)
+            cs.set_font(font, 10)
+            cs.show_text("testMultipleFontFileReuse1")
+            cs.end_text
+
+            font = Pdfbox::Pdmodel::Font::PDType0Font.load(font_doc, ttf, false)
+            cs.begin_text
+            cs.new_line_at_offset(10, 650)
+            cs.set_font(font, 10)
+            cs.show_text("testMultipleFontFileReuse2")
+            cs.end_text
+
+            font = Pdfbox::Pdmodel::Font::PDTrueTypeFont.load(
+              font_doc,
+              ttf,
+              Pdfbox::Pdmodel::Font::Encoding::WinAnsiEncoding::INSTANCE
+            )
+            cs.begin_text
+            cs.new_line_at_offset(10, 600)
+            cs.set_font(font, 10)
+            cs.show_text("testMultipleFontFileReuse3")
+            cs.end_text
+          ensure
+            cs.close
+          end
+
+          doc.save(baos)
+        ensure
+          doc.close
+        end
+      ensure
+        ttf.close
+      end
+
+      baos.rewind
+      loaded = Pdfbox::Pdmodel::Document.load(baos)
+      begin
+        page = loaded.get_page(0)
+        resources = page.resources.not_nil!
+
+        font_f1 = resources.font(Pdfbox::Cos::Name.new("F1")).as(Pdfbox::Pdmodel::Font::PDType0Font)
+        font_f2 = resources.font(Pdfbox::Cos::Name.new("F2")).as(Pdfbox::Pdmodel::Font::PDType0Font)
+        font_f3 = resources.font(Pdfbox::Cos::Name.new("F3")).as(Pdfbox::Pdmodel::Font::PDTrueTypeFont)
+
+        font_f1.name.includes?('+').should be_true
+        font_f1.font_descriptor.not_nil!.font_file2.not_nil!.to_byte_array.size.should be < font_file_size
+
+        font_f2.name.includes?('+').should be_false
+        font_f2.font_descriptor.not_nil!.font_file2.not_nil!.to_byte_array.size.should eq(font_file_size)
+
+        font_f3.name.includes?('+').should be_false
+        font_f3.font_descriptor.not_nil!.font_file2.not_nil!.to_byte_array.size.should eq(font_file_size)
+
+        Pdfbox::Rendering::PDFRenderer.new(loaded).render_image(0)
+
+        stripper = Pdfbox::Text::PDFTextStripper.new
+        stripper.line_separator = "\n"
+        stripper.get_text(loaded).strip.should eq(
+          "testMultipleFontFileReuse1\ntestMultipleFontFileReuse2\ntestMultipleFontFileReuse3"
+        )
+      ensure
+        loaded.close
+      end
     end
   end
 
   describe "testPDFBOX4115" do
-    pending "requires TrueType font embedding and subsetting" do
-      # TODO: Implement when TrueType font embedding is available
+    it "creates an embedded Type1 PDF with umlaut glyphs and extracts them correctly" do
+      font_path = "vendor/pdfbox/pdfbox/target/fonts/n019003l.pfb"
+      output_path = File.expand_path("../../../../temp/FontType1.pdf", __DIR__)
+      text = "äöüÄÖÜ"
+
+      doc = Pdfbox::Pdmodel::Document.new
+      begin
+        page = Pdfbox::Pdmodel::Page.new
+        doc.add_page(page)
+
+        font_doc = Pdfbox::Pdmodel::PDDocument.new(Bytes.new(0))
+        File.open(font_path, "r") do |stream|
+          font = Pdfbox::Pdmodel::Font::PDType1Font.new(
+            font_doc,
+            stream,
+            Pdfbox::Pdmodel::Font::Encoding::WinAnsiEncoding::INSTANCE
+          )
+
+          cs = Pdfbox::Pdmodel::PDPageContentStream.new(doc, page)
+          begin
+            cs.begin_text
+            cs.set_font(font, 10)
+            cs.new_line_at_offset(10, 700)
+            cs.show_text(text)
+            cs.end_text
+          ensure
+            cs.close
+          end
+        end
+
+        File.open(output_path, "w") { |file| doc.save(file) }
+      ensure
+        doc.close
+      end
+
+      loaded = Pdfbox::Pdmodel::Document.load(output_path)
+      begin
+        font = loaded.get_page(0).resources.not_nil!.font(Pdfbox::Cos::Name.new("F1")).as(Pdfbox::Pdmodel::Font::PDType1Font)
+        font.encoding.should eq(Pdfbox::Pdmodel::Font::Encoding::WinAnsiEncoding::INSTANCE)
+
+        text.each_char do |char|
+          name = font.encoding.get_name(char.ord)
+          name[1..].should eq("dieresis")
+          font.get_path(name).empty?.should be_false
+        end
+
+        Pdfbox::Text::PDFTextStripper.new.get_text(loaded).strip.should eq(text)
+      ensure
+        loaded.close
+      end
     end
   end
 
   describe "testPDFox4318" do
-    pending "requires TrueType Collection (TTC) font handling" do
-      # TODO: Implement when TTC font support is available
+    it "keeps the PDType1Font encode cache keyed correctly" do
+      helvetica_bold = Pdfbox::Pdmodel::Font::PDType1Font.new(
+        Pdfbox::Pdmodel::Font::Standard14Fonts::FontName::HELVETICA_BOLD
+      )
+
+      expect_raises(ArgumentError) do
+        helvetica_bold.encode("\u0080")
+      end
+
+      helvetica_bold.encode("€")
+
+      expect_raises(ArgumentError) do
+        helvetica_bold.encode("\u0080")
+      end
     end
   end
 
   describe "testFullEmbeddingTTC" do
-    pending "requires TrueType Collection (TTC) full embedding" do
-      # TODO: Implement when TTC embedding is available
+    it "rejects full embedding for TrueType collection fonts" do
+      ttf_path = "vendor/pdfbox/fontbox/target/fonts/DejaVuSansMono.ttf"
+      pending("TTF fixture not found: #{ttf_path}") unless File.exists?(ttf_path)
+
+      temp_dir = File.expand_path("../../../../temp/pdfont", __DIR__)
+      Dir.mkdir_p(temp_dir)
+      ttc_path = File.join(temp_dir, "single-font.ttc")
+
+      ttf_bytes = File.open(ttf_path) do |file|
+        bytes = Bytes.new(file.size)
+        file.read_fully(bytes)
+        bytes
+      end
+
+      ttc_font_offset = 16
+      num_tables = ((ttf_bytes[4].to_i << 8) | ttf_bytes[5].to_i)
+      num_tables.times do |index|
+        table_offset_index = 12 + (index * 16) + 8
+        table_offset = (ttf_bytes[table_offset_index].to_u32 << 24) |
+                       (ttf_bytes[table_offset_index + 1].to_u32 << 16) |
+                       (ttf_bytes[table_offset_index + 2].to_u32 << 8) |
+                       ttf_bytes[table_offset_index + 3].to_u32
+        adjusted_offset = table_offset + ttc_font_offset
+        ttf_bytes[table_offset_index] = ((adjusted_offset >> 24) & 0xFF).to_u8
+        ttf_bytes[table_offset_index + 1] = ((adjusted_offset >> 16) & 0xFF).to_u8
+        ttf_bytes[table_offset_index + 2] = ((adjusted_offset >> 8) & 0xFF).to_u8
+        ttf_bytes[table_offset_index + 3] = (adjusted_offset & 0xFF).to_u8
+      end
+
+      File.open(ttc_path, "w") do |file|
+        file.write(Bytes['t'.ord.to_u8, 't'.ord.to_u8, 'c'.ord.to_u8, 'f'.ord.to_u8])
+        file.write(Bytes[0x00_u8, 0x01_u8, 0x00_u8, 0x00_u8])
+        file.write(Bytes[0x00_u8, 0x00_u8, 0x00_u8, 0x01_u8])
+        file.write(Bytes[0x00_u8, 0x00_u8, 0x00_u8, 0x10_u8])
+        file.write(ttf_bytes)
+      end
+
+      ttf = File.open(ttc_path) do |file|
+        collection = Fontbox::TTF::TrueTypeCollection.new(file)
+        begin
+          font_name = [] of String
+          collection.process_all_fonts(->(font : Fontbox::TTF::TrueTypeFont) do
+            font_name << font.name
+          end)
+          collection.font_by_name(font_name.first).as(Fontbox::TTF::TrueTypeFont)
+        ensure
+          collection.close
+        end
+      end
+
+      doc = Pdfbox::Pdmodel::PDDocument.new(Bytes.new(0))
+      expect_raises(IO::Error, "Full embedding of TrueType font collections not supported") do
+        Pdfbox::Pdmodel::Font::PDType0Font.load(doc, ttf, false)
+      end
     end
   end
 
   describe "testPDFox5048" do
-    pending "requires font file handling and URI resolution" do
-      # TODO: Implement when font file URI handling is available
+    it "treats broken Type1C font data as damaged and zero-width" do
+      font_descriptor = Pdfbox::Cos::Dictionary.new
+      broken_stream = Pdfbox::Cos::Stream.new(data: Bytes[1_u8, 0_u8, 4_u8, 1_u8, 0_u8, 0_u8])
+      font_descriptor[Pdfbox::Cos::Name::FONT_FILE3] = broken_stream
+
+      font_dict = Pdfbox::Cos::Dictionary.new
+      font_dict[Pdfbox::Cos::Name::TYPE] = Pdfbox::Cos::Name::FONT
+      font_dict[Pdfbox::Cos::Name::SUBTYPE] = Pdfbox::Cos::Name.new("Type1")
+      font_dict[Pdfbox::Cos::Name::BASE_FONT] = Pdfbox::Cos::Name.new("BrokenType1C")
+      font_dict[Pdfbox::Cos::Name::FONT_DESC] = font_descriptor
+
+      font = Pdfbox::Pdmodel::Font::PDFontFactory.create_font(font_dict).as(Pdfbox::Pdmodel::Font::PDType1CFont)
+      font.damaged?.should be_true
+      font.height(0).should eq(0.0_f32)
+      font.get_string_width("Pa").should eq(0.0_f32)
     end
   end
 
   describe "testDeleteFont" do
-    pending "requires font deletion from document resources" do
-      # TODO: Implement when document font management is available
+    it "keeps text extractable after the source font file is deleted" do
+      source_font = "vendor/pdfbox/pdfbox/src/main/resources/org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf"
+      temp_font = File.expand_path("../../../../temp/LiberationSans-Regular.ttf", __DIR__)
+      temp_pdf = File.expand_path("../../../../temp/testDeleteFont.pdf", __DIR__)
+      text = "Test PDFBOX-4823"
+
+      File.write(temp_font, File.read(source_font))
+
+      font_doc = Pdfbox::Pdmodel::PDDocument.new(Bytes.new(0))
+      doc = Pdfbox::Pdmodel::Document.new
+      begin
+        page = Pdfbox::Pdmodel::Page.new
+        doc.add_page(page)
+        font = File.open(temp_font, "r") do |file|
+          Pdfbox::Pdmodel::Font::PDType0Font.load(font_doc, file)
+        end
+        cs = Pdfbox::Pdmodel::PDPageContentStream.new(doc, page)
+        begin
+          cs.begin_text
+          cs.set_font(font, 50)
+          cs.new_line_at_offset(50, 700)
+          cs.show_text(text)
+          cs.end_text
+        ensure
+          cs.close
+        end
+        File.open(temp_pdf, "w") { |file| doc.save(file) }
+      ensure
+        doc.close
+      end
+
+      File.delete(temp_font)
+
+      loaded = Pdfbox::Pdmodel::Document.load(temp_pdf)
+      begin
+        Pdfbox::Text::PDFTextStripper.new.get_text(loaded).strip.should eq(text)
+      ensure
+        loaded.close
+      end
+
+      File.delete(temp_pdf)
     end
   end
 
   describe "testSoftHyphen" do
     it "handles soft hyphen character in Standard 14 fonts" do
-      # Test with Helvetica (Standard 14 font)
       font = Pdfbox::Pdmodel::Font::PDType1Font.new(Pdfbox::Pdmodel::Font::Standard14Fonts::FontName::HELVETICA)
 
-      # Get width of regular hyphen using get_string_width
       hyphen_width = font.get_string_width("-")
-
-      # Get width of soft hyphen (U+00AD) using get_string_width
       soft_hyphen_width = font.get_string_width("\u00AD")
+      hyphen_width.should eq(soft_hyphen_width)
+    end
+  end
 
-      # Hyphen should have positive width
-      hyphen_width.should be > 0.0
+  describe "font mapper parity" do
+    it "keeps a shared singleton mapper" do
+      mapper = Pdfbox::Pdmodel::Font::FontMapperImpl.new
+      Pdfbox::Pdmodel::Font::FontMappers.set(mapper)
+      Pdfbox::Pdmodel::Font::FontMappers.instance.should be(mapper)
+    end
 
-      # Soft hyphen might have 0 width (it's an invisible character)
-      # or might have same width as hyphen
-      # Both are acceptable for now
-      soft_hyphen_width.should be >= 0.0
+    it "maps missing TrueType requests through Java-style descriptor fallback" do
+      descriptor = Pdfbox::Pdmodel::Font::PDFontDescriptor.new(Pdfbox::Cos::Dictionary.new)
+      descriptor.fixed_pitch = true
+      descriptor.italic = true
+      descriptor.force_bold = true
+      descriptor.font_name = "MissingMono-BoldItalic"
 
-      # Also test with width method for individual characters
-      # Hyphen is ASCII 45
-      hyphen_code_width = font.width(45)
-      hyphen_code_width.should be_close(hyphen_width, 0.001)
+      mapping = Pdfbox::Pdmodel::Font::FontMappers.instance.get_true_type_font("DefinitelyMissingFont", descriptor)
+      mapping.fallback?.should be_true
+      mapping.font.should be_a(Fontbox::TTF::TrueTypeFont)
+    end
 
-      # Soft hyphen is code 173 in WinAnsiEncoding
-      soft_hyphen_code_width = font.width(173)
-      soft_hyphen_code_width.should be_close(soft_hyphen_width, 0.001)
+    it "backs Standard14 Type1 fonts with a real mapped FontBox substitute" do
+      font = Pdfbox::Pdmodel::Font::PDType1Font.new(Pdfbox::Pdmodel::Font::Standard14Fonts::FontName::HELVETICA)
+      mapped = font.font_box_font
+
+      mapped.should be_a(Fontbox::FontBoxFont)
+      mapped.not_nil!.name.should_not be_empty
+      mapped.not_nil!.has_glyph?("question").should be_true
+      mapped.not_nil!.path("question").empty?.should be_false
     end
   end
 
@@ -291,6 +585,17 @@ describe "PDFontTest" do
       # ensure width for .notdef (code 0?) returns default width (should be 250 per spec)
       # Actually .notdef is not encoded; we can skip.
     end
+
+    it "returns non-empty glyph paths for standard14 fonts" do
+      helvetica = Pdfbox::Pdmodel::Font::PDType1Font.new(Pdfbox::Pdmodel::Font::Standard14Fonts::FontName::HELVETICA)
+      symbol = Pdfbox::Pdmodel::Font::PDType1Font.new(Pdfbox::Pdmodel::Font::Standard14Fonts::FontName::SYMBOL)
+      zapf = Pdfbox::Pdmodel::Font::PDType1Font.new(Pdfbox::Pdmodel::Font::Standard14Fonts::FontName::ZAPF_DINGBATS)
+
+      helvetica.get_path("question").empty?.should be_false
+      symbol.get_path("circleplus").empty?.should be_false
+      zapf.get_path("a35").empty?.should be_false
+      helvetica.get_path(".notdef").empty?.should be_true
+    end
   end
 
   describe "testStandard14WidthsBadInput" do
@@ -370,14 +675,87 @@ describe "PDFontTest" do
   end
 
   describe "testEmbeddedFont" do
-    pending "requires embedded font handling" do
-      # TODO: Implement when embedded font support is available
+    it "supplemental: round-trips an embedded Type0 font" do
+      font_path = "vendor/pdfbox/pdfbox/src/main/resources/org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf"
+      font_doc = Pdfbox::Pdmodel::PDDocument.new(Bytes.new(0))
+      text = "Embedded Type0"
+      io = IO::Memory.new
+
+      File.open(font_path, "r") do |file|
+        font = Pdfbox::Pdmodel::Font::PDType0Font.load(font_doc, file, false)
+        doc = Pdfbox::Pdmodel::Document.new
+        begin
+          page = Pdfbox::Pdmodel::Page.new
+          doc.add_page(page)
+          cs = Pdfbox::Pdmodel::PDPageContentStream.new(doc, page)
+          begin
+            cs.begin_text
+            cs.new_line_at_offset(10, 700)
+            cs.set_font(font, 12)
+            cs.show_text(text)
+            cs.end_text
+          ensure
+            cs.close
+          end
+          doc.save(io)
+        ensure
+          doc.close
+        end
+      end
+
+      io.rewind
+      loaded = Pdfbox::Pdmodel::Document.load(io)
+      begin
+        font = loaded.get_page(0).resources.not_nil!.font(Pdfbox::Cos::Name.new("F1")).as(Pdfbox::Pdmodel::Font::PDType0Font)
+        font.font_descriptor.not_nil!.font_file2.should_not be_nil
+        Pdfbox::Text::PDFTextStripper.new.get_text(loaded).strip.should eq(text)
+      ensure
+        loaded.close
+      end
     end
   end
 
   describe "testEmbeddedFont2" do
-    pending "requires embedded font handling" do
-      # TODO: Implement when embedded font support is available
+    it "supplemental: round-trips an embedded Type1 font" do
+      font_path = "vendor/pdfbox/pdfbox/target/fonts/n019003l.pfb"
+      text = "äöüÄÖÜ"
+      io = IO::Memory.new
+      doc = Pdfbox::Pdmodel::Document.new
+      begin
+        page = Pdfbox::Pdmodel::Page.new
+        doc.add_page(page)
+        font_doc = Pdfbox::Pdmodel::PDDocument.new(Bytes.new(0))
+        File.open(font_path, "r") do |stream|
+          font = Pdfbox::Pdmodel::Font::PDType1Font.new(
+            font_doc,
+            stream,
+            Pdfbox::Pdmodel::Font::Encoding::WinAnsiEncoding::INSTANCE
+          )
+          cs = Pdfbox::Pdmodel::PDPageContentStream.new(doc, page)
+          begin
+            cs.begin_text
+            cs.new_line_at_offset(10, 700)
+            cs.set_font(font, 12)
+            cs.show_text(text)
+            cs.end_text
+          ensure
+            cs.close
+          end
+        end
+        doc.save(io)
+      ensure
+        doc.close
+      end
+
+      io.rewind
+      loaded = Pdfbox::Pdmodel::Document.load(io)
+      begin
+        font = loaded.get_page(0).resources.not_nil!.font(Pdfbox::Cos::Name.new("F1")).as(Pdfbox::Pdmodel::Font::PDType1Font)
+        font.font_descriptor.not_nil!.font_file.should_not be_nil
+        Pdfbox::Text::PDFTextStripper.new.get_text(loaded).strip.should eq(text)
+      ensure
+        loaded.close
+      end
     end
   end
 
@@ -600,10 +978,8 @@ describe "PDFontTest" do
         encoding = Pdfbox::Pdmodel::Font::Encoding::WinAnsiEncoding::INSTANCE
         font = Pdfbox::Pdmodel::Font::PDTrueTypeFont.load(doc, file, encoding)
 
-        # Expected value from Java test: 20064.0f
-        # Our calculated value: ~20065.43 (close enough due to floating point/font version differences)
         width = font.get_string_width("The quick brown fox jumps over the lazy dog.")
-        width.should be_close(20064.0, 10.0) # Allow 10 units tolerance
+        width.should eq(20064.0_f32)
       end
     end
 
@@ -616,22 +992,34 @@ describe "PDFontTest" do
         encoding = Pdfbox::Pdmodel::Font::Encoding::WinAnsiEncoding::INSTANCE
         font = Pdfbox::Pdmodel::Font::PDTrueTypeFont.load(doc, file, encoding)
 
-        # Expected value from Java test: 278.0f
-        # Our calculated value: ~277.83203 (close enough)
         space_width = font.space_width
-        space_width.should be_close(278.0, 1.0) # Allow 1 unit tolerance
+        space_width.should eq(278.0_f32)
       end
     end
   end
 
   describe "PDFBOX5920Type0" do
-    pending "requires complete PDType0Font implementation with descendant CID font" do
-      it "calculates correct string width for Type0 font" do
-        # Test will be implemented when PDType0Font.load fully creates descendant CID font
-      end
+    it "calculates correct string width for Type0 font" do
+      font_path = "vendor/pdfbox/pdfbox/src/main/resources/org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf"
+      pending("Font file not found: #{font_path}") unless File.exists?(font_path)
 
-      it "calculates correct space width for Type0 font" do
-        # Test will be implemented when PDType0Font.load fully creates descendant CID font
+      File.open(font_path, "r") do |file|
+        doc = Pdfbox::Pdmodel::PDDocument.new(Bytes.new(0))
+        font = Pdfbox::Pdmodel::Font::PDType0Font.load(doc, file, false)
+
+        font.get_string_width("The quick brown fox jumps over the lazy dog.").should eq(20064.0_f32)
+      end
+    end
+
+    it "calculates correct space width for Type0 font" do
+      font_path = "vendor/pdfbox/pdfbox/src/main/resources/org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf"
+      pending("Font file not found: #{font_path}") unless File.exists?(font_path)
+
+      File.open(font_path, "r") do |file|
+        doc = Pdfbox::Pdmodel::PDDocument.new(Bytes.new(0))
+        font = Pdfbox::Pdmodel::Font::PDType0Font.load(doc, file, false)
+
+        font.space_width.should eq(278.0_f32)
       end
     end
   end

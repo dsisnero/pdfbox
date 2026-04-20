@@ -135,9 +135,14 @@ describe "CID descendant font parity slices" do
     font = Pdfbox::Pdmodel::Font::PDType0Font.new(dict).descendant_font.as(Pdfbox::Pdmodel::Font::PDCIDFontType0)
     font.embedded?.should be_true
     font.damaged?.should be_false
+    font.cff_font.should_not be_nil
+    font.font_box_font.should_not be_nil
+    font.type2_char_string(1).should_not be_nil
     font.has_glyph(0).should be_false
     font.bounding_box.width.should be >= 0.0_f32
     font.bounding_box.height.should be >= 0.0_f32
+    font.average_font_width.should eq(500.0_f32)
+    font.height(1).should be >= 0.0_f32
   end
 
   it "uses gid!=0 for has_glyph in CIDFontType0 and CIDFontType2" do
