@@ -45,7 +45,7 @@ module Pdfbox::Pdmodel::Common
         6 => PDTest.new(33),
         7 => PDTest.new(85),
       }
-      node5.not_nil!.numbers = numbers
+      node5.as(PDNumberTreeNode).numbers = numbers
 
       node24 = PDNumberTreeNode(PDTest).new(PD_TEST_CONVERTER)
       numbers = {
@@ -55,43 +55,47 @@ module Pdfbox::Pdmodel::Common
         11 => PDTest.new(30),
         12 => PDTest.new(40),
       }
-      node24.not_nil!.numbers = numbers
+      node24.as(PDNumberTreeNode).numbers = numbers
 
       node2 = PDNumberTreeNode(PDTest).new(PD_TEST_CONVERTER)
       kids = node2.not_nil!.kids
-      if kids.nil?
-        kids = COSArrayList(PDNumberTreeNode(PDTest)).new
+      if kids
+        kids = kids.to_a
+        kids << node5.not_nil!
+      else
+        kids = Common::COSArrayList(PDNumberTreeNode(PDTest)).new
+        kids.add(node5.not_nil!)
       end
-      kids.add(node5.not_nil!)
       node2.not_nil!.kids = kids.to_a
 
-      node4 = PDNumberTreeNode(PDTest).new(PD_TEST_CONVERTER)
       kids = node4.not_nil!.kids
-      if kids.nil?
-        kids = COSArrayList(PDNumberTreeNode(PDTest)).new
+      if kids
+        kids = kids.to_a
+        kids << node24.not_nil!
+      else
+        kids = [] of PDNumberTreeNode(PDTest)
+        kids << node24.not_nil!
       end
-      kids.add(node24.not_nil!)
       node4.not_nil!.kids = kids.to_a
 
-      node1 = PDNumberTreeNode(PDTest).new(PD_TEST_CONVERTER)
       kids = node1.not_nil!.kids
-      if kids.nil?
-        kids = COSArrayList(PDNumberTreeNode(PDTest)).new
+      if kids
+        kids = kids.to_a
+        kids << node2.not_nil!
+        kids << node4.not_nil!
+      else
+        kids = [] of PDNumberTreeNode(PDTest)
+        kids << node2.not_nil!
+        kids << node4.not_nil!
       end
-      kids.add(node2.not_nil!)
-      kids.add(node4.not_nil!)
       node1.not_nil!.kids = kids.to_a
-    end
 
-    it "TestPDNumberTreeNode#testGetValue" do
       node5.not_nil!.value(4).should eq PDTest.new(51)
       node1.not_nil!.value(9).should eq PDTest.new(70)
       node1.not_nil!.kids = nil
       node1.not_nil!.numbers = nil
       node1.not_nil!.value(0).should be_nil
-    end
 
-    it "TestPDNumberTreeNode#testUpperLimit" do
       node5.not_nil!.upper_limit.should eq 7
       node2.not_nil!.upper_limit.should eq 7
       node24.not_nil!.upper_limit.should eq 12
@@ -103,9 +107,7 @@ module Pdfbox::Pdmodel::Common
       node5.not_nil!.upper_limit.should be_nil
       node1.not_nil!.kids = nil
       node1.not_nil!.upper_limit.should be_nil
-    end
 
-    it "TestPDNumberTreeNode#testLowerLimit" do
       node5.not_nil!.lower_limit.should eq 1
       node2.not_nil!.lower_limit.should eq 1
       node24.not_nil!.lower_limit.should eq 8

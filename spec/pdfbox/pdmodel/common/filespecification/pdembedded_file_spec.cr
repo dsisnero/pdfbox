@@ -68,7 +68,7 @@ describe Pdfbox::Pdmodel::Common::Filespecification::PDEmbeddedFile do
       embedded = klass.new(stream)
       time = Time.utc(2025, 2, 20, 14, 45, 0)
       embedded.mod_date = time
-      embedded.mod_date.not_nil!.to_utc.should eq time
+      embedded.mod_date.not_nil!.should eq time
     end
   end
 

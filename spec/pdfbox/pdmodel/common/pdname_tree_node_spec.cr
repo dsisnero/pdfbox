@@ -45,21 +45,35 @@ module Pdfbox::Pdmodel::Common
       kids.add(node2.not_nil!)
       kids.add(node4.not_nil!)
       node1.not_nil!.kids = kids.to_a
-    end
 
-    it "TestPDNameTreeNode#testUpperLimit" do
-      node5.not_nil!.upper_limit.should eq("Astatine")
-      node2.not_nil!.upper_limit.should eq("Astatine")
-      node24.not_nil!.upper_limit.should eq("Zirconium")
-      node4.not_nil!.upper_limit.should eq("Zirconium")
+      node5.not_nil!.value("Antimony").should eq Pdfbox::Cos::Integer.new(51)
+      node1.not_nil!.value("Ytterbium").should eq Pdfbox::Cos::Integer.new(70)
+      node1.not_nil!.kids = nil
+      node1.not_nil!.names = nil
+      node1.not_nil!.value("Actinium").should be_nil
+
+      node5.not_nil!.upper_limit.should eq "Astatine"
+      node2.not_nil!.upper_limit.should eq "Astatine"
+      node24.not_nil!.upper_limit.should eq "Zirconium"
+      node4.not_nil!.upper_limit.should eq "Zirconium"
+      node1.not_nil!.upper_limit.should eq "Zirconium"
+      node24.not_nil!.names = {} of String => Pdfbox::Cos::Integer
+      node24.not_nil!.upper_limit.should be_nil
+      node5.not_nil!.names = nil
+      node5.not_nil!.upper_limit.should be_nil
+      node1.not_nil!.kids = nil
       node1.not_nil!.upper_limit.should be_nil
-    end
 
-    it "TestPDNameTreeNode#testLowerLimit" do
-      node5.not_nil!.lower_limit.should eq("Actinium")
-      node2.not_nil!.lower_limit.should eq("Actinium")
-      node24.not_nil!.lower_limit.should eq("Xenon")
-      node4.not_nil!.lower_limit.should eq("Xenon")
+      node5.not_nil!.lower_limit.should eq "Actinium"
+      node2.not_nil!.lower_limit.should eq "Actinium"
+      node24.not_nil!.lower_limit.should eq "Xenon"
+      node4.not_nil!.lower_limit.should eq "Xenon"
+      node1.not_nil!.lower_limit.should eq "Actinium"
+      node24.not_nil!.names = {} of String => Pdfbox::Cos::Integer
+      node24.not_nil!.lower_limit.should be_nil
+      node5.not_nil!.names = nil
+      node5.not_nil!.lower_limit.should be_nil
+      node1.not_nil!.kids = nil
       node1.not_nil!.lower_limit.should be_nil
     end
   end
