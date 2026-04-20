@@ -5,7 +5,7 @@ describe Tools::PDFBox do
   it "exposes the Java PDFBox subcommand inventory" do
     commands = Tools::PDFBox.new(headless: true).available_subcommands
 
-    commands.should eq(%w(
+    commands.should eq(%w[
       decrypt
       encrypt
       decode
@@ -25,7 +25,7 @@ describe Tools::PDFBox do
       fromtext
       version
       help
-    ))
+    ])
   end
 
   it "PDFBoxHeadlessTest#isHeadlessTest" do

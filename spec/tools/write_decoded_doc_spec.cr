@@ -31,7 +31,6 @@ describe Tools::WriteDecodedDoc do
 
   it "auto-generates output filename with _unc suffix" do
     pdf_file = File.tempname("pdfbox_decode_input_", ".pdf")
-    expected_output = File.tempname("pdfbox_decode_input_", ".pdf").gsub(/\.pdf$/, "_unc.pdf")
     begin
       # Create a PDF first
       stdout = IO::Memory.new

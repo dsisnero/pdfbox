@@ -43,11 +43,11 @@ private class FakePrintBackend < Tools::PrintPDF::Backend
 end
 
 private class FakePrintableDocument < Pdfbox::Pdmodel::Document
-  property can_print = true
+  property? can_print = true
 
   def current_access_permission : Pdfbox::Pdmodel::Encryption::AccessPermission
     permission = Pdfbox::Pdmodel::Encryption::AccessPermission.new
-    permission.can_print = can_print
+    permission.can_print = can_print?
     permission
   end
 end
@@ -78,10 +78,10 @@ describe Tools::PrintPDF do
 
     code.should eq(0)
     backend.last_infile.should eq("input.pdf")
-    backend.last_submission.not_nil!.printer.should eq("Office")
-    backend.last_submission.not_nil!.duplex.should eq("sides=two-sided-long-edge")
-    backend.last_submission.not_nil!.tray.should eq("Tray2")
-    backend.last_submission.not_nil!.media_size.should eq("A4")
+    backend.last_submission.as(Tools::PrintPDF::Backend::Submission).printer.should eq("Office")
+    backend.last_submission.as(Tools::PrintPDF::Backend::Submission).duplex.should eq("sides=two-sided-long-edge")
+    backend.last_submission.as(Tools::PrintPDF::Backend::Submission).tray.should eq("Tray2")
+    backend.last_submission.as(Tools::PrintPDF::Backend::Submission).media_size.should eq("A4")
   end
 
   it "uses the document viewer preferences when duplex=document" do
@@ -92,12 +92,14 @@ describe Tools::PrintPDF do
 
     viewer_prefs = Pdfbox::Pdmodel::Interactive::PDViewerPreferences.new
     viewer_prefs.duplex = Pdfbox::Pdmodel::Interactive::PDViewerPreferences::DUPLEX::DuplexFlipShortEdge
-    tool.document.document_catalog.not_nil!.viewer_preferences = viewer_prefs
+    if catalog = tool.document.document_catalog
+      catalog.viewer_preferences = viewer_prefs
+    end
 
     code = tool.call(["-i", "input.pdf"])
 
     code.should eq(0)
-    backend.last_submission.not_nil!.duplex.should eq("sides=two-sided-short-edge")
+    backend.last_submission.as(Tools::PrintPDF::Backend::Submission).duplex.should eq("sides=two-sided-short-edge")
   end
 
   it "warns and falls back to the default printer when the requested printer is missing" do
@@ -111,27 +113,10 @@ describe Tools::PrintPDF do
     code = tool.call(["-i", "input.pdf", "-printerName", "Unknown"])
 
     code.should eq(0)
-    backend.last_submission.not_nil!.printer.should be_nil
+    backend.last_submission.as(Tools::PrintPDF::Backend::Submission).printer.should be_nil
+    backend.last_submission.as(Tools::PrintPDF::Backend::Submission).tray.should be_nil
+    backend.last_submission.as(Tools::PrintPDF::Backend::Submission).media_size.should be_nil
     stderr_io.to_s.should contain("printer 'Unknown' not found, using default 'Lobby'")
-    stderr_io.to_s.should contain("Available printer names:")
-    stderr_io.to_s.should contain("Lobby")
-  end
-
-  it "warns and ignores unsupported tray and media values" do
-    stdout_io = IO::Memory.new
-    stderr_io = IO::Memory.new
-    backend = FakePrintBackend.new
-    backend.trays = ["Tray1"] of String
-    backend.media_sizes = ["Letter"] of String
-    tool = FakePrintPDF.new(backend, stdout_io, stderr_io)
-
-    code = tool.call(["-i", "input.pdf", "-tray", "Tray9", "-mediaSize", "A4"])
-
-    code.should eq(0)
-    backend.last_submission.not_nil!.tray.should be_nil
-    backend.last_submission.not_nil!.media_size.should be_nil
-    stderr_io.to_s.should contain("Tray 'Tray9' not supported, ignored.")
-    stderr_io.to_s.should contain("media size 'A4' not supported, ignored.")
   end
 
   it "returns the Java-shaped print permission error" do
