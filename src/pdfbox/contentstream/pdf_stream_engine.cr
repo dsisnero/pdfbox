@@ -127,7 +127,7 @@ module Pdfbox::Contentstream
     private def process_stream(page : Pdmodel::Page) : Nil
       parent_resources = @resources
       parent_initial_matrix = @initial_matrix
-      saved_stack = @graphics_stack.map(&.clone)
+      saved_stack = @graphics_stack.as(Array).map(&.clone)
 
       @resources = page.resources || Pdmodel::Resources.new(Cos::Dictionary.new)
       ctm = base_graphics_state.current_transformation_matrix
@@ -170,7 +170,7 @@ module Pdfbox::Contentstream
     ensure
       @initial_matrix = parent_initial_matrix
       @resources = parent_resources
-      @graphics_stack = saved_stack.not_nil!
+      @graphics_stack = saved_stack.as(Array)
     end
 
     # Process operators from content stream bytes
@@ -416,7 +416,7 @@ module Pdfbox::Contentstream
     private def process_form_xobject(stream : Cos::Stream) : Nil
       parent_resources = @resources
       parent_initial_matrix = @initial_matrix
-      saved_stack = @graphics_stack.map(&.clone)
+      saved_stack = @graphics_stack.as(Array).map(&.clone)
 
       form_resources = stream[Cos::Name.new("Resources")]
       if form_resources.is_a?(Cos::Object)
@@ -437,7 +437,7 @@ module Pdfbox::Contentstream
     ensure
       @initial_matrix = parent_initial_matrix
       @resources = parent_resources
-      @graphics_stack = saved_stack.not_nil!
+      @graphics_stack = saved_stack.as(Array)
     end
 
     private def matrix_from_cos_array(base : Cos::Base?) : Util::Matrix?
@@ -452,12 +452,12 @@ module Pdfbox::Contentstream
       return unless values.all?
 
       Util::Matrix.new(
-        values[0].not_nil!.to_f32,
-        values[1].not_nil!.to_f32,
-        values[2].not_nil!.to_f32,
-        values[3].not_nil!.to_f32,
-        values[4].not_nil!.to_f32,
-        values[5].not_nil!.to_f32
+        values[0].as(Float64).to_f32,
+        values[1].as(Float64).to_f32,
+        values[2].as(Float64).to_f32,
+        values[3].as(Float64).to_f32,
+        values[4].as(Float64).to_f32,
+        values[5].as(Float64).to_f32
       )
     end
 
