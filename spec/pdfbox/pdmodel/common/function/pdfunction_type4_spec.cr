@@ -3,7 +3,6 @@ require "../../../../spec_helper"
 module Pdfbox::Pdmodel::Common::Function
   describe PDFunctionType4 do
     it "evaluates simple addition function" do
-      function_text = "{ add }"
       # Simply adds the two arguments and returns the result
       dict = Cos::Dictionary.new
       dict[Cos::Name::FUNCTION_TYPE] = Cos::Integer.new(4)

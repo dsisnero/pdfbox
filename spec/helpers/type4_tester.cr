@@ -93,14 +93,14 @@ module Spec::Helpers
 
     # Checks that the stack is empty at this point.
     # @return this instance
-    def is_empty : Type4Tester
+    def empty? : Type4Tester
       @context.stack.empty?.should be_true
       self
     end
 
-    # Alias for is_empty
+    # Alias for empty?
     def empty : Type4Tester
-      is_empty
+      empty?
     end
 
     # Returns the execution context so some custom checks can be performed.

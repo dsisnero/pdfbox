@@ -4,13 +4,13 @@ require "../../../../../helpers/type4_tester"
 module Pdfbox::Pdmodel::Common::Function::Type4
   describe "Parser" do
     it "tests parser basics" do
-      Spec::Helpers::Type4Tester.create("3 4 add 2 sub").pop(5).is_empty
+      Spec::Helpers::Type4Tester.create("3 4 add 2 sub").pop(5).empty?
     end
 
     it "tests nested blocks" do
       Spec::Helpers::Type4Tester.create("true { 2 1 add } { 2 1 sub } ifelse")
-        .pop(3).is_empty
-      Spec::Helpers::Type4Tester.create("{ true }").pop(true).is_empty
+        .pop(3).empty?
+      Spec::Helpers::Type4Tester.create("{ true }").pop(true).empty?
     end
 
     describe "parseReal" do
@@ -32,7 +32,7 @@ module Pdfbox::Pdmodel::Common::Function::Type4
       # 1. no whitespace between "mul" and "}" (token was detected as "mul}")
       # 2. line breaks cause endless loops
       Spec::Helpers::Type4Tester.create("1 {dup dup .72 mul exch 0 exch .38 mul}\n")
-        .pop(0.38_f32).pop(0_f32).pop(0.72_f32).pop(1.0_f32).is_empty
+        .pop(0.38_f32).pop(0_f32).pop(0.72_f32).pop(1.0_f32).empty?
     end
   end
 end
