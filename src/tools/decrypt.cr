@@ -51,19 +51,19 @@ module Tools
         parser.on("-o FILE", "--output FILE", "The decrypted PDF file (default: overwrite input)") { |value| @outfile = value }
         parser.on("-h", "--help", "Show this help") do
           @out.puts(<<-HELP
-          Decrypts a PDF document
+            Decrypts a PDF document
 
-          This will read an encrypted document and decrypt it using a password.
+            This will read an encrypted document and decrypt it using a password.
 
-          Options:
-            --alias ALIAS          The alias to the certificate in the keystore
-            --keyStore KEYSTORE    The path to the keystore that holds the certificate
-            --password PASSWORD    The password for the PDF or certificate in keystore
-            -i, --input FILE       The PDF file to decrypt (required)
-            -o, --output FILE      The decrypted PDF file (default: overwrite input)
-            -h, --help             Show this help
+            Options:
+              --alias ALIAS          The alias to the certificate in the keystore
+              --keyStore KEYSTORE    The path to the keystore that holds the certificate
+              --password PASSWORD    The password for the PDF or certificate in keystore
+              -i, --input FILE       The PDF file to decrypt (required)
+              -o, --output FILE      The decrypted PDF file (default: overwrite input)
+              -h, --help             Show this help
 
-          Note: Certificate-based decryption (--keyStore, --alias) is not yet implemented.
+            Note: Certificate-based decryption (--keyStore, --alias) is not yet implemented.
           HELP
           )
           exit 0

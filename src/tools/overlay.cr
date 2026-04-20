@@ -123,36 +123,36 @@ module Tools
 
       # Java: overlayer.setFirstPageOverlayFile(...)
       if fp = @first_page_overlay
-        overlayer.set_first_page_overlay_file(fp)
+        overlayer.first_page_overlay_file = fp
       end
 
       # Java: overlayer.setLastPageOverlayFile(...)
       if lp = @last_page_overlay
-        overlayer.set_last_page_overlay_file(lp)
+        overlayer.last_page_overlay_file = lp
       end
 
       # Java: overlayer.setOddPageOverlayFile(...)
       if op = @odd_page_overlay
-        overlayer.set_odd_page_overlay_file(op)
+        overlayer.odd_page_overlay_file = op
       end
 
       # Java: overlayer.setEvenPageOverlayFile(...)
       if ep = @even_page_overlay
-        overlayer.set_even_page_overlay_file(ep)
+        overlayer.even_page_overlay_file = ep
       end
 
       # Java: overlayer.setAllPagesOverlayFile(...)
       if ap = @use_all_pages
-        overlayer.set_all_pages_overlay_file(ap)
+        overlayer.all_pages_overlay_file = ap
       end
 
       # Java: overlayer.setDefaultOverlayFile(...)
       if df = @default_overlay
-        overlayer.set_default_overlay_file(df)
+        overlayer.default_overlay_file = df
       end
 
       # Java: overlayer.setInputFile(...)
-      overlayer.set_input_file(infile)
+      overlayer.input_file = infile
 
       # Java: overlayer.setAdjustRotation(adjustRotation)
       overlayer.adjust_rotation = @adjust_rotation

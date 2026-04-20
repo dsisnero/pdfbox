@@ -127,7 +127,7 @@ module Tools
         @out.flush
       else
         # Java: Files.write(outfile.toPath(), meta.toByteArray())
-        File.write(outfile.not_nil!, xmp_data)
+        File.write(outfile.as(String), xmp_data)
       end
 
       0

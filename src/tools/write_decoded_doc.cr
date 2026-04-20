@@ -50,20 +50,20 @@ module Tools
         parser.on("-skipImages", "Don't uncompress images") { @skip_images = true }
         parser.on("-h", "--help", "Show this help") do
           @out.puts <<-HELP
-          Usage: pdfbox decode [options] inputfile [outputfile]
+            Usage: pdfbox decode [options] inputfile [outputfile]
 
-          Writes a PDF document with all streams decoded.
+            Writes a PDF document with all streams decoded.
 
-          Options:
-            -password PASSWORD        The password to decrypt the document
-            -skipImages               Don't uncompress images
-            -h, --help                Show this help
+            Options:
+              -password PASSWORD        The password to decrypt the document
+              -skipImages               Don't uncompress images
+              -h, --help                Show this help
 
-          Examples:
-            pdfbox decode input.pdf
-            pdfbox decode input.pdf output_decoded.pdf
-            pdfbox decode -password secret input.pdf
-          HELP
+            Examples:
+              pdfbox decode input.pdf
+              pdfbox decode input.pdf output_decoded.pdf
+              pdfbox decode -password secret input.pdf
+            HELP
           exit 0
         end
         parser.unknown_args do |args, _|

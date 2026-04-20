@@ -174,21 +174,21 @@ module Tools
             end
 
             page = Pdfbox::Pdmodel::Page.new
-            page.not_nil!.media_box = actual_media_box
-            doc.add_page(page.not_nil!)
+            page.media_box = actual_media_box
+            doc.add_page(page)
 
-            content_stream = Pdfbox::Pdmodel::PDPageContentStream.new(doc, page.not_nil!)
-            content_stream.not_nil!.set_font(font, @font_size)
-            content_stream.not_nil!.begin_text
+            content_stream = Pdfbox::Pdmodel::PDPageContentStream.new(doc, page)
+            content_stream.set_font(font, @font_size)
+            content_stream.begin_text
 
             y = actual_media_box.height - top_margin
             y += line_height - font_height * @font_size
-            content_stream.not_nil!.new_line_at_offset(left_margin, y)
+            content_stream.as(Pdfbox::Pdmodel::PDPageContentStream).new_line_at_offset(left_margin, y)
           end
 
-          content_stream.not_nil!.new_line_at_offset(0, -line_height)
+          content_stream.as(Pdfbox::Pdmodel::PDPageContentStream).new_line_at_offset(0, -line_height)
           y -= line_height
-          content_stream.not_nil!.show_text(drawn_text)
+          content_stream.as(Pdfbox::Pdmodel::PDPageContentStream).show_text(drawn_text)
         end
       end
 

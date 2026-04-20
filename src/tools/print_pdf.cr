@@ -50,7 +50,7 @@ module Tools
         output = IO::Memory.new
         error = IO::Memory.new
         status = Process.run("lpstat", ["-d"], output: output, error: error)
-        return nil unless status.success?
+        return unless status.success?
 
         if match = output.to_s.match(/system default destination:\s+(.+)\s*$/)
           match[1].strip
@@ -133,7 +133,7 @@ module Tools
         output = IO::Memory.new
         error = IO::Memory.new
         status = Process.run("powershell", powershell_args("(Get-CimInstance Win32_Printer | Where-Object Default -eq $true | Select-Object -First 1 -ExpandProperty Name)"), output: output, error: error)
-        return nil unless status.success?
+        return unless status.success?
         value = output.to_s.strip
         value.empty? ? nil : value
       rescue File::Error
@@ -332,7 +332,7 @@ module Tools
 
     private def resolve_printer_name : String?
       requested = @printer_name
-      return nil unless requested
+      return unless requested
 
       printers = @backend.available_printers
       return requested if printers.any? { |printer| printer.compare(requested, case_insensitive: true) == 0 }
@@ -375,7 +375,7 @@ module Tools
       @err.puts("Warning: partial print parity, currently ignoring #{ignored.join(", ")}")
     end
 
-    private def unimplemented_option_warnings(unsupported : Set(String)) : Array(String) # ameba:disable Metrics/CyclomaticComplexity
+    private def unimplemented_option_warnings(unsupported : Set(String)) : Array(String)
       warnings = [] of String
       warnings << "orientation=#{@orientation.to_s.downcase}" if unsupported.includes?("orientation") && @orientation != Pdfbox::Printing::Orientation::AUTO
       warnings << "duplex=#{@duplex.to_s.downcase}" if unsupported.includes?("duplex") && @duplex != Duplex::Document
@@ -404,7 +404,7 @@ module Tools
 
     private def duplex_option_from_document(document : Pdfbox::Pdmodel::Document) : String?
       catalog = document.document_catalog
-      return nil unless catalog
+      return unless catalog
 
       case catalog.viewer_preferences.try(&.duplex)
       when Pdfbox::Pdmodel::Interactive::PDViewerPreferences::DUPLEX::DuplexFlipLongEdge

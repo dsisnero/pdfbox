@@ -15,7 +15,7 @@ module Tools
     def available_subcommands : Array(String)
       commands = [] of String
       commands << "debug" unless @headless
-      commands.concat(%w(
+      commands.concat(%w[
         decrypt
         encrypt
         decode
@@ -35,7 +35,7 @@ module Tools
         fromtext
         version
         help
-      ))
+      ])
       commands
     end
 

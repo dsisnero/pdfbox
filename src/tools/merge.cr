@@ -16,7 +16,7 @@ module Tools
       parser.parse(normalize_args(args))
 
       infiles = @infiles
-      unless infiles.any?
+      if infiles.empty?
         @err.puts("Missing required option: -i")
         return 1
       end
@@ -88,7 +88,7 @@ module Tools
       merged_doc = Pdfbox::Pdmodel::Document.create
 
       # Process each input file
-      infiles.each_with_index do |infile, _|
+      infiles.each do |infile|
         begin
           # Load document
           document = Pdfbox::Loader.load_pdf(infile, @password)

@@ -18,7 +18,7 @@ module Tools
         return 1
       end
 
-      infile = @infile.not_nil!
+      infile = @infile.as(String)
       outfile = @outfile || default_output(infile, ".xfdf")
       export(infile, outfile)
     rescue ex : ArgumentError

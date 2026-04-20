@@ -24,7 +24,7 @@ module Tools
         return 1
       end
 
-      import(@infile.not_nil!, @outfile || @infile.not_nil!, @data_file.not_nil!)
+      import(@infile.as(String), @outfile || @infile.as(String), @data_file.as(String))
     rescue ex : ArgumentError
       @err.puts("Error: #{ex.message}")
       1
