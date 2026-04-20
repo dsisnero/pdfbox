@@ -59,7 +59,7 @@ describe "Porting parity pdfbox-lxq" do
   end
 
   it "TestHexUtil#testMisc" do
-    byte_src = Bytes.new(256) { |i| i.to_u8 }
+    byte_src = Bytes.new(256, &.to_u8)
 
     byte_src.each_with_index do |_, i|
       bytes = Pdfbox::Util::Hex.get_bytes(i.to_u8)
@@ -82,22 +82,22 @@ describe "Porting parity pdfbox-lxq" do
   it "TestHexUtil#testGetHexValue" do
     valid_hex = Set(Char).new
 
-    ('0'..'9').each do |c|
-      valid_hex << c
-      Pdfbox::Util::Hex.get_hex_value(c).should eq(c.to_s.to_i(16))
+    ('0'..'9').each do |char|
+      valid_hex << char
+      Pdfbox::Util::Hex.get_hex_value(char).should eq(char.to_s.to_i(16))
     end
-    ('a'..'f').each do |c|
-      valid_hex << c
-      Pdfbox::Util::Hex.get_hex_value(c).should eq(c.to_s.to_i(16))
+    ('a'..'f').each do |char|
+      valid_hex << char
+      Pdfbox::Util::Hex.get_hex_value(char).should eq(char.to_s.to_i(16))
     end
-    ('A'..'F').each do |c|
-      valid_hex << c
-      Pdfbox::Util::Hex.get_hex_value(c).should eq(c.to_s.to_i(16))
+    ('A'..'F').each do |char|
+      valid_hex << char
+      Pdfbox::Util::Hex.get_hex_value(char).should eq(char.to_s.to_i(16))
     end
     valid_hex.size.should eq(22)
 
-    (0..255).each do |c|
-      char = c.chr
+    (0..255).each do |code|
+      char = code.chr
       unless valid_hex.includes?(char)
         Pdfbox::Util::Hex.get_hex_value(char).should eq(-256)
       end
