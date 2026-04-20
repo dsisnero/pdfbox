@@ -14,7 +14,7 @@ module Pdfbox::Pdmodel::Interactive::DocumentNavigation::Destination
     end
 
     def page : Cos::Dictionary?
-      return nil if @array.empty?
+      return if @array.empty?
       @array[0]?.as?(Cos::Dictionary)
     end
 

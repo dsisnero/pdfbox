@@ -1,4 +1,14 @@
 module Pdfbox::Pdmodel::Interactive::Pagenavigation
+  enum PDTransitionDimension
+    H
+    V
+  end
+
+  enum PDTransitionMotion
+    I
+    O
+  end
+
   enum PDTransitionStyle
     Split
     Blinds
@@ -56,6 +66,24 @@ module Pdfbox::Pdmodel::Interactive::Pagenavigation
       @dictionary.get_name_as_string(Pdfbox::Cos::Name.new("S")) || PDTransitionStyle::R.to_s
     end
 
+    def dimension : String
+      @dictionary.get_name_as_string(Pdfbox::Cos::Name.new("Dm")) || PDTransitionDimension::H.to_s
+    end
+
+    def dimension=(dimension : PDTransitionDimension) : PDTransitionDimension
+      @dictionary.set_name(Pdfbox::Cos::Name.new("Dm"), dimension.to_s)
+      dimension
+    end
+
+    def motion : String
+      @dictionary.get_name_as_string(Pdfbox::Cos::Name.new("M")) || PDTransitionMotion::I.to_s
+    end
+
+    def motion=(motion : PDTransitionMotion) : PDTransitionMotion
+      @dictionary.set_name(Pdfbox::Cos::Name.new("M"), motion.to_s)
+      motion
+    end
+
     def direction : Pdfbox::Cos::Base
       @dictionary[Pdfbox::Cos::Name.new("Di")]? || Pdfbox::Cos::Integer.new(0)
     end
@@ -81,6 +109,15 @@ module Pdfbox::Pdmodel::Interactive::Pagenavigation
     def fly_scale=(scale : Float64) : Float64
       @dictionary.set_float(Pdfbox::Cos::Name.new("SS"), scale)
       scale
+    end
+
+    def fly_area_opaque? : Bool
+      @dictionary[Pdfbox::Cos::Name.new("B")]?.as?(Pdfbox::Cos::Boolean).try(&.value) || false
+    end
+
+    def fly_area_opaque=(opaque : Bool) : Bool
+      @dictionary.set_item(Pdfbox::Cos::Name.new("B"), Pdfbox::Cos::Boolean.get(opaque))
+      opaque
     end
   end
 end

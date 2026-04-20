@@ -1,15 +1,22 @@
 # A highlight text markup annotation
 module Pdfbox::Pdmodel::Interactive::Annotation
-  class PDAnnotationHighlight < PDAnnotation
+  class PDAnnotationHighlight < PDAnnotationTextMarkup
     SUB_TYPE = "Highlight"
 
-    def initialize(dictionary : Cos::Dictionary = Cos::Dictionary.new)
-      super(dictionary)
-      @dictionary[Cos::Name.new("Subtype")] = Cos::Name.new(SUB_TYPE)
+    def initialize
+      super(SUB_TYPE)
     end
 
-    def subtype : String
-      SUB_TYPE
+    def initialize(dictionary : Cos::Dictionary)
+      super(dictionary)
+    end
+
+    def construct_appearances(document : Pdfbox::Pdmodel::Document? = nil) : Nil
+      if handler = custom_appearance_handler
+        handler.generate_appearance_streams
+      else
+        Handlers::PDHighlightAppearanceHandler.new(self, document).generate_appearance_streams
+      end
     end
   end
 end

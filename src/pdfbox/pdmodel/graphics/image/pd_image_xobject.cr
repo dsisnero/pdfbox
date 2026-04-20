@@ -201,7 +201,7 @@ module Pdfbox::Pdmodel::Graphics::Image
         filter.as(Pdfbox::Cos::Name).value
       when Pdfbox::Cos::Array
         filters = filter.as(Pdfbox::Cos::Array)
-        return nil if filters.size == 0
+        return if filters.size == 0
         first_filter = filters[0]
         first_filter.is_a?(Pdfbox::Cos::Name) ? first_filter.as(Pdfbox::Cos::Name).value : nil
       else

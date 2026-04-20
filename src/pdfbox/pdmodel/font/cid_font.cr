@@ -32,6 +32,11 @@ module Pdfbox::Pdmodel::Font
     end
 
     # Returns the PostScript name of the font.
+    def cos_object : Pdfbox::Cos::Dictionary
+      @dict
+    end
+
+    # Returns the PostScript name of the font.
     def base_font : String
       @dict.get_name_as_string(Pdfbox::Cos::Name::BASE_FONT) || ""
     end
@@ -49,8 +54,6 @@ module Pdfbox::Pdmodel::Font
       fd_dict = @dict.get_dictionary(Pdfbox::Cos::Name::FONT_DESC)
       if fd_dict
         @font_descriptor = PDFontDescriptor.new(fd_dict)
-      else
-        nil
       end
     end
 
@@ -265,8 +268,6 @@ module Pdfbox::Pdmodel::Font
       cid_system_info_dict = @dict.get_dictionary(Pdfbox::Cos::Name.new("CIDSystemInfo"))
       if cid_system_info_dict
         PDCIDSystemInfo.new(cid_system_info_dict)
-      else
-        nil
       end
     end
 

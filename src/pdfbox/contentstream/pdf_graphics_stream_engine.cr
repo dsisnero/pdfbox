@@ -299,7 +299,7 @@ module Pdfbox::Contentstream
     end
 
     def current_point : Tuple(Float32, Float32)?
-      return nil if @segments.empty?
+      return if @segments.empty?
       last = @segments.last
       case last.type
       when SegmentType::MoveTo
@@ -332,7 +332,7 @@ module Pdfbox::Contentstream
       @engine.as(PDFGraphicsStreamEngine)
     end
 
-    def get_graphics_context : PDFGraphicsStreamEngine
+    def graphics_context : PDFGraphicsStreamEngine
       @engine.as(PDFGraphicsStreamEngine)
     end
   end

@@ -9,10 +9,15 @@ require "./pdmodel/fdf"
 require "./pdmodel/graphics"
 require "./pdmodel/document_interchange"
 require "./pdmodel/font"
+require "./pdmodel/resources"
+require "./pdmodel/pdappearance_content_stream"
+require "./pdmodel/pdform_content_stream"
+require "./pdmodel/pdpattern_content_stream"
 require "./pdmodel/page_content_stream"
 require "./pdmodel/page"
 require "./pdmodel/page_layout"
 require "./pdmodel/page_mode"
+require "./pdmodel/graphics/color/icc_profile"
 
 module Pdfbox::Pdmodel
   # Main PDF document class
@@ -28,6 +33,7 @@ module Pdfbox::Pdmodel
     @document_id : Bytes?
     @current_access_permission : Encryption::AccessPermission?
     @all_security_to_be_removed : Bool = false
+    @fonts_for_save = [] of Font::PDFont
 
     def initialize(cos_document : Cos::Dictionary? = nil, version : String = "1.4", trailer : Cos::Dictionary? = nil)
       @version = version
@@ -138,6 +144,8 @@ module Pdfbox::Pdmodel
     end
 
     def save(io : ::IO, parameters : Pdfbox::Pdfwriter::Compress::CompressParameters) : Nil
+      subset_embedded_fonts
+
       # Prepare encryption if document is protected
       if encrypted? && (encryption = self.encryption) && (handler = encryption.security_handler)
         if handler.is_a?(Pdfbox::Pdmodel::Encryption::StandardSecurityHandler)
@@ -161,6 +169,11 @@ module Pdfbox::Pdmodel
       @pages << page
       add_page_to_tree(page)
       page
+    end
+
+    def register_font_for_save(font : Font::PDFont) : Nil
+      return if @fonts_for_save.any? { |existing| existing.object_id == font.object_id }
+      @fonts_for_save << font
     end
 
     # Append a page that was already resolved from the page tree during parsing.
@@ -455,6 +468,15 @@ module Pdfbox::Pdmodel
         page_dict = dereference_dictionary(kid)
         next unless page_dict
         @pages << Page.new(page_dict)
+      end
+    end
+
+    private def subset_embedded_fonts : Nil
+      @fonts_for_save.each do |font|
+        type0_font = font.as?(Font::PDType0Font)
+        next unless type0_font
+        next unless type0_font.will_be_subset?
+        type0_font.subset
       end
     end
 
@@ -773,7 +795,7 @@ module Pdfbox::Pdmodel
       return unless form_dict.is_a?(Cos::Dictionary)
       return unless @document
       document = @document
-      return nil unless document
+      return unless document
 
       Interactive::Form::PDAcroForm.new(document, form_dict)
     end
@@ -877,6 +899,36 @@ module Pdfbox::Pdmodel
 
     @cos_dict : Cos::Dictionary
 
+    # Create an output intent of GTS_PDFA1 subtype.
+    #
+    # @param doc The document.
+    # @param color_profile the ICC color profile data.
+    # @raise ICCProfileError if the color_profile does not contain valid ICC Profile data.
+    def self.create(doc : Document, color_profile : Bytes) : self
+      # Parse ICC profile
+      icc_profile = Graphics::Color::ICCProfile.from_bytes(color_profile)
+
+      dictionary = Cos::Dictionary.new
+      dictionary[Cos::Name::TYPE] = Cos::Name::OUTPUT_INTENT
+      dictionary[Cos::Name::S] = Cos::Name::GTS_PDFA1
+
+      # Create stream with ICC profile data
+      # Note: In Java, this would create a PDStream attached to the document
+      # Since we don't have a PDDocument, we create a standalone Cos::Stream
+      stream_dict = Cos::Dictionary.new
+      stream_dict[Cos::Name::LENGTH] = Cos::Integer.new(color_profile.size)
+      stream_dict[Cos::Name::FILTER] = Cos::Name::FLATE_DECODE
+
+      # Set N parameter to number of components from ICC profile
+      stream_dict[Cos::Name::N] = Cos::Integer.new(icc_profile.num_components)
+
+      # Create stream object with ICC profile data
+      stream = Cos::Stream.new(entries: stream_dict.entries, data: color_profile)
+      dictionary[Cos::Name::DEST_OUTPUT_PROFILE] = stream
+
+      new(dictionary)
+    end
+
     def initialize(@cos_dict : Cos::Dictionary = Cos::Dictionary.new)
     end
 
@@ -887,46 +939,46 @@ module Pdfbox::Pdmodel
 
     # Get info
     def info : String?
-      value = @cos_dict[Cos::Name.new("Info")]
+      value = @cos_dict[Cos::Name::INFO]
       value.as?(Cos::String).try(&.value)
     end
 
     # Set info
     def info=(info : String) : Nil
-      @cos_dict[Cos::Name.new("Info")] = Cos::String.new(info)
+      @cos_dict[Cos::Name::INFO] = Cos::String.new(info)
     end
 
     # Get output condition
     def output_condition : String?
-      value = @cos_dict[Cos::Name.new("OutputCondition")]
+      value = @cos_dict[Cos::Name::OUTPUT_CONDITION]
       value.as?(Cos::String).try(&.value)
     end
 
     # Set output condition
     def output_condition=(output_condition : String) : Nil
-      @cos_dict[Cos::Name.new("OutputCondition")] = Cos::String.new(output_condition)
+      @cos_dict[Cos::Name::OUTPUT_CONDITION] = Cos::String.new(output_condition)
     end
 
     # Get output condition identifier
     def output_condition_identifier : String?
-      value = @cos_dict[Cos::Name.new("OutputConditionIdentifier")]
+      value = @cos_dict[Cos::Name::OUTPUT_CONDITION_IDENTIFIER]
       value.as?(Cos::String).try(&.value)
     end
 
     # Set output condition identifier
     def output_condition_identifier=(output_condition_identifier : String) : Nil
-      @cos_dict[Cos::Name.new("OutputConditionIdentifier")] = Cos::String.new(output_condition_identifier)
+      @cos_dict[Cos::Name::OUTPUT_CONDITION_IDENTIFIER] = Cos::String.new(output_condition_identifier)
     end
 
     # Get registry name
     def registry_name : String?
-      value = @cos_dict[Cos::Name.new("RegistryName")]
+      value = @cos_dict[Cos::Name::REGISTRY_NAME]
       value.as?(Cos::String).try(&.value)
     end
 
     # Set registry name
     def registry_name=(registry_name : String) : Nil
-      @cos_dict[Cos::Name.new("RegistryName")] = Cos::String.new(registry_name)
+      @cos_dict[Cos::Name::REGISTRY_NAME] = Cos::String.new(registry_name)
     end
   end
 
@@ -1206,7 +1258,13 @@ module Pdfbox::Pdmodel
 
     # Get the underlying COS dictionary
     def cos_object : Cos::Dictionary
-      @names_dict
+      @cos_dict
+    end
+
+    # Get the destination output intent stream
+    def dest_output_intent : Cos::Stream?
+      value = @cos_dict[Cos::Name::DEST_OUTPUT_PROFILE]
+      value.as?(Cos::Stream)
     end
 
     # Get embedded files name tree
@@ -1875,12 +1933,12 @@ module Pdfbox::Pdmodel
 
     def find_destination_page(document : Document) : Page?
       dest = destination
-      return nil unless dest
+      return unless dest
 
       case dest
       when Cos::Array
         page_entry = dest[0]?
-        return nil unless page_entry
+        return unless page_entry
 
         if page_entry.is_a?(Cos::Object)
           page_entry = page_entry.object
@@ -1891,7 +1949,7 @@ module Pdfbox::Pdmodel
           Page.new(page_entry)
         when Cos::Integer
           page_number = page_entry.value.to_i
-          return nil if page_number < 0 || page_number >= document.page_count
+          return if page_number < 0 || page_number >= document.page_count
           document.get_page(page_number)
         else
           nil
@@ -2255,7 +2313,7 @@ module Pdfbox::Pdmodel
     end
 
     # Get font by name
-    def font(name : Cos::Name) : Font::Font?
+    def font(name : Cos::Name) : Font::PDFont?
       fonts_dict = @cos_dict[Cos::Name.new("Font")]
       return unless fonts_dict
 
@@ -2276,7 +2334,19 @@ module Pdfbox::Pdmodel
 
       return unless font_dict.is_a?(Cos::Dictionary)
 
-      Font::Font.new(font_dict)
+      Font::PDFontFactory.create_font(font_dict)
+    end
+
+    def font_names : Array(Cos::Name)
+      fonts_dict = @cos_dict[Cos::Name.new("Font")]
+      return [] of Cos::Name unless fonts_dict
+
+      if fonts_dict.is_a?(Cos::Object)
+        fonts_dict = fonts_dict.object
+      end
+
+      return [] of Cos::Name unless fonts_dict.is_a?(Cos::Dictionary)
+      fonts_dict.entries.keys
     end
 
     def xobject(name : Cos::Name) : Cos::Base?

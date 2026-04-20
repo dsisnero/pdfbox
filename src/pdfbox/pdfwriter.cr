@@ -24,6 +24,9 @@ module Pdfbox::Pdfwriter
     @parameters : Pdfbox::Pdfwriter::Compress::CompressParameters
     @will_encrypt : Bool = false
     @security_handler : Pdfbox::Pdmodel::Encryption::SecurityHandler?
+    @next_object_number : Int32 = 0
+    @deferred_stream_objects = [] of Tuple(Int32, Pdfbox::Cos::Stream)
+    @stream_object_numbers = Hash(UInt64, Int32).new
 
     def initialize(@destination : ::IO, @document : Pdfbox::Pdmodel::Document, @parameters : Pdfbox::Pdfwriter::Compress::CompressParameters = Pdfbox::Pdfwriter::Compress::CompressParameters::DEFAULT_COMPRESSION)
       # Check if document has encryption
@@ -49,11 +52,13 @@ module Pdfbox::Pdfwriter
       cos_writer = COSWriter.new(@destination, @will_encrypt, @security_handler)
       xref_writer = XRefWriter.new(@destination)
       xref_writer.add_entry(0_i64, 65535_i64, :free)
+      has_encryption = !@document.encryption.nil?
+      page_start = has_encryption ? 4 : 3
+      @next_object_number = page_start + @document.page_count
       write_catalog_object(cos_writer, xref_writer)
       write_pages_object(xref_writer)
 
       # Write encryption dictionary object if document is encrypted
-      has_encryption = !@document.encryption.nil?
       if encryption = @document.encryption
         encryption_object_number = 3
         encryption_offset = @destination.pos.to_i64
@@ -65,9 +70,6 @@ module Pdfbox::Pdfwriter
       end
 
       # Write each page object
-      deferred_stream_objects = [] of Tuple(Int32, Pdfbox::Cos::Stream)
-      page_start = has_encryption ? 4 : 3
-      next_object_number = page_start + @document.page_count
       @document.page_count.times do |i|
         page_offset = @destination.pos.to_i64
         xref_writer.add_entry(page_offset, 0_i64, :in_use)
@@ -100,14 +102,7 @@ module Pdfbox::Pdfwriter
             )
             cos_writer.write_name(key)
             @destination << ' '
-            if key_name == "Contents" && materialized_value.is_a?(Pdfbox::Cos::Stream)
-              stream_object_number = next_object_number
-              next_object_number += 1
-              deferred_stream_objects << {stream_object_number, materialized_value}
-              @destination << stream_object_number << " 0 R"
-            else
-              cos_writer.write(materialized_value)
-            end
+            cos_writer.write(materialized_value)
             @destination << '\n'
           end
         end
@@ -115,13 +110,16 @@ module Pdfbox::Pdfwriter
         @destination << "endobj\n"
       end
 
-      deferred_stream_objects.each do |stream_object_number, stream|
+      deferred_stream_index = 0
+      while deferred_stream_index < @deferred_stream_objects.size
+        stream_object_number, stream = @deferred_stream_objects[deferred_stream_index]
         stream_offset = @destination.pos.to_i64
         xref_writer.add_entry(stream_offset, 0_i64, :in_use)
         @destination << stream_object_number << " 0 obj\n"
         cos_writer.write_stream(stream, stream_object_number.to_i64, 0_i64)
         @destination << '\n'
         @destination << "endobj\n"
+        deferred_stream_index += 1
       end
 
       # Write xref table
@@ -135,7 +133,7 @@ module Pdfbox::Pdfwriter
       @destination << "/Root 1 0 R\n"
 
       # Add encryption dictionary reference to trailer if document is encrypted
-      if encryption = @document.encryption
+      if @document.encryption
         @destination << "/Encrypt 3 0 R\n"
       end
 
@@ -228,14 +226,7 @@ module Pdfbox::Pdfwriter
       when Pdfbox::Cos::Stream
         object_id = base.object_id.to_u64
         return Pdfbox::Cos::Null.instance if stack.includes?(object_id)
-
-        stack << object_id
-        clone = Pdfbox::Cos::Stream.new({} of Pdfbox::Cos::Name => Pdfbox::Cos::Base, base.data.dup)
-        base.entries.each do |key, value|
-          clone[key] = materialize_for_write(value, stack)
-        end
-        stack.delete(object_id)
-        clone
+        register_deferred_stream(base, stack)
       when Pdfbox::Cos::Dictionary
         object_id = base.object_id.to_u64
         return Pdfbox::Cos::Null.instance if stack.includes?(object_id)
@@ -265,6 +256,26 @@ module Pdfbox::Pdfwriter
       else
         base
       end
+    end
+
+    private def register_deferred_stream(base : Pdfbox::Cos::Stream, stack : Set(UInt64)) : Pdfbox::Cos::Object
+      object_id = base.object_id.to_u64
+      if object_number = @stream_object_numbers[object_id]?
+        return Pdfbox::Cos::Object.new(object_number, 0_i64, base)
+      end
+
+      stack << object_id
+      clone = Pdfbox::Cos::Stream.new({} of Pdfbox::Cos::Name => Pdfbox::Cos::Base, base.data.dup)
+      base.entries.each do |key, value|
+        clone[key] = materialize_for_write(value, stack)
+      end
+      stack.delete(object_id)
+
+      object_number = @next_object_number
+      @next_object_number += 1
+      @stream_object_numbers[object_id] = object_number
+      @deferred_stream_objects << {object_number, clone}
+      Pdfbox::Cos::Object.new(object_number, 0_i64, clone)
     end
 
     # Write with encryption
@@ -302,6 +313,8 @@ module Pdfbox::Pdfwriter
     # Write a COS object
     def write(object : Pdfbox::Cos::Base) : Nil
       case object
+      when Pdfbox::Cos::Stream
+        write_stream(object)
       when Pdfbox::Cos::Dictionary
         write_dictionary(object)
       when Pdfbox::Cos::Array
@@ -316,8 +329,6 @@ module Pdfbox::Pdfwriter
         write_boolean(object)
       when Pdfbox::Cos::Null
         write_null(object)
-      when Pdfbox::Cos::Stream
-        write_stream(object)
       when Pdfbox::Cos::Object
         write_object_reference(object)
       else
@@ -380,6 +391,8 @@ module Pdfbox::Pdfwriter
       if @will_encrypt && (handler = @security_handler)
         handler.encrypt_stream(stream, obj_num, gen_num)
       end
+
+      stream[Pdfbox::Cos::Name::LENGTH] = Pdfbox::Cos::Integer.new(stream.data.size)
 
       # Write stream dictionary
       write_dictionary(stream)

@@ -55,7 +55,7 @@ module Pdfbox::Pdmodel
     end
 
     private def self.get_inheritable_attribute(node : Cos::Dictionary, key : Cos::Name, visited : Set(Cos::Dictionary)) : Cos::Base?
-      return nil if visited.includes?(node)
+      return if visited.includes?(node)
       visited.add(node)
 
       value = node[key]
@@ -71,7 +71,7 @@ module Pdfbox::Pdmodel
 
     private def self.get_parent_node(node : Cos::Dictionary) : Cos::Dictionary?
       parent = node[Cos::Name.new("Parent")] || node[Cos::Name.new("P")]
-      return nil unless parent
+      return unless parent
 
       if parent.is_a?(Cos::Object)
         parent = parent.object
@@ -83,7 +83,7 @@ module Pdfbox::Pdmodel
     # Instance method version for use within the class
     private def get_parent_node(node : Cos::Dictionary) : Cos::Dictionary?
       parent = node[Cos::Name.new("Parent")] || node[Cos::Name.new("P")]
-      return nil unless parent
+      return unless parent
 
       if parent.is_a?(Cos::Object)
         parent = parent.object

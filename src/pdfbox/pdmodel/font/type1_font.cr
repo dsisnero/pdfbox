@@ -6,6 +6,13 @@ require "./encoding/win_ansi_encoding"
 require "./encoding/symbol_encoding"
 require "./encoding/zapf_dingbats_encoding"
 require "./standard14_fonts"
+require "./font_mapper"
+require "./type1_font_embedder"
+require "./encoding/type1_encoding"
+require "../../../fontbox/type1/type1_font"
+require "../../../fontbox/pfb/pfb_parser"
+require "../common/pdstream"
+require "../common/pdrectangle"
 
 class Pdfbox::Pdmodel::Font::PDType1Font < Pdfbox::Pdmodel::Font::PDSimpleFont
   include PDVectorFont
@@ -13,32 +20,7 @@ class Pdfbox::Pdmodel::Font::PDType1Font < Pdfbox::Pdmodel::Font::PDSimpleFont
   Log = ::Log.for(self)
   Cos = Pdfbox::Cos
 
-  # Placeholder types for missing dependencies
-  class Type1Font
-  end
-
-  class PDDocument
-    # Placeholder for PDDocument
-  end
-
-  class FontBoxFont
-    def name : String
-      "?"
-    end
-
-    def has_glyph?(name : String) : Bool
-      false
-    end
-
-    def get_width(name : String) : Float32
-      0.0_f32
-    end
-
-    def get_path(name : String)
-      # Returns GeneralPath placeholder
-      nil
-    end
-  end
+  alias PDDocument = Pdfbox::Pdmodel::PDDocument
 
   class AffineTransform
     getter a : Float32
@@ -76,28 +58,6 @@ class Pdfbox::Pdmodel::Font::PDType1Font < Pdfbox::Pdmodel::Font::PDSimpleFont
     end
   end
 
-  class FontMapping(T)
-    getter font : T
-    @fallback : Bool
-
-    def initialize(@font : T, @fallback : Bool)
-    end
-
-    def fallback? : Bool
-      @fallback
-    end
-  end
-
-  class FontMappers
-    def self.instance
-      FontMappers.new
-    end
-
-    def get_font_box_font(base_font : String, font_descriptor)
-      FontMapping(FontBoxFont).new(FontBoxFont.new, false)
-    end
-  end
-
   # Constants
   # alternative names for glyphs which are commonly encountered
   ALT_NAMES = {
@@ -115,8 +75,8 @@ class Pdfbox::Pdmodel::Font::PDType1Font < Pdfbox::Pdmodel::Font::PDSimpleFont
   PFB_START_MARKER = 0x80
 
   # Instance variables
-  @type1font : Type1Font?
-  @generic_font : FontBoxFont?
+  @type1font : Fontbox::Type1::Type1Font?
+  @generic_font : Fontbox::FontBoxFont?
   @is_embedded : Bool
   @is_damaged : Bool
   @font_matrix_transform : AffineTransform?
@@ -194,33 +154,26 @@ class Pdfbox::Pdmodel::Font::PDType1Font < Pdfbox::Pdmodel::Font::PDSimpleFont
   end
 
   # Constructor for embedding (placeholder)
-  protected def initialize(doc : PDDocument, pfb_in : IO)
-    super() # embedding constructor
-    @standard14 = false
-    @type1font = nil
-    @generic_font = nil
-    @is_embedded = true
-    @is_damaged = false
-    @font_matrix_transform = nil
-    @code_to_bytes_map = Hash(Int32, Bytes).new
-    @font_matrix = nil
-    @font_bbox = nil
-    raise "Not implemented"
+  def initialize(doc : PDDocument, pfb_in : ::IO)
+    initialize(doc, pfb_in, nil)
   end
 
   # Constructor with encoding (placeholder)
-  protected def initialize(doc : PDDocument, pfb_in : IO, encoding : Pdfbox::Pdmodel::Font::Encoding::Encoding)
+  def initialize(doc : PDDocument, pfb_in : ::IO, encoding : Pdfbox::Pdmodel::Font::Encoding::Encoding?)
     super() # embedding constructor
     @standard14 = false
-    @type1font = nil
-    @generic_font = nil
+    embedder = Pdfbox::Pdmodel::Font::PDType1FontEmbedder.new(doc, @dict, pfb_in, encoding)
+    type1 = embedder.type1_font
+    @type1font = type1
+    @generic_font = type1
     @is_embedded = true
     @is_damaged = false
-    @font_matrix_transform = nil
+    @font_matrix = matrix_from_type1(type1)
+    @font_bbox = bounding_box_from_type1(type1)
+    @font_matrix_transform = AffineTransform.from_font_matrix(font_matrix)
     @code_to_bytes_map = Hash(Int32, Bytes).new
-    @font_matrix = nil
-    @font_bbox = nil
-    raise "Not implemented"
+    @encoding = embedder.font_encoding
+    assign_glyph_list(Standard14Fonts.get_mapped_font_name(type1.name))
   end
 
   # Constructor from font dictionary
@@ -245,6 +198,8 @@ class Pdfbox::Pdmodel::Font::PDType1Font < Pdfbox::Pdmodel::Font::PDSimpleFont
       @afm_standard14 = Standard14Fonts.get_afm(standard14_name.to_s)
     end
 
+    parse_embedded_type1
+
     # Set up encoding
     if base_font.includes?("ZapfDingbats")
       @encoding = Encoding::ZapfDingbatsEncoding::INSTANCE
@@ -268,21 +223,27 @@ class Pdfbox::Pdmodel::Font::PDType1Font < Pdfbox::Pdmodel::Font::PDSimpleFont
   end
 
   protected def get_standard14_width(code : Int32) : Float32
-    return 0.0_f32 unless afm = @afm_standard14
+    afm = get_standard14_afm
+    if afm
+      name_in_afm = encoding.get_name(code)
 
-    # Get glyph name from encoding
-    name = encoding.get_name(code)
-    return 0.0_f32 if name.empty?
+      if name_in_afm == ".notdef"
+        return 250.0_f32
+      end
 
-    # Get width from AFM
-    width = afm.character_width(name)
+      if name_in_afm == "nbspace"
+        name_in_afm = "space"
+      elsif name_in_afm == "sfthyphen"
+        name_in_afm = "hyphen"
+      end
 
-    # Transform width if needed
-    transform_width(width)
+      return afm.character_width(name_in_afm)
+    end
+    raise "No AFM"
   end
 
   protected def read_encoding_from_font : Pdfbox::Pdmodel::Font::Encoding::Encoding
-    # TODO: Implement encoding extraction from font file
+    return Encoding::Type1Encoding.new if @type1font
     Encoding::StandardEncoding::INSTANCE
   end
 
@@ -296,12 +257,33 @@ class Pdfbox::Pdmodel::Font::PDType1Font < Pdfbox::Pdmodel::Font::PDSimpleFont
   end
 
   def get_path(name : String)
-    # TODO: Return GeneralPath type
-    nil
+    return Fontbox::Util::Path.new if name == ".notdef" && !embedded?
+
+    if standard14?
+      mapped_name = Standard14Fonts.get_mapped_font_name(self.name) || Standard14Fonts::FontName.new(self.name)
+      return Standard14Fonts.get_glyph_path(mapped_name, name)
+    end
+
+    if type1font = @type1font
+      return type1font.path(name)
+    end
+
+    if generic_font = @generic_font
+      return generic_font.path(name)
+    end
+
+    Fontbox::Util::Path.new
   end
 
   def has_glyph?(name : String) : Bool
-    @generic_font.try(&.has_glyph?(name)) || false
+    return !get_path(name).empty? if standard14?
+    if type1font = @type1font
+      return type1font.has_glyph?(name)
+    end
+    if generic_font = @generic_font
+      return generic_font.has_glyph?(name)
+    end
+    false
   end
 
   def font_box_font
@@ -311,23 +293,23 @@ class Pdfbox::Pdmodel::Font::PDType1Font < Pdfbox::Pdmodel::Font::PDSimpleFont
   # PDFont abstract method implementations
 
   def name : String
-    @dict[Pdfbox::Cos::Name::BASE_FONT]?.try(&.to_s) || "Unknown"
+    base_font = get_base_font
+    base_font.empty? ? "Unknown" : base_font
   end
 
   def font_matrix : Matrix
     if @font_matrix.nil?
-      # TODO: Try to get from generic_font
-      @font_matrix = DEFAULT_FONT_MATRIX
+      @font_matrix = matrix_from_font_box_font || DEFAULT_FONT_MATRIX
     end
     @font_matrix.not_nil! # ameba:disable Lint/NotNil
   end
 
   def bounding_box : BoundingBox
-    @font_bbox ||= BoundingBox.new # TODO: Generate bounding box
+    @font_bbox ||= bounding_box_from_font_box_font || BoundingBox.new
   end
 
   def position_vector(code : Int32) : Vector
-    Vector.new # TODO: Implement
+    Vector.new(0.0_f32, 0.0_f32)
   end
 
   def width(code : Int32) : Float32
@@ -343,8 +325,19 @@ class Pdfbox::Pdmodel::Font::PDType1Font < Pdfbox::Pdmodel::Font::PDSimpleFont
       return get_standard14_width(code)
     end
 
-    # TODO: Get width from font
+    if type1font = @type1font
+      glyph_name = encoding.get_name(code)
+      return type1font.width(glyph_name)
+    end
+
     0.0_f32
+  end
+
+  def height(code : Int32) : Float32
+    return 0.0_f32 if damaged?
+    bbox = bounding_box
+    return 0.0_f32 if bbox.height == 0.0_f32
+    bbox.height / 1000.0_f32
   end
 
   private def transform_width(width : Float32) : Float32
@@ -364,12 +357,12 @@ class Pdfbox::Pdmodel::Font::PDType1Font < Pdfbox::Pdmodel::Font::PDSimpleFont
       return 250.0_f32
     end
 
-    width = if generic_font = @generic_font
-              font_width = generic_font.get_width(name)
-              # If generic font returns 0, fall back to Standard 14 width
-              font_width == 0.0_f32 ? get_standard14_width(code) : font_width
-            else
+    width = if standard14?
               get_standard14_width(code)
+            elsif type1font = @type1font
+              type1font.width(name)
+            else
+              0.0_f32
             end
 
     transform_width(width)
@@ -392,39 +385,44 @@ class Pdfbox::Pdmodel::Font::PDType1Font < Pdfbox::Pdmodel::Font::PDSimpleFont
   end
 
   def encode(unicode : Int32) : Bytes
-    # Check cache
     if cached = @code_to_bytes_map[unicode]?
       return cached
     end
 
-    # Get glyph list based on font type
     glyph_list = if standard14? && get_base_font.includes?("ZapfDingbats")
                    GlyphList.zapf_dingbats
                  else
                    GlyphList.adobe_glyph_list
                  end
 
-    # Get glyph name from Unicode
     name = glyph_list.code_point_to_name(unicode)
-    if name == ".notdef"
-      # Try to get from Adobe Glyph List as fallback
-      name = GlyphList.adobe_glyph_list.code_point_to_name(unicode)
-    end
-
-    # Apply alternative name mapping
     name = ALT_NAMES[name]? || name
 
-    # Get code from encoding
-    code = encoding.get_code(name)
-    if code == -1
-      # Fallback to .notdef
-      code = encoding.get_code(".notdef")
-      if code == -1
-        code = 0
+    if standard14?
+      unless encoding.contains(name)
+        raise ArgumentError.new(
+          "U+#{unicode.to_s(16).upcase.rjust(4, '0')} ('#{name}') is not available in the font #{name()}, encoding: #{encoding.encoding_name}"
+        )
+      end
+      if name == ".notdef"
+        raise ArgumentError.new(
+          "No glyph for U+#{unicode.to_s(16).upcase.rjust(4, '0')} in the font #{name()}"
+        )
       end
     end
 
-    # Create bytes (simple fonts use 1-byte codes)
+    code = encoding.get_code(name)
+    if code == -1
+      generic_name = begin
+        @generic_font.try(&.name) || "?"
+      rescue
+        "?"
+      end
+      raise ArgumentError.new(
+        "U+#{unicode.to_s(16).upcase.rjust(4, '0')} ('#{name}') is not available in the font #{name()} (generic: #{generic_name}), encoding: #{encoding.encoding_name}"
+      )
+    end
+
     bytes = Bytes.new(1)
     bytes[0] = code.to_u8
     @code_to_bytes_map[unicode] = bytes
@@ -440,18 +438,16 @@ class Pdfbox::Pdmodel::Font::PDType1Font < Pdfbox::Pdmodel::Font::PDSimpleFont
   # PDVectorFont interface implementation
 
   def get_path(code : Int32)
-    # TODO: Implement glyph path for code
-    nil
+    get_path(encoding.get_name(code))
   end
 
   def get_normalized_path(code : Int32)
-    # TODO: Implement normalized path
-    nil
+    path = get_path(code)
+    path.empty? ? get_path(".notdef") : path
   end
 
   def has_glyph(code : Int32) : Bool
-    # TODO: Implement
-    false
+    encoding.get_name(code) != ".notdef"
   end
 
   # Helper methods
@@ -463,6 +459,113 @@ class Pdfbox::Pdmodel::Font::PDType1Font < Pdfbox::Pdmodel::Font::PDSimpleFont
     else
       ""
     end
+  end
+
+  private def parse_embedded_type1 : Nil
+    fd = font_descriptor
+    return unless fd
+
+    if font_file = fd.font_file
+      begin
+        bytes = font_file.to_byte_array
+        if bytes.size >= 2 && bytes[0] == PFB_START_MARKER.to_u8
+          @type1font = Fontbox::Type1::Type1Font.create_with_pfb(bytes)
+        end
+      rescue ex
+        Log.warn { "Can't read embedded Type1 font #{fd.font_name}: #{ex.message}" }
+        @is_damaged = true
+      end
+    elsif fd.font_file3
+      Log.warn { "/FontFile3 for Type1 font not supported" }
+    end
+
+    if @type1font
+      @generic_font = @type1font
+      @is_embedded = true
+      if type1font = @type1font
+        @font_matrix = matrix_from_type1(type1font)
+        @font_bbox = bounding_box_from_type1(type1font)
+      end
+    else
+      mapping = FontMappers.instance.get_font_box_font(get_base_font, fd)
+      @generic_font = mapping.font
+    end
+  end
+
+  private def matrix_from_font_box_font : Matrix?
+    if type1font = @type1font
+      return matrix_from_type1(type1font)
+    end
+    nil
+  end
+
+  private def bounding_box_from_font_box_font : BoundingBox?
+    if type1font = @type1font
+      return bounding_box_from_type1(type1font)
+    end
+    nil
+  end
+
+  private def matrix_from_type1(type1 : Fontbox::Type1::Type1Font) : Matrix
+    values = type1.font_matrix
+    if values.size >= 6
+      Matrix.new(values[0], values[1], values[2], values[3], values[4], values[5])
+    else
+      DEFAULT_FONT_MATRIX
+    end
+  end
+
+  private def bounding_box_from_type1(type1 : Fontbox::Type1::Type1Font) : BoundingBox
+    bbox = type1.font_bbox
+    BoundingBox.new(
+      bbox.lower_left_x.to_f32,
+      bbox.lower_left_y.to_f32,
+      bbox.upper_right_x.to_f32,
+      bbox.upper_right_y.to_f32
+    )
+  end
+
+  private def build_embedded_font_descriptor(type1 : Fontbox::Type1::Type1Font) : PDFontDescriptor
+    descriptor = PDFontDescriptor.new(Pdfbox::Cos::Dictionary.new)
+    descriptor.font_name = type1.name
+    descriptor.font_family = type1.family_name unless type1.family_name.empty?
+    descriptor.non_symbolic = true
+    descriptor.symbolic = false
+    descriptor.fixed_pitch = type1.fixed_pitch?
+    descriptor.italic = type1.italic_angle != 0.0_f32
+    descriptor.force_bold = type1.force_bold?
+    descriptor.font_bounding_box = Pdfbox::Pdmodel::Common::PDRectangle.new(
+      type1.font_bbox.lower_left_x.to_f32,
+      type1.font_bbox.lower_left_y.to_f32,
+      (type1.font_bbox.upper_right_x - type1.font_bbox.lower_left_x).to_f32,
+      (type1.font_bbox.upper_right_y - type1.font_bbox.lower_left_y).to_f32
+    )
+    descriptor.italic_angle = type1.italic_angle
+    descriptor.ascent = type1.font_bbox.upper_right_y.to_f32
+    descriptor.descent = type1.font_bbox.lower_left_y.to_f32
+    descriptor.cap_height = (type1.blue_values[2]? || type1.font_bbox.upper_right_y).to_f32
+    descriptor.stem_v = 0.0_f32
+    descriptor
+  end
+
+  private def build_pfb_stream(doc : PDDocument, pfb_parser : Fontbox::Pfb::PfbParser, pfb_bytes : Bytes) : Pdfbox::Pdmodel::Common::PDStream
+    stream = Pdfbox::Pdmodel::Common::PDStream.new(doc.document)
+    output = stream.create_output_stream(Pdfbox::Cos::Name::FLATE_DECODE)
+    output.write(pfb_bytes)
+    output.close
+    stream.cos_object[Pdfbox::Cos::Name::LENGTH] = Pdfbox::Cos::Integer.new(pfb_bytes.size)
+    pfb_parser.lengths.each_with_index do |length, index|
+      stream.cos_object[Pdfbox::Cos::Name.new("Length#{index + 1}")] = Pdfbox::Cos::Integer.new(length)
+    end
+    stream
+  end
+
+  private def build_embedded_widths(type1 : Fontbox::Type1::Type1Font, encoding : Pdfbox::Pdmodel::Font::Encoding::Encoding) : Pdfbox::Cos::Array
+    widths = Pdfbox::Cos::Array.new
+    (0..255).each do |code|
+      widths.add(Pdfbox::Cos::Integer.new(type1.width(encoding.get_name(code)).round.to_i))
+    end
+    widths
   end
 
   # TODO: Add remaining methods from Java PDType1Font

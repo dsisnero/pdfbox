@@ -84,7 +84,7 @@ module Pdfbox::Pdmodel::Font
         if token.is_a?(Pdfbox::ContentStream::Operator)
           if token.name == "d1" && arguments.size == 6
             6.times do |index|
-              return nil unless arguments[index].is_a?(Pdfbox::Cos::Number)
+              return unless arguments[index].is_a?(Pdfbox::Cos::Number)
             end
 
             x = to_float32(arguments[2])
@@ -96,7 +96,7 @@ module Pdfbox::Pdmodel::Font
               to_float32(arguments[5]) - y
             )
           end
-          return nil
+          return
         else
           arguments << token.as(Pdfbox::Cos::Base)
         end

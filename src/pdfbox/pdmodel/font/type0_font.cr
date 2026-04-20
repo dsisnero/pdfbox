@@ -1,6 +1,7 @@
 # Composite (Type 0) font implementation
 # Corresponds to PDType0Font in Apache PDFBox
 require "./encoding"
+require "digest/crc32"
 require "./encoding/glyph_list"
 require "./simple_font"
 require "./vector_font"
@@ -12,6 +13,10 @@ require "./cid_font"
 require "./cid_font_type0"
 require "./cid_font_type2"
 require "./font_factory"
+require "./to_unicode_writer"
+require "../common/pdstream"
+require "../common/pdrectangle"
+require "../../../fontbox/ttf/ttf_subsetter"
 
 class Pdfbox::Pdmodel::Font::PDType0Font < Pdfbox::Pdmodel::Font::PDFont
   include PDVectorFont
@@ -40,6 +45,11 @@ class Pdfbox::Pdmodel::Font::PDType0Font < Pdfbox::Pdmodel::Font::PDFont
   @is_descendant_cjk : Bool = false
   @embedder : PDCIDFontType2Embedder?
   @ttf : Fontbox::TTF::TrueTypeFont?
+  @embed_subset : Bool = false
+  @subset_code_points = Set(Int32).new
+  @subset_glyph_ids = Set(Int32).new
+  @subset_applied = false
+  @subset_unicode_to_old_gid = Hash(Int32, Int32).new
 
   # Constructor for reading a Type0 font from a PDF file.
   def initialize(font_dictionary : Pdfbox::Cos::Dictionary)
@@ -76,25 +86,42 @@ class Pdfbox::Pdmodel::Font::PDType0Font < Pdfbox::Pdmodel::Font::PDFont
   protected def initialize(doc : Pdfbox::Pdmodel::PDDocument, ttf : Fontbox::TTF::TrueTypeFont, embed_subset : Bool, close_ttf : Bool, vertical : Bool)
     super() # embedding constructor - creates empty dictionary
 
+    if !embed_subset && ttf.from_collection?
+      raise ::IO::Error.new("Full embedding of TrueType font collections not supported")
+    end
+
     # Store the TrueType font
     @ttf = ttf
+    @embed_subset = embed_subset
+    ttf.enable_vertical_substitutions if vertical
 
     # Initialize other fields
     @gsub_data = GsubData::NO_DATA_FOUND
     @cmap_lookup = nil
+    base_font_name = embed_subset ? subset_font_name(ttf.name) : ttf.name
 
-    # TODO: Implement proper embedding logic
-    # For now, just set up basic fields so tests can run
+    @dict[Pdfbox::Cos::Name::SUBTYPE] = Pdfbox::Cos::Name.new("Type0")
+    @dict[Pdfbox::Cos::Name::BASE_FONT] = Pdfbox::Cos::Name.new(base_font_name)
+    @dict[Pdfbox::Cos::Name::ENCODING] = vertical ? Pdfbox::Cos::Name::IDENTITY_V : Pdfbox::Cos::Name::IDENTITY_H
+
+    descendant_dict = build_descendant_font_dictionary(doc, ttf, base_font_name, vertical)
+    descendants = Pdfbox::Cos::Array.new
+    descendants.add(descendant_dict)
+    @dict[Pdfbox::Cos::Name::DESCENDANT_FONTS] = descendants
+    if to_unicode_stream = build_to_unicode_stream(ttf)
+      @dict[Pdfbox::Cos::Name::TO_UNICODE] = to_unicode_stream
+    end
+    @descendant_font = PDCIDFontType2.new(descendant_dict, self, ttf)
+
     @is_descendant_cjk = false
     @is_cmap_predefined = false
+    read_encoding
+    fetch_cmap_ucs2
 
     # Close TTF if requested
     if close_ttf
       ttf.close
     end
-
-    # Read encoding (will be overridden by descendant font)
-    read_encoding
   end
 
   # Returns the PostScript name of the font.
@@ -176,6 +203,7 @@ class Pdfbox::Pdmodel::Font::PDType0Font < Pdfbox::Pdmodel::Font::PDFont
   # PDFont abstract method implementations
 
   def encode(unicode : Int32) : Bytes
+    add_to_subset(unicode) if will_be_subset?
     descendant_font.encode(unicode)
   end
 
@@ -263,8 +291,8 @@ class Pdfbox::Pdmodel::Font::PDType0Font < Pdfbox::Pdmodel::Font::PDFont
   end
 
   private def unicode_from_type2_font_cmap(code : Int32) : String?
-    return nil unless type2 = descendant_font.as?(PDCIDFontType2)
-    return nil unless font = type2.true_type_font
+    return unless type2 = descendant_font.as?(PDCIDFontType2)
+    return unless font = type2.true_type_font
 
     begin
       cmap = font.unicode_cmap_lookup(false)
@@ -274,7 +302,7 @@ class Pdfbox::Pdmodel::Font::PDType0Font < Pdfbox::Pdmodel::Font::PDFont
               descendant_font.code_to_cid(code)
             end
       codes = cmap.char_codes(gid)
-      return nil if codes.nil? || codes.empty?
+      return if codes.nil? || codes.empty?
 
       first_code = codes[0]
       begin
@@ -341,21 +369,47 @@ class Pdfbox::Pdmodel::Font::PDType0Font < Pdfbox::Pdmodel::Font::PDFont
 
   def add_to_subset(code_point : Int32) : Nil
     raise "This font was created with subsetting disabled" unless will_be_subset?
-    raise "Subsetting not yet implemented"
+    @subset_code_points.add(code_point)
   end
 
   def add_glyphs_to_subset(glyph_ids : Set(Int32)) : Nil
     raise "This font was created with subsetting disabled" unless will_be_subset?
-    raise "Subsetting not yet implemented"
+    @subset_glyph_ids.concat(glyph_ids)
   end
 
   def subset : Nil
     raise "This font was created with subsetting disabled" unless will_be_subset?
-    raise "Subsetting not yet implemented"
+    return if @subset_applied
+    ttf = @ttf
+    return unless ttf
+
+    subsetter = Fontbox::TTF::TTFSubsetter.new(ttf, subset_table_tags)
+    @subset_code_points.each do |code_point|
+      subsetter.add(code_point)
+    end
+
+    @subset_glyph_ids.each do |glyph_id|
+      add_gid_to_subsetter(subsetter, glyph_id)
+    end
+
+    # Match the Java embedder's invisible-code-point handling.
+    subsetter.force_invisible(0x200B)
+    subsetter.force_invisible(0x200C)
+    subsetter.force_invisible(0x2060)
+    subsetter.force_invisible(0xFEFF)
+    @subset_unicode_to_old_gid = subsetter.unicode_to_gid.dup
+
+    subset_bytes_io = ::IO::Memory.new
+    subsetter.write_to_stream(subset_bytes_io)
+    subset_bytes = subset_bytes_io.to_slice
+
+    cid_to_gid = build_subset_cid_to_gid_map(subsetter.gid_map)
+    rebuild_subset_font(subset_bytes, cid_to_gid)
+    @subset_applied = true
   end
 
   def will_be_subset? : Bool
-    false
+    @embed_subset
   end
 
   # Public methods from Java PDType0Font
@@ -455,14 +509,323 @@ class Pdfbox::Pdmodel::Font::PDType0Font < Pdfbox::Pdmodel::Font::PDFont
     new(doc, ttf, embed_subset, true, false)
   end
 
+  def self.load(doc : Pdfbox::Pdmodel::PDDocument, file : ::File, embed_subset : Bool = true) : self
+    random_access_read = Pdfbox::IO::RandomAccessReadBufferedFile.new(file.path)
+    parser = Fontbox::TTF::TTFParser.new
+    ttf = parser.parse(random_access_read)
+    load(doc, ttf, embed_subset)
+  end
+
   # Loads a TTF to be embedded into a document as a vertical Type 0 font.
   #
   # @param doc The PDF document that will hold the embedded font.
   # @param input An input stream of a TrueType font.
   # @param embed_subset True if the font will be subset before embedding.
   # @return A Type0 font with a CIDFontType2 descendant.
-  def self.load_vertical(doc : Pdfbox::Pdmodel::PDDocument, input : IO, embed_subset : Bool = true) : self
-    # TODO: Implement vertical TrueType font parsing and embedding
-    raise "PDType0Font.load_vertical not yet implemented"
+  def self.load_vertical(doc : Pdfbox::Pdmodel::PDDocument, input : ::IO, embed_subset : Bool = true) : self
+    parser = Fontbox::TTF::TTFParser.new(true)
+    ttf = parser.parse_embedded(input)
+    new(doc, ttf, embed_subset, true, true)
+  end
+
+  private def build_descendant_font_dictionary(doc : Pdfbox::Pdmodel::PDDocument, ttf : Fontbox::TTF::TrueTypeFont, base_font_name : String, vertical : Bool) : Pdfbox::Cos::Dictionary
+    descendant = Pdfbox::Cos::Dictionary.new
+    descendant[Pdfbox::Cos::Name::TYPE] = Pdfbox::Cos::Name::FONT
+    descendant[Pdfbox::Cos::Name::SUBTYPE] = Pdfbox::Cos::Name.new("CIDFontType2")
+    descendant[Pdfbox::Cos::Name::BASE_FONT] = Pdfbox::Cos::Name.new(base_font_name)
+    descendant[Pdfbox::Cos::Name::CIDSYSTEMINFO] = PDCIDSystemInfo.new("Adobe", "Identity", 0).cos_object
+    descendant[Pdfbox::Cos::Name.new("CIDToGIDMap")] = Pdfbox::Cos::Name::IDENTITY
+    descendant[Pdfbox::Cos::Name.new("DW")] = Pdfbox::Cos::Integer.new(default_width_for(ttf))
+    descendant[Pdfbox::Cos::Name.new("W")] = build_widths_array(ttf)
+    build_vertical_metrics(descendant, ttf) if vertical
+
+    descriptor = build_font_descriptor(doc, ttf, base_font_name)
+    descendant[Pdfbox::Cos::Name::FONT_DESC] = descriptor.cos_object
+    descendant
+  end
+
+  private def build_font_descriptor(doc : Pdfbox::Pdmodel::PDDocument, ttf : Fontbox::TTF::TrueTypeFont, base_font_name : String) : PDFontDescriptor
+    descriptor = PDFontDescriptor.new(Pdfbox::Cos::Dictionary.new)
+    descriptor.font_name = base_font_name
+    descriptor.non_symbolic = true
+    descriptor.symbolic = false
+
+    if header = ttf.header
+      descriptor.font_bounding_box = Pdfbox::Pdmodel::Common::PDRectangle.new(
+        header.x_min.to_f32,
+        header.y_min.to_f32,
+        (header.x_max - header.x_min).to_f32,
+        (header.y_max - header.y_min).to_f32
+      )
+    end
+
+    if hhea = ttf.horizontal_header
+      units_per_em = ttf.units_per_em
+      scale = units_per_em > 0 ? 1000.0_f32 / units_per_em.to_f32 : 1.0_f32
+      descriptor.ascent = hhea.ascender.to_f32 * scale
+      descriptor.descent = hhea.descender.to_f32 * scale
+      descriptor.cap_height = hhea.ascender.to_f32 * scale
+      descriptor.x_height = (hhea.ascender.to_f32 * scale) / 2.0_f32
+    end
+
+    descriptor.stem_v = 80.0_f32
+    descriptor.italic_angle = ttf.postscript.try(&.italic_angle) || 0.0_f32
+
+    font_data = ttf.original_data
+    descriptor.font_file2 = Pdfbox::Pdmodel::Common::PDStream.new(doc, font_data)
+    descriptor
+  end
+
+  private def rebuild_subset_font(subset_bytes : Bytes, cid_to_gid : Hash(Int32, Int32)) : Nil
+    descendant_dict = descendant_font.cos_object
+    base_font_name = base_font
+    font_name = base_font_name.includes?('+') ? base_font_name : subset_font_name(base_font_name)
+
+    descriptor = descendant_font.font_descriptor || PDFontDescriptor.new(Pdfbox::Cos::Dictionary.new)
+    descriptor.font_name = font_name
+    descriptor.font_file2 = Pdfbox::Pdmodel::Common::PDStream.new(Pdfbox::Cos::Stream.new(data: subset_bytes))
+    descendant_dict[Pdfbox::Cos::Name::FONT_DESC] = descriptor.cos_object
+
+    @dict[Pdfbox::Cos::Name::BASE_FONT] = Pdfbox::Cos::Name.new(font_name)
+    descendant_dict[Pdfbox::Cos::Name::BASE_FONT] = Pdfbox::Cos::Name.new(font_name)
+    descendant_dict[Pdfbox::Cos::Name.new("W")] = build_subset_widths_array(cid_to_gid, subset_bytes)
+    descendant_dict[Pdfbox::Cos::Name.new("CIDToGIDMap")] = build_subset_cid_to_gid_stream(cid_to_gid)
+    build_subset_vertical_metrics(descendant_dict, cid_to_gid) if vertical?
+    if to_unicode_stream = build_subset_to_unicode_stream(cid_to_gid)
+      @dict[Pdfbox::Cos::Name::TO_UNICODE] = to_unicode_stream
+    end
+  end
+
+  private def build_subset_widths_array(cid_to_gid : Hash(Int32, Int32), subset_bytes : Bytes) : Pdfbox::Cos::Array
+    parser = Fontbox::TTF::TTFParser.new(true)
+    subset_font = parser.parse(Pdfbox::IO::RandomAccessReadBuffer.new(subset_bytes))
+
+    widths = Pdfbox::Cos::Array.new
+    sorted_cids = cid_to_gid.keys.to_a.sort!
+    segment_start = Int32::MIN
+    current_segment = Pdfbox::Cos::Array.new
+    previous_cid = Int32::MIN
+    hmtx = subset_font.horizontal_metrics
+    units_per_em = subset_font.units_per_em
+    scale = units_per_em > 0 ? 1000.0_f32 / units_per_em.to_f32 : 1.0_f32
+
+    sorted_cids.each do |cid|
+      gid = cid_to_gid[cid]
+      width = hmtx ? (hmtx.advance_width(gid).to_f32 * scale).round.to_i : 0
+
+      if segment_start == Int32::MIN || cid != previous_cid + 1
+        unless segment_start == Int32::MIN
+          widths.add(Pdfbox::Cos::Integer.new(segment_start))
+          widths.add(current_segment)
+        end
+        segment_start = cid
+        current_segment = Pdfbox::Cos::Array.new
+      end
+
+      current_segment.add(Pdfbox::Cos::Integer.new(width))
+      previous_cid = cid
+    end
+
+    unless segment_start == Int32::MIN
+      widths.add(Pdfbox::Cos::Integer.new(segment_start))
+      widths.add(current_segment)
+    end
+
+    widths
+  end
+
+  private def build_subset_cid_to_gid_stream(cid_to_gid : Hash(Int32, Int32)) : Pdfbox::Cos::Stream
+    max_cid = cid_to_gid.keys.max? || 0
+    bytes = Bytes.new((max_cid + 1) * 2, 0_u8)
+    cid_to_gid.each do |cid, gid|
+      offset = cid * 2
+      bytes[offset] = ((gid >> 8) & 0xFF).to_u8
+      bytes[offset + 1] = (gid & 0xFF).to_u8
+    end
+    Pdfbox::Cos::Stream.new(data: bytes)
+  end
+
+  private def build_subset_to_unicode_stream(cid_to_gid : Hash(Int32, Int32)) : Pdfbox::Cos::Stream?
+    writer = ToUnicodeWriter.new
+
+    if @subset_unicode_to_old_gid.empty?
+      ttf = @ttf
+      return unless ttf
+      cmap = ttf.unicode_cmap_lookup(false)
+      cid_to_gid.keys.to_a.sort!.each do |cid|
+        codes = cmap.char_codes(cid)
+        next if codes.nil? || codes.empty?
+        begin
+          writer.add(cid, codes.first.chr.to_s)
+        rescue ArgumentError
+        end
+      end
+    else
+      @subset_unicode_to_old_gid.keys.sort!.each do |unicode|
+        old_gid = @subset_unicode_to_old_gid[unicode]
+        begin
+          writer.add(old_gid, unicode.chr.to_s)
+        rescue ArgumentError
+        end
+      end
+    end
+
+    io = ::IO::Memory.new
+    writer.write_to(io)
+    Pdfbox::Cos::Stream.new(data: io.to_slice)
+  rescue ex : ::IO::Error
+    Log.warn { "Failed to build subset ToUnicode map for #{name}: #{ex.message}" }
+    nil
+  end
+
+  private def build_subset_cid_to_gid_map(new_gid_to_old_gid : Hash(Int32, Int32)) : Hash(Int32, Int32)
+    cid_to_gid = Hash(Int32, Int32).new
+    new_gid_to_old_gid.each do |new_gid, old_gid|
+      cid_to_gid[old_gid] = new_gid
+    end
+    cid_to_gid
+  end
+
+  private def subset_table_tags : Array(String)
+    ["head", "hhea", "loca", "maxp", "cvt ", "prep", "glyf", "hmtx", "fpgm", "gasp", "cmap", "name", "post", "OS/2"]
+  end
+
+  private def add_gid_to_subsetter(subsetter : Fontbox::TTF::TTFSubsetter, glyph_id : Int32) : Nil
+    subsetter.add_glyph_id(glyph_id)
+  end
+
+  private def build_widths_array(ttf : Fontbox::TTF::TrueTypeFont) : Pdfbox::Cos::Array
+    widths = Pdfbox::Cos::Array.new
+    glyph_widths = Pdfbox::Cos::Array.new
+
+    number_of_glyphs = Math.max(ttf.number_of_glyphs, 0)
+    hmtx = ttf.horizontal_metrics
+    units_per_em = ttf.units_per_em
+    scale = units_per_em > 0 ? 1000.0_f32 / units_per_em.to_f32 : 1.0_f32
+
+    number_of_glyphs.times do |gid|
+      advance_width = hmtx ? hmtx.advance_width(gid).to_f32 : 0.0_f32
+      glyph_widths.add(Pdfbox::Cos::Integer.new((advance_width * scale).round.to_i))
+    end
+
+    widths.add(Pdfbox::Cos::Integer.new(0))
+    widths.add(glyph_widths)
+    widths
+  end
+
+  private def default_width_for(ttf : Fontbox::TTF::TrueTypeFont) : Int32
+    hmtx = ttf.horizontal_metrics
+    units_per_em = ttf.units_per_em
+    return 1000 unless hmtx && units_per_em > 0
+
+    (hmtx.advance_width(0).to_f32 * (1000.0_f32 / units_per_em.to_f32)).round.to_i
+  end
+
+  private def build_vertical_metrics(descendant : Pdfbox::Cos::Dictionary, ttf : Fontbox::TTF::TrueTypeFont) : Nil
+    default_metrics = apply_default_vertical_metrics(descendant, ttf)
+    return unless default_metrics
+
+    v, w1, scale = default_metrics
+    heights = build_vertical_metrics_array(ttf, (0...ttf.number_of_glyphs), v, w1, scale)
+    descendant[Pdfbox::Cos::Name.new("W2")] = heights
+  end
+
+  private def build_subset_vertical_metrics(descendant : Pdfbox::Cos::Dictionary, cid_to_gid : Hash(Int32, Int32)) : Nil
+    ttf = @ttf
+    return unless ttf
+
+    default_metrics = apply_default_vertical_metrics(descendant, ttf)
+    if default_metrics.nil?
+      descendant.delete(Pdfbox::Cos::Name.new("DW2"))
+      return
+    end
+
+    v, w1, scale = default_metrics
+    heights = build_vertical_metrics_array(ttf, cid_to_gid.keys.to_a.sort!, v, w1, scale)
+    descendant[Pdfbox::Cos::Name.new("W2")] = heights
+  end
+
+  private def apply_default_vertical_metrics(descendant : Pdfbox::Cos::Dictionary, ttf : Fontbox::TTF::TrueTypeFont) : Tuple(Int32, Int32, Float32)?
+    vhea = ttf.vertical_header
+    return unless vhea
+
+    units_per_em = ttf.units_per_em
+    scale = units_per_em > 0 ? 1000.0_f32 / units_per_em.to_f32 : 1.0_f32
+
+    v = (vhea.ascender.to_f32 * scale).round.to_i
+    w1 = (-vhea.advance_height_max.to_f32 * scale).round.to_i
+    if v != 880 || w1 != -1000
+      dw2 = Pdfbox::Cos::Array.new
+      dw2.add(Pdfbox::Cos::Integer.new(v))
+      dw2.add(Pdfbox::Cos::Integer.new(w1))
+      descendant[Pdfbox::Cos::Name.new("DW2")] = dw2
+    else
+      descendant.delete(Pdfbox::Cos::Name.new("DW2"))
+    end
+
+    {v, w1, scale}
+  end
+
+  private def build_vertical_metrics_array(ttf : Fontbox::TTF::TrueTypeFont, cids : Enumerable(Int32), default_v : Int32, default_w1 : Int32, scale : Float32) : Pdfbox::Cos::Array
+    vmtx = ttf.vertical_metrics
+    glyf = ttf.glyph
+    hmtx = ttf.horizontal_metrics
+    return Pdfbox::Cos::Array.new unless vmtx && glyf && hmtx
+
+    heights = Pdfbox::Cos::Array.new
+    current = Pdfbox::Cos::Array.new
+    previous_cid = Int32::MIN
+
+    cids.each do |cid|
+      glyph = glyf.glyph(cid)
+      next unless glyph
+
+      height = ((glyph.y_maximum.to_f32 + vmtx.top_side_bearing(cid).to_f32) * scale).round.to_i
+      advance = (-vmtx.advance_height(cid).to_f32 * scale).round.to_i
+      next if height == default_v && advance == default_w1
+
+      if previous_cid != cid - 1
+        current = Pdfbox::Cos::Array.new
+        heights.add(Pdfbox::Cos::Integer.new(cid))
+        heights.add(current)
+      end
+
+      width = (hmtx.advance_width(cid).to_f32 * scale).round.to_i
+      current.add(Pdfbox::Cos::Integer.new(advance))
+      current.add(Pdfbox::Cos::Integer.new(width // 2))
+      current.add(Pdfbox::Cos::Integer.new(height))
+      previous_cid = cid
+    end
+
+    heights
+  end
+
+  private def build_to_unicode_stream(ttf : Fontbox::TTF::TrueTypeFont) : Pdfbox::Cos::Stream?
+    cmap = ttf.unicode_cmap_lookup(false)
+    writer = ToUnicodeWriter.new
+
+    (0..0xFFFF).each do |unicode|
+      gid = cmap.glyph_id(unicode)
+      next if gid <= 0
+      begin
+        writer.add(gid, unicode.chr.to_s)
+      rescue ArgumentError
+      end
+    end
+
+    io = ::IO::Memory.new
+    writer.write_to(io)
+    stream = Pdfbox::Cos::Stream.new
+    stream.data = io.to_slice
+    stream
+  rescue ex : ::IO::Error
+    Log.warn { "Failed to build ToUnicode map for #{ttf.name}: #{ex.message}" }
+    nil
+  end
+
+  private def subset_font_name(post_script_name : String) : String
+    checksum = Digest::CRC32.checksum(post_script_name).to_s(16).upcase.rjust(6, '0')
+    tag = checksum[-6, 6].chars.map { |char| ((char.ord % 26) + 'A'.ord).chr }.join
+    "#{tag}+#{post_script_name}"
   end
 end

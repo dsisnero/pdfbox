@@ -700,11 +700,11 @@ module Pdfbox::Text
             if expected_start_of_next_word_x != EXPECTED_START_OF_NEXT_WORD_X_RESET_VALUE &&
                expected_start_of_next_word_x < position_x &&
                (@word_separator.empty? ||
-               (previous.text_position.try(&.unicode) && !previous.text_position.not_nil!.unicode.ends_with?(@word_separator)))
+               (previous_text_position = previous.text_position) && previous_text_position.unicode && !previous_text_position.unicode.ends_with?(@word_separator))
               line << LineItem.word_separator
             end
 
-            if (position.x - previous.text_position.not_nil!.x).abs > (word_spacing + delta_space)
+            if (previous_text_position = previous.text_position) && (position.x - previous_text_position.x).abs > (word_spacing + delta_space)
               max_y_for_line = MAX_Y_FOR_LINE_RESET_VALUE
               max_height_for_line = MAX_HEIGHT_FOR_LINE_RESET_VALUE
               min_y_top_for_line = MIN_Y_TOP_FOR_LINE_RESET_VALUE
@@ -831,9 +831,9 @@ module Pdfbox::Text
             current << word.byte_slice(p, q - p)
 
             if codepoint == 0xFDF2 && q > 0 &&
-               word.char_at(q - 1) &&
-               {0x0627, 0xFE8D}.includes?(word.char_at(q - 1).not_nil!.ord)
-              current << "\u0644\u0644\u0647"
+               (prev_char = word.char_at(q - 1)) &&
+               {0x0627, 0xFE8D}.includes?(prev_char.ord)
+              current << "\u0644\u0644\u0644\u0647"
             else
               normalized = char.to_s.unicode_normalize(:nfkc).strip
               normalized = normalized.reverse if codepoint >= 0xFB1D && normalized.size > 1
@@ -885,7 +885,7 @@ module Pdfbox::Text
         word_positions.clear
         String::Builder.new
       else
-        text = item.text_position.not_nil!
+        text = item.text_position.as(TextPosition)
         line_builder << text.visually_ordered_unicode
         word_positions << text
         line_builder

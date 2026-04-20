@@ -268,7 +268,7 @@ module Pdfbox::Pdmodel::Font
     # Returns the stream of the glyph for the given character code.
     def get_char_proc(code : Int32) : PDType3CharProc?
       cp = char_procs
-      return nil unless cp
+      return unless cp
       name = encoding.get_name(code)
       stream = cp.get_stream(Pdfbox::Cos::Name.new(name))
       stream ? PDType3CharProc.new(self, stream) : nil

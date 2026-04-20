@@ -128,9 +128,6 @@ abstract class Pdfbox::Pdmodel::Font::PDSimpleFont < Pdfbox::Pdmodel::Font::PDFo
           end
         end
         false
-      else
-        # we don't know
-        nil
       end
     end
   end

@@ -90,9 +90,18 @@ class Pdfbox::Pdmodel::Font::GlyphList
       # reverse mapping
       # PDFBOX-3884: take the various standard encodings as canonical,
       # e.g. tilde over ilde
-      # TODO: Implement force_override logic once all encodings are fully implemented
-      # For now, always use put_if_absent to avoid missing encoding tables
-      @unicode_to_name.put_if_absent(string, name)
+      force_override =
+        Pdfbox::Pdmodel::Font::Encoding::WinAnsiEncoding::INSTANCE.contains(name) ||
+          Pdfbox::Pdmodel::Font::Encoding::MacRomanEncoding::INSTANCE.contains(name) ||
+          Pdfbox::Pdmodel::Font::Encoding::MacExpertEncoding::INSTANCE.contains(name) ||
+          Pdfbox::Pdmodel::Font::Encoding::SymbolEncoding::INSTANCE.contains(name) ||
+          Pdfbox::Pdmodel::Font::Encoding::ZapfDingbatsEncoding::INSTANCE.contains(name)
+
+      if force_override
+        @unicode_to_name[string] = name
+      else
+        @unicode_to_name.put_if_absent(string, name)
+      end
     end
   end
 
@@ -118,7 +127,7 @@ class Pdfbox::Pdmodel::Font::GlyphList
   # @param name PostScript glyph name
   # @return Unicode character(s), or nil.
   def to_unicode(name : String) : String?
-    return nil if name.nil?
+    return if name.nil?
 
     unicode = @name_to_unicode[name]?
     return unicode if unicode

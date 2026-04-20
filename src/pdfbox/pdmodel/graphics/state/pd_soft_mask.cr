@@ -12,7 +12,7 @@ module Pdfbox::Pdmodel::Graphics::State
     def self.create(dictionary : Pdfbox::Cos::Base) : PDSoftMask?
       case dictionary
       when Pdfbox::Cos::Name
-        return nil if dictionary.name == "None"
+        return if dictionary.name == "None"
         nil
       when Pdfbox::Cos::Dictionary
         PDSoftMask.new(dictionary)

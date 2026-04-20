@@ -1,32 +1,27 @@
 module Pdfbox::Pdmodel::Interactive::Action
   module PDActionFactory
-    def self.create_action(action : Cos::Dictionary?) : PDAction?
-      return nil unless action
+    BUILDERS = {
+      PDActionJavaScript::SUB_TYPE   => ->(dict : Cos::Dictionary) { PDActionJavaScript.new(dict).as(PDAction) },
+      PDActionURI::SUB_TYPE          => ->(dict : Cos::Dictionary) { PDActionURI.new(dict).as(PDAction) },
+      PDActionNamed::SUB_TYPE        => ->(dict : Cos::Dictionary) { PDActionNamed.new(dict).as(PDAction) },
+      PDActionImportData::SUB_TYPE   => ->(dict : Cos::Dictionary) { PDActionImportData.new(dict).as(PDAction) },
+      PDActionEmbeddedGoTo::SUB_TYPE => ->(dict : Cos::Dictionary) { PDActionEmbeddedGoTo.new(dict).as(PDAction) },
+      PDActionHide::SUB_TYPE         => ->(dict : Cos::Dictionary) { PDActionHide.new(dict).as(PDAction) },
+      PDActionMovie::SUB_TYPE        => ->(dict : Cos::Dictionary) { PDActionMovie.new(dict).as(PDAction) },
+      PDActionSound::SUB_TYPE        => ->(dict : Cos::Dictionary) { PDActionSound.new(dict).as(PDAction) },
+      PDActionSubmitForm::SUB_TYPE   => ->(dict : Cos::Dictionary) { PDActionSubmitForm.new(dict).as(PDAction) },
+      PDActionResetForm::SUB_TYPE    => ->(dict : Cos::Dictionary) { PDActionResetForm.new(dict).as(PDAction) },
+      PDActionThread::SUB_TYPE       => ->(dict : Cos::Dictionary) { PDActionThread.new(dict).as(PDAction) },
+      PDActionLaunch::SUB_TYPE       => ->(dict : Cos::Dictionary) { PDActionLaunch.new(dict).as(PDAction) },
+      PDActionGoTo::SUB_TYPE         => ->(dict : Cos::Dictionary) { PDActionGoTo.new(dict).as(PDAction) },
+      PDActionRemoteGoTo::SUB_TYPE   => ->(dict : Cos::Dictionary) { PDActionRemoteGoTo.new(dict).as(PDAction) },
+    } of String => Proc(Cos::Dictionary, PDAction)
 
-      case action[Cos::Name.new("S")]?.as?(Cos::Name).try(&.value)
-      when PDActionJavaScript::SUB_TYPE
-        PDActionJavaScript.new(action)
-      when PDActionURI::SUB_TYPE
-        PDActionURI.new(action)
-      when PDActionNamed::SUB_TYPE
-        PDActionNamed.new(action)
-      when PDActionImportData::SUB_TYPE
-        PDActionImportData.new(action)
-      when PDActionEmbeddedGoTo::SUB_TYPE
-        PDActionEmbeddedGoTo.new(action)
-      when PDActionHide::SUB_TYPE
-        PDActionHide.new(action)
-      when PDActionSubmitForm::SUB_TYPE
-        PDActionSubmitForm.new(action)
-      when PDActionLaunch::SUB_TYPE
-        PDActionLaunch.new(action)
-      when PDActionGoTo::SUB_TYPE
-        PDActionGoTo.new(action)
-      when PDActionRemoteGoTo::SUB_TYPE
-        PDActionRemoteGoTo.new(action)
-      else
-        PDAction.new(action)
-      end
+    def self.create_action(action : Cos::Dictionary?) : PDAction?
+      return unless action
+
+      subtype = action[Cos::Name.new("S")]?.as?(Cos::Name).try(&.value)
+      BUILDERS[subtype]?.try(&.call(action)) || PDAction.new(action)
     end
   end
 end

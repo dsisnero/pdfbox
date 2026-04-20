@@ -145,10 +145,10 @@ abstract class Pdfbox::Pdmodel::Font::PDFont
   # Loads the ToUnicode CMap from the font dictionary.
   private def load_unicode_cmap : Fontbox::CMap::CMap?
     to_unicode = @dict[Pdfbox::Cos::Name.new("ToUnicode")]
-    return nil if to_unicode.nil?
+    return if to_unicode.nil?
 
     cmap = read_cmap(to_unicode)
-    return nil if cmap.nil?
+    return if cmap.nil?
 
     if !cmap.has_unicode_mappings?
       name = self.name
@@ -167,7 +167,7 @@ abstract class Pdfbox::Pdmodel::Font::PDFont
   protected def read_cmap(base : Pdfbox::Cos::Base) : Fontbox::CMap::CMap?
     if base.is_a?(Pdfbox::Cos::Object)
       resolved = base.object
-      return nil unless resolved
+      return unless resolved
       return read_cmap(resolved)
     end
 
@@ -193,8 +193,6 @@ abstract class Pdfbox::Pdmodel::Font::PDFont
     desc_dict = @dict.get_dictionary(Pdfbox::Cos::Name::FONT_DESC)
     if desc_dict
       PDFontDescriptor.new(desc_dict)
-    else
-      nil
     end
   end
 

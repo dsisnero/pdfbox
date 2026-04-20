@@ -511,7 +511,7 @@ module Pdfbox::Util
     end
 
     def self.to_string(cal : Time?) : String?
-      return nil if cal.nil?
+      return if cal.nil?
 
       offset = format_tz_offset((cal.offset * 1000).to_i64, "'")
 
@@ -539,9 +539,9 @@ module Pdfbox::Util
     end
 
     def self.to_calendar(text : String?) : Time?
-      return nil if text.nil?
+      return if text.nil?
       value = text.strip
-      return nil if value.empty?
+      return if value.empty?
 
       value = value[2..] if value.starts_with?("D:")
       normalized = normalize_pdf_tz(value.strip)
@@ -560,7 +560,7 @@ module Pdfbox::Util
         begin
           return Time.parse("%04d%02d%02d00%02d00+0000" % {year, month, day, minute}, "%Y%m%d%H%M%S%z", Time::Location::UTC)
         rescue Time::Format::Error
-          return nil
+          return
         end
       end
       nil
@@ -580,7 +580,7 @@ module Pdfbox::Util
         begin
           return Time.parse("%04d%02d%02d%02d%02d%02d%s%02d" % {year, month, day, hour, minute, second, sign_hour, tz_minute}, "%Y%m%d%H%M%S%z", Time::Location::UTC)
         rescue Time::Format::Error
-          return nil
+          return
         end
       end
       nil
@@ -604,7 +604,7 @@ module Pdfbox::Util
     private def self.parse_time_then_slash_date(normalized : String) : Time?
       # Java DIGIT_START_FORMATS: "H:m M/d/yy"
       match = normalized.match(/^(\d{1,2}):(\d{1,2})\s+(\d{1,2})\/(\d{1,2})\/(\d{2}|\d{4})$/)
-      return nil unless match
+      return unless match
 
       hour = match[1].to_i
       minute = match[2].to_i
@@ -619,7 +619,7 @@ module Pdfbox::Util
     private def self.parse_compact_date_time(normalized : String) : Time?
       match = normalized.match(/^(\d{8})\s+(\d{1,2}):(\d{1,2}):(\d{1,2})$/) ||
               normalized.match(/^(\d{8})\s+(\d{6})$/)
-      return nil unless match
+      return unless match
 
       ymd = match[1]
       year = ymd[0, 4].to_i
@@ -646,7 +646,7 @@ module Pdfbox::Util
 
     private def self.parse_compact_with_z_prefixed_offset(normalized : String) : Time?
       match = normalized.match(/^(\d{8})\s+(\d{1,2}):(\d{1,2}):(\d{1,2})\s+Z([+-]\d{2})(\d{2})$/)
-      return nil unless match
+      return unless match
 
       ymd = match[1]
       year = ymd[0, 4].to_i
@@ -664,7 +664,7 @@ module Pdfbox::Util
     private def self.parse_compact_ymd_colon_time(normalized : String) : Time?
       # Java DIGIT_START_FORMATS: "yyyymmddhh:mm:ss" (lenient hour field width)
       match = normalized.match(/^(\d{8})(\d{1,2}):(\d{1,2}):(\d{1,2})$/)
-      return nil unless match
+      return unless match
 
       ymd = match[1]
       year = ymd[0, 4].to_i
@@ -709,7 +709,7 @@ module Pdfbox::Util
         .gsub(/\s+/, " ")
         .strip
 
-      return nil if prepared.empty?
+      return if prepared.empty?
 
       formats = {
         "%A %d %b %Y %I:%M:%S %p",
@@ -742,10 +742,10 @@ module Pdfbox::Util
       # Java ALPHA_START_FORMATS: "EEEE MMM dd HH:mm:ss z yy" (also handles 4-digit year).
       pattern = /^([A-Za-z]+)\s+([A-Za-z]+)\s+(\d{1,2})\s+(\d{1,2}):(\d{1,2}):(\d{1,2})\s+(?:GMT|UTC)?([+-]\d{1,2})(?::?(\d{2}))?\s+(\d{2}|\d{4})$/
       match = normalized.match(pattern)
-      return nil unless match
+      return unless match
 
       month = month_from_name(match[2])
-      return nil unless month
+      return unless month
       day = match[3].to_i
       hour = match[4].to_i
       minute = match[5].to_i
@@ -763,7 +763,7 @@ module Pdfbox::Util
       # Java accepts "...EST" but not unknown IDs like "...EDT".
       pattern = /^(\d{4})-(\d{1,2})-(\d{1,2})T(\d{1,2}):(\d{1,2}):(\d{1,2})([A-Za-z]{3})$/
       match = normalized.match(pattern)
-      return nil unless match
+      return unless match
 
       year = match[1].to_i
       month = match[2].to_i
@@ -773,7 +773,7 @@ module Pdfbox::Util
       second = match[6].to_i
       named_tz = match[7].upcase
       offset_seconds = parse_named_tz_offset(named_tz)
-      return nil unless offset_seconds
+      return unless offset_seconds
 
       build_time_with_offset(year, month, day, hour, minute, second, offset_seconds)
     end
@@ -781,7 +781,7 @@ module Pdfbox::Util
     private def self.parse_iso_non_padded_with_tz(normalized : String) : Time?
       pattern = /^(\d{4})-(\d{1,2})-(\d{1,2})T(\d{1,2}):(\d{1,2}):(\d{1,2})(?:GMT)?([+-]\d{1,2})(?::?(\d{2}))?$/
       match = normalized.match(pattern)
-      return nil unless match
+      return unless match
 
       year = match[1].to_i
       month = match[2].to_i
@@ -856,7 +856,7 @@ module Pdfbox::Util
     private def self.parse_numeric_tz_offset(value : String) : Int32?
       return 0 if value == "Z"
       match = value.match(/^([+-])?\s*(\d{1,2})(?::?(\d{2}))?$/)
-      return nil unless match
+      return unless match
 
       sign = match[1]? || "+"
       hours = match[2].to_i64
@@ -875,7 +875,7 @@ module Pdfbox::Util
     private def self.parse_textual_month_ymd(normalized : String) : Time?
       pattern = /^(\d{4})\s+([A-Za-z]+)\s+(\d{1,2})(?:\s+(\d{1,2}):(\d{1,2})(?::(\d{1,2}))?)?(?:\s+(?:GMT|UTC)\s*([+-])\s*(\d{1,2})(?::?(\d{2}))?)?$/
       match = normalized.match(pattern)
-      return nil unless match
+      return unless match
       build_from_textual_month_match(
         year: match[1].to_i,
         month_name: match[2],
@@ -892,7 +892,7 @@ module Pdfbox::Util
     private def self.parse_textual_month_dmy(normalized : String) : Time?
       pattern = /^(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})(?:\s+(\d{1,2}):(\d{1,2})(?::(\d{1,2}))?)?(?:\s+(?:GMT|UTC)\s*([+-])\s*(\d{1,2})(?::?(\d{2}))?)?$/
       match = normalized.match(pattern)
-      return nil unless match
+      return unless match
       build_from_textual_month_match(
         year: match[3].to_i,
         month_name: match[2],
@@ -910,7 +910,7 @@ module Pdfbox::Util
                                                     hour : Int32, minute : Int32, second : Int32,
                                                     sign : String?, tz_hour : Int32, tz_minute : Int32) : Time?
       month = month_from_name(month_name)
-      return nil unless month
+      return unless month
       raw_seconds = (tz_hour * 3600) + (tz_minute * 60)
       offset_seconds = sign == "-" ? -raw_seconds : raw_seconds
       build_time_with_offset(year, month, day, hour, minute, second, offset_seconds)
@@ -931,7 +931,7 @@ module Pdfbox::Util
     end
 
     private def self.parse_exact(text : String, guard : Regex, format : String) : Time?
-      return nil unless text.matches?(guard)
+      return unless text.matches?(guard)
       begin
         Time.parse(text, format, Time::Location::UTC)
       rescue Time::Format::Error

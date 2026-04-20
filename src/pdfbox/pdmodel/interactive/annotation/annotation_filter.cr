@@ -2,6 +2,6 @@
 module Pdfbox::Pdmodel::Interactive::Annotation
   # Functional interface for filtering annotations
   module AnnotationFilter
-    abstract def accept(annotation : PDAnnotation) : Bool
+    abstract def accept(candidate : PDAnnotation) : Bool
   end
 end

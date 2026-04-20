@@ -1,15 +1,19 @@
 # A circle annotation
 module Pdfbox::Pdmodel::Interactive::Annotation
-  class PDAnnotationCircle < PDAnnotation
+  class PDAnnotationCircle < PDAnnotationSquareCircle
     SUB_TYPE = "Circle"
 
     def initialize(dictionary : Cos::Dictionary = Cos::Dictionary.new)
       super(dictionary)
-      @dictionary[Cos::Name.new("Subtype")] = Cos::Name.new(SUB_TYPE)
+      self.subtype = SUB_TYPE if subtype.nil?
     end
 
-    def subtype : String
-      SUB_TYPE
+    def construct_appearances(document : Pdfbox::Pdmodel::Document? = nil) : Nil
+      if handler = custom_appearance_handler
+        handler.generate_appearance_streams
+      else
+        Handlers::PDCircleAppearanceHandler.new(self, document).generate_appearance_streams
+      end
     end
   end
 end

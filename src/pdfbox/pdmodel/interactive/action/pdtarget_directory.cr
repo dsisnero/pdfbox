@@ -69,8 +69,6 @@ module Pdfbox::Pdmodel::Interactive::Action
       base = @dict["P"]?
       if string = base.as?(Cos::String)
         Pdfbox::Pdmodel::Interactive::DocumentNavigation::Destination::PDNamedDestination.new(string)
-      else
-        nil
       end
     end
 

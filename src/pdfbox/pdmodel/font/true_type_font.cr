@@ -10,11 +10,15 @@ require "./encoding/zapf_dingbats_encoding"
 require "./encoding/mac_roman_encoding"
 require "./encoding/macos_roman_encoding"
 require "./standard14_fonts"
+require "./font_mapper"
 require "../document"
 require "../../../fontbox/ttf/true_type_font"
 require "../../../fontbox/ttf/ttf_tables"
 require "../../../fontbox/ttf/ttf_parser"
+require "../../../fontbox/ttf/open_type_font"
 require "../../../fontbox/util/path"
+require "../common/pdstream"
+require "../common/pdrectangle"
 
 class Pdfbox::Pdmodel::Font::PDTrueTypeFont < Pdfbox::Pdmodel::Font::PDSimpleFont
   include PDVectorFont
@@ -22,187 +26,22 @@ class Pdfbox::Pdmodel::Font::PDTrueTypeFont < Pdfbox::Pdmodel::Font::PDSimpleFon
   Log = ::Log.for(self)
   Cos = Pdfbox::Cos
 
-  # Placeholder types for missing dependencies
-  class OpenTypeFont
-    def postscript? : Bool
-      false
-    end
-  end
-
-  class PDStream
-    def initialize(dict : Pdfbox::Cos::Dictionary); end
-
-    def cos_object : Pdfbox::Cos::Dictionary
-      Pdfbox::Cos::Dictionary.new
-    end
-
-    def create_view
-      RandomAccessRead.new
-    end
-  end
-
-  class RandomAccessRead
-    def read(bytes : Bytes, offset : Int32, length : Int32) : Int32
-      0
-    end
-
-    def seek(pos : Int64) : Nil; end
-
-    def close : Nil; end
-  end
-
-  class RandomAccessReadBuffer
-    def self.create_buffer_from_stream(io : IO) : RandomAccessRead
-      RandomAccessRead.new
-    end
-  end
-
-  class FontMapping(T)
-    getter font : T
-    @fallback : Bool
-
-    def initialize(@font : T, @fallback : Bool)
-    end
-
-    def fallback? : Bool
-      @fallback
-    end
-  end
-
-  class FontMappers
-    @@font_cache = {} of String => Fontbox::TTF::TrueTypeFont
-    private FALLBACK_TTF_PATH = File.expand_path(
-      "../../../../vendor/pdfbox/pdfbox/src/main/resources/org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf",
-      __DIR__
-    )
-    private SYSTEM_FONT_DIRS = [
-      "/System/Library/Fonts/Supplemental",
-      "/Library/Fonts",
-      File.expand_path("~/Library/Fonts"),
-    ]
-
-    def self.instance
-      FontMappers.new
-    end
-
-    def get_true_type_font(base_font : String, font_descriptor)
-      requested = font_request_names(base_font, font_descriptor)
-      requested.each do |font_path|
-        font = load_true_type_font(font_path)
-        return FontMapping(Fontbox::TTF::TrueTypeFont).new(font, font_path == FALLBACK_TTF_PATH) if font
-      end
-
-      FontMapping(Fontbox::TTF::TrueTypeFont).new(load_last_resort_true_type_font(base_font), true)
-    end
-
-    private def font_request_names(base_font : String, font_descriptor) : Array(String)
-      requested_names = [] of String
-      candidate_names(base_font, font_descriptor).each do |font_name|
-        next if font_name.empty?
-        font_paths_for_name(font_name).each do |path|
-          requested_names << path unless requested_names.includes?(path)
-        end
-      end
-      requested_names << FALLBACK_TTF_PATH unless requested_names.includes?(FALLBACK_TTF_PATH)
-      requested_names
-    end
-
-    private def candidate_names(base_font : String, font_descriptor) : Array(String)
-      base_name = normalize_font_name(base_font)
-      family_name = normalize_font_name(font_descriptor.try(&.font_family) || "")
-      bold = font_descriptor.try(&.force_bold?) || base_name.includes?("bold") || family_name.includes?("bold")
-      italic = font_descriptor.try(&.italic?) || base_name.includes?("italic") || base_name.includes?("oblique")
-
-      names = [] of String
-      add_candidate_name(names, base_name)
-      add_candidate_name(names, family_name)
-
-      [base_name, family_name].each do |name|
-        next if name.empty?
-        add_candidate_name(names, styled_variant(name, bold, italic))
-        add_candidate_name(names, styled_variant(strip_style_suffix(name), bold, italic))
-      end
-
-      names
-    end
-
-    private def add_candidate_name(names : Array(String), name : String) : Nil
-      normalized = normalize_font_name(name)
-      return if normalized.empty? || names.includes?(normalized)
-      names << normalized
-    end
-
-    private def normalize_font_name(name) : String
-      name.to_s.gsub(/\A[A-Z]{6}\+/, "").gsub(',', ' ').gsub('-', ' ').squeeze(' ').strip
-    end
-
-    private def strip_style_suffix(name : String) : String
-      name.gsub(/\b(Bold|Italic|Oblique)\b/i, "").squeeze(' ').strip
-    end
-
-    private def styled_variant(name : String, bold : Bool, italic : Bool) : String
-      base = strip_style_suffix(name)
-      return "" if base.empty?
-      parts = [base]
-      parts << "Bold" if bold
-      parts << "Italic" if italic
-      parts.join(' ')
-    end
-
-    private def font_paths_for_name(font_name : String) : Array(String)
-      basenames = [font_name, font_name.gsub(' ', ""), font_name.gsub(' ', "-")]
-      extensions = [".ttf", ".otf", ".ttc"]
-      paths = [] of String
-
-      SYSTEM_FONT_DIRS.each do |dir|
-        next unless Dir.exists?(dir)
-        basenames.each do |basename|
-          extensions.each do |ext|
-            path = File.join(dir, "#{basename}#{ext}")
-            paths << path if File.exists?(path)
-          end
-        end
-      end
-
-      paths
-    end
-
-    private def load_true_type_font(path : String) : Fontbox::TTF::TrueTypeFont?
-      return @@font_cache[path]? if @@font_cache.has_key?(path)
-      return nil unless File.exists?(path)
-
-      font = File.open(path) do |io|
-        parser = Fontbox::TTF::TTFParser.new
-        parser.parse(Pdfbox::IO::RandomAccessReadBuffer.new(io))
-      end
-      @@font_cache[path] = font
-      font
-    rescue ex : ::Exception
-      Log.warn(exception: ex) { "Could not load substitute TrueType font #{path}" }
-      nil
-    end
-
-    private def load_last_resort_true_type_font(base_font : String) : Fontbox::TTF::TrueTypeFont
-      font = load_true_type_font(FALLBACK_TTF_PATH)
-      return font if font
-
-      raise ::IO::Error.new("Fallback TrueType font not found for #{base_font}: #{FALLBACK_TTF_PATH}")
-    end
-  end
-
   class PDTrueTypeFontEmbedder
     getter font_descriptor : PDFontDescriptor
     @font_descriptor : PDFontDescriptor
 
     def initialize(doc : PDDocument, dict : Pdfbox::Cos::Dictionary, ttf : Fontbox::TTF::TrueTypeFont, encoding : Pdfbox::Pdmodel::Font::Encoding::Encoding, pd_font : PDTrueTypeFont)
+      dict[Pdfbox::Cos::Name::TYPE] = Pdfbox::Cos::Name::FONT
       # Set font subtype
       dict[Pdfbox::Cos::Name.new("Subtype")] = Pdfbox::Cos::Name.new("TrueType")
+      dict[Pdfbox::Cos::Name::BASE_FONT] = Pdfbox::Cos::Name.new(ttf.name)
 
       # Set encoding
       dict[Pdfbox::Cos::Name.new("Encoding")] = encoding.cos_object
 
       # Create font descriptor
       @font_descriptor = PDFontDescriptor.new(Pdfbox::Cos::Dictionary.new)
+      @font_descriptor.font_name = ttf.name
 
       # Set symbolic/non-symbolic flags
       if encoding.is_a?(Pdfbox::Pdmodel::Font::Encoding::SymbolEncoding) || encoding.is_a?(Pdfbox::Pdmodel::Font::Encoding::ZapfDingbatsEncoding)
@@ -212,6 +51,28 @@ class Pdfbox::Pdmodel::Font::PDTrueTypeFont < Pdfbox::Pdmodel::Font::PDSimpleFon
         @font_descriptor.symbolic = false
         @font_descriptor.non_symbolic = true
       end
+
+      if header = ttf.header
+        @font_descriptor.font_bounding_box = Pdfbox::Pdmodel::Common::PDRectangle.new(
+          header.x_min.to_f32,
+          header.y_min.to_f32,
+          (header.x_max - header.x_min).to_f32,
+          (header.y_max - header.y_min).to_f32
+        )
+      end
+
+      if hhea = ttf.horizontal_header
+        units_per_em = ttf.units_per_em
+        scale = units_per_em > 0 ? 1000.0_f32 / units_per_em.to_f32 : 1.0_f32
+        @font_descriptor.ascent = hhea.ascender.to_f32 * scale
+        @font_descriptor.descent = hhea.descender.to_f32 * scale
+        @font_descriptor.cap_height = hhea.ascender.to_f32 * scale
+        @font_descriptor.x_height = (hhea.ascender.to_f32 * scale) / 2.0_f32
+      end
+
+      @font_descriptor.stem_v = 80.0_f32
+      @font_descriptor.italic_angle = ttf.postscript.try(&.italic_angle) || 0.0_f32
+      @font_descriptor.font_file2 = Pdfbox::Pdmodel::Common::PDStream.new(doc, ttf.original_data)
 
       # Calculate and set widths
       set_widths(dict, ttf, encoding, pd_font)
@@ -301,7 +162,7 @@ class Pdfbox::Pdmodel::Font::PDTrueTypeFont < Pdfbox::Pdmodel::Font::PDSimpleFon
 
   # Instance variables
   @ttf : Fontbox::TTF::TrueTypeFont?
-  @otf : OpenTypeFont?
+  @otf : Fontbox::TTF::OpenTypeFont?
   @is_embedded : Bool
   @is_damaged : Bool
   @cmap_win_unicode : Fontbox::TTF::CmapSubtable?
@@ -363,7 +224,7 @@ class Pdfbox::Pdmodel::Font::PDTrueTypeFont < Pdfbox::Pdmodel::Font::PDSimpleFon
     end
 
     @ttf = ttf_font
-    @otf = ttf_font.is_a?(OpenTypeFont) && ttf_font.is_supported_otf? ? ttf_font : nil
+    @otf = ttf_font.is_a?(Fontbox::TTF::OpenTypeFont) && ttf_font.supported_otf? ? ttf_font : nil
 
     read_encoding
   end
@@ -372,7 +233,7 @@ class Pdfbox::Pdmodel::Font::PDTrueTypeFont < Pdfbox::Pdmodel::Font::PDSimpleFon
   protected def initialize(doc : PDDocument, ttf : Fontbox::TTF::TrueTypeFont, encoding : Pdfbox::Pdmodel::Font::Encoding::Encoding, close_ttf : Bool)
     super() # embedding constructor
     @ttf = ttf
-    @otf = ttf.is_a?(OpenTypeFont) && ttf.is_supported_otf? ? ttf : nil
+    @otf = ttf.is_a?(Fontbox::TTF::OpenTypeFont) && ttf.supported_otf? ? ttf : nil
     @is_embedded = true
     @is_damaged = false
     @encoding = encoding
@@ -411,10 +272,15 @@ class Pdfbox::Pdmodel::Font::PDTrueTypeFont < Pdfbox::Pdmodel::Font::PDSimpleFon
 
       # synthesize an encoding, so that getEncoding() is always usable
       post = @ttf.try(&.postscript)
+      ttf = @ttf
       code_to_name = Hash(Int32, String).new
 
       (0..256).each do |code|
-        gid = code_to_gid(code)
+        gid = if ttf && code < ttf.number_of_glyphs
+                code
+              else
+                0
+              end
         if gid > 0
           name = nil
           if post
@@ -435,6 +301,12 @@ class Pdfbox::Pdmodel::Font::PDTrueTypeFont < Pdfbox::Pdmodel::Font::PDSimpleFon
   def get_path(name : String) : Fontbox::Util::Path
     ttf = @ttf
     return Fontbox::Util::Path.new if ttf.nil?
+
+    if otf = @otf
+      if otf.post_script?
+        return otf_path_for_name(otf, name)
+      end
+    end
 
     # handle glyph names and uniXXXX names
     gid = ttf.name_to_gid(name)
@@ -470,6 +342,12 @@ class Pdfbox::Pdmodel::Font::PDTrueTypeFont < Pdfbox::Pdmodel::Font::PDSimpleFon
     ttf = @ttf
     return false if ttf.nil?
 
+    if otf = @otf
+      if otf.post_script?
+        return !otf_path_for_name(otf, name).empty?
+      end
+    end
+
     gid = ttf.name_to_gid(name)
     !(gid == 0 || gid >= ttf.number_of_glyphs)
   end
@@ -478,10 +356,14 @@ class Pdfbox::Pdmodel::Font::PDTrueTypeFont < Pdfbox::Pdmodel::Font::PDSimpleFon
     @ttf
   end
 
+  def true_type_font
+    @ttf
+  end
+
   # PDFont abstract method implementations
 
   def name : String
-    @dict[Pdfbox::Cos::Name::BASE_FONT]?.try(&.to_s) || "Unknown"
+    @dict.get_name_as_string(Pdfbox::Cos::Name::BASE_FONT) || "Unknown"
   end
 
   def font_matrix : Matrix
@@ -565,8 +447,20 @@ class Pdfbox::Pdmodel::Font::PDTrueTypeFont < Pdfbox::Pdmodel::Font::PDSimpleFon
   end
 
   def average_font_width : Float32
-    # TODO: Implement
-    0.0_f32
+    ttf = @ttf
+    return 0.0_f32 unless ttf
+    hmtx = ttf.horizontal_metrics
+    return 0.0_f32 unless hmtx
+    glyph_count = ttf.number_of_glyphs
+    return 0.0_f32 if glyph_count <= 0
+
+    total = 0.0_f64
+    (0...glyph_count).each do |gid|
+      total += hmtx.advance_width(gid)
+    end
+    average = total / glyph_count.to_f64
+    units_per_em = ttf.units_per_em.to_f64
+    units_per_em == 1000.0 ? average.to_f32 : (average * 1000.0_f64 / units_per_em).to_f32
   end
 
   protected def get_standard14_width(code : Int32) : Float32
@@ -658,7 +552,7 @@ class Pdfbox::Pdmodel::Font::PDTrueTypeFont < Pdfbox::Pdmodel::Font::PDSimpleFon
     return Fontbox::Util::Path.new if ttf.nil?
 
     if otf = @otf
-      if otf.postscript?
+      if otf.post_script?
         path = get_path_from_outlines(code)
         return path || Fontbox::Util::Path.new
       end
@@ -684,7 +578,7 @@ class Pdfbox::Pdmodel::Font::PDTrueTypeFont < Pdfbox::Pdmodel::Font::PDSimpleFon
     return Fontbox::Util::Path.new if ttf.nil?
 
     path = nil
-    if (otf = @otf) && otf.postscript?
+    if (otf = @otf) && otf.post_script?
       path = get_path_from_outlines(code)
     else
       gid = code_to_gid(code)
@@ -748,11 +642,78 @@ class Pdfbox::Pdmodel::Font::PDTrueTypeFont < Pdfbox::Pdmodel::Font::PDSimpleFon
   end
 
   private def get_path_from_outlines(code : Int32) : Fontbox::Util::Path?
-    # TODO: Implement OpenType CFF outlines
-    nil
+    otf = @otf
+    return unless otf
+    path = otf_path_for_name(otf, encoding.get_name(code))
+    path.empty? ? nil : path
   end
 
-  # ameba:disable Metrics/CyclomaticComplexity
+  private def otf_path_for_name(otf : Fontbox::TTF::OpenTypeFont, name : String) : Fontbox::Util::Path
+    path = otf.path(name)
+    return path unless path.empty?
+
+    gid = otf_gid_for_name(otf, name)
+    if gid > 0
+      cff = otf.cff.font
+      case cff
+      when Fontbox::CFF::CFFCIDFont
+        path = cff.path(gid)
+        return path unless path.empty?
+      when Fontbox::CFF::CFFType1Font
+        if charset = cff.charset
+          if glyph_name = charset.name_for_gid(gid)
+            path = cff.path(glyph_name)
+            return path unless path.empty?
+          end
+        end
+      end
+    end
+
+    if unicode = GlyphList.adobe_glyph_list.to_unicode(name)
+      if unicode.size == 1
+        uni_name = uni_name_of_code_point(unicode.codepoints.first)
+        path = otf.path(uni_name)
+        return path unless path.empty?
+      end
+    end
+
+    Fontbox::Util::Path.new
+  end
+
+  private def otf_gid_for_name(otf : Fontbox::TTF::OpenTypeFont, name : String) : Int32
+    gid = otf.name_to_gid(name)
+    return gid if gid > 0
+
+    unicode = GlyphList.adobe_glyph_list.to_unicode(name)
+    return 0 unless unicode && unicode.size == 1
+
+    code_point = unicode.codepoints.first
+    cmap_table = otf.cmap
+    return 0 unless cmap_table
+
+    cmap_table.cmaps.each do |cmap|
+      platform_id = cmap.platform_id
+      platform_encoding_id = cmap.platform_encoding_id
+      next unless platform_id == Fontbox::TTF::CmapTable::PLATFORM_WINDOWS && platform_encoding_id == Fontbox::TTF::CmapTable::ENCODING_WIN_UNICODE_BMP ||
+                  platform_id == Fontbox::TTF::CmapTable::PLATFORM_UNICODE
+
+      gid = cmap.glyph_id(code_point)
+      return gid if gid > 0
+    end
+
+    0
+  end
+
+  private def uni_name_of_code_point(code_point : Int32) : String
+    hex = code_point.to_s(16).upcase
+    case hex.size
+    when 1 then "uni000#{hex}"
+    when 2 then "uni00#{hex}"
+    when 3 then "uni0#{hex}"
+    else        "uni#{hex}"
+    end
+  end
+
   protected def code_to_gid(code : Int32) : Int32
     extract_cmap_table
 

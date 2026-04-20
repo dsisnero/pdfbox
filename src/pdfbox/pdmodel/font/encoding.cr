@@ -46,8 +46,6 @@ module Pdfbox::Pdmodel::Font
           IdentityEncoding::IDENTITY_H
         elsif name == Cos::Name::IDENTITY_V
           IdentityEncoding::IDENTITY_V
-        else
-          nil
         end
       end
 

@@ -37,6 +37,11 @@ module Pdfbox::Pdmodel::Font
       @dic
     end
 
+    # Get the Length1 field.
+    def length1 : Int64
+      @dic.get_int(Pdfbox::Cos::Name.new("Length1"), 0_i64)
+    end
+
     # Flag convenience methods
     def fixed_pitch? : Bool
       flag_bit_on?(FLAG_FIXED_PITCH)
@@ -154,7 +159,7 @@ module Pdfbox::Pdmodel::Font
 
     # The weight of the font.
     def font_weight : Float32
-      @dic.get_float(Pdfbox::Cos::Name::FONT_WEIGHT, 0_f32)
+      @dic.get_float(Pdfbox::Cos::Name::FONT_WEIGHT, 0_f32).to_f32
     end
 
     # Set the weight of the font.
@@ -195,18 +200,16 @@ module Pdfbox::Pdmodel::Font
       rect = @dic.get_array(Pdfbox::Cos::Name::FONT_BBOX)
       if rect
         Common::PDRectangle.new(rect)
-      else
-        nil
       end
     end
 
     # Set the fonts bounding box.
     def font_bounding_box=(rect : Common::PDRectangle?)
-      array = nil
       if rect
-        array = rect.cos_array
+        @dic[Pdfbox::Cos::Name::FONT_BBOX] = rect.cos_object
+      else
+        @dic.delete(Pdfbox::Cos::Name::FONT_BBOX)
       end
-      @dic[Pdfbox::Cos::Name::FONT_BBOX] = array
     end
 
     # Get the italic angle for the font.
@@ -364,14 +367,16 @@ module Pdfbox::Pdmodel::Font
       stream = @dic.get_stream(Pdfbox::Cos::Name::FONT_FILE)
       if stream
         Common::PDStream.new(stream)
-      else
-        nil
       end
     end
 
     # Set the type 1 font program.
     def font_file=(type1_stream : Common::PDStream?)
-      @dic[Pdfbox::Cos::Name::FONT_FILE] = type1_stream
+      if type1_stream
+        @dic[Pdfbox::Cos::Name::FONT_FILE] = type1_stream.cos_object
+      else
+        @dic.delete(Pdfbox::Cos::Name::FONT_FILE)
+      end
     end
 
     # A stream containing a true type font program.
@@ -379,14 +384,16 @@ module Pdfbox::Pdmodel::Font
       stream = @dic.get_stream(Pdfbox::Cos::Name::FONT_FILE2)
       if stream
         Common::PDStream.new(stream)
-      else
-        nil
       end
     end
 
     # Set the true type font program.
     def font_file2=(ttf_stream : Common::PDStream?)
-      @dic[Pdfbox::Cos::Name::FONT_FILE2] = ttf_stream
+      if ttf_stream
+        @dic[Pdfbox::Cos::Name::FONT_FILE2] = ttf_stream.cos_object
+      else
+        @dic.delete(Pdfbox::Cos::Name::FONT_FILE2)
+      end
     end
 
     # A stream containing a font program that is not true type or type 1.
@@ -394,14 +401,16 @@ module Pdfbox::Pdmodel::Font
       stream = @dic.get_stream(Pdfbox::Cos::Name::FONT_FILE3)
       if stream
         Common::PDStream.new(stream)
-      else
-        nil
       end
     end
 
     # Set a stream containing a font program that is not true type or type 1.
     def font_file3=(stream : Common::PDStream?)
-      @dic[Pdfbox::Cos::Name::FONT_FILE3] = stream
+      if stream
+        @dic[Pdfbox::Cos::Name::FONT_FILE3] = stream.cos_object
+      else
+        @dic.delete(Pdfbox::Cos::Name::FONT_FILE3)
+      end
     end
 
     # Get the CIDSet stream.
@@ -409,14 +418,16 @@ module Pdfbox::Pdmodel::Font
       cid_set = @dic.get_stream(Pdfbox::Cos::Name::CID_SET)
       if cid_set
         Common::PDStream.new(cid_set)
-      else
-        nil
       end
     end
 
     # Set a stream containing a CIDSet.
     def cid_set=(stream : Common::PDStream?)
-      @dic[Pdfbox::Cos::Name::CID_SET] = stream
+      if stream
+        @dic[Pdfbox::Cos::Name::CID_SET] = stream.cos_object
+      else
+        @dic.delete(Pdfbox::Cos::Name::CID_SET)
+      end
     end
 
     # Returns the Panose entry of the Style dictionary, if any.

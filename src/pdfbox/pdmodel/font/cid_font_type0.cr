@@ -16,6 +16,8 @@ module Pdfbox::Pdmodel::Font
     @cid_font : Fontbox::CFF::CFFCIDFont?
     @t1_font : Fontbox::CFF::CFFType1Font?
     @cid2gid : Array(Int32)?
+    @glyph_heights = Hash(Int32, Float32).new
+    @avg_width : Float32?
 
     # Constructor.
     def initialize(font_dictionary : Pdfbox::Cos::Dictionary, parent : PDType0Font)
@@ -58,6 +60,22 @@ module Pdfbox::Pdmodel::Font
       @font_bbox ||= generate_bounding_box
     end
 
+    def cff_font : Fontbox::CFF::CFFFont?
+      @cid_font || @t1_font
+    end
+
+    def font_box_font : Fontbox::CFF::CFFFont?
+      @cid_font || @t1_font
+    end
+
+    def type2_char_string(cid : Int32) : Fontbox::CFF::Type2CharString?
+      if cid_font = @cid_font
+        cid_font.type2_char_string(cid)
+      elsif t1_font = @t1_font
+        t1_font.type2_char_string(cid)
+      end
+    end
+
     private def generate_bounding_box : PDFont::BoundingBox
       if descriptor = font_descriptor
         if bbox = descriptor.font_bounding_box
@@ -87,8 +105,8 @@ module Pdfbox::Pdmodel::Font
 
     def width_from_font(code : Int32) : Float32
       cid = code_to_cid(code)
-      width = if cid_font = @cid_font
-                cid_font.type2_char_string(cid).width.to_f32
+      width = if type2 = type2_char_string(cid)
+                type2.width.to_f32
               elsif embedded? && (t1_font = @t1_font)
                 t1_font.type2_char_string(cid).width.to_f32
               elsif t1_font = @t1_font
@@ -120,13 +138,13 @@ module Pdfbox::Pdmodel::Font
         end
       end
 
-      if cid_font = @cid_font
-        return cid_font.path(cid)
+      if type2 = type2_char_string(cid)
+        return type2.path
+      end
+      if embedded? && (t1_font = @t1_font)
+        return t1_font.type2_char_string(cid).path
       end
       if t1_font = @t1_font
-        if embedded?
-          return t1_font.type2_char_string(cid).path
-        end
         return t1_font.path(glyph_name(code))
       end
       Fontbox::Util::Path.new
@@ -138,16 +156,32 @@ module Pdfbox::Pdmodel::Font
 
     def has_glyph(code : Int32) : Bool
       cid = code_to_cid(code)
-      if cid_font = @cid_font
-        return cid_font.type2_char_string(cid).gid != 0
+      if type2 = type2_char_string(cid)
+        return type2.gid != 0
+      end
+      if embedded? && (t1_font = @t1_font)
+        return t1_font.type2_char_string(cid).gid != 0
       end
       if t1_font = @t1_font
-        if embedded?
-          return t1_font.type2_char_string(cid).gid != 0
-        end
         return t1_font.name_to_gid(glyph_name(code)) != 0
       end
       code_to_gid(code) != 0
+    end
+
+    def height(code : Int32) : Float32
+      cid = code_to_cid(code)
+      return @glyph_heights[cid] if @glyph_heights.has_key?(cid)
+
+      type2 = type2_char_string(cid)
+      return 0.0_f32 unless type2
+
+      height = type2.path.bounds.height.to_f32
+      @glyph_heights[cid] = height
+      height
+    end
+
+    def average_font_width : Float32
+      @avg_width ||= 500.0_f32
     end
 
     # Override parent methods for Type 0 specific logic

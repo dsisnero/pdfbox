@@ -97,7 +97,7 @@ module Pdfbox::Pdmodel::Fdf
 
     def doc : Hash(String, Pdfbox::Pdmodel::Interactive::Action::PDActionJavaScript)?
       array = @cos_object[Pdfbox::Cos::Name.new("Doc")]?.as?(Pdfbox::Cos::Array)
-      return nil unless array
+      return unless array
 
       map = {} of String => Pdfbox::Pdmodel::Interactive::Action::PDActionJavaScript
       i = 0
@@ -729,7 +729,7 @@ module Pdfbox::Pdmodel::Fdf
       alias ASTNode = String | Hash(String, ASTNode) | Array(ASTNode) | NameToken | Nil
 
       private def parse_first_dictionary : Hash(String, ASTNode)?
-        start = @text.index("<<") || return nil
+        start = @text.index("<<") || return
         @index = start
         parse_dict
       end
@@ -826,7 +826,7 @@ module Pdfbox::Pdmodel::Fdf
       end
 
       private def parse_ids(node : ASTNode?) : Array(String)?
-        values = node.as?(Array(ASTNode)) || return nil
+        values = node.as?(Array(ASTNode)) || return
         ids = [] of String
         values.each do |value|
           if string = value.as?(String)
@@ -841,7 +841,7 @@ module Pdfbox::Pdmodel::Fdf
       end
 
       private def field_from_ast(node : ASTNode) : FDFField?
-        dict = node.as?(Hash(String, ASTNode)) || return nil
+        dict = node.as?(Hash(String, ASTNode)) || return
         field = FDFField.new
         populate_field_scalar_entries(field, dict)
         populate_field_value_and_kids(field, dict)
@@ -898,7 +898,7 @@ module Pdfbox::Pdmodel::Fdf
       end
 
       private def options_from_ast(node : ASTNode?) : Array(String | FDFOptionElement)?
-        option_nodes = node.as?(Array(ASTNode)) || return nil
+        option_nodes = node.as?(Array(ASTNode)) || return
         options = [] of String | FDFOptionElement
         option_nodes.each do |option_node|
           case option_node
@@ -917,6 +917,15 @@ module Pdfbox::Pdmodel::Fdf
 
       private def action_from_ast(node : Hash(String, ASTNode)) : Pdfbox::Pdmodel::Interactive::Action::PDAction?
         subtype = name_token_value(node["S"]?)
+        handled_action_from_ast(subtype, node) ||
+          Pdfbox::Pdmodel::Interactive::Action::PDActionFactory.create_action(dictionary_from_ast(node))
+      end
+
+      private def handled_action_from_ast(subtype : String?, node : Hash(String, ASTNode)) : Pdfbox::Pdmodel::Interactive::Action::PDAction?
+        base_action_from_ast(subtype, node) || navigation_action_from_ast(subtype, node)
+      end
+
+      private def base_action_from_ast(subtype : String?, node : Hash(String, ASTNode)) : Pdfbox::Pdmodel::Interactive::Action::PDAction?
         case subtype
         when Pdfbox::Pdmodel::Interactive::Action::PDActionJavaScript::SUB_TYPE
           javascript_action_from_ast(node)
@@ -928,8 +937,21 @@ module Pdfbox::Pdmodel::Fdf
           embedded_goto_action_from_ast(node)
         when Pdfbox::Pdmodel::Interactive::Action::PDActionHide::SUB_TYPE
           hide_action_from_ast(node)
+        when Pdfbox::Pdmodel::Interactive::Action::PDActionSound::SUB_TYPE
+          sound_action_from_ast(node)
         when Pdfbox::Pdmodel::Interactive::Action::PDActionSubmitForm::SUB_TYPE
           submit_form_action_from_ast(node)
+        when Pdfbox::Pdmodel::Interactive::Action::PDActionResetForm::SUB_TYPE
+          reset_form_action_from_ast(node)
+        else
+          nil
+        end
+      end
+
+      private def navigation_action_from_ast(subtype : String?, node : Hash(String, ASTNode)) : Pdfbox::Pdmodel::Interactive::Action::PDAction?
+        case subtype
+        when Pdfbox::Pdmodel::Interactive::Action::PDActionThread::SUB_TYPE
+          thread_action_from_ast(node)
         when Pdfbox::Pdmodel::Interactive::Action::PDActionLaunch::SUB_TYPE
           launch_action_from_ast(node)
         when Pdfbox::Pdmodel::Interactive::Action::PDActionGoTo::SUB_TYPE
@@ -937,7 +959,7 @@ module Pdfbox::Pdmodel::Fdf
         when Pdfbox::Pdmodel::Interactive::Action::PDActionRemoteGoTo::SUB_TYPE
           remote_goto_action_from_ast(node)
         else
-          Pdfbox::Pdmodel::Interactive::Action::PDActionFactory.create_action(dictionary_from_ast(node))
+          nil
         end
       end
 
@@ -995,6 +1017,67 @@ module Pdfbox::Pdmodel::Fdf
           action.flags = flags
         end
         action
+      end
+
+      private def reset_form_action_from_ast(node : Hash(String, ASTNode)) : Pdfbox::Pdmodel::Interactive::Action::PDActionResetForm
+        action = Pdfbox::Pdmodel::Interactive::Action::PDActionResetForm.new
+        if field_nodes = node["Fields"]?.as?(Array(ASTNode))
+          action.fields = generic_array_from_ast(field_nodes)
+        end
+        if flags = ast_int(node["Flags"]?)
+          action.flags = flags
+        end
+        action
+      end
+
+      private def sound_action_from_ast(node : Hash(String, ASTNode)) : Pdfbox::Pdmodel::Interactive::Action::PDActionSound
+        action = Pdfbox::Pdmodel::Interactive::Action::PDActionSound.new
+        if volume = ast_float(node["Volume"]?)
+          action.volume = volume
+        end
+        if synchronous = ast_bool(node["Synchronous"]?)
+          action.synchronous = synchronous
+        end
+        if repeat = ast_bool(node["Repeat"]?)
+          action.repeat = repeat
+        end
+        if mix = ast_bool(node["Mix"]?)
+          action.mix = mix
+        end
+        action
+      end
+
+      private def thread_action_from_ast(node : Hash(String, ASTNode)) : Pdfbox::Pdmodel::Interactive::Action::PDActionThread
+        action = Pdfbox::Pdmodel::Interactive::Action::PDActionThread.new
+        if file_node = node["F"]?
+          if file_spec_base = cos_value_from_ast(file_node)
+            if file_spec = Pdfbox::Pdmodel::Common::Filespecification::PDFileSpecification.create_fs(file_spec_base)
+              action.file = file_spec
+            end
+          end
+        end
+        if destination = thread_scalar_or_cos_value_from_ast(node["D"]?)
+          action.d = destination
+        end
+        if bead_or_thread = thread_scalar_or_cos_value_from_ast(node["B"]?)
+          action.b = bead_or_thread
+        end
+        action
+      end
+
+      private def thread_scalar_or_cos_value_from_ast(node : ASTNode?) : Pdfbox::Cos::Base?
+        case node
+        when String
+          if integer_value = node.to_i64?
+            Pdfbox::Cos::Integer.new(integer_value)
+          else
+            Pdfbox::Cos::String.new(node)
+          end
+        when ASTNode
+          cos_value_from_ast(node)
+        else
+          nil
+        end
       end
 
       private def embedded_goto_action_from_ast(node : Hash(String, ASTNode)) : Pdfbox::Pdmodel::Interactive::Action::PDActionEmbeddedGoTo
@@ -1277,6 +1360,26 @@ module Pdfbox::Pdmodel::Fdf
         end
       end
 
+      private def ast_float(node : ASTNode?) : Float64?
+        case node
+        when String
+          node.to_f64?
+        else
+          nil
+        end
+      end
+
+      private def ast_bool(node : ASTNode?) : Bool?
+        case node
+        when "true"
+          true
+        when "false"
+          false
+        else
+          nil
+        end
+      end
+
       private def remote_destination_array_from_ast(node : Array(ASTNode)) : Pdfbox::Cos::Array
         array = Pdfbox::Cos::Array.new
         node.each_with_index do |item, index|
@@ -1307,7 +1410,7 @@ module Pdfbox::Pdmodel::Fdf
       end
 
       private def page_from_ast(node : ASTNode) : FDFPage?
-        dict = node.as?(Hash(String, ASTNode)) || return nil
+        dict = node.as?(Hash(String, ASTNode)) || return
         page = FDFPage.new
         if info_dict = dict["Info"]?.as?(Hash(String, ASTNode))
           page.page_info = FDFPageInfo.new(dictionary_from_ast(info_dict))
@@ -1320,7 +1423,7 @@ module Pdfbox::Pdmodel::Fdf
       end
 
       private def template_from_ast(node : ASTNode) : FDFTemplate?
-        dict = node.as?(Hash(String, ASTNode)) || return nil
+        dict = node.as?(Hash(String, ASTNode)) || return
         template = FDFTemplate.new
         if tref_dict = dict["TRef"]?.as?(Hash(String, ASTNode))
           template.template_reference = named_page_reference_from_ast(tref_dict)

@@ -48,7 +48,7 @@ module Pdfbox::Pdmodel::Font
     end
 
     protected def parse_cmap(random_access_read : Pdfbox::IO::RandomAccessRead?) : Fontbox::CMap::CMap?
-      return nil if random_access_read.nil?
+      return if random_access_read.nil?
 
       parser = Fontbox::CMap::CMapParser.new
       parser.parse(random_access_read)

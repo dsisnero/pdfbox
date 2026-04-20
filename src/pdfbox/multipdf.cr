@@ -48,50 +48,50 @@ module Pdfbox::Multipdf
     def adjust_rotation=(@adjust_rotation : Bool) : Nil
     end
 
-    def set_input_file(filename : String) : Nil
+    def input_file=(filename : String) : Nil
       @input_pdf_document = Pdmodel::Document.load(filename)
     end
 
-    def set_input_pdf(document : Pdmodel::Document) : Nil
+    def input_pdf=(document : Pdmodel::Document) : Nil
       @input_pdf_document = document
     end
 
-    def set_default_overlay_file(filename : String) : Nil
+    def default_overlay_file=(filename : String) : Nil
       @default_overlay_document = load_pdf(filename)
       if doc = @default_overlay_document
         @default_overlay_page = create_layout_page_from_document(doc)
       end
     end
 
-    def set_first_page_overlay_file(filename : String) : Nil
+    def first_page_overlay_file=(filename : String) : Nil
       @first_page_overlay_document = load_pdf(filename)
       if doc = @first_page_overlay_document
         @first_page_overlay_page = create_layout_page_from_document(doc)
       end
     end
 
-    def set_last_page_overlay_file(filename : String) : Nil
+    def last_page_overlay_file=(filename : String) : Nil
       @last_page_overlay_document = load_pdf(filename)
       if doc = @last_page_overlay_document
         @last_page_overlay_page = create_layout_page_from_document(doc)
       end
     end
 
-    def set_odd_page_overlay_file(filename : String) : Nil
+    def odd_page_overlay_file=(filename : String) : Nil
       @odd_page_overlay_document = load_pdf(filename)
       if doc = @odd_page_overlay_document
         @odd_page_overlay_page = create_layout_page_from_document(doc)
       end
     end
 
-    def set_even_page_overlay_file(filename : String) : Nil
+    def even_page_overlay_file=(filename : String) : Nil
       @even_page_overlay_document = load_pdf(filename)
       if doc = @even_page_overlay_document
         @even_page_overlay_page = create_layout_page_from_document(doc)
       end
     end
 
-    def set_all_pages_overlay_file(filename : String) : Nil
+    def all_pages_overlay_file=(filename : String) : Nil
       @all_pages_overlay_document = load_pdf(filename)
       if doc = @all_pages_overlay_document
         @specific_page_overlay_layout_page_map = create_page_overlay_layout_page_map(doc)

@@ -18,6 +18,7 @@ module Pdfbox::Pdmodel
     @buffer : ::IO::Memory
     @closed = false
     @font_name : String?
+    @current_font : Font::PDFont?
     @in_text_mode = false
 
     def initialize(@document : Document, @page : Page)
@@ -49,18 +50,20 @@ module Pdfbox::Pdmodel
 
     def set_font(font : Font::PDFont, font_size : Number) : Nil
       add_font_to_resources(font)
+      @document.register_font_for_save(font)
+      @current_font = font
       @buffer << "/#{@font_name} " << format_number(font_size) << ' ' << SET_FONT_AND_SIZE << '\n'
     end
 
     def show_text(text : String) : Nil
       font = get_current_font
-      escaped = if font
-                  encoded = encode_text(text, font)
-                  String.new(encoded).gsub("\\", "\\\\").gsub("(", "\\(").gsub(")", "\\)")
-                else
-                  text.gsub("\\", "\\\\").gsub("(", "\\(").gsub(")", "\\)")
-                end
-      @buffer << '(' << escaped << ") " << SHOW_TEXT << '\n'
+      @buffer << '('
+      if font
+        write_pdf_literal_string(encode_text(text, font))
+      else
+        write_pdf_literal_string(text.to_slice)
+      end
+      @buffer << ") " << SHOW_TEXT << '\n'
     end
 
     def non_stroking_color(gray : Number) : Nil
@@ -316,43 +319,63 @@ module Pdfbox::Pdmodel
     end
 
     private def get_current_font : Font::PDFont?
-      font_name = @font_name
-      return nil unless font_name
-
-      cos_page = @page.cos_object
-      return nil unless cos_page
-
-      resources = cos_page[Cos::Name.new("Resources")]?
-      return nil unless resources
-
-      resources = resources.object if resources.is_a?(Cos::Object)
-      return nil unless resources.is_a?(Cos::Dictionary)
-
-      fonts = resources[Cos::Name.new("Font")]?
-      return nil unless fonts
-
-      fonts = fonts.object if fonts.is_a?(Cos::Object)
-      return nil unless fonts.is_a?(Cos::Dictionary)
-
-      font_dict = fonts[Cos::Name.new(font_name)]?
-      return nil unless font_dict
-
-      font_dict = font_dict.object if font_dict.is_a?(Cos::Object)
-      return nil unless font_dict.is_a?(Cos::Dictionary)
-
-      Font::PDFontFactory.create_font(font_dict)
+      @current_font
     end
 
     private def encode_text(text : String, font : Font::PDFont) : Bytes
       font.encode(text)
+    rescue ex : Exception
+      offset = 0
+      while offset < text.size
+        code_point = text.char_at(offset).ord
+        char = text.char_at(offset).to_s
+        begin
+          font.encode(char)
+        rescue
+          raise IllegalStateError.new(
+            "could not find the glyphId for the character: #{char}, codePoint: #{code_point} (0x#{code_point.to_s(16).upcase})"
+          )
+        end
+        offset += 1
+      end
+      raise ex
+    end
+
+    private def write_pdf_literal_string(bytes : Bytes) : Nil
+      bytes.each do |byte|
+        case byte
+        when '('.ord.to_u8, ')'.ord.to_u8, '\\'.ord.to_u8
+          @buffer << '\\' << byte.chr
+        when 0x20_u8..0x7E_u8
+          @buffer << byte.chr
+        else
+          @buffer << '\\'
+          @buffer << ((byte >> 6) & 0x07).to_s
+          @buffer << ((byte >> 3) & 0x07).to_s
+          @buffer << (byte & 0x07).to_s
+        end
+      end
     end
 
     private def add_font_to_resources(font : Font::PDFont) : Nil
-      return if @font_name
       fonts = ensure_resource_subdictionary("Font")
-      font_name = "F#{fonts.size + 1}"
+      existing_name = existing_font_resource_name(fonts, font)
+      font_name = existing_name || "F#{fonts.size + 1}"
       @font_name = font_name
-      fonts[Cos::Name.new(font_name)] = font.cos_object
+      fonts[Cos::Name.new(font_name)] = font.cos_object unless existing_name
+    end
+
+    private def existing_font_resource_name(fonts : Cos::Dictionary, font : Font::PDFont) : String?
+      target_dict = font.cos_object
+      target_id = target_dict.object_id
+
+      fonts.entries.each do |key, value|
+        value = value.object if value.is_a?(Cos::Object)
+        next unless value.is_a?(Cos::Dictionary)
+        return key.value if value.object_id == target_id
+      end
+
+      nil
     end
 
     private def add_image_to_xobject_resources(image : Graphics::Image::PDImageXObject) : String

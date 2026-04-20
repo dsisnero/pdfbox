@@ -2,6 +2,9 @@
 # There are 14 font files, but Acrobat uses additional names for compatibility, e.g. Arial.
 # Corresponds to Standard14Fonts in Apache PDFBox.
 require "./pdfont"
+require "../../../fontbox/ttf/true_type_font"
+require "../../../fontbox/ttf/ttf_parser"
+require "../../io"
 
 class Pdfbox::Pdmodel::Font::Standard14Fonts
   Log = ::Log.for(self)
@@ -44,6 +47,36 @@ class Pdfbox::Pdmodel::Font::Standard14Fonts
 
   @@aliases = Hash(String, FontName).new
   @@afm_cache = Hash(String, PDFont::FontMetrics).new
+  @@mapped_fonts = Hash(String, Fontbox::TTF::TrueTypeFont).new
+
+  FALLBACK_TTF_PATH = File.expand_path(
+    "../../../../vendor/pdfbox/pdfbox/src/main/resources/org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf",
+    __DIR__
+  )
+
+  SYSTEM_FONT_DIRS = [
+    "/System/Library/Fonts",
+    "/System/Library/Fonts/Supplemental",
+    "/Library/Fonts",
+    File.expand_path("~/Library/Fonts"),
+  ]
+
+  SUBSTITUTES = {
+    FontName::COURIER.to_s                => ["CourierNew", "CourierNewPSMT", "LiberationMono", "NimbusMonL-Regu"],
+    FontName::COURIER_BOLD.to_s           => ["CourierNewPS-BoldMT", "CourierNew-Bold", "LiberationMono-Bold", "NimbusMonL-Bold"],
+    FontName::COURIER_OBLIQUE.to_s        => ["CourierNewPS-ItalicMT", "CourierNew-Italic", "LiberationMono-Italic", "NimbusMonL-ReguObli"],
+    FontName::COURIER_BOLD_OBLIQUE.to_s   => ["CourierNewPS-BoldItalicMT", "CourierNew-BoldItalic", "LiberationMono-BoldItalic", "NimbusMonL-BoldObli"],
+    FontName::HELVETICA.to_s              => ["ArialMT", "Arial", "Helvetica", "HelveticaNeue", "LiberationSans", "NimbusSanL-Regu"],
+    FontName::HELVETICA_BOLD.to_s         => ["Arial-BoldMT", "Arial-Bold", "Arial Bold", "Helvetica-Bold", "LiberationSans-Bold", "NimbusSanL-Bold"],
+    FontName::HELVETICA_OBLIQUE.to_s      => ["Arial-ItalicMT", "Arial-Italic", "Arial Italic", "Helvetica-Oblique", "Helvetica Italic", "LiberationSans-Italic", "NimbusSanL-ReguItal"],
+    FontName::HELVETICA_BOLD_OBLIQUE.to_s => ["Arial-BoldItalicMT", "Arial Bold Italic", "Helvetica-BoldOblique", "Helvetica Bold Italic", "LiberationSans-BoldItalic", "NimbusSanL-BoldItal"],
+    FontName::TIMES_ROMAN.to_s            => ["TimesNewRomanPSMT", "Times New Roman", "TimesNewRoman", "Times", "LiberationSerif", "NimbusRomNo9L-Regu"],
+    FontName::TIMES_BOLD.to_s             => ["TimesNewRomanPS-BoldMT", "Times New Roman Bold", "TimesNewRoman-Bold", "LiberationSerif-Bold", "NimbusRomNo9L-Medi"],
+    FontName::TIMES_ITALIC.to_s           => ["TimesNewRomanPS-ItalicMT", "Times New Roman Italic", "TimesNewRoman-Italic", "LiberationSerif-Italic", "NimbusRomNo9L-ReguItal"],
+    FontName::TIMES_BOLD_ITALIC.to_s      => ["TimesNewRomanPS-BoldItalicMT", "Times New Roman Bold Italic", "TimesNewRoman-BoldItalic", "LiberationSerif-BoldItalic", "NimbusRomNo9L-MediItal"],
+    FontName::SYMBOL.to_s                 => ["Symbol", "SymbolMT", "Apple Symbols", "StandardSymL"],
+    FontName::ZAPF_DINGBATS.to_s          => ["ZapfDingbats", "ZapfDingbatsITCbyBT-Regular", "ZapfDingbatsITC", "Dingbats", "DejaVuSans"],
+  } of String => Array(String)
 
   # Static initializer
   private def self.init_aliases : Nil
@@ -135,7 +168,7 @@ class Pdfbox::Pdmodel::Font::Standard14Fonts
   # Returns nil if the font is not a standard 14 font or the AFM cannot be loaded.
   def self.get_afm(font_name : String) : PDFont::FontMetrics?
     mapped = get_mapped_font_name(font_name)
-    return nil unless mapped
+    return unless mapped
 
     cached = @@afm_cache[mapped.to_s]?
     return cached if cached
@@ -148,13 +181,46 @@ class Pdfbox::Pdmodel::Font::Standard14Fonts
     metrics
   end
 
+  def self.get_font_matrix(font_name : FontName) : Array(Float32)
+    font = mapped_font(font_name)
+    units_per_em = font.units_per_em
+    scale = units_per_em > 0 ? (1.0_f32 / units_per_em.to_f32) : 0.001_f32
+    [scale, 0.0_f32, 0.0_f32, scale, 0.0_f32, 0.0_f32]
+  end
+
+  def self.get_glyph_path(font_name : FontName, glyph_name : String) : Fontbox::Util::Path
+    return Fontbox::Util::Path.new if glyph_name == ".notdef"
+
+    mapped = mapped_font(font_name)
+    direct = glyph_path_from_font(mapped, glyph_name)
+    return direct unless direct.empty?
+
+    unicode = glyph_list(font_name).to_unicode(glyph_name)
+    if unicode && unicode.size == 1
+      uni_name = uni_name_of_code_point(unicode.codepoints.first)
+      via_unicode = glyph_path_from_font(mapped, uni_name)
+      return via_unicode unless via_unicode.empty?
+
+      if font_name == FontName::SYMBOL
+        code = Encoding::SymbolEncoding::INSTANCE.name_to_code_map[glyph_name]?
+        if code
+          symbol_name = uni_name_of_code_point(code + 0xF000)
+          via_symbol = glyph_path_from_font(mapped, symbol_name)
+          return via_symbol unless via_symbol.empty?
+        end
+      end
+    end
+
+    Fontbox::Util::Path.new
+  end
+
   # Loads AFM metrics from the corresponding .afm file in the vendor resources.
   private def self.load_afm_from_file(font_name : String) : PDFont::FontMetrics?
     # Determine path to AFM file
     afm_path = File.join(__DIR__, "../../../../vendor/pdfbox/pdfbox/src/main/resources/org/apache/pdfbox/resources/afm/#{font_name}.afm")
     unless File.exists?(afm_path)
       Log.warn { "AFM file not found: #{afm_path}" }
-      return nil
+      return
     end
 
     widths = Hash(String, Float32).new
@@ -198,5 +264,76 @@ class Pdfbox::Pdmodel::Font::Standard14Fonts
 
   # Private constructor
   private def initialize
+  end
+
+  private def self.glyph_list(font_name : FontName) : Pdfbox::Pdmodel::Font::GlyphList
+    font_name == FontName::ZAPF_DINGBATS ? Pdfbox::Pdmodel::Font::GlyphList.zapf_dingbats : Pdfbox::Pdmodel::Font::GlyphList.adobe_glyph_list
+  end
+
+  private def self.uni_name_of_code_point(code_point : Int32) : String
+    hex = code_point.to_s(16).upcase
+    if hex.size <= 4
+      "uni#{hex.rjust(4, '0')}"
+    else
+      "u#{hex}"
+    end
+  end
+
+  private def self.glyph_path_from_font(font : Fontbox::TTF::TrueTypeFont, glyph_name : String) : Fontbox::Util::Path
+    gid = font.name_to_gid(glyph_name)
+    return Fontbox::Util::Path.new if gid <= 0 || gid >= font.number_of_glyphs
+
+    glyph = font.glyph.try(&.glyph(gid))
+    glyph ? glyph.path : Fontbox::Util::Path.new
+  end
+
+  private def self.mapped_font(font_name : FontName) : Fontbox::TTF::TrueTypeFont
+    cached = @@mapped_fonts[font_name.to_s]?
+    return cached if cached
+
+    font = candidate_font_paths(font_name).each do |path|
+      loaded = load_true_type_font(path)
+      break loaded if loaded
+    end
+
+    unless font
+      raise ::IO::Error.new("No mapped Standard14 font found for #{font_name}")
+    end
+
+    @@mapped_fonts[font_name.to_s] = font
+    font
+  end
+
+  private def self.candidate_font_paths(font_name : FontName) : Array(String)
+    names = [font_name.to_s] + (SUBSTITUTES[font_name.to_s]? || [] of String)
+    paths = [] of String
+
+    names.each do |name|
+      [name, name.gsub(" ", ""), name.gsub(" ", "-")].uniq.each do |basename|
+        [".ttf", ".otf", ".ttc"].each do |ext|
+          SYSTEM_FONT_DIRS.each do |dir|
+            next unless Dir.exists?(dir)
+            path = File.join(dir, "#{basename}#{ext}")
+            paths << path if File.exists?(path) && !paths.includes?(path)
+          end
+        end
+      end
+    end
+
+    paths << FALLBACK_TTF_PATH if File.exists?(FALLBACK_TTF_PATH) && !paths.includes?(FALLBACK_TTF_PATH)
+    paths
+  end
+
+  private def self.load_true_type_font(path : String) : Fontbox::TTF::TrueTypeFont?
+    return unless File.exists?(path)
+    return if path.ends_with?(".ttc")
+
+    File.open(path) do |io|
+      parser = Fontbox::TTF::TTFParser.new
+      parser.parse(Pdfbox::IO::RandomAccessReadBuffer.new(io))
+    end
+  rescue ex : ::Exception
+    Log.warn(exception: ex) { "Could not load Standard14 substitute font #{path}" }
+    nil
   end
 end

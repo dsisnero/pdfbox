@@ -114,13 +114,13 @@ module Pdfbox::Pdmodel::Font
 
     private def self.get_descendant_font(dictionary : Pdfbox::Cos::Dictionary) : Pdfbox::Cos::Dictionary?
       descendant_fonts = dictionary.get_array(Pdfbox::Cos::Name::DESCENDANT_FONTS)
-      return nil if descendant_fonts.nil? || descendant_fonts.size == 0
+      return if descendant_fonts.nil? || descendant_fonts.size == 0
       descendant_fonts[0]?.as?(Pdfbox::Cos::Dictionary)
     end
 
     private def self.get_type0_descendant_subtype_from_font(font_descriptor : Pdfbox::Cos::Dictionary?) : Pdfbox::Cos::Name?
       header = get_font_header(font_descriptor)
-      return nil if header.nil?
+      return if header.nil?
 
       if true_type_header?(header) || true_type_collection_header?(header) || open_type_header?(header)
         return Pdfbox::Cos::Name::CID_FONT_TYPE2
@@ -154,15 +154,15 @@ module Pdfbox::Pdmodel::Font
     end
 
     private def self.get_font_header(font_descriptor : Pdfbox::Cos::Dictionary?) : Bytes?
-      return nil if font_descriptor.nil?
+      return if font_descriptor.nil?
 
       font_file = font_descriptor.get_stream(Pdfbox::Cos::Name::FONT_FILE) ||
                   font_descriptor.get_stream(Pdfbox::Cos::Name::FONT_FILE2) ||
                   font_descriptor.get_stream(Pdfbox::Cos::Name::FONT_FILE3)
-      return nil if font_file.nil?
+      return if font_file.nil?
 
       data = font_file.data
-      return nil if data.empty?
+      return if data.empty?
 
       header = Bytes.new(4, 0_u8)
       header_size = {data.size, 4}.min

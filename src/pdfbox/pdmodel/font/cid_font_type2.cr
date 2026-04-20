@@ -1,8 +1,10 @@
 # Type 2 CIDFont (TrueType)
 # Corresponds to PDCIDFontType2 in Apache PDFBox
 require "./cid_font"
+require "./font_mapper"
 require "../../../fontbox/ttf/true_type_font"
 require "../../../fontbox/ttf/ttf_tables"
+require "../../../fontbox/ttf/ttf_parser"
 
 module Pdfbox::Pdmodel::Font
   class PDCIDFontType2 < PDCIDFont
@@ -16,6 +18,7 @@ module Pdfbox::Pdmodel::Font
     @font_matrix : PDFont::Matrix = PDFont::Matrix.default_font_matrix
     @font_bbox : PDFont::BoundingBox?
     @cid2gid : Array(Int32)?
+    @gid2cid : Hash(Int32, Int32)?
     @no_mapping = Set(Int32).new
 
     # Constructor.
@@ -23,9 +26,36 @@ module Pdfbox::Pdmodel::Font
       super(font_dictionary, parent)
       @parent = parent
       fd = font_descriptor
-      @is_embedded = !fd.nil? && (!fd.try(&.font_file2).nil? || !fd.try(&.font_file3).nil? || !fd.try(&.font_file).nil?)
-      @is_damaged = false
+      ttf_font = nil
+      font_is_damaged = false
+
+      stream = fd.try(&.font_file2) || fd.try(&.font_file3) || fd.try(&.font_file)
+      if stream
+        begin
+          parser = Fontbox::TTF::TTFParser.new(true)
+          ttf_font = parser.parse_embedded(stream.create_input_stream)
+        rescue ex : ::IO::Error
+          font_is_damaged = true
+          Log.warn { "Could not read embedded OTF for font #{base_font}: #{ex.message}" }
+        end
+      end
+
+      @is_embedded = !stream.nil?
+      @is_damaged = font_is_damaged
+      if ttf_font.nil?
+        begin
+          mapping = FontMappers.instance.get_cid_font(base_font, fd, cid_system_info)
+          unless mapping.cid_font?
+            mapped_font = mapping.true_type_font
+            ttf_font = mapped_font.as?(Fontbox::TTF::TrueTypeFont)
+          end
+        rescue ex : ::IO::Error
+          Log.warn { "Could not resolve fallback Type2 font for #{base_font}: #{ex.message}" }
+        end
+      end
+      @ttf = ttf_font
       @cid2gid = read_cid_to_gid_map
+      @gid2cid = build_gid_to_cid_map(@cid2gid)
     end
 
     # Constructor with pre-loaded TrueType font.
@@ -36,6 +66,7 @@ module Pdfbox::Pdmodel::Font
       @is_embedded = true
       @is_damaged = false
       @cid2gid = read_cid_to_gid_map
+      @gid2cid = build_gid_to_cid_map(@cid2gid)
     end
 
     # Abstract method implementations
@@ -96,16 +127,16 @@ module Pdfbox::Pdmodel::Font
     end
 
     private def gid_from_non_embedded_cid_to_gid_map(cid : Int32) : Int32?
-      return nil unless cid2gid = @cid2gid
-      return nil if damaged?
-      return nil unless ttf = @ttf
-      return nil unless name == ttf.name
+      return unless cid2gid = @cid2gid
+      return if damaged?
+      return unless ttf = @ttf
+      return unless name == ttf.name
       Log.warn { "Using non-embedded GIDs in font #{name}" }
       cid < cid2gid.size ? cid2gid[cid] : 0
     end
 
     private def gid_from_unicode(unicode : String) : Int32?
-      return nil unless ttf = @ttf
+      return unless ttf = @ttf
       begin
         cmap = ttf.unicode_cmap_lookup(false)
         cmap.glyph_id(unicode.char_at(0).ord.to_i32)
@@ -126,7 +157,8 @@ module Pdfbox::Pdmodel::Font
         cmap_name = @parent.cmap.try(&.name)
         if cmap_name && cmap_name.starts_with?("Identity-")
           if cmap = unicode_cmap_lookup
-            cid = cmap.glyph_id(unicode)
+            gid = cmap.glyph_id(unicode)
+            cid = gid_to_cid(gid)
           end
         else
           if cmap_ucs2 = @parent.cmap_ucs2
@@ -153,11 +185,25 @@ module Pdfbox::Pdmodel::Font
     end
 
     private def unicode_cmap_lookup : Fontbox::TTF::CmapLookup?
-      return nil unless ttf = @ttf
+      return unless ttf = @ttf
       ttf.unicode_cmap_lookup(false)
     rescue ex : ::IO::Error
       Log.warn { "Failed to get cmap lookup for #{name}: #{ex.message}" }
       nil
+    end
+
+    private def build_gid_to_cid_map(cid2gid : Array(Int32)?) : Hash(Int32, Int32)?
+      return unless cid2gid
+      map = Hash(Int32, Int32).new
+      cid2gid.each_with_index do |gid, cid|
+        map[gid] = cid unless map.has_key?(gid)
+      end
+      map
+    end
+
+    private def gid_to_cid(gid : Int32) : Int32
+      return gid if gid <= 0
+      @gid2cid.try(&.[gid]?) || gid
     end
 
     private def cff_postscript_font? : Bool
@@ -166,7 +212,7 @@ module Pdfbox::Pdmodel::Font
     end
 
     private def unicode_char(unicode : Int32) : String
-      ((unicode & 0xFFFF).chr).to_s
+      unicode.chr.to_s
     rescue ArgumentError
       "\uFFFD"
     end
@@ -286,13 +332,13 @@ module Pdfbox::Pdmodel::Font
     end
 
     private def path_from_otf_outlines(code : Int32) : Fontbox::Util::Path?
-      return nil unless cff_postscript_font?
-      return nil unless ttf = @ttf
+      return unless cff_postscript_font?
+      return unless ttf = @ttf
       table = ttf.table(Fontbox::TTF::CFFTable::TAG).as?(Fontbox::TTF::CFFTable)
-      return nil unless table
+      return unless table
       ttf.read_table(table) unless table.initialized
       cff_font = table.font
-      return nil unless cff_font
+      return unless cff_font
 
       gid = code_to_gid(code)
       cff_font.type2_char_string(gid).path
