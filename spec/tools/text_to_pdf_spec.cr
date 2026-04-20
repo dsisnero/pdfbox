@@ -87,8 +87,8 @@ describe Tools::TextToPDF do
       page = doc.pages[0]
       media_box = page.media_box
       media_box.should_not be_nil
-      media_box.not_nil!.width.should eq(595.0)
-      media_box.not_nil!.height.should eq(842.0)
+      media_box.as(Pdfbox::Pdmodel::Rectangle).width.should eq(595.0)
+      media_box.as(Pdfbox::Pdmodel::Rectangle).height.should eq(842.0)
       doc.close
     ensure
       File.delete(text_file) if File.exists?(text_file)
@@ -113,8 +113,8 @@ describe Tools::TextToPDF do
       page = doc.pages[0]
       media_box = page.media_box
       media_box.should_not be_nil
-      media_box.not_nil!.width.should eq(792.0)
-      media_box.not_nil!.height.should eq(612.0)
+      media_box.as(Pdfbox::Pdmodel::Rectangle).width.should eq(792.0)
+      media_box.as(Pdfbox::Pdmodel::Rectangle).height.should eq(612.0)
       doc.close
     ensure
       File.delete(text_file) if File.exists?(text_file)

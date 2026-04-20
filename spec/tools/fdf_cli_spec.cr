@@ -11,7 +11,7 @@ end
 private def build_form_pdf(path : String) : Nil
   doc = Pdfbox::Pdmodel::Document.new
   form = Pdfbox::Pdmodel::Interactive::Form::PDAcroForm.new(doc)
-  doc.document_catalog.not_nil!.acro_form = form
+  doc.document_catalog.not_nil!.cos_object[Pdfbox::Cos::Name.new("AcroForm")] = form.cos_object
 
   text_dict = Pdfbox::Cos::Dictionary.new
   text_dict[Pdfbox::Cos::Name.new("FT")] = Pdfbox::Cos::Name.new("Tx")
@@ -57,8 +57,9 @@ describe "FDF/XFDF CLI parity" do
 
     code.should eq(0)
     loaded = Pdfbox::Loader.load_pdf(outfile)
-    form = loaded.document_catalog.not_nil!.acro_form.not_nil!
-    form.get_field("name").not_nil!.value_as_string.should eq("Bob")
+    form_dict = loaded.document_catalog.not_nil!.cos_object[Pdfbox::Cos::Name.new("AcroForm")].as(Pdfbox::Cos::Dictionary)
+    form = Pdfbox::Pdmodel::Interactive::Form::PDAcroForm.new(loaded, form_dict)
+    form.get_field("name").as(Pdfbox::Pdmodel::Interactive::Form::PDField).value_as_string.should eq("Bob")
     form.need_appearances?.should be_true
     loaded.close
   end
