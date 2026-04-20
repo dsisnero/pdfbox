@@ -44,10 +44,38 @@ describe "TestPDPageTransitions" do
 
       transition = loaded_transition.not_nil!
       transition.style.should eq("Fly")
-      page.cos_object.not_nil!.get_float(Pdfbox::Cos::Name.new("Dur"), 0.0_f64).should eq(2.0_f64)
+      page.cos_object.as(Pdfbox::Cos::Dictionary).get_float(Pdfbox::Cos::Name.new("Dur"), 0.0_f64).should eq(2.0_f64)
       transition.direction.should eq(Pdfbox::Pdmodel::Interactive::Pagenavigation::PDTransitionDirection::NONE.cos_base)
     ensure
       loaded.close
     end
+  end
+
+  it "applies java transition dimension motion and opacity defaults" do
+    transition = Pdfbox::Pdmodel::Interactive::Pagenavigation::PDTransition.new
+
+    transition.style.should eq("R")
+    transition.dimension.should eq("H")
+    transition.motion.should eq("I")
+    transition.fly_area_opaque?.should be_false
+    transition.direction.should eq(Pdfbox::Cos::Integer.new(0))
+    transition.duration.should eq(1.0_f64)
+    transition.fly_scale.should eq(1.0_f64)
+  end
+
+  it "stores java transition dimension motion and fly opacity" do
+    transition = Pdfbox::Pdmodel::Interactive::Pagenavigation::PDTransition.new(
+      Pdfbox::Pdmodel::Interactive::Pagenavigation::PDTransitionStyle::Fly
+    )
+
+    transition.dimension = Pdfbox::Pdmodel::Interactive::Pagenavigation::PDTransitionDimension::V
+    transition.motion = Pdfbox::Pdmodel::Interactive::Pagenavigation::PDTransitionMotion::O
+    transition.fly_area_opaque = true
+
+    transition.dimension.should eq("V")
+    transition.motion.should eq("O")
+    transition.fly_area_opaque?.should be_true
+    transition.cos_object.get_name_as_string(Pdfbox::Cos::Name.new("Dm")).should eq("V")
+    transition.cos_object.get_name_as_string(Pdfbox::Cos::Name.new("M")).should eq("O")
   end
 end

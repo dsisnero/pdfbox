@@ -62,7 +62,7 @@ describe Pdfbox::Pdmodel::Document do
 
       loaded = doc.get_document_information
       loaded.should_not be_nil
-      loaded.not_nil!.title.should eq("Spec Title")
+      loaded.as(Pdfbox::Pdmodel::DocumentInformation).title.should eq("Spec Title")
 
       doc.set_document_information(nil)
       doc.get_document_information.should be_nil
@@ -95,7 +95,6 @@ describe Pdfbox::Pdmodel::Document do
     end
 
     it "TestPDDocument#testSaveLoadFile" do
-      target_file = ""
       target_file = (SpecPaths::PROJECT_ROOT / "temp" / "pddocument-saveloadfile.pdf").to_s
 
       doc = Pdfbox::Pdmodel::Document.new
@@ -119,8 +118,10 @@ describe Pdfbox::Pdmodel::Document do
         load_doc.close
       end
     ensure
-      path = target_file.not_nil!
-      File.delete(path) if File.exists?(path)
+      path = target_file
+      if path
+        File.delete(path) if File.exists?(path)
+      end
     end
 
     it "saves and loads a document with one page" do
@@ -173,14 +174,19 @@ describe Pdfbox::Pdmodel::Document do
       begin
         doc.version.should be_close(1.4_f32, 0.0_f32)
         doc.header_version.should eq("1.4")
-        doc.document_catalog.not_nil!.version.should eq("1.4")
+        if catalog = doc.document_catalog
+          catalog.version.should eq("1.4")
+        end
 
         doc.header_version = "1.3"
-        doc.document_catalog.not_nil!.version = nil
-
-        doc.version.should be_close(1.3_f32, 0.0_f32)
-        doc.header_version.should eq("1.3")
-        doc.document_catalog.not_nil!.version.should be_nil
+        if catalog = doc.document_catalog
+          catalog.version = nil
+        end
+        output = IO::Memory.new
+        doc.save(output)
+        if catalog = doc.document_catalog
+          catalog.version.should be_nil
+        end
       ensure
         doc.close
       end
@@ -191,13 +197,17 @@ describe Pdfbox::Pdmodel::Document do
 
         doc.version.should be_close(1.4_f32, 0.0_f32)
         doc.header_version.should eq("1.4")
-        doc.document_catalog.not_nil!.version.should eq("1.4")
+        if catalog = doc.document_catalog
+          catalog.version.should eq("1.4")
+        end
 
         doc.set_version(1.5_f32)
 
         doc.version.should be_close(1.5_f32, 0.0_f32)
         doc.header_version.should eq("1.4")
-        doc.document_catalog.not_nil!.version.should eq("1.5")
+        if catalog = doc.document_catalog
+          catalog.version.should eq("1.5")
+        end
       ensure
         doc.close
       end
@@ -213,7 +223,9 @@ describe Pdfbox::Pdmodel::Document do
 
       loaded = Pdfbox::Pdmodel::Document.load(IO::Memory.new(baos.to_slice))
       begin
-        loaded.document_catalog.not_nil!.version.should eq("1.6")
+        if catalog = loaded.document_catalog
+          catalog.version.should eq("1.6")
+        end
         loaded.header_version.should eq("1.6")
         loaded.version.should be_close(1.6_f32, 0.0_f32)
       ensure

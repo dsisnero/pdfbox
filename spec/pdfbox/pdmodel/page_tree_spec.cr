@@ -146,8 +146,8 @@ module Pdfbox::Pdmodel
         SpecPaths.resolve("vendor/pdfbox/pdfbox/src/test/resources/org/apache/pdfbox/pdmodel/with_outline.pdf")
       )
       begin
-        outline = doc.document_catalog.not_nil!.document_outline.not_nil!
-        current = outline.first_child
+        outline = doc.document_catalog.not_nil!.document_outline
+        current = outline.not_nil!.first_child
         found = false
         while current
           if current.title.to_s.includes?("Second")
