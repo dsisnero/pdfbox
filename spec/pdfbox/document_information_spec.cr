@@ -9,7 +9,7 @@ describe Pdfbox::Pdmodel::DocumentInformation do
       info = doc.document_information
       info.should_not be_nil
 
-      document_information = info.not_nil!
+      document_information = info.as(Pdfbox::Pdmodel::DocumentInformation)
       document_information.author.should eq("Brian Carrier")
       document_information.creation_date.should_not be_nil
       document_information.creator.should eq("Acrobat PDFMaker 8.1 for Word")
@@ -48,7 +48,7 @@ describe Pdfbox::Pdmodel::DocumentInformation do
     begin
       document_information = doc.document_information
       document_information.should_not be_nil
-      document_information.not_nil!.title.should eq("Title")
+      document_information.as(Pdfbox::Pdmodel::DocumentInformation).title.should eq("Title")
     ensure
       doc.close
     end

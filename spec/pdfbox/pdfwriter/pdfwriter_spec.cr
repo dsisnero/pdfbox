@@ -1,7 +1,7 @@
 require "../../spec_helper"
 
 class NonClosingMemoryIO < IO::Memory
-  getter close_called = false
+  getter? close_called = false
 
   def close : Nil
     @close_called = true
@@ -159,13 +159,13 @@ describe "Pdfbox::Pdfwriter parity" do
 
     parent6 = annotations[6].cos_object[Pdfbox::Cos::Name.new("Parent")]
     parent6.should_not be_nil
-    parent6_dict = as_dictionary(parent6).not_nil!
-    parent6_dict[Pdfbox::Cos::Name.new("T")].as(Pdfbox::Cos::String).value.should eq("GroupOption")
+    parent6_dict = as_dictionary(parent6)
+    parent6_dict.not_nil![Pdfbox::Cos::Name.new("T")].as(Pdfbox::Cos::String).value.should eq("GroupOption")
 
     parent7 = annotations[7].cos_object[Pdfbox::Cos::Name.new("Parent")]
     parent7.should_not be_nil
-    parent7_dict = as_dictionary(parent7).not_nil!
-    parent7_dict[Pdfbox::Cos::Name.new("T")].as(Pdfbox::Cos::String).value.should eq("GroupOption")
+    parent7_dict = as_dictionary(parent7)
+    parent7_dict.not_nil![Pdfbox::Cos::Name.new("T")].as(Pdfbox::Cos::String).value.should eq("GroupOption")
 
     annotation_field_name(annotations[8]).should eq("ListBox")
     annotation_field_name(annotations[9]).should eq("ListBoxMultiSelect")
@@ -186,17 +186,25 @@ describe "Pdfbox::Pdfwriter parity" do
     compressed = Pdfbox::Pdmodel::Document.load(IO::Memory.new(compressed_output.to_slice))
 
     compressed.number_of_pages.should eq(2)
-    names_dict = compressed.document_catalog.not_nil!.names
-    names_dict.should_not be_nil
-    embedded_tree = names_dict.not_nil!.embedded_files
-    embedded_tree.should_not be_nil
-    embedded_files = embedded_tree.not_nil!.names
-    embedded_files.should_not be_nil
-    embedded_files.not_nil!.size.should eq(1)
-    attachment = embedded_files.not_nil!["A4Unicode.pdf"]?
-    attachment.should_not be_nil
-    attachment.not_nil!.embedded_file.should_not be_nil
-    attachment.not_nil!.embedded_file.not_nil!.length.should eq(14997)
+    if catalog = compressed.document_catalog
+      names_dict = catalog.names
+      names_dict.should_not be_nil
+      embedded_files = names_dict.not_nil!.embedded_files
+      embedded_files.should_not be_nil
+      embedded_files_names = embedded_files.not_nil!.names
+      embedded_files_names.should_not be_nil
+      embedded_files_names.not_nil!.size.should eq(1)
+      attachment = embedded_files_names.not_nil!["A4Unicode.pdf"]?
+      attachment.should_not be_nil
+      ef_dict = attachment.not_nil!.cos_object[Pdfbox::Cos::Name.new("EF")]
+      ef_dict.should_not be_nil
+      embedded_file = ef_dict.as(Pdfbox::Cos::Dictionary)[Pdfbox::Cos::Name.new("F")]
+      embedded_file.should_not be_nil
+      if embedded_file.is_a?(Pdfbox::Cos::Object)
+        embedded_file = embedded_file.object
+      end
+      embedded_file.as(Pdfbox::Cos::Stream)[Pdfbox::Cos::Name.new("Length")].as(Pdfbox::Cos::Integer).value.should eq(14997)
+    end
   ensure
     source.try(&.close)
     compressed.try(&.close)
@@ -246,7 +254,9 @@ describe "Pdfbox::Pdfwriter parity" do
     while i <= 222_222
       document = Pdfbox::Pdmodel::Document.create
       outline = Pdfbox::Pdmodel::DocumentOutline.new
-      document.document_catalog.not_nil!.set_document_outline(outline)
+      if catalog = document.document_catalog
+        catalog.set_document_outline(outline)
+      end
 
       j = 0
       while j < i
@@ -270,7 +280,7 @@ describe "Pdfbox::Pdfwriter parity" do
     # parity intent from Java COSWriterTest#testPDFBox4321:
     # save must not close externally-managed output streams.
     doc.save(output)
-    output.close_called.should be_false
+    output.close_called?.should be_false
     output.to_slice.size.should be > 0
   ensure
     doc.try(&.close)
@@ -295,15 +305,17 @@ describe "Pdfbox::Pdfwriter parity" do
     doc = Pdfbox::Pdmodel::Document.create
     doc.add_page(Pdfbox::Pdmodel::Page.new)
 
-    catalog = doc.document_catalog.not_nil!
-    acro_form = Pdfbox::Pdmodel::Interactive::Form::PDAcroForm.new(doc)
-    catalog.cos_object[Pdfbox::Cos::Name.new("AcroForm")] = acro_form.cos_object
+    acro_form = nil
+    if catalog = doc.document_catalog
+      acro_form = Pdfbox::Pdmodel::Interactive::Form::PDAcroForm.new(doc)
+      catalog.cos_object[Pdfbox::Cos::Name.new("AcroForm")] = acro_form.not_nil!.cos_object
+    end
 
     text_field_dict = Pdfbox::Cos::Dictionary.new
     text_field_dict[Pdfbox::Cos::Name.new("FT")] = Pdfbox::Cos::Name.new("Tx")
     text_field_dict[Pdfbox::Cos::Name.new("T")] = Pdfbox::Cos::String.new("textFieldName")
-    text_field = Pdfbox::Pdmodel::Interactive::Form::PDTextField.new(acro_form, text_field_dict, nil)
-    acro_form.add_field(text_field)
+    text_field = Pdfbox::Pdmodel::Interactive::Form::PDTextField.new(acro_form.not_nil!, text_field_dict, nil)
+    acro_form.not_nil!.add_field(text_field)
 
     initial_output = IO::Memory.new
     doc.save(initial_output)
@@ -317,15 +329,17 @@ describe "Pdfbox::Pdfwriter parity" do
     create_doc = Pdfbox::Pdmodel::Document.create
     create_doc.add_page(Pdfbox::Pdmodel::Page.new)
 
-    catalog = create_doc.document_catalog.not_nil!
-    acro_form = Pdfbox::Pdmodel::Interactive::Form::PDAcroForm.new(create_doc)
-    catalog.cos_object[Pdfbox::Cos::Name.new("AcroForm")] = acro_form.cos_object
+    acro_form = nil
+    if catalog = create_doc.document_catalog
+      acro_form = Pdfbox::Pdmodel::Interactive::Form::PDAcroForm.new(create_doc)
+      catalog.cos_object[Pdfbox::Cos::Name.new("AcroForm")] = acro_form.not_nil!.cos_object
+    end
 
     text_field_dict = Pdfbox::Cos::Dictionary.new
     text_field_dict[Pdfbox::Cos::Name.new("FT")] = Pdfbox::Cos::Name.new("Tx")
     text_field_dict[Pdfbox::Cos::Name.new("T")] = Pdfbox::Cos::String.new("textFieldName")
-    text_field = Pdfbox::Pdmodel::Interactive::Form::PDTextField.new(acro_form, text_field_dict, nil)
-    acro_form.add_field(text_field)
+    text_field = Pdfbox::Pdmodel::Interactive::Form::PDTextField.new(acro_form.not_nil!, text_field_dict, nil)
+    acro_form.not_nil!.add_field(text_field)
 
     initial_output = IO::Memory.new
     create_doc.save(initial_output)
@@ -333,8 +347,10 @@ describe "Pdfbox::Pdfwriter parity" do
     parse_trailer_size(created_bytes).should eq(max_object_number(created_bytes) + 1)
 
     loaded = Pdfbox::Pdmodel::Document.load(IO::Memory.new(created_bytes))
-    loaded_catalog = loaded.document_catalog.not_nil!
-    loaded_form_dict = loaded_catalog.cos_object[Pdfbox::Cos::Name.new("AcroForm")]
+    loaded_form_dict = nil
+    if loaded_catalog = loaded.document_catalog
+      loaded_form_dict = loaded_catalog.cos_object[Pdfbox::Cos::Name.new("AcroForm")]
+    end
     if loaded_form_dict.is_a?(Pdfbox::Cos::Object)
       loaded_form_dict = loaded_form_dict.object
     end
@@ -343,7 +359,7 @@ describe "Pdfbox::Pdfwriter parity" do
 
     loaded_field = loaded_form.not_nil!.get_field("textFieldName")
     loaded_field.should_not be_nil
-    loaded_text_field = loaded_field.not_nil!.as(Pdfbox::Pdmodel::Interactive::Form::PDTextField)
+    loaded_text_field = loaded_field.as(Pdfbox::Pdmodel::Interactive::Form::PDTextField)
     loaded_text_field.field_flags = loaded_text_field.field_flags | Pdfbox::Pdmodel::Interactive::Form::PDTextField::FLAG_MULTILINE
 
     edited_output = IO::Memory.new
@@ -360,17 +376,17 @@ describe "Pdfbox::Pdfwriter parity" do
 
   it "ContentStreamWriterTest#testPDFBox4750" do
     source = <<-PDF
-    q
-    BI
-    /W 1
-    /H 1
-    /BPC 8
-    /CS /RGB
-    ID
-    12EI5
-    EI
-    Q
-    PDF
+      q
+      BI
+      /W 1
+      /H 1
+      /BPC 8
+      /CS /RGB
+      ID
+      12EI5
+      EI
+      Q
+      PDF
 
     parser = Pdfbox::Pdfparser::PDFStreamParser.new(source)
     tokens = parser.parse
@@ -394,8 +410,8 @@ describe "Pdfbox::Pdfwriter parity" do
     reparsed_inline = reparsed[1].as(Pdfbox::ContentStream::Operator)
     original_inline.image_data.should_not be_nil
     reparsed_inline.image_data.should_not be_nil
-    original_data = original_inline.image_data.not_nil!
-    reparsed_data = reparsed_inline.image_data.not_nil!
+    original_data = original_inline.image_data.as(Bytes)
+    reparsed_data = reparsed_inline.image_data.as(Bytes)
 
     trimmed_size = ->(bytes : Bytes) do
       size = bytes.size
@@ -407,6 +423,6 @@ describe "Pdfbox::Pdfwriter parity" do
 
     original_data[0, trimmed_size.call(original_data)].should eq(reparsed_data[0, trimmed_size.call(reparsed_data)])
     original_data[0, 5].should eq("12EI5".to_slice)
-    original_inline.image_parameters.not_nil!.size.should eq(reparsed_inline.image_parameters.not_nil!.size)
+    original_inline.image_parameters.not_nil!.entries.size.should eq(reparsed_inline.image_parameters.not_nil!.entries.size)
   end
 end

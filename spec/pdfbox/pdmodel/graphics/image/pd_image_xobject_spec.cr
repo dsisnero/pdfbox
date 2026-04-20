@@ -88,9 +88,9 @@ describe Pdfbox::Pdmodel::Graphics::Image::PDImageXObject do
       doc = Pdfbox::Pdmodel::Document.create
       image = Pdfbox::Pdmodel::Graphics::Image::PDImageXObject.new(doc)
 
-      image.interpolate?.should eq(false)
+      image.interpolate?.should be_false
       image.interpolate = true
-      image.interpolate?.should eq(true)
+      image.interpolate?.should be_true
     ensure
       doc.try(&.close)
     end
@@ -99,9 +99,9 @@ describe Pdfbox::Pdmodel::Graphics::Image::PDImageXObject do
       doc = Pdfbox::Pdmodel::Document.create
       image = Pdfbox::Pdmodel::Graphics::Image::PDImageXObject.new(doc)
 
-      image.stencil?.should eq(false)
+      image.stencil?.should be_false
       image.stencil = true
-      image.stencil?.should eq(true)
+      image.stencil?.should be_true
     ensure
       doc.try(&.close)
     end
