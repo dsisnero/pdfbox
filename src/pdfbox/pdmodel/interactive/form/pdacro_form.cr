@@ -28,11 +28,17 @@ module Pdfbox::Pdmodel::Interactive::Form
 
     # Get all fields in the form
     def fields : Array(PDField)
-      fields_array = @dictionary[Cos::Name.new("Fields")]
-      return [] of PDField unless fields_array.is_a?(Cos::Array)
+      fields_value = @dictionary[Cos::Name.new("Fields")]
+      if fields_value.is_a?(Cos::Object)
+        fields_value = fields_value.object
+      end
+      return [] of PDField unless fields_value.is_a?(Cos::Array)
+      fields_array = fields_value
 
       result = [] of PDField
-      fields_array.items.each do |field_dict|
+      fields_array.items.each do |field_item|
+        field_dict = field_item
+        field_dict = field_dict.object if field_dict.is_a?(Cos::Object)
         if field_dict.is_a?(Cos::Dictionary)
           field = PDFieldFactory.create_field(self, field_dict, nil)
           result << field if field

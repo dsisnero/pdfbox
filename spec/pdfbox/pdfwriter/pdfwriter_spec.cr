@@ -198,6 +198,7 @@ describe "Pdfbox::Pdfwriter parity" do
       attachment.should_not be_nil
       ef_dict = attachment.not_nil!.cos_object[Pdfbox::Cos::Name.new("EF")]
       ef_dict.should_not be_nil
+      ef_dict = ef_dict.object if ef_dict.is_a?(Pdfbox::Cos::Object)
       embedded_file = ef_dict.as(Pdfbox::Cos::Dictionary)[Pdfbox::Cos::Name.new("F")]
       embedded_file.should_not be_nil
       if embedded_file.is_a?(Pdfbox::Cos::Object)

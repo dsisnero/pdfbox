@@ -188,6 +188,7 @@ module Pdfbox::Pdmodel
       return unless catalog
 
       pages_entry = catalog.cos_object[Cos::Name.new("Pages")]
+      pages_entry = pages_entry.object if pages_entry.is_a?(Cos::Object)
       return unless pages_entry.is_a?(Cos::Dictionary)
 
       kids = pages_entry[Cos::Name.new("Kids")]
@@ -1350,8 +1351,10 @@ module Pdfbox::Pdmodel
 
     # Get names map from this node
     def names : Hash(String, T)?
-      names_array = @node[Cos::Name.new("Names")]
-      return unless names_array.is_a?(Cos::Array)
+      names_value = @node[Cos::Name.new("Names")]
+      names_value = names_value.object if names_value.is_a?(Cos::Object)
+      return unless names_value.is_a?(Cos::Array)
+      names_array = names_value
 
       size = names_array.size
       return unless size % 2 == 0

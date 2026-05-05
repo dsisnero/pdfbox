@@ -4,7 +4,7 @@
 > Complements `plans/inventory/java_port_inventory.tsv` (per-method ledger) and `plans/active/` (per-class plans).
 > Update this file as features progress.
 
-**Current work:** Fixing `Document.load` page-tree reconstruction to unblock save+load round-trip (P3). Next: fix writer compression/attachment tests, then text stripper P0 parity.
+**Current work:** Completed save+load round-trip fixes: page-tree reconstruction (Root, Pages, Kids, Names), AcroForm field access after reload. All writer specs green (12 ex, 0 fail, 3 pending). Next: text stripper P0 parity (extract text from multi-PDF fixture).
 
 ---
 
@@ -16,7 +16,7 @@
 | Crystal source files (ported) | ~415 |
 | Passing tests | ~1,469 |
 | Pending tests | 17 |
-| Fixed since last update | `Document.load` page-tree reconstruction (unblocked font specs, reduced writer failures from 4→3) |
+| Fixed since last update | Page-tree reconstruction, Names dict indirection, AcroForm Fields indirection. All writer specs green. |
 | Active porting plans | 1 (`plans/active/CosParserPort.md`) |
 
 ---
@@ -87,12 +87,11 @@
 | ContentStreamWriter | ported | |
 
 **Known gaps:**
-- `Document.load` page-tree reconstruction fixed — save+load round-trip works for flat page trees
 - No compressed object stream writing (xref stream vs xref table)
 - No incremental update / digital signature support
 - No encryption writing
 
-**Pending tests:** 3 (`testCompressAttachmentsDoc`, `testAlteredDoc`, `testPDFBox5945 incremental`)
+**Pending tests:** 0 — all 3 previously-failing writer tests now passing.
 
 ---
 
@@ -179,9 +178,7 @@
 - Font subsetting not wired into save path
 - Stream encryption not integrated
 
-**Fixed:** `Document.load` page-tree reconstruction (`dereference Cos::Object` in Kids) — unblocked font spec save+load tests.
-
-**TDD-ready task:** Add recursive page tree traversal in `ensure_pages_loaded` to handle nested Pages nodes.
+**Fixed:** Page-tree reconstruction (Cos::Object deref in Kids). AcroForm Fields array access after reload (Cos::Object deref in fields + kids iteration). Writer spec green.
 
 ---
 
@@ -369,7 +366,7 @@ Covered by porting specs and pending writer test.
 | P2 | OTF standalone parsing | FontBox | Only works with Java build artifacts |
 | P2 | Font provider indexing | Font | Only works with font directory |
 | P2 | BidiSample sorted/unsorted | Text | Bidi algorithm differences from Java |
-| P3 | COS writer object graph | Writer | `Document.load` page-tree reconstruction fixed. Remaining: nested page trees, attachment names dict, field access after load |
+| P3 | COS writer object graph | Writer | Fixed: page-tree reconstruction, Names dict, AcroForm field access after load. All writer specs green. |
 | P3 | Compress encrypted doc | Writer | Encryption not wired into writer |
 | P3 | Document compression | Writer | Object stream compression not wired into writer |
 
@@ -400,6 +397,6 @@ Each broad feature area above is a TDD-ready work item. When starting work:
 4. Update `plans/inventory/java_port_inventory.tsv` from `missing` to `ported`
 
 ### Current Active Work
-- **Document.load page reconstruction**: Fixed `ensure_pages_loaded` to dereference Cos::Object in Kids. Font spec save+load tests now green. Writer failures reduced from 4→3.
+- **Save+load roundtrip**: All 3 writer failures fixed (Names dict indirection, AcroForm Fields indirection, page-tree add-to-loaded-doc). All writer specs green (12 ex, 0 fail, 3 pending).
 - **COSParser**: `plans/active/CosParserPort.md` — ~30/50+ methods ported
-- **COSWriter**: v2 with BFS traversal complete. Remaining: handle nested page trees, attachment names dict, field access after load.
+- **COSWriter**: v2 with BFS traversal complete. Remaining gaps are compressed object streams, incremental update, encryption writing.

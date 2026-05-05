@@ -160,7 +160,9 @@ abstract class Pdfbox::Pdmodel::Common::PDNameTreeNode(T)
   # @return ordered map of COS objects or `nil` if the dictionary
   # contains no 'Names' entry on this level.
   def names : Hash(String, T)?
-    names_array = @node[Cos::Name::NAMES].as?(Cos::Array)
+    names_value = @node[Cos::Name::NAMES]
+    names_value = names_value.object if names_value.is_a?(Cos::Object)
+    names_array = names_value.as?(Cos::Array)
     if names_array
       size = names_array.size
       names_hash = {} of String => T
