@@ -2,3 +2,6 @@
 # Use bd merge for beads JSONL files
 .beads/issues.jsonl merge=beads
 *.pdf binary
+
+# Ignore Apple Double resource fork files on FAT32/exFAT drives
+._* binary linguist-generated=true

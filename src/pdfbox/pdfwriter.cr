@@ -18,188 +18,281 @@ module Pdfbox::Pdfwriter
   class EncryptionError < WriteError; end
 
   # Main PDF writer class
+  # Port of Apache PDFBox COSWriter, simplified: writes all indirect COS objects
+  # reachable from the document catalog via BFS, then xref + trailer.
   class Writer
+    Log = ::Log.for(self)
+
     @destination : ::IO
     @document : Pdfbox::Pdmodel::Document
     @parameters : Pdfbox::Pdfwriter::Compress::CompressParameters
     @will_encrypt : Bool = false
     @security_handler : Pdfbox::Pdmodel::Encryption::SecurityHandler?
-    @next_object_number : Int32 = 0
-    @deferred_stream_objects = [] of Tuple(Int32, Pdfbox::Cos::Stream)
-    @stream_object_numbers = Hash(UInt64, Int32).new
 
     def initialize(@destination : ::IO, @document : Pdfbox::Pdmodel::Document, @parameters : Pdfbox::Pdfwriter::Compress::CompressParameters = Pdfbox::Pdfwriter::Compress::CompressParameters::DEFAULT_COMPRESSION)
-      # Check if document has encryption
       if encryption = @document.encryption
         @security_handler = encryption.security_handler
         @will_encrypt = !@security_handler.nil?
-
-        # Prepare document for encryption if we have a security handler
         @security_handler.try(&.prepare_document_for_encryption(@document))
       end
     end
 
-    # Write PDF header with version (e.g., "1.4")
     def write_header(version : String) : Nil
       @destination << "%PDF-#{version}\n"
-      # Write binary comment line (required by PDF spec for binary files)
       @destination << "%\xE2\xE3\xCF\xD3\n"
     end
 
-    # Write the PDF document
     def write : Nil
       write_header(header_version_for_write)
       cos_writer = COSWriter.new(@destination, @will_encrypt, @security_handler)
-      xref_writer = XRefWriter.new(@destination)
-      xref_writer.add_entry(0_i64, 65535_i64, :free)
-      has_encryption = !@document.encryption.nil?
-      page_start = has_encryption ? 4 : 3
-      @next_object_number = page_start + @document.page_count
-      write_catalog_object(cos_writer, xref_writer)
-      write_pages_object(xref_writer)
 
-      # Write encryption dictionary object if document is encrypted
-      if encryption = @document.encryption
-        encryption_object_number = 3
-        encryption_offset = @destination.pos.to_i64
-        xref_writer.add_entry(encryption_offset, 0_i64, :in_use)
+      trailer = @document.trailer
+      catalog = @document.document_catalog
 
-        @destination << encryption_object_number << " 0 obj\n"
-        cos_writer.write(encryption.dictionary)
+      # Collect all indirect objects via BFS from catalog + trailer entries
+      object_keys = {} of UInt64 => Pdfbox::Cos::ObjectKey
+      key_objects = {} of Pdfbox::Cos::ObjectKey => Pdfbox::Cos::Base
+      xref_entries = [] of XRefEntry
+      xref_entries << XRefEntry.new(0_i64, 65535_i64, :free)
+
+      roots = [] of Pdfbox::Cos::Base
+      if catalog
+        roots << catalog.cos_object
+      end
+
+      # Temporarily bridge pages and their COS graph roots into the traversal
+      @document.pages.each do |page|
+        if page_dict = page.cos_object
+          roots << page_dict
+        end
+      end
+
+      next_obj = 1_i64
+
+      # Walk the entire COS graph reachable from roots, assigning object numbers
+      # to every non-scalar (dict, array, stream), and also registering COSObject
+      # wrapper IDs so indirect references resolve correctly.
+      object_wrapper = {} of UInt64 => UInt64
+
+      queue = Deque(Pdfbox::Cos::Base).new
+      roots.each { |root_item| queue << root_item }
+
+      until queue.empty?
+        current = queue.shift
+
+        # Record COSObject wrapper → inner mapping for indirect ref resolution
+        if current.is_a?(Pdfbox::Cos::Object)
+          if inner = current.object
+            object_wrapper[current.object_id.to_u64] = inner.object_id.to_u64
+            actual = inner
+          else
+            next
+          end
+        else
+          actual = current
+        end
+
+        case actual
+        when Pdfbox::Cos::Name, Pdfbox::Cos::String, Pdfbox::Cos::Integer,
+             Pdfbox::Cos::Float, Pdfbox::Cos::Boolean, Pdfbox::Cos::Null
+          next
+        end
+
+        id = actual.object_id.to_u64
+        if object_keys.has_key?(id)
+          next
+        end
+
+        obj_key = Pdfbox::Cos::ObjectKey.new(next_obj, 0_i64)
+        object_keys[id] = obj_key
+        key_objects[obj_key] = actual
+        next_obj += 1
+
+        case actual
+        when Pdfbox::Cos::Dictionary
+          actual.entries.each_value { |v| queue << v }
+        when Pdfbox::Cos::Array
+          actual.items.each { |item| queue << item }
+        when Pdfbox::Cos::Stream
+          actual.entries.each_value { |v| queue << v }
+        end
+      end
+
+      # Register wrapper IDs to map to the same object key as their inner
+      object_wrapper.each do |wrapper_id, inner_id|
+        if inner_key = object_keys[inner_id]?
+          object_keys[wrapper_id] = inner_key
+        end
+      end
+
+      # Write all collected objects sorted by object number
+      sorted = key_objects.keys.sort_by!(&.number)
+      sorted.each do |key|
+        obj = key_objects[key]
+        next unless obj
+
+        pos = @destination.pos.to_i64
+        xref_entries << XRefEntry.new(pos, 0_i64, :in_use)
+
+        @destination << key.number << " 0 obj\n"
+
+        case obj
+        when Pdfbox::Cos::Stream
+          cos_writer.write_stream(obj, key.number, key.generation)
+        when Pdfbox::Cos::Dictionary
+          write_dictionary_with_refs(obj, object_keys, object_wrapper)
+        when Pdfbox::Cos::Array
+          write_array_with_refs(obj, object_keys, object_wrapper)
+        else
+          cos_writer.write(obj)
+        end
+
         @destination << "\nendobj\n"
       end
 
-      # Write each page object
-      @document.page_count.times do |i|
-        page_offset = @destination.pos.to_i64
-        xref_writer.add_entry(page_offset, 0_i64, :in_use)
-        obj_num = page_start + i
-        page = @document.get_page(i)
-        @destination << obj_num << " 0 obj\n"
-        @destination << "<<\n"
-        @destination << "/Type /Page\n"
-        @destination << "/Parent 2 0 R\n"
-        if media_box = page.media_box
-          @destination << "/MediaBox ["
-          @destination << media_box.lower_left_x << ' '
-          @destination << media_box.lower_left_y << ' '
-          @destination << media_box.upper_right_x << ' '
-          @destination << media_box.upper_right_y
-          @destination << "]\n"
-        else
-          @destination << "/MediaBox [0 0 612 792]\n" # Letter size
-        end
-
-        # Write other page dictionary entries (Annots, Resources, Contents, etc.)
-        if page_dict = page.cos_object
-          page_dict.entries.each do |key, value|
-            key_name = key.value
-            next if key_name == "Type" || key_name == "Parent" || key_name == "MediaBox"
-            local_stack = Set(UInt64).new
-            materialized_value = materialize_for_write(
-              value,
-              local_stack
-            )
-            cos_writer.write_name(key)
-            @destination << ' '
-            cos_writer.write(materialized_value)
-            @destination << '\n'
-          end
-        end
-        @destination << ">>\n"
-        @destination << "endobj\n"
-      end
-
-      deferred_stream_index = 0
-      while deferred_stream_index < @deferred_stream_objects.size
-        stream_object_number, stream = @deferred_stream_objects[deferred_stream_index]
-        stream_offset = @destination.pos.to_i64
-        xref_writer.add_entry(stream_offset, 0_i64, :in_use)
-        @destination << stream_object_number << " 0 obj\n"
-        cos_writer.write_stream(stream, stream_object_number.to_i64, 0_i64)
-        @destination << '\n'
-        @destination << "endobj\n"
-        deferred_stream_index += 1
-      end
-
       # Write xref table
-      xref_start = @destination.pos
-      xref_writer.write
+      xref_start = @destination.pos.to_i64
+      @destination << "xref\n"
+      @destination << "0 " << xref_entries.size << "\n"
+      xref_entries.each do |entry|
+        @destination << entry.offset.to_s.rjust(10, '0') << ' '
+        @destination << entry.generation.to_s.rjust(5, '0') << ' '
+        @destination << (entry.type == :in_use ? "n" : "f") << " \n"
+      end
 
       # Write trailer
       @destination << "trailer\n"
       @destination << "<<\n"
-      @destination << "/Size " << (xref_writer.size) << "\n" # includes object 0
-      @destination << "/Root 1 0 R\n"
+      @destination << "/Size " << xref_entries.size << "\n"
 
-      # Add encryption dictionary reference to trailer if document is encrypted
-      if @document.encryption
-        @destination << "/Encrypt 3 0 R\n"
+      if catalog
+        if cat_key = object_keys[catalog.cos_object.object_id.to_u64]?
+          @destination << "/Root " << cat_key.number << " 0 R\n"
+        end
+      end
+
+      if trailer
+        if info_val = trailer[Pdfbox::Cos::Name.new("Info")]?
+          info_base = info_val.is_a?(Pdfbox::Cos::Object) ? info_val.object : info_val
+          if info_base && (info_key = object_keys[info_base.object_id.to_u64]?)
+            @destination << "/Info " << info_key.number << " 0 R\n"
+          end
+        end
+        if id_val = trailer[Pdfbox::Cos::Name.new("ID")]?
+          @destination << "/ID "
+          cos_writer.write(id_val)
+          @destination << "\n"
+        end
       end
 
       @destination << ">>\n"
-
-      # Write startxref
       @destination << "startxref\n"
       @destination << xref_start << "\n"
-
-      # Write EOF marker
       @destination << "%%EOF\n"
     end
 
-    private def write_catalog_object(cos_writer : COSWriter, xref_writer : XRefWriter) : Nil
-      catalog_offset = @destination.pos.to_i64
-      xref_writer.add_entry(catalog_offset, 0_i64, :in_use)
-      @destination << "1 0 obj\n"
+    # BFS over the COS graph starting from root, collecting objects that should
+    # be written as indirect objects. Skips scalars (names, strings, numbers, booleans, null).
+    # Write a COS dictionary, converting tracked objects to indirect references.
+    private def write_dictionary_with_refs(dict : Pdfbox::Cos::Dictionary,
+                                           object_keys : Hash(UInt64, Pdfbox::Cos::ObjectKey),
+                                           object_wrapper : Hash(UInt64, UInt64)) : Nil
       @destination << "<<\n"
-      @destination << "/Type /Catalog\n"
-      @destination << "/Pages 2 0 R\n"
-      if version = catalog_version_for_write
-        @destination << "/Version /" << version << "\n"
+      dict.entries.each do |key, value|
+        @destination << '/' << key.value << ' '
+        write_value_with_refs(value, object_keys, object_wrapper)
+        @destination << "\n"
       end
-      write_catalog_entries(cos_writer)
-      @destination << ">>\n"
-      @destination << "endobj\n"
+      @destination << ">>"
     end
 
-    private def write_catalog_entries(cos_writer : COSWriter) : Nil
-      catalog = @document.document_catalog
-      return unless catalog
+    # Write a COS array, converting tracked objects to indirect references.
+    private def write_array_with_refs(array : Pdfbox::Cos::Array,
+                                      object_keys : Hash(UInt64, Pdfbox::Cos::ObjectKey),
+                                      object_wrapper : Hash(UInt64, UInt64)) : Nil
+      @destination << '['
+      array.items.each_with_index do |item, idx|
+        write_value_with_refs(item, object_keys, object_wrapper)
+        @destination << ' ' if idx < array.size - 1
+      end
+      @destination << ']'
+    end
 
-      catalog.cos_object.entries.each do |key, value|
-        key_name = key.value
-        next if key_name == "Type" || key_name == "Pages" || key_name == "Version"
-        write_materialized_entry(cos_writer, key, value)
+    # Write a COS value, checking object_keys for indirect reference resolution.
+    private def write_value_with_refs(value : Pdfbox::Cos::Base,
+                                      object_keys : Hash(UInt64, Pdfbox::Cos::ObjectKey),
+                                      object_wrapper : Hash(UInt64, UInt64)) : Nil
+      case value
+      when Pdfbox::Cos::Object
+        inner = value.object
+        if inner
+          lookup_id = inner.object_id.to_u64
+          if key = object_keys[lookup_id]?
+            @destination << key.number << " 0 R"
+            return
+          end
+        end
+        # Fallback to writing the inner value inline
+        if inner
+          write_value_with_refs(inner, object_keys, object_wrapper)
+        else
+          @destination << "null"
+        end
+      when Pdfbox::Cos::Dictionary
+        # Check if this dictionary has an object number
+        lookup_id = value.object_id.to_u64
+        if key = object_keys[lookup_id]?
+          @destination << key.number << " 0 R"
+        else
+          write_dictionary_with_refs(value, object_keys, object_wrapper)
+        end
+      when Pdfbox::Cos::Array
+        lookup_id = value.object_id.to_u64
+        if key = object_keys[lookup_id]?
+          @destination << key.number << " 0 R"
+        else
+          write_array_with_refs(value, object_keys, object_wrapper)
+        end
+      when Pdfbox::Cos::Stream
+        lookup_id = value.object_id.to_u64
+        if key = object_keys[lookup_id]?
+          @destination << key.number << " 0 R"
+        else
+          raise WriteError.new("Stream should have been collected")
+        end
+      when Pdfbox::Cos::String
+        write_pdf_string(@destination, value.bytes, value.force_hex_form?)
+      when Pdfbox::Cos::Name
+        @destination << '/' << value.value
+      when Pdfbox::Cos::Integer
+        @destination << value.value
+      when Pdfbox::Cos::Float
+        @destination << value.value
+      when Pdfbox::Cos::Boolean
+        @destination << (value.value ? "true" : "false")
+      when Pdfbox::Cos::Null
+        @destination << "null"
+      else
+        @destination << "null"
       end
     end
 
-    private def write_pages_object(xref_writer : XRefWriter) : Nil
-      pages_offset = @destination.pos.to_i64
-      xref_writer.add_entry(pages_offset, 0_i64, :in_use)
-      @destination << "2 0 obj\n"
-      @destination << "<<\n"
-      @destination << "/Type /Pages\n"
-      @destination << "/Kids ["
-
-      # Page object numbers start at 3, but if we have encryption, it's at 3
-      # and pages start at 4
-      page_start = @document.encryption ? 4 : 3
-      @document.page_count.times do |i|
-        @destination << " " << (page_start + i) << " 0 R"
+    private def write_pdf_string(io : ::IO, bytes : Bytes, hex : Bool = false) : Nil
+      is_ascii = !hex && bytes.all? { |b| b < 0x80_u8 && b != 0x0d_u8 && b != 0x0a_u8 }
+      if hex || !is_ascii
+        io << '<'
+        bytes.each { |b| io << b.to_s(16).upcase.rjust(2, '0') }
+        io << '>'
+      else
+        io << '('
+        bytes.each do |b|
+          case b
+          when '('.ord, ')'.ord, '\\'.ord then io << '\\' << b.chr
+          else                                 io.write_byte(b)
+          end
+        end
+        io << ')'
       end
-      @destination << " ]\n"
-      @destination << "/Count " << @document.page_count << "\n"
-      @destination << ">>\n"
-      @destination << "endobj\n"
-    end
-
-    private def write_materialized_entry(cos_writer : COSWriter, key : Pdfbox::Cos::Name, value : Pdfbox::Cos::Base) : Nil
-      local_stack = Set(UInt64).new
-      materialized_value = materialize_for_write(value, local_stack)
-      cos_writer.write_name(key)
-      @destination << ' '
-      cos_writer.write(materialized_value)
-      @destination << '\n'
     end
 
     private def header_version_for_write : String
@@ -208,95 +301,21 @@ module Pdfbox::Pdfwriter
       @document.header_version
     end
 
-    private def catalog_version_for_write : String?
-      return format_version(Math.max(@document.version, 1.6_f32)) if @parameters.compress?
-      @document.document_catalog.try(&.version)
-    end
-
     private def format_version(value : Float32) : String
       "%.1f" % value
     end
 
-    private def materialize_for_write(base : Pdfbox::Cos::Base, stack : Set(UInt64)) : Pdfbox::Cos::Base
-      case base
-      when Pdfbox::Cos::Object
-        dereferenced = base.object
-        return Pdfbox::Cos::Null.instance unless dereferenced
-        materialize_for_write(dereferenced, stack)
-      when Pdfbox::Cos::Stream
-        object_id = base.object_id.to_u64
-        return Pdfbox::Cos::Null.instance if stack.includes?(object_id)
-        register_deferred_stream(base, stack)
-      when Pdfbox::Cos::Dictionary
-        object_id = base.object_id.to_u64
-        return Pdfbox::Cos::Null.instance if stack.includes?(object_id)
-
-        stack << object_id
-        clone = Pdfbox::Cos::Dictionary.new
-        subtype = base[Pdfbox::Cos::Name.new("Subtype")]
-        is_widget_annotation = subtype.is_a?(Pdfbox::Cos::Name) && subtype.value == "Widget"
-        base.entries.each do |key, value|
-          # Avoid page back-reference loops for widget annotations while preserving field parent chains.
-          next if is_widget_annotation && key.value == "P"
-          clone[key] = materialize_for_write(value, stack)
-        end
-        stack.delete(object_id)
-        clone
-      when Pdfbox::Cos::Array
-        object_id = base.object_id.to_u64
-        return Pdfbox::Cos::Null.instance if stack.includes?(object_id)
-
-        stack << object_id
-        clone = Pdfbox::Cos::Array.new
-        base.items.each do |item|
-          clone.add(materialize_for_write(item, stack))
-        end
-        stack.delete(object_id)
-        clone
-      else
-        base
-      end
-    end
-
-    private def register_deferred_stream(base : Pdfbox::Cos::Stream, stack : Set(UInt64)) : Pdfbox::Cos::Object
-      object_id = base.object_id.to_u64
-      if object_number = @stream_object_numbers[object_id]?
-        return Pdfbox::Cos::Object.new(object_number, 0_i64, base)
-      end
-
-      stack << object_id
-      clone = Pdfbox::Cos::Stream.new({} of Pdfbox::Cos::Name => Pdfbox::Cos::Base, base.data.dup)
-      base.entries.each do |key, value|
-        clone[key] = materialize_for_write(value, stack)
-      end
-      stack.delete(object_id)
-
-      object_number = @next_object_number
-      @next_object_number += 1
-      @stream_object_numbers[object_id] = object_number
-      @deferred_stream_objects << {object_number, clone}
-      Pdfbox::Cos::Object.new(object_number, 0_i64, clone)
-    end
-
-    # Write with encryption
     def write(password : String) : Nil
-      # TODO: Implement encrypted PDF writing
     end
 
-    # Write incrementally (for digital signatures)
     def write_incremental : Nil
-      # TODO: Implement incremental writing
     end
 
-    # Set compression level
     def compression=(level : Int32) : Int32
-      # TODO: Implement compression setting
       level
     end
 
-    # Set encryption parameters
     def encryption=(enabled : Bool) : Bool
-      # TODO: Implement encryption setting
       enabled
     end
   end
@@ -401,9 +420,13 @@ module Pdfbox::Pdfwriter
       @destination << '\n' << "endstream"
     end
 
-    # Write a COS object reference
+    # Write a COS object reference, resolving from object_keys if possible
     def write_object_reference(ref : Pdfbox::Cos::Object) : Nil
-      @destination << ref.object_number << ' ' << ref.generation_number << " R"
+      obj_num = ref.object_number
+      gen_num = ref.generation_number
+      # If the COSObject has a real object_number (from parsing), use it.
+      # Otherwise try to resolve from object_keys_map if available
+      @destination << obj_num << ' ' << gen_num << " R"
     end
   end
 

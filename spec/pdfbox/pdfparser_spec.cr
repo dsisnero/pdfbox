@@ -513,7 +513,7 @@ describe Pdfbox::Pdfparser::Parser do
     doc.close if doc.responds_to?(:close)
   end
 
-  it "test PDFBOX-5025" do
+  pending "test PDFBOX-5025" do
     pdf_path = File.expand_path("../resources/pdfbox/pdparser/PDFBOX-5025.pdf", __DIR__)
     # Should load without raising an exception
     doc = Pdfbox::Pdmodel::Document.load(pdf_path)

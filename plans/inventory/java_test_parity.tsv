@@ -399,13 +399,13 @@ pdfbox/src/test/java/org/apache/pdfbox/encryption/TestSymmetricKeyEncryption.jav
 pdfbox/src/test/java/org/apache/pdfbox/encryption/TestSymmetricKeyEncryption.java::test::testPermissions	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/encryption/TestSymmetricKeyEncryption.java::test::testProtection	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/encryption/TestSymmetricKeyEncryption.java::test::testProtectionInnerAttachment	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/filter/PredictorTest.java::test::testCalcSetBitSeq	ported	spec/pdfbox/filter/predictor_spec.cr	Ported Predictor calc_set_bit_seq vectors from Java PredictorTest
-pdfbox/src/test/java/org/apache/pdfbox/filter/PredictorTest.java::test::testGetBitSeq	ported	spec/pdfbox/filter/predictor_spec.cr	Ported Predictor get_bit_seq vectors from Java PredictorTest
-pdfbox/src/test/java/org/apache/pdfbox/filter/TestFilters.java::test::testEmptyFilterList	ported	spec/pdfbox/filter/filter_spec.cr	Ported empty filter list decode error parity from Java TestFilters
-pdfbox/src/test/java/org/apache/pdfbox/filter/TestFilters.java::test::testFilters	ported	spec/pdfbox/filter/filter_spec.cr	Ported randomized deterministic and nondeterministic round-trip coverage across all implemented filters; LZW encoder lookup now avoids pathological scan time
-pdfbox/src/test/java/org/apache/pdfbox/filter/TestFilters.java::test::testPDFBOX1977	ported	spec/pdfbox/filter/filter_spec.cr	Ported Java PDFBOX-1977 LZW regression vector round-trip coverage
-pdfbox/src/test/java/org/apache/pdfbox/filter/TestFilters.java::test::testPDFBOX4517	ported	spec/pdfbox/filter/test_filters_spec.cr	Ported encrypted identity-filter fixture load parity from Java TestFilters
-pdfbox/src/test/java/org/apache/pdfbox/filter/TestFilters.java::test::testRLE	ported	spec/pdfbox/filter/run_length_decode_filter_spec.cr	Ported simple and corner-case RLE round-trip vectors from Java TestFilters
+pdfbox/src/test/java/org/apache/pdfbox/filter/PredictorTest.java::test::testCalcSetBitSeq	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/filter/PredictorTest.java::test::testGetBitSeq	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/filter/TestFilters.java::test::testEmptyFilterList	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/filter/TestFilters.java::test::testFilters	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/filter/TestFilters.java::test::testPDFBOX1977	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/filter/TestFilters.java::test::testPDFBOX4517	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/filter/TestFilters.java::test::testRLE	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/multipdf/MergeAcroFormsTest.java::test::testAPEntry	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/multipdf/MergeAcroFormsTest.java::test::testAnnotsEntry	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/multipdf/MergeAcroFormsTest.java::test::testLegacyModeMerge	missing	-	baseline
@@ -477,61 +477,61 @@ pdfbox/src/test/java/org/apache/pdfbox/pdfparser/TestPDFParser.java::test::testP
 pdfbox/src/test/java/org/apache/pdfbox/pdfparser/TestPDFParser.java::test::testPDFBox5025	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdfparser/TestPDFParser.java::test::testPDFParserMissingCatalog	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdfparser/TestPDFParser.java::test::testParseGenko	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdfwriter/COSDocumentCompressionTest.java::test::testAlteredDoc	ported	spec/pdfbox/pdfwriter/pdfwriter_spec.cr	Ported Java altered document compression round-trip with added page content stream length assertion
-pdfbox/src/test/java/org/apache/pdfbox/pdfwriter/COSDocumentCompressionTest.java::test::testCompressAcroformDoc	ported	spec/pdfbox/pdfwriter/pdfwriter_spec.cr	Ported AcroForm compression round-trip assertions from Java COSDocumentCompressionTest
-pdfbox/src/test/java/org/apache/pdfbox/pdfwriter/COSDocumentCompressionTest.java::test::testCompressAttachmentsDoc	ported	spec/pdfbox/pdfwriter/pdfwriter_spec.cr	Ported embedded-file compression round-trip assertions from Java COSDocumentCompressionTest
+pdfbox/src/test/java/org/apache/pdfbox/pdfwriter/COSDocumentCompressionTest.java::test::testAlteredDoc	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdfwriter/COSDocumentCompressionTest.java::test::testCompressAcroformDoc	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdfwriter/COSDocumentCompressionTest.java::test::testCompressAttachmentsDoc	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdfwriter/COSDocumentCompressionTest.java::test::testCompressEncryptedDoc	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdfwriter/COSDocumentCompressionTest.java::test::testPDFBox5927	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdfwriter/COSWriterCompressionPoolTest.java::test::testPDFBox6036	ported	spec/pdfbox/pdfwriter/pdfwriter_spec.cr	Ported iterative compression-pool traversal parity from Java COSWriterCompressionPoolTest
-pdfbox/src/test/java/org/apache/pdfbox/pdfwriter/COSWriterTest.java::test::testPDFBox4321	ported	spec/pdfbox/pdfwriter/pdfwriter_spec.cr	Ported non-closing external output stream contract parity from Java COSWriterTest
-pdfbox/src/test/java/org/apache/pdfbox/pdfwriter/COSWriterTest.java::test::testPDFBox5485	ported	spec/pdfbox/pdfwriter/pdfwriter_spec.cr	Ported page extraction and writer regression coverage from Java COSWriterTest
-pdfbox/src/test/java/org/apache/pdfbox/pdfwriter/COSWriterTest.java::test::testPDFBox5945	ported	spec/pdfbox/pdfwriter/pdfwriter_spec.cr	Ported trailer size alignment parity for initial and incremental saves from Java COSWriterTest
+pdfbox/src/test/java/org/apache/pdfbox/pdfwriter/COSWriterCompressionPoolTest.java::test::testPDFBox6036	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdfwriter/COSWriterTest.java::test::testPDFBox4321	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdfwriter/COSWriterTest.java::test::testPDFBox5485	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdfwriter/COSWriterTest.java::test::testPDFBox5945	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdfwriter/COSWriterTest.java::test::testPDFBox6036	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdfwriter/ContentStreamWriterTest.java::test::testPDFBox4750	ported	spec/pdfbox/pdfwriter/pdfwriter_spec.cr	Ported inline-image content stream writer round-trip regression from Java ContentStreamWriterTest
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/PageLayoutTest.java::test::fromStringInputNotNullOutputIllegalArgumentException	ported	spec/pdfbox/pdmodel/page_layout_spec.cr	Ported invalid PageLayout.from_string exception parity from Java PageLayoutTest
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/PageLayoutTest.java::test::testValues	ported	spec/pdfbox/pdmodel/page_layout_spec.cr	Ported PageLayout string round-trip completeness parity from Java PageLayoutTest
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/PageModeTest.java::test::fromStringInputNotNullOutputIllegalArgumentException	ported	spec/pdfbox/pdmodel/page_mode_spec.cr	Ported empty-string PageMode.from_string exception parity from Java PageModeTest
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/PageModeTest.java::test::fromStringInputNotNullOutputIllegalArgumentException2	ported	spec/pdfbox/pdmodel/page_mode_spec.cr	Ported invalid-string PageMode.from_string exception parity from Java PageModeTest
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/PageModeTest.java::test::fromStringInputNotNullOutputNotNull	ported	spec/pdfbox/pdmodel/page_mode_spec.cr	Ported FullScreen PageMode.from_string parity from Java PageModeTest
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/PageModeTest.java::test::fromStringInputNotNullOutputNotNull2	ported	spec/pdfbox/pdmodel/page_mode_spec.cr	Ported UseThumbs PageMode.from_string parity from Java PageModeTest
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/PageModeTest.java::test::fromStringInputNotNullOutputNotNull3	ported	spec/pdfbox/pdmodel/page_mode_spec.cr	Ported UseOC PageMode.from_string parity from Java PageModeTest
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/PageModeTest.java::test::fromStringInputNotNullOutputNotNull4	ported	spec/pdfbox/pdmodel/page_mode_spec.cr	Ported UseNone PageMode.from_string parity from Java PageModeTest
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/PageModeTest.java::test::fromStringInputNotNullOutputNotNull5	ported	spec/pdfbox/pdmodel/page_mode_spec.cr	Ported UseAttachments PageMode.from_string parity from Java PageModeTest
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/PageModeTest.java::test::fromStringInputNotNullOutputNotNull6	ported	spec/pdfbox/pdmodel/page_mode_spec.cr	Ported UseOutlines PageMode.from_string parity from Java PageModeTest
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/PageModeTest.java::test::stringValueOutputNotNull	ported	spec/pdfbox/pdmodel/page_mode_spec.cr	Ported PageMode.string_value parity from Java PageModeTest
+pdfbox/src/test/java/org/apache/pdfbox/pdfwriter/ContentStreamWriterTest.java::test::testPDFBox4750	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/PageLayoutTest.java::test::fromStringInputNotNullOutputIllegalArgumentException	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/PageLayoutTest.java::test::testValues	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/PageModeTest.java::test::fromStringInputNotNullOutputIllegalArgumentException	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/PageModeTest.java::test::fromStringInputNotNullOutputIllegalArgumentException2	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/PageModeTest.java::test::fromStringInputNotNullOutputNotNull	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/PageModeTest.java::test::fromStringInputNotNullOutputNotNull2	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/PageModeTest.java::test::fromStringInputNotNullOutputNotNull3	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/PageModeTest.java::test::fromStringInputNotNullOutputNotNull4	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/PageModeTest.java::test::fromStringInputNotNullOutputNotNull5	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/PageModeTest.java::test::fromStringInputNotNullOutputNotNull6	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/PageModeTest.java::test::stringValueOutputNotNull	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestFDF.java::test::testLoad2	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestFDF.java::test::testPDFBox5894	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDDocument.java::test::testDeleteBadFile	ported	spec/pdfbox/document_spec.cr	Ported delete-after-failed-load parity using malformed PDF file fixture created in temp
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDDocument.java::test::testDeleteGoodFile	ported	spec/pdfbox/document_spec.cr	Ported delete-after-successful-load-and-close parity using saved temporary PDF
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDDocument.java::test::testDeleteBadFile	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDDocument.java::test::testDeleteGoodFile	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDDocument.java::test::testSaveArabicLocale	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDDocument.java::test::testSaveLoadFile	ported	spec/pdfbox/document_spec.cr	Ported no-compression file save/load parity with header and EOF assertions
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDDocument.java::test::testSaveLoadStream	ported	spec/pdfbox/document_spec.cr	Ported no-compression stream save/load parity with header and EOF assertions
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDDocument.java::test::testVersions	ported	spec/pdfbox/document_spec.cr	Ported Java PDDocument version semantics including header/catalog interplay and default compressed save version 1.6 behavior
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDDocumentCatalog.java::test::handleBooleanInOpenAction	ported	spec/pdfbox/document_catalog_spec.cr	Ported COSBoolean OpenAction handling parity
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDDocumentCatalog.java::test::handleOutputIntents	ported	spec/pdfbox/document_catalog_spec.cr	Ported output intent retrieval, add, and replace parity
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDDocumentCatalog.java::test::retrieveNumberOfPages	ported	spec/pdfbox/document_catalog_spec.cr	Ported page count retrieval parity for test.unc.pdf
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDDocumentCatalog.java::test::retrievePageLabels	ported	spec/pdfbox/document_catalog_spec.cr	Ported page label extraction parity for test_pagelabels.pdf
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDDocumentCatalog.java::test::retrievePageLabelsOnMalformedPdf	ported	spec/pdfbox/document_catalog_spec.cr	Ported malformed page label retrieval parity without raising
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDDocumentInformation.java::test::testMetadataExtraction	ported	spec/pdfbox/document_information_spec.cr	Ported metadata extraction parity for hello3.pdf including custom metadata keys and values
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDDocumentInformation.java::test::testPDFBox3068	ported	spec/pdfbox/document_information_spec.cr	Ported indirect /Info /Title resolution parity for PDFBOX-3068.pdf
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDDocument.java::test::testSaveLoadFile	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDDocument.java::test::testSaveLoadStream	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDDocument.java::test::testVersions	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDDocumentCatalog.java::test::handleBooleanInOpenAction	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDDocumentCatalog.java::test::handleOutputIntents	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDDocumentCatalog.java::test::retrieveNumberOfPages	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDDocumentCatalog.java::test::retrievePageLabels	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDDocumentCatalog.java::test::retrievePageLabelsOnMalformedPdf	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDDocumentInformation.java::test::testMetadataExtraction	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDDocumentInformation.java::test::testPDFBox3068	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPage.java::test::testAddingPageAfterCreatingAnnotation	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageAnnotationsFiltering.java::test::validateAllFiltered	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageAnnotationsFiltering.java::test::validateNoFiltering	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageAnnotationsFiltering.java::test::validateSelectedFew	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageContentStream.java::test::testCloseContract	ported	spec/pdfbox/pdmodel/page_content_stream_spec.cr	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageContentStream.java::test::testGeneralGraphicStateOperatorTextMode	ported	spec/pdfbox/pdmodel/page_content_stream_spec.cr	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageContentStream.java::test::testMissingContentStream	ported	spec/pdfbox/pdmodel/page_content_stream_spec.cr	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageContentStream.java::test::testSetCmykColors	ported	spec/pdfbox/pdmodel/page_content_stream_spec.cr	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageContentStream.java::test::testSetRGBandGColors	ported	spec/pdfbox/pdmodel/page_content_stream_spec.cr	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageTransitions.java::test::readTransitions	ported	spec/pdfbox/pdmodel/page_transitions_spec.cr	Ported page transition fixture read parity for transitions_test.pdf
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageTransitions.java::test::saveAndReadTransitions	ported	spec/pdfbox/pdmodel/page_transitions_spec.cr	Ported page transition save/load parity for Fly transition with NONE direction
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageTree.java::test::indexOfPageFromOutlineDestination	ported	spec/pdfbox/pdmodel/page_tree_spec.cr	Ported outline destination page index parity using with_outline.pdf
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageTree.java::test::negative	ported	spec/pdfbox/pdmodel/page_tree_spec.cr	Ported missing-page index parity returning -1
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageTree.java::test::positiveMultipleLevel	ported	spec/pdfbox/pdmodel/page_tree_spec.cr	Ported multi-level page tree index parity using page_tree_multiple_levels.pdf
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageTree.java::test::positiveSingleLevel	ported	spec/pdfbox/pdmodel/page_tree_spec.cr	Ported single-level page tree index parity using with_outline.pdf
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageTree.java::test::testInsertAfterBlankPage	ported	spec/pdfbox/pdmodel/page_tree_spec.cr	Ported insertAfter blank page ordering parity
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageTree.java::test::testInsertBeforeBlankPage	ported	spec/pdfbox/pdmodel/page_tree_spec.cr	Ported insertBefore blank page ordering parity
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageTree.java::test::testNodeLoop	ported	spec/pdfbox/pdmodel/page_tree_nodeloop_spec.cr	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageContentStream.java::test::testCloseContract	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageContentStream.java::test::testGeneralGraphicStateOperatorTextMode	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageContentStream.java::test::testMissingContentStream	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageContentStream.java::test::testSetCmykColors	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageContentStream.java::test::testSetRGBandGColors	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageTransitions.java::test::readTransitions	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageTransitions.java::test::saveAndReadTransitions	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageTree.java::test::indexOfPageFromOutlineDestination	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageTree.java::test::negative	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageTree.java::test::positiveMultipleLevel	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageTree.java::test::positiveSingleLevel	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageTree.java::test::testInsertAfterBlankPage	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageTree.java::test::testInsertBeforeBlankPage	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageTree.java::test::testNodeLoop	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/COSArrayListTest.java::test::getFromList	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/COSArrayListTest.java::test::removeAllMultipleFromListByObject	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/COSArrayListTest.java::test::removeAllUniqueFromListByObject	missing	-	baseline
@@ -543,21 +543,21 @@ pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/COSArrayListTest.java::tes
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/COSArrayListTest.java::test::removeSingleIndirectObject	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/COSArrayListTest.java::test::removeUniqueFromListByObject	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/COSArrayListTest.java::test::retainIndirectObject	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/PDImmutableRectangleTest.java::test::testClass	ported	spec/pdfbox/pdmodel/common/pdrectangle_spec.cr	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/PDImmutableRectangleTest.java::test::testSetLowerLeftX	ported	spec/pdfbox/pdmodel/common/pdrectangle_spec.cr	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/PDImmutableRectangleTest.java::test::testSetLowerLeftY	ported	spec/pdfbox/pdmodel/common/pdrectangle_spec.cr	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/PDImmutableRectangleTest.java::test::testSetUpperRightX	ported	spec/pdfbox/pdmodel/common/pdrectangle_spec.cr	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/PDImmutableRectangleTest.java::test::testSetUpperRightY	ported	spec/pdfbox/pdmodel/common/pdrectangle_spec.cr	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/PDStreamTest.java::test::testCreateInputStreamEmptyFilters	ported	spec/pdfbox/pdmodel/common/pdstream_spec.cr	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/PDStreamTest.java::test::testCreateInputStreamNullFilters	ported	spec/pdfbox/pdmodel/common/pdstream_spec.cr	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/PDStreamTest.java::test::testCreateInputStreamNullStopFilters	ported	spec/pdfbox/pdmodel/common/pdstream_spec.cr	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/PDImmutableRectangleTest.java::test::testClass	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/PDImmutableRectangleTest.java::test::testSetLowerLeftX	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/PDImmutableRectangleTest.java::test::testSetLowerLeftY	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/PDImmutableRectangleTest.java::test::testSetUpperRightX	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/PDImmutableRectangleTest.java::test::testSetUpperRightY	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/PDStreamTest.java::test::testCreateInputStreamEmptyFilters	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/PDStreamTest.java::test::testCreateInputStreamNullFilters	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/PDStreamTest.java::test::testCreateInputStreamNullStopFilters	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/TestEmbeddedFiles.java::test::testNullEmbeddedFile	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/TestEmbeddedFiles.java::test::testOSSpecificAttachments	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/TestPDNameTreeNode.java::test::testLowerLimit	ported	spec/pdfbox/pdmodel/common/pdname_tree_node_spec.cr	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/TestPDNameTreeNode.java::test::testUpperLimit	ported	spec/pdfbox/pdmodel/common/pdname_tree_node_spec.cr	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/TestPDNumberTreeNode.java::test::testGetValue	ported	spec/pdfbox/pdmodel/common/pdnumber_tree_node_spec.cr	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/TestPDNumberTreeNode.java::test::testLowerLimit	ported	spec/pdfbox/pdmodel/common/pdnumber_tree_node_spec.cr	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/TestPDNumberTreeNode.java::test::testUpperLimit	ported	spec/pdfbox/pdmodel/common/pdnumber_tree_node_spec.cr	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/TestPDNameTreeNode.java::test::testLowerLimit	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/TestPDNameTreeNode.java::test::testUpperLimit	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/TestPDNumberTreeNode.java::test::testGetValue	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/TestPDNumberTreeNode.java::test::testLowerLimit	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/TestPDNumberTreeNode.java::test::testUpperLimit	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/function/TestPDFunctionType4.java::test::testFunctionArgumentOrder	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/function/TestPDFunctionType4.java::test::testFunctionSimple	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/function/type4/TestOperators.java::test::testAbs	missing	-	baseline
@@ -613,16 +613,16 @@ pdfbox/src/test/java/org/apache/pdfbox/pdmodel/fdf/FDFFieldTest.java::test::test
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/fdf/FDFFieldTest.java::test::testCOSNameValue	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/fdf/FDFFieldTest.java::test::testCOSStringValue	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/fdf/FDFFieldTest.java::test::testTextAsCOSStreamValue	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/font/PDFontTest.java::test::PDFBOX5920TrueType	ported	spec/pdfbox/pdmodel/font/pdfont_test_spec.cr	TrueType font loading works, width calculation matches Java exactly (20064.0, 278.0) after fixing encoding module paths and PDTrueTypeFontEmbedder implementation
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/font/PDFontTest.java::test::PDFBOX5920Type0	partial	spec/pdfbox/pdmodel/font/pdfont_test_spec.cr	PDType0Font.load method implemented with basic constructor; test added but pending due to get_string_width calculation issues
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/font/PDFontTest.java::test::PDFBOX5920TrueType	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/font/PDFontTest.java::test::PDFBOX5920Type0	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/font/PDFontTest.java::test::testDeleteFont	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/font/PDFontTest.java::test::testFullEmbeddingTTC	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/font/PDFontTest.java::test::testPDFBOX4115	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/font/PDFontTest.java::test::testPDFBOX5486	ported	spec/pdfbox/pdmodel/font/pdfont_test_spec.cr	testPDFBOX5486 test checks has_glyph? and get_path for TrueType fonts
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/font/PDFontTest.java::test::testPDFBOX5486	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/font/PDFontTest.java::test::testPDFBox3747	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/font/PDFontTest.java::test::testPDFBox3826	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/font/PDFontTest.java::test::testPDFBox5484	ported	spec/pdfbox/pdmodel/font/pdfont_test_spec.cr	testPDFBox5484 tests symbol font encoding handling with PDFBOX-5484.ttf font
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/font/PDFontTest.java::test::testPDFBox988	ported	spec/pdfbox/pdmodel/font/pdfont_test_spec.cr	Ported Java PDFBOX-988 crash regression test; loads F001u_3_7j.pdf and renders without crashing
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/font/PDFontTest.java::test::testPDFBox5484	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/font/PDFontTest.java::test::testPDFBox988	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/font/PDFontTest.java::test::testPDFox4318	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/font/PDFontTest.java::test::testPDFox5048	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/font/PDFontTest.java::test::testSoftHyphen	missing	-	baseline
@@ -644,7 +644,7 @@ pdfbox/src/test/java/org/apache/pdfbox/pdmodel/font/TestFontEmbedding.java::test
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/font/TestFontEmbedding.java::test::testSurrogatePairCharacterExceptionIsValidCodePoint	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/font/TestFontEncoding.java::test::testAdd	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/font/TestFontEncoding.java::test::testOverwrite	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/font/TestFontEncoding.java::test::testPDFBox3884	partial	-	Can create PDF with PDPageContentStream, but PDFTextStripper not implemented for verification
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/font/TestFontEncoding.java::test::testPDFBox3884	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/font/TestToUnicodeWriter.java::test::testAllowCIDToUnicodeRange	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/font/TestToUnicodeWriter.java::test::testAllowCodeRange	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/font/TestToUnicodeWriter.java::test::testAllowDestinationRange	missing	-	baseline
@@ -708,9 +708,9 @@ pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/LosslessFactoryTes
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/LosslessFactoryTest.java::test::testCreateLosslessFromTransparentGIF	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObjectTest.java::test::testCreateFromByteArray	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObjectTest.java::test::testCreateFromByteArrayWithCustomFactory	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObjectTest.java::test::testCreateFromFile	partial	spec/pdfbox/pdmodel/graphics/image/pd_image_xobject_spec.cr	create_from_file with JPEG/PNG, properties, drawImage round-trip; pixel-level ARGB comparison and CCITT/TIFF/GIF formats remain pending
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObjectTest.java::test::testCreateFromFileByContent	partial	spec/pdfbox/pdmodel/graphics/image/pd_image_xobject_spec.cr	create_from_file with JPEG/PNG, properties, drawImage round-trip; pixel-level ARGB comparison and CCITT/TIFF/GIF formats remain pending
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObjectTest.java::test::testCreateFromFileByExtension	partial	spec/pdfbox/pdmodel/graphics/image/pd_image_xobject_spec.cr	create_from_file with JPEG/PNG, properties, drawImage round-trip; pixel-level ARGB comparison and CCITT/TIFF/GIF formats remain pending
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObjectTest.java::test::testCreateFromFile	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObjectTest.java::test::testCreateFromFileByContent	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObjectTest.java::test::testCreateFromFileByExtension	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/PDInlineImageTest.java::test::testInlineImage	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/PDInlineImageTest.java::test::testShortCCITT1	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/PDInlineImageTest.java::test::testShortCCITT2	missing	-	baseline
@@ -912,13 +912,13 @@ pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/pagenavigation/PDTran
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/pagenavigation/PDTransitionTest.java::test::getStyle	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/pagenavigation/PDTransitionTest.java::test::motion	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/rendering/TestQuality.java::test::testPDFBox4831	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/text/BidiTest.java::test::testNotSorted	ported	spec/pdfbox/text/bidi_text_stripper_spec.cr	Ported against BidiSample.pdf with Java unsorted fixture output
-pdfbox/src/test/java/org/apache/pdfbox/text/BidiTest.java::test::testSorted	ported	spec/pdfbox/text/bidi_text_stripper_spec.cr	Ported against BidiSample.pdf sorted fixture output with sort_by_position enabled
-pdfbox/src/test/java/org/apache/pdfbox/text/PDFTextStripperByAreaTest.java::test::testSomeMethod	ported	spec/pdfbox/text/pdf_text_stripper_by_area_spec.cr	Ported against eu-001.pdf with Java rectangle coverage for page 1 and page 3 region extraction
+pdfbox/src/test/java/org/apache/pdfbox/text/BidiTest.java::test::testNotSorted	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/text/BidiTest.java::test::testSorted	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/text/PDFTextStripperByAreaTest.java::test::testSomeMethod	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/text/TestTextStripper.java::test::testExtract	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/text/TestTextStripper.java::test::testIgnoreContentStreamSpaceGlyphs	ported	spec/pdfbox/text/pdf_text_stripper_spec.cr	Ported exactly from Java with overlapping Helvetica/Times content stream text and ignore-space-glyph sorting expectations
-pdfbox/src/test/java/org/apache/pdfbox/text/TestTextStripper.java::test::testStartEndPage	ported	spec/pdfbox/text/pdf_text_stripper_spec.cr	Ported with Java start/end page assertions on eu-001.pdf, including trimmed text prefix/suffix and exact length
-pdfbox/src/test/java/org/apache/pdfbox/text/TestTextStripper.java::test::testStripByOutlineItems	ported	spec/pdfbox/text/pdf_text_stripper_spec.cr	Ported against with_outline.pdf with Java-equivalent bookmark destination page checks and outline-vs-page-range extraction assertions
+pdfbox/src/test/java/org/apache/pdfbox/text/TestTextStripper.java::test::testIgnoreContentStreamSpaceGlyphs	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/text/TestTextStripper.java::test::testStartEndPage	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/text/TestTextStripper.java::test::testStripByOutlineItems	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/text/TestTextStripper.java::test::testTabula	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/util/MatrixTest.java::test::testConstructionAndCopy	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/util/MatrixTest.java::test::testCreateMatrixUsingInvalidInput	missing	-	baseline
@@ -957,19 +957,19 @@ pdfbox/src/test/java/org/apache/pdfbox/util/TestNumberFormatUtil.java::test::tes
 pdfbox/src/test/java/org/apache/pdfbox/util/TestNumberFormatUtil.java::test::testRoundingDown	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/util/TestNumberFormatUtil.java::test::testRoundingUp	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/util/TestSort.java::test::testSort	missing	-	baseline
-tools/src/test/java/org/apache/pdfbox/tools/PDFBoxHeadlessTest.java::test::isHeadlessPDFBoxTest	ported	spec/tools/pdfbox_cli_spec.cr	baseline
-tools/src/test/java/org/apache/pdfbox/tools/PDFBoxHeadlessTest.java::test::isHeadlessTest	ported	spec/tools/pdfbox_cli_spec.cr	baseline
-tools/src/test/java/org/apache/pdfbox/tools/PDFBoxNonHeadlessTest.java::test::isNonHeadlessPDFBoxTest	ported	spec/tools/pdfbox_cli_spec.cr	baseline
-tools/src/test/java/org/apache/pdfbox/tools/PDFBoxNonHeadlessTest.java::test::isNonHeadlessTest	ported	spec/tools/pdfbox_cli_spec.cr	baseline
-tools/src/test/java/org/apache/pdfbox/tools/TestExtractText.java::test::testAddFileName	ported	spec/tools/extract_text_spec.cr	baseline
-tools/src/test/java/org/apache/pdfbox/tools/TestExtractText.java::test::testEmbeddedPDFs	ported	spec/tools/extract_text_spec.cr	baseline
-tools/src/test/java/org/apache/pdfbox/tools/TestExtractText.java::test::testPDFBoxRepeatableSubcommand	ported	spec/tools/extract_text_spec.cr	baseline
-tools/src/test/java/org/apache/pdfbox/tools/TestExtractText.java::test::testPDFBoxRepeatableSubcommandAddFileName	ported	spec/tools/extract_text_spec.cr	baseline
-tools/src/test/java/org/apache/pdfbox/tools/TestExtractText.java::test::testPDFBoxRepeatableSubcommandAddFileNameOutfile	ported	spec/tools/extract_text_spec.cr	baseline
-tools/src/test/java/org/apache/pdfbox/tools/TestExtractText.java::test::testPDFBoxRepeatableSubcommandAddFileNameOutfileAppend	ported	spec/tools/extract_text_spec.cr	baseline
-tools/src/test/java/org/apache/pdfbox/tools/TestExtractText.java::test::testRotationMagic	ported	spec/tools/extract_text_spec.cr	baseline
-tools/src/test/java/org/apache/pdfbox/tools/TestPDFText2HTML.java::test::testEscapeTitle	ported	spec/tools/pdf_text_2_html_spec.cr	baseline
-tools/src/test/java/org/apache/pdfbox/tools/TestPDFText2HTML.java::test::testStyle	ported	spec/tools/pdf_text_2_html_spec.cr	baseline
+tools/src/test/java/org/apache/pdfbox/tools/PDFBoxHeadlessTest.java::test::isHeadlessPDFBoxTest	missing	-	baseline
+tools/src/test/java/org/apache/pdfbox/tools/PDFBoxHeadlessTest.java::test::isHeadlessTest	missing	-	baseline
+tools/src/test/java/org/apache/pdfbox/tools/PDFBoxNonHeadlessTest.java::test::isNonHeadlessPDFBoxTest	missing	-	baseline
+tools/src/test/java/org/apache/pdfbox/tools/PDFBoxNonHeadlessTest.java::test::isNonHeadlessTest	missing	-	baseline
+tools/src/test/java/org/apache/pdfbox/tools/TestExtractText.java::test::testAddFileName	missing	-	baseline
+tools/src/test/java/org/apache/pdfbox/tools/TestExtractText.java::test::testEmbeddedPDFs	missing	-	baseline
+tools/src/test/java/org/apache/pdfbox/tools/TestExtractText.java::test::testPDFBoxRepeatableSubcommand	missing	-	baseline
+tools/src/test/java/org/apache/pdfbox/tools/TestExtractText.java::test::testPDFBoxRepeatableSubcommandAddFileName	missing	-	baseline
+tools/src/test/java/org/apache/pdfbox/tools/TestExtractText.java::test::testPDFBoxRepeatableSubcommandAddFileNameOutfile	missing	-	baseline
+tools/src/test/java/org/apache/pdfbox/tools/TestExtractText.java::test::testPDFBoxRepeatableSubcommandAddFileNameOutfileAppend	missing	-	baseline
+tools/src/test/java/org/apache/pdfbox/tools/TestExtractText.java::test::testRotationMagic	missing	-	baseline
+tools/src/test/java/org/apache/pdfbox/tools/TestPDFText2HTML.java::test::testEscapeTitle	missing	-	baseline
+tools/src/test/java/org/apache/pdfbox/tools/TestPDFText2HTML.java::test::testStyle	missing	-	baseline
 tools/src/test/java/org/apache/pdfbox/tools/TestTextToPdf.java::test::testCreateEmptyPdf	missing	-	baseline
 tools/src/test/java/org/apache/pdfbox/tools/TestTextToPdf.java::test::testFormFeed	missing	-	baseline
 tools/src/test/java/org/apache/pdfbox/tools/TestTextToPdf.java::test::testLeadingTrailingSpaces	missing	-	baseline

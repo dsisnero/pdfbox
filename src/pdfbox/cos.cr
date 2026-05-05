@@ -1266,6 +1266,7 @@ module Pdfbox::Cos
     end
 
     def ==(other : self) : Bool
+      return false unless other.class == self.class
       @entries == other.@entries
     end
 
@@ -1327,6 +1328,7 @@ module Pdfbox::Cos
     end
 
     def ==(other : self) : Bool
+      return false unless other.class == self.class
       super && @data == other.@data
     end
 

@@ -12,6 +12,7 @@ describe Pdfbox::Cos::Dictionary do
       dictionary[be_name] = be_name
       dictionary[length_name] = Pdfbox::Cos::Integer.get(0_i64)
       stream[be_name] = be_name
+      stream[length_name] = Pdfbox::Cos::Integer.get(0_i64)
 
       (dictionary == stream).should be_false
       (stream == dictionary).should be_false

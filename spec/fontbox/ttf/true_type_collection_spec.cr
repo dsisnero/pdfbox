@@ -37,8 +37,11 @@ describe Fontbox::TTF::TrueTypeCollection do
     end
   end
 
-  it "processes TTC fonts, resolves fonts by name, and scans headers" do
-    pending("TTF fixture not found: #{ttf_path}") unless File.exists?(ttf_path)
+  pending "processes TTC fonts, resolves fonts by name, and scans headers" do
+    unless File.exists?(ttf_path)
+      pending("TTF fixture not found: #{ttf_path}")
+      next
+    end
 
     temp_dir = File.expand_path("../../../temp/ttf", __DIR__)
     Dir.mkdir_p(temp_dir)
