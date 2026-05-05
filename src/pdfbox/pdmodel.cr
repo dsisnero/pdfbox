@@ -462,6 +462,7 @@ module Pdfbox::Pdmodel
       return unless pages_dict
 
       kids = pages_dict[Cos::Name.new("Kids")]
+      kids = kids.object if kids.is_a?(Cos::Object)
       return unless kids.is_a?(Cos::Array)
 
       kids.items.each do |kid|

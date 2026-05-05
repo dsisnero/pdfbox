@@ -4,6 +4,8 @@
 > Complements `plans/inventory/java_port_inventory.tsv` (per-method ledger) and `plans/active/` (per-class plans).
 > Update this file as features progress.
 
+**Current work:** Fixing `Document.load` page-tree reconstruction to unblock save+load round-trip (P3). Next: fix writer compression/attachment tests, then text stripper P0 parity.
+
 ---
 
 ## Overview
@@ -14,6 +16,7 @@
 | Crystal source files (ported) | ~415 |
 | Passing tests | ~1,469 |
 | Pending tests | 17 |
+| Fixed since last update | `Document.load` page-tree reconstruction (unblocked font specs, reduced writer failures from 4→3) |
 | Active porting plans | 1 (`plans/active/CosParserPort.md`) |
 
 ---
@@ -84,12 +87,12 @@
 | ContentStreamWriter | ported | |
 
 **Known gaps:**
-- `Document.load` doesn't reconstruct pages from serialized page tree (save+load round-trip broken)
+- `Document.load` page-tree reconstruction fixed — save+load round-trip works for flat page trees
 - No compressed object stream writing (xref stream vs xref table)
 - No incremental update / digital signature support
 - No encryption writing
 
-**Pending tests:** 3 (`testCompressEncryptedDoc`, `testPDFBox5927`, `testPDFBox6036`)
+**Pending tests:** 3 (`testCompressAttachmentsDoc`, `testAlteredDoc`, `testPDFBox5945 incremental`)
 
 ---
 
@@ -171,14 +174,14 @@
 | PDDocumentInformation | partial | |
 
 **Known gaps:**
-- `Document.load` → save → load roundtrip broken (page tree not reconstructed)
+- `ensure_pages_loaded` only reads one level of Kids (handles flat page trees only — nested tree nodes not traversed)
 - Missing `ResourceCache` for page resources (needed by PDPageTree iterator)
 - Font subsetting not wired into save path
 - Stream encryption not integrated
 
-**No dedicated pending tests** (issues surface in font/text writer tests).
+**Fixed:** `Document.load` page-tree reconstruction (`dereference Cos::Object` in Kids) — unblocked font spec save+load tests.
 
-**TDD-ready task:** Fix `Document.load` to reconstruct pages from serialized page tree after save.
+**TDD-ready task:** Add recursive page tree traversal in `ensure_pages_loaded` to handle nested Pages nodes.
 
 ---
 
@@ -366,7 +369,7 @@ Covered by porting specs and pending writer test.
 | P2 | OTF standalone parsing | FontBox | Only works with Java build artifacts |
 | P2 | Font provider indexing | Font | Only works with font directory |
 | P2 | BidiSample sorted/unsorted | Text | Bidi algorithm differences from Java |
-| P3 | COS writer object graph | Writer | `Document.load` not reconstructing page tree |
+| P3 | COS writer object graph | Writer | `Document.load` page-tree reconstruction fixed. Remaining: nested page trees, attachment names dict, field access after load |
 | P3 | Compress encrypted doc | Writer | Encryption not wired into writer |
 | P3 | Document compression | Writer | Object stream compression not wired into writer |
 
@@ -397,5 +400,6 @@ Each broad feature area above is a TDD-ready work item. When starting work:
 4. Update `plans/inventory/java_port_inventory.tsv` from `missing` to `ported`
 
 ### Current Active Work
+- **Document.load page reconstruction**: Fixed `ensure_pages_loaded` to dereference Cos::Object in Kids. Font spec save+load tests now green. Writer failures reduced from 4→3.
 - **COSParser**: `plans/active/CosParserPort.md` — ~30/50+ methods ported
-- **COSWriter**: Just completed (v2 with BFS traversal). Save+load roundtrip needs `Document.load` fix.
+- **COSWriter**: v2 with BFS traversal complete. Remaining: handle nested page trees, attachment names dict, field access after load.
