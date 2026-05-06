@@ -37,12 +37,11 @@ describe Fontbox::TTF::TrueTypeCollection do
     end
   end
 
-  pending "processes TTC fonts, resolves fonts by name, and scans headers" do
+  it "processes TTC fonts, resolves fonts by name, and scans headers" do
     unless File.exists?(ttf_path)
-      pending("TTF fixture not found: #{ttf_path}")
+      pending "TTF fixture not found: #{ttf_path}"
       next
     end
-
     temp_dir = File.expand_path("../../../temp/ttf", __DIR__)
     Dir.mkdir_p(temp_dir)
     ttc_path = File.join(temp_dir, "single-font.ttc")
@@ -68,9 +67,9 @@ describe Fontbox::TTF::TrueTypeCollection do
 
     File.open(ttc_path, "w") do |file|
       file.write(Bytes['t'.ord.to_u8, 't'.ord.to_u8, 'c'.ord.to_u8, 'f'.ord.to_u8])
-      file.write(Bytes[0x00_u8, 0x01_u8, 0x00_u8, 0x00_u8]) # version 1.0
-      file.write(Bytes[0x00_u8, 0x00_u8, 0x00_u8, 0x01_u8]) # numFonts = 1
-      file.write(Bytes[0x00_u8, 0x00_u8, 0x00_u8, 0x10_u8]) # first font offset
+      file.write(Bytes[0x00_u8, 0x01_u8, 0x00_u8, 0x00_u8])
+      file.write(Bytes[0x00_u8, 0x00_u8, 0x00_u8, 0x01_u8])
+      file.write(Bytes[0x00_u8, 0x00_u8, 0x00_u8, 0x10_u8])
       file.write(ttf_bytes)
     end
 

@@ -154,7 +154,7 @@ describe "PDFontTest" do
   end
 
   describe "testPDFBOX5486" do
-    pending "checks has_glyph and get_path for TrueType font" do
+    it "checks has_glyph and get_path for TrueType font" do
       font_path = "vendor/pdfbox/pdfbox/src/main/resources/org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf"
 
       unless File.exists?(font_path)
@@ -1326,38 +1326,24 @@ describe "PDFontTest" do
   end
 
   describe "PDFBOX5920Type0" do
-    pending "calculates correct string width for Type0 font" do
+    it "calculates correct string width for Type0 font" do
       font_path = "vendor/pdfbox/pdfbox/src/main/resources/org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf"
-
-      unless File.exists?(font_path)
-        pending("Font file not found: #{font_path}")
-
-        next
-      end
+      pending("LiberationSans-Regular.ttf not found at #{font_path}") unless File.exists?(font_path)
 
       File.open(font_path, "r") do |file|
         doc = Pdfbox::Pdmodel::PDDocument.new(Bytes.new(0))
-
         font = Pdfbox::Pdmodel::Font::PDType0Font.load(doc, file, false)
-
         font.get_string_width("The quick brown fox jumps over the lazy dog.").should eq(20064.0_f32)
       end
     end
 
-    pending "calculates correct space width for Type0 font" do
+    it "calculates correct space width for Type0 font" do
       font_path = "vendor/pdfbox/pdfbox/src/main/resources/org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf"
-
-      unless File.exists?(font_path)
-        pending("Font file not found: #{font_path}")
-
-        next
-      end
+      pending("LiberationSans-Regular.ttf not found at #{font_path}") unless File.exists?(font_path)
 
       File.open(font_path, "r") do |file|
         doc = Pdfbox::Pdmodel::PDDocument.new(Bytes.new(0))
-
         font = Pdfbox::Pdmodel::Font::PDType0Font.load(doc, file, false)
-
         font.space_width.should eq(278.0_f32)
       end
     end

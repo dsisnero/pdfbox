@@ -25,14 +25,9 @@ describe Pdfbox::Pdmodel::Font::PDTrueTypeFont do
       doc.try(&.close)
     end
 
-    pending "extracts outlines from OpenType/CFF fonts through the PDTrueTypeFont surface" do
-      otf_path = "vendor/pdfbox/fontbox/src/test/resources/otf/FoglihtenNo07.otf"
-      unless File.exists?(otf_path)
-        pending("Font fixture not found: #{otf_path}")
-        next
-      end
-
-      begin
+    otf_path = "vendor/pdfbox/fontbox/src/test/resources/otf/FoglihtenNo07.otf"
+    if File.exists?(otf_path)
+      it "extracts outlines from OpenType/CFF fonts through the PDTrueTypeFont surface" do
         font = Fontbox::TTF::OTFParser.new.parse(
           Pdfbox::IO::RandomAccessReadBufferedFile.new(otf_path)
         )
@@ -52,6 +47,9 @@ describe Pdfbox::Pdmodel::Font::PDTrueTypeFont do
       ensure
         doc.try(&.close)
         font.try(&.close)
+      end
+    else
+      pending "extracts outlines from OpenType/CFF fonts (Font fixture not found: #{otf_path})" do
       end
     end
   end
