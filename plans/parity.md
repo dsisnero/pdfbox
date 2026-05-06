@@ -4,7 +4,7 @@
 > Complements `plans/inventory/java_port_inventory.tsv` (per-method ledger) and `plans/active/` (per-class plans).
 > Update this file as features progress.
 
-**Current work:** Completed save+load round-trip fixes: page-tree reconstruction (Root, Pages, Kids, Names), AcroForm field access after reload. All writer specs green (12 ex, 0 fail, 3 pending). Next: text stripper P0 parity (extract text from multi-PDF fixture).
+**Current work:** Text stripper P0 parity. Enabled multi-PDF extraction test (34/40 pass, 6 known deviations documented). Fixed TrueType `average_font_width` to match Java (use Widths array from PDF dict instead of TTF hmtx). Next: investigate and fix remaining 6 text extraction deviations.
 
 ---
 
@@ -15,8 +15,8 @@
 | Java source files (vendor) | ~1,289 |
 | Crystal source files (ported) | ~415 |
 | Passing tests | ~1,469 |
-| Pending tests | 17 |
-| Fixed since last update | Page-tree reconstruction, Names dict indirection, AcroForm Fields indirection. All writer specs green. |
+| Pending tests | 14 (3 text stripper → 1 active with 6 known skips) |
+| Fixed since last update | Page-tree reconstruction, Names dict indirection, AcroForm Fields indirection, TrueType average_font_width (use PDF Widths array). Multi-PDF text extraction test enabled (34/40 pass). All writer specs green. |
 | Active porting plans | 1 (`plans/active/CosParserPort.md`) |
 
 ---
@@ -355,7 +355,7 @@ Covered by porting specs and pending writer test.
 
 | Priority | Test | Area | Blocked By |
 |---|---|---|---|
-| P0 | testExtract (multi-PDF) | Text | Font height / line-break positioning edge cases |
+| P0 | testExtract (multi-PDF) | Text | 34/40 pass. 6 remaining: 2x beads ordering, 1x rotation, 1x encoding, 1x spacing float precision, 1x Arabic bidi |
 | P0 | with_outline.pdf extraction | Text | `LegacyPDFStreamEngine` calc differences |
 | P0 | tabula font-height extraction | Text | Custom `computeFontHeight` override differences |
 | P1 | Type0 string/space width | Font | `PDCIDFontType2Embedder` not implemented |
@@ -397,6 +397,7 @@ Each broad feature area above is a TDD-ready work item. When starting work:
 4. Update `plans/inventory/java_port_inventory.tsv` from `missing` to `ported`
 
 ### Current Active Work
-- **Save+load roundtrip**: All 3 writer failures fixed (Names dict indirection, AcroForm Fields indirection, page-tree add-to-loaded-doc). All writer specs green (12 ex, 0 fail, 3 pending).
+- **Text stripper**: Multi-PDF extraction test enabled (34/40 exact match). Fixed TrueType `average_font_width` to use PDF Widths array (Java parity). 6 known deviations remain.
+- **Save+load roundtrip**: All writer specs green (12 ex, 0 fail, 3 pending).
 - **COSParser**: `plans/active/CosParserPort.md` — ~30/50+ methods ported
 - **COSWriter**: v2 with BFS traversal complete. Remaining gaps are compressed object streams, incremental update, encryption writing.

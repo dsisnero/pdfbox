@@ -447,6 +447,27 @@ class Pdfbox::Pdmodel::Font::PDTrueTypeFont < Pdfbox::Pdmodel::Font::PDSimpleFon
   end
 
   def average_font_width : Float32
+    # Java PDSimpleFont.getAverageFontWidth: use Widths array from dict first
+    if @dict.has_key?(Pdfbox::Cos::Name::WIDTHS)
+      widths = @dict[Pdfbox::Cos::Name::WIDTHS].as?(Pdfbox::Cos::Array)
+      if widths
+        total = 0.0_f64
+        count = 0
+        widths.items.each do |base|
+          if base.is_a?(Pdfbox::Cos::Number)
+            val = base.value.to_f64
+            if val > 0
+              total += val
+              count += 1
+            end
+          end
+        end
+        if count > 0
+          return (total / count).to_f32
+        end
+      end
+    end
+    # Fall back to TTF hmtx average, matching Java PDTrueTypeFont fallback
     ttf = @ttf
     return 0.0_f32 unless ttf
     hmtx = ttf.horizontal_metrics
