@@ -291,6 +291,7 @@ describe Pdfbox::Text::PDFTextStripper do
       "PDFBOX-4532-reduced.pdf"                                         => true,
       "PDFBOX-5002.pdf"                                                 => true,
       "PDFBOX-5920-4MQTG6ZXOYSMTQ444KGQOVC6ZFQHWFNY-spaces-reduced.pdf" => true,
+      "cweb.pdf"                                                        => true,
       "openoffice-test-document.pdf"                                    => true,
       "rotation.pdf"                                                    => true,
       "sample_fonts_solidconvertor.pdf"                                 => true,
@@ -298,10 +299,7 @@ describe Pdfbox::Text::PDFTextStripper do
     }
 
     # Also skip PDFs that crash during processing (CMap resource not found, etc.)
-    known_crash = {
-      "PDFBOX-3833-reduced.pdf" => true,
-      "cweb.pdf"                => true,
-    }
+    known_crash = {} of String => Bool
 
     Dir.glob(File.join(input_dir, "*.pdf")).sort.each do |pdf_path|
       basename = File.basename(pdf_path)

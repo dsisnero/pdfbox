@@ -192,10 +192,11 @@ class Pdfbox::Pdmodel::Font::PDType1Font < Pdfbox::Pdmodel::Font::PDSimpleFont
     # Try to determine if this is a Standard 14 font
     base_font = get_base_font
     standard14_name = Standard14Fonts.get_mapped_font_name(base_font)
-    if standard14_name != base_font
-      # This is a Standard 14 font
+    if standard14_name.is_a?(Standard14Fonts::FontName)
       @standard14 = true
       @afm_standard14 = Standard14Fonts.get_afm(standard14_name.to_s)
+    else
+      @standard14 = false
     end
 
     parse_embedded_type1

@@ -407,8 +407,10 @@ module Fontbox
         # Try to load from resources directory relative to project root
         resource_path = File.join(Dir.current, "spec", "resources", "org", "apache", "fontbox", "cmap", name)
         unless File.exists?(resource_path)
-          # Try relative to source file
           resource_path = File.join(__DIR__, "../../../../spec/resources/org/apache/fontbox/cmap", name)
+        end
+        unless File.exists?(resource_path)
+          resource_path = File.join(__DIR__, "../../../vendor/pdfbox/fontbox/src/main/resources/org/apache/fontbox/cmap", name)
         end
         unless File.exists?(resource_path)
           raise "Error: Could not find referenced cmap stream #{name}"
