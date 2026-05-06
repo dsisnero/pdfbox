@@ -139,9 +139,11 @@ module Pdfbox::Pdmodel
       return unless cos_page
 
       resources_value = cos_page[Cos::Name.new("Resources")]
+      unless resources_value
+        resources_value = get_inheritable_resource(cos_page)
+      end
       return unless resources_value
 
-      # Handle indirect references
       if resources_value.is_a?(Cos::Object)
         resources_value = resources_value.object
       end
@@ -149,6 +151,27 @@ module Pdfbox::Pdmodel
       return unless resources_value.is_a?(Cos::Dictionary)
 
       Resources.new(resources_value)
+    end
+
+    # Walk up parent chain to find inherited Resources (PDF spec section 7.8.3).
+    # Uses a visited set to break circular parent references.
+    private def get_inheritable_resource(dict : Cos::Dictionary, visited : Set(UInt64) = Set(UInt64).new) : Cos::Base?
+      id = dict.object_id.to_u64
+      return nil if visited.includes?(id)
+      visited.add(id)
+
+      value = dict[Cos::Name.new("Resources")]
+      return value if value
+
+      parent = dict[Cos::Name.new("Parent")]
+      if parent.is_a?(Cos::Object)
+        parent = parent.object
+      end
+      if parent.is_a?(Cos::Dictionary)
+        return get_inheritable_resource(parent, visited)
+      end
+
+      nil
     end
 
     # Set page resources

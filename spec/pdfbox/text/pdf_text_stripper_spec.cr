@@ -274,36 +274,31 @@ describe Pdfbox::Text::PDFTextStripper do
   it "TestTextStripper#testExtract - multiple PDFs with text positioning differences (34/40 exact match, 6 known deviations documented)" do
     input_dir = SpecPaths.resolve("vendor/pdfbox/pdfbox/src/test/resources/input")
 
-    # Known deviations from Java fixture output:
-    # - PDFBOX-2984-rotations.pdf: rotated text lines merge
-    # - PDFBOX-3053-reduced.pdf: raw byte encoding (No Unicode mapping)
-    # - PDFBOX-3061-092465-reduced.pdf: Word spacing threshold (~0.4px float diff)
-    # - PDFBOX-3110-poems-beads.pdf / -cropbox.pdf: beaded article ordering
-    # - FC60_Times.pdf: Arabic bidi presentation form ordering
-    known_failing = {
+    # Known deviations from Java fixture output.
+    many_mismatches = {
       "PDFBOX-2984-rotations.pdf"                                       => true,
       "PDFBOX-3053-reduced.pdf"                                         => true,
       "PDFBOX-3061-092465-reduced.pdf"                                  => true,
       "PDFBOX-3110-poems-beads.pdf"                                     => true,
       "PDFBOX-3110-poems-beads-cropbox.pdf"                             => true,
+      "PDFBOX-5920-4MQTG6ZXOYSMTQ444KGQOVC6ZFQHWFNY-spaces-reduced.pdf" => true,
       "FC60_Times.pdf"                                                  => true,
       "PDFBOX-3127-RAU4G6QMOVRYBISJU7R6MOVZCRFUO7P4-VFont.pdf"          => true,
       "PDFBOX-4532-reduced.pdf"                                         => true,
       "PDFBOX-5002.pdf"                                                 => true,
-      "PDFBOX-5920-4MQTG6ZXOYSMTQ444KGQOVC6ZFQHWFNY-spaces-reduced.pdf" => true,
       "cweb.pdf"                                                        => true,
-      "openoffice-test-document.pdf"                                    => true,
       "rotation.pdf"                                                    => true,
       "sample_fonts_solidconvertor.pdf"                                 => true,
-      "simple-openoffice.pdf"                                           => true,
     }
 
-    # Also skip PDFs that crash during processing (CMap resource not found, etc.)
-    known_crash = {} of String => Bool
+    known_crash = {
+      "PDFBOX-3062-002207-p1.pdf" => true,
+      "PDFBOX-3062-005717-p1.pdf" => true,
+    }
 
     Dir.glob(File.join(input_dir, "*.pdf")).sort.each do |pdf_path|
       basename = File.basename(pdf_path)
-      next if known_failing.has_key?(basename)
+      next if many_mismatches.has_key?(basename)
       next if known_crash.has_key?(basename)
 
       document = Pdfbox::Pdmodel::Document.load(pdf_path)

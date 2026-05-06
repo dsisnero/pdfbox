@@ -32,6 +32,9 @@ abstract class Pdfbox::Pdmodel::Font::PDSimpleFont < Pdfbox::Pdmodel::Font::PDFo
   # Must be called at the end of any subclass constructors.
   protected def read_encoding : Nil
     encoding_base = @dict[Pdfbox::Cos::Name::ENCODING]?
+    if encoding_base.is_a?(Pdfbox::Cos::Object)
+      encoding_base = encoding_base.object
+    end
     if encoding_base.is_a?(Pdfbox::Cos::Name)
       encoding_name = encoding_base
       if font_name == Standard14Fonts::FontName::ZAPF_DINGBATS && !embedded?
