@@ -15,6 +15,7 @@ module Pdfbox::Pdmodel::Font
     @font_matrix : Matrix?
     @font_bbox : BoundingBox?
     @resource_cache : Pdfbox::Pdmodel::ResourceCache?
+    @avg_font_width : Float32?
 
     # Constructor.
     def initialize(font_dictionary : Pdfbox::Cos::Dictionary)
@@ -193,7 +194,40 @@ module Pdfbox::Pdmodel::Font
     end
 
     def average_font_width : Float32
-      0.0_f32
+      if avg = @avg_font_width
+        return avg
+      end
+
+      total_width = 0.0_f32
+      character_count = 0.0_f32
+      widths_array = @dict[Pdfbox::Cos::Name::WIDTHS]?
+      if widths_array
+        widths_array = widths_array.object if widths_array.is_a?(Pdfbox::Cos::Object)
+        if widths_array.is_a?(Pdfbox::Cos::Array)
+          widths_array.items.each do |item|
+            case item
+            when Pdfbox::Cos::Integer
+              fv = item.value.to_f32
+            when Pdfbox::Cos::Float
+              fv = item.value
+            else
+              next
+            end
+            if fv > 0
+              total_width += fv
+              character_count += 1
+            end
+          end
+        end
+      end
+
+      average = if total_width > 0
+                  total_width / character_count
+                else
+                  0.0_f32
+                end
+      @avg_font_width = average
+      average
     end
 
     # Returns the optional resources of the type3 stream.
