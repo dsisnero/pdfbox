@@ -60,7 +60,7 @@ module Fontbox::CFF
 
     # Returns the advance width of the glyph.
     def width : Int32
-      if @path.nil?
+      unless @rendered
         render
       end
       @width
