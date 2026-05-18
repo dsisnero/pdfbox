@@ -157,6 +157,11 @@ module Pdfbox::Pdmodel::Common
       @rect_array[3] = Cos::Float.new(value)
     end
 
+    def contains(x : Float32, y : Float32) : Bool
+      x >= lower_left_x && x <= upper_right_x &&
+        y >= lower_left_y && y <= upper_right_y
+    end
+
     # Get width
     def width : Float32
       upper_right_x - lower_left_x

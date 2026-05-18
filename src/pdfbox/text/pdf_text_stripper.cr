@@ -51,6 +51,8 @@ module Pdfbox::Text
     @start_page_number : Int32 = 1
     @end_page_number : Int32 = -1
     @text_positions : Array(TextPosition) = [] of TextPosition
+    @characters_by_article : Array(Array(TextPosition)) = [] of Array(TextPosition)
+    @bead_rectangles : Array(Pdmodel::Common::PDRectangle?) = [] of Pdmodel::Common::PDRectangle?
     @word_separator : String = " "
     @spacing_tolerance : Float32 = 0.5_f32
     @average_char_tolerance : Float32 = 0.3_f32
@@ -138,7 +140,6 @@ module Pdfbox::Text
     #
     # @param page The page to process
     def process_page(page : Pdfbox::Pdmodel::Page) : Nil
-      # Check if we should process this page based on page number range
       if @start_page_number > 0 && @current_page_no < @start_page_number
         return
       end
@@ -155,17 +156,37 @@ module Pdfbox::Text
         return
       end
 
-      # Clear text positions for new page
+      number_of_article_sections = 1
+      if @should_separate_by_beads
+        fill_bead_rectangles(page)
+        number_of_article_sections += @bead_rectangles.size * 2
+      end
+      original_size = @characters_by_article.size
+      last_index = Math.max(number_of_article_sections, original_size)
+      (0...last_index).each do |i|
+        if i < original_size
+          @characters_by_article[i].clear
+        else
+          if number_of_article_sections < original_size
+            @characters_by_article.delete_at(i)
+          else
+            @characters_by_article << [] of TextPosition
+          end
+        end
+      end
+
       @text_positions.clear
       @character_list_mapping.clear
 
-      # Process the page content using the parent engine
       super(page)
 
-      # Write collected text positions to output
       output = @output
       if output
-        output << render_text_positions(@text_positions)
+        if @should_separate_by_beads && !@bead_rectangles.empty?
+          output << render_text_positions_by_article
+        else
+          output << render_text_positions(@text_positions)
+        end
       end
     end
 
@@ -176,6 +197,7 @@ module Pdfbox::Text
 
       if @text_positions.empty?
         @text_positions << text
+        add_to_article(text)
         return
       end
 
@@ -186,8 +208,61 @@ module Pdfbox::Text
         text.merge_diacritic(previous_text_position)
         @text_positions.pop
         @text_positions << text
+        # Also update article list
+        article_index = compute_article_index(text)
+        text_list = @characters_by_article[article_index]?
+        if text_list
+          text_list.pop
+          text_list << text
+        end
       else
         @text_positions << text
+        add_to_article(text)
+      end
+    end
+
+    private def compute_article_index(text : TextPosition) : Int32
+      return 0 unless @should_separate_by_beads
+
+      found_index = -1
+      not_found_left_above = -1
+      not_found_left = -1
+      not_found_above = -1
+      x = text.x
+      y = text.y
+      @bead_rectangles.each_with_index do |rect, i|
+        break if found_index != -1
+        if rect.nil?
+          found_index = 0
+        elsif rect.contains(x, y)
+          found_index = i * 2 + 1
+        elsif (x < rect.lower_left_x || y < rect.upper_right_y) && not_found_left_above == -1
+          not_found_left_above = i * 2
+        elsif x < rect.lower_left_x && not_found_left == -1
+          not_found_left = i * 2
+        elsif y < rect.upper_right_y && not_found_above == -1
+          not_found_above = i * 2
+        end
+      end
+
+      if found_index != -1
+        found_index
+      elsif not_found_left_above != -1
+        not_found_left_above
+      elsif not_found_left != -1
+        not_found_left
+      elsif not_found_above != -1
+        not_found_above
+      else
+        Math.max(0, @characters_by_article.size - 1)
+      end
+    end
+
+    private def add_to_article(text : TextPosition) : Nil
+      article_index = compute_article_index(text)
+      text_list = @characters_by_article[article_index]?
+      if text_list
+        text_list << text
       end
     end
 
@@ -255,6 +330,7 @@ module Pdfbox::Text
       @end_bookmark_page_number = -1
       @in_paragraph = false
       @text_positions.clear
+      @characters_by_article.clear
       @character_list_mapping.clear
     end
 
@@ -1239,6 +1315,155 @@ module Pdfbox::Text
       (0x0590 <= codepoint && codepoint <= 0x08FF) ||
         (0xFB1D <= codepoint && codepoint <= 0xFDFF) ||
         (0xFE70 <= codepoint && codepoint <= 0xFEFF)
+    end
+
+    private def fill_bead_rectangles(page : Pdfbox::Pdmodel::Page) : Nil
+      @bead_rectangles.clear
+      page.thread_beads.each do |bead|
+        rect = bead.rectangle
+        if rect.nil?
+          @bead_rectangles << nil
+          next
+        end
+
+        media_box = page.media_box
+        if media_box
+          upper_right_y = (media_box.upper_right_y - rect.lower_left_y).to_f32
+          lower_left_y = (media_box.upper_right_y - rect.upper_right_y).to_f32
+          rect.lower_left_y = lower_left_y
+          rect.upper_right_y = upper_right_y
+        end
+
+        crop_box = page.crop_box
+        if crop_box && (crop_box.lower_left_x != 0 || crop_box.lower_left_y != 0)
+          rect.lower_left_x = (rect.lower_left_x - crop_box.lower_left_x).to_f32
+          rect.lower_left_y = (rect.lower_left_y - crop_box.lower_left_y).to_f32
+          rect.upper_right_x = (rect.upper_right_x - crop_box.lower_left_x).to_f32
+          rect.upper_right_y = (rect.upper_right_y - crop_box.lower_left_y).to_f32
+        end
+
+        @bead_rectangles << rect
+      end
+    end
+
+    protected def render_text_positions_by_article : String
+      String.build do |io|
+        unless @characters_by_article.empty?
+          io << @page_start
+        end
+
+        @characters_by_article.each do |article_texts|
+          next if article_texts.empty?
+
+          io << @article_start
+          start_of_article = true
+
+          max_y_for_line = MAX_Y_FOR_LINE_RESET_VALUE
+          end_of_last_text_x = END_OF_LAST_TEXT_X_RESET_VALUE
+          last_word_spacing = LAST_WORD_SPACING_RESET_VALUE
+          max_height_for_line = MAX_HEIGHT_FOR_LINE_RESET_VALUE
+          last_position = nil.as(PositionWrapper?)
+          previous_ave_char_width = -1.0_f32
+          line = [] of LineItem
+
+          text_list = if @sort_by_position
+                        sorted = stable_merge_sort(article_texts)
+                        remove_contained_spaces(sorted)
+                        sorted
+                      else
+                        article_texts
+                      end
+
+          text_list.each do |position|
+            character_value = position.unicode
+            next if character_value == " " && @ignore_content_stream_space_glyphs
+
+            if last_position && has_font_or_size_changed(position, last_position.text_position)
+              previous_ave_char_width = -1.0_f32
+            end
+
+            position_x, position_y, position_width, position_height =
+              if @sort_by_position
+                {position.x_dir_adj, position.y_dir_adj, position.width_dir_adj, position.height_dir}
+              else
+                {position.x, position.y, position.width, position.height}
+              end
+
+            word_char_count = position.widths.size
+            word_spacing = position.width_of_space
+            delta_space =
+              if word_spacing == 0 || word_spacing.nan?
+                Float32::MAX
+              elsif last_word_spacing < 0
+                word_spacing * @spacing_tolerance
+              else
+                ((word_spacing + last_word_spacing) / 2.0_f32) * @spacing_tolerance
+              end
+
+            average_char_width =
+              if previous_ave_char_width < 0
+                position_width / word_char_count
+              else
+                (previous_ave_char_width + position_width / word_char_count) / 2.0_f32
+              end
+            delta_char_width = average_char_width * @average_char_tolerance
+
+            expected_start_of_next_word_x = EXPECTED_START_OF_NEXT_WORD_X_RESET_VALUE
+            if end_of_last_text_x != END_OF_LAST_TEXT_X_RESET_VALUE
+              expected_start_of_next_word_x = end_of_last_text_x + Math.min(delta_space, delta_char_width)
+            end
+
+            if previous = last_position
+              if start_of_article
+                previous.set_article_start
+                start_of_article = false
+              end
+
+              unless overlap?(position_y, position_height, max_y_for_line, max_height_for_line)
+                io << render_items(line)
+                io << @line_separator
+                line.clear
+                expected_start_of_next_word_x = EXPECTED_START_OF_NEXT_WORD_X_RESET_VALUE
+                max_y_for_line = MAX_Y_FOR_LINE_RESET_VALUE
+                max_height_for_line = MAX_HEIGHT_FOR_LINE_RESET_VALUE
+              end
+
+              if expected_start_of_next_word_x != EXPECTED_START_OF_NEXT_WORD_X_RESET_VALUE &&
+                 expected_start_of_next_word_x < position_x &&
+                 (@word_separator.empty? ||
+                 (previous_text_position = previous.text_position) && previous_text_position.unicode && !previous_text_position.unicode.ends_with?(@word_separator))
+                line << LineItem.word_separator
+              end
+
+              if (previous_text_position = previous.text_position) && (position.x - previous_text_position.x).abs > (word_spacing + delta_space)
+                max_y_for_line = MAX_Y_FOR_LINE_RESET_VALUE
+                max_height_for_line = MAX_HEIGHT_FOR_LINE_RESET_VALUE
+              end
+            end
+
+            max_y_for_line = position_y if position_y >= max_y_for_line
+            end_of_last_text_x = position_x + position_width
+
+            unless character_value.nil?
+              line << LineItem.new(position)
+            end
+
+            max_height_for_line = Math.max(max_height_for_line, position_height)
+            last_position = PositionWrapper.new(position)
+            last_word_spacing = word_spacing
+            previous_ave_char_width = average_char_width
+          end
+
+          unless line.empty?
+            io << render_items(line)
+            io << @paragraph_end unless @paragraph_end.empty?
+          end
+
+          io << @article_end
+        end
+
+        io << @page_end unless @characters_by_article.empty?
+      end
     end
   end
 

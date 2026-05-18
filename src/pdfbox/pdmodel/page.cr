@@ -345,5 +345,22 @@ module Pdfbox::Pdmodel
       meta_obj = cos_page.get_stream(Cos::Name.new("Metadata"))
       meta_obj ? Pdmodel::Common::PDMetadata.new(meta_obj) : nil
     end
+
+    def thread_beads : Array(Interactive::Pagenavigation::PDThreadBead)
+      cos_page = @cos_page
+      return [] of Interactive::Pagenavigation::PDThreadBead unless cos_page
+
+      beads_entry = cos_page["B"]?
+      beads_entry = beads_entry.object if beads_entry.is_a?(Cos::Object)
+      return [] of Interactive::Pagenavigation::PDThreadBead unless beads_entry.is_a?(Cos::Array)
+
+      beads_array = beads_entry.as(Cos::Array)
+      beads_array.items.compact_map do |item|
+        item = item.object if item.is_a?(Cos::Object)
+        if item.is_a?(Cos::Dictionary)
+          Interactive::Pagenavigation::PDThreadBead.new(item)
+        end
+      end
+    end
   end
 end
