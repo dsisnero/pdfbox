@@ -38,7 +38,7 @@ module Pdfbox::Text
     @current_page_no : Int32 = 1
     @line_separator : String = "\n"
     @page_start : String = ""
-    @page_end : String = ""
+    @page_end : String = "\n"
     @paragraph_start : String = ""
     @paragraph_end : String = ""
     @article_start : String = ""
