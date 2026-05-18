@@ -276,19 +276,14 @@ describe Pdfbox::Text::PDFTextStripper do
 
     # Known deviations from Java fixture output.
     many_mismatches = {
-      "PDFBOX-2984-rotations.pdf"                                       => true,
-      "PDFBOX-3053-reduced.pdf"                                         => true,
-      "PDFBOX-3061-092465-reduced.pdf"                                  => true,
-      "PDFBOX-3110-poems-beads.pdf"                                     => true,
-      "PDFBOX-3110-poems-beads-cropbox.pdf"                             => true,
-      "PDFBOX-5920-4MQTG6ZXOYSMTQ444KGQOVC6ZFQHWFNY-spaces-reduced.pdf" => true,
-      "FC60_Times.pdf"                                                  => true,
-      "PDFBOX-3127-RAU4G6QMOVRYBISJU7R6MOVZCRFUO7P4-VFont.pdf"          => true,
-      "PDFBOX-4532-reduced.pdf"                                         => true,
-      "PDFBOX-5002.pdf"                                                 => true,
-      "cweb.pdf"                                                        => true,
-      "rotation.pdf"                                                    => true,
-      "sample_fonts_solidconvertor.pdf"                                 => true,
+      "PDFBOX-3053-reduced.pdf"                                => true,
+      "PDFBOX-3061-092465-reduced.pdf"                         => true,
+      "PDFBOX-3110-poems-beads.pdf"                            => true,
+      "PDFBOX-3110-poems-beads-cropbox.pdf"                    => true,
+      "FC60_Times.pdf"                                         => true,
+      "PDFBOX-3127-RAU4G6QMOVRYBISJU7R6MOVZCRFUO7P4-VFont.pdf" => true,
+      "PDFBOX-4532-reduced.pdf"                                => true,
+      "cweb.pdf"                                               => true,
     }
 
     known_crash = {
