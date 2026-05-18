@@ -464,20 +464,21 @@ class Pdfbox::Pdmodel::Font::PDType1Font < Pdfbox::Pdmodel::Font::PDSimpleFont
 
   private def parse_embedded_type1 : Nil
     fd = font_descriptor
-    return unless fd
 
-    if font_file = fd.font_file
-      begin
-        bytes = font_file.to_byte_array
-        if bytes.size >= 2 && bytes[0] == PFB_START_MARKER.to_u8
-          @type1font = Fontbox::Type1::Type1Font.create_with_pfb(bytes)
+    if fd
+      if font_file = fd.font_file
+        begin
+          bytes = font_file.to_byte_array
+          if bytes.size >= 2 && bytes[0] == PFB_START_MARKER.to_u8
+            @type1font = Fontbox::Type1::Type1Font.create_with_pfb(bytes)
+          end
+        rescue ex
+          Log.warn { "Can't read embedded Type1 font #{fd.font_name}: #{ex.message}" }
+          @is_damaged = true
         end
-      rescue ex
-        Log.warn { "Can't read embedded Type1 font #{fd.font_name}: #{ex.message}" }
-        @is_damaged = true
+      elsif fd.font_file3
+        Log.warn { "/FontFile3 for Type1 font not supported" }
       end
-    elsif fd.font_file3
-      Log.warn { "/FontFile3 for Type1 font not supported" }
     end
 
     if @type1font
@@ -503,6 +504,15 @@ class Pdfbox::Pdmodel::Font::PDType1Font < Pdfbox::Pdmodel::Font::PDSimpleFont
   private def bounding_box_from_font_box_font : BoundingBox?
     if type1font = @type1font
       return bounding_box_from_type1(type1font)
+    end
+    if generic_font = @generic_font
+      bbox = generic_font.font_bbox
+      return BoundingBox.new(
+        bbox.lower_left_x.to_f32,
+        bbox.lower_left_y.to_f32,
+        bbox.upper_right_x.to_f32,
+        bbox.upper_right_y.to_f32
+      )
     end
     nil
   end

@@ -393,11 +393,12 @@ class Pdfbox::Pdmodel::Font::PDTrueTypeFont < Pdfbox::Pdmodel::Font::PDSimpleFon
 
     if ttf = @ttf
       if header = ttf.header
+        scale = 1000.0_f32 / ttf.units_per_em.to_f32
         return PDFont::BoundingBox.new(
-          header.x_min.to_f32,
-          header.y_min.to_f32,
-          header.x_max.to_f32,
-          header.y_max.to_f32
+          header.x_min.to_f32 * scale,
+          header.y_min.to_f32 * scale,
+          header.x_max.to_f32 * scale,
+          header.y_max.to_f32 * scale
         )
       end
     end

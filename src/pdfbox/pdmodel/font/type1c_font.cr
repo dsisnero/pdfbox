@@ -284,7 +284,7 @@ class Pdfbox::Pdmodel::Font::PDType1CFont < Pdfbox::Pdmodel::Font::PDSimpleFont
   end
 
   private def name_in_font(name : String) : String
-    return name if generic_has_glyph?(name)
+    return name if embedded? || generic_has_glyph?(name)
 
     if unicode = glyph_list.to_unicode(name)
       if unicode.size == 1
@@ -318,7 +318,9 @@ class Pdfbox::Pdmodel::Font::PDType1CFont < Pdfbox::Pdmodel::Font::PDSimpleFont
   private def generic_width(name : String) : Float32
     case font = @generic_font
     in Fontbox::CFF::CFFType1Font
-      font.type1_char_string(name).width.to_f32
+      cs = font.type1_char_string(name)
+      w = cs.width.to_f32
+      w
     in Fontbox::FontBoxFont
       font.width(name)
     end

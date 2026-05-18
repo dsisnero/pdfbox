@@ -30,11 +30,14 @@ module Pdfbox::Pdmodel::Font
       header = @ttf.header
       return Fontbox::Util::BoundingBox.new if header.nil?
 
+      units_per_em = @ttf.units_per_em
+      scale = units_per_em > 0 ? (1000.0_f32 / units_per_em.to_f32) : 1.0_f32
+
       Fontbox::Util::BoundingBox.new(
-        header.x_min.to_f32,
-        header.y_min.to_f32,
-        header.x_max.to_f32,
-        header.y_max.to_f32
+        header.x_min.to_f32 * scale,
+        header.y_min.to_f32 * scale,
+        header.x_max.to_f32 * scale,
+        header.y_max.to_f32 * scale
       )
     end
 
