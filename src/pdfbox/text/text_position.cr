@@ -146,8 +146,8 @@ module Pdfbox::Text
     def dir : Float32
       if @direction < 0
         a = text_matrix.get_value(1, 1)
-        b = text_matrix.get_value(1, 0)
-        c = text_matrix.get_value(0, 1)
+        b = text_matrix.get_value(0, 1)
+        c = text_matrix.get_value(1, 0)
         d = text_matrix.get_value(0, 0)
 
         @direction = if a > 0 && b.abs < d && c.abs < a && d > 0
