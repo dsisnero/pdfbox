@@ -34,6 +34,7 @@ module Pdfbox::Pdmodel
     @current_access_permission : Encryption::AccessPermission?
     @all_security_to_be_removed : Bool = false
     @fonts_for_save = [] of Font::PDFont
+    @source_bytes : Bytes? = nil
 
     def initialize(cos_document : Cos::Dictionary? = nil, version : String = "1.4", trailer : Cos::Dictionary? = nil)
       @version = version
@@ -158,8 +159,12 @@ module Pdfbox::Pdmodel
     end
 
     # Save the document incrementally.
-    # Current Crystal port fallback writes a full document.
+    # Writes the original PDF bytes first, then appends a full save as an update.
+    # The parser reads the last xref/trailer to get the updated state.
     def save_incremental(io : ::IO) : Nil
+      if source = @source_bytes
+        io.write(source)
+      end
       save(io)
     end
 
@@ -192,6 +197,7 @@ module Pdfbox::Pdmodel
       return unless pages_entry.is_a?(Cos::Dictionary)
 
       kids = pages_entry[Cos::Name.new("Kids")]
+      kids = kids.object if kids.is_a?(Cos::Object)
       unless kids.is_a?(Cos::Array)
         kids = Cos::Array.new
         pages_entry[Cos::Name.new("Kids")] = kids
@@ -292,15 +298,54 @@ module Pdfbox::Pdmodel
     # Remove a page from the document
     def remove_page(page : Page) : Bool
       ensure_pages_loaded
-      @pages.delete(page)
+      if @pages.delete(page)
+        remove_page_from_tree(page)
+        true
+      else
+        false
+      end
     end
 
     # Remove a page by index
     def remove_page(index : Int) : Bool
       ensure_pages_loaded
       return false if index < 0 || index >= @pages.size
-      @pages.delete_at(index)
+      page = @pages.delete_at(index)
+      remove_page_from_tree(page)
       true
+    end
+
+    private def remove_page_from_tree(page : Page) : Nil
+      page_dict = page.cos_object
+      return unless page_dict
+
+      parent_entry = page_dict[Cos::Name.new("Parent")]
+      parent_entry = parent_entry.object if parent_entry.is_a?(Cos::Object)
+      return unless parent_entry.is_a?(Cos::Dictionary)
+
+      kids = parent_entry[Cos::Name.new("Kids")]
+      kids = kids.object if kids.is_a?(Cos::Object)
+      return unless kids.is_a?(Cos::Array)
+
+      # Find and remove the page reference from Kids array
+      # Kids contain Cos::Object wrappers pointing to page dictionaries
+      kids.items.each_with_index do |kid, idx|
+        match = if kid.is_a?(Cos::Object)
+                  kid.object.same?(page_dict)
+                else
+                  kid.same?(page_dict)
+                end
+        if match
+          kids.delete_at(idx)
+          break
+        end
+      end
+
+      # Decrement ancestor counts (simplified: single-level page tree)
+      count = parent_entry[Cos::Name.new("Count")]
+      if count.is_a?(Cos::Integer) && count.value > 0
+        parent_entry[Cos::Name.new("Count")] = Cos::Integer.new(count.value - 1)
+      end
     end
 
     # Get the document trailer dictionary
@@ -333,6 +378,16 @@ module Pdfbox::Pdmodel
 
     def document_id=(document_id : Bytes?) : Bytes?
       @document_id = document_id
+    end
+
+    # The original PDF bytes when loaded from a file or stream.
+    # Used by save_incremental to append changes after the original content.
+    def source_bytes : Bytes?
+      @source_bytes
+    end
+
+    def source_bytes=(bytes : Bytes?) : Bytes?
+      @source_bytes = bytes
     end
 
     def set_document_id(document_id : Bytes?) : Nil # ameba:disable Naming/AccessorMethodName
@@ -462,14 +517,36 @@ module Pdfbox::Pdmodel
       pages_dict = dereference_dictionary(pages_entry)
       return unless pages_dict
 
+      load_page_tree(pages_dict)
+    end
+
+    private def load_page_tree(pages_dict : Cos::Dictionary) : Nil
       kids = pages_dict[Cos::Name.new("Kids")]
       kids = kids.object if kids.is_a?(Cos::Object)
       return unless kids.is_a?(Cos::Array)
 
       kids.items.each do |kid|
-        page_dict = dereference_dictionary(kid)
-        next unless page_dict
-        @pages << Page.new(page_dict)
+        node = dereference_dictionary(kid)
+        next unless node
+
+        type_entry = node[Cos::Name.new("Type")]
+        type_entry = type_entry.object if type_entry.is_a?(Cos::Object)
+        type_name = type_entry.is_a?(Cos::Name) ? type_entry.value : nil
+
+        case type_name
+        when "Pages"
+          # Intermediate page tree node — recurse
+          load_page_tree(node)
+        when "Page"
+          @pages << Page.new(node)
+        else
+          # Some PDFs have pages without explicit /Type
+          if node[Cos::Name.new("Kids")]?
+            load_page_tree(node)
+          else
+            @pages << Page.new(node)
+          end
+        end
       end
     end
 
@@ -2351,6 +2428,54 @@ module Pdfbox::Pdmodel
 
       return [] of Cos::Name unless fonts_dict.is_a?(Cos::Dictionary)
       fonts_dict.entries.keys
+    end
+
+    def ext_g_state(name : Cos::Name) : Graphics::State::PDExtendedGraphicsState?
+      ext_gstate_dict = @cos_dict[Cos::Name.new("ExtGState")]
+      return unless ext_gstate_dict
+      if ext_gstate_dict.is_a?(Cos::Object)
+        ext_gstate_dict = ext_gstate_dict.object
+      end
+      return unless ext_gstate_dict.is_a?(Cos::Dictionary)
+      entry = ext_gstate_dict[name]
+      return unless entry
+      if entry.is_a?(Cos::Object)
+        entry = entry.object
+      end
+      return unless entry.is_a?(Cos::Dictionary)
+      Graphics::State::PDExtendedGraphicsState.new(entry)
+    end
+
+    def color_space(name : Cos::Name) : Graphics::Color::PDColorSpace?
+      cs_dict = @cos_dict[Cos::Name.new("ColorSpace")]
+      return unless cs_dict
+      if cs_dict.is_a?(Cos::Object)
+        cs_dict = cs_dict.object
+      end
+      return unless cs_dict.is_a?(Cos::Dictionary)
+      entry = cs_dict[name]
+      return unless entry
+      if entry.is_a?(Cos::Object)
+        entry = entry.object
+      end
+      return unless entry.is_a?(Cos::Array) || entry.is_a?(Cos::Name)
+      Graphics::Color::PDColorSpace.create(entry)
+    end
+
+    def properties(name : Cos::Name) : DocumentInterchange::MarkedContent::PDPropertyList?
+      props_dict = @cos_dict[Cos::Name.new("Properties")]
+      return unless props_dict
+      if props_dict.is_a?(Cos::Object)
+        props_dict = props_dict.object
+      end
+      return unless props_dict.is_a?(Cos::Dictionary)
+      entry = props_dict[name]
+      return unless entry
+      if entry.is_a?(Cos::Object)
+        entry = entry.object
+      end
+      return unless entry.is_a?(Cos::Dictionary)
+      DocumentInterchange::MarkedContent::PDPropertyList.create(entry)
     end
 
     def xobject(name : Cos::Name) : Cos::Base?

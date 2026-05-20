@@ -358,7 +358,7 @@ describe Pdfbox::Pdmodel::Document do
 
       catalog_dict[Pdfbox::Cos::Name.new("Pages")].should be_a(Pdfbox::Cos::Object)
       pages_ref = catalog_dict[Pdfbox::Cos::Name.new("Pages")].as(Pdfbox::Cos::Object)
-      pages_ref.obj_number.should eq(2)
+      pages_ref.obj_number.should eq(3)
       pages_ref.gen_number.should eq(0)
     end
 
@@ -378,8 +378,8 @@ describe Pdfbox::Pdmodel::Document do
       parser.seek(xref_offset.as(Int64))
       xref = parser.parse_xref
 
-      # Get pages object (object 2)
-      pages_entry = xref[2]
+      # Get pages object (object 3, after catalog=1, page=2)
+      pages_entry = xref[3]
       pages_entry.should_not be_nil
       pages_entry.as(Pdfbox::Pdfparser::XRefEntry).type.should eq(:in_use)
 
@@ -394,11 +394,17 @@ describe Pdfbox::Pdmodel::Document do
       pages_dict[Pdfbox::Cos::Name.new("Count")].should be_a(Pdfbox::Cos::Integer)
       pages_dict[Pdfbox::Cos::Name.new("Count")].as(Pdfbox::Cos::Integer).value.should eq(1)
 
-      pages_dict[Pdfbox::Cos::Name.new("Kids")].should be_a(Pdfbox::Cos::Array)
-      kids = pages_dict[Pdfbox::Cos::Name.new("Kids")].as(Pdfbox::Cos::Array)
+      kids_ref = pages_dict[Pdfbox::Cos::Name.new("Kids")]
+      kids_ref.should be_a(Pdfbox::Cos::Object)
+      kids_cos_obj = kids_ref.as(Pdfbox::Cos::Object)
+      kids_kid_num = kids_cos_obj.obj_number.to_i
+      kids_entry = xref[kids_kid_num]
+      kids_entry.should_not be_nil
+      kids_obj = parser.parse_indirect_object_at_offset(kids_entry.as(Pdfbox::Pdfparser::XRefEntry).offset)
+      kids = kids_obj.as(Pdfbox::Cos::Array)
       kids.items.size.should eq(1)
       kids.items[0].should be_a(Pdfbox::Cos::Object)
-      kids.items[0].as(Pdfbox::Cos::Object).obj_number.should eq(3)
+      kids.items[0].as(Pdfbox::Cos::Object).obj_number.should eq(2)
     end
   end
 end
