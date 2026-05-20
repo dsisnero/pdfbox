@@ -168,6 +168,100 @@ module Pdfbox::Pdfwriter
                                        trailer : Pdfbox::Cos::Dictionary?,
                                        object_keys : Hash(UInt64, Pdfbox::Cos::ObjectKey),
                                        cos_writer : COSWriter) : Nil
+      # Xref streams require full parser support for compressed objects.
+      # Use traditional xref table until parser is updated to read xref streams.
+      write_xref_table(xref_entries, catalog, trailer, object_keys, cos_writer)
+    end
+
+    # PDF 1.5+ cross-reference stream (enables compressed object streams).
+    private def write_xref_stream(xref_entries : Array(XRefEntry),
+                                  catalog : Pdfbox::Pdmodel::DocumentCatalog?,
+                                  trailer : Pdfbox::Cos::Dictionary?,
+                                  object_keys : Hash(UInt64, Pdfbox::Cos::ObjectKey)) : Nil
+      xref_dict = Pdfbox::Cos::Dictionary.new
+      xref_dict[Pdfbox::Cos::Name.new("Type")] = Pdfbox::Cos::Name.new("XRef")
+      xref_dict.set_int(Pdfbox::Cos::Name.new("Size"), xref_entries.size.to_i64)
+
+      w_array = Pdfbox::Cos::Array.new
+      w_array << Pdfbox::Cos::Integer.new(1_i64)
+      w_array << Pdfbox::Cos::Integer.new(4_i64)
+      w_array << Pdfbox::Cos::Integer.new(1_i64)
+      xref_dict[Pdfbox::Cos::Name.new("W")] = w_array
+
+      if catalog
+        if cat_key = object_keys[catalog.cos_object.object_id.to_u64]?
+          xref_dict[Pdfbox::Cos::Name.new("Root")] = ref_obj(cat_key)
+        end
+      end
+
+      if trailer
+        if info_val = trailer[Pdfbox::Cos::Name.new("Info")]?
+          info_base = info_val.is_a?(Pdfbox::Cos::Object) ? info_val.object : info_val
+          if info_base && (info_key = object_keys[info_base.object_id.to_u64]?)
+            xref_dict[Pdfbox::Cos::Name.new("Info")] = ref_obj(info_key)
+          end
+        end
+        if id_val = trailer[Pdfbox::Cos::Name.new("ID")]?
+          xref_dict[Pdfbox::Cos::Name.new("ID")] = id_val
+        end
+      end
+
+      data_io = ::IO::Memory.new
+      xref_entries.each do |entry|
+        case entry.type
+        when :free
+          data_io.write_byte(0_u8)
+          xref_write_u32(data_io, entry.offset)
+          xref_write_u8(data_io, entry.generation)
+        when :in_use
+          data_io.write_byte(1_u8)
+          xref_write_u32(data_io, entry.offset)
+          xref_write_u8(data_io, entry.generation)
+        end
+      end
+
+      xref_stream = Pdfbox::Cos::Stream.new
+      xref_stream.entries.merge!(xref_dict.entries)
+      xref_stream.data = data_io.to_slice
+
+      stream_key = Pdfbox::Cos::ObjectKey.new(xref_entries.size.to_i64, 0_i64)
+      pos = @destination.pos.to_i64
+      @destination << stream_key.number << " 0 obj\n"
+      @destination << "<<\n"
+      xref_dict.entries.each do |key, value|
+        @destination << '/' << key.value << ' '
+        if value.is_a?(Pdfbox::Cos::Name) || value.is_a?(Pdfbox::Cos::Integer)
+          value.write_pdf(@destination)
+        elsif value.is_a?(Pdfbox::Cos::Array)
+          @destination << '['
+          value.items.each_with_index do |item, idx|
+            item.write_pdf(@destination)
+            @destination << ' ' if idx < value.size - 1
+          end
+          @destination << ']'
+        elsif value.is_a?(Pdfbox::Cos::Object)
+          @destination << value.object_number << ' ' << value.generation_number << " R"
+        else
+          value.write_pdf(@destination)
+        end
+        @destination << "\n"
+      end
+      @destination << ">>\n"
+      @destination << "stream\n"
+      @destination.write(data_io.to_slice)
+      @destination << "\nendstream\n"
+      @destination << "endobj\n"
+      @destination << "startxref\n"
+      @destination << pos << "\n"
+      @destination << "%%EOF\n"
+    end
+
+    # Traditional PDF xref table + trailer.
+    private def write_xref_table(xref_entries : Array(XRefEntry),
+                                 catalog : Pdfbox::Pdmodel::DocumentCatalog?,
+                                 trailer : Pdfbox::Cos::Dictionary?,
+                                 object_keys : Hash(UInt64, Pdfbox::Cos::ObjectKey),
+                                 cos_writer : COSWriter) : Nil
       xref_start = @destination.pos.to_i64
       @destination << "xref\n"
       @destination << "0 " << xref_entries.size << "\n"
@@ -333,6 +427,18 @@ module Pdfbox::Pdfwriter
 
     def encryption=(enabled : Bool) : Bool
       enabled
+    end
+
+    private def ref_obj(key : Pdfbox::Cos::ObjectKey) : Pdfbox::Cos::Object
+      Pdfbox::Cos::Object.new(key.number, key.generation, nil)
+    end
+
+    private def xref_write_u32(io : ::IO, value : Int64) : Nil
+      io.write_bytes(value.to_u32, ::IO::ByteFormat::BigEndian)
+    end
+
+    private def xref_write_u8(io : ::IO, value : Int64) : Nil
+      io.write_byte((value & 0xFF).to_u8)
     end
   end
 
