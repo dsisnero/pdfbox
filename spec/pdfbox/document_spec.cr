@@ -84,6 +84,18 @@ describe Pdfbox::Pdmodel::Document do
         doc.close
       end
     end
+
+    it "TestPDDocumentInformation#testPDFBox3068" do
+      path = SpecPaths.resolve("vendor/pdfbox/pdfbox/src/test/resources/org/apache/pdfbox/pdmodel/PDFBOX-3068.pdf")
+      doc = Pdfbox::Pdmodel::Document.load(path)
+      begin
+        info = doc.document_information
+        info.should_not be_nil
+        info.not_nil!.title.should eq("Title")
+      ensure
+        doc.close
+      end
+    end
   end
 
   describe "#save and .load" do
