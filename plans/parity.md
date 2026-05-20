@@ -103,7 +103,7 @@ Each feature area below tracks concrete, actionable tasks. Checkboxes reflect cu
 - [x] PDFRenderer — working renderer with CrImage integration, PageDrawer extends PDFGraphicsStreamEngine
 - [ ] XMPBox XML parsing and schema handling
 - [ ] Encryption: public key encryption porting
-- [ ] ImageIOUtil: crimage integration for image writing
+- [x] ImageIOUtil: CrImage integration — ExtractImages uses CrImage::RGBA + CrImage::PNG::Writer; PDFRenderer uses CrImage for render_image_png
 
 ---
 
@@ -252,7 +252,7 @@ Each feature area below tracks concrete, actionable tasks. Checkboxes reflect cu
 | PDDocumentInformation | ported | title, author, subject, keywords, creator, producer, dates — all getters/setters |
 
 **Known gaps:**
-- None remaining — stream encryption integrated via `COSWriter.write_stream` calling `SecurityHandler.encrypt_stream`
+- None remaining — stream encryption integrated via `COSWriter.write_stream` calling `SecurityHandler.encrypt_stream`; xref stream format enabled; document info get/set complete
 
 **Fixed:** add_page_to_tree resolves Kids Cos::Object (page count on incremental load). remove_page removes from catalog page tree. COSArrayList#retain_all checks inner Cos::Object. Writer catalog /Version updated to match header. Document version test (1.4→1.6). COS increment test (save/load 3 pages).
 
