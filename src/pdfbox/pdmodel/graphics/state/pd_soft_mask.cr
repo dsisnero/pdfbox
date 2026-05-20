@@ -3,6 +3,7 @@
 module Pdfbox::Pdmodel::Graphics::State
   class PDSoftMask
     property dictionary : Pdfbox::Cos::Dictionary
+    property initial_transformation_matrix : Pdfbox::Util::Matrix = Pdfbox::Util::Matrix.identity
 
     def initialize(@dictionary : Pdfbox::Cos::Dictionary)
     end
