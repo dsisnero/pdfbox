@@ -531,6 +531,22 @@ module Pdfbox::Pdfwriter
 
   # COS object writer
   class COSWriter
+    # PDF token byte sequences (Java COSWriter constants)
+    DICT_OPEN    = "<<".to_slice
+    DICT_CLOSE   = ">>".to_slice
+    SPACE        = Bytes[32_u8]
+    ARRAY_OPEN   = "[".to_slice
+    ARRAY_CLOSE  = "]".to_slice
+    REFERENCE    = "R".to_slice
+    OBJ          = "obj".to_slice
+    ENDOBJ       = "endobj".to_slice
+    STREAM       = "stream".to_slice
+    ENDSTREAM    = "endstream".to_slice
+    XREF         = "xref".to_slice
+    TRAILER      = "trailer".to_slice
+    STARTXREF    = "startxref".to_slice
+    EOF          = "%%EOF".to_slice
+
     @destination : ::IO
     @will_encrypt : Bool = false
     @security_handler : Pdfbox::Pdmodel::Encryption::SecurityHandler?
