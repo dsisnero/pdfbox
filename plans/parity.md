@@ -102,7 +102,7 @@ Each feature area below tracks concrete, actionable tasks. Checkboxes reflect cu
 
 - [x] PDFRenderer — working renderer with CrImage integration, PageDrawer extends PDFGraphicsStreamEngine
 - [ ] XMPBox XML parsing and schema handling
-- [ ] Encryption: public key encryption porting
+- [ ] Encryption: public key encryption porting — requires OpenSSL RSA/X.509 support (Crystal stdlib has only symmetric ciphers and digests; needs external shard like openssl_ext)
 - [x] ImageIOUtil: CrImage integration — ExtractImages uses CrImage::RGBA + CrImage::PNG::Writer; PDFRenderer uses CrImage for render_image_png
 
 ---
