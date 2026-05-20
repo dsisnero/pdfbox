@@ -121,7 +121,27 @@ module Pdfbox::Pdfparser
       end
     end
 
-    # Read the trailer information and provide a COSDictionary containing the trailer information.
+    # Dereference a COSObject, resolving it to its actual COS content.
+    # Port of Java COSParser.dereferenceCOSObject.
+    def dereference_cos_object(obj : Cos::Object) : Cos::Base?
+      current_pos = source.position
+      key = obj.key
+      return unless key
+      parsed_obj = parse_object_dynamically(key, false)
+      if parsed_obj
+        parsed_obj.direct = false
+        parsed_obj.key = key
+      end
+      source.seek(current_pos) if current_pos > 0
+      parsed_obj
+    end
+
+    # Create a view into the source data for a given range.
+    # Port of Java COSParser.createRandomAccessReadView.
+    def create_random_access_read_view(start_position : Int64, stream_length : Int64) : Pdfbox::IO::RandomAccessReadView
+      Pdfbox::IO::RandomAccessReadView.new(source, start_position, stream_length)
+    end
+
     protected def retrieve_trailer : Pdfbox::Cos::Dictionary?
       trailer = nil
       rebuild_trailer = false
