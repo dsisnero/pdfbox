@@ -77,9 +77,9 @@ Each feature area below tracks concrete, actionable tasks. Checkboxes reflect cu
 - [x] TrueTypeCollection: processes TTC fonts, resolves fonts by name, scans headers — fixture switched to `ipag.ttf`
 - [x] OTFParser: standalone OpenType/CFF parsing — CFF path fix (uses CFF charset, not TTF post table)
 - [x] GSUB specs: all 65 examples pass, no compile errors
-- [ ] GSUB: multiple substitution, alternate substitution, ligature substitution edge cases
-- [ ] GSUB: Tamil worker adjustments (copied from Gujarati, needs adjustment)
-- [ ] Various TTF table TODO logging/warnings (50+ TODO comments)
+- [~] GSUB: multiple/alternate/ligature substitution — data extraction implemented, needs end-to-end glyph substitution wiring
+- [~] GSUB: Tamil worker adjustments — wired into factory, needs Tamil-specific substitution rules (currently uses Gujarati logic)
+- [~] Various TTF table TODO comments — reduced from 50+ to ~18 genuine feature gaps (logging TODOs converted to NOTE comments, dead stubs removed)
 
 ### P6 — PD Model Completeness
 
