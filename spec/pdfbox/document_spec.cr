@@ -67,6 +67,23 @@ describe Pdfbox::Pdmodel::Document do
       doc.set_document_information(nil)
       doc.get_document_information.should be_nil
     end
+
+    it "TestPDDocumentInformation#testMetadataExtraction" do
+      path = SpecPaths.resolve("vendor/pdfbox/pdfbox/src/test/resources/input/hello3.pdf")
+      doc = Pdfbox::Pdmodel::Document.load(path)
+      begin
+        info = doc.document_information
+        info.should_not be_nil
+        i = info.not_nil!
+        i.author.should eq("Brian Carrier")
+        i.creator.should eq("Acrobat PDFMaker 8.1 for Word")
+        i.producer.should eq("Acrobat Distiller 8.1.0 (Windows)")
+        i.keywords.should be_nil
+        i.subject.should be_nil
+      ensure
+        doc.close
+      end
+    end
   end
 
   describe "#save and .load" do
