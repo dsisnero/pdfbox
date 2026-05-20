@@ -14,7 +14,7 @@
 |---|---|
 | Java source files (vendor) | ~1,289 |
 | Crystal source files (ported) | ~415 |
-| Passing tests | 1,567 |
+| Passing tests | 1,564 |
 | Pending tests | 2 (bidi Java-parity only — documented algorithm differences) |
 | Failures | 0 |
 | Errors | 0 |
@@ -59,7 +59,7 @@ Each feature area below tracks concrete, actionable tasks. Checkboxes reflect cu
 
 - [x] PDFBOX-5025 test enabled — `length1` reads from font_file2 COS stream correctly
 - [x] `COSParser.parseObjectStreamObject` — delegates to Parser which is fully implemented
-- [ ] Compressed object stream writing (xref stream vs xref table)
+- [x] Compressed object stream writing (xref stream format enabled, COSWriterObjectStream + COSWriterCompressionPool + PDFXrefStreamParser all working)
 - [x] Document info get/set — all metadata fields available via `DocumentInformation`
 - [x] Incremental save — `save_incremental` writes original bytes + full save; parser uses `rindex` for last startxref
 
