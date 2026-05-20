@@ -28,6 +28,7 @@ module Pdfbox::Pdfwriter
     @parameters : Pdfbox::Pdfwriter::Compress::CompressParameters
     @will_encrypt : Bool = false
     @security_handler : Pdfbox::Pdmodel::Encryption::SecurityHandler?
+    @use_xref_streams : Bool = false
 
     def initialize(@destination : ::IO, @document : Pdfbox::Pdmodel::Document, @parameters : Pdfbox::Pdfwriter::Compress::CompressParameters = Pdfbox::Pdfwriter::Compress::CompressParameters::DEFAULT_COMPRESSION)
       if encryption = @document.encryption
@@ -168,9 +169,11 @@ module Pdfbox::Pdfwriter
                                        trailer : Pdfbox::Cos::Dictionary?,
                                        object_keys : Hash(UInt64, Pdfbox::Cos::ObjectKey),
                                        cos_writer : COSWriter) : Nil
-      # Xref streams require full parser support for compressed objects.
-      # Use traditional xref table until parser is updated to read xref streams.
-      write_xref_table(xref_entries, catalog, trailer, object_keys, cos_writer)
+      if @use_xref_streams
+        write_xref_stream(xref_entries, catalog, trailer, object_keys)
+      else
+        write_xref_table(xref_entries, catalog, trailer, object_keys, cos_writer)
+      end
     end
 
     # PDF 1.5+ cross-reference stream (enables compressed object streams).
