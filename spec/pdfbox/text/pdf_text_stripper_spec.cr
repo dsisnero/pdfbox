@@ -293,15 +293,12 @@ describe Pdfbox::Text::PDFTextStripper do
       "cweb.pdf"                                               => true,
     }
 
-    known_crash = {
-      "PDFBOX-3062-002207-p1.pdf" => true,
-      "PDFBOX-3062-005717-p1.pdf" => true,
-    }
+    # These PDFs previously crashed but now work
+    # "PDFBOX-3062-002207-p1.pdf" and "PDFBOX-3062-005717-p1.pdf" now extract text without errors
 
     Dir.glob(File.join(input_dir, "*.pdf")).sort.each do |pdf_path|
       basename = File.basename(pdf_path)
       next if many_mismatches.has_key?(basename)
-      next if known_crash.has_key?(basename)
 
       document = Pdfbox::Pdmodel::Document.load(pdf_path)
       begin
