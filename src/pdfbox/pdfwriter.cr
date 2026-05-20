@@ -54,6 +54,84 @@ module Pdfbox::Pdfwriter
       trailer = @document.trailer
       catalog = @document.document_catalog
 
+      if @use_xref_streams && @parameters.compress?
+        write_compressed(cos_writer, catalog, trailer)
+      else
+        write_standard(cos_writer, catalog, trailer)
+      end
+    end
+
+    # Write using compressed object streams (PDF 1.5+).
+    private def write_compressed(cos_writer : COSWriter,
+                                  catalog : Pdfbox::Pdmodel::DocumentCatalog?,
+                                  trailer : Pdfbox::Cos::Dictionary?) : Nil
+      # Use compression pool for object classification and traversal
+      compression_pool = Compress::COSWriterCompressionPool.new(@document, @parameters)
+
+      # Collect and assign object numbers
+      object_keys = {} of UInt64 => Pdfbox::Cos::ObjectKey
+      key_objects = {} of Pdfbox::Cos::ObjectKey => Pdfbox::Cos::Base
+      object_wrapper = {} of UInt64 => UInt64
+      roots = build_roots(catalog)
+      collect_objects(roots, object_keys, key_objects, object_wrapper)
+      object_wrapper.each do |wrapper_id, inner_id|
+        if inner_key = object_keys[inner_id]?
+          object_keys[wrapper_id] = inner_key
+        end
+      end
+
+      # Register objects with compression pool
+      key_objects.each do |key, obj|
+        compression_pool.register_object(key, obj)
+      end
+
+      # Create object streams for compressible objects
+      object_streams = compression_pool.create_object_streams
+
+      xref_entries = [] of XRefEntry
+      xref_entries << XRefEntry.new(0_i64, 65535_i64, :free)
+      next_obj = key_objects.size.to_i64 + 1_i64
+
+      # Write object streams first
+      object_streams.each do |obj_stream|
+        stream = Pdfbox::Cos::Stream.new
+        obj_stream.write_objects_to_stream(stream)
+
+        stream_key = Pdfbox::Cos::ObjectKey.new(next_obj, 0_i64)
+        next_obj += 1
+        pos = @destination.pos.to_i64
+        xref_entries << XRefEntry.new(pos, 0_i64, :in_use)
+        @destination << stream_key.number << " 0 obj\n"
+        cos_writer.write_stream(stream, stream_key.number, stream_key.generation)
+        @destination << "\nendobj\n"
+
+        # Add compressed xref entries for objects in this stream
+        obj_stream.prepared_keys.each do |prep_key|
+          xref_entries << XRefEntry.new(stream_key.number, prep_key.number)
+        end
+      end
+
+      # Write top-level objects (not in object streams)
+      sorted = key_objects.keys.sort_by!(&.number)
+      top_level_keys = sorted.reject { |k| compression_pool.object_stream_objects.includes?(k) }
+      top_level_keys.each do |key|
+        obj = key_objects[key]
+        next unless obj
+        pos = @destination.pos.to_i64
+        xref_entries << XRefEntry.new(pos, 0_i64, :in_use)
+        @destination << key.number << " 0 obj\n"
+        write_indirect_object(obj, cos_writer, object_keys, object_wrapper, key)
+        @destination << "\nendobj\n"
+      end
+
+      write_xref_stream(xref_entries, catalog, trailer, object_keys)
+    end
+
+    # Write using standard xref table (PDF 1.4 compatible).
+    private def write_standard(cos_writer : COSWriter,
+                                catalog : Pdfbox::Pdmodel::DocumentCatalog?,
+                                trailer : Pdfbox::Cos::Dictionary?) : Nil
+
       # Collect all indirect objects via BFS
       object_keys = {} of UInt64 => Pdfbox::Cos::ObjectKey
       key_objects = {} of Pdfbox::Cos::ObjectKey => Pdfbox::Cos::Base

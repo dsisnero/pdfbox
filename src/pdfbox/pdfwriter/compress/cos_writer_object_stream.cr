@@ -17,7 +17,8 @@ module Pdfbox::Pdfwriter::Compress
     # Prepare an object to be written to this object stream.
     def prepare_stream_object(key : Pdfbox::Cos::ObjectKey, object : Pdfbox::Cos::Base) : Nil
       @prepared_keys << key
-      @prepared_objects << (object.is_a?(Pdfbox::Cos::Object) ? object.object : object)
+      resolved = object.is_a?(Pdfbox::Cos::Object) ? object.object : object
+      @prepared_objects << resolved if resolved
     end
 
     # Write all prepared objects to the given COSStream.

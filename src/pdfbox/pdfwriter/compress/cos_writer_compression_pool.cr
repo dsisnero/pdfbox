@@ -1,3 +1,5 @@
+require "./cos_writer_object_stream"
+
 module Pdfbox::Pdfwriter::Compress
   # Collects objects from a PDF document and organizes them into compressed object streams.
   # Port of org.apache.pdfbox.pdfwriter.compress.COSWriterCompressionPool.
