@@ -43,44 +43,71 @@ module Pdfbox::Pdfwriter
     end
 
     def write : Nil
-      write_header(header_version_for_write)
+      header = header_version_for_write
+      if @parameters.compress? || (v = header.to_f32?) && v >= 1.6_f32
+        @document.set_version(header.to_f32)
+      end
+      write_header(header)
       cos_writer = COSWriter.new(@destination, @will_encrypt, @security_handler)
 
       trailer = @document.trailer
       catalog = @document.document_catalog
 
-      # Collect all indirect objects via BFS from catalog + trailer entries
+      # Collect all indirect objects via BFS
       object_keys = {} of UInt64 => Pdfbox::Cos::ObjectKey
       key_objects = {} of Pdfbox::Cos::ObjectKey => Pdfbox::Cos::Base
+      object_wrapper = {} of UInt64 => UInt64
+
+      roots = build_roots(catalog)
+      collect_objects(roots, object_keys, key_objects, object_wrapper)
+      object_wrapper.each do |wrapper_id, inner_id|
+        if inner_key = object_keys[inner_id]?
+          object_keys[wrapper_id] = inner_key
+        end
+      end
+
       xref_entries = [] of XRefEntry
       xref_entries << XRefEntry.new(0_i64, 65535_i64, :free)
 
+      # Write objects sorted by object number
+      sorted = key_objects.keys.sort_by!(&.number)
+      sorted.each do |key|
+        obj = key_objects[key]
+        next unless obj
+        pos = @destination.pos.to_i64
+        xref_entries << XRefEntry.new(pos, 0_i64, :in_use)
+        @destination << key.number << " 0 obj\n"
+        write_indirect_object(obj, cos_writer, object_keys, object_wrapper, key)
+        @destination << "\nendobj\n"
+      end
+
+      # Write xref and trailer
+      write_xref_and_trailer(xref_entries, catalog, trailer, object_keys, cos_writer)
+    end
+
+    private def build_roots(catalog : Pdfbox::Pdmodel::DocumentCatalog?) : Array(Pdfbox::Cos::Base)
       roots = [] of Pdfbox::Cos::Base
       if catalog
         roots << catalog.cos_object
       end
-
-      # Temporarily bridge pages and their COS graph roots into the traversal
       @document.pages.each do |page|
         if page_dict = page.cos_object
           roots << page_dict
         end
       end
+      roots
+    end
 
+    private def collect_objects(roots : Array(Pdfbox::Cos::Base),
+                                object_keys : Hash(UInt64, Pdfbox::Cos::ObjectKey),
+                                key_objects : Hash(Pdfbox::Cos::ObjectKey, Pdfbox::Cos::Base),
+                                object_wrapper : Hash(UInt64, UInt64)) : Nil
       next_obj = 1_i64
-
-      # Walk the entire COS graph reachable from roots, assigning object numbers
-      # to every non-scalar (dict, array, stream), and also registering COSObject
-      # wrapper IDs so indirect references resolve correctly.
-      object_wrapper = {} of UInt64 => UInt64
-
       queue = Deque(Pdfbox::Cos::Base).new
       roots.each { |root_item| queue << root_item }
 
       until queue.empty?
         current = queue.shift
-
-        # Record COSObject wrapper → inner mapping for indirect ref resolution
         if current.is_a?(Pdfbox::Cos::Object)
           if inner = current.object
             object_wrapper[current.object_id.to_u64] = inner.object_id.to_u64
@@ -110,47 +137,37 @@ module Pdfbox::Pdfwriter
 
         case actual
         when Pdfbox::Cos::Dictionary
-          actual.entries.each_value { |v| queue << v }
+          actual.entries.each_value { |val| queue << val }
         when Pdfbox::Cos::Array
           actual.items.each { |item| queue << item }
         when Pdfbox::Cos::Stream
-          actual.entries.each_value { |v| queue << v }
+          actual.entries.each_value { |val| queue << val }
         end
       end
+    end
 
-      # Register wrapper IDs to map to the same object key as their inner
-      object_wrapper.each do |wrapper_id, inner_id|
-        if inner_key = object_keys[inner_id]?
-          object_keys[wrapper_id] = inner_key
-        end
+    private def write_indirect_object(obj : Pdfbox::Cos::Base,
+                                      cos_writer : COSWriter,
+                                      object_keys : Hash(UInt64, Pdfbox::Cos::ObjectKey),
+                                      object_wrapper : Hash(UInt64, UInt64),
+                                      key : Pdfbox::Cos::ObjectKey) : Nil
+      case obj
+      when Pdfbox::Cos::Stream
+        cos_writer.write_stream(obj, key.number, key.generation)
+      when Pdfbox::Cos::Dictionary
+        write_dictionary_with_refs(obj, object_keys, object_wrapper)
+      when Pdfbox::Cos::Array
+        write_array_with_refs(obj, object_keys, object_wrapper)
+      else
+        cos_writer.write(obj)
       end
+    end
 
-      # Write all collected objects sorted by object number
-      sorted = key_objects.keys.sort_by!(&.number)
-      sorted.each do |key|
-        obj = key_objects[key]
-        next unless obj
-
-        pos = @destination.pos.to_i64
-        xref_entries << XRefEntry.new(pos, 0_i64, :in_use)
-
-        @destination << key.number << " 0 obj\n"
-
-        case obj
-        when Pdfbox::Cos::Stream
-          cos_writer.write_stream(obj, key.number, key.generation)
-        when Pdfbox::Cos::Dictionary
-          write_dictionary_with_refs(obj, object_keys, object_wrapper)
-        when Pdfbox::Cos::Array
-          write_array_with_refs(obj, object_keys, object_wrapper)
-        else
-          cos_writer.write(obj)
-        end
-
-        @destination << "\nendobj\n"
-      end
-
-      # Write xref table
+    private def write_xref_and_trailer(xref_entries : Array(XRefEntry),
+                                       catalog : Pdfbox::Pdmodel::DocumentCatalog?,
+                                       trailer : Pdfbox::Cos::Dictionary?,
+                                       object_keys : Hash(UInt64, Pdfbox::Cos::ObjectKey),
+                                       cos_writer : COSWriter) : Nil
       xref_start = @destination.pos.to_i64
       @destination << "xref\n"
       @destination << "0 " << xref_entries.size << "\n"
@@ -160,7 +177,6 @@ module Pdfbox::Pdfwriter
         @destination << (entry.type == :in_use ? "n" : "f") << " \n"
       end
 
-      # Write trailer
       @destination << "trailer\n"
       @destination << "<<\n"
       @destination << "/Size " << xref_entries.size << "\n"

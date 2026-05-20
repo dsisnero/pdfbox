@@ -692,7 +692,7 @@ module Pdfbox::Pdfparser
         str = String.new(data, "ISO-8859-1")
         # puts "DEBUG: string created, length=#{str.size}" if @lenient
         # puts "DEBUG: searching for 'startxref' in string" if @lenient
-        if startxref_idx = str.index("startxref")
+        if startxref_idx = str.rindex("startxref")
           # puts "DEBUG: found 'startxref' at index #{startxref_idx}" if @lenient
           # Return offset of "startxref" keyword (XrefParser expects this)
           return start + startxref_idx

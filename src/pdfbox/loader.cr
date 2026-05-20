@@ -13,6 +13,8 @@ module Pdfbox
       document = parser.parse(password)
       # Attempt decryption for encrypted documents, including empty-password attempts.
       document.decrypt(password)
+      # Store original bytes for incremental save support
+      document.source_bytes = data
       document
     end
 
