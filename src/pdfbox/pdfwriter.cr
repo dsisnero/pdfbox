@@ -28,7 +28,7 @@ module Pdfbox::Pdfwriter
     @parameters : Pdfbox::Pdfwriter::Compress::CompressParameters
     @will_encrypt : Bool = false
     @security_handler : Pdfbox::Pdmodel::Encryption::SecurityHandler?
-    @use_xref_streams : Bool = false
+    @use_xref_streams : Bool = true
 
     def initialize(@destination : ::IO, @document : Pdfbox::Pdmodel::Document, @parameters : Pdfbox::Pdfwriter::Compress::CompressParameters = Pdfbox::Pdfwriter::Compress::CompressParameters::DEFAULT_COMPRESSION)
       if encryption = @document.encryption
@@ -169,8 +169,10 @@ module Pdfbox::Pdfwriter
                                        trailer : Pdfbox::Cos::Dictionary?,
                                        object_keys : Hash(UInt64, Pdfbox::Cos::ObjectKey),
                                        cos_writer : COSWriter) : Nil
-      if @use_xref_streams
+      if @use_xref_streams && @parameters.compress?
         write_xref_stream(xref_entries, catalog, trailer, object_keys)
+      elsif @use_xref_streams
+        write_xref_table(xref_entries, catalog, trailer, object_keys, cos_writer)
       else
         write_xref_table(xref_entries, catalog, trailer, object_keys, cos_writer)
       end

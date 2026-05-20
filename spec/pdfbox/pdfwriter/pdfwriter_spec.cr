@@ -350,7 +350,7 @@ describe "Pdfbox::Pdfwriter parity" do
     acro_form.not_nil!.add_field(text_field)
 
     initial_output = IO::Memory.new
-    doc.save(initial_output)
+    doc.save(initial_output, Pdfbox::Pdfwriter::Compress::CompressParameters::NO_COMPRESSION)
     created_bytes = initial_output.to_slice
     parse_trailer_size(created_bytes).should eq(max_object_number(created_bytes) + 1)
   ensure
@@ -374,7 +374,7 @@ describe "Pdfbox::Pdfwriter parity" do
     acro_form.not_nil!.add_field(text_field)
 
     initial_output = IO::Memory.new
-    create_doc.save(initial_output)
+    create_doc.save(initial_output, Pdfbox::Pdfwriter::Compress::CompressParameters::NO_COMPRESSION)
     created_bytes = initial_output.to_slice
     parse_trailer_size(created_bytes).should eq(max_object_number(created_bytes) + 1)
 

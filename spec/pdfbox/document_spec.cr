@@ -284,12 +284,25 @@ describe Pdfbox::Pdmodel::Document do
   end
 
   describe "xref table integration" do
-    it "generates PDF with xref table" do
+    it "generates PDF with xref stream by default" do
       doc = Pdfbox::Pdmodel::Document.new
       doc.add_page(Pdfbox::Pdmodel::Page.new)
 
       io = IO::Memory.new
       doc.save(io)
+
+      pdf = io.to_s
+      pdf.should contain("/Type /XRef")
+      pdf.should contain("/W [1 4 1]")
+      pdf.should end_with("%%EOF\n")
+    end
+
+    it "generates PDF with xref table when uncompressed" do
+      doc = Pdfbox::Pdmodel::Document.new
+      doc.add_page(Pdfbox::Pdmodel::Page.new)
+
+      io = IO::Memory.new
+      doc.save(io, Pdfbox::Pdfwriter::Compress::CompressParameters::NO_COMPRESSION)
 
       pdf = io.to_s
       pdf.should contain("xref\n")

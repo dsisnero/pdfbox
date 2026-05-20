@@ -159,13 +159,9 @@ module Pdfbox::Pdmodel
     end
 
     # Save the document incrementally.
-    # Writes the original PDF bytes first, then appends a full save as an update.
-    # The parser reads the last xref/trailer to get the updated state.
+    # Falls back to a full save without compression (incremental updates don't use compressed objects).
     def save_incremental(io : ::IO) : Nil
-      if source = @source_bytes
-        io.write(source)
-      end
-      save(io)
+      save(io, Pdfbox::Pdfwriter::Compress::CompressParameters::NO_COMPRESSION)
     end
 
     # Add a page to the document

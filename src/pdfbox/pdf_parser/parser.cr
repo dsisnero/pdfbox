@@ -156,13 +156,27 @@ module Pdfbox::Pdfparser
     # Parse cross-reference table
 
     def parse_xref(start_byte_pos : Int64? = nil) : XRef
-      # puts "DEBUG: parse_xref called" if @lenient
       start_time = Time.instant
       xref = XRef.new
-      # Skip whitespace/comments before "xref"
 
-      # Some PDFs have incorrect startxref offsets. Try to find "xref" by seeking back a bit.
+      # If a specific startxref position was provided, use it
+      if start_byte_pos
+        source.seek(start_byte_pos)
+      end
+
       original_pos = source.position
+
+      # Check if we're at a "startxref" keyword and parse the offset
+      skip_spaces
+      if string?("startxref")
+        read_string # consume "startxref"
+        skip_spaces
+        start_byte_pos = read_long
+        if start_byte_pos && start_byte_pos > 0
+          source.seek(start_byte_pos)
+          original_pos = source.position
+        end
+      end
 
       # First check if we're at an xref stream (object number)
       source.seek(original_pos)
