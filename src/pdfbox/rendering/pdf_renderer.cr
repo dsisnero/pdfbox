@@ -76,9 +76,28 @@ module Pdfbox::Rendering
           data = stream_obj.create_input_stream.getb_to_end
           next if data.empty?
 
-          saved = graphics_state.current_transformation_matrix.clone
+          # Get annotation rectangle and appearance bbox
+          rect = annot.rectangle
+          bbox = stream.bbox
+
+          # Save graphics state
+          gs = graphics_state
+          saved_matrix = gs.current_transformation_matrix.clone
+
+          if rect && bbox && rect.width > 0 && rect.height > 0 &&
+             bbox.width > 0 && bbox.height > 0
+            # Compute transformation matrix from appearance bbox to annotation rect
+            matrix = Pdfbox::Util::Matrix.new
+            matrix.translate(rect.lower_left_x, rect.lower_left_y)
+            matrix.scale((rect.width / bbox.width).to_f32, (rect.height / bbox.height).to_f32)
+            matrix.translate(-bbox.lower_left_x, -bbox.lower_left_y)
+            gs.current_transformation_matrix.concatenate(matrix)
+          end
+
           process_stream_operators(data)
-          graphics_state.current_transformation_matrix = saved
+
+          # Restore graphics state
+          gs.current_transformation_matrix = saved_matrix
         rescue ex
         end
       end
