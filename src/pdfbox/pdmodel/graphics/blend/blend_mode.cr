@@ -93,13 +93,13 @@ module Pdfbox::Pdmodel::Graphics::Blend
     def self.get_instance(cos_blend_mode : Pdfbox::Cos::Base) : BlendMode
       case cos_blend_mode
       when Pdfbox::Cos::Name
-        name = cos_blend_mode.name
+        name = cos_blend_mode.value
         mode = Mode.from_cos_name(name)
         BlendMode.new(mode)
       when Pdfbox::Cos::Array
         cos_blend_mode.items.each do |item|
           if item.is_a?(Pdfbox::Cos::Name)
-            name = item.name
+            name = item.value
             mode = Mode.from_cos_name(name)
             return BlendMode.new(mode) unless mode.normal?
           end

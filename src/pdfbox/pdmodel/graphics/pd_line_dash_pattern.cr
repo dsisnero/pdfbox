@@ -9,7 +9,7 @@ module Pdfbox::Pdmodel::Graphics
       @phase = 0
     end
 
-    def initialize(array : Pdfbox::Cos::Array, phase : Int32 | Int64 | Int)
+    def initialize(array : Pdfbox::Cos::Array, phase : Int32 | Int64)
       @array = array.to_float_array
       @phase = normalize_phase(@array, phase.to_i32)
     end

@@ -192,7 +192,7 @@ module Pdfbox::Pdmodel::Encryption
     property owner_password : String
     property user_password : String
     property permissions : AccessPermission
-    property encryption_key_length : Int32 = 256
+    property encryption_key_length : Int32 = 128
     property? prefer_aes : Bool = false
     property? encrypt_metadata : Bool = true
 
