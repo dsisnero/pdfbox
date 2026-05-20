@@ -222,6 +222,10 @@ module Pdfbox::Pdfwriter
           data_io.write_byte(1_u8)
           xref_write_u32(data_io, entry.offset)
           xref_write_u8(data_io, entry.generation)
+        when :compressed
+          data_io.write_byte(2_u8)
+          xref_write_u32(data_io, entry.offset)   # object stream number
+          xref_write_u8(data_io, entry.objstm_index) # index within stream
         end
       end
 
@@ -669,8 +673,19 @@ module Pdfbox::Pdfwriter
     @offset : Int64
     @generation : Int64
     @type : Symbol
+    @objstm_index : Int64
 
+    # Create a normal xref entry (type :free or :in_use)
     def initialize(@offset : Int64, @generation : Int64, @type : Symbol)
+      @objstm_index = 0_i64
+    end
+
+    # Create a compressed xref entry (type :compressed)
+    def initialize(objstm_number : Int64, objstm_index : Int64)
+      @offset = objstm_number
+      @generation = 0_i64
+      @type = :compressed
+      @objstm_index = objstm_index
     end
 
     def offset : Int64
@@ -683,6 +698,10 @@ module Pdfbox::Pdfwriter
 
     def type : Symbol
       @type
+    end
+
+    def objstm_index : Int64
+      @objstm_index
     end
   end
 
