@@ -6,6 +6,7 @@
 # callback methods that subclasses must implement.
 require "../cos"
 require "../pdmodel"
+require "./pdf_stream_engine"
 require "../pdmodel/graphics/color/pdcolor"
 require "../pdmodel/graphics/color/pdcolor_space"
 require "../pdmodel/graphics/color/pddevice_gray"
@@ -35,6 +36,8 @@ module Pdfbox::Contentstream
       super()
       @line_path = Path2D.new
       @graphics_state_stack = [] of Pdmodel::Graphics::State::PDGraphicsState
+      # Initialize with a proper PDGraphicsState to avoid type mismatch with parent's stack
+      @graphics_state_stack << Pdmodel::Graphics::State::PDGraphicsState.new
       register_operators
     end
 
@@ -45,7 +48,7 @@ module Pdfbox::Contentstream
 
     # Returns the current graphics state.
     def graphics_state : Pdmodel::Graphics::State::PDGraphicsState
-      (@graphics_state_stack.last? || @graphics_stack.last).as(Pdmodel::Graphics::State::PDGraphicsState)
+      @graphics_state_stack.last || raise "Graphics state stack empty"
     end
 
     # Save the graphics state - override to use properly typed stack
@@ -239,6 +242,9 @@ module Pdfbox::Contentstream
       # Marked content operators
       add_operator(OperatorBeginMarkedContent.new(self))
       add_operator(OperatorEndMarkedContent.new(self))
+      add_operator(OperatorMarkedContentPoint.new(self))
+      add_operator(OperatorMarkedContentPointWithProperties.new(self))
+      add_operator(OperatorBeginMarkedContentWithProperties.new(self))
 
       # Draw object operator
       add_operator(OperatorDrawObject.new(self))
@@ -723,7 +729,15 @@ module Pdfbox::Contentstream
     end
 
     def process(arguments : Array(Cos::Base)) : Nil
-      # TODO: Implement extended graphics state
+      return if arguments.empty?
+      base = arguments[0]
+      return unless base.is_a?(Cos::Name)
+      resources = context.resources
+      return unless resources
+      gs = resources.ext_g_state(base)
+      if gs
+        gs.copy_into_graphics_state(context.graphics_state)
+      end
     end
   end
 
@@ -778,7 +792,8 @@ module Pdfbox::Contentstream
     end
 
     def process(arguments : Array(Cos::Base)) : Nil
-      # TODO: Implement text showing with font glyph rendering
+      return if arguments.empty?
+      context.show_text_string(arguments[0])
     end
   end
 
@@ -789,7 +804,10 @@ module Pdfbox::Contentstream
     end
 
     def process(arguments : Array(Cos::Base)) : Nil
-      # TODO: Implement adjusted text showing
+      return if arguments.empty?
+      base = arguments[0]
+      return unless base.is_a?(Cos::Array)
+      context.show_text_strings(base)
     end
   end
 
@@ -800,7 +818,13 @@ module Pdfbox::Contentstream
     end
 
     def process(arguments : Array(Cos::Base)) : Nil
-      # TODO: Implement text line showing
+      # Move to next line
+      leading = context.graphics_state.text_state.leading
+      context.graphics_state.text_matrix = context.graphics_state.text_line_matrix.clone
+      context.graphics_state.text_matrix.try(&.translate(0.0_f32, -leading))
+      context.graphics_state.text_line_matrix = context.graphics_state.text_matrix.clone
+      # Show text
+      context.show_text_string(arguments[0]) unless arguments.empty?
     end
   end
 
@@ -811,7 +835,23 @@ module Pdfbox::Contentstream
     end
 
     def process(arguments : Array(Cos::Base)) : Nil
-      # TODO: Implement text line with spacing
+      return if arguments.size < 3
+      # Set word spacing
+      aw = arguments[0]
+      if aw.is_a?(Cos::Integer) || aw.is_a?(Cos::Float)
+        context.graphics_state.text_state.word_spacing = aw.as(Cos::Number).value.to_f32
+      end
+      # Set character spacing
+      ac = arguments[1]
+      if ac.is_a?(Cos::Integer) || ac.is_a?(Cos::Float)
+        context.graphics_state.text_state.character_spacing = ac.as(Cos::Number).value.to_f32
+      end
+      # Move to next line and show text
+      leading = context.graphics_state.text_state.leading
+      context.graphics_state.text_matrix = context.graphics_state.text_line_matrix.clone
+      context.graphics_state.text_matrix.try(&.translate(0.0_f32, -leading))
+      context.graphics_state.text_line_matrix = context.graphics_state.text_matrix.clone
+      context.show_text_string(arguments[2])
     end
   end
 
@@ -939,7 +979,15 @@ module Pdfbox::Contentstream
     end
 
     def process(arguments : Array(Cos::Base)) : Nil
-      # TODO: Implement color space lookup from resources
+      return if arguments.empty?
+      name_arg = arguments[0]
+      return unless name_arg.is_a?(Cos::Name)
+      resources = context.resources
+      return unless resources
+      cs = resources.color_space(name_arg)
+      return unless cs
+      context.graphics_state.stroking_color_space = cs
+      context.graphics_state.stroking_color = cs.initial_color
     end
   end
 
@@ -950,7 +998,15 @@ module Pdfbox::Contentstream
     end
 
     def process(arguments : Array(Cos::Base)) : Nil
-      # TODO: Implement color space lookup from resources
+      return if arguments.empty?
+      name_arg = arguments[0]
+      return unless name_arg.is_a?(Cos::Name)
+      resources = context.resources
+      return unless resources
+      cs = resources.color_space(name_arg)
+      return unless cs
+      context.graphics_state.non_stroking_color_space = cs
+      context.graphics_state.non_stroking_color = cs.initial_color
     end
   end
 
@@ -1049,7 +1105,14 @@ module Pdfbox::Contentstream
     end
 
     def process(arguments : Array(Cos::Base)) : Nil
-      # TODO: Implement with color space
+      return if arguments.empty?
+      cs = context.graphics_state.stroking_color_space
+      return unless cs
+      components = arguments.map do |arg|
+        arg = arg.object if arg.is_a?(Cos::Object)
+        arg.is_a?(Cos::Number) ? arg.value.to_f32 : 0.0_f32
+      end
+      context.graphics_state.stroking_color = Pdmodel::Graphics::Color::PDColor.new(components, cs)
     end
   end
 
@@ -1060,7 +1123,14 @@ module Pdfbox::Contentstream
     end
 
     def process(arguments : Array(Cos::Base)) : Nil
-      # TODO: Implement with color space
+      return if arguments.empty?
+      cs = context.graphics_state.non_stroking_color_space
+      return unless cs
+      components = arguments.map do |arg|
+        arg = arg.object if arg.is_a?(Cos::Object)
+        arg.is_a?(Cos::Number) ? arg.value.to_f32 : 0.0_f32
+      end
+      context.graphics_state.non_stroking_color = Pdmodel::Graphics::Color::PDColor.new(components, cs)
     end
   end
 
@@ -1071,7 +1141,11 @@ module Pdfbox::Contentstream
     end
 
     def process(arguments : Array(Cos::Base)) : Nil
-      # TODO: Implement marked content
+      tag = nil
+      arguments.each do |arg|
+        tag = arg if arg.is_a?(Cos::Name)
+      end
+      context.begin_marked_content_sequence(tag, nil)
     end
   end
 
@@ -1082,7 +1156,79 @@ module Pdfbox::Contentstream
     end
 
     def process(arguments : Array(Cos::Base)) : Nil
-      # TODO: Implement marked content
+      context.end_marked_content_sequence
+    end
+  end
+
+  # MarkedContentPoint operator (MP)
+  class OperatorMarkedContentPoint < GraphicsOperatorProcessor
+    def name : String
+      "MP"
+    end
+
+    def process(arguments : Array(Cos::Base)) : Nil
+      return if arguments.empty?
+      tag = arguments[0]
+      return unless tag.is_a?(Cos::Name)
+      context.marked_content_point(tag, nil)
+    end
+  end
+
+  # MarkedContentPointWithProperties operator (DP)
+  class OperatorMarkedContentPointWithProperties < GraphicsOperatorProcessor
+    def name : String
+      "DP"
+    end
+
+    def process(arguments : Array(Cos::Base)) : Nil
+      return if arguments.size < 2
+      tag = arguments[0]
+      return unless tag.is_a?(Cos::Name)
+      op1 = arguments[1]
+      prop_dict = resolve_property_dict(op1)
+      return unless prop_dict
+      context.marked_content_point(tag, prop_dict)
+    end
+
+    private def resolve_property_dict(op : Cos::Base) : Cos::Dictionary?
+      if op.is_a?(Cos::Name)
+        resources = context.resources
+        return unless resources
+        prop = resources.properties(op)
+        return unless prop
+        prop.cos_object.is_a?(Cos::Dictionary) ? prop.cos_object : nil
+      elsif op.is_a?(Cos::Dictionary)
+        op
+      end
+    end
+  end
+
+  # BeginMarkedContentSequenceWithProperties operator (BDC)
+  class OperatorBeginMarkedContentWithProperties < GraphicsOperatorProcessor
+    def name : String
+      "BDC"
+    end
+
+    def process(arguments : Array(Cos::Base)) : Nil
+      return if arguments.size < 2
+      tag = arguments[0]
+      return unless tag.is_a?(Cos::Name)
+      op1 = arguments[1]
+      prop_dict = _resolve_prop_dict(op1)
+      return unless prop_dict
+      context.begin_marked_content_sequence(tag, prop_dict)
+    end
+
+    private def _resolve_prop_dict(op : Cos::Base) : Cos::Dictionary?
+      if op.is_a?(Cos::Name)
+        resources = context.resources
+        return unless resources
+        prop = resources.properties(op)
+        return unless prop
+        prop.cos_object.is_a?(Cos::Dictionary) ? prop.cos_object : nil
+      elsif op.is_a?(Cos::Dictionary)
+        op
+      end
     end
   end
 

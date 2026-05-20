@@ -634,6 +634,29 @@ module Pdfbox::Contentstream
         obj.value.to_i32
       end
     end
+
+    # Begin a marked-content sequence.
+    # Port of Java PDFStreamEngine.beginMarkedContentSequence.
+    def begin_marked_content_sequence(tag : Cos::Name? = nil, properties : Cos::Base? = nil) : Nil
+      @marked_content_stack ||= [] of {Cos::Name?, Cos::Base?}
+      if stack = @marked_content_stack
+        stack << {tag, properties}
+      end
+    end
+
+    # End a marked-content sequence.
+    # Port of Java PDFStreamEngine.endMarkedContentSequence.
+    def end_marked_content_sequence : Nil
+      if stack = @marked_content_stack
+        stack.pop? unless stack.empty?
+      end
+    end
+
+    # Mark a marked-content point.
+    # Port of Java PDFStreamEngine.markedContentPoint.
+    def marked_content_point(tag : Cos::Name, properties : Cos::Base?) : Nil
+      # Record as a point (not pushed onto stack since it has no duration)
+    end
   end
 
   # Graphics state for the PDF stream engine
