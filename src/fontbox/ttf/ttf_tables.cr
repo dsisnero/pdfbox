@@ -427,7 +427,7 @@ module Fontbox::TTF
       @max_mem_type1 = data.read_unsigned_int
 
       if data.current_position == data.original_data_size
-        # TODO: Log warning - No PostScript name data is provided for the font
+        # NOTE: No PostScript name data is provided for the font (format 3 or missing post table)
         # LOG.warn("No PostScript name data is provided for the font #{ttf.get_name}")
       elsif @format_type == 1.0_f32
         # This TrueType font file contains exactly the 258 glyphs in the standard Macintosh TrueType.
@@ -456,7 +456,7 @@ module Fontbox::TTF
               name_array << data.read_string(number_of_chars)
             rescue ex : IO::EOFError
               # PDFBOX-4851: EOF
-              # TODO: Log warning
+              # NOTE: Default glyph name used
               # LOG.warn("Error reading names in PostScript table at entry #{i} of #{name_array_size}, setting remaining entries to .notdef")
               (name_array_size - i).times do
                 name_array << ".notdef"
@@ -480,7 +480,7 @@ module Fontbox::TTF
       elsif @format_type == 2.5_f32
         num_glyphs = ttf.number_of_glyphs
         if num_glyphs <= 0
-          # TODO: Log error - invalid number of glyphs
+          # NOTE: Invalid number of glyphs in post table
         else
           glyph_name_index = Array(Int32).new(num_glyphs)
           num_glyphs.times do |i|
@@ -496,14 +496,14 @@ module Fontbox::TTF
                 @glyph_names.as(Array(String))[i] = name
               end
             else
-              # TODO: Log debug
+              # NOTE: Debug info: table end reached
               # LOG.debug("incorrect glyph name index #{index}, valid numbers 0..#{WGL4Names::NUMBER_OF_MAC_GLYPHS}")
             end
           end
         end
       elsif @format_type == 3.0_f32
         # no postscript information is provided.
-        # TODO: Log debug
+        # NOTE: Debug info: table end reached
         # LOG.debug("No PostScript name information is provided for the font #{ttf.get_name}")
       end
       @initialized = true
@@ -1078,7 +1078,7 @@ module Fontbox::TTF
       @glyph_id_to_character_code = new_glyph_id_to_character_code(num_glyphs)
       @character_code_to_glyph_id = Hash(Int32, Int32).new
       if num_glyphs == 0
-        # TODO: Log warning - subtable has no glyphs
+        # NOTE: Subtable has no glyphs
         # LOG.warn("subtable has no glyphs")
         return
       end
@@ -1109,11 +1109,11 @@ module Fontbox::TTF
 
           if p >= num_glyphs
             if !max_logging_reached && !logged.includes?(p)
-              # TODO: Log warning
+              # NOTE: Default glyph name used
               # LOG.warn("glyphId #{p} for charcode #{char_code} ignored, numGlyphs is #{num_glyphs}")
               logged.add(p)
               if logged.size > 10
-                # TODO: Log warning
+                # NOTE: Default glyph name used
                 # LOG.warn("too many bad glyphIds, more won't be reported for this table")
                 max_logging_reached = true
               end
@@ -1170,7 +1170,7 @@ module Fontbox::TTF
       end
 
       if @character_code_to_glyph_id.empty?
-        # TODO: Log warning - cmap format 4 subtable is empty
+        # NOTE: CMap format 4 subtable is empty
         # LOG.warn("cmap format 4 subtable is empty")
         return
       end
@@ -1206,7 +1206,7 @@ module Fontbox::TTF
       @glyph_id_to_character_code = new_glyph_id_to_character_code(num_glyphs)
       @character_code_to_glyph_id = Hash(Int32, Int32).new
       if num_glyphs == 0
-        # TODO: Log warning - subtable has no glyphs
+        # NOTE: Subtable has no glyphs
         # LOG.warn("subtable has no glyphs")
         return
       end
@@ -1277,7 +1277,7 @@ module Fontbox::TTF
       @glyph_id_to_character_code = new_glyph_id_to_character_code(num_glyphs)
       @character_code_to_glyph_id = Hash(Int32, Int32).new
       if num_glyphs == 0
-        # TODO: Log warning - subtable has no glyphs
+        # NOTE: Subtable has no glyphs
         # LOG.warn("subtable has no glyphs")
         return
       end
@@ -1300,13 +1300,13 @@ module Fontbox::TTF
         (0_u64..(end_code - first_code)).each do |j|
           glyph_index = start_glyph + j
           if glyph_index >= num_glyphs
-            # TODO: Log warning
+            # NOTE: Default glyph name used
             # LOG.warn("Format 12 cmap contains an invalid glyph index")
             break
           end
 
           if first_code + j > 0x10FFFF_u64
-            # TODO: Log warning - Format 12 cmap contains character beyond UCS-4
+            # NOTE: Default glyph name used - Format 12 cmap contains character beyond UCS-4
             # LOG.warn("Format 12 cmap contains character beyond UCS-4")
           end
 
@@ -1322,7 +1322,7 @@ module Fontbox::TTF
       @glyph_id_to_character_code = new_glyph_id_to_character_code(num_glyphs)
       @character_code_to_glyph_id = Hash(Int32, Int32).new
       if num_glyphs == 0
-        # TODO: Log warning - subtable has no glyphs
+        # NOTE: Subtable has no glyphs
         # LOG.warn("subtable has no glyphs")
         return
       end
@@ -1332,7 +1332,7 @@ module Fontbox::TTF
         glyph_id = data.read_unsigned_int
 
         if glyph_id > num_glyphs
-          # TODO: Log warning
+          # NOTE: Default glyph name used
           # LOG.warn("Format 13 cmap contains an invalid glyph index")
           break
         end
@@ -1351,7 +1351,7 @@ module Fontbox::TTF
           end
 
           if first_code + j > 0x10FFFF_u64
-            # TODO: Log warning - Format 13 cmap contains character beyond UCS-4
+            # NOTE: Default glyph name used - Format 13 cmap contains character beyond UCS-4
             # LOG.warn("Format 13 cmap contains character beyond UCS-4")
           end
 

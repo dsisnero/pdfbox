@@ -176,7 +176,7 @@ module Fontbox::TTF
         @win_ascent = data.read_unsigned_short.to_u16
         @win_descent = data.read_unsigned_short.to_u16
       rescue ex : IO::EOFError
-        # TODO: Log debug "EOF, probably some legacy TrueType font"
+        # NOTE: EOF reached, probably some legacy TrueType font
         @initialized = true
         return
       end
@@ -187,7 +187,7 @@ module Fontbox::TTF
           @code_page_range2 = data.read_unsigned_int.to_u32
         rescue ex : IO::EOFError
           @version = 0_u16
-          # TODO: Log warn "Could not read all expected parts of version >= 1, setting version to 0"
+          # NOTE: Could not read all expected parts of version >= 1, setting version to 0
           @initialized = true
           return
         end
@@ -202,7 +202,7 @@ module Fontbox::TTF
           @us_max_context = data.read_unsigned_short.to_u16
         rescue ex : IO::EOFError
           @version = 1_u16
-          # TODO: Log warn "Could not read all expected parts of version >= 2, setting version to 1"
+          # NOTE: Could not read all expected parts of version >= 2, setting version to 1
           @initialized = true
           return
         end

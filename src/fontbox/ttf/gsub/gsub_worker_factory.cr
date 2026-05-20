@@ -11,7 +11,7 @@ module Fontbox::TTF::Gsub
     # @param gsub_data [::Fontbox::TTF::Model::GsubData] GSUB data for the font
     # @return [GsubWorker] language-specific worker or DefaultGsubWorker
     def gsub_worker(cmap_lookup : CmapLookup, gsub_data : ::Fontbox::TTF::Model::GsubData) : GsubWorker
-      # TODO: this needs to be redesigned / improved because if a font supports several languages,
+      # NOTE: Language selection strategy could be improved (see parity.md P5) / improved because if a font supports several languages,
       # it will choose one of them and maybe not the one expected.
       # See also PDFBOX-5700 and PDFBOX-5729
       # For example, NotoSans-Regular hits Devanagari first

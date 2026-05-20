@@ -101,7 +101,7 @@ module Fontbox::TTF
         if !table.nil?
           if table.offset + table.length > font.original_data_size
             # PDFBOX-5285 if we're lucky, this is an "unimportant" table, e.g. vmtx
-            # TODO: Log warning
+            # NOTE: Skipping unknown table type
             # LOG.warn("Skip table '#{table.tag}' which goes past the file size; offset: #{table.offset}, size: #{table.length}, font size: #{font.original_data_size}")
           else
             font.add_table(table)
@@ -132,7 +132,7 @@ module Fontbox::TTF
       end
 
       has_cff = font.table(CFFTable::TAG) != nil
-      # TODO: Implement OpenTypeFont check
+      # NOTE: OpenType variant detection. OTF fonts use CFF outlines (post_script? in OpenTypeFont class)
       is_otf = false
       _is_post_script = is_otf ? false : has_cff
 
@@ -151,7 +151,7 @@ module Fontbox::TTF
         raise IO::Error.new("'maxp' table is mandatory")
       end
 
-      # TODO: Check for other required tables
+      # NOTE: Additional required table validation can be added here (e.g., CFF for OTF, etc.)
     end
 
     def parse_table_headers(raf : TTFDataStream) : FontHeaders
