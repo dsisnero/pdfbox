@@ -211,7 +211,22 @@ describe "Pdfbox::Pdfwriter parity" do
     compressed.try(&.close)
   end
 
-  pending "COSDocumentCompressionTest#testCompressEncryptedDoc requires encryption + compression writer parity" do
+  it "COSDocumentCompressionTest#testCompressEncryptedDoc" do
+    source_path = SpecPaths.resolve("vendor/pdfbox/pdfbox/src/test/resources/input/compression/unencrypted.pdf")
+    source = Pdfbox::Loader.load_pdf(source_path)
+
+    ap = Pdfbox::Pdmodel::Encryption::AccessPermission.new(0)
+    policy = Pdfbox::Pdmodel::Encryption::StandardProtectionPolicy.new("owner", "user", ap)
+    source.protect(policy)
+
+    compressed_output = IO::Memory.new
+    source.save(compressed_output)
+
+    compressed = Pdfbox::Loader.load_pdf(compressed_output.to_slice, "user")
+    compressed.number_of_pages.should eq(2)
+  ensure
+    source.try(&.close)
+    compressed.try(&.close)
   end
 
   it "COSDocumentCompressionTest#testAlteredDoc" do
@@ -247,7 +262,23 @@ describe "Pdfbox::Pdfwriter parity" do
     compressed.try(&.close)
   end
 
-  pending "COSDocumentCompressionTest#testPDFBox5927 requires document compression writer parity" do
+  it "COSDocumentCompressionTest#testPDFBox5927" do
+    source_path = File.expand_path("../../resources/pdfbox/pdfwriter/PDFBOX-5927.pdf", __DIR__)
+
+    doc = Pdfbox::Pdmodel::Document.load(source_path)
+    compressed_output = IO::Memory.new
+    doc.save(compressed_output)
+
+    reloaded = Pdfbox::Pdmodel::Document.load(IO::Memory.new(compressed_output.to_slice))
+    if catalog = reloaded.document_catalog
+      acro_form = catalog.acro_form
+      acro_form.should_not be_nil
+      field = acro_form.not_nil!.get_field("chkPrivacy1")
+      field.should_not be_nil
+    end
+  ensure
+    doc.try(&.close)
+    reloaded.try(&.close)
   end
 
   it "COSWriterCompressionPoolTest#testPDFBox6036" do
@@ -372,7 +403,39 @@ describe "Pdfbox::Pdfwriter parity" do
     loaded.try(&.close)
   end
 
-  pending "COSWriterTest#testPDFBox6036 requires COS writer object graph parity" do
+  it "COSWriterTest#testPDFBox6036 merge with compression" do
+    empty_path = File.expand_path("../../resources/pdfbox/pdfwriter/empty.pdf", __DIR__)
+    test_path = File.expand_path("../../resources/pdfbox/pdfwriter/test.pdf", __DIR__)
+
+    # Load both documents
+    target = Pdfbox::Pdmodel::Document.load(empty_path)
+    source = Pdfbox::Pdmodel::Document.load(test_path)
+
+    # Extract page from source and add to target (simulating importPage)
+    extractor = Pdfbox::Multipdf::PageExtractor.new(source, 1, 1)
+    extracted = extractor.extract
+    extracted.pages.each { |page| target.add_page(page) }
+
+    # Save with compression
+    compressed_output = IO::Memory.new
+    target.save(compressed_output)
+
+    # Reload and verify
+    reloaded = Pdfbox::Pdmodel::Document.load(IO::Memory.new(compressed_output.to_slice))
+    reloaded.number_of_pages.should eq(2)
+    reloaded.get_page(1).should_not be_nil
+
+    # Save without compression too
+    uncompressed_output = IO::Memory.new
+    target.save(uncompressed_output, Pdfbox::Pdfwriter::Compress::CompressParameters::NO_COMPRESSION)
+    reloaded2 = Pdfbox::Pdmodel::Document.load(IO::Memory.new(uncompressed_output.to_slice))
+    reloaded2.number_of_pages.should eq(2)
+  ensure
+    target.try(&.close)
+    source.try(&.close)
+    extracted.try(&.close)
+    reloaded.try(&.close)
+    reloaded2.try(&.close)
   end
 
   it "ContentStreamWriterTest#testPDFBox4750" do

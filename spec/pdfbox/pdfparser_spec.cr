@@ -513,7 +513,7 @@ describe Pdfbox::Pdfparser::Parser do
     doc.close if doc.responds_to?(:close)
   end
 
-  pending "test PDFBOX-5025" do
+  it "test PDFBOX-5025" do
     pdf_path = File.expand_path("../resources/pdfbox/pdparser/PDFBOX-5025.pdf", __DIR__)
     # Should load without raising an exception
     doc = Pdfbox::Pdmodel::Document.load(pdf_path)
@@ -527,13 +527,14 @@ describe Pdfbox::Pdfparser::Parser do
 
     doc.page_count.should eq(1)
 
-    page = doc.page(0) || raise "Expected page 0"
+    page = doc.pages[0]? || raise "Expected page 0"
     resources = page.resources || raise "Expected page resources"
     font = resources.font(Pdfbox::Cos::Name.new("F1")) || raise "Expected F1 font"
     font_descriptor = font.font_descriptor || raise "Expected font descriptor"
-    length1 = font_descriptor.length1
-    length1.should_not be_nil
-    length1.should eq(74191)
+    font_file2 = font_descriptor.font_file2 || raise "Expected font file 2"
+    length1 = font_file2.cos_object[Pdfbox::Cos::Name.new("Length1")]
+    length1 = length1.object if length1.is_a?(Pdfbox::Cos::Object)
+    length1.as(Pdfbox::Cos::Integer).value.should eq(74191)
 
     doc.close if doc.responds_to?(:close)
   end
