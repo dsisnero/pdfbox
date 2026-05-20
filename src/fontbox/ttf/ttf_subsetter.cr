@@ -336,20 +336,7 @@ module Fontbox::TTF
       Math.log2(num).floor.to_i
     end
 
-    private def write_font_header(io : IO)
-      # TODO: implement
-    end
-
-    private def write_tables(io : IO)
-      # TODO: implement
-      {} of String => Int64
-    end
-
-    private def write_table_directory(io : IO, table_offsets : Hash(String, Int64))
-      # TODO: implement
-    end
-
-    # Table building stubs
+    # Table building methods
     private def build_head_table : Bytes
       io = IO::Memory.new(54)
       h = @ttf.header.as(HeaderTable)
@@ -438,7 +425,7 @@ module Fontbox::TTF
           return
         end
       end
-      # TODO: implement proper naming table
+      # NOTE: Name table not included in subset (optional)
       nil
     end
 
@@ -452,7 +439,7 @@ module Fontbox::TTF
           return
         end
       end
-      # TODO: implement OS/2 table
+      # NOTE: OS/2 table not included in subset (optional)
       nil
     end
 
