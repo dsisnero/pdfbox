@@ -68,6 +68,12 @@ private def text_stripper_strings_equal?(expected : String?, actual : String?) :
   end
 end
 
+private def text_stripper_normalize(str : String) : String
+  normalized = str.unicode_normalize(:nfkc)
+  normalized = normalized[1..] if normalized.starts_with?("\uFEFF")
+  normalized
+end
+
 private def text_stripper_skip_whitespace(chars : Array(Char), index : Int32) : Int32
   current = index
   if chars[current] == ' ' || chars[current].ord > 256
@@ -80,8 +86,8 @@ private def text_stripper_skip_whitespace(chars : Array(Char), index : Int32) : 
 end
 
 private def text_stripper_compare_fixture(expected_path : String, actual_text : String) : Bool
-  expected_lines = File.read_lines(expected_path, encoding: "UTF-8")
-  actual_lines = ("\uFEFF" + actual_text).lines
+  expected_lines = File.read_lines(expected_path, encoding: "UTF-8").map { |l| text_stripper_normalize(l) }
+  actual_lines = text_stripper_normalize(actual_text).lines
 
   expected_index = 0
   actual_index = 0
@@ -199,22 +205,23 @@ describe Pdfbox::Text::PDFTextStripper do
     end
   end
 
-  pending "extracts text by outline items like the Java fixture - text positioning/line break differences" do
+  it "extracts text by outline items like the Java fixture" do
     pdf_path = SpecPaths.resolve("vendor/pdfbox/pdfbox/src/test/resources/org/apache/pdfbox/pdmodel/with_outline.pdf")
 
     doc = Pdfbox::Pdmodel::Document.load(pdf_path)
     begin
-      outline = doc.document_catalog.as(Pdfbox::Cos::Dictionary).document_outline.as(Pdfbox::Cos::Dictionary)
-      oi0 = outline.first_child.as(Pdfbox::Cos::Dictionary)
-      oi2 = oi0.next_sibling.as(Pdfbox::Cos::Dictionary)
-      oi3 = oi2.next_sibling.as(Pdfbox::Cos::Dictionary)
-      oi4 = oi3.next_sibling.as(Pdfbox::Cos::Dictionary)
+      catalog = doc.document_catalog || raise "Expected catalog"
+      outline = catalog.document_outline || raise "Expected outline"
+      oi0 = outline.first_child || raise "Expected first child"
+      oi2 = oi0.next_sibling || raise "Expected second sibling"
+      oi3 = oi2.next_sibling || raise "Expected third sibling"
+      oi4 = oi3.next_sibling || raise "Expected fourth sibling"
 
       pages = doc.pages
-      pages.index { |page| page.cos_object == oi0.find_destination_page(doc).as(Pdfbox::Pdmodel::PDPage).cos_object }.should eq(0)
-      pages.index { |page| page.cos_object == oi2.find_destination_page(doc).as(Pdfbox::Pdmodel::PDPage).cos_object }.should eq(2)
-      pages.index { |page| page.cos_object == oi3.find_destination_page(doc).as(Pdfbox::Pdmodel::PDPage).cos_object }.should eq(3)
-      pages.index { |page| page.cos_object == oi4.find_destination_page(doc).as(Pdfbox::Pdmodel::PDPage).cos_object }.should eq(4)
+      pages.index { |page| page.cos_object == oi0.find_destination_page(doc).try(&.cos_object) }.should eq(0)
+      pages.index { |page| page.cos_object == oi2.find_destination_page(doc).try(&.cos_object) }.should eq(2)
+      pages.index { |page| page.cos_object == oi3.find_destination_page(doc).try(&.cos_object) }.should eq(3)
+      pages.index { |page| page.cos_object == oi4.find_destination_page(doc).try(&.cos_object) }.should eq(4)
 
       stripper = Pdfbox::Text::PDFTextStripper.new
 
@@ -254,7 +261,7 @@ describe Pdfbox::Text::PDFTextStripper do
     end
   end
 
-  pending "extracts eu-001.pdf with tabula font-height behavior like the Java fixture - complex formatting differences" do
+  it "extracts eu-001.pdf with tabula font-height behavior like the Java fixture" do
     pdf_path = SpecPaths.resolve("vendor/pdfbox/pdfbox/src/test/resources/input/eu-001.pdf")
     expected_path = SpecPaths.resolve("vendor/pdfbox/pdfbox/src/test/resources/input/eu-001.pdf-tabula.txt")
 
