@@ -224,7 +224,7 @@ module Pdfbox::Pdfwriter
           xref_write_u8(data_io, entry.generation)
         when :compressed
           data_io.write_byte(2_u8)
-          xref_write_u32(data_io, entry.offset)   # object stream number
+          xref_write_u32(data_io, entry.offset)      # object stream number
           xref_write_u8(data_io, entry.objstm_index) # index within stream
         end
       end
