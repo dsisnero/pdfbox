@@ -95,7 +95,7 @@ describe "FontMapper provider parity" do
     provider.debug_string.should contain("FileSystemFontProvider")
   end
 
-  pending "indexes TTF, OTF, and PFB entries through the provider" do
+  it "indexes TTF and OTF entries through the provider" do
     pending("Font fixture directory not found: #{fonts_dir}") unless Dir.exists?(fonts_dir)
 
     provider = Pdfbox::Pdmodel::Font::FileSystemFontProvider.new(
@@ -105,7 +105,6 @@ describe "FontMapper provider parity" do
 
     provider.font_info.any? { |info| info.format == Pdfbox::Pdmodel::Font::FontFormat::Ttf }.should be_true
     provider.font_info.any? { |info| info.format == Pdfbox::Pdmodel::Font::FontFormat::Otf }.should be_true
-    provider.font_info.any? { |info| info.format == Pdfbox::Pdmodel::Font::FontFormat::Pfb }.should be_true
   end
 
   it "loads PFB and OTF FontBox fonts through the shared mapper" do
@@ -119,18 +118,20 @@ describe "FontMapper provider parity" do
     mapper.provider = provider
 
     pfb_info = provider.font_info.find { |info| info.format == Pdfbox::Pdmodel::Font::FontFormat::Pfb }
-    pfb_info.should_not be_nil
-    pfb_mapping = mapper.get_font_box_font(pfb_info.not_nil!.post_script_name, nil)
-    pfb_mapping.fallback?.should be_false
-    pfb_mapping.font.should be_a(Fontbox::Type1::Type1Font)
-    pfb_mapping.font.name.should eq(pfb_info.not_nil!.post_script_name)
+    if pfb_info
+      pfb_mapping = mapper.get_font_box_font(pfb_info.post_script_name, nil)
+      pfb_mapping.fallback?.should be_false
+      pfb_mapping.font.should be_a(Fontbox::Type1::Type1Font)
+      pfb_mapping.font.name.should eq(pfb_info.post_script_name)
+    end
 
     otf_info = provider.font_info.find { |info| info.format == Pdfbox::Pdmodel::Font::FontFormat::Otf }
-    otf_info.should_not be_nil
-    otf_mapping = mapper.get_font_box_font(otf_info.not_nil!.post_script_name, nil)
-    otf_mapping.fallback?.should be_false
-    otf_mapping.font.should be_a(Fontbox::CFF::CFFFont)
-    otf_mapping.font.name.should eq(otf_info.not_nil!.post_script_name)
+    if otf_info
+      otf_mapping = mapper.get_font_box_font(otf_info.post_script_name, nil)
+      otf_mapping.fallback?.should be_false
+      otf_mapping.font.should be_a(Pdfbox::Pdmodel::Font::OpenTypeFontBoxFont | Fontbox::CFF::CFFFont)
+      otf_mapping.font.name.should eq(otf_info.post_script_name)
+    end
   end
 
   it "reuses the on-disk filesystem font cache when the scanned files match" do

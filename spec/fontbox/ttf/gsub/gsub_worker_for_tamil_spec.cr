@@ -26,9 +26,8 @@ module Fontbox::TTF::Gsub
         cmap_lookup = font.unicode_cmap_lookup
         gsub_worker = GsubWorkerFactory.new.gsub_worker(cmap_lookup, font.gsub_data)
 
-        # Java test expects DefaultGsubWorker because Tamil worker is not fully implemented
-        # (has TODO comment in Java source)
-        gsub_worker.should be_a(DefaultGsubWorker)
+        # Tamil GSUB worker is now wired in
+        gsub_worker.should be_a(GsubWorkerForTamil)
       end
     end
   end
