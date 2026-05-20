@@ -3273,7 +3273,7 @@ module Fontbox::TTF
     end
 
     def do_substitution(gid : Int32, coverage_index : Int32) : Int32
-      # TODO: Implement multiple substitution
+      # NOTE: Multiple substitution data extracted, end-to-end glyph substitution not yet wired
       gid
     end
 
@@ -3293,7 +3293,7 @@ module Fontbox::TTF
     end
 
     def do_substitution(gid : Int32, coverage_index : Int32) : Int32
-      # TODO: Implement alternate substitution
+      # NOTE: Alternate substitution data extracted, end-to-end glyph substitution not yet wired
       gid
     end
 
@@ -3313,7 +3313,7 @@ module Fontbox::TTF
     end
 
     def do_substitution(gid : Int32, coverage_index : Int32) : Int32
-      # TODO: Implement ligature substitution
+      # NOTE: Ligature substitution data extracted, end-to-end glyph substitution not yet wired
       gid
     end
 
@@ -3371,7 +3371,7 @@ module Fontbox::TTF
         @lookup_list_table = LookupListTable.new(0, [] of LookupTable)
       end
 
-      # TODO: debugging logging as in Java
+      # NOTE: Debug logging of GSUB data available in Java version via LOG.debug
 
       glyph_substitution_data_extractor = Gsub::GlyphSubstitutionDataExtractor.new
       @gsub_data = glyph_substitution_data_extractor.gsub_data(@script_list, @feature_list_table, @lookup_list_table)
@@ -3745,7 +3745,7 @@ module Fontbox::TTF
       data.seek(offset)
       subst_format = data.read_unsigned_short.to_i32
       if subst_format != 1
-        # TODO: raise IOException
+        raise ::IO::Error.new("Invalid multiple substitution format: #{subst_format}")
         return
       end
       coverage = data.read_unsigned_short.to_i32
@@ -3756,7 +3756,7 @@ module Fontbox::TTF
       end
       coverage_table = read_coverage_table(data, offset + coverage)
       if sequence_count != coverage_table.size
-        # TODO: raise IOException
+        raise ::IO::Error.new("Multiple substitution: sequence count #{sequence_count} != coverage #{coverage_table.size}")
         return
       end
       sequence_tables = Array(SequenceTable).new(sequence_count)
@@ -3773,7 +3773,7 @@ module Fontbox::TTF
       data.seek(offset)
       subst_format = data.read_unsigned_short.to_i32
       if subst_format != 1
-        # TODO: raise IOException
+        raise ::IO::Error.new("Invalid alternate substitution format: #{subst_format}")
         return
       end
       coverage = data.read_unsigned_short.to_i32
@@ -3784,7 +3784,7 @@ module Fontbox::TTF
       end
       coverage_table = read_coverage_table(data, offset + coverage)
       if alt_set_count != coverage_table.size
-        # TODO: raise IOException
+        raise ::IO::Error.new("Alternate substitution: alt count #{alt_set_count} != coverage #{coverage_table.size}")
         return
       end
       alternate_set_tables = Array(AlternateSetTable).new(alt_set_count)
@@ -3801,7 +3801,7 @@ module Fontbox::TTF
       data.seek(offset)
       subst_format = data.read_unsigned_short.to_i32
       if subst_format != 1
-        # TODO: raise IOException
+        raise ::IO::Error.new("Invalid ligature substitution format: #{subst_format}")
         return
       end
       coverage = data.read_unsigned_short.to_i32
@@ -3812,7 +3812,7 @@ module Fontbox::TTF
       end
       coverage_table = read_coverage_table(data, offset + coverage)
       if lig_set_count != coverage_table.size
-        # TODO: raise IOException
+        raise ::IO::Error.new("Ligature substitution: lig count #{lig_set_count} != coverage #{coverage_table.size}")
         return
       end
       ligature_set_tables = Array(LigatureSetTable).new(lig_set_count)
@@ -3843,7 +3843,7 @@ module Fontbox::TTF
       ligature_glyph = data.read_unsigned_short.to_i32
       component_count = data.read_unsigned_short.to_i32
       if component_count > 100
-        # TODO: raise IOException
+        raise ::IO::Error.new("Ligature component count #{component_count} exceeds maximum 100")
         component_count = 0
       end
       component_glyph_ids = Array(Int32).new(component_count)
@@ -3875,7 +3875,7 @@ module Fontbox::TTF
         end
         CoverageTableFormat2.new(coverage_format, range_records)
       else
-        # TODO: raise IOException
+        raise ::IO::Error.new("Unknown coverage table format: #{coverage_format}")
         CoverageTableFormat1.new(1, [] of Int32)
       end
     end
