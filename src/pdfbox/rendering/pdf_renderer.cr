@@ -59,7 +59,29 @@ module Pdfbox::Rendering
     def render : CrImage::RGBA
       @image = CrImage.rgba(@width, @height)
       process_page(@page.not_nil!)
+      process_annotations
       @image.not_nil!
+    end
+
+    private def process_annotations : Nil
+      return unless pg = @page
+      pg.annotations.each do |annot|
+        begin
+          next if annot.responds_to?(:hidden?) && annot.hidden?
+          stream = annot.normal_appearance_stream
+          next unless stream
+
+          stream_obj = stream.stream_object
+          next unless stream_obj
+          data = stream_obj.create_input_stream.getb_to_end
+          next if data.empty?
+
+          saved = graphics_state.current_transformation_matrix.clone
+          process_stream_operators(data)
+          graphics_state.current_transformation_matrix = saved
+        rescue ex
+        end
+      end
     end
 
     private def tx(x : Float32) : Float64
