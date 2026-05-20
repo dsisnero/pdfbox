@@ -1,0 +1,27 @@
+require "./type/cardinality"
+require "./type/types"
+require "./type/property_type"
+require "./type/properties_description"
+require "./type/attribute"
+require "./type/bad_field_value_exception"
+
+require "./type/abstract_field"
+require "./type/abstract_simple_property"
+require "./type/abstract_complex_property"
+require "./type/abstract_structured_type"
+require "./type/defined_structured_type"
+require "./type/complex_property_container"
+require "./type/array_property"
+
+require "./type/text_type"
+require "./type/date_type"
+require "./type/boolean_type"
+require "./type/integer_type"
+require "./type/real_type"
+require "./type/simple_derived_types"
+
+require "./type/structured_types"
+require "./type/structured_types_stubs"
+
+require "./type/schema_factory"
+require "./type/type_mapping"

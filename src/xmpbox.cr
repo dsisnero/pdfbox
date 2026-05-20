@@ -1,9 +1,5 @@
-# XMPBox module for PDFBox Crystal
-#
-# This module contains XMP metadata handling functionality,
-# corresponding to the xmpbox module in Apache PDFBox.
-module Xmpbox
-  # TODO: Implement xmpbox functionality
-end
-
+require "./xmpbox/xmp_constants"
 require "./xmpbox/date_converter"
+require "./xmpbox/type"
+require "./xmpbox/schema"
+require "./xmpbox/xmp_metadata"
