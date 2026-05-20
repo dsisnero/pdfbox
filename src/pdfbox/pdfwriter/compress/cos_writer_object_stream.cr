@@ -83,15 +83,15 @@ module Pdfbox::Pdfwriter::Compress
       end
 
       case base
-      when Pdfbox::Cos::String  then write_cos_string(output, base)
-      when Pdfbox::Cos::Float   then write_cos_float(output, base)
-      when Pdfbox::Cos::Integer then write_cos_integer(output, base)
-      when Pdfbox::Cos::Boolean then write_cos_boolean(output, base)
-      when Pdfbox::Cos::Name    then write_cos_name(output, base)
-      when Pdfbox::Cos::Array   then write_cos_array(output, base)
+      when Pdfbox::Cos::String     then write_cos_string(output, base)
+      when Pdfbox::Cos::Float      then write_cos_float(output, base)
+      when Pdfbox::Cos::Integer    then write_cos_integer(output, base)
+      when Pdfbox::Cos::Boolean    then write_cos_boolean(output, base)
+      when Pdfbox::Cos::Name       then write_cos_name(output, base)
+      when Pdfbox::Cos::Array      then write_cos_array(output, base)
       when Pdfbox::Cos::Dictionary then write_cos_dictionary(output, base)
-      when Pdfbox::Cos::Null    then write_cos_null(output)
-      when Pdfbox::Cos::Object  then write_object(output, base, top_level)
+      when Pdfbox::Cos::Null       then write_cos_null(output)
+      when Pdfbox::Cos::Object     then write_object(output, base, top_level)
       end
     end
 
