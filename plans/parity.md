@@ -174,7 +174,7 @@ Each feature area below tracks concrete, actionable tasks. Checkboxes reflect cu
 | ContentStreamWriter | ported | |
 
 **Known gaps:**
-- No compressed object stream writing (xref stream vs xref table)
+- Compressed object stream writing fully integrated: COSWriterCompressionPool → COSWriterObjectStream → xref stream with Type 2 entries
 
 **Pending tests:** 0 — all 12 writer specs pass.
 
