@@ -231,7 +231,9 @@ module Pdfbox::Pdmodel::Common
       changed = false
       i = @array.size - 1
       while i >= 0
-        unless retain_cos.includes?(@array.items[i])
+        array_item = @array.items[i]
+        # If the array item is a COSObject, check the inner object too
+        unless retain_cos.includes?(array_item) || (array_item.is_a?(Cos::Object) && retain_cos.includes?(array_item.object))
           @array.items.delete_at(i)
           @actual.delete_at(i)
           changed = true

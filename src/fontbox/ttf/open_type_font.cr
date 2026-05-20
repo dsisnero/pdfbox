@@ -22,13 +22,13 @@ module Fontbox::TTF
 
     def path(name : String) : Fontbox::Util::Path
       if post_script? && supported_otf?
-        gid = name_to_gid(name)
-        return Fontbox::Util::Path.new if gid < 0
         cff_font = cff.font
         return Fontbox::Util::Path.new unless cff_font
 
         case cff_font
         when Fontbox::CFF::CFFCIDFont
+          gid = name_to_gid(name)
+          return Fontbox::Util::Path.new if gid <= 0 || gid >= number_of_glyphs
           cff_font.path(gid)
         when Fontbox::CFF::CFFType1Font
           cff_font.path(name)
