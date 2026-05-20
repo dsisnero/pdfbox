@@ -31,8 +31,7 @@ module Fontbox::TTF::Gsub
       when ::Fontbox::TTF::Model::Language::DFLT
         GsubWorkerForDflt.new(gsub_data)
       when ::Fontbox::TTF::Model::Language::TAMIL
-        # TODO implement me
-        DefaultGsubWorker.new
+        GsubWorkerForTamil.new(cmap_lookup, gsub_data)
       else
         DefaultGsubWorker.new
       end
