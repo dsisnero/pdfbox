@@ -1,43 +1,38 @@
 require "../spec_helper"
 
+hello3_path = File.expand_path("../../vendor/pdfbox/pdfbox/src/test/resources/input/hello3.pdf", __DIR__)
+
 describe Tools::Encrypt do
-  it "creates protection policy and marks document as encrypted" do
-    # Create a simple test
-    input_file = "vendor/pdfbox/tools/target/test-classes/org/apache/pdfbox/hello3.pdf"
-    output_file = "temp/test_encrypted.pdf"
+  if File.exists?(hello3_path)
+    it "creates protection policy and marks document as encrypted" do
+      output_file = "temp/test_encrypted.pdf"
 
-    # Load document
-    document = Pdfbox::Loader.load_pdf(input_file)
+      document = Pdfbox::Loader.load_pdf(hello3_path)
 
-    # Create access permissions
-    ap = Pdfbox::Pdmodel::Encryption::AccessPermission.new
-    ap.can_print = true
-    ap.can_modify = false
+      ap = Pdfbox::Pdmodel::Encryption::AccessPermission.new
+      ap.can_print = true
+      ap.can_modify = false
 
-    # Create protection policy
-    policy = Pdfbox::Pdmodel::Encryption::StandardProtectionPolicy.new("ownerpass", "userpass", ap)
-    policy.encryption_key_length = 128
+      policy = Pdfbox::Pdmodel::Encryption::StandardProtectionPolicy.new("ownerpass", "userpass", ap)
+      policy.encryption_key_length = 128
 
-    # Protect document
-    document.protect(policy)
+      document.protect(policy)
+      document.encrypted?.should be_true
 
-    # Verify document is marked as encrypted
-    document.encrypted?.should be_true
+      document.save(output_file)
+      document.close
 
-    # Save document (even though encryption isn't fully implemented)
-    document.save(output_file)
-    document.close
-
-    # Clean up
-    File.delete(output_file) if File.exists?(output_file)
+      File.delete(output_file) if File.exists?(output_file)
+    end
+  else
+    pending "hello3.pdf fixture not found"
   end
 
-  it "Encrypt tool accepts basic arguments" do
-    # Test that the tool can parse arguments without error
-    encrypt = Tools::Encrypt.new(IO::Memory.new, IO::Memory.new)
-
-    # Test help
-    result = encrypt.call(["-h"])
-    result.should eq(0)
+  it "reports missing input file" do
+    err = IO::Memory.new
+    enc = Tools::Encrypt.new(IO::Memory.new, err)
+    result = enc.call([] of String)
+    result.should eq(1)
+    err.to_s.should contain("Missing required option: -i")
   end
 end

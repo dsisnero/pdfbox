@@ -57,7 +57,12 @@ describe "FDF/XFDF CLI parity" do
 
     code.should eq(0)
     loaded = Pdfbox::Loader.load_pdf(outfile)
-    form_dict = loaded.document_catalog.not_nil!.cos_object[Pdfbox::Cos::Name.new("AcroForm")].as(Pdfbox::Cos::Dictionary)
+    acro_form_cos = loaded.document_catalog.not_nil!.cos_object[Pdfbox::Cos::Name.new("AcroForm")]
+    form_dict = if acro_form_cos.is_a?(Pdfbox::Cos::Object)
+                  acro_form_cos.object.as(Pdfbox::Cos::Dictionary)
+                else
+                  acro_form_cos.as(Pdfbox::Cos::Dictionary)
+                end
     form = Pdfbox::Pdmodel::Interactive::Form::PDAcroForm.new(loaded, form_dict)
     form.get_field("name").as(Pdfbox::Pdmodel::Interactive::Form::PDField).value_as_string.should eq("Bob")
     form.need_appearances?.should be_true
