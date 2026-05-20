@@ -95,7 +95,7 @@ Each feature area below tracks concrete, actionable tasks. Checkboxes reflect cu
 ### P7 — Annotations & Interactive
 
 - [x] Form field value serialization — save/load roundtrip verified for text, checkbox, list box fields
-- [ ] Annotation appearance handlers: wire rendering triggers
+- [~] Annotation appearance handlers: rendering wired into PageDrawer.process_annotations (appearance streams rendered via process_stream_operators)
 - [x] Action completion — all 13 action types implemented with factory, URI/GoTo/JavaScript getters/setters work
 
 ### P8 — Lower Priority / Future
