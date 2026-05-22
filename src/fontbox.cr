@@ -3,8 +3,6 @@
 # This module contains font processing functionality,
 # corresponding to the fontbox module in Apache PDFBox.
 module Fontbox
-  # TODO: Implement fontbox functionality
-
   # Raised when a font file is corrupted or cannot be parsed
   class DamagedFontException < Exception; end
 end
