@@ -1,4 +1,5 @@
 require "../../../xmpbox"
+require "io/memory"
 
 # This class represents metadata for various objects in a PDF document
 module Pdfbox::Pdmodel::Common
@@ -39,7 +40,6 @@ module Pdfbox::Pdmodel::Common
     # Parse XMP metadata using XmpBox
     def xmp_metadata : Xmpbox::XMPMetadata?
       input = export_xmp_metadata
-      return nil if input.as(IO::Memory).size.zero?
       parser = Xmpbox::Xml::DomXmpParser.new
       parser.strict_parsing = false
       parser.parse(input)
