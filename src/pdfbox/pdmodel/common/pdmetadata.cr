@@ -1,3 +1,5 @@
+require "../../../xmpbox"
+
 # This class represents metadata for various objects in a PDF document
 module Pdfbox::Pdmodel::Common
   class PDMetadata < PDStream
@@ -32,6 +34,32 @@ module Pdfbox::Pdmodel::Common
       io = create_output_stream
       io.write(xmp)
       io.close
+    end
+
+    # Parse XMP metadata using XmpBox
+    def xmp_metadata : Xmpbox::XMPMetadata?
+      input = export_xmp_metadata
+      return nil if input.as(IO::Memory).size.zero?
+      parser = Xmpbox::Xml::DomXmpParser.new
+      parser.strict_parsing = false
+      parser.parse(input)
+    rescue
+      nil
+    end
+
+    # Serialize XMP metadata and store in the PDF
+    def xmp_metadata=(xmp : Xmpbox::XMPMetadata) : Nil
+      serializer = Xmpbox::Xml::XmpSerializer.new
+      xml = serializer.serialize(xmp)
+      import_xmp_metadata(xml.to_slice)
+    end
+
+    # Creates a new PDMetadata with default XMP skeleton
+    def self.create_with_xmp(document : Pdmodel::PDDocument) : PDMetadata
+      meta = new(document)
+      xmp = Xmpbox::XMPMetadata.create_xmp_metadata
+      meta.xmp_metadata = xmp
+      meta
     end
   end
 end
