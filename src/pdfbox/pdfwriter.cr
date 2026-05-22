@@ -63,8 +63,8 @@ module Pdfbox::Pdfwriter
 
     # Write using compressed object streams (PDF 1.5+).
     private def write_compressed(cos_writer : COSWriter,
-                                  catalog : Pdfbox::Pdmodel::DocumentCatalog?,
-                                  trailer : Pdfbox::Cos::Dictionary?) : Nil
+                                 catalog : Pdfbox::Pdmodel::DocumentCatalog?,
+                                 trailer : Pdfbox::Cos::Dictionary?) : Nil
       # Use compression pool for object classification and traversal
       compression_pool = Compress::COSWriterCompressionPool.new(@document, @parameters)
 
@@ -129,9 +129,8 @@ module Pdfbox::Pdfwriter
 
     # Write using standard xref table (PDF 1.4 compatible).
     private def write_standard(cos_writer : COSWriter,
-                                catalog : Pdfbox::Pdmodel::DocumentCatalog?,
-                                trailer : Pdfbox::Cos::Dictionary?) : Nil
-
+                               catalog : Pdfbox::Pdmodel::DocumentCatalog?,
+                               trailer : Pdfbox::Cos::Dictionary?) : Nil
       # Collect all indirect objects via BFS
       object_keys = {} of UInt64 => Pdfbox::Cos::ObjectKey
       key_objects = {} of Pdfbox::Cos::ObjectKey => Pdfbox::Cos::Base
@@ -532,20 +531,20 @@ module Pdfbox::Pdfwriter
   # COS object writer
   class COSWriter
     # PDF token byte sequences (Java COSWriter constants)
-    DICT_OPEN    = "<<".to_slice
-    DICT_CLOSE   = ">>".to_slice
-    SPACE        = Bytes[32_u8]
-    ARRAY_OPEN   = "[".to_slice
-    ARRAY_CLOSE  = "]".to_slice
-    REFERENCE    = "R".to_slice
-    OBJ          = "obj".to_slice
-    ENDOBJ       = "endobj".to_slice
-    STREAM       = "stream".to_slice
-    ENDSTREAM    = "endstream".to_slice
-    XREF         = "xref".to_slice
-    TRAILER      = "trailer".to_slice
-    STARTXREF    = "startxref".to_slice
-    EOF          = "%%EOF".to_slice
+    DICT_OPEN   = "<<".to_slice
+    DICT_CLOSE  = ">>".to_slice
+    SPACE       = Bytes[32_u8]
+    ARRAY_OPEN  = "[".to_slice
+    ARRAY_CLOSE = "]".to_slice
+    REFERENCE   = "R".to_slice
+    OBJ         = "obj".to_slice
+    ENDOBJ      = "endobj".to_slice
+    STREAM      = "stream".to_slice
+    ENDSTREAM   = "endstream".to_slice
+    XREF        = "xref".to_slice
+    TRAILER     = "trailer".to_slice
+    STARTXREF   = "startxref".to_slice
+    EOF         = "%%EOF".to_slice
 
     @destination : ::IO
     @will_encrypt : Bool = false
@@ -879,54 +878,58 @@ module Pdfbox::Pdfwriter
 
     # Write document information dictionary
     def write : Nil
-      # TODO: Implement document info writing
+      return unless info = @info
+
+      @destination << info.to_s << "\n"
     end
 
     # Set document title
     def title=(title : String) : String
-      # TODO: Implement title setting
+      @info.try &.set(Cos::Name.new("Title"), Cos::String.new(title))
       title
     end
 
     # Set document author
     def author=(author : String) : String
-      # TODO: Implement author setting
+      @info.try &.set(Cos::Name.new("Author"), Cos::String.new(author))
       author
     end
 
     # Set document subject
     def subject=(subject : String) : String
-      # TODO: Implement subject setting
+      @info.try &.set(Cos::Name.new("Subject"), Cos::String.new(subject))
       subject
     end
 
     # Set document keywords
     def keywords=(keywords : String) : String
-      # TODO: Implement keywords setting
+      @info.try &.set(Cos::Name.new("Keywords"), Cos::String.new(keywords))
       keywords
     end
 
     # Set document creator
     def creator=(creator : String) : String
-      # TODO: Implement creator setting
+      @info.try &.set(Cos::Name.new("Creator"), Cos::String.new(creator))
       creator
     end
 
     # Set document producer
     def producer=(producer : String) : String
-      # TODO: Implement producer setting
+      @info.try &.set(Cos::Name.new("Producer"), Cos::String.new(producer))
       producer
     end
 
     # Set creation date
     def creation_date=(date : Time) : Time
-      # TODO: Implement creation date setting
+      date_str = "D:" + date.to_s("%Y%m%d%H%M%S")
+      @info.try &.set(Cos::Name.new("CreationDate"), Cos::String.new(date_str))
       date
     end
 
     # Set modification date
     def modification_date=(date : Time) : Time
-      # TODO: Implement modification date setting
+      date_str = "D:" + date.to_s("%Y%m%d%H%M%S")
+      @info.try &.set(Cos::Name.new("ModDate"), Cos::String.new(date_str))
       date
     end
   end

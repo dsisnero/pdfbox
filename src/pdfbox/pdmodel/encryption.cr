@@ -607,8 +607,6 @@ module Pdfbox::Pdmodel::Encryption
       end
 
       document.encryption = encryption
-      # TODO: Set encryption dictionary on document's COSDocument
-      # document.document.set_encryption_dictionary(encryption.dictionary)
     end
 
     def owner_password?(owner_password : Bytes, user : Bytes, owner : Bytes, permissions : Int32, id : Bytes, enc_revision : Int32, key_length_in_bytes : Int32, encrypt_metadata : Bool) : Bool
@@ -1681,7 +1679,7 @@ module Pdfbox::Pdmodel::Encryption
       @security_handler = SecurityHandlerFactory.instance.new_security_handler_for_filter(filter_name)
     end
 
-    # TODO: implement all getters and setters
+    # Encryption dictionary getters
     private def get_int(key : Pdfbox::Cos::Name, default : Int32) : Int32
       entry = @dictionary[key]
       # Dereference COSObject
@@ -1864,7 +1862,6 @@ module Pdfbox::Pdmodel::Encryption
       perms_str.bytes
     end
 
-    # TODO: implement
     def security_handler : SecurityHandler
       @security_handler || raise ::IO::Error.new("No security handler for filter #{filter}")
     end
