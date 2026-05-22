@@ -1,0 +1,6 @@
+require "./xml/exceptions"
+require "./xml/dom_helper"
+require "./xml/namespace_finder"
+require "./xml/dom_xmp_parser"
+require "./xml/xmp_serializer"
+require "./xml/pdfa_extension_helper"
