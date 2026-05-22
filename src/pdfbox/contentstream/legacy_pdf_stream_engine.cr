@@ -64,7 +64,7 @@ module Pdfbox::Contentstream
       state = graphics_state
       ctm = state.current_transformation_matrix
       font_size = state.font_size
-      horizontal_scaling = state.horizontal_scaling / 100.0
+      horizontal_scaling = state.horizontal_scaling / 100.0_f32
       text_matrix = self.text_matrix
 
       displacement_x = displacement.x
@@ -74,7 +74,12 @@ module Pdfbox::Contentstream
       if font.vertical?
         displacement_x = font.width(code) / 1000.0
         # There may be an additional scaling factor for true type fonts
-        # Simplified implementation - skip TTF scaling for now
+        if font.is_a?(Pdmodel::Font::PDTrueTypeFont)
+          ttf = font.as(Pdmodel::Font::PDTrueTypeFont).true_type_font
+          if ttf && ttf.units_per_em != 1000
+            displacement_x *= 1000.0 / ttf.units_per_em.to_f64
+          end
+        end
       end
 
       #
@@ -142,7 +147,7 @@ module Pdfbox::Contentstream
       space_width_display = space_width_text * text_rendering_matrix.scaling_factor_x
 
       # Use our additional glyph list for Unicode mapping
-      glyph_list = Pdmodel::Font::GlyphList.adobe_glyph_list
+      glyph_list = Pdmodel::Font::GlyphList.adobe_glyph_list_with_additional
       unicode = font.to_unicode(code, glyph_list)
 
       # When there is no Unicode mapping available, Acrobat simply coerces the character code

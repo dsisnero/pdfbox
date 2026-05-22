@@ -8,12 +8,28 @@ class Pdfbox::Pdmodel::Font::GlyphList
   # Adobe Glyph List (AGL)
   private DEFAULT = load("glyphlist.txt", 4281)
 
+  # Adobe Glyph List with additional entries (lazy loaded from additional.txt)
+  @@agl_with_additional : GlyphList?
+
   # Zapf Dingbats has its own glyph list
   private ZAPF_DINGBATS = load("zapfdingbats.txt", 201)
 
   # Returns the Adobe Glyph List (AGL).
   def self.adobe_glyph_list : GlyphList
     DEFAULT
+  end
+
+  # Returns the Adobe Glyph List with additional.txt mappings merged in.
+  # Used by LegacyPDFStreamEngine for compatible Unicode mapping.
+  def self.adobe_glyph_list_with_additional : GlyphList
+    @@agl_with_additional ||= begin
+      path = File.join(__DIR__, "../../../../../vendor/pdfbox/pdfbox/src/main/resources/org/apache/pdfbox/resources/glyphlist", "additional.txt")
+      File.open(path, "r") do |file|
+        GlyphList.new(DEFAULT, file)
+      end
+    rescue ex : File::NotFoundError
+      DEFAULT
+    end
   end
 
   # Returns the Zapf Dingbats glyph list.

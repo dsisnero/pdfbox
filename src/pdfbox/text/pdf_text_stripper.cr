@@ -630,8 +630,10 @@ module Pdfbox::Text
       merged
     end
 
+    # Matches Java Float.compare: NaN == NaN is 0
     private def float_compare(left : Float32, right : Float32) : Int32
       return 0 if left == right
+      return 0 if left.nan? && right.nan?
       return 1 if left.nan?
       return -1 if right.nan?
 
