@@ -21,7 +21,6 @@ require "./type/real_type"
 require "./type/simple_derived_types"
 
 require "./type/structured_types"
-require "./type/structured_types_stubs"
 
 require "./type/schema_factory"
 require "./type/type_mapping"

@@ -7,21 +7,15 @@ module Xmpbox
       @prefered_prefix : String?
       @prefix_str : String?
 
-      def initialize(metadata : XMPMetadata)
-        initialize(metadata, nil, nil, nil)
-      end
-
-      def initialize(metadata : XMPMetadata, namespace_uri : String?, field_prefix : String?, property_name : String?)
+      def initialize(metadata : XMPMetadata, namespace_uri : String? = nil, field_prefix : String? = nil, property_name : String? = nil)
         super(metadata, property_name)
         st = self.class.structured_type_info
         if st
           @namespace_uri = st[:namespace]
           @prefered_prefix = st[:prefered_prefix]
-        else
-          raise ArgumentError.new("Both StructuredType annotation and namespace parameter cannot be null") unless namespace_uri
-          @namespace_uri = namespace_uri
-          @prefered_prefix = field_prefix
         end
+        @namespace_uri ||= namespace_uri
+        @prefered_prefix ||= field_prefix
         @prefix_str = field_prefix || @prefered_prefix
       end
 
@@ -53,7 +47,20 @@ module Xmpbox
 
       protected def add_simple_property(property_name : String, value : ValueType) : Nil
         tm = metadata.type_mapping
-        asp = tm.instanciate_simple_field(self.class, nil, prefix, property_name, value)
+        case value
+        when String
+          asp = tm.create_text(nil, prefix, property_name, value)
+        when Bool
+          asp = tm.create_boolean(nil, prefix, property_name, value)
+        when Int32, Int64
+          asp = tm.create_integer(nil, prefix, property_name, value.to_i32)
+        when Float32, Float64
+          asp = tm.create_real(nil, prefix, property_name, value.to_f64)
+        when Time
+          asp = tm.create_date(nil, prefix, property_name, value)
+        else
+          asp = tm.create_text(nil, prefix, property_name, value.to_s)
+        end
         add_property(asp)
       end
 
