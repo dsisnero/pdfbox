@@ -498,7 +498,8 @@ module Pdfbox::Pdmodel
 
     # Close the document and release resources
     def close : Nil
-      # TODO: Implement cleanup
+      # Crystal GC handles resource cleanup; clear cached data
+      @pages.clear
     end
 
     private def ensure_pages_loaded : Nil
@@ -950,7 +951,7 @@ module Pdfbox::Pdmodel
     end
 
     # Get open action
-    def open_action
+    def open_action : Interactive::Action::PDAction?
       open_action_value = @cos_dict[Cos::Name.new("OpenAction")]
       return unless open_action_value
 
@@ -962,9 +963,12 @@ module Pdfbox::Pdmodel
       # Return nil for boolean values (e.g., false) as per PDF spec
       return if open_action_value.is_a?(Cos::Boolean)
 
-      # TODO: Implement proper action/destination parsing
-      # For now, just return the raw value
-      open_action_value
+      if open_action_value.is_a?(Cos::Dictionary)
+        Interactive::Action::PDActionFactory.create_action(open_action_value)
+      elsif open_action_value.is_a?(Cos::Array)
+        # Array represents a destination, not an action
+        nil
+      end
     end
   end
 

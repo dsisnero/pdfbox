@@ -153,7 +153,19 @@ abstract class Pdfbox::Pdmodel::Font::PDFont
     if !cmap.has_unicode_mappings?
       name = self.name
       Log.warn { "Invalid ToUnicode CMap in font #{name}" }
-      # TODO: Implement additional Identity mapping checks from Java PDFont
+
+      cmap_name = cmap.name || ""
+      ordering = cmap.ordering || ""
+      encoding = @dict[Pdfbox::Cos::Name.new("Encoding")]?
+
+      if cmap_name.includes?("Identity") || ordering.includes?("Identity") ||
+         (encoding && (encoding == Pdfbox::Cos::Name::IDENTITY_H || encoding == Pdfbox::Cos::Name::IDENTITY_V))
+        encoding_dict = @dict[Pdfbox::Cos::Name.new("Encoding")]?
+        if encoding_dict.nil? || !encoding_dict.is_a?(Pdfbox::Cos::Dictionary) || !encoding_dict.has_key?(Pdfbox::Cos::Name.new("Differences"))
+          cmap = CMapManager.get_predefined_cmap("Identity-H")
+          Log.warn { "Using predefined Identity CMap instead for font #{name}" }
+        end
+      end
     end
 
     cmap
