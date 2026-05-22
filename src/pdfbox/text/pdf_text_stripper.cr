@@ -60,6 +60,8 @@ module Pdfbox::Text
     @average_char_tolerance : Float32 = 0.3_f32
     @sort_by_position : Bool = false
     @suppress_duplicate_overlapping_text : Bool = true
+    @actual_text : String?
+    @first_actual_text_position : Bool = false
     @should_separate_by_beads : Bool = true
     @ignore_content_stream_space_glyphs : Bool = false
     @in_paragraph : Bool = false
@@ -192,8 +194,43 @@ module Pdfbox::Text
       end
     end
 
+    # Port of Java beginMarkedContentSequence: capture /ActualText from marked content
+    def begin_marked_content_sequence(tag : Cos::Name? = nil, properties : Cos::Base? = nil) : Nil
+      marked_content = Pdmodel::DocumentInterchange::MarkedContent::PDMarkedContent.create(tag,
+        properties.try(&.as?(Cos::Dictionary)))
+      @marked_contents_stack ||= [] of Pdmodel::DocumentInterchange::MarkedContent::PDMarkedContent
+      @marked_contents_stack.not_nil! << marked_content
+      @actual_text = marked_content.actual_text
+      if @actual_text
+        @actual_text = @actual_text.not_nil!.gsub("\u00AD", "") # remove soft hyphens
+        @first_actual_text_position = true
+      end
+      super
+    end
+
+    # Port of Java endMarkedContentSequence: restore previous /ActualText
+    def end_marked_content_sequence : Nil
+      if stack = @marked_contents_stack
+        marked_content = stack.pop? unless stack.empty?
+        if marked_content && marked_content.actual_text
+          @actual_text = nil
+        end
+      end
+      super
+    end
+
     # Override process_text_position to collect text positions
     def process_text_position(text : TextPosition) : Nil
+      # Handle ActualText from marked content (PDF/UA)
+      if at = @actual_text
+        if @first_actual_text_position
+          text.unicode = at
+          @first_actual_text_position = false
+        else
+          text.unicode = ""
+        end
+      end
+
       return if text.unicode == " " && @ignore_content_stream_space_glyphs
       return if suppress_duplicate_overlapping_text?(text)
 

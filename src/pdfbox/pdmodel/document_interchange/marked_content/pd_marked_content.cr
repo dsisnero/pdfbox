@@ -29,5 +29,11 @@ module Pdfbox::Pdmodel::DocumentInterchange::MarkedContent
       value = props[Pdfbox::Cos::Name.new("MCID")]
       value.as?(Pdfbox::Cos::Integer).try(&.value.to_i32) || -1
     end
+
+    def actual_text : String?
+      props = @properties
+      return nil unless props
+      props[Pdfbox::Cos::Name.new("ActualText")]?.try(&.as?(Pdfbox::Cos::String)).try(&.value)
+    end
   end
 end
