@@ -1504,6 +1504,7 @@ module Pdfbox::Text
           last_word_spacing = LAST_WORD_SPACING_RESET_VALUE
           max_height_for_line = MAX_HEIGHT_FOR_LINE_RESET_VALUE
           last_position = nil.as(PositionWrapper?)
+          last_line_start_position = nil.as(PositionWrapper?)
           previous_ave_char_width = -1.0_f32
           line = [] of LineItem
 
@@ -1561,8 +1562,26 @@ module Pdfbox::Text
               end
 
               unless overlap?(position_y, position_height, max_y_for_line, max_height_for_line)
+                # Detect paragraph separation
+                current = PositionWrapper.new(position)
+                if llsp = last_line_start_position
+                  is_paragraph_separation(current, previous, llsp, max_height_for_line)
+                  current.set_line_start
+                else
+                  current.set_line_start
+                end
+
                 io << render_items(line)
-                io << @line_separator
+
+                if current.paragraph_start?
+                  io << @paragraph_end unless @paragraph_end.empty?
+                  io << @paragraph_start unless @paragraph_start.empty?
+                  io << @line_separator
+                else
+                  io << @line_separator
+                end
+                last_line_start_position = current
+
                 line.clear
                 expected_start_of_next_word_x = EXPECTED_START_OF_NEXT_WORD_X_RESET_VALUE
                 max_y_for_line = MAX_Y_FOR_LINE_RESET_VALUE
