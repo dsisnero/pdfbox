@@ -53,7 +53,9 @@ module Xmpbox
       end
 
       def structured?
-        basic == Structured
+        self.in?(Colorant, Font, Layer, Thumbnail, ResourceEvent, ResourceRef,
+          Version, PDFASchema, PDFAField, PDFAProperty, PDFAType, Job, OECF,
+          CFAPattern, DeviceSettings, Flash, Dimensions)
       end
 
       def defined?
@@ -61,11 +63,11 @@ module Xmpbox
       end
 
       def basic : Types?
-        return Structured if structured?
         return Text if self.in?(
                          GPSCoordinate, ProperName, Locale, AgentName, GUID, XPath,
                          Part, URL, URI, Choice, MIMEType, RenditionClass, Rational
                        )
+        return Structured if structured?
         nil
       end
 

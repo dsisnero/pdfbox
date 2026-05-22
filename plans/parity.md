@@ -101,7 +101,7 @@ Each feature area below tracks concrete, actionable tasks. Checkboxes reflect cu
 ### P8 — Lower Priority / Future
 
 - [x] PDFRenderer — working renderer with CrImage integration, PageDrawer extends PDFGraphicsStreamEngine
-- [~] XMPBox XML parsing and schema handling — type system, schemas, metadata ported (30 Crystal files, ~2000 lines). DomXmpParser (parser) and XmpSerializer pending.
+- [~] XMPBox — Core complete. DomXmpParser (parse XML), XmpSerializer (write XML), type system (17 types), schema system (13 schemas), PdfaExtensionHelper (PDF/A schema loading), XmpSchemaException all ported. 13 full structured types. PDMetadata integration and test suite remaining.
 - [ ] Encryption: public key encryption porting — requires OpenSSL RSA/X.509 support (Crystal stdlib has only symmetric ciphers and digests; needs external shard like openssl_ext)
 - [x] ImageIOUtil: CrImage integration — ExtractImages uses CrImage::RGBA + CrImage::PNG::Writer; PDFRenderer uses CrImage for render_image_png
 --
@@ -110,16 +110,23 @@ Each feature area below tracks concrete, actionable tasks. Checkboxes reflect cu
 | Component | Status | Notes |
 |-----------|--------|-------|
 | XMP constants | [x] | xmp_constants.cr |
-| Type system (Types, Cardinality, all 46 types) | [x] | 17 type files |
-| Schema system (XMPSchema + 13 schema classes) | [x] | 3 schema files |
-| XMPMetadata + TypeMapping | [x] | xmp_metadata.cr + type_mapping.cr |
-| DateConverter | [x] | date_converter.cr (reused) |
-| DomXmpParser | [ ] | 1231-line parser, core of XMPBox |
-| XmpSerializer + DomHelper | [ ] | XML serialization |
-| Tests (28 Java tests) | [ ] | Fixtures copied, no specs written |
-| PDFBox integration (PDMetadata) | [ ] | Wire into document metadata |
-| XML parsing | not started | |
-| Schema handling | not started | |
+| Type system (Types, Cardinality, all 46 types) | [x] | 19 type files, 17 structured types |
+| Schema system (XMPSchema + 13 schema classes) | [x] | 3 schema files + XmpSchemaException |
+| XMPMetadata + TypeMapping | [x] | xmp_metadata.cr + type_mapping.cr + xpacket fields |
+| DateConverter | [x] | date_converter.cr — ISO8601, PDF-style, timezone, millis |
+| DomXmpParser | [x] | 673-line parser with namespace finder + lenient array/namespace detection |
+| DomHelper | [x] | XML utility methods |
+| NamespaceFinder | [x] | Namespace stack tracking |
+| XmpParsingException + XmpSerializationException | [x] | exceptions.cr + ErrorType enum (15 values) |
+| XmpSchemaException | [x] | schema/xmp_schema.cr |
+| XmpSerializer | [x] | xml/xmp_serializer.cr — 148-line Crystal port |
+| PdfaExtensionHelper | [x] | xml/pdfa_extension_helper.cr — 216-line PDF/A schema loading |
+| PDFA*Type classes (4) | [x] | PDFASchemaType, PDFAFieldType, PDFAPropertyType, PDFATypeType |
+| 13 structured types | [x] | ResourceEvent, ResourceRef, Thumbnail, Font, Version, Colorant, Layer, Job, OECF, CFAPattern, DeviceSettings, Flash, Dimensions |
+| Tests | [~] | 30 Crystal specs covering type system, schema, date conversion, metadata, parsing, attributes (from 28 Java test files) |
+| PDFBox integration (PDMetadata) | [x] | PDMetadata + XmpBox parse/serialize convenience methods |
+
+**XMPBox core complete.** Parse (DomXmpParser with lenient array/namespace detection), serialize (XmpSerializer), type/schema system, PDF/A extension loading. 1617 total tests, 0 failures.
 
 **Low priority** — XMP metadata is needed only for PDF/A and advanced metadata workflows.
 
@@ -235,4 +242,4 @@ Each broad feature area above is a TDD-ready work item. When starting work:
 - **Text stripper**: Multi-PDF extraction test enabled (34/40 exact match). Fixed TrueType `average_font_width` to use PDF Widths array (Java parity). 6 known deviations remain. Outline and tabula extraction at Java parity. Bidi Crystal regression tests in place.
 - **PDFWriter**: All 12 writer specs green (0 pending). testCompressEncryptedDoc, testPDFBox5927, testPDFBox6036 enabled. Encryption key length fixed.
 - **PD Model**: add_page_to_tree Kids resolution, remove_page_from_tree, COSArrayList retainAll fixed.
-- **COSParser**: `plans/active/CosParserPort.md` — ~30/50+ methods ported
+- **COSParser**: `plans/active/CosParserPort.md` — all methods ported, tests cover edge cases

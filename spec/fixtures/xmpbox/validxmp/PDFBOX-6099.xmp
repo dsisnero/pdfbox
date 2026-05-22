@@ -1,1 +1,68 @@
-<?xpacket begin="" id="W5M0MpCehiHzreSzNTczkc9d"?>\n<x:xmpmeta xmlns:x="adobe:ns:meta/" x:xmptk="XMP toolkit 2.9.1-13, framework 1.6">\n	<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"\n	         xmlns:iX="http://ns.adobe.com/iX/1.0/"\n	         xmlns:xmp="http://ns.adobe.com/xap/1.0/"\n	         xmlns:pdf="http://ns.adobe.com/pdf/1.3/"\n	         xmlns:dc="http://purl.org/dc/elements/1.1/"\n	         xmlns:xmpMM="http://ns.adobe.com/xap/1.0/mm/"\n	         xmlns:stEvt="http://ns.adobe.com/xap/1.0/sType/ResourceEvent#" xmlns:pdfaid="http://www.aiim.org/pdfa/ns/id/">\n		<rdf:Description rdf:about="uuid:71a722ba-4f74-11ec-0000-53130bd52c8e"\n		                 xmlns:pdf="http://ns.adobe.com/pdf/1.3/">\n			<pdf:Keywords/>\n			<pdf:Producer>Compart MFFPDF I/O Filter 2023-11-18 00:34:56</pdf:Producer>\n		</rdf:Description>\n		<rdf:Description rdf:about="uuid:71a722ba-4f74-11ec-0000-53130bd52c8e"\n		                 xmlns:xmp="http://ns.adobe.com/xap/1.0/">\n			<xmp:CreatorTool>PDFCreator 3.1.1.10385</xmp:CreatorTool>\n			<xmp:CreateDate>2025-11-11T13:16:36+01:00</xmp:CreateDate>\n			<xmp:ModifyDate>2025-11-11T13:16:36+01:00</xmp:ModifyDate>\n			<xmp:Identifier>\n				<rdf:Bag>\n					<rdf:li>7c67df9f73681e1b1ea8884a4a0e9b55</rdf:li>\n				</rdf:Bag>\n			</xmp:Identifier>\n		</rdf:Description>\n		<rdf:Description rdf:about="uuid:71a722ba-4f74-11ec-0000-53130bd52c8e"\n		                 xmlns:xapMM="http://ns.adobe.com/xap/1.0/mm/"\n		                 xapMM:DocumentID="uuid:71a722ba-4f74-11ec-0000-53130bd52c8e"\n		                 xmlns:xmpMM="http://ns.adobe.com/xap/1.0/mm/">\n			<xmpMM:VersionID>1</xmpMM:VersionID>\n			<xmpMM:History>\n				<rdf:Seq>\n					<rdf:li rdf:parseType="Resource">\n						<stEvt:action>created</stEvt:action>\n						<stEvt:parameters>converted to PDF/A</stEvt:parameters>\n						<stEvt:softwareAgent>Compart Docponent API</stEvt:softwareAgent>\n						<stEvt:when>2025-11-11T13:16:36+01:00</stEvt:when>\n					</rdf:li>\n				</rdf:Seq>\n			</xmpMM:History>\n		</rdf:Description>\n		<rdf:Description rdf:about="uuid:71a722ba-4f74-11ec-0000-53130bd52c8e"\n		                 xmlns:dc="http://purl.org/dc/elements/1.1/"\n		                 dc:format="application/pdf">\n			<dc:title>\n				<rdf:Alt>\n					<rdf:li xml:lang="x-default"/>\n				</rdf:Alt>\n			</dc:title>\n			<dc:description>\n				<rdf:Alt>\n					<rdf:li xml:lang="x-default"/>\n				</rdf:Alt>\n			</dc:description>\n			<dc:creator>\n				<rdf:Seq>\n					<rdf:li>User</rdf:li>\n				</rdf:Seq>\n			</dc:creator>\n		</rdf:Description>\n		<rdf:Description rdf:about="uuid:71a722ba-4f74-11ec-0000-53130bd52c8e"\n		                 xmlns:pdfaid="http://www.aiim.org/pdfa/ns/id/">\n			<pdfaid:part>1</pdfaid:part>\n			<pdfaid:conformance>B</pdfaid:conformance>\n		</rdf:Description>\n	</rdf:RDF>\n</x:xmpmeta>\n<?xpacket end="w"?>
+<?xpacket begin="" id="W5M0MpCehiHzreSzNTczkc9d"?>
+<x:xmpmeta xmlns:x="adobe:ns:meta/" x:xmptk="XMP toolkit 2.9.1-13, framework 1.6">
+	<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+	         xmlns:iX="http://ns.adobe.com/iX/1.0/"
+	         xmlns:xmp="http://ns.adobe.com/xap/1.0/"
+	         xmlns:pdf="http://ns.adobe.com/pdf/1.3/"
+	         xmlns:dc="http://purl.org/dc/elements/1.1/"
+	         xmlns:xmpMM="http://ns.adobe.com/xap/1.0/mm/"
+	         xmlns:stEvt="http://ns.adobe.com/xap/1.0/sType/ResourceEvent#" xmlns:pdfaid="http://www.aiim.org/pdfa/ns/id/">
+		<rdf:Description rdf:about="uuid:71a722ba-4f74-11ec-0000-53130bd52c8e"
+		                 xmlns:pdf="http://ns.adobe.com/pdf/1.3/">
+			<pdf:Keywords/>
+			<pdf:Producer>Compart MFFPDF I/O Filter 2023-11-18 00:34:56</pdf:Producer>
+		</rdf:Description>
+		<rdf:Description rdf:about="uuid:71a722ba-4f74-11ec-0000-53130bd52c8e"
+		                 xmlns:xmp="http://ns.adobe.com/xap/1.0/">
+			<xmp:CreatorTool>PDFCreator 3.1.1.10385</xmp:CreatorTool>
+			<xmp:CreateDate>2025-11-11T13:16:36+01:00</xmp:CreateDate>
+			<xmp:ModifyDate>2025-11-11T13:16:36+01:00</xmp:ModifyDate>
+			<xmp:Identifier>
+				<rdf:Bag>
+					<rdf:li>7c67df9f73681e1b1ea8884a4a0e9b55</rdf:li>
+				</rdf:Bag>
+			</xmp:Identifier>
+		</rdf:Description>
+		<rdf:Description rdf:about="uuid:71a722ba-4f74-11ec-0000-53130bd52c8e"
+		                 xmlns:xapMM="http://ns.adobe.com/xap/1.0/mm/"
+		                 xapMM:DocumentID="uuid:71a722ba-4f74-11ec-0000-53130bd52c8e"
+		                 xmlns:xmpMM="http://ns.adobe.com/xap/1.0/mm/">
+			<xmpMM:VersionID>1</xmpMM:VersionID>
+			<xmpMM:History>
+				<rdf:Seq>
+					<rdf:li rdf:parseType="Resource">
+						<stEvt:action>created</stEvt:action>
+						<stEvt:parameters>converted to PDF/A</stEvt:parameters>
+						<stEvt:softwareAgent>Compart Docponent API</stEvt:softwareAgent>
+						<stEvt:when>2025-11-11T13:16:36+01:00</stEvt:when>
+					</rdf:li>
+				</rdf:Seq>
+			</xmpMM:History>
+		</rdf:Description>
+		<rdf:Description rdf:about="uuid:71a722ba-4f74-11ec-0000-53130bd52c8e"
+		                 xmlns:dc="http://purl.org/dc/elements/1.1/"
+		                 dc:format="application/pdf">
+			<dc:title>
+				<rdf:Alt>
+					<rdf:li xml:lang="x-default"/>
+				</rdf:Alt>
+			</dc:title>
+			<dc:description>
+				<rdf:Alt>
+					<rdf:li xml:lang="x-default"/>
+				</rdf:Alt>
+			</dc:description>
+			<dc:creator>
+				<rdf:Seq>
+					<rdf:li>User</rdf:li>
+				</rdf:Seq>
+			</dc:creator>
+		</rdf:Description>
+		<rdf:Description rdf:about="uuid:71a722ba-4f74-11ec-0000-53130bd52c8e"
+		                 xmlns:pdfaid="http://www.aiim.org/pdfa/ns/id/">
+			<pdfaid:part>1</pdfaid:part>
+			<pdfaid:conformance>B</pdfaid:conformance>
+		</rdf:Description>
+	</rdf:RDF>
+</x:xmpmeta>
+<?xpacket end="w"?>
