@@ -11,10 +11,18 @@ require "../xmp_constants"
 
 module Xmpbox
   module Schema
+    class XmpSchemaException < Exception
+      def initialize(message : String, cause : Exception? = nil)
+        super(message, cause: cause)
+      end
+    end
+
     class XMPSchema < Type::AbstractStructuredType
       def initialize(metadata : XMPMetadata, namespace_uri : String? = nil, prefix : String? = nil, name : String? = nil)
         super(metadata, namespace_uri, prefix, name)
-        add_namespace(self.namespace, self.prefix)
+        if ns = self.namespace
+          add_namespace(ns, self.prefix || "")
+        end
       end
 
       def abstract_property(qualified_name : String) : Type::AbstractField?
@@ -41,6 +49,7 @@ module Xmpbox
         end
       end
 
+      # Port of Java setAboutAsSimple
       def set_about_as_simple(about : String?) : Nil
         if about.nil?
           remove_attribute(XmpConstants::ABOUT_NAME)
@@ -79,6 +88,17 @@ module Xmpbox
         set_specified_simple_type_property(prop)
       end
 
+      def date_property(qualified_name : String) : Type::DateType?
+        prop = abstract_property(qualified_name)
+        if prop
+          if prop.is_a?(Type::DateType)
+            return prop
+          end
+          raise Type::BadFieldValueException.new("Property asked is not a Date Property")
+        end
+        nil
+      end
+
       def date_property_value(qualified_name : String) : Time?
         prop = abstract_property(qualified_name)
         if prop
@@ -99,6 +119,17 @@ module Xmpbox
         set_specified_simple_type_property(prop)
       end
 
+      def boolean_property(qualified_name : String) : Type::BooleanType?
+        prop = abstract_property(qualified_name)
+        if prop
+          if prop.is_a?(Type::BooleanType)
+            return prop
+          end
+          raise Type::BadFieldValueException.new("Property asked is not a Boolean Property")
+        end
+        nil
+      end
+
       def boolean_property_value(qualified_name : String) : Bool?
         prop = abstract_property(qualified_name)
         if prop
@@ -117,6 +148,17 @@ module Xmpbox
       # Integer property accessors
       def integer_property=(prop : Type::IntegerType) : Nil
         set_specified_simple_type_property(prop)
+      end
+
+      def integer_property(qualified_name : String) : Type::IntegerType?
+        prop = abstract_property(qualified_name)
+        if prop
+          if prop.is_a?(Type::IntegerType)
+            return prop
+          end
+          raise Type::BadFieldValueException.new("Property asked is not an Integer Property")
+        end
+        nil
       end
 
       def integer_property_value(qualified_name : String) : Int32?
@@ -151,6 +193,10 @@ module Xmpbox
       end
 
       # Bag operations
+      def add_bag_value(bag_name : String, bag_value : Type::TextType) : Nil
+        internal_add_bag_value_with_type(bag_name, bag_value)
+      end
+
       def add_qualified_bag_value(simple_name : String, bag_value : String) : Nil
         internal_add_bag_value(simple_name, bag_value)
       end
@@ -193,7 +239,7 @@ module Xmpbox
       end
 
       # Language alternatives
-      def set_unqualified_language_property_value(name : String, language : String?, value : String) : Nil
+      def set_unqualified_language_property_value(name : String, language : String?, value : String?) : Nil
         lang = language.try(&.empty?) ? XmpConstants::X_DEFAULT : (language || XmpConstants::X_DEFAULT)
         property = abstract_property(name)
 
@@ -203,7 +249,7 @@ module Xmpbox
             if child.attribute(XmpConstants::LANG_NAME).try(&.value) == lang
               array_prop.container.remove_property(child)
               unless value.nil?
-                lang_value = create_text_type(XmpConstants::LIST_NAME, value)
+                lang_value = create_text_type(XmpConstants::LIST_NAME, value.as(String))
                 lang_value.attribute = Type::Attribute.new("http://www.w3.org/XML/1998/namespace", XmpConstants::LANG_NAME, lang)
                 array_prop.container.add_property(lang_value)
               end
@@ -211,13 +257,16 @@ module Xmpbox
               return
             end
           end
-          lang_value = create_text_type(XmpConstants::LIST_NAME, value)
-          lang_value.attribute = Type::Attribute.new("http://www.w3.org/XML/1998/namespace", XmpConstants::LANG_NAME, lang)
-          array_prop.container.add_property(lang_value)
-          reorganize_alt_order(array_prop.container)
+          if value
+            lang_value = create_text_type(XmpConstants::LIST_NAME, value)
+            lang_value.attribute = Type::Attribute.new("http://www.w3.org/XML/1998/namespace", XmpConstants::LANG_NAME, lang)
+            array_prop.container.add_property(lang_value)
+            reorganize_alt_order(array_prop.container)
+          end
         else
+          return if value.nil?
           array_prop = create_array_property(name, Type::Cardinality::Alt)
-          lang_value = create_text_type(XmpConstants::LIST_NAME, value)
+          lang_value = create_text_type(XmpConstants::LIST_NAME, value.as(String))
           lang_value.attribute = Type::Attribute.new("http://www.w3.org/XML/1998/namespace", XmpConstants::LANG_NAME, lang)
           array_prop.container.add_property(lang_value)
           add_property(array_prop)
@@ -240,6 +289,20 @@ module Xmpbox
           raise Type::BadFieldValueException.new("The property '#{name}' is not of Lang Alt type")
         end
         nil
+      end
+
+      def unqualified_language_property_languages_value(name : String) : Array(String)?
+        property = abstract_property(name)
+        return nil unless property
+        if property.is_a?(Type::ArrayProperty)
+          langs = [] of String
+          property.container.all_properties.each do |child|
+            if lang_attr = child.attribute(XmpConstants::LANG_NAME)
+              langs << lang_attr.value
+            end
+          end
+          langs
+        end
       end
 
       def merge(other : XMPSchema) : Nil
@@ -265,7 +328,6 @@ module Xmpbox
                     end
                     tmp.as(Type::ArrayProperty).container.add_property(new_val) unless found
                   end
-                  return
                 end
               end
             else
@@ -320,6 +382,17 @@ module Xmpbox
         end
       end
 
+      private def internal_add_bag_value_with_type(qualified_bag_name : String, text_type : Type::TextType) : Nil
+        bag = abstract_property(qualified_bag_name)
+        if bag.is_a?(Type::ArrayProperty)
+          bag.container.add_property(text_type)
+        else
+          new_bag = create_array_property(qualified_bag_name, Type::Cardinality::Bag)
+          new_bag.container.add_property(text_type)
+          add_property(new_bag)
+        end
+      end
+
       private def remove_unqualified_array_value(array_name : String, field_value : String) : Nil
         abstract_prop = abstract_property(array_name)
         return unless abstract_prop.is_a?(Type::ArrayProperty)
@@ -330,7 +403,7 @@ module Xmpbox
             to_delete << field
           end
         end
-        to_delete.each { |f| array.container.remove_property(f) }
+        to_delete.each { |field| array.container.remove_property(field) }
       end
 
       private def reorganize_alt_order(alt : Type::ComplexPropertyContainer) : Nil
@@ -340,12 +413,12 @@ module Xmpbox
         if first.attribute(XmpConstants::LANG_NAME).try(&.value) == XmpConstants::X_DEFAULT
           return
         end
-        xdefault = props.find { |p| p.attribute(XmpConstants::LANG_NAME).try(&.value) == XmpConstants::X_DEFAULT }
+        xdefault = props.find { |prop| prop.attribute(XmpConstants::LANG_NAME).try(&.value) == XmpConstants::X_DEFAULT }
         return unless xdefault
         alt.remove_property(xdefault)
         reordered = [xdefault] + alt.all_properties
-        reordered.each { |p| alt.remove_property(p) }
-        reordered.each { |p| alt.add_property(p) }
+        reordered.each { |prop| alt.remove_property(prop) }
+        reordered.each { |prop| alt.add_property(prop) }
       end
     end
   end
