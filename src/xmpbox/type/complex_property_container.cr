@@ -26,7 +26,7 @@ module Xmpbox
       end
 
       def properties_by_local_name(local_name : String) : Array(AbstractField)?
-        matches = @properties.select { |f| f.property_name == local_name }
+        matches = @properties.select { |field| field.property_name == local_name }
         matches.empty? ? nil : matches
       end
 
@@ -56,7 +56,7 @@ module Xmpbox
         return if @properties.empty?
         prop_list = properties_by_local_name(local_name)
         return unless prop_list
-        prop_list.each { |p| @properties.delete(p) }
+        prop_list.each { |prop| @properties.delete(prop) }
       end
     end
   end

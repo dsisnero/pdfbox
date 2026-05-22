@@ -24,6 +24,10 @@ module Xmpbox
         Types::DeviceSettings => DeviceSettingsType,
         Types::Flash          => FlashType,
         Types::Dimensions     => DimensionsType,
+        Types::PDFASchema     => PDFASchemaType,
+        Types::PDFAField      => PDFAFieldType,
+        Types::PDFAProperty   => PDFAPropertyType,
+        Types::PDFAType       => PDFATypeType,
       } of Types => AbstractStructuredType.class
 
       SIMPLE_TYPE_CLASSES = {
@@ -77,9 +81,9 @@ module Xmpbox
       end
 
       # Called after schema classes are loaded to register them
-      def register_schema(ns : String, schema_klass : AbstractStructuredType.class) : Nil
-        pm = initialize_prop_mapping(schema_klass)
-        @schema_map[ns] = XMPSchemaFactory.new(ns, schema_klass, pm)
+      def register_schema(ns : String, create_proc : (XMPMetadata, String) -> AbstractStructuredType) : Nil
+        pm = initialize_prop_mapping(AbstractStructuredType)
+        @schema_map[ns] = XMPSchemaFactory.new(ns, create_proc, pm)
       end
 
       def add_to_defined_structured_types(type_name : String, ns : String, pm : PropertiesDescription) : Nil
@@ -101,8 +105,7 @@ module Xmpbox
       def instanciate_structured_type(type : Types, property_name : String) : AbstractStructuredType
         klass = STRUCTURED_TYPE_CLASSES[type]?
         raise BadFieldValueException.new("Unknown structured type: #{type}") unless klass
-        tmp = klass.new(metadata)
-        tmp.property_name = property_name
+        tmp = klass.new(metadata, nil, nil, property_name)
         tmp
       end
 
@@ -137,7 +140,12 @@ module Xmpbox
 
       def add_new_namespace(ns : String, preferred : String) : Nil
         mapping = PropertiesDescription.new
-        @schema_map[ns] = XMPSchemaFactory.new(ns, AbstractStructuredType, mapping)
+        # Create a fallback factory that creates a generic XMPSchema
+        @schema_map[ns] = XMPSchemaFactory.new(ns,
+          ->(metadata : XMPMetadata, prefix : String) : AbstractStructuredType {
+            Schema::XMPSchema.new(metadata, ns, prefix, nil)
+          },
+          mapping)
       end
 
       def structured_prop_mapping(type : Types) : PropertiesDescription?
@@ -192,10 +200,16 @@ module Xmpbox
           return PropertyTypeDesc.new(type: Types::DefinedType, card: Cardinality::Simple)
         end
 
+        # Check if namespace is known at all
+        if defined_namespace?(qname.namespace_uri)
+          return nil
+        end
+
         if factory
           nil
         else
-          raise BadFieldValueException.new("No descriptor found for #{qname}")
+          # If the namespace is completely unknown, return nil to let lenient mode handle it
+          nil
         end
       end
 
@@ -277,8 +291,9 @@ module Xmpbox
     struct QName
       getter namespace_uri : String
       getter local_part : String
+      getter prefix : String
 
-      def initialize(@namespace_uri : String, @local_part : String)
+      def initialize(@namespace_uri : String, @local_part : String, @prefix : String = "")
       end
     end
   end

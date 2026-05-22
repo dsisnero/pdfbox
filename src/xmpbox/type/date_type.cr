@@ -51,13 +51,16 @@ module Xmpbox
       end
 
       def string_value : String?
-        return nil unless @date_value
-        Xmpbox::DateConverter.to_iso8601(@date_value.not_nil!)
+        if dv = @date_value
+          Xmpbox::DateConverter.to_iso8601(dv)
+        end
       end
 
       private def set_value_from_string(value : String) : Nil
         cal = Xmpbox::DateConverter.to_calendar(value)
-        value_from_calendar(cal.not_nil!)
+        if cal
+          value_from_calendar(cal)
+        end
       end
     end
   end
