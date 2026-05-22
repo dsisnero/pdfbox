@@ -5,6 +5,149 @@ require "openssl"
 require "io"
 
 module Pdfbox::Pdmodel::Encryption
+  # SASLPrep string preparation as per RFC 4013.
+  # Ported from Apache PDFBox SaslPrep.java.
+  module SaslPrep
+    def self.sasl_prep_query(str : String) : String
+      sasl_prep(str, true)
+    end
+
+    def self.sasl_prep_stored(str : String) : String
+      sasl_prep(str, false)
+    end
+
+    private def self.sasl_prep(str : String, allow_unassigned : Bool) : String
+      chars = str.chars
+
+      result = String.build do |io|
+        chars.each do |ch|
+          cp = ch.ord
+          if non_ascii_space?(cp)
+            io << ' '
+          elsif !mapped_to_nothing?(cp)
+            io << ch
+          end
+        end
+      end
+
+      normalized = result.unicode_normalize(:nfkc)
+
+      contains_rand_al_cat = false
+      contains_l_cat = false
+      initial_rand_al_cat = false
+
+      normalized.each_char_with_index do |ch, i|
+        cp = ch.ord
+        if prohibited?(cp)
+          raise ArgumentError.new("Prohibited character U+#{cp.to_s(16).upcase} at position #{i}")
+        end
+        is_rand_al = rtl_char?(ch)
+        contains_rand_al_cat ||= is_rand_al
+        contains_l_cat ||= ltr_char?(ch)
+        initial_rand_al_cat ||= (i == 0 && is_rand_al)
+        if !allow_unassigned && unassigned?(ch)
+          raise ArgumentError.new("Unassigned character at position #{i}")
+        end
+      end
+
+      last_char = normalized.chars.last?
+      if initial_rand_al_cat && last_char && !rtl_char?(last_char)
+        raise ArgumentError.new("First character is RandALCat, but last character is not")
+      end
+      if contains_rand_al_cat && contains_l_cat
+        raise ArgumentError.new("Contains both RandALCat and LCat characters")
+      end
+      normalized
+    end
+
+    private def self.non_ascii_space?(cp : Int32) : Bool
+      cp == 0x00A0 || cp == 0x1680 || (0x2000 <= cp <= 0x200B) ||
+        cp == 0x202F || cp == 0x205F || cp == 0x3000
+    end
+
+    private def self.ascii_control?(cp : Int32) : Bool
+      (0x0000 <= cp <= 0x001F) || cp == 0x007F
+    end
+
+    private def self.non_ascii_control?(cp : Int32) : Bool
+      (0x0080 <= cp <= 0x009F) || cp == 0x06DD || cp == 0x070F || cp == 0x180E ||
+        cp == 0x200C || cp == 0x200D || cp == 0x2028 || cp == 0x2029 ||
+        cp == 0x2060 || cp == 0x2061 || cp == 0x2062 || cp == 0x2063 ||
+        (0x206A <= cp <= 0x206F) || cp == 0xFEFF || (0xFFF9 <= cp <= 0xFFFC) ||
+        (0x1D173 <= cp <= 0x1D17A)
+    end
+
+    private def self.private_use?(cp : Int32) : Bool
+      (0xE000 <= cp <= 0xF8FF) || (0xF0000 <= cp <= 0xFFFFD) ||
+        (0x100000 <= cp <= 0x10FFFD)
+    end
+
+    private def self.non_character_code_point?(cp : Int32) : Bool
+      (0xFDD0 <= cp <= 0xFDEF) || (0xFFFE <= cp <= 0xFFFF) ||
+        (0x1FFFE <= cp <= 0x1FFFF) || (0x2FFFE <= cp <= 0x2FFFF) ||
+        (0x3FFFE <= cp <= 0x3FFFF) || (0x4FFFE <= cp <= 0x4FFFF) ||
+        (0x5FFFE <= cp <= 0x5FFFF) || (0x6FFFE <= cp <= 0x6FFFF) ||
+        (0x7FFFE <= cp <= 0x7FFFF) || (0x8FFFE <= cp <= 0x8FFFF) ||
+        (0x9FFFE <= cp <= 0x9FFFF) || (0xAFFFE <= cp <= 0xAFFFF) ||
+        (0xBFFFE <= cp <= 0xBFFFF) || (0xCFFFE <= cp <= 0xCFFFF) ||
+        (0xDFFFE <= cp <= 0xDFFFF) || (0xEFFFE <= cp <= 0xEFFFF) ||
+        (0xFFFFE <= cp <= 0xFFFFF) || (0x10FFFE <= cp <= 0x10FFFF)
+    end
+
+    private def self.surrogate_code_point?(cp : Int32) : Bool
+      0xD800 <= cp <= 0xDFFF
+    end
+
+    private def self.inappropriate_for_plain_text?(cp : Int32) : Bool
+      cp == 0xFFF9 || cp == 0xFFFA || cp == 0xFFFB || cp == 0xFFFC || cp == 0xFFFD
+    end
+
+    private def self.inappropriate_for_canonical?(cp : Int32) : Bool
+      0x2FF0 <= cp <= 0x2FFB
+    end
+
+    private def self.change_display_properties?(cp : Int32) : Bool
+      cp == 0x0340 || cp == 0x0341 || cp == 0x200E || cp == 0x200F ||
+        cp == 0x202A || cp == 0x202B || cp == 0x202C || cp == 0x202D || cp == 0x202E ||
+        (0x206A <= cp <= 0x206F)
+    end
+
+    private def self.tagging?(cp : Int32) : Bool
+      cp == 0xE0001 || (0xE0020 <= cp <= 0xE007F)
+    end
+
+    private def self.prohibited?(cp : Int32) : Bool
+      non_ascii_space?(cp) || ascii_control?(cp) || non_ascii_control?(cp) ||
+        private_use?(cp) || non_character_code_point?(cp) ||
+        surrogate_code_point?(cp) || inappropriate_for_plain_text?(cp) ||
+        inappropriate_for_canonical?(cp) || change_display_properties?(cp) ||
+        tagging?(cp)
+    end
+
+    private def self.mapped_to_nothing?(cp : Int32) : Bool
+      cp == 0x00AD || cp == 0x034F || cp == 0x1806 || cp == 0x180B ||
+        cp == 0x180C || cp == 0x180D || cp == 0x200B || cp == 0x200C ||
+        cp == 0x200D || cp == 0x2060 || (0xFE00 <= cp <= 0xFE0F) || cp == 0xFEFF
+    end
+
+    private def self.rtl_char?(ch : Char) : Bool
+      cp = ch.ord
+      (0x0590 <= cp <= 0x05FF) || (0x0600 <= cp <= 0x06FF) || (0x0700 <= cp <= 0x074F) ||
+        (0x0750 <= cp <= 0x077F) || (0x0780 <= cp <= 0x07BF) || (0x08A0 <= cp <= 0x08FF) ||
+        (0xFB1D <= cp <= 0xFB4F) || (0xFB50 <= cp <= 0xFDFF) || (0xFE70 <= cp <= 0xFEFF) ||
+        (0x10800 <= cp <= 0x10FFF) || (0x1E800 <= cp <= 0x1EFFF)
+    end
+
+    private def self.ltr_char?(ch : Char) : Bool
+      ('A' <= ch <= 'Z') || ('a' <= ch <= 'z') || ('0' <= ch <= '9')
+    end
+
+    private def self.unassigned?(ch : Char) : Bool
+      cp = ch.ord
+      cp > 0xFFFF && !(0x10000 <= cp <= 0x10FFFF)
+    end
+  end
+
   # Simple RC4 implementation for PDF encryption (compatible with PDF RC4)
   class RC4
     @s = Bytes.new(256, 0_u8)
@@ -598,9 +741,8 @@ module Pdfbox::Pdmodel::Encryption
       length = get_key_length_bits // 8
 
       if revision == REVISION_6
-        # TODO: Implement SASLPrep for revision 6
-        # owner_password = SaslPrep.sasl_prep_stored(owner_password)
-        # user_password = SaslPrep.sasl_prep_stored(user_password)
+        owner_password = SaslPrep.sasl_prep_stored(owner_password)
+        user_password = SaslPrep.sasl_prep_stored(user_password)
         prepare_encryption_dict_rev6(owner_password, user_password, encryption, permission_int)
       else
         prepare_encryption_dict_rev234(owner_password, user_password, encryption, permission_int, document, revision, length)
@@ -843,9 +985,6 @@ module Pdfbox::Pdmodel::Encryption
 
     private def prepare_encryption_dict_rev6(owner_password : String, user_password : String, encryption : PDEncryption, permission_int : Int32) : Nil
       # Revision 6 encryption (AES-256)
-      # TODO: Implement SASLPrep for revision 6
-      # owner_password = SaslPrep.sasl_prep_stored(owner_password)
-      # user_password = SaslPrep.sasl_prep_stored(user_password)
 
       # Generate random 256-bit file encryption key
       encryption_key = Bytes.new(32)
@@ -1183,9 +1322,11 @@ module Pdfbox::Pdmodel::Encryption
     end
 
     private def sasl_prep_query(password : String) : String
-      # TODO: implement SASLPrep string preparation as per RFC 4013
-      # For now, return unchanged (ASCII passwords work)
-      password
+      SaslPrep.sasl_prep_query(password)
+    end
+
+    private def sasl_prep_stored(password : String) : String
+      SaslPrep.sasl_prep_stored(password)
     end
 
     private def iso_8859_1_bytes(password : String) : Bytes
