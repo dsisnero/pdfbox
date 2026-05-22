@@ -1379,19 +1379,35 @@ module Pdfbox::Text
     end
 
     private def mirrored_char(char : Char) : Char
-      case char
-      when '(' then ')'
-      when ')' then '('
-      when '[' then ']'
-      when ']' then '['
-      when '{' then '}'
-      when '}' then '{'
-      when '<' then '>'
-      when '>' then '<'
-      when '«' then '»'
-      when '»' then '«'
-      else          char
+      bidi_mirror_map[char]? || char
+    end
+
+    # Lazy-loaded Unicode Bidi Mirroring map (from BidiMirroring.txt)
+    @@bidi_mirror_map : Hash(Char, Char)?
+
+    private def bidi_mirror_map : Hash(Char, Char)
+      if map = @@bidi_mirror_map
+        return map
       end
+      map = {} of Char => Char
+      {'(' => ')', ')' => '(', '[' => ']', ']' => '[', '{' => '}', '}' => '{',
+       '<' => '>', '>' => '<', '«' => '»', '»' => '«'}.each { |k, v| map[k] = v }
+      path = File.join(__DIR__, "../../../../vendor/pdfbox/pdfbox/src/main/resources/org/apache/pdfbox/resources/text", "BidiMirroring.txt")
+      begin
+        if File.exists?(path)
+          File.each_line(path) do |line|
+            next if line.starts_with?('#') || line.strip.empty?
+            parts = line.split(';')
+            next unless parts.size >= 2
+            from_cp = parts[0].strip.to_i(16)
+            to_cp = parts[1].split('#')[0].strip.to_i(16)
+            map[from_cp.chr] = to_cp.chr if from_cp > 0 && to_cp > 0
+          end
+        end
+      rescue
+      end
+      @@bidi_mirror_map = map
+      map
     end
 
     private def presentation_form_codepoint?(codepoint : Int32) : Bool
