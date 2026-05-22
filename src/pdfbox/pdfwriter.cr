@@ -885,51 +885,67 @@ module Pdfbox::Pdfwriter
 
     # Set document title
     def title=(title : String) : String
-      @info.try &.set(Cos::Name.new("Title"), Cos::String.new(title))
+      if info = @info
+        info[Cos::Name.new("Title")] = Cos::String.new(title)
+      end
       title
     end
 
     # Set document author
     def author=(author : String) : String
-      @info.try &.set(Cos::Name.new("Author"), Cos::String.new(author))
+      if info = @info
+        info[Cos::Name.new("Author")] = Cos::String.new(author)
+      end
       author
     end
 
     # Set document subject
     def subject=(subject : String) : String
-      @info.try &.set(Cos::Name.new("Subject"), Cos::String.new(subject))
+      if info = @info
+        info[Cos::Name.new("Subject")] = Cos::String.new(subject)
+      end
       subject
     end
 
     # Set document keywords
     def keywords=(keywords : String) : String
-      @info.try &.set(Cos::Name.new("Keywords"), Cos::String.new(keywords))
+      if info = @info
+        info[Cos::Name.new("Keywords")] = Cos::String.new(keywords)
+      end
       keywords
     end
 
     # Set document creator
     def creator=(creator : String) : String
-      @info.try &.set(Cos::Name.new("Creator"), Cos::String.new(creator))
+      if info = @info
+        info[Cos::Name.new("Creator")] = Cos::String.new(creator)
+      end
       creator
     end
 
     # Set document producer
     def producer=(producer : String) : String
-      @info.try &.set(Cos::Name.new("Producer"), Cos::String.new(producer))
+      if info = @info
+        info[Cos::Name.new("Producer")] = Cos::String.new(producer)
+      end
       producer
     end
 
     # Set creation date
     def creation_date=(date : Time) : Time
-      date_str = "D:" + date.to_s("%Y%m%d%H%M%S")
-      @info.try &.set(Cos::Name.new("CreationDate"), Cos::String.new(date_str))
+      if info = @info
+        date_str = "D:" + date.to_s("%Y%m%d%H%M%S")
+        info[Cos::Name.new("CreationDate")] = Cos::String.new(date_str)
+      end
       date
     end
 
     # Set modification date
     def modification_date=(date : Time) : Time
-      date_str = "D:" + date.to_s("%Y%m%d%H%M%S")
-      @info.try &.set(Cos::Name.new("ModDate"), Cos::String.new(date_str))
+      if info = @info
+        date_str = "D:" + date.to_s("%Y%m%d%H%M%S")
+        info[Cos::Name.new("ModDate")] = Cos::String.new(date_str)
+      end
       date
     end
   end
