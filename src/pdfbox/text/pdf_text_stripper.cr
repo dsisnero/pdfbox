@@ -37,6 +37,8 @@ module Pdfbox::Text
     @document : Pdfbox::Pdmodel::Document?
     @current_page_no : Int32 = 1
     @line_separator : String = "\n"
+    @drop_threshold : Float32 = 2.5_f32
+    @indent_threshold : Float32 = 2.0_f32
     @page_start : String = ""
     @page_end : String = "\n"
     @paragraph_start : String = ""
@@ -344,6 +346,22 @@ module Pdfbox::Text
 
     def line_separator : String
       @line_separator
+    end
+
+    def drop_threshold=(value : Float32) : Float32
+      @drop_threshold = value
+    end
+
+    def drop_threshold : Float32
+      @drop_threshold
+    end
+
+    def indent_threshold=(value : Float32) : Float32
+      @indent_threshold = value
+    end
+
+    def indent_threshold : Float32
+      @indent_threshold
     end
 
     def start_page=(value : Int) : Int32
@@ -708,6 +726,7 @@ module Pdfbox::Text
       last_word_spacing = LAST_WORD_SPACING_RESET_VALUE
       max_height_for_line = MAX_HEIGHT_FOR_LINE_RESET_VALUE
       last_position = nil.as(PositionWrapper?)
+      last_line_start_position = nil.as(PositionWrapper?)
       start_of_page = true
       start_of_article = false
       previous_ave_char_width = -1.0_f32
@@ -766,8 +785,26 @@ module Pdfbox::Text
             end
 
             unless overlap?(position_y, position_height, max_y_for_line, max_height_for_line)
+              # Detect paragraph separation
+              current = PositionWrapper.new(position)
+              if llsp = last_line_start_position
+                is_paragraph_separation(current, previous, llsp, max_height_for_line)
+                current.set_line_start
+              else
+                current.set_line_start
+              end
+
               io << render_items(line)
-              io << @line_separator
+
+              if current.paragraph_start?
+                io << @paragraph_end unless @paragraph_end.empty?
+                io << @paragraph_start unless @paragraph_start.empty?
+                io << @line_separator
+              else
+                io << @line_separator
+              end
+              last_line_start_position = current
+
               line.clear
               expected_start_of_next_word_x = EXPECTED_START_OF_NEXT_WORD_X_RESET_VALUE
               max_y_for_line = MAX_Y_FOR_LINE_RESET_VALUE
@@ -894,6 +931,55 @@ module Pdfbox::Text
       expected_start < current.x &&
         !previous.unicode.ends_with?(@word_separator) &&
         !current.unicode.starts_with?(@word_separator)
+    end
+
+    # Public test wrappers for private method parity tests
+    def test_multiply_float(value1 : Float32, value2 : Float32) : Float32
+      multiply_float(value1, value2)
+    end
+
+    def test_is_paragraph_separation(position : PositionWrapper, last_position : PositionWrapper,
+                                      last_line_start_position : PositionWrapper?, max_height_for_line : Float32) : Nil
+      is_paragraph_separation(position, last_position, last_line_start_position, max_height_for_line)
+    end
+
+    # Port of Java multiplyFloat: multiply 2 floats, truncate to 3 decimal places
+    private def multiply_float(value1 : Float32, value2 : Float32) : Float32
+      ((value1.to_f64 * value2.to_f64 * 1000.0).round / 1000.0).to_f32
+    end
+
+    # Port of Java isParagraphSeparation
+    private def is_paragraph_separation(position : PositionWrapper, last_position : PositionWrapper,
+                                         last_line_start_position : PositionWrapper?, max_height_for_line : Float32) : Nil
+      result = false
+      if last_line_start_position.nil?
+        result = true
+      else
+        y_gap = (position.text_position.not_nil!.y_dir_adj - last_position.text_position.not_nil!.y_dir_adj).abs
+        new_y_val = multiply_float(@drop_threshold, max_height_for_line)
+        x_gap = position.text_position.not_nil!.x_dir_adj - last_line_start_position.text_position.not_nil!.x_dir_adj
+        new_x_val = multiply_float(@indent_threshold, position.text_position.not_nil!.width_of_space)
+        position_width = multiply_float(0.25_f32, position.text_position.not_nil!.width)
+
+        if y_gap > new_y_val
+          result = true
+        elsif x_gap > new_x_val
+          if !last_line_start_position.paragraph_start?
+            result = true
+          else
+            position.set_hanging_indent
+          end
+        elsif x_gap < -position.text_position.not_nil!.width_of_space
+          if !last_line_start_position.paragraph_start?
+            result = true
+          end
+        elsif x_gap.abs < position_width
+          if last_line_start_position.hanging_indent?
+            position.set_hanging_indent
+          end
+        end
+      end
+      position.set_paragraph_start if result
     end
 
     private def normalize_word(word : String) : String
