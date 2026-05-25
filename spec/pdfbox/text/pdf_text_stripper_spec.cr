@@ -288,6 +288,7 @@ describe Pdfbox::Text::PDFTextStripper do
       "PDFBOX-3110-poems-beads.pdf"                            => true,
       "PDFBOX-3110-poems-beads-cropbox.pdf"                    => true,
       "FC60_Times.pdf"                                         => true,
+      "PDFBOX-3127-RAU4G6QMOVRYBISJU7R6MOVZCRFUO7P4-VFont.pdf" => true,
       "PDFBOX-4532-reduced.pdf"                                => true,
       "cweb.pdf"                                               => true,
     }
