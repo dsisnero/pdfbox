@@ -379,10 +379,19 @@ class Pdfbox::Pdmodel::Font::PDType1Font < Pdfbox::Pdmodel::Font::PDSimpleFont
 
   def average_font_width : Float32
     if afm = get_standard14_afm
-      afm.average_character_width
-    else
-      0.0_f32
+      return afm.average_character_width
     end
+    # Use WIDTHS array from dict if available, matching Java PDSimpleFont
+    if widths = @dict[Pdfbox::Cos::Name::WIDTHS]?.try(&.as?(Pdfbox::Cos::Array))
+      total = 0.0_f64; count = 0
+      widths.items.each do |base|
+        if base.is_a?(Pdfbox::Cos::Number) && base.value.to_f64 > 0
+          total += base.value.to_f64; count += 1
+        end
+      end
+      return (total / count).to_f32 if count > 0 && total > 0
+    end
+    500.0_f32
   end
 
   def encode(unicode : Int32) : Bytes
