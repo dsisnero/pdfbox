@@ -426,7 +426,26 @@ class Pdfbox::Pdmodel::Font::PDType1Font < Pdfbox::Pdmodel::Font::PDSimpleFont
           "U+#{unicode.to_s(16).upcase.rjust(4, '0')} ('#{name}') is not available in the font #{name()}, encoding: #{encoding.encoding_name}"
         )
       end
-      unless has_glyph?(name)
+
+      # Port of Java getNameInFont: find the actual font name for this glyph
+      name_in_font = name
+      unless embedded? || has_glyph?(name)
+        # Try ALT_NAMES
+        alt = ALT_NAMES[name]?
+        if alt && alt != ".notdef" && has_glyph?(alt)
+          name_in_font = alt
+        else
+          # Try "uniXXXX" name from Unicode codepoint
+          unicode_str = glyph_list.to_unicode(name)
+          if unicode_str && unicode_str.size == 1
+            cp = unicode_str[0].ord
+            uni_name = "uni#{cp.to_s(16).upcase.rjust(4, '0')}"
+            name_in_font = uni_name if has_glyph?(uni_name)
+          end
+        end
+      end
+
+      if name_in_font == ".notdef" || !has_glyph?(name_in_font)
         raise ArgumentError.new(
           "No glyph for U+#{unicode.to_s(16).upcase.rjust(4, '0')} in the font #{name()}"
         )
