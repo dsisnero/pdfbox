@@ -436,6 +436,8 @@ abstract class Pdfbox::Pdmodel::Font::PDFont
         Log.error { e }
         @font_width_of_space = 250.0_f32
       end
+      # Final fallback: ensure minimum space width (matches Java PDFont line 600)
+      @font_width_of_space = 250.0_f32 if @font_width_of_space <= 0
       Log.debug { "Space width for font #{name} is #{@font_width_of_space}" }
     end
     @font_width_of_space
