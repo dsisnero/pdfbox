@@ -419,6 +419,18 @@ class Pdfbox::Pdmodel::Font::PDType1Font < Pdfbox::Pdmodel::Font::PDSimpleFont
           "No glyph for U+#{unicode.to_s(16).upcase.rjust(4, '0')} in the font #{name()}"
         )
       end
+    else
+      # Port of Java PDType1Font non-standard14 encode validation
+      unless encoding.contains(name)
+        raise ArgumentError.new(
+          "U+#{unicode.to_s(16).upcase.rjust(4, '0')} ('#{name}') is not available in the font #{name()}, encoding: #{encoding.encoding_name}"
+        )
+      end
+      unless has_glyph?(name)
+        raise ArgumentError.new(
+          "No glyph for U+#{unicode.to_s(16).upcase.rjust(4, '0')} in the font #{name()}"
+        )
+      end
     end
 
     code = encoding.get_code(name)
