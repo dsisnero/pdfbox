@@ -141,7 +141,7 @@ describe "CID descendant font parity slices" do
     font.has_glyph(0).should be_false
     font.bounding_box.width.should be >= 0.0_f32
     font.bounding_box.height.should be >= 0.0_f32
-    font.average_font_width.should eq(500.0_f32)
+    font.average_font_width.should eq(1000.0_f32) # Parent CIDFont computes from default_width
     font.height(1).should be >= 0.0_f32
   end
 

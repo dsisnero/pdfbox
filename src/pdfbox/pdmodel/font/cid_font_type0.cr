@@ -17,7 +17,6 @@ module Pdfbox::Pdmodel::Font
     @t1_font : Fontbox::CFF::CFFType1Font?
     @cid2gid : Array(Int32)?
     @glyph_heights = Hash(Int32, Float32).new
-    @avg_width : Float32?
 
     # Constructor.
     def initialize(font_dictionary : Pdfbox::Cos::Dictionary, parent : PDType0Font)
@@ -180,9 +179,7 @@ module Pdfbox::Pdmodel::Font
       height
     end
 
-    def average_font_width : Float32
-      @avg_width ||= 500.0_f32
-    end
+    # Inherits average_font_width from PDCIDFont which computes from WIDTHS array
 
     # Override parent methods for Type 0 specific logic
     def cid_font_type2? : Bool
