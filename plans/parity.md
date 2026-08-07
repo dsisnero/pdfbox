@@ -8,7 +8,7 @@
 > Phases are branch-sized, user-visible features — not individual helper methods.
 > A feature is marked `[x]` only when its mapped inventory rows are closed and the parity checks are green.
 
-**Current work:** Text extraction deviations investigated in detail (2026-05-25). Rotation deviation (PDFBOX-3127) fixed and MATCH. Spacing deviations traced to `delta_char_width` computed from CURRENT position width rather than PREVIOUS. Encoding deviation (PDFBOX-4532) traced to ToUnicode CMap period→space mapping. Java 3.0.4 recovers period through opaque stripper pipeline (likely `mergeDiacritic`/`normalizeWord`). Beads deviations (PDFBOX-3110) fixed and MATCH via `handleLineSeparation` article-start gating and cropbox text-position translation. 2 remaining deviations documented below.
+**Current work:** Text extraction deviations investigated in detail (2026-05-25). Rotation deviation (PDFBOX-3127) fixed and MATCH. Spacing deviations traced to `delta_char_width` computed from CURRENT position width rather than PREVIOUS. Encoding deviation (PDFBOX-4532) traced to ToUnicode CMap period→space mapping. Java 3.0.4 recovers period through opaque stripper pipeline (likely `mergeDiacritic`/`normalizeWord`). Beads deviations (PDFBOX-3110) fixed and MATCH via `handleLineSeparation` article-start gating and cropbox text-position translation. cweb.pdf fixed and MATCH via Widths-array indirect-reference resolution, raw Type1 FontFile parsing (Length1/Length2 split), and MODIFIER_SYMBOL diacritic merging. 1 remaining deviation documented below.
 
 ---
 
@@ -22,8 +22,8 @@
 | Pending tests | 0 |
 | Failures | 0 |
 | Errors | 0 |
-| Text extraction: exact match | 39/40 PDFs (97.5%) |
-| Text extraction: known deviations | 1 PDF (2.5%) |
+| Text extraction: exact match | 40/40 PDFs (100%) |
+| Text extraction: known deviations | 0 PDFs (0%) |
 | Text extraction: fixed this session | PDFBOX-3127, PDFBOX-3053, PDFBOX-3061, PDFBOX-4532 |
 | Inventory: ported | 78 |
 | Inventory: partial | 38 |
@@ -53,7 +53,10 @@
 - [x] Fix bead rectangle semantics (`fill_bead_rectangles` lower-left + width/height reconstruction)
 - [x] Fix article-boundary line handling — `handleLineSeparation` article_start gating: only write `@line_separator` when `previous.line_start?` (PDFBOX-3110-poems-beads MATCH)
 - [x] Fix cropbox text-position translation — LegacyPDFStreamEngine uses `page.crop_box` not `media_box` (PDFBOX-3110-poems-beads-cropbox MATCH)
-- [~] Fix 2 remaining deviations (see breakdown below)
+- [x] Fix Widths-array indirect reference resolution — `/Widths` entry may be a `Cos::Object` (cweb.pdf spacing)
+- [x] Fix raw Type1 FontFile parsing — non-PFB fonts split by `/Length1`/`/Length2` via `create_with_segments` (cweb.pdf word separators)
+- [x] Fix MODIFIER_SYMBOL diacritic merging — add U+00A8/U+00AF/U+00B4/U+00B8 to `diacritic_codepoint?` (cweb.pdf accents)
+- [~] Fix 1 remaining deviation (see breakdown below)
 - [ ] Bidi Java parity (2 pending: sorted/unsorted) — Crystal bidi shard vs java.text.Bidi differences documented in `lib_issues/bidi.1.md` and `bidi.2.md`
 
 **Deviation breakdown (2026-05-25 investigation):**
@@ -68,7 +71,7 @@
 | PDFBOX-3110-poems-beads-cropbox | 0 | Same beads ordering issue. | **FIXED** — `LegacyPDFStreamEngine.process_page` was using `page.media_box`; Java uses `page.getCropBox()` and translates text positions by cropbox lower-left. Corrected to `page.crop_box`. | Done |
 | FC60_Times | 1 | Arabic diacritic ordering differs: `بآُتَّا` vs `بُآتَّا`. Likely `normalize_word` + `handle_direction` interaction. | Needs diacritic handling parity |
 | PDFBOX-4532-reduced (unlisted) | 1 | CMap maps period→space. See PDFBOX-4532 above. | Same |
-| cweb.pdf | 1514 | Massive differences — spacing + special chars (`|` vs `—`, `c` vs `c©`). | Multi-factor, low priority |
+| cweb.pdf | 0 | Massive differences — spacing + special chars (`|` vs `—`, `c` vs `c©`). | **FIXED** — three root causes: (1) `/Widths` arrays are indirect references (`Cos::Object`) that Crystal didn't dereference, giving wrong glyph widths; (2) non-PFB raw Type1 FontFiles weren't parsed — Java splits by `/Length1`/`/Length2` and calls `createWithSegments`, Crystal fell back to a TTF substitute with StandardEncoding; (3) `MODIFIER_SYMBOL` diacritics (U+00A8/U+00B4) weren't merged, leaving `¨u`/`C´e` instead of `ü`/`Cé`. All fixed — verified against Java 3.0.4 jar output (1509 lines both). | Done |
 | hello3.pdf (bidi) | 1 | Arabic character order: `Hello دمحم World.` vs `Hello محمد World.` | Documented in `lib_issues/bidi.1.md` |
 
 ---
@@ -287,7 +290,7 @@ Each broad feature area above is a TDD-ready work item. When starting work:
 4. Update `plans/inventory/java_port_inventory.tsv` from `missing` to `ported`
 
 ### Current Active Work
-- **Phase 1 — Text stripper**: Multi-PDF extraction test enabled (39/40 exact match). Fixed TrueType `average_font_width` to use PDF Widths array (Java parity). 2 known deviations remain (see breakdown). Outline, tabula, rotation, encoding, and both beads PDFs at Java parity. Bidi Crystal regression tests in place.
+- **Phase 1 — Text stripper**: Multi-PDF extraction test enabled (40/40 exact match). Fixed TrueType `average_font_width` to use PDF Widths array (Java parity). 1 known deviation remains (FC60_Times bidi diacritic order). Outline, tabula, rotation, encoding, both beads PDFs, and cweb.pdf at Java parity. Bidi Crystal regression tests in place.
 - **Phase 5 — PDFWriter**: All 12 writer specs green (0 pending). testCompressEncryptedDoc, testPDFBox5927, testPDFBox6036 enabled. Encryption key length fixed.
 - **Phase 7 — PD Model**: add_page_to_tree Kids resolution, remove_page_from_tree, COSArrayList retainAll fixed.
 - **Phase 3 — COSParser**: `plans/active/CosParserPort.md` — all methods ported, tests cover edge cases.

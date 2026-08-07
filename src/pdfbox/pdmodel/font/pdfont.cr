@@ -217,6 +217,9 @@ abstract class Pdfbox::Pdmodel::Font::PDFont
   protected def widths : Array(Float32)
     if @widths.nil?
       array = @dict[Pdfbox::Cos::Name::WIDTHS]?
+      if array.is_a?(Pdfbox::Cos::Object)
+        array = array.object
+      end
       if array.is_a?(Pdfbox::Cos::Array)
         @widths = array.items.map do |item|
           case item

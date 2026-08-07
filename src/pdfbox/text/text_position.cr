@@ -302,6 +302,11 @@ module Pdfbox::Text
         (0xFC5E <= codepoint && codepoint <= 0xFC63) ||
         (0xFE70 <= codepoint && codepoint <= 0xFE7F) ||
         (0xFE20 <= codepoint && codepoint <= 0xFE2F) ||
+        # MODIFIER_SYMBOL (Sk) diacritics in Latin-1 Supplement (Java Character.getType)
+        codepoint == 0x00A8 || # DIAERESIS
+        codepoint == 0x00AF || # MACRON
+        codepoint == 0x00B4 || # ACUTE ACCENT
+        codepoint == 0x00B8 || # CEDILLA
         DIACRITICS.has_key?(codepoint)
     end
 

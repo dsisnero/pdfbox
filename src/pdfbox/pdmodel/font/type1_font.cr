@@ -522,6 +522,21 @@ class Pdfbox::Pdmodel::Font::PDType1Font < Pdfbox::Pdmodel::Font::PDSimpleFont
           bytes = font_file.to_byte_array
           if bytes.size >= 2 && bytes[0] == PFB_START_MARKER.to_u8
             @type1font = Fontbox::Type1::Type1Font.create_with_pfb(bytes)
+          elsif bytes.size > 0
+            stream = font_file.cos_object
+            length1 = stream.get_int(Pdfbox::Cos::Name.new("Length1"), 0_i64)
+            length2 = stream.get_int(Pdfbox::Cos::Name.new("Length2"), 0_i64)
+
+            length1 = repair_length1(bytes, length1)
+            length2 = repair_length2(bytes, length1, length2)
+
+            if length1 >= 0 && length1 <= length1 + length2
+              segment1 = Bytes.new(length1.to_i32) { |i| bytes[i] }
+              segment2 = Bytes.new(length2.to_i32) { |i| bytes[length1.to_i32 + i] }
+              if length1 > 0 && length2 > 0
+                @type1font = Fontbox::Type1::Type1Font.create_with_segments(segment1, segment2)
+              end
+            end
           end
         rescue ex
           Log.warn { "Can't read embedded Type1 font #{fd.font_name}: #{ex.message}" }
@@ -543,6 +558,54 @@ class Pdfbox::Pdmodel::Font::PDType1Font < Pdfbox::Pdmodel::Font::PDSimpleFont
       mapping = FontMappers.instance.get_font_box_font(get_base_font, fd)
       @generic_font = mapping.font
     end
+  end
+
+  private def repair_length1(bytes : Bytes, length1 : Int64) : Int64
+    offset = Math.max(0, length1 - 4).to_i32
+    if offset <= 0 || offset > bytes.size - 4
+      offset = bytes.size - 4
+    end
+
+    offset = find_binary_offset_after_exec(bytes, offset)
+    if offset == 0 && length1 > 0
+      offset = find_binary_offset_after_exec(bytes, bytes.size - 4)
+    end
+
+    if length1 - offset != 0 && offset > 0
+      Log.warn { "Ignored invalid Length1 #{length1} for Type 1 font #{name}" }
+      return offset.to_i64
+    end
+
+    length1
+  end
+
+  private def find_binary_offset_after_exec(bytes : Bytes, start_offset : Int32) : Int32
+    offset = start_offset
+    while offset > 0
+      if offset < bytes.size - 3 &&
+         bytes[offset] == 'e'.ord.to_u8 &&
+         bytes[offset + 1] == 'x'.ord.to_u8 &&
+         bytes[offset + 2] == 'e'.ord.to_u8 &&
+         bytes[offset + 3] == 'c'.ord.to_u8
+        offset += 4
+        while offset < bytes.size &&
+              (bytes[offset] == '\r'.ord.to_u8 || bytes[offset] == '\n'.ord.to_u8 ||
+              bytes[offset] == ' '.ord.to_u8 || bytes[offset] == '\t'.ord.to_u8)
+          offset += 1
+        end
+        break
+      end
+      offset -= 1
+    end
+    offset
+  end
+
+  private def repair_length2(bytes : Bytes, length1 : Int64, length2 : Int64) : Int64
+    if length2 < 0 || length2 > bytes.size - length1
+      Log.warn { "Ignored invalid Length2 #{length2} for Type 1 font #{name}" }
+      return (bytes.size - length1).to_i64
+    end
+    length2
   end
 
   private def matrix_from_font_box_font : Matrix?
