@@ -421,7 +421,6 @@ class Pdfbox::Pdmodel::Font::PDTrueTypeFont < Pdfbox::Pdmodel::Font::PDSimpleFon
 
   def width_from_font(code : Int32) : Float32
     gid = code_to_gid(code)
-    return 0.0_f32 if gid == 0
 
     if ttf = @ttf
       width = if hm = ttf.horizontal_metrics

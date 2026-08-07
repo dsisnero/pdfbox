@@ -222,22 +222,23 @@ abstract class Pdfbox::Pdmodel::Font::PDSimpleFont < Pdfbox::Pdmodel::Font::PDFo
                          end
 
     # first try to use a ToUnicode CMap
-    # Call parent class's to_unicode method directly
     cmap = @to_unicode_cmap
     if cmap
+      cmap_unicode = nil.as(String?)
       name = cmap.name
       if name && name.starts_with?("Identity-") &&
          (@dict[Pdfbox::Cos::Name.new("ToUnicode")].is_a?(Pdfbox::Cos::Name) || !cmap.has_unicode_mappings?)
-        return identity_char_from_code(code)
+        cmap_unicode = identity_char_from_code(code)
       else
         if code < 256 && !composite_font?
           encoding_value = @dict[Pdfbox::Cos::Name::ENCODING]
           if encoding_value.is_a?(Pdfbox::Cos::Name) && !encoding_value.to_s.starts_with?("Identity")
-            return cmap.to_unicode(code, 1)
+            cmap_unicode = cmap.to_unicode(code, 1)
           end
         end
-        return cmap.to_unicode(code)
+        cmap_unicode = cmap.to_unicode(code) unless cmap_unicode
       end
+      return cmap_unicode if cmap_unicode
     end
 
     # if the font is a "simple font" and uses MacRoman/MacExpert/WinAnsi[Encoding]

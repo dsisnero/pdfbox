@@ -202,12 +202,16 @@ class Pdfbox::Pdmodel::Font::PDType1Font < Pdfbox::Pdmodel::Font::PDSimpleFont
     parse_embedded_type1
 
     # Set up encoding
-    if base_font.includes?("ZapfDingbats")
-      @encoding = Encoding::ZapfDingbatsEncoding::INSTANCE
-    elsif base_font == "Symbol"
-      @encoding = Encoding::SymbolEncoding::INSTANCE
+    if @standard14
+      if base_font.includes?("ZapfDingbats")
+        @encoding = Encoding::ZapfDingbatsEncoding::INSTANCE
+      elsif base_font == "Symbol"
+        @encoding = Encoding::SymbolEncoding::INSTANCE
+      else
+        @encoding = Encoding::WinAnsiEncoding::INSTANCE
+      end
     else
-      @encoding = Encoding::WinAnsiEncoding::INSTANCE
+      read_encoding
     end
 
     # Assign glyph list
@@ -331,6 +335,11 @@ class Pdfbox::Pdmodel::Font::PDType1Font < Pdfbox::Pdmodel::Font::PDSimpleFont
       return type1font.width(glyph_name)
     end
 
+    if generic_font = @generic_font
+      glyph_name = encoding.get_name(code)
+      return generic_font.width(glyph_name)
+    end
+
     0.0_f32
   end
 
@@ -362,6 +371,8 @@ class Pdfbox::Pdmodel::Font::PDType1Font < Pdfbox::Pdmodel::Font::PDSimpleFont
               get_standard14_width(code)
             elsif type1font = @type1font
               type1font.width(name)
+            elsif generic_font = @generic_font
+              generic_font.width(name)
             else
               0.0_f32
             end

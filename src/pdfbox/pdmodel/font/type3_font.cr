@@ -105,6 +105,15 @@ module Pdfbox::Pdmodel::Font
       width_from_font(code)
     end
 
+    def displacement(code : Int32) : Vector
+      matrix = font_matrix
+      w = width(code)
+      Vector.new(
+        matrix.a * w + matrix.e,
+        matrix.b * w + matrix.f
+      )
+    end
+
     # Returns the width from the embedded font file (char proc stream).
     def width_from_font(code : Int32) : Float32
       char_proc = get_char_proc(code)
