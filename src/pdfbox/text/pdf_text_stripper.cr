@@ -824,19 +824,22 @@ module Pdfbox::Text
             unless overlap?(position_y, position_height, max_y_for_line, max_height_for_line)
               # Detect paragraph separation
               current = PositionWrapper.new(position)
+              current.set_line_start
               if llsp = last_line_start_position
                 is_paragraph_separation(current, previous, llsp, max_height_for_line)
-                current.set_line_start
-              else
-                current.set_line_start
               end
 
               io << render_items(line)
 
               if current.paragraph_start?
-                io << @paragraph_end unless @paragraph_end.empty?
-                io << @paragraph_start unless @paragraph_start.empty?
-                io << @line_separator
+                if previous.article_start? && previous.line_start?
+                  io << @line_separator
+                  io << @paragraph_start
+                else
+                  io << @line_separator
+                  io << @paragraph_end
+                  io << @paragraph_start
+                end
               else
                 io << @line_separator
               end
@@ -867,24 +870,32 @@ module Pdfbox::Text
           end_of_last_text_x = position_x + position_width
 
           unless character_value.nil?
+            if start_of_page && last_position.nil?
+              io << @paragraph_start
+            end
             line << LineItem.new(position)
           end
 
           max_height_for_line = Math.max(max_height_for_line, position_height)
           min_y_top_for_line = Math.min(min_y_top_for_line, position_y - position_height)
           last_position = PositionWrapper.new(position)
-          start_of_page = false if start_of_page
+          if start_of_page
+            last_position.not_nil!.set_paragraph_start
+            last_position.not_nil!.set_line_start
+            last_line_start_position = last_position
+            start_of_page = false
+          end
           last_word_spacing = word_spacing
           previous_ave_char_width = average_char_width
         end
 
         unless line.empty?
           io << render_items(line)
-          io << @paragraph_end unless @paragraph_end.empty?
+          io << @paragraph_end
         end
 
         io << @article_end unless text_positions.empty?
-        io << @page_end unless text_positions.empty?
+        io << @page_end
       end
     end
 
@@ -976,7 +987,7 @@ module Pdfbox::Text
     end
 
     def test_is_paragraph_separation(position : PositionWrapper, last_position : PositionWrapper,
-                                      last_line_start_position : PositionWrapper?, max_height_for_line : Float32) : Nil
+                                     last_line_start_position : PositionWrapper?, max_height_for_line : Float32) : Nil
       is_paragraph_separation(position, last_position, last_line_start_position, max_height_for_line)
     end
 
@@ -987,7 +998,7 @@ module Pdfbox::Text
 
     # Port of Java isParagraphSeparation
     private def is_paragraph_separation(position : PositionWrapper, last_position : PositionWrapper,
-                                         last_line_start_position : PositionWrapper?, max_height_for_line : Float32) : Nil
+                                        last_line_start_position : PositionWrapper?, max_height_for_line : Float32) : Nil
       result = false
       if last_line_start_position.nil?
         result = true
@@ -1459,14 +1470,20 @@ module Pdfbox::Text
     end
 
     private def fill_bead_rectangles(page : Pdfbox::Pdmodel::Page) : Nil
-      @bead_rectangles.clear
+      @bead_rectangles = [] of Pdmodel::Common::PDRectangle?
       page.thread_beads.each do |bead|
-        rect = bead.rectangle
-        if rect.nil?
+        original_rect = bead.rectangle
+        if original_rect.nil?
           @bead_rectangles << nil
           next
         end
 
+        rect = Pdmodel::Common::PDRectangle.new(
+          original_rect.lower_left_x,
+          original_rect.lower_left_y,
+          original_rect.upper_right_x - original_rect.lower_left_x,
+          original_rect.upper_right_y - original_rect.lower_left_y
+        )
         media_box = page.media_box
         if media_box
           upper_right_y = (media_box.upper_right_y - rect.lower_left_y).to_f32
@@ -1489,24 +1506,21 @@ module Pdfbox::Text
 
     protected def render_text_positions_by_article : String
       String.build do |io|
+        max_y_for_line = MAX_Y_FOR_LINE_RESET_VALUE
+        min_y_top_for_line = MIN_Y_TOP_FOR_LINE_RESET_VALUE
+        end_of_last_text_x = END_OF_LAST_TEXT_X_RESET_VALUE
+        last_word_spacing = LAST_WORD_SPACING_RESET_VALUE
+        max_height_for_line = MAX_HEIGHT_FOR_LINE_RESET_VALUE
+        last_position = nil.as(PositionWrapper?)
+        last_line_start_position = nil.as(PositionWrapper?)
+        start_of_page = true
+
         unless @characters_by_article.empty?
           io << @page_start
         end
 
         @characters_by_article.each do |article_texts|
           next if article_texts.empty?
-
-          io << @article_start
-          start_of_article = true
-
-          max_y_for_line = MAX_Y_FOR_LINE_RESET_VALUE
-          end_of_last_text_x = END_OF_LAST_TEXT_X_RESET_VALUE
-          last_word_spacing = LAST_WORD_SPACING_RESET_VALUE
-          max_height_for_line = MAX_HEIGHT_FOR_LINE_RESET_VALUE
-          last_position = nil.as(PositionWrapper?)
-          last_line_start_position = nil.as(PositionWrapper?)
-          previous_ave_char_width = -1.0_f32
-          line = [] of LineItem
 
           text_list = if @sort_by_position
                         sorted = stable_merge_sort(article_texts)
@@ -1515,6 +1529,12 @@ module Pdfbox::Text
                       else
                         article_texts
                       end
+
+          io << @article_start
+          start_of_article = true
+
+          line = [] of LineItem
+          previous_ave_char_width = -1.0_f32
 
           text_list.each do |position|
             character_value = position.unicode
@@ -1562,30 +1582,32 @@ module Pdfbox::Text
               end
 
               unless overlap?(position_y, position_height, max_y_for_line, max_height_for_line)
-                # Detect paragraph separation
+                io << render_items(line)
+                line.clear
+
                 current = PositionWrapper.new(position)
+                current.set_line_start
                 if llsp = last_line_start_position
                   is_paragraph_separation(current, previous, llsp, max_height_for_line)
-                  current.set_line_start
-                else
-                  current.set_line_start
                 end
-
-                io << render_items(line)
-
                 if current.paragraph_start?
-                  io << @paragraph_end unless @paragraph_end.empty?
-                  io << @paragraph_start unless @paragraph_start.empty?
-                  io << @line_separator
+                  if previous.article_start? && previous.line_start?
+                    io << @line_separator
+                    io << @paragraph_start
+                  else
+                    io << @line_separator
+                    io << @paragraph_end
+                    io << @paragraph_start
+                  end
                 else
                   io << @line_separator
                 end
                 last_line_start_position = current
 
-                line.clear
                 expected_start_of_next_word_x = EXPECTED_START_OF_NEXT_WORD_X_RESET_VALUE
                 max_y_for_line = MAX_Y_FOR_LINE_RESET_VALUE
                 max_height_for_line = MAX_HEIGHT_FOR_LINE_RESET_VALUE
+                min_y_top_for_line = MIN_Y_TOP_FOR_LINE_RESET_VALUE
               end
 
               if expected_start_of_next_word_x != EXPECTED_START_OF_NEXT_WORD_X_RESET_VALUE &&
@@ -1598,31 +1620,43 @@ module Pdfbox::Text
               if (previous_text_position = previous.text_position) && (position.x - previous_text_position.x).abs > (word_spacing + delta_space)
                 max_y_for_line = MAX_Y_FOR_LINE_RESET_VALUE
                 max_height_for_line = MAX_HEIGHT_FOR_LINE_RESET_VALUE
+                min_y_top_for_line = MIN_Y_TOP_FOR_LINE_RESET_VALUE
               end
             end
 
             max_y_for_line = position_y if position_y >= max_y_for_line
             end_of_last_text_x = position_x + position_width
 
-            unless character_value.nil?
+            if character_value
+              if start_of_page && last_position.nil?
+                io << @paragraph_start
+              end
               line << LineItem.new(position)
             end
 
             max_height_for_line = Math.max(max_height_for_line, position_height)
-            last_position = PositionWrapper.new(position)
+            min_y_top_for_line = Math.min(min_y_top_for_line, position_y - position_height)
+            current_position = PositionWrapper.new(position)
+            last_position = current_position
+            if start_of_page
+              current_position.set_paragraph_start
+              current_position.set_line_start
+              last_line_start_position = current_position
+              start_of_page = false
+            end
             last_word_spacing = word_spacing
             previous_ave_char_width = average_char_width
           end
 
           unless line.empty?
             io << render_items(line)
-            io << @paragraph_end unless @paragraph_end.empty?
+            io << @paragraph_end
           end
 
           io << @article_end
         end
 
-        io << @page_end unless @characters_by_article.empty?
+        io << @page_end
       end
     end
   end
