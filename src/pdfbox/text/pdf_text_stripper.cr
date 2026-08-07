@@ -832,8 +832,9 @@ module Pdfbox::Text
               io << render_items(line)
 
               if current.paragraph_start?
-                if previous.article_start? && previous.line_start?
-                  io << @line_separator
+                if previous.article_start?
+                  io << @line_separator if previous.line_start?
+                  io << @paragraph_end
                   io << @paragraph_start
                 else
                   io << @line_separator
@@ -878,11 +879,12 @@ module Pdfbox::Text
 
           max_height_for_line = Math.max(max_height_for_line, position_height)
           min_y_top_for_line = Math.min(min_y_top_for_line, position_y - position_height)
-          last_position = PositionWrapper.new(position)
+          current_position = PositionWrapper.new(position)
+          last_position = current_position
           if start_of_page
-            last_position.not_nil!.set_paragraph_start
-            last_position.not_nil!.set_line_start
-            last_line_start_position = last_position
+            current_position.set_paragraph_start
+            current_position.set_line_start
+            last_line_start_position = current_position
             start_of_page = false
           end
           last_word_spacing = word_spacing
@@ -1591,8 +1593,9 @@ module Pdfbox::Text
                   is_paragraph_separation(current, previous, llsp, max_height_for_line)
                 end
                 if current.paragraph_start?
-                  if previous.article_start? && previous.line_start?
-                    io << @line_separator
+                  if previous.article_start?
+                    io << @line_separator if previous.line_start?
+                    io << @paragraph_end
                     io << @paragraph_start
                   else
                     io << @line_separator

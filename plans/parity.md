@@ -8,7 +8,7 @@
 > Phases are branch-sized, user-visible features — not individual helper methods.
 > A feature is marked `[x]` only when its mapped inventory rows are closed and the parity checks are green.
 
-**Current work:** Text extraction deviations investigated in detail (2026-05-25). Rotation deviation (PDFBOX-3127) fixed and MATCH. Spacing deviations traced to `delta_char_width` computed from CURRENT position width rather than PREVIOUS. Encoding deviation (PDFBOX-4532) traced to ToUnicode CMap period→space mapping. Java 3.0.4 recovers period through opaque stripper pipeline (likely `mergeDiacritic`/`normalizeWord`). 7 remaining deviations documented below.
+**Current work:** Text extraction deviations investigated in detail (2026-05-25). Rotation deviation (PDFBOX-3127) fixed and MATCH. Spacing deviations traced to `delta_char_width` computed from CURRENT position width rather than PREVIOUS. Encoding deviation (PDFBOX-4532) traced to ToUnicode CMap period→space mapping. Java 3.0.4 recovers period through opaque stripper pipeline (likely `mergeDiacritic`/`normalizeWord`). Beads deviations (PDFBOX-3110) fixed and MATCH via `handleLineSeparation` article-start gating and cropbox text-position translation. 2 remaining deviations documented below.
 
 ---
 
@@ -22,8 +22,8 @@
 | Pending tests | 0 |
 | Failures | 0 |
 | Errors | 0 |
-| Text extraction: exact match | 37/40 PDFs (92.5%) |
-| Text extraction: known deviations | 3 PDFs (7.5%) |
+| Text extraction: exact match | 39/40 PDFs (97.5%) |
+| Text extraction: known deviations | 1 PDF (2.5%) |
 | Text extraction: fixed this session | PDFBOX-3127, PDFBOX-3053, PDFBOX-3061, PDFBOX-4532 |
 | Inventory: ported | 78 |
 | Inventory: partial | 38 |
@@ -51,7 +51,9 @@
 - [x] Fix spacing deviation (PDFBOX-3061) — `name_to_gid` returns 0 (not −1); removed gid==0 early return
 - [x] Fix paragraph separation and article boundaries in `render_text_positions_by_article` (Java writePage parity)
 - [x] Fix bead rectangle semantics (`fill_bead_rectangles` lower-left + width/height reconstruction)
-- [~] Fix 7 remaining deviations (see breakdown below)
+- [x] Fix article-boundary line handling — `handleLineSeparation` article_start gating: only write `@line_separator` when `previous.line_start?` (PDFBOX-3110-poems-beads MATCH)
+- [x] Fix cropbox text-position translation — LegacyPDFStreamEngine uses `page.crop_box` not `media_box` (PDFBOX-3110-poems-beads-cropbox MATCH)
+- [~] Fix 2 remaining deviations (see breakdown below)
 - [ ] Bidi Java parity (2 pending: sorted/unsorted) — Crystal bidi shard vs java.text.Bidi differences documented in `lib_issues/bidi.1.md` and `bidi.2.md`
 
 **Deviation breakdown (2026-05-25 investigation):**
@@ -62,8 +64,8 @@
 | PDFBOX-4532 (encoding) | 0 | **FIXED** — PDF has marked content `/Span` with `/ActualText "."`. Crystal's `process_operator` was missing BDC/BMC/EMC/MP/DP operators. Added operator handling in `PDFStreamEngine`, enabling `begin_marked_content_sequence` → `@actual_text` → `process_text_position` chain to override CMap's space with ActualText "." | Done |
 | PDFBOX-3053 (spacing) | 0 | **FIXED** — Font "T5" is `PDType3Font`, not `PDTrueTypeFont`. Crystal used base `/1000` displacement, Java uses `getFontMatrix().transform()`. Added `displacement` override in `PDType3Font` to use font matrix transform. Font matrix scale 0.01724 vs 0.001 — 17.24x difference. | Done |
 | PDFBOX-3061 (spacing) | 0 | **FIXED** — `name_to_gid` returned -1 instead of 0, causing `advance_width(-1)` to wrap to last glyph. Combined with `width_from_font` early return on gid==0. Fixed both: name_to_gid returns 0 (matching Java) + removed early return. | Done |
-| PDFBOX-3110-poems-beads | 2 | 2-page PDF. Page 2's bead rectangles (3) don't cover y=447 text. Article boundaries reset `max_y_for_line`, preventing y-change detection between articles. | Needs cross-article y-context |
-| PDFBOX-3110-poems-beads-cropbox | 2 | Same beads ordering issue. | Same fix |
+| PDFBOX-3110-poems-beads | 0 | 2-page PDF. Page 2's bead rectangles (3) don't cover y=447 text. Article boundaries reset `max_y_for_line`, preventing y-change detection between articles. | **FIXED** — `handleLineSeparation`: only write `@line_separator` at article boundary when previous position is line_start; Java writes only paragraphStart when article_start but not line_start. Verified against Java 3.0.4 jar output (75 lines both). | Done |
+| PDFBOX-3110-poems-beads-cropbox | 0 | Same beads ordering issue. | **FIXED** — `LegacyPDFStreamEngine.process_page` was using `page.media_box`; Java uses `page.getCropBox()` and translates text positions by cropbox lower-left. Corrected to `page.crop_box`. | Done |
 | FC60_Times | 1 | Arabic diacritic ordering differs: `بآُتَّا` vs `بُآتَّا`. Likely `normalize_word` + `handle_direction` interaction. | Needs diacritic handling parity |
 | PDFBOX-4532-reduced (unlisted) | 1 | CMap maps period→space. See PDFBOX-4532 above. | Same |
 | cweb.pdf | 1514 | Massive differences — spacing + special chars (`|` vs `—`, `c` vs `c©`). | Multi-factor, low priority |
@@ -285,7 +287,7 @@ Each broad feature area above is a TDD-ready work item. When starting work:
 4. Update `plans/inventory/java_port_inventory.tsv` from `missing` to `ported`
 
 ### Current Active Work
-- **Phase 1 — Text stripper**: Multi-PDF extraction test enabled (37/40 exact match). Fixed TrueType `average_font_width` to use PDF Widths array (Java parity). 7 known deviations remain (see breakdown). Outline, tabula, rotation, and encoding extraction at Java parity. Bidi Crystal regression tests in place.
+- **Phase 1 — Text stripper**: Multi-PDF extraction test enabled (39/40 exact match). Fixed TrueType `average_font_width` to use PDF Widths array (Java parity). 2 known deviations remain (see breakdown). Outline, tabula, rotation, encoding, and both beads PDFs at Java parity. Bidi Crystal regression tests in place.
 - **Phase 5 — PDFWriter**: All 12 writer specs green (0 pending). testCompressEncryptedDoc, testPDFBox5927, testPDFBox6036 enabled. Encryption key length fixed.
 - **Phase 7 — PD Model**: add_page_to_tree Kids resolution, remove_page_from_tree, COSArrayList retainAll fixed.
 - **Phase 3 — COSParser**: `plans/active/CosParserPort.md` — all methods ported, tests cover edge cases.
