@@ -32,10 +32,18 @@ shards update
 ## Core Principles
 
 - Treat Apache PDFBox Java source under `vendor/pdfbox/` as the source of truth.
+- Before making changes to code, verify the intended vendor logic by asking questions via DeepWiki (`apache/pdfbox`), then confirm against the actual Java source under `vendor/pdfbox/`.
 - Port tests first and match Java behavior exactly; do not simplify behavior for convenience.
 - Prefer Crystal idioms only when they preserve the Java logic and observable semantics.
 - Keep the repo shippable: run format, ameba, and specs before committing.
 - Use `./temp` for temporary artifacts and keep repository-local tooling state out of version control.
+
+## Workflow
+
+- Follow `plans/parity.md` to pick what to work on next.
+- Work on one phase to completion before stopping: close every unchecked item in that phase.
+- Before committing, clean the quality gates: `crystal tool format --check src spec`, `ameba src spec`, and `crystal spec -Dpreview_mt -Dexecution_context`.
+- Update `plans/parity.md` (check off completed items) and the inventory, then commit with a detailed description of what was implemented.
 
 ## Commit Convention
 
@@ -47,7 +55,6 @@ Port COSDocumentCompressionTest#testAlteredDoc with Flate stream parity
 
 ## Project Conventions
 
-- Use `bd` for issue tracking; do not keep markdown TODO lists.
 - Run `ameba --fix src spec` before the final lint/spec pass when code changes.
 - Prefer vendor fixtures and Java tests over synthetic replacements when porting parity behavior.
 - Keep temporary scripts and downloaded fixtures under `./temp`.

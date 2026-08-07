@@ -3,6 +3,10 @@
 > Working document tracking broad feature porting status.
 > Complements `plans/inventory/java_port_inventory.tsv` (per-method ledger) and `plans/active/` (per-class plans).
 > Update this file as features progress.
+>
+> **Checkbox convention:** `[x]` complete and verified, `[~]` partial / in progress, `[ ]` not started.
+> Phases are branch-sized, user-visible features — not individual helper methods.
+> A feature is marked `[x]` only when its mapped inventory rows are closed and the parity checks are green.
 
 **Current work:** Text extraction deviations investigated in detail (2026-05-25). Rotation deviation (PDFBOX-3127) fixed and MATCH. Spacing deviations traced to `delta_char_width` computed from CURRENT position width rather than PREVIOUS. Encoding deviation (PDFBOX-4532) traced to ToUnicode CMap period→space mapping. Java 3.0.4 recovers period through opaque stripper pipeline (likely `mergeDiacritic`/`normalizeWord`). 7 remaining deviations documented below.
 
@@ -13,7 +17,7 @@
 | Metric | Value |
 |---|---|
 | Java source files (vendor) | ~1,289 |
-| Crystal source files (ported) | ~415 |
+| Crystal source files (ported) | ~415 (`src/` has 464 `.cr` files) |
 | Passing tests | 1,630 |
 | Pending tests | 0 |
 | Failures | 0 |
@@ -29,11 +33,9 @@
 
 ---
 
-## Feature Roadmap
+## Phase 1 — Text Extraction (most visible feature gap)
 
-Each feature area below tracks concrete, actionable tasks. Checkboxes reflect current status.
-
-### P0 — Text Extraction (most visible feature gap)
+**Goal:** Exact text extraction parity with Java PDFBox across the fixture corpus.
 
 - [x] Fix font height=0 regression (Type1 @generic_font, TTF/Mapped/OpenType upem scaling)
 - [x] Fix CFF Type1CharString.width lazy render bug — unblocks 3 skipped PDFs (PDFBOX-5920, PDFBOX-5002, sample_fonts_solidconvertor)
@@ -43,7 +45,13 @@ Each feature area below tracks concrete, actionable tasks. Checkboxes reflect cu
 - [x] Enable `eu-001.pdf` tabula font-height extraction parity — matches Java exactly (0 diffs, 4567 bytes)
 - [x] Add `text_stripper_normalize` (NFKC + BOM stripping) for lenient diacritic comparison
 - [x] Add BidiSample Crystal-specific regression tests (size, content markers)
-- [~] Fix 7 remaining deviations (see detailed breakdown below)
+- [x] Fix rotation deviation (PDFBOX-3127) — MATCH
+- [x] Fix encoding deviation (PDFBOX-4532) — marked content `/Span` `/ActualText "."` via BDC/BMC/EMC/MP/DP operator handling
+- [x] Fix spacing deviation (PDFBOX-3053) — PDType3Font `displacement` override via font matrix transform
+- [x] Fix spacing deviation (PDFBOX-3061) — `name_to_gid` returns 0 (not −1); removed gid==0 early return
+- [x] Fix paragraph separation and article boundaries in `render_text_positions_by_article` (Java writePage parity)
+- [x] Fix bead rectangle semantics (`fill_bead_rectangles` lower-left + width/height reconstruction)
+- [~] Fix 7 remaining deviations (see breakdown below)
 - [ ] Bidi Java parity (2 pending: sorted/unsorted) — Crystal bidi shard vs java.text.Bidi differences documented in `lib_issues/bidi.1.md` and `bidi.2.md`
 
 **Deviation breakdown (2026-05-25 investigation):**
@@ -61,7 +69,11 @@ Each feature area below tracks concrete, actionable tasks. Checkboxes reflect cu
 | cweb.pdf | 1514 | Massive differences — spacing + special chars (`|` vs `—`, `c` vs `c©`). | Multi-factor, low priority |
 | hello3.pdf (bidi) | 1 | Arabic character order: `Hello دمحم World.` vs `Hello محمد World.` | Documented in `lib_issues/bidi.1.md` |
 
-### P1 — Font Embedding / Loading (blocks Type0/TrueType/Type1C parity)
+---
+
+## Phase 2 — Font Embedding / Loading (blocks Type0/TrueType/Type1C parity)
+
+**Goal:** All font subtypes load, embed, and subset with Java-parity behavior.
 
 - [x] Font specs: all 129 examples pass, 0 pending
 - [x] Type1 font PFB constructor — `PDType1Font.new(doc, pfb_in)` implemented
@@ -72,16 +84,31 @@ Each feature area below tracks concrete, actionable tasks. Checkboxes reflect cu
 - [x] Font subsetting wired into save — `subset_embedded_fonts` calls `PDType0Font.subset`
 - [x] TrueTypeEmbedder — 272 lines Java ported (abstract base, font descriptor, subsetting)
 - [x] PDCIDFontType2Embedder — 677→427 lines Java→Crystal ported (CID font embedding, widths, vertical metrics)
+- [x] Type1 `average_font_width` computed from WIDTHS dict (Java parity)
+- [x] Type1/Type1C non-standard14 encode validation (Java parity)
+- [x] Type1C font embedding width/height via embedded CFF (Java parity)
 
-### P2 — PDF Parsing
+---
+
+## Phase 3 — PDF Parsing & COS
+
+**Goal:** Robust COS object, stream, xref, and document parsing.
 
 - [x] PDFBOX-5025 test enabled — `length1` reads from font_file2 COS stream correctly
 - [x] `COSParser.parseObjectStreamObject` — delegates to Parser which is fully implemented
 - [x] Compressed object stream writing (xref stream format enabled, COSWriterObjectStream + COSWriterCompressionPool + PDFXrefStreamParser all working)
 - [x] Document info get/set — all metadata fields available via `DocumentInformation`
 - [x] Incremental save — `save_incremental` writes original bytes + full save; parser uses `rindex` for last startxref
+- [x] Page-tree Kids indirection resolution before array-type checks
+- [x] `COSArrayList#retain_all` checks inner Cos::Object for matching
+- [x] `PDPageTree` nested tree traversal — `load_page_tree` recurses into intermediate Pages nodes
+- [x] COSParser port plan complete — `plans/active/CosParserPort.md`, all methods ported, edge-case tests green
 
-### P4 — Content Stream Operators
+---
+
+## Phase 4 — Content Stream Engine
+
+**Goal:** Complete operator coverage on PDFStreamEngine / graphics engines.
 
 - [x] All text operators (Tj, TJ, ', " Td TD T*) — implemented
 - [x] All device color operators (G, g, RG, rg, K, k) — implemented
@@ -89,8 +116,28 @@ Each feature area below tracks concrete, actionable tasks. Checkboxes reflect cu
 - [x] Color space operators (CS, cs) — PDColorSpace.create factory + Resources.color_space
 - [x] Generic color operators (SC, sc) — set color components on current color space
 - [x] Marked content operators (BMC, EMC, MP, DP, BDC) — all 5 implemented, marked content stack + points on PDFStreamEngine
+- [x] Indirect `Cos::Object` reference resolution for font names, show-text arrays, and TJ array items
+- [x] `Cos::Number` handling for Tw/Tc word/character spacing in PDFGraphicsStreamEngine
 
-### P5 — FontBox Infrastructure
+---
+
+## Phase 5 — PDF Writer
+
+**Goal:** Byte-compatible document writing (incremental, compressed, encrypted).
+
+- [x] All 12 writer specs green (0 pending)
+- [x] testCompressEncryptedDoc, testPDFBox5927, testPDFBox6036 enabled
+- [x] Compressed object stream writing via xref stream format
+- [x] Writer catalog `/Version` update
+- [x] Encryption key length default fixed (256→128) for revision 4 compatibility
+- [x] COS increment test (save/load page count), document version test (1.4→1.6)
+- [x] Font subsetting wired into save — `subset_embedded_fonts` calls `PDType0Font.subset` before every save
+
+---
+
+## Phase 6 — FontBox Infrastructure
+
+**Goal:** TrueType/OpenType/Type1 low-level parsing and glyph substitution.
 
 - [x] TrueTypeCollection: processes TTC fonts, resolves fonts by name, scans headers — fixture switched to `ipag.ttf`
 - [x] OTFParser: standalone OpenType/CFF parsing — CFF path fix (uses CFF charset, not TTF post table)
@@ -99,7 +146,11 @@ Each feature area below tracks concrete, actionable tasks. Checkboxes reflect cu
 - [~] GSUB: Tamil worker adjustments — wired into factory, needs Tamil-specific substitution rules (currently uses Gujarati logic)
 - [~] Various TTF table TODO comments — reduced from 50+ to ~18 genuine feature gaps (logging TODOs converted to NOTE comments, dead stubs removed)
 
-### P6 — PD Model Completeness
+---
+
+## Phase 7 — PD Model Completeness
+
+**Goal:** Full PDModel object surface with Java-parity semantics.
 
 - [x] add_page_to_tree: resolve Kids indirect reference before checking array type
 - [x] remove_page: also remove from catalog page tree (Kids array + Count decrement)
@@ -109,40 +160,51 @@ Each feature area below tracks concrete, actionable tasks. Checkboxes reflect cu
 - [x] `PDDocumentCatalog`: 32 methods including acro_form, viewer_preferences, metadata, output_intents, open_action
 - [x] `PDDocumentInformation`: title, author, subject, keywords, creator, producer, dates — all getters/setters
 - [x] Font subsetting wired into save — `subset_embedded_fonts` calls `PDType0Font.subset` before every save
+- [x] PDRectangle.contains / thread_beads / bead rect semantics for article flow
 
-### P7 — Annotations & Interactive
+---
+
+## Phase 8 — Annotations & Interactive
+
+**Goal:** Forms, widgets, annotations, and actions round-trip through save/load.
 
 - [x] Form field value serialization — save/load roundtrip verified for text, checkbox, list box fields
 - [~] Annotation appearance handlers: rendering wired into PageDrawer.process_annotations (appearance streams rendered via process_stream_operators)
 - [x] Action completion — all 13 action types implemented with factory, URI/GoTo/JavaScript getters/setters work
+- [ ] Document navigation (destinations: XYZ, Fit, FitH, FitV, Named) — partial, verify end-to-end
+- [ ] Page navigation (threads, transitions) — partial, verify end-to-end
 
-### P8 — Lower Priority / Future
+---
 
-- [x] PDFRenderer — working renderer with CrImage integration, PageDrawer extends PDFGraphicsStreamEngine
-- [~] XMPBox — Core complete. DomXmpParser (parse XML), XmpSerializer (write XML), type system (17 types), schema system (13 schemas), PdfaExtensionHelper (PDF/A schema loading), XmpSchemaException all ported. 13 full structured types. PDMetadata integration and test suite remaining.
-- [ ] Encryption: public key encryption porting — requires OpenSSL RSA/X.509 support (Crystal stdlib has only symmetric ciphers and digests; needs external shard like openssl_ext)
-- [x] ImageIOUtil: CrImage integration — ExtractImages uses CrImage::RGBA + CrImage::PNG::Writer; PDFRenderer uses CrImage for render_image_png
---
-### 10. XMPBox (`src/xmpbox/`)
+## Phase 9 — Encryption
 
-| Component | Status | Notes |
-|-----------|--------|-------|
-| XMP constants | [x] | xmp_constants.cr |
-| Type system (Types, Cardinality, all 46 types) | [x] | 19 type files, 17 structured types |
-| Schema system (XMPSchema + 13 schema classes) | [x] | 3 schema files + XmpSchemaException |
-| XMPMetadata + TypeMapping | [x] | xmp_metadata.cr + type_mapping.cr + xpacket fields |
-| DateConverter | [x] | date_converter.cr — ISO8601, PDF-style, timezone, millis |
-| DomXmpParser | [x] | 673-line parser with namespace finder + lenient array/namespace detection |
-| DomHelper | [x] | XML utility methods |
-| NamespaceFinder | [x] | Namespace stack tracking |
-| XmpParsingException + XmpSerializationException | [x] | exceptions.cr + ErrorType enum (15 values) |
-| XmpSchemaException | [x] | schema/xmp_schema.cr |
-| XmpSerializer | [x] | xml/xmp_serializer.cr — 148-line Crystal port |
-| PdfaExtensionHelper | [x] | xml/pdfa_extension_helper.cr — 216-line PDF/A schema loading |
-| PDFA*Type classes (4) | [x] | PDFASchemaType, PDFAFieldType, PDFAPropertyType, PDFATypeType |
-| 13 structured types | [x] | ResourceEvent, ResourceRef, Thumbnail, Font, Version, Colorant, Layer, Job, OECF, CFAPattern, DeviceSettings, Flash, Dimensions |
-| Tests | [~] | 30 Crystal specs covering type system, schema, date conversion, metadata, parsing, attributes (from 28 Java test files) |
-| PDFBox integration (PDMetadata) | [x] | PDMetadata + XmpBox parse/serialize convenience methods |
+**Goal:** Full password-based (and future public-key) encryption for read/write.
+
+- [x] StandardSecurityHandler — RC4, AES-128, AES-256 key generation
+- [x] Encryption key length default fixed (256→128) for revision 4 compatibility
+- [x] AccessPermission, ProtectionPolicy ported
+- [x] PDEncryption dictionary management (encrypt/decrypt document roundtrip green)
+- [x] SASLPrep (RFC 4013) string preparation for encryption revision 6
+- [~] Stream/data encryption wired into writer (testCompressEncryptedDoc passes; broader stream encryption verification pending)
+- [ ] Public key encryption porting — requires OpenSSL RSA/X.509 support (Crystal stdlib has only symmetric ciphers and digests; needs external shard like openssl_ext)
+
+---
+
+## Phase 10 — XMPBox
+
+**Goal:** Parse, serialize, and integrate XMP metadata for PDF/A workflows.
+
+- [x] XMP constants
+- [x] Type system (Types, Cardinality, all 46 types, 17 structured types)
+- [x] Schema system (XMPSchema + 13 schema classes)
+- [x] XMPMetadata + TypeMapping
+- [x] DateConverter — ISO8601, PDF-style, timezone, millis
+- [x] DomXmpParser — 673-line parser with namespace finder + lenient array/namespace detection
+- [x] XmpSerializer — 148-line Crystal port
+- [x] PdfaExtensionHelper — 216-line PDF/A schema loading + 4 PDFA*Type classes
+- [x] XmpParsingException, XmpSerializationException, XmpSchemaException
+- [x] PDFBox integration (PDMetadata parse/serialize convenience methods)
+- [~] Test suite — 30 Crystal specs covering type system, schema, date conversion, metadata, parsing, attributes (from 28 Java test files); keep growing coverage
 
 **XMPBox core complete.** Parse (DomXmpParser with lenient array/namespace detection), serialize (XmpSerializer), type/schema system, PDF/A extension loading. 1617 total tests, 0 failures.
 
@@ -150,88 +212,54 @@ Each feature area below tracks concrete, actionable tasks. Checkboxes reflect cu
 
 ---
 
-### 11. Tools (`src/tools/`)
+## Phase 11 — Tools & CLI
+
+**Goal:** Parity for all `tools/` command-line utilities.
 
 **Java source:** `vendor/pdfbox/tools/src/main/java/org/apache/pdfbox/tools/` (26 files)
 
-| Component | Status | Notes |
-|---|---|---|
-| TextExtraction CLI | ported | export:text + export:html |
-| PDFSplit | ported | 3 spec tests |
-| PDFMerger | ported | 3 spec tests |
-| PDFToImage | ported | 6 spec tests |
-| Decrypt | ported | 5 spec tests (owner/user password, decryption, wrong password) |
-| Encrypt | ported | 2 spec tests |
-| DecompressObjectStreams | ported | |
-| Overlay | ported | |
-| ExportFDF | ported | |
-| ImportFDF | ported | |
-| WriteDecodedDoc | ported | |
+- [x] TextExtraction CLI — export:text + export:html
+- [x] PDFSplit — 3 spec tests
+- [x] PDFMerger — 3 spec tests
+- [x] PDFToImage — 6 spec tests
+- [x] Decrypt — 5 spec tests (owner/user password, decryption, wrong password)
+- [x] Encrypt — 2 spec tests
+- [x] DecompressObjectStreams
+- [x] Overlay
+- [x] ExportFDF
+- [x] ImportFDF
+- [x] WriteDecodedDoc
+- [x] ImageIOUtil — CrImage integration (ExtractImages uses CrImage::RGBA + PNG::Writer; PDFRenderer uses CrImage for render_image_png)
 
 **All tool CLI tests pass.** ImageIOUtil is partial (format detection works, image writing needs crimage integration).
 
 ---
 
-### 12. Renderer (`src/pdfbox/rendering/`)
+## Phase 12 — Rendering
 
-| Component | Status | Notes |
-|---|---|---|
-| PDFRenderer | ported | Working renderer with CrImage. render_image, render_image_with_dpi, render_image_png |
-| TrueTypeFontRenderer | ported | CrImage-backed text rendering |
-| PageDrawer | ported | 280 lines. Path tracking, Bresenham line drawing, bezier curves, text glyph rendering via font paths, image drawing, color conversion (Gray/RGB/CMYK) |
+**Goal:** A working raster renderer backed by CrImage.
+
+- [x] PDFRenderer — working renderer with CrImage. render_image, render_image_with_dpi, render_image_png
+- [x] TrueTypeFontRenderer — CrImage-backed text rendering
+- [x] PageDrawer — 280 lines. Path tracking, Bresenham line drawing, bezier curves, text glyph rendering via font paths, image drawing, color conversion (Gray/RGB/CMYK)
 
 **Low priority** — Full PDF rendering to images requires significant work (path filling, image compositing, ICC color management).
 
 ---
 
-### 13. Annotations & Interactive Features (`src/pdfbox/pdmodel/interactive/`)
+## Phase 13 — I/O Layer
 
-**Java source:** `vendor/pdfbox/pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/` (50+ files)
+**Goal:** Complete random-access I/O parity (blocking lower phases).
 
-| Component | Status | Notes |
-|---|---|---|
-| Annotation model classes | partial | Most annotation types defined, factory dispatching |
-| Annotation appearance handlers | partial | Handler stubs exist, rendering not wired |
-| Form (AcroForm) | partial | Field types, widget annotations |
-| Action (all types) | partial | URI, GoTo, JavaScript, Named, etc. |
-| Document Navigation (destinations) | partial | XYZ, Fit, FitH, FitV, Named |
-| Page Navigation (threads, transitions) | partial | |
-
-**Gaps:** Appearance handlers generate content but don't trigger. Form field value serialization is not verified. Action JavaScript execution not implemented (out of scope).
-
----
-
-### 14. Encryption (`src/pdfbox/pdmodel/encryption/`)
-
-**Java source:** `vendor/pdfbox/pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/` (12 files)
-
-| Component | Status | Notes |
-|---|---|---|
-| StandardSecurityHandler | partial | RC4, AES-128, AES-256 key generation. Key length default fixed (256→128). |
-| PDEncryption | partial | Encryption dictionary management |
-| AccessPermission | ported | |
-| ProtectionPolicy | ported | |
-| SecurityHandlerFactory | partial | |
-
-**Fixed:** Default encryption_key_length (256→128) for revision 4 compatibility. testCompressEncryptedDoc now passes.
-
-**Gaps:** Stream/data encryption not wired into writer. Public key encryption not ported.
-
----
-
-### 15. I/O Layer (`src/pdfbox/io.cr`)
-
-| Component | Status | Notes |
-|---|---|---|
-| RandomAccessReadBuffer | ported | |
-| RandomAccessReadBufferedFile | ported | |
-| RandomAccessReadMemoryMappedFile | ported | |
-| RandomAccessReadView | ported | |
-| RandomAccessReadWriteBuffer | ported | |
-| RandomAccessInputStream | ported | |
-| NonSeekableRandomAccessReadInputStream | ported | |
-| SequenceRandomAccessRead | ported | |
-| IOUtils | ported | |
+- [x] RandomAccessReadBuffer
+- [x] RandomAccessReadBufferedFile
+- [x] RandomAccessReadMemoryMappedFile
+- [x] RandomAccessReadView
+- [x] RandomAccessReadWriteBuffer
+- [x] RandomAccessInputStream
+- [x] NonSeekableRandomAccessReadInputStream
+- [x] SequenceRandomAccessRead
+- [x] IOUtils
 
 **I/O parity is complete.**
 
@@ -253,11 +281,11 @@ Each broad feature area above is a TDD-ready work item. When starting work:
 
 1. Create an active plan in `plans/active/<FeatureName>.md` (see `CosParserPort.md` for format)
 2. Move corresponding pending tests to active, fix implementation to make them pass
-3. Update this `parity.md` status from `partial` to `ported`
+3. Update this `parity.md` status from `partial` to `ported` (and check the `[~]` box)
 4. Update `plans/inventory/java_port_inventory.tsv` from `missing` to `ported`
 
 ### Current Active Work
-- **Text stripper**: Multi-PDF extraction test enabled (34/40 exact match). Fixed TrueType `average_font_width` to use PDF Widths array (Java parity). 6 known deviations remain. Outline and tabula extraction at Java parity. Bidi Crystal regression tests in place.
-- **PDFWriter**: All 12 writer specs green (0 pending). testCompressEncryptedDoc, testPDFBox5927, testPDFBox6036 enabled. Encryption key length fixed.
-- **PD Model**: add_page_to_tree Kids resolution, remove_page_from_tree, COSArrayList retainAll fixed.
-- **COSParser**: `plans/active/CosParserPort.md` — all methods ported, tests cover edge cases
+- **Phase 1 — Text stripper**: Multi-PDF extraction test enabled (37/40 exact match). Fixed TrueType `average_font_width` to use PDF Widths array (Java parity). 7 known deviations remain (see breakdown). Outline, tabula, rotation, and encoding extraction at Java parity. Bidi Crystal regression tests in place.
+- **Phase 5 — PDFWriter**: All 12 writer specs green (0 pending). testCompressEncryptedDoc, testPDFBox5927, testPDFBox6036 enabled. Encryption key length fixed.
+- **Phase 7 — PD Model**: add_page_to_tree Kids resolution, remove_page_from_tree, COSArrayList retainAll fixed.
+- **Phase 3 — COSParser**: `plans/active/CosParserPort.md` — all methods ported, tests cover edge cases.
