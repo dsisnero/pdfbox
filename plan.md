@@ -221,13 +221,6 @@ src/
 └── tools/           # Command-line tools
 ```
 
-### Beads Issue Tracking
-Each milestone will be created as a beads epic with:
-- `--type=epic` for milestones
-- `--type=task` for individual porting tasks
-- Proper dependencies between tasks
-- Priority based on dependency chain
-
 ## Crystal-Specific Considerations
 
 ### Memory Management

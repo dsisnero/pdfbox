@@ -501,9 +501,9 @@ crystal spec spec/fontbox/ttf/
 crystal spec
 ```
 
-**Step 4: Update beads issue status**
+**Step 4: Update parity tracking**
 
-Close `pdfbox-z59j` and `pdfbox-63rk`.
+Check off the completed items in `plans/parity.md` and update the port inventory.
 
 ### Task 16: Documentation and finalization
 

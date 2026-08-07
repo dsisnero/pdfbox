@@ -1,10 +1,10 @@
 .PHONY: install update format lint test
 
 install:
-	BEADS_DIR=$$(pwd)/.beads shards install
+	shards install
 
 update:
-	BEADS_DIR=$$(pwd)/.beads shards update
+	shards update
 
 format:
 	crystal tool format --check src spec

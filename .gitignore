@@ -44,9 +44,6 @@ cff_parser/
 *.db
 scripts/
 
-# Beads / Dolt files (added by bd init)
-.beads-credential-key
-
 # Apple Double / Extended Attributes (macOS FAT32 artifacts)
 ._*
 .DS_Store
