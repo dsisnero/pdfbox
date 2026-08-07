@@ -838,12 +838,12 @@ module Pdfbox::Contentstream
       return if arguments.size < 3
       # Set word spacing
       aw = arguments[0]
-      if aw.is_a?(Cos::Integer) || aw.is_a?(Cos::Float)
+      if aw.is_a?(Cos::Number)
         context.graphics_state.text_state.word_spacing = aw.as(Cos::Number).value.to_f32
       end
       # Set character spacing
       ac = arguments[1]
-      if ac.is_a?(Cos::Integer) || ac.is_a?(Cos::Float)
+      if ac.is_a?(Cos::Number)
         context.graphics_state.text_state.character_spacing = ac.as(Cos::Number).value.to_f32
       end
       # Move to next line and show text

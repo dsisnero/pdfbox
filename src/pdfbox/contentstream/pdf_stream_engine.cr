@@ -252,6 +252,7 @@ module Pdfbox::Contentstream
         # Set font and size
         if arguments.size >= 2
           font_name = arguments[0]
+          font_name = font_name.object if font_name.is_a?(Cos::Object)
           font_size = to_float(arguments[1])
           if font_name.is_a?(Cos::Name) && font_size
             set_font(font_name.value, font_size)
@@ -316,6 +317,7 @@ module Pdfbox::Contentstream
         # Show text with adjustments
         if arguments.size >= 1
           array = arguments[0]
+          array = array.object if array.is_a?(Cos::Object)
           if array.is_a?(Cos::Array)
             show_text_strings(array)
           end
@@ -341,6 +343,29 @@ module Pdfbox::Contentstream
       when "Do"
         if arguments.size >= 1 && arguments[0].is_a?(Cos::Name)
           show_xobject(arguments[0].as(Cos::Name))
+        end
+      when "BMC"
+        begin_marked_content_sequence
+      when "BDC"
+        raw_tag = arguments[0]?
+        raw_tag = raw_tag.object if raw_tag.is_a?(Cos::Object)
+        tag = raw_tag.try(&.as?(Cos::Name))
+        properties = arguments[1]?
+        begin_marked_content_sequence(tag, properties)
+      when "EMC"
+        end_marked_content_sequence
+      when "MP"
+        if arguments.size >= 1
+          if tag = arguments[0].try(&.as?(Cos::Name))
+            marked_content_point(tag, nil)
+          end
+        end
+      when "DP"
+        if arguments.size >= 2
+          if tag = arguments[0].try(&.as?(Cos::Name))
+            properties = arguments[1]?
+            marked_content_point(tag, properties)
+          end
         end
       else
         # Unknown operator - ignore
@@ -473,8 +498,9 @@ module Pdfbox::Contentstream
 
     # Show text string
     def show_text_string(obj : Cos::Base) : Nil
-      if obj.is_a?(Cos::String)
-        show_text(obj.bytes)
+      resolved = obj.is_a?(Cos::Object) ? obj.object : obj
+      if resolved.is_a?(Cos::String)
+        show_text(resolved.bytes)
       end
     end
 
@@ -488,8 +514,10 @@ module Pdfbox::Contentstream
       horizontal_scaling = base_graphics_state.horizontal_scaling / 100.0
 
       array.items.each do |item|
-        if item.is_a?(Cos::Integer) || item.is_a?(Cos::Float)
-          tj = to_float(item) || 0.0
+        # Resolve indirect references
+        resolved = item.is_a?(Cos::Object) ? item.object : item
+        if resolved.is_a?(Cos::Number)
+          tj = to_float(resolved) || 0.0
 
           # Calculate the combined displacements
           tx : Float64
@@ -503,8 +531,8 @@ module Pdfbox::Contentstream
           end
 
           apply_text_adjustment(tx, ty)
-        elsif item.is_a?(Cos::String)
-          show_text(item.bytes)
+        elsif resolved.is_a?(Cos::String)
+          show_text(resolved.bytes)
         end
       end
     end
@@ -618,20 +646,22 @@ module Pdfbox::Contentstream
     end
 
     private def to_float(obj : Cos::Base) : Float64?
-      case obj
+      resolved = obj.is_a?(Cos::Object) ? obj.object : obj
+      case resolved
       when Cos::Integer
-        obj.value.to_f64
+        resolved.value.to_f64
       when Cos::Float
-        obj.value
+        resolved.value
       end
     end
 
     private def to_int(obj : Cos::Base) : Int32?
-      case obj
+      resolved = obj.is_a?(Cos::Object) ? obj.object : obj
+      case resolved
       when Cos::Integer
-        obj.value.to_i32
+        resolved.value.to_i32
       when Cos::Float
-        obj.value.to_i32
+        resolved.value.to_i32
       end
     end
 

@@ -34,7 +34,7 @@ module Pdfbox::Contentstream
     # Process a page
     def process_page(page : Pdmodel::Page) : Nil
       @page_rotation = page.rotation
-      @page_size = page.crop_box || page.media_box
+      @page_size = page.media_box
 
       page_size = @page_size
       if page_size
