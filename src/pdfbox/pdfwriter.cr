@@ -173,6 +173,9 @@ module Pdfbox::Pdfwriter
           roots << page_dict
         end
       end
+      if encryption = @document.encryption
+        roots << encryption.dictionary
+      end
       roots
     end
 
@@ -276,6 +279,13 @@ module Pdfbox::Pdfwriter
         end
       end
 
+      if encryption = @document.encryption
+        enc_id = encryption.dictionary.object_id.to_u64
+        if enc_key = object_keys[enc_id]?
+          xref_dict[Pdfbox::Cos::Name.new("Encrypt")] = ref_obj(enc_key)
+        end
+      end
+
       if trailer
         if info_val = trailer[Pdfbox::Cos::Name.new("Info")]?
           info_base = info_val.is_a?(Pdfbox::Cos::Object) ? info_val.object : info_val
@@ -364,6 +374,13 @@ module Pdfbox::Pdfwriter
       if catalog
         if cat_key = object_keys[catalog.cos_object.object_id.to_u64]?
           @destination << "/Root " << cat_key.number << " 0 R\n"
+        end
+      end
+
+      if encryption = @document.encryption
+        enc_id = encryption.dictionary.object_id.to_u64
+        if enc_key = object_keys[enc_id]?
+          @destination << "/Encrypt " << enc_key.number << " 0 R\n"
         end
       end
 

@@ -389,6 +389,10 @@ module Pdfbox::Pdfparser
       @security_handler
     end
 
+    def security_handler=(handler : Pdfbox::Pdmodel::Encryption::SecurityHandler?) : Pdfbox::Pdmodel::Encryption::SecurityHandler?
+      @security_handler = handler
+    end
+
     # Parse a COS object from the stream (similar to Apache PDFBox parseDirObject)
 
     def parse_dir_object : Pdfbox::Cos::Base?

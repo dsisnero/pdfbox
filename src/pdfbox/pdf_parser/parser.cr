@@ -629,6 +629,7 @@ module Pdfbox::Pdfparser
 
       # Parse object body using COSParser
       object_parser = COSParser.new(source, self)
+      object_parser.security_handler = @security_handler
       # The source is already positioned after "obj"
       object = object_parser.parse_object
       unless object
@@ -894,6 +895,7 @@ module Pdfbox::Pdfparser
     protected def parse_object_dynamically(key : Cos::ObjectKey, require_existing_not_compressed_obj : Bool) : Cos::Base
       # Create COSParser instance to handle object parsing
       cos_parser = COSParser.new(source, self)
+      cos_parser.security_handler = @security_handler
       result = cos_parser.parse_object_dynamically(key, require_existing_not_compressed_obj)
       # parse_object_dynamically should never return nil (returns Cos::Null.instance instead)
       result || Cos::Null.instance
@@ -1260,6 +1262,7 @@ module Pdfbox::Pdfparser
 
         # Parse the object using incremental parser
         object_parser = COSParser.new(memory_io, self)
+        object_parser.security_handler = @security_handler
         object = object_parser.parse_object
         unless object
           raise SyntaxError.new("Failed to parse object at offset #{final_position}")
@@ -1685,6 +1688,7 @@ module Pdfbox::Pdfparser
 
                          @trailer = trailer
                          @xref = xref
+                         prepare_decryption
 
                          if @lenient
                            Log.debug { "Parser lenient mode enabled, performing brute-force search for object streams" }
@@ -1836,6 +1840,7 @@ module Pdfbox::Pdfparser
           end
           # Now parse dictionary
           object_parser = COSParser.new(source, self)
+          object_parser.security_handler = @security_handler
           dict = object_parser.parse_dictionary
           Log.debug { "parse_trailer: parsed dictionary: #{dict.inspect}" }
           # Set trailer in resolver
@@ -1870,7 +1875,7 @@ module Pdfbox::Pdfparser
 
     # Parse with password for encrypted PDFs
     def parse(password : String) : Pdfbox::Pdmodel::Document
-      # For now, ignore password and parse normally
+      @password = password
       parse
     end
 

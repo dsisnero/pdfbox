@@ -190,7 +190,7 @@
 - [x] AccessPermission, ProtectionPolicy ported
 - [x] PDEncryption dictionary management (encrypt/decrypt document roundtrip green)
 - [x] SASLPrep (RFC 4013) string preparation for encryption revision 6
-- [~] Stream/data encryption wired into writer (testCompressEncryptedDoc passes; broader stream encryption verification pending)
+- [x] Stream/data encryption wired into writer — writer writes `/Encrypt` dict + trailer/xref reference, document ID persisted to trailer, rev2-4 key computed from user password + owner key with rev4 RC4 padding (PDFBOX-5955), parser propagates security handler to lazily-parsed streams, `parse(password)` sets password. `testProtection` round-trips 40/128/128-AES/256-bit through save+reopen with content-stream equality.
 - [ ] Public key encryption porting — requires OpenSSL RSA/X.509 support (Crystal stdlib has only symmetric ciphers and digests; needs external shard like openssl_ext)
 
 ---

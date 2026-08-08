@@ -424,7 +424,17 @@ module Pdfbox::Pdmodel::Encryption
     end
 
     protected def compute_version_number : Int32
-      4_i32 # REVISION_4
+      key_length = get_key_length_bits
+      if key_length == 40
+        1 # VERSION1_40_BIT_ALGORITHM
+      elsif key_length == 128 && @policy.is_a?(StandardProtectionPolicy) &&
+            @policy.as(StandardProtectionPolicy).prefer_aes?
+        4 # VERSION4_SECURITY_HANDLER
+      elsif key_length == 256
+        5 # REVISION_5
+      else
+        2 # VERSION2_VARIABLE_LENGTH_ALGORITHM
+      end
     end
 
     protected def decrypt_metadata? : Bool
@@ -622,8 +632,17 @@ module Pdfbox::Pdmodel::Encryption
     end
 
     private def compute_version_number : Int32
-      # For now, default to version 4 (supports 128-bit encryption)
-      REVISION_4
+      key_length = get_key_length_bits
+      if key_length == 40
+        1 # VERSION1_40_BIT_ALGORITHM
+      elsif key_length == 128 && @policy.is_a?(StandardProtectionPolicy) &&
+            @policy.as(StandardProtectionPolicy).prefer_aes?
+        4 # VERSION4_SECURITY_HANDLER
+      elsif key_length == 256
+        5 # REVISION_5
+      else
+        2 # VERSION2_VARIABLE_LENGTH_ALGORITHM
+      end
     end
 
     private def compute_revision_number(version : Int32) : Int32
@@ -690,9 +709,10 @@ module Pdfbox::Pdmodel::Encryption
       password_bytes = password_to_bytes(password, enc_revision)
 
       # Try owner password first
+      is_owner_password = false
       if owner_password?(password_bytes, user_key_value, owner_key_value, permissions, id, enc_revision, key_length_in_bytes, encrypt_metadata)
         set_current_access_permission(AccessPermission.owner_access_permission)
-        # Then try user password
+        is_owner_password = true
       else
         if user_password?(password_bytes, user_key_value, owner_key_value, permissions, id, enc_revision, key_length_in_bytes, encrypt_metadata)
           perm = AccessPermission.new(permissions)
@@ -702,6 +722,23 @@ module Pdfbox::Pdmodel::Encryption
           raise ::IO::Error.new("Cannot decrypt PDF, the password is incorrect")
         end
       end
+
+      # For rev 2-4, when the owner password is used, derive the user password to
+      # compute the encryption key (matching Java's getUserPassword234).
+      key_password = password_bytes
+      if is_owner_password && (enc_revision == REVISION_2 || enc_revision == REVISION_3 || enc_revision == REVISION_4)
+        key_password = user_password234(password_bytes, owner_key_value, enc_revision, key_length_in_bytes)
+      end
+
+      oe = encryption.owner_encryption_key
+      ue = encryption.user_encryption_key
+
+      enc_key = compute_encrypted_key(key_password, owner_key_value, user_key_value, oe, ue, permissions, id, enc_revision, key_length_in_bytes, encrypt_metadata, is_owner_password)
+      if enc_revision == REVISION_4 && enc_key.size < 16
+        # PDFBOX-5955: pad RC4 key to length 16
+        enc_key = Bytes.new(16) { |i| i < enc_key.size ? enc_key[i] : 0_u8 }
+      end
+      set_encryption_key(enc_key)
     end
 
     def prepare_document_for_encryption(document : Pdfbox::Pdmodel::Document) : Nil
@@ -951,24 +988,40 @@ module Pdfbox::Pdmodel::Encryption
     end
 
     private def prepare_encryption_dict_rev234(owner_password : String, user_password : String, encryption : PDEncryption, permission_int : Int32, document : Pdfbox::Pdmodel::Document, revision : Int32, length : Int32) : Nil
-      # Generate document ID if not present
-      # For now, use a simple fixed ID
-      document_id = Bytes[0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF, 0xFE, 0xDC, 0xBA, 0x98, 0x76, 0x54, 0x32, 0x10]
+      # Use the document's existing ID if present, otherwise generate one and
+      # persist it to the trailer so the writer writes the same ID that the
+      # O/U/P values are computed against (matching Java's prepareEncryptionDictRev234).
+      document_id = document.document_id
+      if document_id.nil?
+        document_id = Bytes[0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF, 0xFE, 0xDC, 0xBA, 0x98, 0x76, 0x54, 0x32, 0x10]
+        document.set_document_id(document_id)
+        if trailer = document.trailer
+          id_array = Cos::Array.new
+          id_array << Cos::String.new(document_id)
+          id_array << Cos::String.new(document_id)
+          trailer[Cos::Name.new("ID")] = id_array
+        end
+      end
 
       # Convert passwords to bytes based on revision
       owner_password_bytes = password_to_bytes(owner_password, revision)
       user_password_bytes = password_to_bytes(user_password, revision)
 
-      # Compute encryption key
-      encrypt_metadata = true # Default to encrypting metadata
-      enc_key = compute_encrypted_key_rev234(owner_password_bytes, Bytes.new(0), permission_int, document_id, encrypt_metadata, length, revision)
-
-      # Set encryption key
-      set_encryption_key(enc_key)
-
       # Compute owner key (O)
       owner_key = compute_owner_password(owner_password_bytes, user_password_bytes, revision, length)
       encryption.owner_key = owner_key
+
+      # Compute encryption key from the user password and the owner key,
+      # matching Java's computeEncryptedKey(userPasswordBytes, ownerBytes, ...).
+      encrypt_metadata = true # Default to encrypting metadata
+      enc_key = compute_encrypted_key_rev234(user_password_bytes, owner_key, permission_int, document_id, encrypt_metadata, length, revision)
+      if revision == REVISION_4 && enc_key.size < 16
+        # PDFBOX-5955: pad RC4 key to length 16
+        enc_key = Bytes.new(16) { |i| i < enc_key.size ? enc_key[i] : 0_u8 }
+      end
+
+      # Set encryption key
+      set_encryption_key(enc_key)
 
       # Compute user key (U)
       user_key = compute_user_password(user_password_bytes, owner_key, permission_int, document_id, revision, length, encrypt_metadata)

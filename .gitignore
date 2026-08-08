@@ -17,6 +17,7 @@ test_*_release
 
 # Temporary files
 /temp/
+/target/
 
 # Compiled executables
 /cmap

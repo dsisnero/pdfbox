@@ -49,7 +49,43 @@ def test_symm_encr_for_key_size(filename : String, key_length : Int32, prefer_ae
                                 size_prior_to_encryption : Int32, input_file_as_byte_array : Bytes,
                                 user_password : String, owner_password : String,
                                 permission : Pdfbox::Pdmodel::Encryption::AccessPermission) : Nil
-  # TODO: Implement
+  test_results_dir = "target/test-output/crypto"
+  document = Pdfbox::Loader.load_pdf(input_file_as_byte_array)
+  num_src_pages = document.pages.size
+
+  src_content_streams = [] of Bytes
+  document.pages.each do |page|
+    stream = page.contents
+    src_content_streams << (stream ? stream.create_input_stream.getb_to_end : Bytes.new(0))
+  end
+
+  spp = Pdfbox::Pdmodel::Encryption::StandardProtectionPolicy.new(owner_password, user_password, permission)
+  spp.encryption_key_length = key_length
+  spp.prefer_aes = prefer_aes
+
+  document.protect(spp)
+  prefix = "#{filename}-Simple-"
+  encrypted_path = File.join(test_results_dir, "#{prefix}#{key_length}-bit-#{prefer_aes ? "AES" : "RC4"}-encrypted.pdf")
+  document.save(encrypted_path)
+  document.close
+
+  size_encrypted = File.size(encrypted_path)
+  size_encrypted.should_not eq(size_prior_to_encryption)
+
+  encrypted_doc = Pdfbox::Loader.load_pdf(encrypted_path, owner_password)
+  begin
+    encrypted_doc.encrypted?.should be_true
+    encrypted_doc.current_access_permission.owner_permission?.should be_true
+
+    encrypted_doc.pages.size.should eq(num_src_pages)
+    encrypted_doc.pages.each_with_index do |page, i|
+      stream = page.contents
+      bytes = stream ? stream.create_input_stream.getb_to_end : Bytes.new(0)
+      bytes.should eq(src_content_streams[i])
+    end
+  ensure
+    encrypted_doc.close
+  end
 end
 
 def test_symm_encr_for_key_size_inner(key_length : Int32, prefer_aes : Bool,
@@ -117,6 +153,21 @@ describe Pdfbox::Pdmodel::Encryption do
   end
 
   it "testProtection" do
+    filename = "Acroform-PDFBOX-2333.pdf"
+    input_file_as_byte_array = get_file_resource_as_byte_array(filename)
+    size_prior_to_encryption = input_file_as_byte_array.size
+
+    test_symm_encr_for_key_size(filename, 40, false, size_prior_to_encryption, input_file_as_byte_array,
+      USERPASSWORD, OWNERPASSWORD, permission)
+
+    test_symm_encr_for_key_size(filename, 128, false, size_prior_to_encryption, input_file_as_byte_array,
+      USERPASSWORD, OWNERPASSWORD, permission)
+
+    test_symm_encr_for_key_size(filename, 128, true, size_prior_to_encryption, input_file_as_byte_array,
+      USERPASSWORD, OWNERPASSWORD, permission)
+
+    test_symm_encr_for_key_size(filename, 256, true, size_prior_to_encryption, input_file_as_byte_array,
+      USERPASSWORD, OWNERPASSWORD, permission)
   end
 
   it "testPDFBox4308" do
