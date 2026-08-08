@@ -310,8 +310,54 @@ module Xmpbox
 
     # XMP Rights Management: http://ns.adobe.com/xap/1.0/rights/
     class XMPRightsManagementSchema < XMPSchema
+      CERTIFICATE   = "Certificate"
+      MARKED        = "Marked"
+      OWNER         = "Owner"
+      USAGE_TERMS   = "UsageTerms"
+      WEB_STATEMENT = "WebStatement"
+
       def self.structured_type_info
         {namespace: "http://ns.adobe.com/xap/1.0/rights/", prefered_prefix: "xmpRights"}
+      end
+
+      def certificate=(value : String) : Nil
+        set_text_property_value(CERTIFICATE, value)
+      end
+
+      def certificate : String?
+        unqualified_text_property_value(CERTIFICATE)
+      end
+
+      def web_statement=(value : String) : Nil
+        set_text_property_value(WEB_STATEMENT, value)
+      end
+
+      def web_statement : String?
+        unqualified_text_property_value(WEB_STATEMENT)
+      end
+
+      def marked=(value : Bool) : Nil
+        set_boolean_property_value(MARKED, value)
+      end
+
+      def marked : Bool?
+        boolean_property_value(MARKED)
+      end
+
+      def add_owner(owner : String) : Nil
+        add_unqualified_bag_value(OWNER, owner)
+      end
+
+      def owners : Array(String)?
+        unqualified_bag_value_list(OWNER)
+      end
+
+      def usage_terms=(value : String) : Nil
+        set_unqualified_language_property_value(USAGE_TERMS, nil, value)
+      end
+
+      def usage_terms : String?
+        unqualified_language_property_value(USAGE_TERMS, nil)
       end
     end
 
