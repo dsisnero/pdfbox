@@ -514,6 +514,144 @@ describe Xmpbox::Xml::DomXmpParser do
       ua.not_nil!.integer_property_value("part").should eq(1)
     end
 
+    it "rejects a namespace not declared in the document" do
+      s = <<-XML
+      <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+      <?xpacket begin="\uFEFF" id="W5M0MpCehiHzreSzNTczkc9d"?><x:xmpmeta xmlns:x="adobe:ns:meta/" x:xmptk="Adobe XMP Core 5.6-c016 91.163616, 2018/10/29-16:58:49        ">
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+              <rdf:Description xmlns:xmp="http://ns.adobe.com/xap/1.0/" xmlns:pdf="http://ns.adobe.com/pdf/1.3/" rdf:about="">
+                  <xml:ModifyDate>2019-07-26'T'19:28:53.000'-04:00'</xml:ModifyDate>
+                  <xmp:ModifyDate>2019-07-29T15:12:07-04:00</xmp:ModifyDate>
+                  <pdf:Producer>iTextSharp 4.0.3 (based on iText 2.0.2)</pdf:Producer>
+              </rdf:Description>
+          </rdf:RDF>
+      </x:xmpmeta><?xpacket end="w"?>
+      XML
+      parser = Xmpbox::Xml::DomXmpParser.new
+      ex = expect_raises(Xmpbox::Xml::XmpParsingException) do
+        parser.parse(s)
+      end
+      ex.to_s.should eq("Schema is not set in this document : http://www.w3.org/XML/1998/namespace, property: xml:ModifyDate")
+    end
+
+    it "strict rejects an empty array property, lenient skips it" do
+      s = <<-XML
+      <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+      <?xpacket begin='' id='W5M0MpCehiHzreSzNTczkc9d' bytes='1506'?><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:iX="http://ns.adobe.com/iX/1.0/">
+          <rdf:Description xmlns="http://purl.org/dc/elements/1.1/" xmlns:dc="http://purl.org/dc/elements/1.1/" about="">
+              <dc:creator/>
+              <dc:coverage>Cover</dc:coverage>
+          </rdf:Description>
+      </rdf:RDF><?xpacket end='r'?>
+      XML
+      strict_parser = Xmpbox::Xml::DomXmpParser.new
+      ex = expect_raises(Xmpbox::Xml::XmpParsingException) do
+        strict_parser.parse(s)
+      end
+      ex.to_s.should eq("Invalid array definition, expecting Seq and found nothing [prefix=dc; name=creator]")
+
+      lenient_parser = Xmpbox::Xml::DomXmpParser.new(strict_parsing: false)
+      xmp = lenient_parser.parse(s)
+      dc = xmp.dublin_core_schema
+      dc.should_not be_nil
+      dc.not_nil!.abstract_property("creator").should be_nil
+      dc.not_nil!.coverage.should eq("Cover")
+    end
+
+    it "strict rejects an undefined structured child, lenient stores it as text" do
+      s = <<-XML
+      <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+      <?xpacket begin="\uFEFF" id="W5M0MpCehiHzreSzNTczkc9d"?><x:xmpmeta xmlns:x="adobe:ns:meta/" x:xmptk="3.1-701">
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+              <rdf:Description xmlns:stRef="http://ns.adobe.com/xap/1.0/sType/ResourceRef#" xmlns:xapMM="http://ns.adobe.com/xap/1.0/mm/" rdf:about="">
+                  <xapMM:DocumentID>uuid:CE03288B61A6DB11A55CA11F14F48514</xapMM:DocumentID>
+                  <xapMM:DerivedFrom rdf:parseType="Resource">
+                      <stRef:documentName>uuid:8705447f-b80d-4cc8-82f7-0ec27187edfe</stRef:documentName>
+                      <stRef:documentID>uuid:b2f88223-2723-430d-b93c-3503ccb0e34b</stRef:documentID>
+                  </xapMM:DerivedFrom>
+              </rdf:Description>
+          </rdf:RDF>
+      </x:xmpmeta><?xpacket end="w"?>
+      XML
+      strict_parser = Xmpbox::Xml::DomXmpParser.new
+      ex = expect_raises(Xmpbox::Xml::XmpParsingException) do
+        strict_parser.parse(s)
+      end
+      ex.to_s.should eq("Type 'stRef:documentName' not defined in http://ns.adobe.com/xap/1.0/sType/ResourceRef#")
+
+      lenient_parser = Xmpbox::Xml::DomXmpParser.new(strict_parsing: false)
+      xmp = lenient_parser.parse(s)
+      mm = xmp.xmp_media_management_schema
+      mm.should_not be_nil
+      derived = mm.not_nil!.abstract_property("DerivedFrom")
+      derived.should be_a(Xmpbox::Type::ResourceRefType)
+      derived.as(Xmpbox::Type::ResourceRefType).document_id.should eq("uuid:b2f88223-2723-430d-b93c-3503ccb0e34b")
+      doc_name = derived.as(Xmpbox::Type::AbstractStructuredType).property("documentName")
+      doc_name.should_not be_nil
+      doc_name.as(Xmpbox::Type::TextType).string_value.should eq("uuid:8705447f-b80d-4cc8-82f7-0ec27187edfe")
+    end
+
+    it "strict rejects no processing instruction, lenient parses attributes" do
+      s = <<-XML
+      <x:xmpmeta xmlns:x="adobe:ns:meta/" x:xmptk="Adobe XMP Core 4.1-c037 46.282696, Mon Apr 02 2007 18:36:42        ">
+       <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+        <rdf:Description rdf:about=""
+          xmlns:xapMM="http://ns.adobe.com/xap/1.0/mm/"
+          xmlns:stRef="http://ns.adobe.com/xap/1.0/sType/ResourceRef#"
+          xmlns:tiff="http://ns.adobe.com/tiff/1.0/"
+          xmlns:xap="http://ns.adobe.com/xap/1.0/"
+          xmlns:exif="http://ns.adobe.com/exif/1.0/"
+          xmlns:dc="http://purl.org/dc/elements/1.1/"
+          xmlns:photoshop="http://ns.adobe.com/photoshop/1.0/"
+         xapMM:DocumentID="uuid:F1FEDA1D7D03DA11B0F6E4B4E63B0143"
+         xapMM:InstanceID="uuid:7A28FBF56920DA11B4BBB356C0A5C72B"
+         tiff:Orientation="1"
+         tiff:XResolution="3050000/10000"
+         tiff:YResolution="3050000/10000"
+         tiff:ResolutionUnit="2"
+         xap:ModifyDate="2005-09-08T09:13:10-04:00"
+         xap:CreatorTool="Adobe Photoshop CS2 Windows"
+         xap:CreateDate="2005-08-02T13:47:24-04:00"
+         xap:MetadataDate="2005-09-08T09:13:10-04:00"
+         exif:ColorSpace="-1"
+         exif:PixelXDimension="1525"
+         exif:PixelYDimension="387"
+         dc:format="image/tiff"
+         photoshop:ColorMode="4"
+         photoshop:ICCProfile="U.S. Web Coated (SWOP) v2"
+         photoshop:History="">
+         <xapMM:DerivedFrom
+          stRef:instanceID="adobe:docid:photoshop:28ff3dc5-4801-11d8-85d1-bb49d244e2ef"
+          stRef:documentID="adobe:docid:photoshop:28ff3dc5-4801-11d8-85d1-bb49d244e2ef"/>
+        </rdf:Description>
+       </rdf:RDF>
+      </x:xmpmeta>
+      XML
+      strict_parser = Xmpbox::Xml::DomXmpParser.new
+      ex = expect_raises(Xmpbox::Xml::XmpParsingException) do
+        strict_parser.parse(s)
+      end
+      ex.to_s.should eq("xmp should start with a processing instruction")
+
+      lenient_parser = Xmpbox::Xml::DomXmpParser.new(strict_parsing: false)
+      xmp = lenient_parser.parse(s)
+      dc = xmp.dublin_core_schema
+      dc.should_not be_nil
+      dc.not_nil!.format.should eq("image/tiff")
+      mm = xmp.xmp_media_management_schema
+      mm.should_not be_nil
+      mm.not_nil!.document_id.should eq("uuid:F1FEDA1D7D03DA11B0F6E4B4E63B0143")
+      basic = xmp.xmp_basic_schema
+      basic.should_not be_nil
+      basic.not_nil!.creator_tool.should eq("Adobe Photoshop CS2 Windows")
+      photoshop = xmp.photoshop_schema
+      photoshop.should_not be_nil
+      photoshop.not_nil!.color_mode.should eq(4)
+      exif = xmp.exif_schema
+      exif.should_not be_nil
+      exif.not_nil!.abstract_property("PixelXDimension").as(Xmpbox::Type::IntegerType).value.should eq(1525)
+    end
+
     it "PDFBOX-6131 parses Open Choice of Integer as a pdfua integer property" do
       path = File.join(fixture_dir, "org", "apache", "xmpbox", "xml", "PDFBOX-6131-0015675.xml")
       parser = Xmpbox::Xml::DomXmpParser.new

@@ -704,8 +704,13 @@ module Xmpbox
       end
 
       private def check_property_definition(tm : Type::TypeMapping, qname : Type::QName, parent_type_name : String?) : Type::PropertyTypeDesc?
-        # Port of Java checkPropertyDefinition: reject namespaces not defined
-        # (matches the "Cannot find a definition for the namespace" NoSchema error).
+        # Port of Java checkPropertyDefinition:
+        # 1. reject namespaces not declared in the document
+        unless @ns_finder.contains_namespace?(qname.namespace_uri)
+          raise XmpParsingException.new(XmpParsingException::ErrorType::NoSchema,
+            "Schema is not set in this document : #{qname.namespace_uri}, property: #{qname.prefix}:#{qname.local_part}")
+        end
+        # 2. reject namespaces not defined
         unless tm.defined_namespace?(qname.namespace_uri)
           raise XmpParsingException.new(XmpParsingException::ErrorType::NoSchema,
             "Cannot find a definition for the namespace #{qname.namespace_uri}, property: #{qname.prefix}:#{qname.local_part}")
