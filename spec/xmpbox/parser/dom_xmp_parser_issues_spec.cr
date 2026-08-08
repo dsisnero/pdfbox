@@ -221,5 +221,97 @@ describe Xmpbox::Xml::DomXmpParser do
       xmp2 = lenient_parser.parse(s)
       xmp2.all_schemas.size.should eq(0)
     end
+
+    it "rejects a non-xpacket processing instruction name" do
+      s = <<-XML
+      <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+      <?packet begin="" id="W5M0MpCehiHzreSzNTczkc9d"?><x:xmpmeta xmlns:x="adobe:ns:meta/" x:xmptk="3.1-701">
+      </x:xmpmeta><?packet end="w"?>
+      XML
+      parser = Xmpbox::Xml::DomXmpParser.new
+      ex = expect_raises(Xmpbox::Xml::XmpParsingException) do
+        parser.parse(s)
+      end
+      ex.to_s.should eq("Bad processing instruction name : packet")
+    end
+
+    it "rejects content after the xpacket end" do
+      s = <<-XML
+      <?xpacket begin='' id='W5M0MpCehiHzreSzNTczkc9d'?>
+      <?xpacket begin='' id='W5M0MpCehiHzreSzNTczkc9d'?>
+      <x:xmpmeta xmlns:x="adobe:ns:meta/">
+      	<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+      	</rdf:RDF>
+      </x:xmpmeta>
+      <?xpacket end="w"?>
+      <?xpacket end='r'?>
+      XML
+      parser = Xmpbox::Xml::DomXmpParser.new
+      ex = expect_raises(Xmpbox::Xml::XmpParsingException) do
+        parser.parse(s)
+      end
+      ex.to_s.should eq("xmp should end after xpacket end processing instruction")
+    end
+
+    it "rejects a wrong rdf namespace" do
+      s = <<-XML
+      <?xpacket begin="\uFEFF" id="W5M0MpCehiHzreSzNTczkc9d"?><x:xmpmeta xmlns:x="adobe:ns:meta/" x:xmptk="XXX">
+          <rdf:RDF xmlns:rdf="https://www.w3.org/1999/02/22-rdf-syntax-ns#">
+          </rdf:RDF>
+      </x:xmpmeta><?xpacket end="w"?>
+      XML
+      parser = Xmpbox::Xml::DomXmpParser.new
+      ex = expect_raises(Xmpbox::Xml::XmpParsingException) do
+        parser.parse(s)
+      end
+      ex.to_s.should eq("Expecting namespace 'http://www.w3.org/1999/02/22-rdf-syntax-ns#' and found 'https://www.w3.org/1999/02/22-rdf-syntax-ns#'")
+    end
+
+    it "raises for a document with no content" do
+      parser = Xmpbox::Xml::DomXmpParser.new
+      expect_raises(Xmpbox::Xml::XmpParsingException) do
+        parser.parse(%(<?xml version="1.0" encoding="UTF-8" standalone="no"?>))
+      end
+    end
+
+    it "PDFBOX-6131 parses Open Choice of Integer as a pdfua integer property" do
+      path = File.join(fixture_dir, "org", "apache", "xmpbox", "xml", "PDFBOX-6131-0015675.xml")
+      parser = Xmpbox::Xml::DomXmpParser.new
+      xmp = parser.parse(File.open(path))
+      ua_schema = xmp.schema("http://www.aiim.org/pdfua/ns/id/")
+      ua_schema.should_not be_nil
+      ua_schema.not_nil!.integer_property_value("part").should eq(1)
+    end
+
+    it "strict rejects an undefined lowercase photoshop property, lenient stores text" do
+      s = <<-XML
+      <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+      <?xpacket begin="\uFEFF" id="W5M0MpCehiHzreSzNTczkc9d"?><x:xmpmeta xmlns:x="adobe:ns:meta/" x:xmptk="Adobe XMP Core 4.0-c316 44.253921, Sun Oct 01 2006 17:14:39">
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+              <rdf:Description xmlns:photoshop="http://ns.adobe.com/photoshop/1.0/" rdf:about="">
+                  <photoshop:headline>
+                      <rdf:Seq>
+                          <rdf:li/>
+                      </rdf:Seq>
+                  </photoshop:headline>
+              </rdf:Description>
+          </rdf:RDF>
+      </x:xmpmeta><?xpacket end="w"?>
+      XML
+      strict_parser = Xmpbox::Xml::DomXmpParser.new
+      ex = expect_raises(Xmpbox::Xml::XmpParsingException) do
+        strict_parser.parse(s)
+      end
+      ex.to_s.should eq("No type defined for {http://ns.adobe.com/photoshop/1.0/}headline")
+
+      lenient_parser = Xmpbox::Xml::DomXmpParser.new(strict_parsing: false)
+      xmp = lenient_parser.parse(s)
+      photoshop = xmp.photoshop_schema
+      photoshop.should_not be_nil
+      photoshop.not_nil!.headline.should be_nil
+      prop = photoshop.not_nil!.abstract_property("headline")
+      prop.should_not be_nil
+      prop.as(Xmpbox::Type::TextType).string_value.should eq("")
+    end
   end
 end

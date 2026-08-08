@@ -212,6 +212,10 @@ module Xmpbox
       end
 
       private def parse_initial_xpacket(pi : XML::Node) : XMPMetadata
+        if pi.name != "xpacket"
+          raise XmpParsingException.new(XmpParsingException::ErrorType::XpacketBadStart,
+            "Bad processing instruction name : #{pi.name}")
+        end
         XMPMetadata.create_xmp_metadata
       end
 
@@ -361,17 +365,8 @@ module Xmpbox
               raise XmpParsingException.new(XmpParsingException::ErrorType::InvalidType,
                 "No type defined for {#{namespace}}#{name}")
             end
-            # Lenient mode: check for array container child element
-            if bag_or_seq = DomHelper.unique_element_child(property)
-              card = detect_cardinality_from_name(bag_or_seq.name)
-              if card && card.array?
-                manage_array(xmp, property, Type::PropertyTypeDesc.new(type: Type::Types::Text, card: card), container)
-              else
-                manage_simple_type(xmp, property, Type::Types::Text, container)
-              end
-            else
-              manage_simple_type(xmp, property, Type::Types::Text, container)
-            end
+            # Lenient mode: use it as string (Java: manageSimpleType with Types.Text)
+            manage_simple_type(xmp, property, Type::Types::Text, container)
           elsif type.type == Type::Types::LangAlt
             manage_lang_alt(xmp, property, container)
           elsif type.card.array?
