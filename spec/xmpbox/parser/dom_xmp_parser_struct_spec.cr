@@ -430,6 +430,124 @@ module Xmpbox
         values.should be_a(Type::ArrayProperty)
         values.as(Type::ArrayProperty).elements_as_string.should eq(["1", "2", "0", "1"])
       end
+
+      it "PDFBOX-6136 parses an extension schema with xmlns= default namespace" do
+        s = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n" +
+            "<?xpacket begin='' id='W5M0MpCehiHzreSzNTczkc9d' bytes='6865'?><rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:iX=\"http://ns.adobe.com/iX/1.0/\">\n" +
+            "    <rdf:Description xmlns=\"http://www.aiim.org/pdfa/ns/extension/\" xmlns:pdfaExtension=\"http://www.aiim.org/pdfa/ns/extension/\" xmlns:pdfaProperty=\"http://www.aiim.org/pdfa/ns/property#\" xmlns:pdfaSchema=\"http://www.aiim.org/pdfa/ns/schema#\" about=\"\">\n" +
+            "        <pdfaExtension:schemas>\n" +
+            "            <rdf:Bag>\n" +
+            "                <rdf:li rdf:parseType=\"Resource\">\n" +
+            "                    <pdfaSchema:namespaceURI>http://ns.adobe.com/pdfx/1.3/</pdfaSchema:namespaceURI>\n" +
+            "                    <pdfaSchema:prefix>pdfx</pdfaSchema:prefix>\n" +
+            "                    <pdfaSchema:schema>Adobe Document Info PDF eXtension Schema</pdfaSchema:schema>\n" +
+            "                    <pdfaSchema:property>\n" +
+            "                        <rdf:Seq>\n" +
+            "                            <rdf:li rdf:parseType=\"Resource\">\n" +
+            "                                <pdfaProperty:category>internal</pdfaProperty:category>\n" +
+            "                                <pdfaProperty:description>ID of PDF/X standard</pdfaProperty:description>\n" +
+            "                                <pdfaProperty:name>GTS_PDFXVersion</pdfaProperty:name>\n" +
+            "                                <pdfaProperty:valueType>Text</pdfaProperty:valueType>\n" +
+            "                            </rdf:li>\n" +
+            "                        </rdf:Seq>\n" +
+            "                    </pdfaSchema:property>\n" +
+            "                </rdf:li>\n" +
+            "                <rdf:li rdf:parseType=\"Resource\">\n" +
+            "                    <pdfaSchema:namespaceURI>http://ns.adobe.com/xap/1.0/mm/</pdfaSchema:namespaceURI>\n" +
+            "                    <pdfaSchema:prefix>xmpMM</pdfaSchema:prefix>\n" +
+            "                    <pdfaSchema:schema>XMP Media Management Schema</pdfaSchema:schema>\n" +
+            "                    <pdfaSchema:property>\n" +
+            "                        <rdf:Seq>\n" +
+            "                            <rdf:li rdf:parseType=\"Resource\">\n" +
+            "                                <pdfaProperty:category>internal</pdfaProperty:category>\n" +
+            "                                <pdfaProperty:description>UUID based identifier for specific incarnation of a document</pdfaProperty:description>\n" +
+            "                                <pdfaProperty:name>InstanceID</pdfaProperty:name>\n" +
+            "                                <pdfaProperty:valueType>URI</pdfaProperty:valueType>\n" +
+            "                            </rdf:li>\n" +
+            "                        </rdf:Seq>\n" +
+            "                    </pdfaSchema:property>\n" +
+            "                </rdf:li>\n" +
+            "                <rdf:li rdf:parseType=\"Resource\">\n" +
+            "                    <pdfaSchema:namespaceURI>http://www.aiim.org/pdfa/ns/id/</pdfaSchema:namespaceURI>\n" +
+            "                    <pdfaSchema:prefix>pdfaid</pdfaSchema:prefix>\n" +
+            "                    <pdfaSchema:schema>PDF/A ID Schema</pdfaSchema:schema>\n" +
+            "                    <pdfaSchema:property>\n" +
+            "                        <rdf:Seq>\n" +
+            "                            <rdf:li rdf:parseType=\"Resource\">\n" +
+            "                                <pdfaProperty:category>internal</pdfaProperty:category>\n" +
+            "                                <pdfaProperty:description>Part of PDF/A standard</pdfaProperty:description>\n" +
+            "                                <pdfaProperty:name>part</pdfaProperty:name>\n" +
+            "                                <pdfaProperty:valueType>Integer</pdfaProperty:valueType>\n" +
+            "                            </rdf:li>\n" +
+            "                            <rdf:li rdf:parseType=\"Resource\">\n" +
+            "                                <pdfaProperty:category>internal</pdfaProperty:category>\n" +
+            "                                <pdfaProperty:description>Amendment of PDF/A standard</pdfaProperty:description>\n" +
+            "                                <pdfaProperty:name>amd</pdfaProperty:name>\n" +
+            "                                <pdfaProperty:valueType>Text</pdfaProperty:valueType>\n" +
+            "                            </rdf:li>\n" +
+            "                            <rdf:li rdf:parseType=\"Resource\">\n" +
+            "                                <pdfaProperty:category>internal</pdfaProperty:category>\n" +
+            "                                <pdfaProperty:description>Conformance level of PDF/A standard</pdfaProperty:description>\n" +
+            "                                <pdfaProperty:name>conformance</pdfaProperty:name>\n" +
+            "                                <pdfaProperty:valueType>Text</pdfaProperty:valueType>\n" +
+            "                            </rdf:li>\n" +
+            "                        </rdf:Seq>\n" +
+            "                    </pdfaSchema:property>\n" +
+            "                </rdf:li>\n" +
+            "            </rdf:Bag>\n" +
+            "        </pdfaExtension:schemas>\n" +
+            "    </rdf:Description>\n" +
+            "    <rdf:Description xmlns=\"http://www.aiim.org/pdfa/ns/id/\" xmlns:pdfaid=\"http://www.aiim.org/pdfa/ns/id/\" about=\"\">\n" +
+            "        <pdfaid:part>1</pdfaid:part>\n" +
+            "        <pdfaid:conformance>B</pdfaid:conformance>\n" +
+            "    </rdf:Description>\n" +
+            "</rdf:RDF><?xpacket end='r'?>"
+        parser = DomXmpParser.new(strict_parsing: false)
+        xmp = parser.parse(s)
+        pdfaid = xmp.pdfa_identification_schema
+        pdfaid.should_not be_nil
+        pdfaid.not_nil!.conformance.should eq("B")
+        pdfaid.not_nil!.part.should eq(1)
+      end
+
+      it "PDFBOX-6138 parses extension schemas with namespaces in the root" do
+        s = "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?>\n" +
+            "<?xpacket begin='' id='W5M0MpCehiHzreSzNTczkc9d'?>" +
+            "<x:xmpmeta xmlns:x=\"adobe:ns:meta/\" xmlns:pdfaExtension=\"http://www.aiim.org/pdfa/ns/extension/\" " +
+            "xmlns:pdfaProperty=\"http://www.aiim.org/pdfa/ns/property#\" xmlns:pdfaSchema=\"http://www.aiim.org/pdfa/ns/schema#\" " +
+            "xmlns:pdfuaid=\"http://www.aiim.org/pdfua/ns/id/\" xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" " +
+            "x:xmptk=\"Adobe XMP Core 5.6-c015 91.163280, 2018/06/22-11:31:03        \">\n" +
+            "    <rdf:RDF>\n" +
+            "        <rdf:Description rdf:about=\"\">\n" +
+            "            <pdfaExtension:schemas>\n" +
+            "                <rdf:Bag>\n" +
+            "                    <rdf:li rdf:parseType=\"Resource\">\n" +
+            "                        <pdfaSchema:schema>PDF/UA Universal Accessibility Schema</pdfaSchema:schema>\n" +
+            "                        <pdfaSchema:namespaceURI>http://www.aiim.org/pdfua/ns/id/</pdfaSchema:namespaceURI>\n" +
+            "                        <pdfaSchema:prefix>pdfuaid</pdfaSchema:prefix>\n" +
+            "                        <pdfaSchema:property>\n" +
+            "                            <rdf:Seq>\n" +
+            "                                <rdf:li rdf:parseType=\"Resource\">\n" +
+            "                                    <pdfaProperty:name>part</pdfaProperty:name>\n" +
+            "                                    <pdfaProperty:valueType>Integer</pdfaProperty:valueType>\n" +
+            "                                    <pdfaProperty:category>internal</pdfaProperty:category>\n" +
+            "                                    <pdfaProperty:description>Indicates, which part of ISO 14289 standard is followed</pdfaProperty:description>\n" +
+            "                                </rdf:li>\n" +
+            "                            </rdf:Seq>\n" +
+            "                        </pdfaSchema:property>\n" +
+            "                    </rdf:li>\n" +
+            "                </rdf:Bag>\n" +
+            "            </pdfaExtension:schemas>\n" +
+            "            <pdfuaid:part>1</pdfuaid:part>\n" +
+            "        </rdf:Description>\n" +
+            "    </rdf:RDF>\n" +
+            "</x:xmpmeta><?xpacket end='w'?>"
+        parser = DomXmpParser.new
+        xmp = parser.parse(s)
+        ua = xmp.schema("http://www.aiim.org/pdfua/ns/id/")
+        ua.should_not be_nil
+        ua.not_nil!.integer_property_value("part").should eq(1)
+      end
     end
   end
 end
