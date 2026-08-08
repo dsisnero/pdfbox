@@ -35,11 +35,11 @@ module Xmpbox
         {"http://ns.adobe.com/pdf/1.3/", Schema::AdobePDFSchema},
         {"http://www.aiim.org/pdfa/ns/id/", Schema::PDFAIdentificationSchema},
         {"http://www.aiim.org/pdfa/ns/extension/", Schema::PDFAExtensionSchema},
-        {"http://ns.adobe.com/photoshop/1.0/", ->(m : XMPMetadata, _p : String) : Type::AbstractStructuredType { Schema::PhotoshopSchema.new(m) }},
-        {"http://ns.adobe.com/exif/1.0/", ->(m : XMPMetadata, _p : String) : Type::AbstractStructuredType { Schema::ExifSchema.new(m) }},
-        {"http://ns.adobe.com/tiff/1.0/", ->(m : XMPMetadata, _p : String) : Type::AbstractStructuredType { Schema::TiffSchema.new(m) }},
+        {"http://ns.adobe.com/photoshop/1.0/", Schema::PhotoshopSchema},
+        {"http://ns.adobe.com/exif/1.0/", Schema::ExifSchema},
+        {"http://ns.adobe.com/tiff/1.0/", Schema::TiffSchema},
         {"http://ns.adobe.com/xap/1.0/bj/", Schema::XMPBasicJobTicketSchema},
-        {"http://ns.adobe.com/xap/1.0/t/pg/", ->(m : XMPMetadata, _p : String) : Type::AbstractStructuredType { Schema::XMPPageTextSchema.new(m) }},
+        {"http://ns.adobe.com/xap/1.0/t/pg/", Schema::XMPPageTextSchema},
       }.each do |_schema_ns, registration|
         if registration.is_a?(Schema::XMPSchema.class)
           xmp.type_mapping.register_schema(_schema_ns, registration)

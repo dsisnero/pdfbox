@@ -153,6 +153,8 @@ module Xmpbox
       MODIFY_DATE   = "ModifyDate"
       NICKNAME      = "Nickname"
       RATING        = "Rating"
+      MODIFIER_DATE = "ModifierDate"
+      THUMBNAILS    = "Thumbnails"
 
       def self.structured_type_info
         {namespace: "http://ns.adobe.com/xap/1.0/", prefered_prefix: "xmp"}
@@ -170,6 +172,8 @@ module Xmpbox
           MODIFY_DATE   => Type::PropertyTypeDesc.new(type: Type::Types::Date),
           NICKNAME      => Type::PropertyTypeDesc.new(type: Type::Types::Text),
           RATING        => Type::PropertyTypeDesc.new(type: Type::Types::Integer),
+          MODIFIER_DATE => Type::PropertyTypeDesc.new(type: Type::Types::Date),
+          THUMBNAILS    => Type::PropertyTypeDesc.new(type: Type::Types::Thumbnail, card: Type::Cardinality::Alt),
         }
       end
 
@@ -266,6 +270,13 @@ module Xmpbox
       RENDITION_CLASS      = "RenditionClass"
       VERSION_ID           = "VersionID"
       HISTORY              = "History"
+      DERIVED_FROM         = "DerivedFrom"
+      MANAGED_FROM         = "ManagedFrom"
+      MANAGER_VARIANT      = "ManagerVariant"
+      VERSIONS             = "Versions"
+      LAST_URL             = "LastURL"
+      RENDITION_OF         = "RenditionOf"
+      SAVE_ID              = "SaveID"
 
       def self.structured_type_info
         {namespace: "http://ns.adobe.com/xap/1.0/mm/", prefered_prefix: "xmpMM"}
@@ -283,6 +294,13 @@ module Xmpbox
           RENDITION_CLASS      => Type::PropertyTypeDesc.new(type: Type::Types::RenditionClass),
           VERSION_ID           => Type::PropertyTypeDesc.new(type: Type::Types::Text),
           HISTORY              => Type::PropertyTypeDesc.new(type: Type::Types::ResourceEvent, card: Type::Cardinality::Seq),
+          DERIVED_FROM         => Type::PropertyTypeDesc.new(type: Type::Types::ResourceRef),
+          MANAGED_FROM         => Type::PropertyTypeDesc.new(type: Type::Types::ResourceRef),
+          MANAGER_VARIANT      => Type::PropertyTypeDesc.new(type: Type::Types::Text),
+          VERSIONS             => Type::PropertyTypeDesc.new(type: Type::Types::Version, card: Type::Cardinality::Seq),
+          LAST_URL             => Type::PropertyTypeDesc.new(type: Type::Types::URL),
+          RENDITION_OF         => Type::PropertyTypeDesc.new(type: Type::Types::ResourceRef),
+          SAVE_ID              => Type::PropertyTypeDesc.new(type: Type::Types::Integer),
         }
       end
 
@@ -369,6 +387,16 @@ module Xmpbox
 
       def self.structured_type_info
         {namespace: "http://ns.adobe.com/xap/1.0/rights/", prefered_prefix: "xmpRights"}
+      end
+
+      def self.property_types : Hash(String, Type::PropertyTypeDesc)
+        {
+          CERTIFICATE   => Type::PropertyTypeDesc.new(type: Type::Types::URL),
+          MARKED        => Type::PropertyTypeDesc.new(type: Type::Types::Boolean),
+          OWNER         => Type::PropertyTypeDesc.new(type: Type::Types::ProperName, card: Type::Cardinality::Bag),
+          USAGE_TERMS   => Type::PropertyTypeDesc.new(type: Type::Types::LangAlt),
+          WEB_STATEMENT => Type::PropertyTypeDesc.new(type: Type::Types::URL),
+        }
       end
 
       def certificate=(value : String) : Nil
@@ -603,25 +631,54 @@ module Xmpbox
 
     # Photoshop: http://ns.adobe.com/photoshop/1.0/
     class PhotoshopSchema < XMPSchema
-      AUTHORS_POSITION       = "AuthorsPosition"
-      CAPTION_WRITER         = "CaptionWriter"
-      CATEGORY               = "Category"
-      CITY                   = "City"
-      COLOR_MODE             = "ColorMode"
-      COUNTRY                = "Country"
-      CREDIT                 = "Credit"
-      DATE_CREATED           = "DateCreated"
-      HEADLINE               = "Headline"
-      HISTORY                = "History"
-      ICC_PROFILE            = "ICCProfile"
-      INSTRUCTIONS           = "Instructions"
-      SOURCE                 = "Source"
-      STATE                  = "State"
-      TRANSMISSION_REFERENCE = "TransmissionReference"
-      URGENCY                = "Urgency"
+      AUTHORS_POSITION        = "AuthorsPosition"
+      CAPTION_WRITER          = "CaptionWriter"
+      CATEGORY                = "Category"
+      CITY                    = "City"
+      COLOR_MODE              = "ColorMode"
+      COUNTRY                 = "Country"
+      CREDIT                  = "Credit"
+      DATE_CREATED            = "DateCreated"
+      HEADLINE                = "Headline"
+      HISTORY                 = "History"
+      ICC_PROFILE             = "ICCProfile"
+      INSTRUCTIONS            = "Instructions"
+      SOURCE                  = "Source"
+      STATE                   = "State"
+      TRANSMISSION_REFERENCE  = "TransmissionReference"
+      URGENCY                 = "Urgency"
+      ANCESTOR_ID             = "AncestorID"
+      DOCUMENT_ANCESTORS      = "DocumentAncestors"
+      SUPPLEMENTAL_CATEGORIES = "SupplementalCategories"
+      TEXT_LAYERS             = "TextLayers"
 
       def self.structured_type_info
         {namespace: "http://ns.adobe.com/photoshop/1.0/", prefered_prefix: "photoshop"}
+      end
+
+      def self.property_types : Hash(String, Type::PropertyTypeDesc)
+        {
+          ANCESTOR_ID             => Type::PropertyTypeDesc.new(type: Type::Types::URI),
+          AUTHORS_POSITION        => Type::PropertyTypeDesc.new(type: Type::Types::Text),
+          CAPTION_WRITER          => Type::PropertyTypeDesc.new(type: Type::Types::ProperName),
+          CATEGORY                => Type::PropertyTypeDesc.new(type: Type::Types::Text),
+          CITY                    => Type::PropertyTypeDesc.new(type: Type::Types::Text),
+          COLOR_MODE              => Type::PropertyTypeDesc.new(type: Type::Types::Integer),
+          COUNTRY                 => Type::PropertyTypeDesc.new(type: Type::Types::Text),
+          CREDIT                  => Type::PropertyTypeDesc.new(type: Type::Types::Text),
+          DATE_CREATED            => Type::PropertyTypeDesc.new(type: Type::Types::Date),
+          DOCUMENT_ANCESTORS      => Type::PropertyTypeDesc.new(type: Type::Types::Text, card: Type::Cardinality::Bag),
+          HEADLINE                => Type::PropertyTypeDesc.new(type: Type::Types::Text),
+          HISTORY                 => Type::PropertyTypeDesc.new(type: Type::Types::Text),
+          ICC_PROFILE             => Type::PropertyTypeDesc.new(type: Type::Types::Text),
+          INSTRUCTIONS            => Type::PropertyTypeDesc.new(type: Type::Types::Text),
+          SOURCE                  => Type::PropertyTypeDesc.new(type: Type::Types::Text),
+          STATE                   => Type::PropertyTypeDesc.new(type: Type::Types::Text),
+          SUPPLEMENTAL_CATEGORIES => Type::PropertyTypeDesc.new(type: Type::Types::Text),
+          TEXT_LAYERS             => Type::PropertyTypeDesc.new(type: Type::Types::Layer, card: Type::Cardinality::Seq),
+          TRANSMISSION_REFERENCE  => Type::PropertyTypeDesc.new(type: Type::Types::Text),
+          URGENCY                 => Type::PropertyTypeDesc.new(type: Type::Types::Integer),
+        }
       end
 
       def authors_position=(value : String) : Nil
@@ -731,15 +788,235 @@ module Xmpbox
 
     # EXIF: http://ns.adobe.com/exif/1.0/
     class ExifSchema < XMPSchema
+      USER_COMMENT                = "UserComment"
+      EXIF_VERSION                = "ExifVersion"
+      FLASH_PIX_VERSION           = "FlashpixVersion"
+      COLOR_SPACE                 = "ColorSpace"
+      COMPONENTS_CONFIGURATION    = "ComponentsConfiguration"
+      COMPRESSED_BPP              = "CompressedBitsPerPixel"
+      PIXEL_X_DIMENSION           = "PixelXDimension"
+      PIXEL_Y_DIMENSION           = "PixelYDimension"
+      RELATED_SOUND_FILE          = "RelatedSoundFile"
+      DATE_TIME_ORIGINAL          = "DateTimeOriginal"
+      DATE_TIME_DIGITIZED         = "DateTimeDigitized"
+      EXPOSURE_TIME               = "ExposureTime"
+      F_NUMBER                    = "FNumber"
+      EXPOSURE_PROGRAM            = "ExposureProgram"
+      SPECTRAL_SENSITIVITY        = "SpectralSensitivity"
+      ISO_SPEED_RATINGS           = "ISOSpeedRatings"
+      SHUTTER_SPEED_VALUE         = "ShutterSpeedValue"
+      APERTURE_VALUE              = "ApertureValue"
+      BRIGHTNESS_VALUE            = "BrightnessValue"
+      EXPOSURE_BIAS_VALUE         = "ExposureBiasValue"
+      MAX_APERTURE_VALUE          = "MaxApertureValue"
+      SUBJECT_DISTANCE            = "SubjectDistance"
+      METERING_MODE               = "MeteringMode"
+      LIGHT_SOURCE                = "LightSource"
+      FLASH_ENERGY                = "FlashEnergy"
+      FOCAL_LENGTH                = "FocalLength"
+      FOCAL_PLANE_XRESOLUTION     = "FocalPlaneXResolution"
+      FOCAL_PLANE_YRESOLUTION     = "FocalPlaneYResolution"
+      SUBJECT_AREA                = "SubjectArea"
+      FOCAL_PLANE_RESOLUTION_UNIT = "FocalPlaneResolutionUnit"
+      SUBJECT_LOCATION            = "SubjectLocation"
+      EXPOSURE_INDEX              = "ExposureIndex"
+      SENSING_METHOD              = "SensingMethod"
+      FILE_SOURCE                 = "FileSource"
+      SCENE_TYPE                  = "SceneType"
+      CUSTOM_RENDERED             = "CustomRendered"
+      WHITE_BALANCE               = "WhiteBalance"
+      EXPOSURE_MODE               = "ExposureMode"
+      DIGITAL_ZOOM_RATIO          = "DigitalZoomRatio"
+      FOCAL_LENGTH_IN_3_5MM_FILM  = "FocalLengthIn35mmFilm"
+      SCENE_CAPTURE_TYPE          = "SceneCaptureType"
+      GAIN_CONTROL                = "GainControl"
+      CONTRAST                    = "Contrast"
+      SATURATION                  = "Saturation"
+      SHARPNESS                   = "Sharpness"
+      SUBJECT_DISTANCE_RANGE      = "SubjectDistanceRange"
+      IMAGE_UNIQUE_ID             = "ImageUniqueID"
+      GPSVERSION_ID               = "GPSVersionID"
+      GPS_SATELLITES              = "GPSSatellites"
+      GPS_STATUS                  = "GPSStatus"
+      GPS_MEASURE_MODE            = "GPSMeasureMode"
+      GPS_MAP_DATUM               = "GPSMapDatum"
+      GPS_SPEED_REF               = "GPSSpeedRef"
+      GPS_TRACK_REF               = "GPSTrackRef"
+      GPS_IMG_DIRECTION_REF       = "GPSImgDirectionRef"
+      GPS_DEST_BEARING_REF        = "GPSDestBearingRef"
+      GPS_DEST_DISTANCE_REF       = "GPSDestDistanceRef"
+      GPS_PROCESSING_METHOD       = "GPSProcessingMethod"
+      GPS_AREA_INFORMATION        = "GPSAreaInformation"
+      GPS_ALTITUDE                = "GPSAltitude"
+      GPS_DOP                     = "GPSDOP"
+      GPS_SPEED                   = "GPSSpeed"
+      GPS_TRACK                   = "GPSTrack"
+      GPS_IMG_DIRECTION           = "GPSImgDirection"
+      GPS_DEST_BEARING            = "GPSDestBearing"
+      GPS_DEST_DISTANCE           = "GPSDestDistance"
+      GPS_ALTITUDE_REF            = "GPSAltitudeRef"
+      GPS_DIFFERENTIAL            = "GPSDifferential"
+      GPS_TIME_STAMP              = "GPSTimeStamp"
+      OECF                        = "OECF"
+      SPATIAL_FREQUENCY_RESPONSE  = "SpatialFrequencyResponse"
+      GPS_LATITUDE                = "GPSLatitude"
+      GPS_LONGITUDE               = "GPSLongitude"
+      GPS_DEST_LATITUDE           = "GPSDestLatitude"
+      GPS_DEST_LONGITUDE          = "GPSDestLongitude"
+      CFA_PATTERN                 = "CFAPattern"
+      FLASH                       = "Flash"
+      CFA_PATTERN_TYPE            = "CFAPatternType"
+      DEVICE_SETTING_DESCRIPTION  = "DeviceSettingDescription"
+
       def self.structured_type_info
         {namespace: "http://ns.adobe.com/exif/1.0/", prefered_prefix: "exif"}
+      end
+
+      def self.property_types : Hash(String, Type::PropertyTypeDesc)
+        {
+          USER_COMMENT                => Type::PropertyTypeDesc.new(type: Type::Types::LangAlt),
+          EXIF_VERSION                => Type::PropertyTypeDesc.new(type: Type::Types::Text),
+          FLASH_PIX_VERSION           => Type::PropertyTypeDesc.new(type: Type::Types::Text),
+          COLOR_SPACE                 => Type::PropertyTypeDesc.new(type: Type::Types::Integer),
+          COMPONENTS_CONFIGURATION    => Type::PropertyTypeDesc.new(type: Type::Types::Integer, card: Type::Cardinality::Seq),
+          COMPRESSED_BPP              => Type::PropertyTypeDesc.new(type: Type::Types::Rational),
+          PIXEL_X_DIMENSION           => Type::PropertyTypeDesc.new(type: Type::Types::Integer),
+          PIXEL_Y_DIMENSION           => Type::PropertyTypeDesc.new(type: Type::Types::Integer),
+          RELATED_SOUND_FILE          => Type::PropertyTypeDesc.new(type: Type::Types::Text),
+          DATE_TIME_ORIGINAL          => Type::PropertyTypeDesc.new(type: Type::Types::Date),
+          DATE_TIME_DIGITIZED         => Type::PropertyTypeDesc.new(type: Type::Types::Date),
+          EXPOSURE_TIME               => Type::PropertyTypeDesc.new(type: Type::Types::Rational),
+          F_NUMBER                    => Type::PropertyTypeDesc.new(type: Type::Types::Rational),
+          EXPOSURE_PROGRAM            => Type::PropertyTypeDesc.new(type: Type::Types::Integer),
+          SPECTRAL_SENSITIVITY        => Type::PropertyTypeDesc.new(type: Type::Types::Text),
+          ISO_SPEED_RATINGS           => Type::PropertyTypeDesc.new(type: Type::Types::Integer, card: Type::Cardinality::Seq),
+          SHUTTER_SPEED_VALUE         => Type::PropertyTypeDesc.new(type: Type::Types::Rational),
+          APERTURE_VALUE              => Type::PropertyTypeDesc.new(type: Type::Types::Rational),
+          BRIGHTNESS_VALUE            => Type::PropertyTypeDesc.new(type: Type::Types::Rational),
+          EXPOSURE_BIAS_VALUE         => Type::PropertyTypeDesc.new(type: Type::Types::Rational),
+          MAX_APERTURE_VALUE          => Type::PropertyTypeDesc.new(type: Type::Types::Rational),
+          SUBJECT_DISTANCE            => Type::PropertyTypeDesc.new(type: Type::Types::Rational),
+          METERING_MODE               => Type::PropertyTypeDesc.new(type: Type::Types::Integer),
+          LIGHT_SOURCE                => Type::PropertyTypeDesc.new(type: Type::Types::Integer),
+          FLASH_ENERGY                => Type::PropertyTypeDesc.new(type: Type::Types::Rational),
+          FOCAL_LENGTH                => Type::PropertyTypeDesc.new(type: Type::Types::Rational),
+          FOCAL_PLANE_XRESOLUTION     => Type::PropertyTypeDesc.new(type: Type::Types::Rational),
+          FOCAL_PLANE_YRESOLUTION     => Type::PropertyTypeDesc.new(type: Type::Types::Rational),
+          SUBJECT_AREA                => Type::PropertyTypeDesc.new(type: Type::Types::Integer, card: Type::Cardinality::Seq),
+          FOCAL_PLANE_RESOLUTION_UNIT => Type::PropertyTypeDesc.new(type: Type::Types::Integer),
+          SUBJECT_LOCATION            => Type::PropertyTypeDesc.new(type: Type::Types::Integer, card: Type::Cardinality::Seq),
+          EXPOSURE_INDEX              => Type::PropertyTypeDesc.new(type: Type::Types::Rational),
+          SENSING_METHOD              => Type::PropertyTypeDesc.new(type: Type::Types::Integer),
+          FILE_SOURCE                 => Type::PropertyTypeDesc.new(type: Type::Types::Integer),
+          SCENE_TYPE                  => Type::PropertyTypeDesc.new(type: Type::Types::Integer),
+          CUSTOM_RENDERED             => Type::PropertyTypeDesc.new(type: Type::Types::Integer),
+          WHITE_BALANCE               => Type::PropertyTypeDesc.new(type: Type::Types::Integer),
+          EXPOSURE_MODE               => Type::PropertyTypeDesc.new(type: Type::Types::Integer),
+          DIGITAL_ZOOM_RATIO          => Type::PropertyTypeDesc.new(type: Type::Types::Rational),
+          FOCAL_LENGTH_IN_3_5MM_FILM  => Type::PropertyTypeDesc.new(type: Type::Types::Integer),
+          SCENE_CAPTURE_TYPE          => Type::PropertyTypeDesc.new(type: Type::Types::Integer),
+          GAIN_CONTROL                => Type::PropertyTypeDesc.new(type: Type::Types::Integer),
+          CONTRAST                    => Type::PropertyTypeDesc.new(type: Type::Types::Integer),
+          SATURATION                  => Type::PropertyTypeDesc.new(type: Type::Types::Integer),
+          SHARPNESS                   => Type::PropertyTypeDesc.new(type: Type::Types::Integer),
+          SUBJECT_DISTANCE_RANGE      => Type::PropertyTypeDesc.new(type: Type::Types::Integer),
+          IMAGE_UNIQUE_ID             => Type::PropertyTypeDesc.new(type: Type::Types::Text),
+          GPSVERSION_ID               => Type::PropertyTypeDesc.new(type: Type::Types::Text),
+          GPS_SATELLITES              => Type::PropertyTypeDesc.new(type: Type::Types::Text),
+          GPS_STATUS                  => Type::PropertyTypeDesc.new(type: Type::Types::Text),
+          GPS_MEASURE_MODE            => Type::PropertyTypeDesc.new(type: Type::Types::Text),
+          GPS_MAP_DATUM               => Type::PropertyTypeDesc.new(type: Type::Types::Text),
+          GPS_SPEED_REF               => Type::PropertyTypeDesc.new(type: Type::Types::Text),
+          GPS_TRACK_REF               => Type::PropertyTypeDesc.new(type: Type::Types::Text),
+          GPS_IMG_DIRECTION_REF       => Type::PropertyTypeDesc.new(type: Type::Types::Text),
+          GPS_DEST_BEARING_REF        => Type::PropertyTypeDesc.new(type: Type::Types::Text),
+          GPS_DEST_DISTANCE_REF       => Type::PropertyTypeDesc.new(type: Type::Types::Text),
+          GPS_PROCESSING_METHOD       => Type::PropertyTypeDesc.new(type: Type::Types::Text),
+          GPS_AREA_INFORMATION        => Type::PropertyTypeDesc.new(type: Type::Types::Text),
+          GPS_ALTITUDE                => Type::PropertyTypeDesc.new(type: Type::Types::Rational),
+          GPS_DOP                     => Type::PropertyTypeDesc.new(type: Type::Types::Rational),
+          GPS_SPEED                   => Type::PropertyTypeDesc.new(type: Type::Types::Rational),
+          GPS_TRACK                   => Type::PropertyTypeDesc.new(type: Type::Types::Rational),
+          GPS_IMG_DIRECTION           => Type::PropertyTypeDesc.new(type: Type::Types::Rational),
+          GPS_DEST_BEARING            => Type::PropertyTypeDesc.new(type: Type::Types::Rational),
+          GPS_DEST_DISTANCE           => Type::PropertyTypeDesc.new(type: Type::Types::Rational),
+          GPS_ALTITUDE_REF            => Type::PropertyTypeDesc.new(type: Type::Types::Integer),
+          GPS_DIFFERENTIAL            => Type::PropertyTypeDesc.new(type: Type::Types::Integer),
+          GPS_TIME_STAMP              => Type::PropertyTypeDesc.new(type: Type::Types::Date),
+          OECF                        => Type::PropertyTypeDesc.new(type: Type::Types::OECF),
+          SPATIAL_FREQUENCY_RESPONSE  => Type::PropertyTypeDesc.new(type: Type::Types::OECF),
+          GPS_LATITUDE                => Type::PropertyTypeDesc.new(type: Type::Types::GPSCoordinate),
+          GPS_LONGITUDE               => Type::PropertyTypeDesc.new(type: Type::Types::GPSCoordinate),
+          GPS_DEST_LATITUDE           => Type::PropertyTypeDesc.new(type: Type::Types::GPSCoordinate),
+          GPS_DEST_LONGITUDE          => Type::PropertyTypeDesc.new(type: Type::Types::GPSCoordinate),
+          CFA_PATTERN                 => Type::PropertyTypeDesc.new(type: Type::Types::CFAPattern),
+          FLASH                       => Type::PropertyTypeDesc.new(type: Type::Types::Flash),
+          CFA_PATTERN_TYPE            => Type::PropertyTypeDesc.new(type: Type::Types::CFAPattern),
+          DEVICE_SETTING_DESCRIPTION  => Type::PropertyTypeDesc.new(type: Type::Types::DeviceSettings),
+        }
       end
     end
 
     # TIFF: http://ns.adobe.com/tiff/1.0/
     class TiffSchema < XMPSchema
+      IMAGE_DESCRIPTION          = "ImageDescription"
+      COPYRIGHT                  = "Copyright"
+      ARTIST                     = "Artist"
+      IMAGE_WIDTH                = "ImageWidth"
+      IMAGE_LENGTH               = "ImageLength"
+      BITS_PER_SAMPLE            = "BitsPerSample"
+      COMPRESSION                = "Compression"
+      PHOTOMETRIC_INTERPRETATION = "PhotometricInterpretation"
+      ORIENTATION                = "Orientation"
+      SAMPLES_PER_PIXEL          = "SamplesPerPixel"
+      PLANAR_CONFIGURATION       = "PlanarConfiguration"
+      YCBCR_SUB_SAMPLING         = "YCbCrSubSampling"
+      YCBCR_POSITIONING          = "YCbCrPositioning"
+      X_RESOLUTION               = "XResolution"
+      Y_RESOLUTION               = "YResolution"
+      RESOLUTION_UNIT            = "ResolutionUnit"
+      TRANSFER_FUNCTION          = "TransferFunction"
+      WHITE_POINT                = "WhitePoint"
+      PRIMARY_CHROMATICITIES     = "PrimaryChromaticities"
+      YCBCR_COEFFICIENTS         = "YCbCrCoefficients"
+      REFERENCE_BLACK_WHITE      = "ReferenceBlackWhite"
+      DATE_TIME                  = "DateTime"
+      SOFTWARE                   = "Software"
+      MAKE                       = "Make"
+      MODEL                      = "Model"
+
       def self.structured_type_info
         {namespace: "http://ns.adobe.com/tiff/1.0/", prefered_prefix: "tiff"}
+      end
+
+      def self.property_types : Hash(String, Type::PropertyTypeDesc)
+        {
+          IMAGE_DESCRIPTION          => Type::PropertyTypeDesc.new(type: Type::Types::LangAlt),
+          COPYRIGHT                  => Type::PropertyTypeDesc.new(type: Type::Types::LangAlt),
+          ARTIST                     => Type::PropertyTypeDesc.new(type: Type::Types::ProperName),
+          IMAGE_WIDTH                => Type::PropertyTypeDesc.new(type: Type::Types::Integer),
+          IMAGE_LENGTH               => Type::PropertyTypeDesc.new(type: Type::Types::Integer),
+          BITS_PER_SAMPLE            => Type::PropertyTypeDesc.new(type: Type::Types::Integer, card: Type::Cardinality::Seq),
+          COMPRESSION                => Type::PropertyTypeDesc.new(type: Type::Types::Integer),
+          PHOTOMETRIC_INTERPRETATION => Type::PropertyTypeDesc.new(type: Type::Types::Integer),
+          ORIENTATION                => Type::PropertyTypeDesc.new(type: Type::Types::Integer),
+          SAMPLES_PER_PIXEL          => Type::PropertyTypeDesc.new(type: Type::Types::Integer),
+          PLANAR_CONFIGURATION       => Type::PropertyTypeDesc.new(type: Type::Types::Integer),
+          YCBCR_SUB_SAMPLING         => Type::PropertyTypeDesc.new(type: Type::Types::Integer, card: Type::Cardinality::Seq),
+          YCBCR_POSITIONING          => Type::PropertyTypeDesc.new(type: Type::Types::Integer),
+          X_RESOLUTION               => Type::PropertyTypeDesc.new(type: Type::Types::Rational),
+          Y_RESOLUTION               => Type::PropertyTypeDesc.new(type: Type::Types::Rational),
+          RESOLUTION_UNIT            => Type::PropertyTypeDesc.new(type: Type::Types::Integer),
+          TRANSFER_FUNCTION          => Type::PropertyTypeDesc.new(type: Type::Types::Integer, card: Type::Cardinality::Seq),
+          WHITE_POINT                => Type::PropertyTypeDesc.new(type: Type::Types::Rational, card: Type::Cardinality::Seq),
+          PRIMARY_CHROMATICITIES     => Type::PropertyTypeDesc.new(type: Type::Types::Rational, card: Type::Cardinality::Seq),
+          YCBCR_COEFFICIENTS         => Type::PropertyTypeDesc.new(type: Type::Types::Rational, card: Type::Cardinality::Seq),
+          REFERENCE_BLACK_WHITE      => Type::PropertyTypeDesc.new(type: Type::Types::Rational, card: Type::Cardinality::Seq),
+          DATE_TIME                  => Type::PropertyTypeDesc.new(type: Type::Types::Date),
+          SOFTWARE                   => Type::PropertyTypeDesc.new(type: Type::Types::AgentName),
+          MAKE                       => Type::PropertyTypeDesc.new(type: Type::Types::ProperName),
+          MODEL                      => Type::PropertyTypeDesc.new(type: Type::Types::ProperName),
+        }
       end
     end
 
@@ -817,8 +1094,24 @@ module Xmpbox
 
     # XMP Page Text: http://ns.adobe.com/xap/1.0/t/pg/
     class XMPPageTextSchema < XMPSchema
+      MAX_PAGE_SIZE = "MaxPageSize"
+      N_PAGES       = "NPages"
+      PLATE_NAMES   = "PlateNames"
+      COLORANTS     = "Colorants"
+      FONTS         = "Fonts"
+
       def self.structured_type_info
         {namespace: "http://ns.adobe.com/xap/1.0/t/pg/", prefered_prefix: "xmpTPg"}
+      end
+
+      def self.property_types : Hash(String, Type::PropertyTypeDesc)
+        {
+          MAX_PAGE_SIZE => Type::PropertyTypeDesc.new(type: Type::Types::Dimensions),
+          N_PAGES       => Type::PropertyTypeDesc.new(type: Type::Types::Integer),
+          PLATE_NAMES   => Type::PropertyTypeDesc.new(type: Type::Types::Text, card: Type::Cardinality::Seq),
+          COLORANTS     => Type::PropertyTypeDesc.new(type: Type::Types::Colorant, card: Type::Cardinality::Seq),
+          FONTS         => Type::PropertyTypeDesc.new(type: Type::Types::Font, card: Type::Cardinality::Bag),
+        }
       end
     end
   end
