@@ -371,6 +371,14 @@ module Xmpbox
         {namespace: "http://ns.adobe.com/pdf/1.3/", prefered_prefix: "pdf"}
       end
 
+      def self.property_types : Hash(String, Type::PropertyTypeDesc)
+        {
+          KEYWORDS    => Type::PropertyTypeDesc.new(type: Type::Types::Text),
+          PDF_VERSION => Type::PropertyTypeDesc.new(type: Type::Types::Text),
+          PRODUCER    => Type::PropertyTypeDesc.new(type: Type::Types::Text),
+        }
+      end
+
       def keywords=(value : String) : Nil
         set_text_property_value(KEYWORDS, value)
       end

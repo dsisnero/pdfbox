@@ -32,7 +32,7 @@ module Xmpbox
         {"http://ns.adobe.com/xap/1.0/", ->(m : XMPMetadata, _p : String) : Type::AbstractStructuredType { Schema::XMPBasicSchema.new(m) }},
         {"http://ns.adobe.com/xap/1.0/mm/", ->(m : XMPMetadata, _p : String) : Type::AbstractStructuredType { Schema::XMPMediaManagementSchema.new(m) }},
         {"http://ns.adobe.com/xap/1.0/rights/", ->(m : XMPMetadata, _p : String) : Type::AbstractStructuredType { Schema::XMPRightsManagementSchema.new(m) }},
-        {"http://ns.adobe.com/pdf/1.3/", ->(m : XMPMetadata, _p : String) : Type::AbstractStructuredType { Schema::AdobePDFSchema.new(m) }},
+        {"http://ns.adobe.com/pdf/1.3/", Schema::AdobePDFSchema},
         {"http://www.aiim.org/pdfa/ns/id/", Schema::PDFAIdentificationSchema},
         {"http://www.aiim.org/pdfa/ns/extension/", ->(m : XMPMetadata, _p : String) : Type::AbstractStructuredType { Schema::PDFAExtensionSchema.new(m) }},
         {"http://ns.adobe.com/photoshop/1.0/", ->(m : XMPMetadata, _p : String) : Type::AbstractStructuredType { Schema::PhotoshopSchema.new(m) }},
