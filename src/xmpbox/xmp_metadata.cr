@@ -9,7 +9,7 @@ module Xmpbox
     property xpacket_bytes : String?
 
     def initialize
-      @schemas = {} of String => Schema::XMPSchema
+      @schemas = [] of Schema::XMPSchema
       @type_mapping = Type::TypeMapping.new(self)
     end
 
@@ -60,7 +60,7 @@ module Xmpbox
       end
 
       def {{method_name}} : {{schema_class}}?
-        @schemas.each_value do |s|
+        @schemas.each do |s|
           return s.as({{schema_class}}) if s.is_a?({{schema_class}})
         end
         nil
@@ -80,26 +80,28 @@ module Xmpbox
     schema_helper xmp_basic_job_ticket_schema, Schema::XMPBasicJobTicketSchema
     schema_helper xmp_page_text_schema, Schema::XMPPageTextSchema
 
+    # Port of Java getSchema(nsURI) — first schema with the matching namespace.
     def schema(ns_uri : String) : Schema::XMPSchema?
-      @schemas[ns_uri]?
+      @schemas.find { |schema| schema.namespace == ns_uri }
     end
 
+    # Port of Java getSchema(prefix, nsURI) — schema matching both prefix and namespace.
     def schema(prefix : String, ns_uri : String) : Schema::XMPSchema?
-      @schemas[ns_uri]?
+      @schemas.find { |schema| schema.namespace == ns_uri && schema.prefix == prefix }
     end
 
     def all_schemas : Array(Schema::XMPSchema)
-      @schemas.values
+      @schemas
     end
 
+    # Port of Java addSchema(XMPSchema) — schemas are stored in a list so multiple
+    # schemas of the same type can coexist with different prefixes.
     def add_schema(schema : Schema::XMPSchema) : Nil
-      ns = schema.namespace
-      return unless ns
-      @schemas[ns] = schema
+      @schemas << schema
     end
 
     def remove_schema(ns_uri : String) : Nil
-      @schemas.delete(ns_uri)
+      @schemas.reject! { |schema| schema.namespace == ns_uri }
     end
 
     def clear_schemas : Nil
