@@ -69,7 +69,10 @@ module Xmpbox
           st_info = klass.structured_type_info
           next unless st_info
           ns = st_info[:namespace]
-          pm = initialize_prop_mapping(klass)
+          pm = PropertiesDescription.new
+          klass.property_types.each do |name, desc|
+            pm.add_new_property(name, desc)
+          end
           list = @structured_namespaces[ns]?
           if list
             list << type

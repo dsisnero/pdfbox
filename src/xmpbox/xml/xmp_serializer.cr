@@ -82,12 +82,12 @@ module Xmpbox
             arr_name = field.property_name || ""
 
             io << ind << "<" << arr_prefix << ":" << arr_name << ">\n"
-            io << "  " << ind << "<rdf:" << array.array_type.to_s.downcase << ">\n"
+            io << "  " << ind << "<rdf:" << array.array_type.to_s << ">\n"
 
             inner_fields = array.all_properties
             serialize_fields(io, inner_fields, indent_level + 2, resource_ns, XmpConstants::DEFAULT_RDF_PREFIX, false)
 
-            io << "  " << ind << "</rdf:" << array.array_type.to_s.downcase << ">\n"
+            io << "  " << ind << "</rdf:" << array.array_type.to_s << ">\n"
             io << ind << "</" << arr_prefix << ":" << arr_name << ">\n"
           elsif field.is_a?(Type::AbstractStructuredType)
             structured = field.as(Type::AbstractStructuredType)

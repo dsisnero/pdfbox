@@ -1,4 +1,5 @@
 require "xml"
+require "../xmp_constants"
 
 module Xmpbox
   module Xml
@@ -23,11 +24,13 @@ module Xmpbox
         elems.size == 1 ? elems.first : nil
       end
 
-      # Check if a node has parseType="Resource"
+      # Check if a node has rdf:parseType="Resource"
       def self.parse_type_resource?(node : XML::Node) : Bool
-        node[PARSE_TYPE_RES]? == "Resource"
-      rescue KeyError
-        false
+        node.attributes.any? do |attr|
+          attr.name == XmpConstants::PARSE_TYPE &&
+            attr.namespace.try(&.href) == XmpConstants::RDF_NAMESPACE &&
+            attr.content == XmpConstants::RESOURCE_NAME
+        end
       end
 
       # Build a QName from an XML element

@@ -25,6 +25,12 @@ module Xmpbox
         nil
       end
 
+      # Port of Java @PropertyType-annotated fields on structured types. Defaults
+      # to empty; subclasses override to let strict parsing resolve property types.
+      def self.property_types : Hash(String, PropertyTypeDesc)
+        {} of String => PropertyTypeDesc
+      end
+
       def namespace : String?
         @namespace_uri
       end

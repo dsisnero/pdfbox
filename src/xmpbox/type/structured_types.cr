@@ -582,9 +582,17 @@ module Xmpbox
         {namespace: "http://ns.adobe.com/xap/1.0/sType/Job#", prefered_prefix: "stJob"}
       end
 
+      def self.property_types : Hash(String, PropertyTypeDesc)
+        {
+          ID   => PropertyTypeDesc.new(type: Types::Text),
+          NAME => PropertyTypeDesc.new(type: Types::Text),
+          URL  => PropertyTypeDesc.new(type: Types::URL),
+        }
+      end
+
       def initialize(metadata : XMPMetadata, namespace_uri = nil, field_prefix = nil, property_name = nil)
         super(metadata, namespace_uri, field_prefix, property_name)
-        add_namespace(namespace.as(String), prefered_prefix.as(String))
+        add_namespace(namespace.as(String), prefix.as(String))
       end
 
       def id : String?

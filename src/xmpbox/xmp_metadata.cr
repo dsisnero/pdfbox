@@ -38,7 +38,7 @@ module Xmpbox
         {"http://ns.adobe.com/photoshop/1.0/", ->(m : XMPMetadata, _p : String) : Type::AbstractStructuredType { Schema::PhotoshopSchema.new(m) }},
         {"http://ns.adobe.com/exif/1.0/", ->(m : XMPMetadata, _p : String) : Type::AbstractStructuredType { Schema::ExifSchema.new(m) }},
         {"http://ns.adobe.com/tiff/1.0/", ->(m : XMPMetadata, _p : String) : Type::AbstractStructuredType { Schema::TiffSchema.new(m) }},
-        {"http://ns.adobe.com/xap/1.0/bj/", ->(m : XMPMetadata, _p : String) : Type::AbstractStructuredType { Schema::XMPBasicJobTicketSchema.new(m) }},
+        {"http://ns.adobe.com/xap/1.0/bj/", Schema::XMPBasicJobTicketSchema},
         {"http://ns.adobe.com/xap/1.0/t/pg/", ->(m : XMPMetadata, _p : String) : Type::AbstractStructuredType { Schema::XMPPageTextSchema.new(m) }},
       }.each do |_schema_ns, registration|
         if registration.is_a?(Schema::XMPSchema.class)

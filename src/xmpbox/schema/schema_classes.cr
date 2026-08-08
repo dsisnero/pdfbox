@@ -674,8 +674,73 @@ module Xmpbox
 
     # XMP Basic Job Ticket: http://ns.adobe.com/xap/1.0/bj/
     class XMPBasicJobTicketSchema < XMPSchema
+      JOB_REF = "JobRef"
+
+      @bag_jobs : Type::ArrayProperty?
+
       def self.structured_type_info
         {namespace: "http://ns.adobe.com/xap/1.0/bj/", prefered_prefix: "xmpBJ"}
+      end
+
+      def self.property_types : Hash(String, Type::PropertyTypeDesc)
+        {
+          JOB_REF => Type::PropertyTypeDesc.new(type: Type::Types::Job, card: Type::Cardinality::Bag),
+        }
+      end
+
+      def add_job(id : String, name : String, url : String) : Nil
+        add_job(id, name, url, nil)
+      end
+
+      def add_job(id : String, name : String, url : String, field_prefix : String?) : Nil
+        if bag = @bag_jobs
+          if field_prefix.nil?
+            first = bag.container.all_properties.first?
+            if first.is_a?(Type::JobType)
+              field_prefix = first.prefix
+            end
+          end
+        end
+        job = Type::JobType.new(metadata, nil, field_prefix)
+        job.id = id
+        job.name = name
+        job.url = url
+        add_job(job)
+      end
+
+      def add_job(job : Type::JobType) : Nil
+        prefix = namespace_prefix(job.namespace.to_s)
+        if prefix
+          job.prefix = prefix
+          if bag = @bag_jobs
+            bag.container.all_properties.each do |field|
+              if field.is_a?(Type::JobType)
+                field.prefix = prefix
+              end
+            end
+          end
+        else
+          add_namespace(job.namespace.to_s, job.prefix.to_s)
+        end
+        if @bag_jobs.nil?
+          @bag_jobs = create_array_property(JOB_REF, Type::Cardinality::Bag)
+          add_property(@bag_jobs.as(Type::ArrayProperty))
+        end
+        @bag_jobs.as(Type::ArrayProperty).container.add_property(job)
+      end
+
+      def jobs : Array(Type::JobType)?
+        prop = abstract_property(JOB_REF)
+        unless prop.is_a?(Type::ArrayProperty)
+          return nil
+        end
+        prop.container.all_properties.map do |abstract_field|
+          unless abstract_field.is_a?(Type::JobType)
+            raise Type::BadFieldValueException.new(
+              "Job expected and #{abstract_field.class.name} found.")
+          end
+          abstract_field
+        end
       end
     end
 
