@@ -296,8 +296,129 @@ module Xmpbox
 
     # Photoshop: http://ns.adobe.com/photoshop/1.0/
     class PhotoshopSchema < XMPSchema
+      AUTHORS_POSITION       = "AuthorsPosition"
+      CAPTION_WRITER         = "CaptionWriter"
+      CATEGORY               = "Category"
+      CITY                   = "City"
+      COLOR_MODE             = "ColorMode"
+      COUNTRY                = "Country"
+      CREDIT                 = "Credit"
+      DATE_CREATED           = "DateCreated"
+      HEADLINE               = "Headline"
+      HISTORY                = "History"
+      ICC_PROFILE            = "ICCProfile"
+      INSTRUCTIONS           = "Instructions"
+      SOURCE                 = "Source"
+      STATE                  = "State"
+      TRANSMISSION_REFERENCE = "TransmissionReference"
+      URGENCY                = "Urgency"
+
       def self.structured_type_info
         {namespace: "http://ns.adobe.com/photoshop/1.0/", prefered_prefix: "photoshop"}
+      end
+
+      def authors_position=(value : String) : Nil
+        set_text_property_value(AUTHORS_POSITION, value)
+      end
+
+      def authors_position : String?
+        unqualified_text_property_value(AUTHORS_POSITION)
+      end
+
+      def caption_writer=(value : String) : Nil
+        set_text_property_value(CAPTION_WRITER, value)
+      end
+
+      def caption_writer : String?
+        unqualified_text_property_value(CAPTION_WRITER)
+      end
+
+      def city=(value : String) : Nil
+        set_text_property_value(CITY, value)
+      end
+
+      def city : String?
+        unqualified_text_property_value(CITY)
+      end
+
+      def country=(value : String) : Nil
+        set_text_property_value(COUNTRY, value)
+      end
+
+      def country : String?
+        unqualified_text_property_value(COUNTRY)
+      end
+
+      def credit=(value : String) : Nil
+        set_text_property_value(CREDIT, value)
+      end
+
+      def credit : String?
+        unqualified_text_property_value(CREDIT)
+      end
+
+      def headline=(value : String) : Nil
+        set_text_property_value(HEADLINE, value)
+      end
+
+      def headline : String?
+        unqualified_text_property_value(HEADLINE)
+      end
+
+      def history=(value : String) : Nil
+        set_text_property_value(HISTORY, value)
+      end
+
+      def history : String?
+        unqualified_text_property_value(HISTORY)
+      end
+
+      def icc_profile=(value : String) : Nil
+        set_text_property_value(ICC_PROFILE, value)
+      end
+
+      def icc_profile : String?
+        unqualified_text_property_value(ICC_PROFILE)
+      end
+
+      def instructions=(value : String) : Nil
+        set_text_property_value(INSTRUCTIONS, value)
+      end
+
+      def instructions : String?
+        unqualified_text_property_value(INSTRUCTIONS)
+      end
+
+      def state=(value : String) : Nil
+        set_text_property_value(STATE, value)
+      end
+
+      def state : String?
+        unqualified_text_property_value(STATE)
+      end
+
+      def color_mode=(value : Int32) : Nil
+        set_integer_property_value(COLOR_MODE, value)
+      end
+
+      def color_mode : Int32?
+        integer_property_value(COLOR_MODE)
+      end
+
+      def urgency=(value : Int32) : Nil
+        set_integer_property_value(URGENCY, value)
+      end
+
+      def urgency : Int32?
+        integer_property_value(URGENCY)
+      end
+
+      def date_created=(date : Time) : Nil
+        set_date_property_value(DATE_CREATED, date)
+      end
+
+      def date_created : Time?
+        date_property_value(DATE_CREATED)
       end
     end
 
