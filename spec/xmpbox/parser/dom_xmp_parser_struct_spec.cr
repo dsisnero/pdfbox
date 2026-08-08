@@ -313,6 +313,88 @@ module Xmpbox
         example.should_not be_nil
         example.not_nil!.unqualified_text_property_value("Data").should eq("Example")
       end
+
+      it "parses a ResourceEventType defined by namespace inside rdf:li" do
+        s = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n" +
+            "<?xpacket begin=\"\uFEFF\" id=\"W5M0MpCehiHzreSzNTczkc9d\"?><x:xmpmeta xmlns:x=\"adobe:ns:meta/\">\n" +
+            "    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n" +
+            "        <rdf:Description xmlns:xmpMM=\"http://ns.adobe.com/xap/1.0/mm/\" rdf:about=\"\">\n" +
+            "            <xmpMM:History>\n" +
+            "                <rdf:Seq>\n" +
+            "                    <rdf:li xmlns:stEvt=\"http://ns.adobe.com/xap/1.0/sType/ResourceEvent#\" rdf:parseType=\"Resource\">\n" +
+            "                        <stEvt:action>created</stEvt:action>\n" +
+            "                        <stEvt:parameters>original PDF file</stEvt:parameters>\n" +
+            "                    </rdf:li>\n" +
+            "                </rdf:Seq>\n" +
+            "            </xmpMM:History>\n" +
+            "        </rdf:Description>\n" +
+            "    </rdf:RDF>\n" +
+            "</x:xmpmeta><?xpacket end=\"w\"?>"
+        parser = DomXmpParser.new
+        xmp = parser.parse(s)
+        mm = xmp.xmp_media_management_schema
+        mm.should_not be_nil
+        history = mm.not_nil!.abstract_property("History").as(Type::ArrayProperty)
+        evt = history.all_properties[0].as(Type::ResourceEventType)
+        evt.action.should eq("created")
+        evt.parameters.should eq("original PDF file")
+      end
+
+      it "strict rejects an incomplete pdfaExtension, lenient tolerates it" do
+        s = "<?xpacket begin=\"\uFEFF\" id=\"W5M0MpCehiHzreSzNTczkc9d\"?>\n" +
+            "<x:xmpmeta xmlns:x=\"adobe:ns:meta/\"\n" +
+            "           x:xmptk=\"Adobe XMP Core 4.2.1-c043 52.372728, 2009/01/18-15:08:04\">\n" +
+            "\t<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n" +
+            "\t\t<rdf:Description rdf:about=\"\"\n" +
+            "\t\t                 xmlns:xmpMM=\"http://ns.adobe.com/xap/1.0/mm/\">\n" +
+            "\t\t\t<xmpMM:DocumentID>uuid:0b306144-6a43-dcbd-6b3e-c6b6b1df873d</xmpMM:DocumentID>\n" +
+            "\t\t\t<xmpMM:InstanceID>uuid:0b306144-6a43-dcbd-6b3e-c6b6b1df873d</xmpMM:InstanceID>\n" +
+            "\t\t</rdf:Description>\n" +
+            "\t\t<rdf:Description rdf:about=\"\"\n" +
+            "\t\t                 xmlns:pdfaExtension=\"http://www.aiim.org/pdfa/ns/extension/\"\n" +
+            "\t\t                 xmlns:pdfaSchema=\"http://www.aiim.org/pdfa/ns/schema#\"\n" +
+            "\t\t                 xmlns:pdfaProperty=\"http://www.aiim.org/pdfa/ns/property#\">\n" +
+            "\t\t\t<pdfaExtension:schemas>\n" +
+            "\t\t\t\t<rdf:Bag>\n" +
+            "\t\t\t\t\t<rdf:li rdf:parseType=\"Resource\">\n" +
+            "\t\t\t\t\t\t<pdfaSchema:namespaceURI>http://ns.adobe.com/pdf/1.3/</pdfaSchema:namespaceURI>\n" +
+            "\t\t\t\t\t\t<pdfaSchema:prefix>pdf</pdfaSchema:prefix>\n" +
+            "\t\t\t\t\t\t<pdfaSchema:schema>Adobe PDF Schema</pdfaSchema:schema>\n" +
+            "\t\t\t\t\t</rdf:li>\n" +
+            "\t\t\t\t\t<rdf:li rdf:parseType=\"Resource\">\n" +
+            "\t\t\t\t\t\t<pdfaSchema:namespaceURI>http://ns.adobe.com/xap/1.0/mm/</pdfaSchema:namespaceURI>\n" +
+            "\t\t\t\t\t\t<pdfaSchema:prefix>xmpMM</pdfaSchema:prefix>\n" +
+            "\t\t\t\t\t\t<pdfaSchema:schema>XMP Media Management Schema</pdfaSchema:schema>\n" +
+            "\t\t\t\t\t\t<pdfaSchema:property>\n" +
+            "\t\t\t\t\t\t\t<rdf:Seq>\n" +
+            "\t\t\t\t\t\t\t\t<rdf:li rdf:parseType=\"Resource\">\n" +
+            "\t\t\t\t\t\t\t\t\t<pdfaProperty:category>internal</pdfaProperty:category>\n" +
+            "\t\t\t\t\t\t\t\t\t<pdfaProperty:description>UUID based identifier for specific incarnation of a document</pdfaProperty:description>\n" +
+            "\t\t\t\t\t\t\t\t\t<pdfaProperty:name>InstanceID</pdfaProperty:name>\n" +
+            "\t\t\t\t\t\t\t\t\t<pdfaProperty:valueType>URI</pdfaProperty:valueType>\n" +
+            "\t\t\t\t\t\t\t\t</rdf:li>\n" +
+            "\t\t\t\t\t\t\t</rdf:Seq>\n" +
+            "\t\t\t\t\t\t</pdfaSchema:property>\n" +
+            "\t\t\t\t\t</rdf:li>\n" +
+            "\t\t\t\t</rdf:Bag>\n" +
+            "\t\t\t</pdfaExtension:schemas>\n" +
+            "\t\t</rdf:Description>\n" +
+            "\t</rdf:RDF>\n" +
+            "</x:xmpmeta>\n" +
+            "<?xpacket end=\"w\"?>"
+        strict_parser = DomXmpParser.new
+        ex = expect_raises(Xmpbox::Xml::XmpParsingException) do
+          strict_parser.parse(s)
+        end
+        ex.to_s.should eq("Missing pdfaSchema:property in type definition")
+
+        lenient_parser = DomXmpParser.new(strict_parsing: false)
+        xmp = lenient_parser.parse(s)
+        mm = xmp.xmp_media_management_schema
+        mm.should_not be_nil
+        mm.not_nil!.instance_id.should eq("uuid:0b306144-6a43-dcbd-6b3e-c6b6b1df873d")
+        mm.not_nil!.document_id.should eq("uuid:0b306144-6a43-dcbd-6b3e-c6b6b1df873d")
+      end
     end
   end
 end
