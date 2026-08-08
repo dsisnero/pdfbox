@@ -176,8 +176,8 @@
 - [x] Form field value serialization — save/load roundtrip verified for text, checkbox, list box fields
 - [~] Annotation appearance handlers: rendering wired into PageDrawer.process_annotations (appearance streams rendered via process_stream_operators)
 - [x] Action completion — all 13 action types implemented with factory, URI/GoTo/JavaScript getters/setters work
-- [ ] Document navigation (destinations: XYZ, Fit, FitH, FitV, Named) — partial, verify end-to-end
-- [ ] Page navigation (threads, transitions) — partial, verify end-to-end
+- [x] Document navigation (destinations: XYZ, Fit, FitB, FitH, FitV, FitR, Named) — PDDestination.create dispatch verified against Java; spec coverage for all destination types and XYZ/Fit getters/setters
+- [x] Page navigation (threads, transitions) — PDThread/PDThreadBead circular bead list, PDTransition style/dimension/motion/direction/duration/fly-scale/opacity verified against PDTransitionTest.java + PDTransitionDirectionTest.java
 
 ---
 
