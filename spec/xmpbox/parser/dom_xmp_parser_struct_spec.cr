@@ -548,6 +548,75 @@ module Xmpbox
         ua.should_not be_nil
         ua.not_nil!.integer_property_value("part").should eq(1)
       end
+
+      it "PDFBOX-6131_2 parses Seq Text and Bag Text value types" do
+        path = File.join(fixture_dir, "org", "apache", "xmpbox", "xml", "PDFBOX-6131-RMR6DEEUWZO6IM3A7WKRPX33SZMBTTQZ.xml")
+        parser = DomXmpParser.new
+        xmp = parser.parse(File.open(path))
+        pdfaid = xmp.pdfa_identification_schema
+        pdfaid.should_not be_nil
+        pdfaid.not_nil!.part.should eq(1)
+      end
+
+      it "PDFBOX-6133 parses a schema used both as schema and type" do
+        path = File.join(fixture_dir, "org", "apache", "xmpbox", "xml", "PDFBOX-6133-0064638.xml")
+        parser = DomXmpParser.new
+        xmp = parser.parse(File.open(path))
+
+        epa = xmp.schema("http://www.epo.org/patent-bibliographic-data/1.0/")
+        epa.should_not be_nil
+
+        tnp = epa.not_nil!.abstract_property("TotalNumberOfPages")
+        tnp.should_not be_nil
+        tnp.as(Xmpbox::Type::RealType).value.should eq(47.0)
+
+        pub = epa.not_nil!.abstract_property("Publication")
+        pub.should be_a(Xmpbox::Type::DefinedStructuredType)
+        pub.as(Xmpbox::Type::DefinedStructuredType).property("CountryCode").as(Xmpbox::Type::TextType).string_value.should eq("EP")
+
+        classification = epa.not_nil!.abstract_property("Classification")
+        classification.should be_a(Xmpbox::Type::ArrayProperty)
+        classification.as(Xmpbox::Type::ArrayProperty).all_properties.size.should eq(4)
+        class3 = classification.as(Xmpbox::Type::ArrayProperty).all_properties[3]
+        class3.as(Xmpbox::Type::TextType).string_value.should eq("A61K 39/215 20060101ALI20160203BHEP")
+
+        epa.not_nil!.unqualified_language_property_value("Title", "de").should eq("CORONAVIRUS")
+
+        document_structure = epa.not_nil!.abstract_property("DocumentStructure")
+        document_structure.should be_a(Xmpbox::Type::ArrayProperty)
+        struct4 = document_structure.as(Xmpbox::Type::ArrayProperty).all_properties[4]
+        struct4.should be_a(Xmpbox::Type::DefinedStructuredType)
+        struct4.as(Xmpbox::Type::DefinedStructuredType).property("DocumentSection").as(Xmpbox::Type::TextType).string_value.should eq("cited-references")
+        struct4.as(Xmpbox::Type::DefinedStructuredType).property("StartPage").as(Xmpbox::Type::RealType).value.should eq(47.0)
+        struct4.as(Xmpbox::Type::DefinedStructuredType).property("NumberOfPages").as(Xmpbox::Type::RealType).value.should eq(1.0)
+      end
+
+      it "rejects xmpMM:parseType but accepts rdf:parseType" do
+        s = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n" +
+            "<?xpacket begin=\"\uFEFF\" id=\"W5M0MpCehiHzreSzNTczkc9d\"?><x:xmpmeta xmlns:x=\"adobe:ns:meta/\" x:xmptk=\"Adobe XMP Core 5.2-c001 63.139439, 2010/09/27-13:37:26        \">\n" +
+            "    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n" +
+            "        <rdf:Description xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:pdf=\"http://ns.adobe.com/pdf/1.3/\" xmlns:stRef=\"http://ns.adobe.com/xap/1.0/sType/ResourceRef#\" xmlns:xmpMM=\"http://ns.adobe.com/xap/1.0/mm/\">\n" +
+            "            <xmpMM:DerivedFrom xmpMM:parseType=\"Resource\">\n" +
+            "                <stRef:instanceID>uuid:6b838c4d-07e2-0611-2333-558805f93988</stRef:instanceID>\n" +
+            "                <stRef:documentID>uuid:6b838c4d-07e2-0611-2333-558805f93988</stRef:documentID>\n" +
+            "            </xmpMM:DerivedFrom>\n" +
+            "        </rdf:Description>\n" +
+            "    </rdf:RDF>\n" +
+            "</x:xmpmeta><?xpacket end=\"w\"?>"
+        parser = DomXmpParser.new
+        expect_raises(Xmpbox::Xml::XmpParsingException) do
+          parser.parse(s)
+        end
+
+        fixed = s.gsub("xmpMM:parseType", "rdf:parseType")
+        xmp = parser.parse(fixed)
+        mm = xmp.xmp_media_management_schema
+        mm.should_not be_nil
+        derived = mm.not_nil!.abstract_property("DerivedFrom")
+        derived.should be_a(Xmpbox::Type::ResourceRefType)
+        derived.as(Xmpbox::Type::ResourceRefType).document_id.should eq("uuid:6b838c4d-07e2-0611-2333-558805f93988")
+        derived.as(Xmpbox::Type::ResourceRefType).instance_id.should eq("uuid:6b838c4d-07e2-0611-2333-558805f93988")
+      end
     end
   end
 end
