@@ -146,6 +146,173 @@ module Xmpbox
         dst.as(Type::DefinedStructuredType).property("number").as(Type::IntegerType).value.should eq(1)
         dst.as(Type::DefinedStructuredType).property("origNumber").as(Type::IntegerType).value.should eq(1)
       end
+
+      it "PDFBOX-3882_2 parses ResourceEventType and LayerType from attributes" do
+        s = "<?xpacket begin=\"\uFEFF\" id=\"W5M0MpCehiHzreSzNTczkc9d\"?>\n" +
+            "<x:xmpmeta xmlns:x=\"adobe:ns:meta/\"\n" +
+            "           x:xmptk=\"Adobe XMP Core 5.0-c060 61.134777, 2010/02/12-17:32:00        \">\n" +
+            "\t<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n" +
+            "\t\t<rdf:Description rdf:about=\"\"\n" +
+            "\t\t                 xmlns:xmp=\"http://ns.adobe.com/xap/1.0/\"\n" +
+            "\t\t                 xmlns:dc=\"http://purl.org/dc/elements/1.1/\"\n" +
+            "\t\t                 xmlns:xmpMM=\"http://ns.adobe.com/xap/1.0/mm/\"\n" +
+            "\t\t                 xmlns:stEvt=\"http://ns.adobe.com/xap/1.0/sType/ResourceEvent#\"\n" +
+            "\t\t                 xmlns:stRef=\"http://ns.adobe.com/xap/1.0/sType/ResourceRef#\"\n" +
+            "\t\t                 xmlns:photoshop=\"http://ns.adobe.com/photoshop/1.0/\"\n" +
+            "\t\t                 xmp:CreatorTool=\"Adobe Photoshop CS5 Macintosh\"\n" +
+            "\t\t                 xmp:CreateDate=\"2012-04-30T12:52:07-04:00\"\n" +
+            "\t\t                 xmp:MetadataDate=\"2012-05-03T13:36:11-04:00\"\n" +
+            "\t\t                 xmp:ModifyDate=\"2012-05-03T13:36:11-04:00\"\n" +
+            "\t\t                 dc:format=\"image/jpeg\"\n" +
+            "\t\t                 xmpMM:InstanceID=\"xmp.iid:49E997338D4911E1AB62EBF9B374B234\"\n" +
+            "\t\t                 xmpMM:DocumentID=\"xmp.did:49E997348D4911E1AB62EBF9B374B234\"\n" +
+            "\t\t                 xmpMM:OriginalDocumentID=\"xmp.did:01801174072068118A6D9A879C818256\"\n" +
+            "\t\t                 photoshop:History=\"2012-05-03T09:34:50-04:00&#x9;File i1222b.jpg opened&#xA;\">\n" +
+            "\t\t\t<xmpMM:History>\n" +
+            "\t\t\t\t<rdf:Seq>\n" +
+            "\t\t\t\t\t<rdf:li stEvt:action=\"created\"\n" +
+            "\t\t\t\t\t        stEvt:instanceID=\"xmp.iid:01801174072068118A6D9A879C818256\"\n" +
+            "\t\t\t\t\t        stEvt:when=\"2012-04-30T12:52:07-04:00\"\n" +
+            "\t\t\t\t\t        stEvt:softwareAgent=\"Adobe Photoshop CS5 Macintosh\"/>\n" +
+            "\t\t\t\t\t<rdf:li stEvt:action=\"saved\"\n" +
+            "\t\t\t\t\t        stEvt:instanceID=\"xmp.iid:02801174072068118A6D9A879C818256\"\n" +
+            "\t\t\t\t\t        stEvt:when=\"2012-04-30T12:54:04-04:00\"\n" +
+            "\t\t\t\t\t        stEvt:softwareAgent=\"Adobe Photoshop CS5 Macintosh\"\n" +
+            "\t\t\t\t\t        stEvt:changed=\"/\"/>\n" +
+            "\t\t\t\t\t<rdf:li stEvt:action=\"saved\"\n" +
+            "\t\t\t\t\t        stEvt:instanceID=\"xmp.iid:03801174072068118A6D9A879C818256\"\n" +
+            "\t\t\t\t\t        stEvt:when=\"2012-04-30T12:54:48-04:00\"\n" +
+            "\t\t\t\t\t        stEvt:softwareAgent=\"Adobe Photoshop CS5 Macintosh\"\n" +
+            "\t\t\t\t\t        stEvt:changed=\"/\"/>\n" +
+            "\t\t\t\t</rdf:Seq>\n" +
+            "\t\t\t</xmpMM:History>\n" +
+            "\t\t\t<xmpMM:DerivedFrom stRef:instanceID=\"xmp.iid:21F0677BA22168118A6D9A879C818256\"\n" +
+            "\t\t\t                   stRef:documentID=\"xmp.did:01801174072068118A6D9A879C818256\"\n" +
+            "\t\t\t                   stRef:originalDocumentID=\"xmp.did:01801174072068118A6D9A879C818256\"/>\n" +
+            "\t\t\t<photoshop:DocumentAncestors>\n" +
+            "\t\t\t\t<rdf:Bag>\n" +
+            "\t\t\t\t\t<rdf:li>adobe:docid:photoshop:11d3ec5a-c131-11d8-9274-ec65c7d7e0c6</rdf:li>\n" +
+            "\t\t\t\t\t<rdf:li>adobe:docid:photoshop:aadc7027-309c-11d8-9596-9cf45d2f630b</rdf:li>\n" +
+            "\t\t\t\t\t<rdf:li>adobe:docid:photoshop:c7961c59-6e0f-11d8-87b7-d67539df12d8</rdf:li>\n" +
+            "\t\t\t\t</rdf:Bag>\n" +
+            "\t\t\t</photoshop:DocumentAncestors>\n" +
+            "\t\t\t<photoshop:DateCreated>2012-04-30T12:54:48Z</photoshop:DateCreated>\n" +
+            "\t\t\t<photoshop:TextLayers>\n" +
+            "\t\t\t\t<rdf:Seq>\n" +
+            "\t\t\t\t       <rdf:li photoshop:LayerName=\"Name1\" photoshop:LayerText=\"Text1\"/>\n" +
+            "\t\t\t\t       <rdf:li photoshop:LayerName=\"Name2\" photoshop:LayerText=\"Text2\"/>\n" +
+            "\t\t\t\t</rdf:Seq>\n" +
+            "\t\t\t</photoshop:TextLayers>\n" +
+            "\t\t</rdf:Description>\n" +
+            "\t</rdf:RDF>\n" +
+            "</x:xmpmeta>\n" +
+            "<?xpacket end=\"w\"?>"
+        parser = DomXmpParser.new
+        xmp = parser.parse(s)
+
+        xmpmm = xmp.xmp_media_management_schema
+        xmpmm.should_not be_nil
+        xmpmm.not_nil!.instance_id.should eq("xmp.iid:49E997338D4911E1AB62EBF9B374B234")
+        xmpmm.not_nil!.document_id.should eq("xmp.did:49E997348D4911E1AB62EBF9B374B234")
+        xmpmm.not_nil!.original_document_id.should eq("xmp.did:01801174072068118A6D9A879C818256")
+
+        history = xmpmm.not_nil!.abstract_property("History").as(Type::ArrayProperty)
+        history.all_properties.size.should eq(3)
+        evt0 = history.all_properties[0].as(Type::ResourceEventType)
+        evt0.action.should eq("created")
+        evt0.instance_id.should eq("xmp.iid:01801174072068118A6D9A879C818256")
+        evt0.software_agent.should eq("Adobe Photoshop CS5 Macintosh")
+        evt0.when.not_nil!.year.should eq(2012)
+        evt0.when.not_nil!.minute.should eq(52)
+        evt1 = history.all_properties[1].as(Type::ResourceEventType)
+        evt1.when.not_nil!.minute.should eq(54)
+        evt1.when.not_nil!.second.should eq(4)
+        evt2 = history.all_properties[2].as(Type::ResourceEventType)
+        evt2.when.not_nil!.minute.should eq(54)
+        evt2.when.not_nil!.second.should eq(48)
+
+        photoshop = xmp.photoshop_schema
+        photoshop.should_not be_nil
+        text_layers = photoshop.not_nil!.abstract_property("TextLayers").as(Type::ArrayProperty)
+        text_layers.all_properties.size.should eq(2)
+        layer0 = text_layers.all_properties[0].as(Type::LayerType)
+        layer0.layer_name.should eq("Name1")
+        layer0.layer_text.should eq("Text1")
+        layer1 = text_layers.all_properties[1].as(Type::LayerType)
+        layer1.layer_name.should eq("Name2")
+        layer1.layer_text.should eq("Text2")
+
+        ancestors = photoshop.not_nil!.abstract_property("DocumentAncestors").as(Type::ArrayProperty)
+        ancestors.all_properties.size.should eq(3)
+        ancestors.all_properties[0].as(Type::TextType).string_value.should eq("adobe:docid:photoshop:11d3ec5a-c131-11d8-9274-ec65c7d7e0c6")
+      end
+
+      it "PDFBOX-5292 parses an inline extension schema with a Text property" do
+        s = "<?xpacket begin=\"\uFEFF\" id=\"W5M0MpCehiHzreSzNTczkc9d\"?>\n" +
+            "<x:xmpmeta xmlns:x=\"adobe:ns:meta/\" x:xmptk=\"Adobe XMP Core 5.6-c015 84.159810, 2016/09/10-02:41:30        \">\n" +
+            "    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n" +
+            "        <rdf:Description rdf:about=\"\"\n" +
+            "                         xmlns:xmp=\"http://ns.adobe.com/xap/1.0/\"\n" +
+            "                         xmlns:dc=\"http://purl.org/dc/elements/1.1/\"\n" +
+            "                         xmlns:pdf=\"http://ns.adobe.com/pdf/1.3/\"\n" +
+            "                         xmlns:pdfaid=\"http://www.aiim.org/pdfa/ns/id/\"\n" +
+            "                         xmlns:pdfaExtension=\"http://www.aiim.org/pdfa/ns/extension/\"\n" +
+            "                         xmlns:pdfaSchema=\"http://www.aiim.org/pdfa/ns/schema#\"\n" +
+            "                         xmlns:pdfaProperty=\"http://www.aiim.org/pdfa/ns/property#\"\n" +
+            "                         xmlns:example=\"http://ns.example.org/default/1.0/\">\n" +
+            "            <xmp:CreateDate>2021-05-21T11:42:49+01:00</xmp:CreateDate>\n" +
+            "            <xmp:ModifyDate>2021-05-21T11:47:16+02:00</xmp:ModifyDate>\n" +
+            "            <xmp:MetadataDate>2021-05-21T11:47:16+02:00</xmp:MetadataDate>\n" +
+            "            <dc:format>application/pdf</dc:format>\n" +
+            "            <dc:title>\n" +
+            "                <rdf:Alt>\n" +
+            "                    <rdf:li xml:lang=\"x-default\">Inline XMP Extension PoC</rdf:li>\n" +
+            "                </rdf:Alt>\n" +
+            "            </dc:title>\n" +
+            "            <dc:creator>\n" +
+            "                <rdf:Seq>\n" +
+            "                    <rdf:li>DSO</rdf:li>\n" +
+            "                </rdf:Seq>\n" +
+            "            </dc:creator>\n" +
+            "            <pdf:Keywords/>\n" +
+            "            <pdfaid:part>2</pdfaid:part>\n" +
+            "            <pdfaid:conformance>A</pdfaid:conformance>\n" +
+            "            <example:Data>Example</example:Data>\n" +
+            "            <pdfaExtension:schemas>\n" +
+            "                <rdf:Bag>\n" +
+            "                    <rdf:li rdf:parseType=\"Resource\">\n" +
+            "                        <pdfaSchema:schema>Simple Schema</pdfaSchema:schema>\n" +
+            "                        <pdfaSchema:namespaceURI>http://ns.example.org/default/1.0/</pdfaSchema:namespaceURI>\n" +
+            "                        <pdfaSchema:prefix>example</pdfaSchema:prefix>\n" +
+            "                        <pdfaSchema:property>\n" +
+            "                            <rdf:Seq>\n" +
+            "                                <rdf:li rdf:parseType=\"Resource\">\n" +
+            "                                    <pdfaProperty:name>Data</pdfaProperty:name>\n" +
+            "                                    <pdfaProperty:valueType>Text</pdfaProperty:valueType>\n" +
+            "                                    <pdfaProperty:category>internal</pdfaProperty:category>\n" +
+            "                                    <pdfaProperty:description>Example Data</pdfaProperty:description>\n" +
+            "                                </rdf:li>\n" +
+            "                            </rdf:Seq>\n" +
+            "                        </pdfaSchema:property>\n" +
+            "                    </rdf:li>\n" +
+            "                </rdf:Bag>\n" +
+            "            </pdfaExtension:schemas>\n" +
+            "        </rdf:Description>\n" +
+            "    </rdf:RDF>\n" +
+            "</x:xmpmeta>\n" +
+            "\n" +
+            "<?xpacket end=\"w\"?>"
+        parser = DomXmpParser.new
+        xmp = parser.parse(s)
+
+        pdfaid = xmp.pdfa_identification_schema
+        pdfaid.should_not be_nil
+        pdfaid.not_nil!.part.should eq(2)
+
+        example = xmp.schema("http://ns.example.org/default/1.0/")
+        example.should_not be_nil
+        example.not_nil!.unqualified_text_property_value("Data").should eq("Example")
+      end
     end
   end
 end

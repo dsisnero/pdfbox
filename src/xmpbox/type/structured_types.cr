@@ -580,6 +580,13 @@ module Xmpbox
         {namespace: "http://ns.adobe.com/photoshop/1.0/", prefered_prefix: "photoshop"}
       end
 
+      def self.property_types : Hash(String, PropertyTypeDesc)
+        {
+          LAYER_NAME => PropertyTypeDesc.new(type: Types::Text),
+          LAYER_TEXT => PropertyTypeDesc.new(type: Types::Text),
+        }
+      end
+
       def initialize(metadata : XMPMetadata, namespace_uri = nil, field_prefix = nil, property_name = nil)
         super(metadata, namespace_uri, field_prefix, property_name)
         add_namespace(namespace.as(String), prefered_prefix.as(String))
