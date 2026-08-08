@@ -790,6 +790,16 @@ module Xmpbox
         {namespace: "http://ns.adobe.com/exif/1.0/", prefered_prefix: "exif"}
       end
 
+      def self.property_types : Hash(String, PropertyTypeDesc)
+        {
+          FIRED        => PropertyTypeDesc.new(type: Types::Boolean),
+          FUNCTION     => PropertyTypeDesc.new(type: Types::Boolean),
+          RED_EYE_MODE => PropertyTypeDesc.new(type: Types::Boolean),
+          MODE         => PropertyTypeDesc.new(type: Types::Integer),
+          RETURN       => PropertyTypeDesc.new(type: Types::Integer),
+        }
+      end
+
       def initialize(metadata : XMPMetadata, namespace_uri = nil, field_prefix = nil, property_name = nil)
         super(metadata, namespace_uri, field_prefix, property_name)
         add_namespace(namespace.as(String), prefered_prefix.as(String))

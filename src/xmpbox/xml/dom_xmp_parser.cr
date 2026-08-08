@@ -301,7 +301,7 @@ module Xmpbox
         elsif !type.type.simple? || type.card.array? || type.type == Type::Types::LangAlt
           if @strict_parsing
             raise XmpParsingException.new(XmpParsingException::ErrorType::InvalidType,
-              "The type '#{type.type}' in '#{attr.namespace.try(&.prefix)}:#{attr.name}=#{attr.content}' is a structured or array type")
+              "The type '#{type.type}' in '#{attr.namespace.try(&.prefix)}:#{attr.name}=#{attr.content}' is a structured or array type, but attributes are simple types")
           end
           if attr.content.empty?
             schema.remove_attribute(attr.name)

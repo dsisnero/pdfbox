@@ -12,8 +12,18 @@ module Xmpbox
         case value
         when Bool
           @bool_value = value
+        when String
+          s = value.strip.upcase
+          if s == "TRUE"
+            @bool_value = true
+          elsif s == "FALSE"
+            @bool_value = false
+          else
+            # unknown value
+            raise ArgumentError.new("Not a valid boolean value : '#{value}'")
+          end
         else
-          raise ArgumentError.new("Value given is not allowed for the Boolean type: '#{value}'")
+          raise ArgumentError.new("Value given is not allowed for the Boolean type.")
         end
       end
 

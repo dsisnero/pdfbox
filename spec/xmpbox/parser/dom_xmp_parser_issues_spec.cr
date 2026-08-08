@@ -274,6 +274,101 @@ describe Xmpbox::Xml::DomXmpParser do
       end
     end
 
+    it "rejects xmpmeta with no rdf:RDF child" do
+      s = <<-XML
+      <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+      <?xpacket begin="\uFEFF" id="W5M0MpCehiHzreSzNTczkc9d" ?><x:xmpmeta xmlns:x="adobe:ns:meta/"/>
+      <?xpacket end="w" ?>
+      XML
+      parser = Xmpbox::Xml::DomXmpParser.new
+      ex = expect_raises(Xmpbox::Xml::XmpParsingException) do
+        parser.parse(s)
+      end
+      ex.to_s.should eq("No rdf description found in xmp")
+    end
+
+    it "rejects text where an Alt array is expected" do
+      s = <<-XML
+      <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+      <?xpacket begin="\uFEFF" id="W5M0MpCehiHzreSzNTczkc9d"?>
+      <x:xmpmeta xmlns:x="adobe:ns:meta/"
+                 x:xmptk="3.1-701">
+      	<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+      		<rdf:Description xmlns:dc="http://purl.org/dc/elements/1.1/"
+      		                 rdf:about="">
+      			<dc:title>Title</dc:title>
+      		</rdf:Description>
+      	</rdf:RDF>
+      </x:xmpmeta><?xpacket end="w"?>
+      XML
+      parser = Xmpbox::Xml::DomXmpParser.new
+      ex = expect_raises(Xmpbox::Xml::XmpParsingException) do
+        parser.parse(s)
+      end
+      ex.to_s.should eq("Invalid array definition, expecting Alt and found Text [prefix=dc; name=title]")
+    end
+
+    it "parses exif:Flash structured type with Fired boolean child" do
+      s = <<-XML
+      <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+      <?xpacket begin='\uFEFF' id='W5M0MpCehiHzreSzNTczkc9d'?>
+      <x:xmpmeta xmlns:x="adobe:ns:meta/"
+                 x:xmptk="XMP toolkit 3.0-28, framework 1.6">
+      	<rdf:RDF xmlns:iX="http://ns.adobe.com/iX/1.0/"
+      	         xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+      		<rdf:Description xmlns:exif="http://ns.adobe.com/exif/1.0/"
+      		                 rdf:about="uuid:d9974396-53ee-11d9-9542-81b7ec7f4613">
+      			<exif:Flash rdf:parseType="Resource">
+      				<exif:Fired>False</exif:Fired>
+      			</exif:Flash>
+      		</rdf:Description>
+      	</rdf:RDF>
+      </x:xmpmeta><?xpacket end='w'?>
+      XML
+      parser = Xmpbox::Xml::DomXmpParser.new
+      xmp = parser.parse(s)
+      exif = xmp.schema("http://ns.adobe.com/exif/1.0/")
+      exif.should_not be_nil
+      flash = exif.not_nil!.abstract_property("Flash")
+      flash.should be_a(Xmpbox::Type::FlashType)
+      fired = flash.as(Xmpbox::Type::AbstractStructuredType).property("Fired")
+      fired.should_not be_nil
+      fired.should be_a(Xmpbox::Type::BooleanType)
+      fired.as(Xmpbox::Type::BooleanType).string_value.should eq("false")
+    end
+
+    it "strict rejects structured type as attribute, lenient stores text" do
+      s = <<-XML
+      <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+      <?xpacket begin='\uFEFF' id='W5M0MpCehiHzreSzNTczkc9d'?>
+      <x:xmpmeta xmlns:x="adobe:ns:meta/"
+                 x:xmptk="XMP toolkit 2.9.1-13, framework 1.6">
+      	<rdf:RDF xmlns:iX="http://ns.adobe.com/iX/1.0/"
+      	         xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+      		<rdf:Description xmlns:exif="http://ns.adobe.com/exif/1.0/"
+      		                 exif:FNumber="36/10"
+      		                 exif:FileSource="3"
+      		                 exif:Flash="1"
+      		                 rdf:about="">
+      		</rdf:Description>
+      	</rdf:RDF>
+      </x:xmpmeta><?xpacket end='r'?>
+      XML
+      strict_parser = Xmpbox::Xml::DomXmpParser.new
+      ex = expect_raises(Xmpbox::Xml::XmpParsingException) do
+        strict_parser.parse(s)
+      end
+      ex.to_s.should eq("The type 'Flash' in 'exif:Flash=1' is a structured or array type, but attributes are simple types")
+
+      lenient_parser = Xmpbox::Xml::DomXmpParser.new(strict_parsing: false)
+      xmp = lenient_parser.parse(s)
+      exif = xmp.schema("http://ns.adobe.com/exif/1.0/")
+      exif.should_not be_nil
+      flash = exif.not_nil!.abstract_property("Flash")
+      flash.should_not be_nil
+      flash.as(Xmpbox::Type::TextType).string_value.should eq("1")
+    end
+
     it "PDFBOX-6131 parses Open Choice of Integer as a pdfua integer property" do
       path = File.join(fixture_dir, "org", "apache", "xmpbox", "xml", "PDFBOX-6131-0015675.xml")
       parser = Xmpbox::Xml::DomXmpParser.new
