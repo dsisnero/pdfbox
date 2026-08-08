@@ -221,8 +221,90 @@ module Xmpbox
 
     # XMP Media Management: http://ns.adobe.com/xap/1.0/mm/
     class XMPMediaManagementSchema < XMPSchema
+      DOCUMENT_ID          = "DocumentID"
+      INSTANCE_ID          = "InstanceID"
+      MANAGER              = "Manager"
+      MANAGE_TO            = "ManageTo"
+      MANAGE_UI            = "ManageUI"
+      ORIGINAL_DOCUMENT_ID = "OriginalDocumentID"
+      RENDITION_PARAMS     = "RenditionParams"
+      VERSION_ID           = "VersionID"
+      HISTORY              = "History"
+
       def self.structured_type_info
         {namespace: "http://ns.adobe.com/xap/1.0/mm/", prefered_prefix: "xmpMM"}
+      end
+
+      def document_id=(value : String) : Nil
+        set_text_property_value(DOCUMENT_ID, value)
+      end
+
+      def document_id : String?
+        unqualified_text_property_value(DOCUMENT_ID)
+      end
+
+      def instance_id=(value : String) : Nil
+        set_text_property_value(INSTANCE_ID, value)
+      end
+
+      def instance_id : String?
+        unqualified_text_property_value(INSTANCE_ID)
+      end
+
+      def manager=(value : String) : Nil
+        set_text_property_value(MANAGER, value)
+      end
+
+      def manager : String?
+        unqualified_text_property_value(MANAGER)
+      end
+
+      def manage_to=(value : String) : Nil
+        set_text_property_value(MANAGE_TO, value)
+      end
+
+      def manage_to : String?
+        unqualified_text_property_value(MANAGE_TO)
+      end
+
+      def manage_ui=(value : String) : Nil
+        set_text_property_value(MANAGE_UI, value)
+      end
+
+      def manage_ui : String?
+        unqualified_text_property_value(MANAGE_UI)
+      end
+
+      def original_document_id=(value : String) : Nil
+        set_text_property_value(ORIGINAL_DOCUMENT_ID, value)
+      end
+
+      def original_document_id : String?
+        unqualified_text_property_value(ORIGINAL_DOCUMENT_ID)
+      end
+
+      def rendition_params=(value : String) : Nil
+        set_text_property_value(RENDITION_PARAMS, value)
+      end
+
+      def rendition_params : String?
+        unqualified_text_property_value(RENDITION_PARAMS)
+      end
+
+      def version_id=(value : String) : Nil
+        set_text_property_value(VERSION_ID, value)
+      end
+
+      def version_id : String?
+        unqualified_text_property_value(VERSION_ID)
+      end
+
+      def add_history(history : String) : Nil
+        add_unqualified_sequence_value(HISTORY, history)
+      end
+
+      def history : Array(String)?
+        unqualified_sequence_value_list(HISTORY)
       end
     end
 
