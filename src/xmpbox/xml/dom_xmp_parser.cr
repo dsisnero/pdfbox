@@ -643,26 +643,37 @@ module Xmpbox
           end
         end
 
-        ast
+        try_parse_attributes_as_properties(tm, li_desc_element, ast, pm, parent_qname) || ast
       end
 
       private def try_parse_attributes_as_properties(tm : Type::TypeMapping, element : XML::Node, ast : Type::AbstractStructuredType?, pm : Type::PropertiesDescription?, parent_qname : Type::QName?) : Type::AbstractStructuredType?
-        # If ast is nil, only try to build from parent type info
-        if ast.nil? && parent_qname
-          ctype = check_property_definition(tm, parent_qname, nil)
-          if ctype
-            ast = instanciate_structured(tm, ctype.type, parent_qname.local_part,
-              parent_qname.namespace_uri)
-          end
-        end
-        return nil unless ast
-
-        # Parse XML attributes as properties
         element.attributes.each do |attr|
           prefix = attr.namespace.try(&.prefix)
           next if prefix.nil? || prefix == "xmlns" || prefix == "rdf"
           local_name = attr.name
           namespace = attr.namespace.try(&.href) || ""
+
+          # Port of Java: when ast is nil and the attribute carries a namespace,
+          # instantiate the structured type from the attribute's own QName
+          # (e.g. pdfaProperty:name), like in parse_li_description.
+          if ast.nil? && !namespace.empty?
+            attr_qname = Type::QName.new(namespace, local_name, prefix)
+            ctype = check_property_definition(tm, attr_qname, nil)
+            unless ctype
+              raise XmpParsingException.new(XmpParsingException::ErrorType::NoType,
+                "Property '#{prefix}:#{local_name}' not defined in #{namespace}")
+            end
+            tt = ctype.type
+            name = parent_qname ? parent_qname.local_part : local_name
+            ast = instanciate_structured(tm, tt, name, namespace)
+            pm = if tt.structured?
+                   tm.structured_prop_mapping(tt)
+                 else
+                   tm.defined_description_by_namespace(namespace, local_name)
+                 end
+          end
+
+          next unless ast
 
           prop_type = pm.try(&.property_type(local_name))
           if prop_type.nil?

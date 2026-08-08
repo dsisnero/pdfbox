@@ -360,6 +360,14 @@ module Xmpbox
         unqualified_text_property_value(RENDITION_PARAMS)
       end
 
+      def rendition_class=(value : String) : Nil
+        set_text_property_value(RENDITION_CLASS, value)
+      end
+
+      def rendition_class : String?
+        unqualified_text_property_value(RENDITION_CLASS)
+      end
+
       def version_id=(value : String) : Nil
         set_text_property_value(VERSION_ID, value)
       end

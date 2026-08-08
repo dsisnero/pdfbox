@@ -108,6 +108,27 @@ module Xmpbox
         {namespace: "http://ns.adobe.com/xap/1.0/sType/ResourceRef#", prefered_prefix: "stRef"}
       end
 
+      def self.property_types : Hash(String, PropertyTypeDesc)
+        {
+          DOCUMENT_ID      => PropertyTypeDesc.new(type: Types::URI),
+          FILE_PATH        => PropertyTypeDesc.new(type: Types::URI),
+          INSTANCE_ID      => PropertyTypeDesc.new(type: Types::URI),
+          LAST_MODIFY_DATE => PropertyTypeDesc.new(type: Types::Date),
+          MANAGE_TO        => PropertyTypeDesc.new(type: Types::URI),
+          MANAGE_UI        => PropertyTypeDesc.new(type: Types::URI),
+          MANAGER          => PropertyTypeDesc.new(type: Types::AgentName),
+          MANAGER_VARIANT  => PropertyTypeDesc.new(type: Types::Text),
+          PART_MAPPING     => PropertyTypeDesc.new(type: Types::Text),
+          RENDITION_PARAMS => PropertyTypeDesc.new(type: Types::Text),
+          VERSION_ID       => PropertyTypeDesc.new(type: Types::Text),
+          MASK_MARKERS     => PropertyTypeDesc.new(type: Types::Choice),
+          RENDITION_CLASS  => PropertyTypeDesc.new(type: Types::RenditionClass),
+          FROM_PART        => PropertyTypeDesc.new(type: Types::Part),
+          TO_PART          => PropertyTypeDesc.new(type: Types::Part),
+          ALTERNATE_PATHS  => PropertyTypeDesc.new(type: Types::Text, card: Cardinality::Bag),
+        }
+      end
+
       def initialize(metadata : XMPMetadata, namespace_uri = nil, field_prefix = nil, property_name = nil)
         super(metadata, namespace_uri, field_prefix, property_name)
         add_namespace(namespace.as(String), prefered_prefix.as(String))
@@ -820,6 +841,14 @@ module Xmpbox
 
       def self.structured_type_info
         {namespace: "http://ns.adobe.com/xap/1.0/sType/Dimensions#", prefered_prefix: "stDim"}
+      end
+
+      def self.property_types : Hash(String, PropertyTypeDesc)
+        {
+          H    => PropertyTypeDesc.new(type: Types::Real),
+          W    => PropertyTypeDesc.new(type: Types::Real),
+          UNIT => PropertyTypeDesc.new(type: Types::Text),
+        }
       end
 
       def initialize(metadata : XMPMetadata, namespace_uri = nil, field_prefix = nil, property_name = nil)
