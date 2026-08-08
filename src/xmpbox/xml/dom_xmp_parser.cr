@@ -160,21 +160,50 @@ module Xmpbox
         tm.add_new_namespace(namespace, prefix)
       end
 
+      # Port of Java findDescriptionsParent — validates the x:xmpmeta wrapper and
+      # returns the rdf:RDF element, raising Format on malformed structure.
       private def find_descriptions_parent(root : XML::Node) : XML::Node
-        # root should be rdf:RDF
-        if root.name == XmpConstants::DEFAULT_RDF_LOCAL_NAME ||
-           root.name == "#{XmpConstants::DEFAULT_RDF_PREFIX}:#{XmpConstants::DEFAULT_RDF_LOCAL_NAME}"
-          return root
-        end
-        # Search children for rdf:RDF
-        DomHelper.element_children(root).each do |child|
-          if child.name == XmpConstants::DEFAULT_RDF_LOCAL_NAME ||
-             child.name == "#{XmpConstants::DEFAULT_RDF_PREFIX}:#{XmpConstants::DEFAULT_RDF_LOCAL_NAME}"
-            return child
+        rdf_rdf : XML::Node
+        # check if already rdf element, as xmpmeta wrapper can be optional
+        if root.namespace.try(&.href) != XmpConstants::RDF_NAMESPACE
+          # always <x:xmpmeta xmlns:x="adobe:ns:meta/">
+          expect_naming(root, "adobe:ns:meta/", "x", "xmpmeta")
+          # should only have one child
+          children = root.children
+          if children.empty?
+            # empty description
+            raise XmpParsingException.new(XmpParsingException::ErrorType::Format,
+              "No rdf description found in xmp")
+          elsif children.size > 1
+            # only expect one element
+            raise XmpParsingException.new(XmpParsingException::ErrorType::Format,
+              "More than one element found in x:xmpmeta")
+          elsif !children.first.element?
+            # should be an element
+            raise XmpParsingException.new(XmpParsingException::ErrorType::Format,
+              "x:xmpmeta does not contains rdf:RDF element but #{children.first}")
           end
+          rdf_rdf = children.first
+        else
+          rdf_rdf = root
         end
-        raise XmpParsingException.new(XmpParsingException::ErrorType::NoRootElement,
-          "Can't find rdf:RDF element")
+        # always <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+        expect_naming(rdf_rdf, XmpConstants::RDF_NAMESPACE, XmpConstants::DEFAULT_RDF_PREFIX,
+          XmpConstants::DEFAULT_RDF_LOCAL_NAME)
+        rdf_rdf
+      end
+
+      private def expect_naming(element : XML::Node, ns : String, prefix : String, local_name : String) : Nil
+        if ns != element.namespace.try(&.href)
+          raise XmpParsingException.new(XmpParsingException::ErrorType::Format,
+            "Expecting namespace '#{ns}' and found '#{element.namespace.try(&.href)}'")
+        elsif prefix != element.namespace.try(&.prefix)
+          raise XmpParsingException.new(XmpParsingException::ErrorType::Format,
+            "Expecting prefix '#{prefix}' and found '#{element.namespace.try(&.prefix)}'")
+        elsif local_name != element.name
+          raise XmpParsingException.new(XmpParsingException::ErrorType::Format,
+            "Expecting local name '#{local_name}' and found '#{element.name}'")
+        end
       end
 
       private def parse_initial_xpacket(pi : XML::Node) : XMPMetadata
