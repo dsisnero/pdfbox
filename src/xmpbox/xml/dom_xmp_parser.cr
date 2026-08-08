@@ -167,7 +167,12 @@ module Xmpbox
         # check if already rdf element, as xmpmeta wrapper can be optional
         if root.namespace.try(&.href) != XmpConstants::RDF_NAMESPACE
           # always <x:xmpmeta xmlns:x="adobe:ns:meta/">
-          expect_naming(root, "adobe:ns:meta/", "x", "xmpmeta")
+          if !@strict_parsing && root.name == "xapmeta"
+            # older XMP content
+            expect_naming(root, "adobe:ns:meta/", "x", "xapmeta")
+          else
+            expect_naming(root, "adobe:ns:meta/", "x", "xmpmeta")
+          end
           # should only have one child
           children = root.children
           if children.empty?
@@ -665,8 +670,12 @@ module Xmpbox
           namespace = attr.namespace.try(&.href) || ""
 
           prop_type = pm.try(&.property_type(local_name))
-          unless prop_type
-            next unless @strict_parsing
+          if prop_type.nil?
+            if @strict_parsing
+              raise XmpParsingException.new(XmpParsingException::ErrorType::InvalidType,
+                "No type defined for {#{namespace}}#{local_name}")
+            end
+            # PDFBOX-2318, PDFBOX-6106: Default to text if no type is found
             prop_type = Type::PropertyTypeDesc.new(type: Type::Types::Text, card: Type::Cardinality::Simple)
           end
 
