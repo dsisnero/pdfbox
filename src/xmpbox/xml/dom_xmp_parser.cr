@@ -129,18 +129,24 @@ module Xmpbox
       end
 
       private def remove_comments_and_blanks(node : XML::Node) : Nil
+        # Port of Java removeCommentsAndBlanks: only prune when the parent has
+        # more than one child, so whitespace-only text inside an otherwise
+        # single-child element (e.g. "<pdf:Producer> </pdf:Producer>") survives.
+        children = node.children
+        if !node.document? && children.size <= 1
+          return
+        end
         to_remove = [] of XML::Node
-        walk_nodes(node) do |child|
-          if child.comment? || (child.text? && child.content.strip.empty?)
+        children.each do |child|
+          if child.comment?
             to_remove << child
+          elsif child.text? && child.content.strip.empty?
+            to_remove << child
+          elsif child.element?
+            remove_comments_and_blanks(child)
           end
         end
         to_remove.each(&.unlink)
-      end
-
-      private def walk_nodes(node : XML::Node, &block : XML::Node ->) : Nil
-        yield node
-        node.children.each { |child| walk_nodes(child, &block) }
       end
 
       private def processing_instruction?(node : XML::Node) : Bool

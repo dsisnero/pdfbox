@@ -26,18 +26,26 @@ describe Xmpbox::Xml::DomXmpParser do
   end
 
   describe "parses XMP with undefined schemas" do
-    undefined_files = [
-      "/undefinedxmp/prism.xmp",
-    ]
+    # Port of TestXMPWithUndefinedSchemas.java — lenient parsing of prism.xmp
+    # registers the prism namespace and its aggregationType property.
+    it "parses prism.xmp leniently with namespace and property" do
+      path = File.join(fixture_dir, "/undefinedxmp/prism.xmp")
+      parser = Xmpbox::Xml::DomXmpParser.new
+      parser.strict_parsing = false
+      xmp = parser.parse(File.open(path))
 
-    undefined_files.each do |rel_path|
-      it "parses #{File.basename(rel_path)} leniently" do
-        path = File.join(fixture_dir, rel_path)
-        parser = Xmpbox::Xml::DomXmpParser.new
-        parser.strict_parsing = false
-        xmp = parser.parse(File.open(path))
-        xmp.all_schemas.should_not be_empty
-      end
+      xmp.all_schemas.should_not be_empty
+
+      namespace = "http://prismstandard.org/namespaces/basic/2.0/"
+      property_name = "aggregationType"
+      property_value = "journal"
+
+      schema = xmp.schema(namespace)
+      schema.should_not be_nil
+      prop = schema.not_nil!.abstract_property(property_name)
+      prop.should_not be_nil
+      prop.not_nil!.property_name.should eq(property_name)
+      schema.not_nil!.unqualified_text_property_value(property_name).should eq(property_value)
     end
   end
 end

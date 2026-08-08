@@ -27,7 +27,7 @@ describe Xmpbox::Xml::DomXmpParser do
       # Should have Adobe PDF schema
       pdf = metadata.adobe_pdf_schema
       pdf.should_not be_nil
-      pdf.not_nil!.unqualified_text_property_value("Producer").should eq ""
+      pdf.not_nil!.unqualified_text_property_value("Producer").should eq " "
 
       # Should have PDFA Identification schema
       pdfaid = metadata.pdfa_identification_schema
