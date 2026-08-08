@@ -123,8 +123,99 @@ module Xmpbox
 
     # XMP Basic: http://ns.adobe.com/xap/1.0/
     class XMPBasicSchema < XMPSchema
+      ADVISORY      = "Advisory"
+      BASE_URL      = "BaseURL"
+      CREATE_DATE   = "CreateDate"
+      CREATOR_TOOL  = "CreatorTool"
+      IDENTIFIER    = "Identifier"
+      LABEL         = "Label"
+      METADATA_DATE = "MetadataDate"
+      MODIFY_DATE   = "ModifyDate"
+      NICKNAME      = "Nickname"
+      RATING        = "Rating"
+
       def self.structured_type_info
         {namespace: "http://ns.adobe.com/xap/1.0/", prefered_prefix: "xmp"}
+      end
+
+      def base_url=(url : String) : Nil
+        set_text_property_value(BASE_URL, url)
+      end
+
+      def base_url : String?
+        unqualified_text_property_value(BASE_URL)
+      end
+
+      def create_date=(date : Time) : Nil
+        set_date_property_value(CREATE_DATE, date)
+      end
+
+      def create_date : Time?
+        date_property_value(CREATE_DATE)
+      end
+
+      def metadata_date=(date : Time) : Nil
+        set_date_property_value(METADATA_DATE, date)
+      end
+
+      def metadata_date : Time?
+        date_property_value(METADATA_DATE)
+      end
+
+      def modify_date=(date : Time) : Nil
+        set_date_property_value(MODIFY_DATE, date)
+      end
+
+      def modify_date : Time?
+        date_property_value(MODIFY_DATE)
+      end
+
+      def creator_tool=(tool : String) : Nil
+        set_text_property_value(CREATOR_TOOL, tool)
+      end
+
+      def creator_tool : String?
+        unqualified_text_property_value(CREATOR_TOOL)
+      end
+
+      def label=(label : String) : Nil
+        set_text_property_value(LABEL, label)
+      end
+
+      def label : String?
+        unqualified_text_property_value(LABEL)
+      end
+
+      def nickname=(nickname : String) : Nil
+        set_text_property_value(NICKNAME, nickname)
+      end
+
+      def nickname : String?
+        unqualified_text_property_value(NICKNAME)
+      end
+
+      def rating=(rating : Int32) : Nil
+        set_integer_property_value(RATING, rating)
+      end
+
+      def rating : Int32?
+        integer_property_value(RATING)
+      end
+
+      def add_identifier(identifier : String) : Nil
+        add_unqualified_bag_value(IDENTIFIER, identifier)
+      end
+
+      def identifiers : Array(String)?
+        unqualified_bag_value_list(IDENTIFIER)
+      end
+
+      def add_advisory(advisory : String) : Nil
+        add_unqualified_bag_value(ADVISORY, advisory)
+      end
+
+      def advisories : Array(String)?
+        unqualified_bag_value_list(ADVISORY)
       end
     end
 
