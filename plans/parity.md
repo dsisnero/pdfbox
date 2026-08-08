@@ -209,7 +209,7 @@
 - [x] PdfaExtensionHelper — 216-line PDF/A schema loading + 4 PDFA*Type classes
 - [x] XmpParsingException, XmpSerializationException, XmpSchemaException
 - [x] PDFBox integration (PDMetadata parse/serialize convenience methods)
-- [~] Test suite — 43 Crystal specs covering type system, schema, date conversion, metadata, parsing, attributes (from 28 Java test files); keep growing coverage. PDFAIdentificationSchema and XMPBasicJobTicketSchema ported (round-trip verified). Strict-parsing parity gaps fixed: schema/structured-type property mappings registered from `property_types` (mirrors Java `initializePropMapping`), `DomHelper.qname` swapped `local_part`/`prefix`, `parse_type_resource?` looked up the wrong attribute, and serializer wrote `rdf:bag` lowercase instead of Java's `rdf:Bag`.
+- [~] Test suite — 47 Crystal specs covering type system, schema, date conversion, metadata, parsing, attributes (from 28 Java test files). All schema Java tests now ported (AdobePDF, AdobePDFErrors, DublinCore, BasicJobTicket, PDFAIdentification + Others, Photoshop, XMPBasic, XMPMediaManagement, XmpRights, XMPSchema, TestExifXmp). Strict-parsing parity gaps fixed: schema/structured-type property mappings registered from `property_types` (mirrors Java `initializePropMapping`), `DomHelper.qname` swapped `local_part`/`prefix`, `parse_type_resource?` looked up the wrong attribute, serializer wrote `rdf:bag` lowercase instead of Java's `rdf:Bag`, and JobType constructor registered the wrong namespace prefix.
 
 **XMPBox core complete.** Parse (DomXmpParser with lenient array/namespace detection), serialize (XmpSerializer), type/schema system, PDF/A extension loading. 1617 total tests, 0 failures.
 
