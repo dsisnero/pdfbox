@@ -44,7 +44,7 @@ module Xmpbox
       def self.populate_schema_mapping(meta : XMPMetadata, strict_parsing : Bool) : Nil
         schemas = meta.all_schemas
         tm = meta.type_mapping
-        st_pdfa_ext = Type::PDFAExtensionSchema
+        st_pdfa_ext = Schema::PDFAExtensionSchema
 
         schemas.each do |xmp_schema|
           next unless xmp_schema.is_a?(Schema::PDFAExtensionSchema)
@@ -58,7 +58,7 @@ module Xmpbox
             end
 
             pes = xmp_schema.as(Schema::PDFAExtensionSchema)
-            sp = pes.array_property("schema")
+            sp = pes.schemas_property
             next unless sp
 
             sp.all_properties.each do |field|

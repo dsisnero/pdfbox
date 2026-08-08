@@ -28,13 +28,13 @@ module Xmpbox
       xmp.xpacket_bytes = xpacket_bytes
       xmp.xpacket_encoding = xpacket_encoding
       {
-        {"http://purl.org/dc/elements/1.1/", ->(m : XMPMetadata, _p : String) : Type::AbstractStructuredType { Schema::DublinCoreSchema.new(m) }},
-        {"http://ns.adobe.com/xap/1.0/", ->(m : XMPMetadata, _p : String) : Type::AbstractStructuredType { Schema::XMPBasicSchema.new(m) }},
-        {"http://ns.adobe.com/xap/1.0/mm/", ->(m : XMPMetadata, _p : String) : Type::AbstractStructuredType { Schema::XMPMediaManagementSchema.new(m) }},
-        {"http://ns.adobe.com/xap/1.0/rights/", ->(m : XMPMetadata, _p : String) : Type::AbstractStructuredType { Schema::XMPRightsManagementSchema.new(m) }},
+        {"http://purl.org/dc/elements/1.1/", Schema::DublinCoreSchema},
+        {"http://ns.adobe.com/xap/1.0/", Schema::XMPBasicSchema},
+        {"http://ns.adobe.com/xap/1.0/mm/", Schema::XMPMediaManagementSchema},
+        {"http://ns.adobe.com/xap/1.0/rights/", Schema::XMPRightsManagementSchema},
         {"http://ns.adobe.com/pdf/1.3/", Schema::AdobePDFSchema},
         {"http://www.aiim.org/pdfa/ns/id/", Schema::PDFAIdentificationSchema},
-        {"http://www.aiim.org/pdfa/ns/extension/", ->(m : XMPMetadata, _p : String) : Type::AbstractStructuredType { Schema::PDFAExtensionSchema.new(m) }},
+        {"http://www.aiim.org/pdfa/ns/extension/", Schema::PDFAExtensionSchema},
         {"http://ns.adobe.com/photoshop/1.0/", ->(m : XMPMetadata, _p : String) : Type::AbstractStructuredType { Schema::PhotoshopSchema.new(m) }},
         {"http://ns.adobe.com/exif/1.0/", ->(m : XMPMetadata, _p : String) : Type::AbstractStructuredType { Schema::ExifSchema.new(m) }},
         {"http://ns.adobe.com/tiff/1.0/", ->(m : XMPMetadata, _p : String) : Type::AbstractStructuredType { Schema::TiffSchema.new(m) }},

@@ -24,6 +24,26 @@ module Xmpbox
         {namespace: "http://purl.org/dc/elements/1.1/", prefered_prefix: "dc"}
       end
 
+      def self.property_types : Hash(String, Type::PropertyTypeDesc)
+        {
+          CONTRIBUTOR => Type::PropertyTypeDesc.new(type: Type::Types::Text, card: Type::Cardinality::Bag),
+          COVERAGE    => Type::PropertyTypeDesc.new(type: Type::Types::Text),
+          CREATOR     => Type::PropertyTypeDesc.new(type: Type::Types::Text, card: Type::Cardinality::Seq),
+          DATE        => Type::PropertyTypeDesc.new(type: Type::Types::Date, card: Type::Cardinality::Seq),
+          DESCRIPTION => Type::PropertyTypeDesc.new(type: Type::Types::LangAlt),
+          FORMAT      => Type::PropertyTypeDesc.new(type: Type::Types::MIMEType),
+          IDENTIFIER  => Type::PropertyTypeDesc.new(type: Type::Types::Text),
+          LANGUAGE    => Type::PropertyTypeDesc.new(type: Type::Types::Text, card: Type::Cardinality::Bag),
+          PUBLISHER   => Type::PropertyTypeDesc.new(type: Type::Types::Text, card: Type::Cardinality::Bag),
+          RELATION    => Type::PropertyTypeDesc.new(type: Type::Types::Text, card: Type::Cardinality::Bag),
+          RIGHTS      => Type::PropertyTypeDesc.new(type: Type::Types::LangAlt),
+          SOURCE      => Type::PropertyTypeDesc.new(type: Type::Types::Text),
+          SUBJECT     => Type::PropertyTypeDesc.new(type: Type::Types::Text, card: Type::Cardinality::Bag),
+          TITLE       => Type::PropertyTypeDesc.new(type: Type::Types::LangAlt),
+          TYPE        => Type::PropertyTypeDesc.new(type: Type::Types::Text, card: Type::Cardinality::Bag),
+        }
+      end
+
       def coverage=(text : String) : Nil
         set_text_property_value(COVERAGE, text)
       end
@@ -138,6 +158,21 @@ module Xmpbox
         {namespace: "http://ns.adobe.com/xap/1.0/", prefered_prefix: "xmp"}
       end
 
+      def self.property_types : Hash(String, Type::PropertyTypeDesc)
+        {
+          ADVISORY      => Type::PropertyTypeDesc.new(type: Type::Types::XPath, card: Type::Cardinality::Bag),
+          BASE_URL      => Type::PropertyTypeDesc.new(type: Type::Types::URL),
+          CREATE_DATE   => Type::PropertyTypeDesc.new(type: Type::Types::Date),
+          CREATOR_TOOL  => Type::PropertyTypeDesc.new(type: Type::Types::AgentName),
+          IDENTIFIER    => Type::PropertyTypeDesc.new(type: Type::Types::Text, card: Type::Cardinality::Bag),
+          LABEL         => Type::PropertyTypeDesc.new(type: Type::Types::Text),
+          METADATA_DATE => Type::PropertyTypeDesc.new(type: Type::Types::Date),
+          MODIFY_DATE   => Type::PropertyTypeDesc.new(type: Type::Types::Date),
+          NICKNAME      => Type::PropertyTypeDesc.new(type: Type::Types::Text),
+          RATING        => Type::PropertyTypeDesc.new(type: Type::Types::Integer),
+        }
+      end
+
       def base_url=(url : String) : Nil
         set_text_property_value(BASE_URL, url)
       end
@@ -228,11 +263,27 @@ module Xmpbox
       MANAGE_UI            = "ManageUI"
       ORIGINAL_DOCUMENT_ID = "OriginalDocumentID"
       RENDITION_PARAMS     = "RenditionParams"
+      RENDITION_CLASS      = "RenditionClass"
       VERSION_ID           = "VersionID"
       HISTORY              = "History"
 
       def self.structured_type_info
         {namespace: "http://ns.adobe.com/xap/1.0/mm/", prefered_prefix: "xmpMM"}
+      end
+
+      def self.property_types : Hash(String, Type::PropertyTypeDesc)
+        {
+          DOCUMENT_ID          => Type::PropertyTypeDesc.new(type: Type::Types::URI),
+          INSTANCE_ID          => Type::PropertyTypeDesc.new(type: Type::Types::URI),
+          MANAGER              => Type::PropertyTypeDesc.new(type: Type::Types::AgentName),
+          MANAGE_TO            => Type::PropertyTypeDesc.new(type: Type::Types::URI),
+          MANAGE_UI            => Type::PropertyTypeDesc.new(type: Type::Types::URI),
+          ORIGINAL_DOCUMENT_ID => Type::PropertyTypeDesc.new(type: Type::Types::Text),
+          RENDITION_PARAMS     => Type::PropertyTypeDesc.new(type: Type::Types::Text),
+          RENDITION_CLASS      => Type::PropertyTypeDesc.new(type: Type::Types::RenditionClass),
+          VERSION_ID           => Type::PropertyTypeDesc.new(type: Type::Types::Text),
+          HISTORY              => Type::PropertyTypeDesc.new(type: Type::Types::ResourceEvent, card: Type::Cardinality::Seq),
+        }
       end
 
       def document_id=(value : String) : Nil
@@ -533,8 +584,20 @@ module Xmpbox
 
     # PDF/A Extension: http://www.aiim.org/pdfa/ns/extension/
     class PDFAExtensionSchema < XMPSchema
+      SCHEMAS = "schemas"
+
       def self.structured_type_info
         {namespace: "http://www.aiim.org/pdfa/ns/extension/", prefered_prefix: "pdfaExtension"}
+      end
+
+      def self.property_types : Hash(String, Type::PropertyTypeDesc)
+        {
+          SCHEMAS => Type::PropertyTypeDesc.new(type: Type::Types::PDFASchema, card: Type::Cardinality::Bag),
+        }
+      end
+
+      def schemas_property : Type::ArrayProperty?
+        array_property(SCHEMAS)
       end
     end
 

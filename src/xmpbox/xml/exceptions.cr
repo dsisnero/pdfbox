@@ -12,6 +12,7 @@ module Xmpbox
         Format
         NoValue
         NoType
+        NoValueType
         RequiredProperty
         InvalidPdfaSchema
         InvalidPrefix

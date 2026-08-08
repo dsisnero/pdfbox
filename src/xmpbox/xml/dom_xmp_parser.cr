@@ -113,8 +113,9 @@ module Xmpbox
           parse_schema_extensions(xmp, desc)
         end
 
-        # Populate schema mappings
-        # (PdfaExtensionHelper.populateSchemaMapping equivalent - skipped for now)
+        # Populate schema mappings (Java: PdfaExtensionHelper.populateSchemaMapping)
+        # Registers pdfaExtension-declared namespaces so strict parsing knows them.
+        PdfaExtensionHelper.populate_schema_mapping(xmp, @strict_parsing)
 
         # Parse data descriptions
         descriptions.each do |desc|
@@ -661,9 +662,16 @@ module Xmpbox
       end
 
       private def instanciate_structured(tm : Type::TypeMapping, type : Type::Types, name : String, namespace : String) : Type::AbstractStructuredType
-        tm.instanciate_structured_type(type, name).tap do |ast|
-          ast.namespace = namespace
-        end
+        ast = if type.structured?
+                tm.instanciate_structured_type(type, name)
+              elsif type.defined?
+                tm.instanciate_defined_type(name, namespace)
+              else
+                raise XmpParsingException.new(XmpParsingException::ErrorType::InvalidType,
+                  "Type not structured : #{type}")
+              end
+        ast.namespace = namespace
+        ast
       rescue ex : Type::BadFieldValueException
         raise XmpParsingException.new(XmpParsingException::ErrorType::InvalidType,
           "Failed to instantiate structured type #{type}: #{ex.message}")

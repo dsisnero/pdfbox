@@ -21,6 +21,17 @@ module Xmpbox
         {namespace: "http://ns.adobe.com/xap/1.0/sType/ResourceEvent#", prefered_prefix: "stEvt"}
       end
 
+      def self.property_types : Hash(String, PropertyTypeDesc)
+        {
+          INSTANCE_ID    => PropertyTypeDesc.new(type: Types::GUID),
+          SOFTWARE_AGENT => PropertyTypeDesc.new(type: Types::AgentName),
+          WHEN           => PropertyTypeDesc.new(type: Types::Date),
+          ACTION         => PropertyTypeDesc.new(type: Types::Choice),
+          CHANGED        => PropertyTypeDesc.new(type: Types::Text),
+          PARAMETERS     => PropertyTypeDesc.new(type: Types::Text),
+        }
+      end
+
       def initialize(metadata : XMPMetadata, namespace_uri = nil, field_prefix = nil, property_name = nil)
         super(metadata, namespace_uri, field_prefix, property_name)
         add_namespace(namespace.as(String), prefered_prefix.as(String))
@@ -854,6 +865,16 @@ module Xmpbox
         {namespace: "http://www.aiim.org/pdfa/ns/schema#", prefered_prefix: "pdfaSchema"}
       end
 
+      def self.property_types : Hash(String, PropertyTypeDesc)
+        {
+          SCHEMA        => PropertyTypeDesc.new(type: Types::Text),
+          NAMESPACE_URI => PropertyTypeDesc.new(type: Types::URI),
+          PREFIX        => PropertyTypeDesc.new(type: Types::Text),
+          PROPERTY      => PropertyTypeDesc.new(type: Types::PDFAProperty, card: Cardinality::Seq),
+          VALUE_TYPE    => PropertyTypeDesc.new(type: Types::PDFAType, card: Cardinality::Seq),
+        }
+      end
+
       def initialize(metadata : XMPMetadata, namespace_uri = nil, field_prefix = nil, property_name = nil)
         super(metadata, namespace_uri, field_prefix, property_name)
         add_namespace(namespace.as(String), prefered_prefix.as(String))
@@ -885,6 +906,14 @@ module Xmpbox
         {namespace: "http://www.aiim.org/pdfa/ns/field#", prefered_prefix: "pdfaField"}
       end
 
+      def self.property_types : Hash(String, PropertyTypeDesc)
+        {
+          NAME        => PropertyTypeDesc.new(type: Types::Text),
+          VALUE_TYPE  => PropertyTypeDesc.new(type: Types::Choice),
+          DESCRIPTION => PropertyTypeDesc.new(type: Types::Text),
+        }
+      end
+
       def initialize(metadata : XMPMetadata, namespace_uri = nil, field_prefix = nil, property_name = nil)
         super(metadata, namespace_uri, field_prefix, property_name)
         add_namespace(namespace.as(String), prefered_prefix.as(String))
@@ -911,6 +940,15 @@ module Xmpbox
 
       def self.structured_type_info
         {namespace: "http://www.aiim.org/pdfa/ns/property#", prefered_prefix: "pdfaProperty"}
+      end
+
+      def self.property_types : Hash(String, PropertyTypeDesc)
+        {
+          NAME        => PropertyTypeDesc.new(type: Types::Text),
+          VALUE_TYPE  => PropertyTypeDesc.new(type: Types::Choice),
+          CATEGORY    => PropertyTypeDesc.new(type: Types::Choice),
+          DESCRIPTION => PropertyTypeDesc.new(type: Types::Text),
+        }
       end
 
       def initialize(metadata : XMPMetadata, namespace_uri = nil, field_prefix = nil, property_name = nil)
@@ -944,6 +982,16 @@ module Xmpbox
 
       def self.structured_type_info
         {namespace: "http://www.aiim.org/pdfa/ns/type#", prefered_prefix: "pdfaType"}
+      end
+
+      def self.property_types : Hash(String, PropertyTypeDesc)
+        {
+          TYPE        => PropertyTypeDesc.new(type: Types::Text),
+          NS_URI      => PropertyTypeDesc.new(type: Types::URI),
+          PREFIX      => PropertyTypeDesc.new(type: Types::Text),
+          DESCRIPTION => PropertyTypeDesc.new(type: Types::Text),
+          FIELD       => PropertyTypeDesc.new(type: Types::PDFAField, card: Cardinality::Seq),
+        }
       end
 
       def initialize(metadata : XMPMetadata, namespace_uri = nil, field_prefix = nil, property_name = nil)

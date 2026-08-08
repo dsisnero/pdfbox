@@ -48,11 +48,11 @@ describe Xmpbox::Xml::DomXmpParser do
 
       xmp_basic = metadata.xmp_basic_schema
       xmp_basic.should_not be_nil
-      xmp_basic.not_nil!.unqualified_text_property_value("ModifyDate").should_not be_nil
+      xmp_basic.not_nil!.modify_date.should_not be_nil
 
       xmpmm = metadata.xmp_media_management_schema
       xmpmm.should_not be_nil
-      xmpmm.not_nil!.unqualified_text_property_value("DocumentID").should_not be_nil
+      xmpmm.not_nil!.document_id.should_not be_nil
     end
 
     it "parses metadata.rdf with Dublin Core and rights schemas" do
