@@ -48,8 +48,13 @@ module Xmpbox
         io << " rdf:about=\"" << escape_attr(about) << "\""
         io << " xmlns:" << prefix << "=\"" << escape_attr(ns) << "\""
 
-        # Additional namespace declarations
-        schema.all_namespaces_with_prefix.each do |ns_uri, ns_prefix|
+        # Additional namespace declarations: schema-level plus any namespaces
+        # used by nested structured types (Java's DOM serializer emits these
+        # automatically, so the output must re-parse cleanly).
+        all_ns = {} of String => String
+        schema.all_namespaces_with_prefix.each { |k, v| all_ns[k] = v }
+        collect_namespaces(schema.all_properties, all_ns)
+        all_ns.each do |ns_uri, ns_prefix|
           next if ns_prefix.empty?
           next if ns_prefix == prefix || ns_prefix == XmpConstants::DEFAULT_RDF_PREFIX
           io << " xmlns:" << ns_prefix << "=\"" << escape_attr(ns_uri) << "\""
@@ -110,6 +115,19 @@ module Xmpbox
             if wrap_with_property
               io << ind << "</" << resource_ns << ":" << st_name << ">\n"
             end
+          end
+        end
+      end
+
+      # Collect namespace declarations used by nested properties (structured
+      # types, array elements) so the serialized XML declares every prefix used.
+      private def collect_namespaces(fields : Array(Type::AbstractField), acc : Hash(String, String)) : Nil
+        fields.each do |field|
+          if field.is_a?(Type::AbstractStructuredType)
+            field.all_namespaces_with_prefix.each { |k, v| acc[k] = v unless v.empty? }
+            collect_namespaces(field.all_properties, acc)
+          elsif field.is_a?(Type::ArrayProperty)
+            collect_namespaces(field.all_properties, acc)
           end
         end
       end

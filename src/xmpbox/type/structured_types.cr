@@ -421,11 +421,24 @@ module Xmpbox
     end
 
     class VersionType < AbstractStructuredType
-      VERSION_COMMENT = "versionComment"
-      EVENT           = "Event"
+      COMMENTS    = "comments"
+      EVENT       = "event"
+      MODIFIER    = "modifier"
+      MODIFY_DATE = "modifyDate"
+      VERSION     = "version"
 
       def self.structured_type_info
         {namespace: "http://ns.adobe.com/xap/1.0/sType/Version#", prefered_prefix: "stVer"}
+      end
+
+      def self.property_types : Hash(String, PropertyTypeDesc)
+        {
+          COMMENTS    => PropertyTypeDesc.new(type: Types::Text),
+          EVENT       => PropertyTypeDesc.new(type: Types::ResourceEvent),
+          MODIFIER    => PropertyTypeDesc.new(type: Types::ProperName),
+          MODIFY_DATE => PropertyTypeDesc.new(type: Types::Date),
+          VERSION     => PropertyTypeDesc.new(type: Types::Text),
+        }
       end
 
       def initialize(metadata : XMPMetadata, namespace_uri = nil, field_prefix = nil, property_name = nil)
@@ -433,12 +446,12 @@ module Xmpbox
         add_namespace(namespace.as(String), prefered_prefix.as(String))
       end
 
-      def version_comment : String?
-        property_value_as_string(VERSION_COMMENT)
+      def comments : String?
+        property_value_as_string(COMMENTS)
       end
 
-      def version_comment=(v : String)
-        add_simple_property(VERSION_COMMENT, v)
+      def comments=(v : String)
+        add_simple_property(COMMENTS, v)
       end
     end
 

@@ -103,6 +103,77 @@ module Xmpbox
         dst.property("name").as(Xmpbox::Type::AbstractSimpleProperty).string_value.should eq("John Doe")
         dst.property("mailto").as(Xmpbox::Type::AbstractSimpleProperty).string_value.should eq("john@acme.com")
       end
+
+      # Port of DeserializationTest.checkTransform — serialize then re-parse must
+      # preserve the schema count (data integrity; the SHA-256 digests are not
+      # reproduced since byte-exact output parity is out of scope).
+      {
+        "structured_recursive.xml" => 1,
+        "empty_list.xml"           => 1,
+        "AltBagSeqTest.xml"        => 6,
+      }.each do |rel, expected_schemas|
+        it "round-trips #{rel} preserving #{expected_schemas} schemas" do
+          path = File.join(fixture_dir, "org", "apache", "xmpbox", "parser", rel)
+          parser = DomXmpParser.new(strict_parsing: false)
+          xmp = parser.parse(File.open(path))
+          xmp.all_schemas.size.should eq(expected_schemas)
+          output = Xmpbox::Xml::XmpSerializer.new.serialize(xmp)
+          rxmp = parser.parse(output)
+          rxmp.all_schemas.size.should eq(expected_schemas)
+        end
+      end
+
+      it "round-trips attr_as_props.xml preserving schema count" do
+        path = File.join(fixture_dir, "validxmp", "attr_as_props.xml")
+        parser = DomXmpParser.new(strict_parsing: false)
+        xmp = parser.parse(File.open(path))
+        output = Xmpbox::Xml::XmpSerializer.new.serialize(xmp)
+        rxmp = parser.parse(output)
+        rxmp.all_schemas.size.should eq(xmp.all_schemas.size)
+      end
+
+      it "round-trips only_space_fields.xmp preserving schema count and spaces" do
+        path = File.join(fixture_dir, "validxmp", "only_space_fields.xmp")
+        parser = DomXmpParser.new(strict_parsing: false)
+        xmp = parser.parse(File.open(path))
+        output = Xmpbox::Xml::XmpSerializer.new.serialize(xmp)
+        rxmp = parser.parse(output)
+        rxmp.all_schemas.size.should eq(xmp.all_schemas.size)
+        rxmp.adobe_pdf_schema.not_nil!.producer.should eq(" ")
+      end
+
+      it "PDFBOX-6029 round-trips an empty date property" do
+        s = "<?xpacket begin=\"\uFEFF\" id=\"W5M0MpCehiHzreSzNTczkc9d\"?>\n" +
+            "<x:xmpmeta x:xmptk=\"Adobe XMP Core 4.2.1-c041 52.342996, 2008/05/07-20:48:00\" xmlns:x=\"adobe:ns:meta/\">\n" +
+            "  <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n" +
+            "   <rdf:Description rdf:about=\"\" xmlns:xmp=\"http://ns.adobe.com/xap/1.0/\">\n" +
+            "    <xmp:CreateDate></xmp:CreateDate>\n" +
+            "   </rdf:Description>\n" +
+            "  </rdf:RDF>\n" +
+            "</x:xmpmeta>\n" +
+            "<?xpacket end=\"w\"?>"
+        parser = DomXmpParser.new
+        xmp = parser.parse(s)
+        output = Xmpbox::Xml::XmpSerializer.new.serialize(xmp)
+        rxmp = parser.parse(output)
+        rxmp.all_schemas.size.should eq(1)
+      end
+
+      it "testMetadataParsing round-trips constructed metadata" do
+        meta = Xmpbox::XMPMetadata.create_xmp_metadata
+        dc = meta.create_and_add_dublin_core_schema
+        dc.coverage = "coverage"
+        dc.add_contributor("contributor1")
+        dc.add_contributor("contributor2")
+        dc.set_title("x-default", "Description")
+        pdf = meta.create_and_add_adobe_pdf_schema
+        pdf.producer = "Producer"
+        pdf.pdf_version = "1.4"
+
+        output = Xmpbox::Xml::XmpSerializer.new.serialize(meta)
+        rxmp = DomXmpParser.new.parse(output)
+        rxmp.all_schemas.size.should eq(2)
+      end
     end
   end
 end
