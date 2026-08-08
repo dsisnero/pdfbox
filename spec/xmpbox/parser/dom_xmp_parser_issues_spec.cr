@@ -652,6 +652,42 @@ describe Xmpbox::Xml::DomXmpParser do
       exif.not_nil!.abstract_property("PixelXDimension").as(Xmpbox::Type::IntegerType).value.should eq(1525)
     end
 
+    it "rejects a malformed date property" do
+      s = <<-XML
+      <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+      <?xpacket begin='\uFEFF' id='W5M0MpCehiHzreSzNTczkc9d'?><?adobe-xap-filters esc="CRLF"?><x:xmpmeta xmlns:x="adobe:ns:meta/" x:xmptk="XMP toolkit 2.9.1-13, framework 1.6">
+          <rdf:RDF xmlns:iX="http://ns.adobe.com/iX/1.0/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+              <rdf:Description xmlns:xmp="http://ns.adobe.com/xap/1.0/" rdf:about="uuid:f577a812-a531-11f4-0000-2eba1231b686">
+                  <xmp:CreateDate>2019-05-02T22:03:5Z</xmp:CreateDate>
+              </rdf:Description>
+          </rdf:RDF>
+      </x:xmpmeta><?xpacket end='w'?>
+      XML
+      parser = Xmpbox::Xml::DomXmpParser.new
+      ex = expect_raises(Xmpbox::Xml::XmpParsingException) do
+        parser.parse(s)
+      end
+      ex.to_s.should eq("Failed to instantiate DateType property with value '2019-05-02T22:03:5Z' in xmp:CreateDate")
+    end
+
+    it "rejects a malformed date attribute" do
+      s = <<-XML
+      <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+      <?xpacket begin='\uFEFF' id='W5M0MpCehiHzreSzNTczkc9d'?><?adobe-xap-filters esc="CRLF"?><x:xmpmeta xmlns:x="adobe:ns:meta/" x:xmptk="XMP toolkit 2.9.1-13, framework 1.6">
+          <rdf:RDF xmlns:iX="http://ns.adobe.com/iX/1.0/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+              <rdf:Description xmlns:xap="http://ns.adobe.com/xap/1.0/" xap:CreateDate="2016-03-09T19:47:1Z">
+                  <xap:CreatorTool>PrimoPDF http://www.primopdf.com</xap:CreatorTool>
+              </rdf:Description>
+          </rdf:RDF>
+      </x:xmpmeta><?xpacket end='w'?>
+      XML
+      parser = Xmpbox::Xml::DomXmpParser.new
+      ex = expect_raises(Xmpbox::Xml::XmpParsingException) do
+        parser.parse(s)
+      end
+      ex.to_s.should eq("Failed to instantiate DateType property with value '2016-03-09T19:47:1Z' in xap:CreateDate")
+    end
+
     it "PDFBOX-6131 parses Open Choice of Integer as a pdfua integer property" do
       path = File.join(fixture_dir, "org", "apache", "xmpbox", "xml", "PDFBOX-6131-0015675.xml")
       parser = Xmpbox::Xml::DomXmpParser.new

@@ -98,7 +98,13 @@ module Xmpbox
           pm.add_new_property(name, desc)
         end
         @schema_map[ns] = XMPSchemaFactory.new(ns,
-          ->(m : XMPMetadata, _p : String) : AbstractStructuredType { klass.new(m) },
+          ->(m : XMPMetadata, prefix : String) : AbstractStructuredType {
+            if prefix.nil? || prefix.empty?
+              klass.new(m)
+            else
+              klass.new(m, nil, prefix)
+            end
+          },
           pm)
       end
 
@@ -133,6 +139,10 @@ module Xmpbox
         klass = SIMPLE_TYPE_CLASSES[type]?
         raise ArgumentError.new("No implementing class for type: #{type}") unless klass
         klass.new(metadata, ns_uri, prefix, name, value)
+      rescue ex : ArgumentError
+        # Port of Java instanciateSimpleProperty: wrap the instantiation failure
+        class_name = klass.try(&.name.split("::").last) || "property"
+        raise ArgumentError.new("Failed to instantiate #{class_name} property with value '#{value}'")
       end
 
       def instanciate_simple_field(klass : T.class, ns_uri : String?, prefix : String?, property_name : String, value : ValueType) : AbstractSimpleProperty forall T

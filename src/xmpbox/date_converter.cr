@@ -34,6 +34,12 @@ module Xmpbox
     end
 
     private def self.from_iso8601(date : String) : Time
+      # Port of Java DATE_TIME_FORMATTER (parseStrict): ISO_LOCAL_DATE_TIME
+      # requires two-digit seconds when present. Java rejects e.g. "22:03:5Z".
+      if date.matches?(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d(?!\d)/)
+        raise IO::Error.new("Error converting date:#{date}")
+      end
+
       parse_formats = [
         "%Y-%m-%dT%H:%M:%S.%N%:z",
         "%Y-%m-%dT%H:%M:%S%:z",
