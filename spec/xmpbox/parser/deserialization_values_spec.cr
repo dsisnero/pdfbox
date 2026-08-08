@@ -66,6 +66,43 @@ module Xmpbox
         basic.should_not be_nil
         basic.not_nil!.creator_tool.should eq("Canon ")
       end
+
+      it "testIsartorStyleWithThumbs parses thumbnails and extension schemas" do
+        path = File.join(fixture_dir, "org", "apache", "xmpbox", "parser", "ThumbisartorStyle.xml")
+        parser = DomXmpParser.new(strict_parsing: false)
+        xmp = parser.parse(File.open(path))
+
+        mm = xmp.xmp_media_management_schema
+        mm.should_not be_nil
+        mm.not_nil!.document_id.should eq("uuid:09C78666-2F91-3A9C-92AF-3691A6D594F7")
+
+        basic = xmp.xmp_basic_schema
+        basic.should_not be_nil
+        basic.not_nil!.create_date.should_not be_nil
+        basic.not_nil!.modify_date.should_not be_nil
+        basic.not_nil!.metadata_date.should_not be_nil
+
+        thumbs = basic.not_nil!.abstract_property("Thumbnails")
+        thumbs.should be_a(Xmpbox::Type::ArrayProperty)
+        thumbs.as(Xmpbox::Type::ArrayProperty).all_properties.size.should eq(2)
+        t0 = thumbs.as(Xmpbox::Type::ArrayProperty).all_properties[0].as(Xmpbox::Type::ThumbnailType)
+        t0.height.should eq(162)
+        t0.width.should eq(216)
+        t0.format.should eq("JPEG")
+        t0.image.should eq("/9j/4AAQSkZJRgABAgEASABIAAD")
+
+        acme = xmp.schema("http://www.acme.com/ns/email/1/")
+        acme.should_not be_nil
+        delivery = acme.not_nil!.abstract_property("Delivery-Date")
+        delivery.should_not be_nil
+        delivery.as(Xmpbox::Type::AbstractSimpleProperty).string_value.should eq("2007-11-09T09:55:36+01:00")
+
+        from = acme.not_nil!.abstract_property("From")
+        from.should be_a(Xmpbox::Type::DefinedStructuredType)
+        dst = from.as(Xmpbox::Type::DefinedStructuredType)
+        dst.property("name").as(Xmpbox::Type::AbstractSimpleProperty).string_value.should eq("John Doe")
+        dst.property("mailto").as(Xmpbox::Type::AbstractSimpleProperty).string_value.should eq("john@acme.com")
+      end
     end
   end
 end

@@ -286,6 +286,15 @@ module Xmpbox
         {namespace: "http://ns.adobe.com/xap/1.0/g/img/", prefered_prefix: "xmpGImg"}
       end
 
+      def self.property_types : Hash(String, PropertyTypeDesc)
+        {
+          FORMAT => PropertyTypeDesc.new(type: Types::Choice),
+          HEIGHT => PropertyTypeDesc.new(type: Types::Integer),
+          WIDTH  => PropertyTypeDesc.new(type: Types::Integer),
+          IMAGE  => PropertyTypeDesc.new(type: Types::Text),
+        }
+      end
+
       def initialize(metadata : XMPMetadata, namespace_uri = nil, field_prefix = nil, property_name = nil)
         super(metadata, namespace_uri, field_prefix, property_name)
         add_namespace(namespace.as(String), prefered_prefix.as(String))
