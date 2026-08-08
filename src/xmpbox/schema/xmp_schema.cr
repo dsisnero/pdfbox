@@ -201,6 +201,18 @@ module Xmpbox
         internal_add_bag_value(simple_name, bag_value)
       end
 
+      def add_unqualified_bag_value(simple_bag_name : String, bag_value : String) : Nil
+        bag = abstract_property(simple_bag_name)
+        li = create_text_type(XmpConstants::LIST_NAME, bag_value)
+        if bag.is_a?(Type::ArrayProperty)
+          bag.container.add_property(li)
+        else
+          new_bag = create_array_property(simple_bag_name, Type::Cardinality::Bag)
+          new_bag.container.add_property(li)
+          add_property(new_bag)
+        end
+      end
+
       def unqualified_bag_value_list(bag_name : String) : Array(String)?
         abstract_prop = abstract_property(bag_name)
         if abstract_prop.is_a?(Type::ArrayProperty)

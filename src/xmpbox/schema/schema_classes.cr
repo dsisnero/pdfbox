@@ -4,8 +4,120 @@ module Xmpbox
   module Schema
     # Dublin Core: http://purl.org/dc/elements/1.1/
     class DublinCoreSchema < XMPSchema
+      CONTRIBUTOR = "contributor"
+      COVERAGE    = "coverage"
+      CREATOR     = "creator"
+      DATE        = "date"
+      DESCRIPTION = "description"
+      FORMAT      = "format"
+      IDENTIFIER  = "identifier"
+      LANGUAGE    = "language"
+      PUBLISHER   = "publisher"
+      RELATION    = "relation"
+      RIGHTS      = "rights"
+      SOURCE      = "source"
+      SUBJECT     = "subject"
+      TITLE       = "title"
+      TYPE        = "type"
+
       def self.structured_type_info
         {namespace: "http://purl.org/dc/elements/1.1/", prefered_prefix: "dc"}
+      end
+
+      def coverage=(text : String) : Nil
+        set_text_property_value(COVERAGE, text)
+      end
+
+      def coverage_property : Type::TextType?
+        unqualified_text_property(COVERAGE)
+      end
+
+      def coverage : String?
+        unqualified_text_property_value(COVERAGE)
+      end
+
+      def format=(mime_type : String) : Nil
+        set_text_property_value(FORMAT, mime_type)
+      end
+
+      def format_property : Type::TextType?
+        unqualified_text_property(FORMAT)
+      end
+
+      def format : String?
+        unqualified_text_property_value(FORMAT)
+      end
+
+      def identifier=(text : String) : Nil
+        set_text_property_value(IDENTIFIER, text)
+      end
+
+      def identifier_property : Type::TextType?
+        unqualified_text_property(IDENTIFIER)
+      end
+
+      def identifier : String?
+        unqualified_text_property_value(IDENTIFIER)
+      end
+
+      def source=(text : String) : Nil
+        set_text_property_value(SOURCE, text)
+      end
+
+      def source_property : Type::TextType?
+        unqualified_text_property(SOURCE)
+      end
+
+      def source : String?
+        unqualified_text_property_value(SOURCE)
+      end
+
+      def title=(value : String) : Nil
+        set_unqualified_language_property_value(TITLE, nil, value)
+      end
+
+      def set_title(lang : String, value : String) : Nil
+        set_unqualified_language_property_value(TITLE, lang, value)
+      end
+
+      def title : String?
+        unqualified_language_property_value(TITLE, nil)
+      end
+
+      def title(lang : String) : String?
+        unqualified_language_property_value(TITLE, lang)
+      end
+
+      def description=(value : String) : Nil
+        set_unqualified_language_property_value(DESCRIPTION, nil, value)
+      end
+
+      def description : String?
+        unqualified_language_property_value(DESCRIPTION, nil)
+      end
+
+      def description(lang : String) : String?
+        unqualified_language_property_value(DESCRIPTION, lang)
+      end
+
+      def description_languages : Array(String)?
+        unqualified_language_property_languages_value(DESCRIPTION)
+      end
+
+      def add_contributor(contributor : String) : Nil
+        add_unqualified_bag_value(CONTRIBUTOR, contributor)
+      end
+
+      def contributors : Array(String)?
+        unqualified_bag_value_list(CONTRIBUTOR)
+      end
+
+      def add_creator(creator : String) : Nil
+        add_unqualified_sequence_value(CREATOR, creator)
+      end
+
+      def creators : Array(String)?
+        unqualified_sequence_value_list(CREATOR)
       end
     end
 
