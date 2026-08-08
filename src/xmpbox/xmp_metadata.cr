@@ -33,15 +33,20 @@ module Xmpbox
         {"http://ns.adobe.com/xap/1.0/mm/", ->(m : XMPMetadata, _p : String) : Type::AbstractStructuredType { Schema::XMPMediaManagementSchema.new(m) }},
         {"http://ns.adobe.com/xap/1.0/rights/", ->(m : XMPMetadata, _p : String) : Type::AbstractStructuredType { Schema::XMPRightsManagementSchema.new(m) }},
         {"http://ns.adobe.com/pdf/1.3/", ->(m : XMPMetadata, _p : String) : Type::AbstractStructuredType { Schema::AdobePDFSchema.new(m) }},
-        {"http://www.aiim.org/pdfa/ns/id/", ->(m : XMPMetadata, _p : String) : Type::AbstractStructuredType { Schema::PDFAIdentificationSchema.new(m) }},
+        {"http://www.aiim.org/pdfa/ns/id/", Schema::PDFAIdentificationSchema},
         {"http://www.aiim.org/pdfa/ns/extension/", ->(m : XMPMetadata, _p : String) : Type::AbstractStructuredType { Schema::PDFAExtensionSchema.new(m) }},
         {"http://ns.adobe.com/photoshop/1.0/", ->(m : XMPMetadata, _p : String) : Type::AbstractStructuredType { Schema::PhotoshopSchema.new(m) }},
         {"http://ns.adobe.com/exif/1.0/", ->(m : XMPMetadata, _p : String) : Type::AbstractStructuredType { Schema::ExifSchema.new(m) }},
         {"http://ns.adobe.com/tiff/1.0/", ->(m : XMPMetadata, _p : String) : Type::AbstractStructuredType { Schema::TiffSchema.new(m) }},
         {"http://ns.adobe.com/xap/1.0/bj/", ->(m : XMPMetadata, _p : String) : Type::AbstractStructuredType { Schema::XMPBasicJobTicketSchema.new(m) }},
         {"http://ns.adobe.com/xap/1.0/t/pg/", ->(m : XMPMetadata, _p : String) : Type::AbstractStructuredType { Schema::XMPPageTextSchema.new(m) }},
-      }.each do |_schema_ns, create_proc|
-        xmp.type_mapping.register_schema(_schema_ns, create_proc)
+      }.each do |_schema_ns, registration|
+        if registration.is_a?(Schema::XMPSchema.class)
+          xmp.type_mapping.register_schema(_schema_ns, registration)
+        else
+          create_proc = registration.as((XMPMetadata, String) -> Type::AbstractStructuredType)
+          xmp.type_mapping.register_schema(_schema_ns, create_proc)
+        end
       end
       xmp
     end

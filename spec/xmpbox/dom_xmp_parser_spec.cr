@@ -32,8 +32,8 @@ describe Xmpbox::Xml::DomXmpParser do
       # Should have PDFA Identification schema
       pdfaid = metadata.pdfa_identification_schema
       pdfaid.should_not be_nil
-      pdfaid.not_nil!.unqualified_text_property_value("part").should eq "1"
-      pdfaid.not_nil!.unqualified_text_property_value("conformance").should eq "B"
+      pdfaid.not_nil!.part.should eq 1
+      pdfaid.not_nil!.conformance.should eq "B"
     end
 
     it "parses a more complex XMP file with sequences and structured types" do

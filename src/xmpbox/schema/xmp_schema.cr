@@ -25,6 +25,12 @@ module Xmpbox
         end
       end
 
+      # Port of Java @PropertyType-annotated fields on schema classes. Defaults
+      # to empty; subclasses override to let strict parsing resolve property types.
+      def self.property_types : Hash(String, Type::PropertyTypeDesc)
+        {} of String => Type::PropertyTypeDesc
+      end
+
       def abstract_property(qualified_name : String) : Type::AbstractField?
         container.all_properties.each do |child|
           return child if child.property_name == qualified_name

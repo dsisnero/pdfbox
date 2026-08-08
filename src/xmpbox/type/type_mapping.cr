@@ -86,6 +86,19 @@ module Xmpbox
         @schema_map[ns] = XMPSchemaFactory.new(ns, create_proc, pm)
       end
 
+      # Registers a schema namespace with the property type descriptions declared
+      # by the schema class. Mirrors Java TypeMapping.addNameSpace which reflects
+      # over @PropertyType-annotated fields via initializePropMapping.
+      def register_schema(ns : String, klass : Schema::XMPSchema.class) : Nil
+        pm = PropertiesDescription.new
+        klass.property_types.each do |name, desc|
+          pm.add_new_property(name, desc)
+        end
+        @schema_map[ns] = XMPSchemaFactory.new(ns,
+          ->(m : XMPMetadata, _p : String) : AbstractStructuredType { klass.new(m) },
+          pm)
+      end
+
       def add_to_defined_structured_types(type_name : String, ns : String, pm : PropertiesDescription) : Nil
         list = @defined_structured_namespaces[ns]?
         if list

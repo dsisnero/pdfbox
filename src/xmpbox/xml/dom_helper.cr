@@ -35,8 +35,8 @@ module Xmpbox
         ns = element.namespace
         Type::QName.new(
           ns.try(&.href) || "",
-          ns.try(&.prefix) || "",
-          element.name
+          element.name,
+          ns.try(&.prefix) || ""
         )
       end
     end

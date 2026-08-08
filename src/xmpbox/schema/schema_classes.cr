@@ -410,8 +410,116 @@ module Xmpbox
 
     # PDF/A Identification: http://www.aiim.org/pdfa/ns/id/
     class PDFAIdentificationSchema < XMPSchema
+      PART        = "part"
+      AMD         = "amd"
+      CONFORMANCE = "conformance"
+      REV         = "rev"
+
+      VALID_CONFORMANCE = {"A", "B", "U", "e", "f"}
+
       def self.structured_type_info
         {namespace: "http://www.aiim.org/pdfa/ns/id/", prefered_prefix: "pdfaid"}
+      end
+
+      # Port of Java @PropertyType annotations — used by TypeMapping to resolve
+      # property types during strict parsing (mirrors TypeMapping.initializePropMapping).
+      def self.property_types : Hash(String, Type::PropertyTypeDesc)
+        {
+          PART        => Type::PropertyTypeDesc.new(type: Type::Types::Integer),
+          AMD         => Type::PropertyTypeDesc.new(type: Type::Types::Text),
+          CONFORMANCE => Type::PropertyTypeDesc.new(type: Type::Types::Text),
+          REV         => Type::PropertyTypeDesc.new(type: Type::Types::Integer),
+        }
+      end
+
+      def set_part_value_with_string(value : String) : Nil
+        set_integer_property_value(PART, value.to_i32)
+      end
+
+      def set_part_value_with_int(value : Int32) : Nil
+        set_integer_property_value(PART, value)
+      end
+
+      def set_part(value : Int32) : Nil
+        set_part_value_with_int(value)
+      end
+
+      def part_property : Type::IntegerType?
+        integer_property(PART)
+      end
+
+      def part : Int32?
+        integer_property_value(PART)
+      end
+
+      def set_amd(value : String) : Nil
+        set_text_property_value(AMD, value)
+      end
+
+      def amd_property : Type::TextType?
+        unqualified_text_property(AMD)
+      end
+
+      def amendment : String?
+        prop = abstract_property(AMD)
+        if prop.is_a?(Type::TextType)
+          return prop.string_value
+        end
+        nil
+      end
+
+      def amd : String?
+        prop = amd_property
+        if prop
+          return prop.string_value
+        end
+        all_attributes.each do |attribute|
+          return attribute.value if attribute.name == AMD
+        end
+        nil
+      end
+
+      def set_conformance(value : String) : Nil
+        unless VALID_CONFORMANCE.includes?(value)
+          raise Type::BadFieldValueException.new(
+            "The value '#{value}' isn't a valid PDF/A conformance level (must be A, B, U, e or f)")
+        end
+        set_text_property_value(CONFORMANCE, value)
+      end
+
+      def conformance_property : Type::TextType?
+        unqualified_text_property(CONFORMANCE)
+      end
+
+      def conformance : String?
+        prop = conformance_property
+        if prop
+          return prop.string_value
+        end
+        all_attributes.each do |attribute|
+          return attribute.value if attribute.name == CONFORMANCE
+        end
+        nil
+      end
+
+      def set_rev_value_with_string(value : String) : Nil
+        set_integer_property_value(REV, value.to_i32)
+      end
+
+      def set_rev_value_with_int(value : Int32) : Nil
+        set_integer_property_value(REV, value)
+      end
+
+      def set_rev(value : Int32) : Nil
+        set_rev_value_with_int(value)
+      end
+
+      def rev_property : Type::IntegerType?
+        integer_property(REV)
+      end
+
+      def rev : Int32?
+        integer_property_value(REV)
       end
     end
 

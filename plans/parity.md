@@ -209,7 +209,7 @@
 - [x] PdfaExtensionHelper — 216-line PDF/A schema loading + 4 PDFA*Type classes
 - [x] XmpParsingException, XmpSerializationException, XmpSchemaException
 - [x] PDFBox integration (PDMetadata parse/serialize convenience methods)
-- [~] Test suite — 30 Crystal specs covering type system, schema, date conversion, metadata, parsing, attributes (from 28 Java test files); keep growing coverage
+- [~] Test suite — 40 Crystal specs covering type system, schema, date conversion, metadata, parsing, attributes (from 28 Java test files); keep growing coverage. PDFAIdentificationSchema ported (part/amd/conformance/rev + BadFieldValueException validation + serialize/parse round-trip). Also fixed two strict-parsing parity gaps surfaced by the round-trip: (1) schema property type mappings now registered from `property_types` (mirrors Java `initializePropMapping`), and (2) `DomHelper.qname` swapped `local_part`/`prefix`.
 
 **XMPBox core complete.** Parse (DomXmpParser with lenient array/namespace detection), serialize (XmpSerializer), type/schema system, PDF/A extension loading. 1617 total tests, 0 failures.
 
