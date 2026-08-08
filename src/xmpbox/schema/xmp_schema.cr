@@ -252,8 +252,73 @@ module Xmpbox
         nil
       end
 
+      # Port of Java addUnqualifiedSequenceValue(String seqName, AbstractField seqValue).
+      def add_unqualified_sequence_value(seq_name : String, seq_value : Type::AbstractField) : Nil
+        seq = abstract_property(seq_name)
+        if seq.is_a?(Type::ArrayProperty)
+          seq.container.add_property(seq_value)
+        else
+          new_seq = create_array_property(seq_name, Type::Cardinality::Seq)
+          new_seq.container.add_property(seq_value)
+          add_property(new_seq)
+        end
+      end
+
       def remove_unqualified_sequence_value(qualified_seq_name : String, seq_value : String) : Nil
         remove_unqualified_array_value(qualified_seq_name, seq_value)
+      end
+
+      # Port of Java getUnqualifiedArrayList — returns the raw AbstractField list
+      # of an array property, raising BadFieldValueException if the named property
+      # exists but is not an array.
+      def unqualified_array_list(name : String) : Array(Type::AbstractField)?
+        array : Type::ArrayProperty? = nil
+        all_properties.each do |child|
+          if child.property_name == name
+            if child.is_a?(Type::ArrayProperty)
+              array = child
+              break
+            end
+            raise Type::BadFieldValueException.new("Property asked is not an array")
+          end
+        end
+        array.try(&.container.all_properties)
+      end
+
+      # Port of Java addUnqualifiedSequenceDateValue.
+      def add_unqualified_sequence_date_value(seq_name : String, date : Time) : Nil
+        add_unqualified_sequence_value(seq_name,
+          metadata.type_mapping.create_date(nil, XmpConstants::DEFAULT_RDF_LOCAL_NAME, XmpConstants::LIST_NAME, date))
+      end
+
+      # Port of Java getUnqualifiedSequenceDateValueList.
+      def unqualified_sequence_date_value_list(seq_name : String) : Array(Time)?
+        prop = abstract_property(seq_name)
+        return nil unless prop.is_a?(Type::ArrayProperty)
+        seq = prop.as(Type::ArrayProperty)
+        dates = [] of Time
+        seq.container.all_properties.each do |child|
+          if child.is_a?(Type::DateType)
+            if v = child.value
+              dates << v
+            end
+          end
+        end
+        dates
+      end
+
+      # Port of Java removeUnqualifiedSequenceDateValue.
+      def remove_unqualified_sequence_date_value(seq_name : String, date : Time) : Nil
+        prop = abstract_property(seq_name)
+        return unless prop.is_a?(Type::ArrayProperty)
+        seq = prop.as(Type::ArrayProperty)
+        to_delete = [] of Type::AbstractField
+        seq.container.all_properties.each do |tmp|
+          if tmp.is_a?(Type::DateType) && tmp.value == date
+            to_delete << tmp
+          end
+        end
+        to_delete.each { |tmp| seq.container.remove_property(tmp) }
       end
 
       # Language alternatives

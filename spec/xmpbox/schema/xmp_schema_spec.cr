@@ -143,6 +143,42 @@ module Xmpbox
         end
       end
 
+      describe "#test_array_list" do
+        it "returns the raw array list of a sequence" do
+          meta = XMPMetadata.create_xmp_metadata
+          new_seq = meta.type_mapping.create_array_property(nil, "nsSchem", "seqType", Type::Cardinality::Seq)
+          tm = meta.type_mapping
+          li1 = tm.create_text(nil, "rdf", "li", "valeur1")
+          li2 = tm.create_text(nil, "rdf", "li", "valeur2")
+          new_seq.container.add_property(li1)
+          new_seq.container.add_property(li2)
+          schem.add_property(new_seq)
+
+          list = schem.unqualified_array_list("seqType")
+          list.should_not be_nil
+          list.not_nil!.includes?(li1).should be_true
+          list.not_nil!.includes?(li2).should be_true
+        end
+      end
+
+      describe "#test_seq_management" do
+        it "adds, lists, and removes date sequence values" do
+          date = Time.utc
+          seq_name = "SEQDATE"
+
+          schem.add_unqualified_sequence_date_value(seq_name, date)
+          dates = schem.unqualified_sequence_date_value_list(seq_name)
+          dates.should_not be_nil
+          dates.not_nil!.size.should eq(1)
+          dates.not_nil![0].to_unix.should eq(date.to_unix)
+
+          schem.remove_unqualified_sequence_date_value(seq_name, date)
+          dates = schem.unqualified_sequence_date_value_list(seq_name)
+          dates.should_not be_nil
+          dates.not_nil!.size.should eq(0)
+        end
+      end
+
       describe "#test_merge_schema" do
         it "merges two schemas" do
           bag_name = "bagName"
