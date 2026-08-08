@@ -257,6 +257,16 @@ module Xmpbox
         begin
           properties = DomHelper.element_children(description)
 
+          # Lenient mode: register non-standard namespaces declared here
+          unless @strict_parsing
+            description.namespace_definitions.each do |ns_def|
+              next unless ns_def.prefix
+              next if ns_def.prefix == "xmlns"
+              next unless ns_def.href
+              maybe_add_non_standard_namespace(xmp, ns_def.href.as(String), ns_def.prefix.as(String))
+            end
+          end
+
           # Parse attributes as properties
           description.attributes.each do |attr|
             local_name = attr.name
@@ -694,6 +704,12 @@ module Xmpbox
       end
 
       private def check_property_definition(tm : Type::TypeMapping, qname : Type::QName, parent_type_name : String?) : Type::PropertyTypeDesc?
+        # Port of Java checkPropertyDefinition: reject namespaces not defined
+        # (matches the "Cannot find a definition for the namespace" NoSchema error).
+        unless tm.defined_namespace?(qname.namespace_uri)
+          raise XmpParsingException.new(XmpParsingException::ErrorType::NoSchema,
+            "Cannot find a definition for the namespace #{qname.namespace_uri}, property: #{qname.prefix}:#{qname.local_part}")
+        end
         tm.specified_property_type(qname, parent_type_name)
       end
 

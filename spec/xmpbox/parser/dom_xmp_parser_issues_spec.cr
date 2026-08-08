@@ -369,6 +369,151 @@ describe Xmpbox::Xml::DomXmpParser do
       flash.as(Xmpbox::Type::TextType).string_value.should eq("1")
     end
 
+    it "rejects a structured type used as a schema namespace" do
+      s = <<-XML
+      <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+      <?xpacket begin='\uFEFF' id='W5M0MpCehiHzreSzNTczkc9d'?><?adobe-xap-filters esc="CRLF"?>
+      <x:xmpmeta xmlns:x="adobe:ns:meta/"
+                 x:xmptk="XMP toolkit">
+      	<rdf:RDF xmlns:iX="http://ns.adobe.com/iX/1.0/"
+      	         xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+      		<rdf:Description xmlns:stJob="http://ns.adobe.com/xap/1.0/sType/Job#"
+      		                 rdf:about="uuid"
+      		                 stJob:id="jobid"
+      		                 stJob:name="some name">
+      			<stJob:URL>https://pdfbox.apache.org</stJob:URL>
+      		</rdf:Description>
+      	</rdf:RDF>
+      </x:xmpmeta><?xpacket end='w'?>
+      XML
+      parser = Xmpbox::Xml::DomXmpParser.new
+      ex = expect_raises(Xmpbox::Xml::XmpParsingException) do
+        parser.parse(s)
+      end
+      ex.to_s.should eq("This namespace is not from a schema: http://ns.adobe.com/xap/1.0/sType/Job#")
+    end
+
+    it "strict rejects an undefined namespace, lenient registers it" do
+      s = <<-XML
+      <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+      <?xpacket begin="\uFEFF" id="W5M0MpCehiHzreSzNTczkc9d"?><x:xmpmeta xmlns:x="adobe:ns:meta/" x:xmptk="Adobe XMP Core 4.2.1-c041 52.342996, 2008/05/07-20:48:00        ">
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+              <rdf:Description xmlns:pdfx="http://ns.adobe.com/pdfx/1.3/" rdf:about="">
+                  <pdfx:XPressPrivate>private</pdfx:XPressPrivate>
+              </rdf:Description>
+          </rdf:RDF>
+      </x:xmpmeta><?xpacket end="w"?>
+      XML
+      strict_parser = Xmpbox::Xml::DomXmpParser.new
+      ex = expect_raises(Xmpbox::Xml::XmpParsingException) do
+        strict_parser.parse(s)
+      end
+      ex.to_s.should eq("Cannot find a definition for the namespace http://ns.adobe.com/pdfx/1.3/, property: pdfx:XPressPrivate")
+
+      lenient_parser = Xmpbox::Xml::DomXmpParser.new(strict_parsing: false)
+      xmp = lenient_parser.parse(s)
+      pdfx = xmp.schema("http://ns.adobe.com/pdfx/1.3/")
+      pdfx.should_not be_nil
+      prop = pdfx.not_nil!.abstract_property("XPressPrivate")
+      prop.should_not be_nil
+      prop.as(Xmpbox::Type::TextType).string_value.should eq("private")
+    end
+
+    it "strict rejects empty LangAlt attribute, lenient skips it" do
+      s = <<-XML
+      <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+      <?xpacket begin='' id='W5M0MpCehiHzreSzNTczkc9d' bytes='987'?><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:iX="http://ns.adobe.com/iX/1.0/">
+          <rdf:Description xmlns="http://purl.org/dc/elements/1.1/" xmlns:dc="http://purl.org/dc/elements/1.1/" about="" dc:title="" dc:coverage="COVER"/>
+      </rdf:RDF><?xpacket end='r'?>
+      XML
+      strict_parser = Xmpbox::Xml::DomXmpParser.new
+      ex = expect_raises(Xmpbox::Xml::XmpParsingException) do
+        strict_parser.parse(s)
+      end
+      ex.to_s.should eq("The type 'LangAlt' in 'dc:title=' is a structured or array type, but attributes are simple types")
+
+      lenient_parser = Xmpbox::Xml::DomXmpParser.new(strict_parsing: false)
+      xmp = lenient_parser.parse(s)
+      dc = xmp.dublin_core_schema
+      dc.should_not be_nil
+      dc.not_nil!.coverage.should eq("COVER")
+      dc.not_nil!.title.should be_nil
+      dc.not_nil!.abstract_property("title").should be_nil
+    end
+
+    it "strict rejects text in a Seq attribute, lenient stores it" do
+      s = <<-XML
+      <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+      <?xpacket begin='' id='W5M0MpCehiHzreSzNTczkc9d' bytes='1064'?><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+          <rdf:Description xmlns="http://purl.org/dc/elements/1.1/" xmlns:dc="http://purl.org/dc/elements/1.1/" about="" dc:creator="Creator" />
+      </rdf:RDF><?xpacket end='r'?>
+      XML
+      strict_parser = Xmpbox::Xml::DomXmpParser.new
+      ex = expect_raises(Xmpbox::Xml::XmpParsingException) do
+        strict_parser.parse(s)
+      end
+      ex.to_s.should eq("The type 'Text' in 'dc:creator=Creator' is a structured or array type, but attributes are simple types")
+
+      lenient_parser = Xmpbox::Xml::DomXmpParser.new(strict_parsing: false)
+      xmp = lenient_parser.parse(s)
+      dc = xmp.dublin_core_schema
+      dc.should_not be_nil
+      creator = dc.not_nil!.abstract_property("creator")
+      creator.should_not be_nil
+      creator.as(Xmpbox::Type::TextType).string_value.should eq("Creator")
+    end
+
+    it "PDFBOX-6126 parses rdf:Description as child of rdf:li" do
+      s = <<-XML
+      <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+      <?xpacket begin="\uFEFF" id="W5M0MpCehiHzreSzNTczkc9d"?>
+      <x:xmpmeta xmlns:x="adobe:ns:meta/"
+                 x:xmptk="Adobe XMP Core 5.1.0-jc003">
+      	<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+      		<rdf:Description xmlns:dc="http://purl.org/dc/elements/1.1/"
+      		                 xmlns:pdf="http://ns.adobe.com/pdf/1.3/"
+      		                 xmlns:pdfaExtension="http://www.aiim.org/pdfa/ns/extension/"
+      		                 xmlns:pdfaProperty="http://www.aiim.org/pdfa/ns/property#"
+      		                 xmlns:pdfaSchema="http://www.aiim.org/pdfa/ns/schema#"
+      		                 xmlns:pdfaid="http://www.aiim.org/pdfa/ns/id/"
+      		                 xmlns:pdfuaid="http://www.aiim.org/pdfua/ns/id/"
+      		                 xmlns:xmp="http://ns.adobe.com/xap/1.0/"
+      		                 dc:format="application/pdf"
+      		                 pdfaid:conformance="B"
+      		                 pdfaid:part="1"
+      		                 rdf:about=""
+      		                 xmp:CreateDate="2018-09-24T09:00:57+02:00"
+      		                 xmp:ModifyDate="2018-09-24T09:00:57+02:00">
+      			<pdfaExtension:schemas>
+      				<rdf:Bag>
+      					<rdf:li rdf:parseType="Resource">
+      						<rdf:Description pdfaSchema:namespaceURI="http://www.aiim.org/pdfua/ns/id/"
+      						                 pdfaSchema:prefix="pdfuaid"
+      						                 pdfaSchema:schema="PDF/UA identification schema">
+      							<pdfaSchema:property>
+      								<rdf:Seq>
+      									<rdf:li pdfaProperty:category="internal"
+      									        pdfaProperty:description="PDF/UA version identifier"
+      									        pdfaProperty:name="part"
+      									        pdfaProperty:valueType="Integer"/>
+      								</rdf:Seq>
+      							</pdfaSchema:property>
+      						</rdf:Description>
+      					</rdf:li>
+      				</rdf:Bag>
+      			</pdfaExtension:schemas>
+      			<pdfuaid:part>1</pdfuaid:part>
+      		</rdf:Description>
+      	</rdf:RDF>
+      </x:xmpmeta><?xpacket end="w"?>
+      XML
+      parser = Xmpbox::Xml::DomXmpParser.new
+      xmp = parser.parse(s)
+      ua = xmp.schema("http://www.aiim.org/pdfua/ns/id/")
+      ua.should_not be_nil
+      ua.not_nil!.integer_property_value("part").should eq(1)
+    end
+
     it "PDFBOX-6131 parses Open Choice of Integer as a pdfua integer property" do
       path = File.join(fixture_dir, "org", "apache", "xmpbox", "xml", "PDFBOX-6131-0015675.xml")
       parser = Xmpbox::Xml::DomXmpParser.new
