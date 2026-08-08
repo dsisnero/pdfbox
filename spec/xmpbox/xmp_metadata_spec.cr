@@ -118,4 +118,70 @@ describe Xmpbox::XMPMetadata do
     meta.remove_schema("http://test.org/")
     meta.all_schemas.size.should eq(0)
   end
+
+  it "PDFBOX3257 — setting CreateDate twice does not duplicate, lists intact" do
+    xmpmeta = <<-XML
+    <?xpacket id="W5M0MpCehiHzreSzNTczkc9d"?>
+    <x:xmpmeta xmlns:x="adobe:ns:meta/" x:xmptk="Adobe XMP Core">
+       <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+          <rdf:Description rdf:about=""
+                xmlns:xap="http://ns.adobe.com/xap/1.0/">
+             <xap:CreatorTool>Acrobat PDFMaker 8.1 for Word</xap:CreatorTool>
+             <xap:ModifyDate>2008-11-12T15:29:43+01:00</xap:ModifyDate>
+             <xap:CreateDate>2008-11-12T15:29:40+01:00</xap:CreateDate>
+             <xap:MetadataDate>2008-11-12T15:29:43+01:00</xap:MetadataDate>
+          </rdf:Description>
+          <rdf:Description rdf:about=""
+                xmlns:pdf="http://ns.adobe.com/pdf/1.3/">
+             <pdf:Producer>Acrobat Distiller 8.1.0 (Windows)</pdf:Producer>
+          </rdf:Description>
+          <rdf:Description rdf:about=""
+                xmlns:dc="http://purl.org/dc/elements/1.1/">
+             <dc:format>application/pdf</dc:format>
+             <dc:creator>
+                <rdf:Seq>
+                   <rdf:li>R002325</rdf:li>
+                </rdf:Seq>
+             </dc:creator>
+             <dc:subject>
+                <rdf:Bag>
+                   <rdf:li>one</rdf:li>
+                   <rdf:li>two</rdf:li>
+                   <rdf:li>three</rdf:li>
+                   <rdf:li>four</rdf:li>
+                </rdf:Bag>
+             </dc:subject>
+             <dc:title>
+                <rdf:Alt>
+                   <rdf:li xml:lang="x-default"> </rdf:li>
+                </rdf:Alt>
+             </dc:title>
+          </rdf:Description>
+          <rdf:Description rdf:about=""
+                xmlns:xapMM="http://ns.adobe.com/xap/1.0/mm/">
+             <xapMM:DocumentID>uuid:31ae92cf-9a27-45e0-9371-0d2741e25919</xapMM:DocumentID>
+             <xapMM:InstanceID>uuid:2c7eb5da-9210-4666-8cef-e02ef6631c5e</xapMM:InstanceID>
+          </rdf:Description>
+       </rdf:RDF>
+    </x:xmpmeta>
+    <?xpacket end="w"?>
+    XML
+
+    parser = Xmpbox::Xml::DomXmpParser.new
+    parser.strict_parsing = false
+    xmp = parser.parse(xmpmeta)
+
+    basic = xmp.xmp_basic_schema
+    basic.should_not be_nil
+    create_date1 = basic.not_nil!.create_date
+    basic.not_nil!.create_date = Time.utc
+    create_date2 = basic.not_nil!.create_date
+    create_date1.should_not eq(create_date2)
+
+    dc = xmp.dublin_core_schema
+    dc.should_not be_nil
+    subjects = dc.not_nil!.unqualified_bag_value_list("subject")
+    subjects.should_not be_nil
+    subjects.not_nil!.size.should eq(4)
+  end
 end
