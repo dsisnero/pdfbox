@@ -32,8 +32,48 @@ module Xmpbox
 
     # Adobe PDF: http://ns.adobe.com/pdf/1.3/
     class AdobePDFSchema < XMPSchema
+      KEYWORDS    = "Keywords"
+      PDF_VERSION = "PDFVersion"
+      PRODUCER    = "Producer"
+
       def self.structured_type_info
         {namespace: "http://ns.adobe.com/pdf/1.3/", prefered_prefix: "pdf"}
+      end
+
+      def keywords=(value : String) : Nil
+        set_text_property_value(KEYWORDS, value)
+      end
+
+      def keywords_property : Type::TextType?
+        unqualified_text_property(KEYWORDS)
+      end
+
+      def keywords : String?
+        unqualified_text_property_value(KEYWORDS)
+      end
+
+      def pdf_version=(value : String) : Nil
+        set_text_property_value(PDF_VERSION, value)
+      end
+
+      def pdf_version_property : Type::TextType?
+        unqualified_text_property(PDF_VERSION)
+      end
+
+      def pdf_version : String?
+        unqualified_text_property_value(PDF_VERSION)
+      end
+
+      def producer=(value : String) : Nil
+        set_text_property_value(PRODUCER, value)
+      end
+
+      def producer_property : Type::TextType?
+        unqualified_text_property(PRODUCER)
+      end
+
+      def producer : String?
+        unqualified_text_property_value(PRODUCER)
       end
     end
 
