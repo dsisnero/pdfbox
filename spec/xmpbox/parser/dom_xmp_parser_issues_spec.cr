@@ -419,6 +419,29 @@ describe Xmpbox::Xml::DomXmpParser do
       prop.as(Xmpbox::Type::TextType).string_value.should eq("private")
     end
 
+    it "strict rejects an empty Seq attribute, lenient skips it" do
+      s = <<-XML
+      <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+      <?xpacket begin='' id='W5M0MpCehiHzreSzNTczkc9d' bytes='1206'?><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+          <rdf:Description xmlns="http://purl.org/dc/elements/1.1/" xmlns:dc="http://purl.org/dc/elements/1.1/" about="" dc:creator="">
+              <dc:coverage>Coverage</dc:coverage>
+          </rdf:Description>
+      </rdf:RDF><?xpacket end='r'?>
+      XML
+      strict_parser = Xmpbox::Xml::DomXmpParser.new
+      ex = expect_raises(Xmpbox::Xml::XmpParsingException) do
+        strict_parser.parse(s)
+      end
+      ex.to_s.should eq("The type 'Text' in 'dc:creator=' is a structured or array type, but attributes are simple types")
+
+      lenient_parser = Xmpbox::Xml::DomXmpParser.new(strict_parsing: false)
+      xmp = lenient_parser.parse(s)
+      dc = xmp.dublin_core_schema
+      dc.should_not be_nil
+      dc.not_nil!.coverage.should eq("Coverage")
+      dc.not_nil!.abstract_property("creator").should be_nil
+    end
+
     it "strict rejects empty LangAlt attribute, lenient skips it" do
       s = <<-XML
       <?xml version="1.0" encoding="UTF-8" standalone="no"?>
