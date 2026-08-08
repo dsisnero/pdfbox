@@ -395,6 +395,41 @@ module Xmpbox
         mm.not_nil!.instance_id.should eq("uuid:0b306144-6a43-dcbd-6b3e-c6b6b1df873d")
         mm.not_nil!.document_id.should eq("uuid:0b306144-6a43-dcbd-6b3e-c6b6b1df873d")
       end
+
+      it "parses CFAPatternType with a Values sequence" do
+        s = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n" +
+            "<?xpacket begin='\uFEFF' id='W5M0MpCehiHzreSzNTczkc9d'?>\n" +
+            "<x:xmpmeta xmlns:x=\"adobe:ns:meta/\"\n" +
+            "           x:xmptk=\"Adobe XMP Core 4.0-c006 1.236519, Wed Jun 14 2006 08:31:24\">\n" +
+            "\t<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n" +
+            "\t\t<rdf:Description xmlns:dc=\"http://purl.org/dc/elements/1.1/\"\n" +
+            "\t\t                 xmlns:exif=\"http://ns.adobe.com/exif/1.0/\">\n" +
+            "\t\t\t<exif:CFAPattern>\n" +
+            "\t\t\t\t<rdf:Description>\n" +
+            "\t\t\t\t\t<exif:Values>\n" +
+            "\t\t\t\t\t\t<rdf:Seq>\n" +
+            "\t\t\t\t\t\t\t<rdf:li>1</rdf:li>\n" +
+            "\t\t\t\t\t\t\t<rdf:li>2</rdf:li>\n" +
+            "\t\t\t\t\t\t\t<rdf:li>0</rdf:li>\n" +
+            "\t\t\t\t\t\t\t<rdf:li>1</rdf:li>\n" +
+            "\t\t\t\t\t\t</rdf:Seq>\n" +
+            "\t\t\t\t\t</exif:Values>\n" +
+            "\t\t\t\t</rdf:Description>\n" +
+            "\t\t\t</exif:CFAPattern>\n" +
+            "\t\t</rdf:Description>\n" +
+            "\t</rdf:RDF>\n" +
+            "</x:xmpmeta><?xpacket end='w'?>"
+        parser = DomXmpParser.new
+        xmp = parser.parse(s)
+        exif = xmp.schema("http://ns.adobe.com/exif/1.0/")
+        exif.should_not be_nil
+        cfa = exif.not_nil!.abstract_property("CFAPattern")
+        cfa.should be_a(Type::CFAPatternType)
+        values = cfa.as(Type::AbstractStructuredType).property("Values")
+        values.should_not be_nil
+        values.should be_a(Type::ArrayProperty)
+        values.as(Type::ArrayProperty).elements_as_string.should eq(["1", "2", "0", "1"])
+      end
     end
   end
 end

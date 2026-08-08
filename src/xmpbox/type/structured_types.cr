@@ -712,6 +712,14 @@ module Xmpbox
         {namespace: "http://ns.adobe.com/exif/1.0/", prefered_prefix: "exif"}
       end
 
+      def self.property_types : Hash(String, PropertyTypeDesc)
+        {
+          COLUMNS => PropertyTypeDesc.new(type: Types::Integer),
+          ROWS    => PropertyTypeDesc.new(type: Types::Integer),
+          VALUES  => PropertyTypeDesc.new(type: Types::Integer, card: Cardinality::Seq),
+        }
+      end
+
       def initialize(metadata : XMPMetadata, namespace_uri = nil, field_prefix = nil, property_name = nil)
         super(metadata, namespace_uri, field_prefix, property_name)
         add_namespace(namespace.as(String), prefered_prefix.as(String))
