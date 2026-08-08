@@ -688,6 +688,36 @@ describe Xmpbox::Xml::DomXmpParser do
       ex.to_s.should eq("Failed to instantiate DateType property with value '2016-03-09T19:47:1Z' in xap:CreateDate")
     end
 
+    it "rejects an xpacket end with a wrong attribute name" do
+      s = <<-XML
+      <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+      <?xpacket begin="\uFEFF" id="W5M0MpCehiHzreSzNTczkc9d" ?><x:xmpmeta xmlns:x="adobe:ns:meta/">
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+          </rdf:RDF>
+      </x:xmpmeta><?xpacket ends="w" ?>
+      XML
+      parser = Xmpbox::Xml::DomXmpParser.new
+      ex = expect_raises(Xmpbox::Xml::XmpParsingException) do
+        parser.parse(s)
+      end
+      ex.to_s.should eq("Expected xpacket 'end' attribute (must be present and placed in first)")
+    end
+
+    it "rejects an xpacket end with an invalid value" do
+      s = <<-XML
+      <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+      <?xpacket begin="\uFEFF" id="W5M0MpCehiHzreSzNTczkc9d" ?><x:xmpmeta xmlns:x="adobe:ns:meta/">
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+          </rdf:RDF>
+      </x:xmpmeta><?xpacket end="k" ?>
+      XML
+      parser = Xmpbox::Xml::DomXmpParser.new
+      ex = expect_raises(Xmpbox::Xml::XmpParsingException) do
+        parser.parse(s)
+      end
+      ex.to_s.should eq("Expected xpacket 'end' attribute with value 'r' or 'w' ")
+    end
+
     it "PDFBOX-6131 parses Open Choice of Integer as a pdfua integer property" do
       path = File.join(fixture_dir, "org", "apache", "xmpbox", "xml", "PDFBOX-6131-0015675.xml")
       parser = Xmpbox::Xml::DomXmpParser.new

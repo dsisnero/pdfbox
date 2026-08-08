@@ -220,8 +220,22 @@ module Xmpbox
       end
 
       private def parse_end_packet(xmp : XMPMetadata, pi : XML::Node) : Nil
-        # Extract end attribute
-        # xmp.end_xpacket = pi["end"]? || XmpConstants::DEFAULT_XPACKET_END
+        xpack_data = pi.content
+        # end attribute must be present and placed in first
+        # xmp spec says Other unrecognized attributes can follow, but should be ignored
+        if xpack_data.starts_with?("end=")
+          end_char = xpack_data.byte_at?(5)
+          # check value (5 for end='X')
+          if end_char.nil? || (end_char != 'r'.ord && end_char != 'w'.ord)
+            raise XmpParsingException.new(XmpParsingException::ErrorType::XpacketBadEnd,
+              "Expected xpacket 'end' attribute with value 'r' or 'w' ")
+          end
+          xmp.xpacket_end = end_char.chr.to_s
+        else
+          # should find end='r/w'
+          raise XmpParsingException.new(XmpParsingException::ErrorType::XpacketBadEnd,
+            "Expected xpacket 'end' attribute (must be present and placed in first)")
+        end
       end
 
       private def parse_schema_extensions(xmp : XMPMetadata, description : XML::Node) : Nil
