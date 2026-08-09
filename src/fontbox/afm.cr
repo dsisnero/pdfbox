@@ -4,6 +4,7 @@ module Fontbox
 end
 
 require "./afm/parser"
+require "./afm/unmodifiable_list"
 require "./afm/font_metrics"
 require "./afm/char_metric"
 require "./afm/kern_pair"

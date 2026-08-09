@@ -22,8 +22,10 @@ describe Fontbox::AFM::FontMetrics do
       fm.add_comment("comment")
       comments = fm.comments
       comments.size.should eq(1)
-      # In Java, the returned list is unmodifiable; we can test that adding raises an error.
-      # For now, skip that check.
+      # Java returns unmodifiable lists; adding to the returned list raises.
+      expect_raises(Exception) do
+        comments << "another"
+      end
     end
   end
 
@@ -93,7 +95,16 @@ describe Fontbox::AFM::FontMetrics do
       fm = Fontbox::AFM::FontMetrics.new
       fm.metric_sets = 1
       fm.metric_sets.should eq(1)
-      # The Java test expects IllegalArgumentException for invalid values; we'll skip for now.
+    end
+
+    it "rejects metric sets values outside 0..2" do
+      fm = Fontbox::AFM::FontMetrics.new
+      expect_raises(ArgumentError) do
+        fm.metric_sets = -1
+      end
+      expect_raises(ArgumentError) do
+        fm.metric_sets = 3
+      end
     end
   end
 
@@ -105,6 +116,10 @@ describe Fontbox::AFM::FontMetrics do
       fm.add_char_metric(char_metric)
       char_metrics = fm.char_metrics
       char_metrics.size.should eq(1)
+      # Java returns unmodifiable lists.
+      expect_raises(Exception) do
+        char_metrics << char_metric
+      end
     end
   end
 
@@ -116,6 +131,9 @@ describe Fontbox::AFM::FontMetrics do
       fm.add_composite(composite)
       composites = fm.composites
       composites.size.should eq(1)
+      expect_raises(Exception) do
+        composites << composite
+      end
     end
   end
 
@@ -134,16 +152,48 @@ describe Fontbox::AFM::FontMetrics do
       track_kern = Fontbox::AFM::TrackKern.new(0, 1.0_f32, 1.0_f32, 10.0_f32, 10.0_f32)
       fm.add_track_kern(track_kern)
       fm.track_kern.size.should eq(1)
+      # Java returns unmodifiable lists.
+      expect_raises(Exception) do
+        fm.kern_pairs << kern_pair
+      end
     end
   end
 
   describe "character dimensions" do
-    it "computes character width, height, average width" do
+    it "computes character width, height, average width from added char metrics" do
       fm = Fontbox::AFM::FontMetrics.new
-      fm.character_width("unknown").should eq(0.0_f32)
-      fm.character_height("unknown").should eq(0.0_f32)
       fm.average_character_width.should eq(0.0_f32)
-      # The Java test adds char metrics and computes; we'll skip for now.
+
+      cm10 = Fontbox::AFM::CharMetric.new
+      cm10.name = "ten"
+      cm10.wx = 10.0_f32
+      cm10.wy = 20.0_f32
+      fm.add_char_metric(cm10)
+      cm20 = Fontbox::AFM::CharMetric.new
+      cm20.name = "twenty"
+      cm20.wx = 20.0_f32
+      cm20.wy = 40.0_f32
+      fm.add_char_metric(cm20)
+      cm30 = Fontbox::AFM::CharMetric.new
+      cm30.name = "thirty"
+      cm30.wx = 30.0_f32
+      cm30.wy = 60.0_f32
+      fm.add_char_metric(cm30)
+      cm40 = Fontbox::AFM::CharMetric.new
+      cm40.name = "forty"
+      cm40.wx = 40.0_f32
+      cm40.wy = 80.0_f32
+      fm.add_char_metric(cm40)
+
+      fm.character_width("ten").should eq(10.0_f32)
+      fm.character_width("thirty").should eq(30.0_f32)
+      fm.character_width("unknown").should eq(0.0_f32)
+
+      fm.character_height("twenty").should eq(40.0_f32)
+      fm.character_height("forty").should eq(80.0_f32)
+      fm.character_height("unknown").should eq(0.0_f32)
+
+      fm.average_character_width.should eq(25.0_f32)
     end
   end
 end

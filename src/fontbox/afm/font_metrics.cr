@@ -5,10 +5,17 @@ module Fontbox
         notice, encoding_scheme, mapping_scheme, esc_char, character_set, characters,
         is_base_font, v_vector, is_fixed_v, cap_height, x_height, ascender, descender,
         standard_horizontal_width, standard_vertical_width, underline_position,
-        underline_thickness, italic_angle, char_width, fixed_pitch, comments,
-        char_metrics, kern_pairs, kern_pairs0, kern_pairs1, composites, track_kern,
-        metric_sets
+        underline_thickness, italic_angle, char_width, fixed_pitch
       property char_metrics_map
+
+      @comments : Array(String)
+      @char_metrics : Array(CharMetric)
+      @kern_pairs : Array(KernPair)
+      @kern_pairs0 : Array(KernPair)
+      @kern_pairs1 : Array(KernPair)
+      @composites : Array(Composite)
+      @track_kern : Array(TrackKern)
+      @metric_sets : Int32
 
       def initialize
         @afm_version = 0.0_f32
@@ -47,6 +54,48 @@ module Fontbox
         @composites = [] of Composite
         @track_kern = [] of TrackKern
         @metric_sets = 0
+      end
+
+      # Port of Java getComments / getCharMetrics / getComposites / kern getters:
+      # the returned collections are unmodifiable.
+      def comments : UnmodifiableList(String)
+        UnmodifiableList.new(@comments)
+      end
+
+      def char_metrics : UnmodifiableList(CharMetric)
+        UnmodifiableList.new(@char_metrics)
+      end
+
+      def composites : UnmodifiableList(Composite)
+        UnmodifiableList.new(@composites)
+      end
+
+      def kern_pairs : UnmodifiableList(KernPair)
+        UnmodifiableList.new(@kern_pairs)
+      end
+
+      def kern_pairs0 : UnmodifiableList(KernPair)
+        UnmodifiableList.new(@kern_pairs0)
+      end
+
+      def kern_pairs1 : UnmodifiableList(KernPair)
+        UnmodifiableList.new(@kern_pairs1)
+      end
+
+      def track_kern : UnmodifiableList(TrackKern)
+        UnmodifiableList.new(@track_kern)
+      end
+
+      def metric_sets : Int32
+        @metric_sets
+      end
+
+      # Port of Java setMetricSets: the value must be 0, 1, or 2.
+      def metric_sets=(value : Int32)
+        if value < 0 || value > 2
+          raise ArgumentError.new("The metricSets attribute must be in the range 0-2.")
+        end
+        @metric_sets = value
       end
 
       def add_comment(comment : String)
