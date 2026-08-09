@@ -192,7 +192,9 @@
 - [x] PDEncryption dictionary management (encrypt/decrypt document roundtrip green)
 - [x] SASLPrep (RFC 4013) string preparation for encryption revision 6
 - [x] Stream/data encryption wired into writer — writer writes `/Encrypt` dict + trailer/xref reference, document ID persisted to trailer, rev2-4 key computed from user password + owner key with rev4 RC4 padding (PDFBOX-5955), parser propagates security handler to lazily-parsed streams, `parse(password)` sets password. `testProtection` round-trips 40/128/128-AES/256-bit through save+reopen with content-stream equality.
+- [x] `testProtectionInnerAttachment` — embedded-file extraction (`EmbeddedFile#size` reads `/Params /Size` matching `PDEmbeddedFile.getSize()`; Java's `getLength()` is `/Length`) and encrypt→decrypt round-trip of an attachment-carrying document (`preEnc_20141025_105451.pdf`) for 40/128/128-AES/256-bit. Required a writer fix: stream-dictionary indirect references were written with their original parsed object numbers instead of the reassigned ones, so any stream whose dict referenced another object (e.g. embedded-file `/Params`) pointed at the wrong object after save. `write_stream_with_refs` now remaps `Cos::Object` references through `object_keys` while keeping non-reference output byte-identical to `COSWriter.write_stream`.
 - [ ] Public key encryption porting — requires OpenSSL RSA/X.509 support (Crystal stdlib has only symmetric ciphers and digests; needs external shard like openssl_ext)
+- [ ] Encrypted-string round-trip parity — the writer encrypts stream data but not `Cos::String` values, so string content (e.g. embedded-file name-tree keys) is written plaintext then re-decrypted on load and garbled; fixing requires threading object numbers through `COSWriter.write_string` and skipping the `/Encrypt` dict (Java `testPDFBox4453`/`testPDFBox4308`).
 
 ---
 

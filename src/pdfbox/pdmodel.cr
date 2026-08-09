@@ -1657,6 +1657,35 @@ module Pdfbox::Pdmodel
       end
     end
 
+    # Get the size of the embedded file (from /Params /Size).
+    # Corresponds to PDEmbeddedFile.getSize() in Apache PDFBox.
+    def size : Int32?
+      params_value = @cos_dict[Cos::Name.new("Params")]
+      return unless params_value
+
+      # Handle indirect references
+      if params_value.is_a?(Cos::Object)
+        params_value = params_value.object
+      end
+
+      return unless params_value.is_a?(Cos::Dictionary)
+
+      size_value = params_value[Cos::Name.new("Size")]
+      return unless size_value
+
+      # Handle indirect references
+      if size_value.is_a?(Cos::Object)
+        size_value = size_value.object
+      end
+
+      case size_value
+      when Cos::Integer
+        size_value.value.to_i32
+      when Cos::Float
+        size_value.value.to_i32
+      end
+    end
+
     def subtype : String?
       subtype_value = @cos_dict[Cos::Name.new("Subtype")]?
       return unless subtype_value

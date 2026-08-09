@@ -234,13 +234,66 @@ module Pdfbox::Pdfwriter
                                       key : Pdfbox::Cos::ObjectKey) : Nil
       case obj
       when Pdfbox::Cos::Stream
-        cos_writer.write_stream(obj, key.number, key.generation)
+        write_stream_with_refs(obj, cos_writer, object_keys, object_wrapper, key)
       when Pdfbox::Cos::Dictionary
         write_dictionary_with_refs(obj, object_keys, object_wrapper)
       when Pdfbox::Cos::Array
         write_array_with_refs(obj, object_keys, object_wrapper)
       else
         cos_writer.write(obj)
+      end
+    end
+
+    # Write a stream, remapping its dictionary's indirect references through
+    # object_keys. Non-reference values are written via the COSWriter in the
+    # same single-line format as COSWriter.write_stream, so that the output is
+    # byte-identical to the previous behavior except for references, which are
+    # now remapped to the reassigned object numbers.
+    private def write_stream_with_refs(stream : Pdfbox::Cos::Stream,
+                                       cos_writer : COSWriter,
+                                       object_keys : Hash(UInt64, Pdfbox::Cos::ObjectKey),
+                                       object_wrapper : Hash(UInt64, UInt64),
+                                       key : Pdfbox::Cos::ObjectKey) : Nil
+      if @will_encrypt && (handler = @security_handler)
+        handler.encrypt_stream(stream, key.number, key.generation)
+      end
+
+      stream[Pdfbox::Cos::Name::LENGTH] = Pdfbox::Cos::Integer.new(stream.data.size)
+
+      @destination << "<<"
+      stream.entries.each do |dict_key, value|
+        cos_writer.write_name(dict_key)
+        PDFIO.write_whitespace(@destination)
+        write_stream_value_with_refs(value, cos_writer, object_keys, object_wrapper)
+        PDFIO.write_whitespace(@destination)
+      end
+      @destination << ">>"
+      @destination << '\n' << "stream" << '\n'
+      @destination.write(stream.data)
+      @destination << '\n' << "endstream"
+    end
+
+    # Write a stream dictionary value, remapping indirect references through
+    # object_keys. Non-reference values are delegated to the COSWriter so the
+    # output matches COSWriter.write_stream exactly.
+    private def write_stream_value_with_refs(value : Pdfbox::Cos::Base,
+                                             cos_writer : COSWriter,
+                                             object_keys : Hash(UInt64, Pdfbox::Cos::ObjectKey),
+                                             object_wrapper : Hash(UInt64, UInt64)) : Nil
+      case value
+      when Pdfbox::Cos::Object
+        inner = value.object
+        if inner
+          lookup_id = inner.object_id.to_u64
+          if key = object_keys[lookup_id]?
+            @destination << key.number << " 0 R"
+            return
+          end
+        end
+        # Fall back to the original reference number
+        @destination << value.object_number << ' ' << value.generation_number << " R"
+      else
+        cos_writer.write(value)
       end
     end
 

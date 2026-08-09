@@ -88,10 +88,71 @@ def test_symm_encr_for_key_size(filename : String, key_length : Int32, prefer_ae
   end
 end
 
+def extract_embedded_file(input_file_as_byte_array : Bytes, name : String) : Bytes
+  doc = Pdfbox::Loader.load_pdf(input_file_as_byte_array).not_nil!
+  begin
+    catalog = doc.document_catalog.not_nil!
+    names = catalog.names.not_nil!
+    embedded_files = names.embedded_files.not_nil!
+    embedded_file_names = embedded_files.names.not_nil!
+    embedded_file_names.size.should eq(1)
+    entry = embedded_file_names.first
+    puts "Processing embedded file #{entry[0]}:"
+    complex_file_spec = entry[1]
+    embedded_file = complex_file_spec.embedded_file.not_nil!
+
+    bytes = embedded_file.create_input_stream.not_nil!.getb_to_end
+    embedded_file.size.should eq(bytes.size)
+
+    bytes
+  ensure
+    doc.close
+  end
+end
+
 def test_symm_encr_for_key_size_inner(key_length : Int32, prefer_aes : Bool,
+                                      size_prior_to_encryption : Int32,
+                                      input_file_with_embedded_file_as_byte_array : Bytes,
+                                      embedded_file_prior_to_encryption : Bytes,
                                       user_password : String, owner_password : String,
                                       permission : Pdfbox::Pdmodel::Encryption::AccessPermission) : Nil
-  # TODO: Implement
+  test_results_dir = "target/test-output/crypto"
+  document = Pdfbox::Loader.load_pdf(input_file_with_embedded_file_as_byte_array)
+
+  spp = Pdfbox::Pdmodel::Encryption::StandardProtectionPolicy.new(owner_password, user_password, permission)
+  spp.encryption_key_length = key_length
+  spp.prefer_aes = prefer_aes
+
+  # This must have no effect and should only log a warning.
+  document.set_all_security_to_be_removed(true)
+
+  document.protect(spp)
+
+  prefix = "ContainsEmbedded-"
+  encrypted_path = File.join(test_results_dir, "#{prefix}#{key_length}-bit-#{prefer_aes ? "AES" : "RC4"}-encrypted.pdf")
+  document.save(encrypted_path)
+  document.close
+
+  size_encrypted = File.size(encrypted_path)
+  size_encrypted.should_not eq(size_prior_to_encryption)
+
+  encrypted_doc = Pdfbox::Loader.load_pdf(encrypted_path, owner_password)
+  begin
+    encrypted_doc.encrypted?.should be_true
+    encrypted_doc.current_access_permission.owner_permission?.should be_true
+
+    encrypted_doc.set_all_security_to_be_removed(true)
+    decrypted_path = File.join(test_results_dir, "DecryptedContainsEmbedded-#{key_length}-bit-#{prefer_aes ? "AES" : "RC4"}.pdf")
+    encrypted_doc.save(decrypted_path)
+
+    extracted_embedded_file = extract_embedded_file(File.read(decrypted_path).to_slice,
+      "decryptedInnerFile-#{key_length}-bit-#{prefer_aes ? "AES" : "RC4"}.pdf")
+
+    extracted_embedded_file.size.should eq(embedded_file_prior_to_encryption.size)
+    extracted_embedded_file.should eq(embedded_file_prior_to_encryption)
+  ensure
+    encrypted_doc.close
+  end
 end
 
 USERPASSWORD  = "1234567890abcdefghijk1234567890abcdefghijk"
@@ -177,6 +238,23 @@ describe Pdfbox::Pdmodel::Encryption do
   end
 
   it "testProtectionInnerAttachment" do
+    test_file_name = "preEnc_20141025_105451.pdf"
+    input_file_with_embedded_file_as_byte_array = get_file_resource_as_byte_array(test_file_name)
+    size_of_file_with_embedded_file = input_file_with_embedded_file_as_byte_array.size
+
+    extracted_embedded_file = extract_embedded_file(input_file_with_embedded_file_as_byte_array, "innerFile.pdf")
+
+    test_symm_encr_for_key_size_inner(40, false, size_of_file_with_embedded_file,
+      input_file_with_embedded_file_as_byte_array, extracted_embedded_file, USERPASSWORD, OWNERPASSWORD, permission)
+
+    test_symm_encr_for_key_size_inner(128, false, size_of_file_with_embedded_file,
+      input_file_with_embedded_file_as_byte_array, extracted_embedded_file, USERPASSWORD, OWNERPASSWORD, permission)
+
+    test_symm_encr_for_key_size_inner(128, true, size_of_file_with_embedded_file,
+      input_file_with_embedded_file_as_byte_array, extracted_embedded_file, USERPASSWORD, OWNERPASSWORD, permission)
+
+    test_symm_encr_for_key_size_inner(256, true, size_of_file_with_embedded_file,
+      input_file_with_embedded_file_as_byte_array, extracted_embedded_file, USERPASSWORD, OWNERPASSWORD, permission)
   end
 
   it "testPDFBox4453" do
