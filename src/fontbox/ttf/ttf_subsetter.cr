@@ -294,8 +294,8 @@ module Fontbox::TTF
     private def write_fixed(io : IO, f : Float64)
       ip = f.floor.to_i
       fp = ((f - ip) * 65536.0).round.to_i
-      io.write_bytes(ip.to_u16, IO::ByteFormat::BigEndian)
-      io.write_bytes(fp.to_u16, IO::ByteFormat::BigEndian)
+      io.write_bytes(ip.to_i16, IO::ByteFormat::BigEndian)
+      io.write_bytes(fp.to_i16, IO::ByteFormat::BigEndian)
     end
 
     private def write_uint32(io : IO, value : UInt64)

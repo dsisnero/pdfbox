@@ -20,6 +20,7 @@ module Pdfbox::Pdmodel
     @font_name : String?
     @current_font : Font::PDFont?
     @in_text_mode = false
+    @gsub_workers = {} of Font::PDType0Font => Fontbox::TTF::Gsub::GsubWorker
 
     def initialize(@document : Document, @page : Page)
       @append_mode = AppendMode::OVERWRITE
@@ -52,6 +53,18 @@ module Pdfbox::Pdmodel
       add_font_to_resources(font)
       @document.register_font_for_save(font)
       @current_font = font
+      # complex text layout: create a GsubWorker for Type0 fonts with GSUB data
+      if font.is_a?(Font::PDType0Font)
+        type0 = font.as(Font::PDType0Font)
+        gsub_data = type0.gsub_data
+        if gsub_data != Fontbox::TTF::Model::GsubData::NO_DATA_FOUND
+          cmap = type0.cmap_lookup
+          if cmap
+            worker = Fontbox::TTF::Gsub::GsubWorkerFactory.new.gsub_worker(cmap, gsub_data)
+            @gsub_workers[type0] = worker
+          end
+        end
+      end
       @buffer << "/#{@font_name} " << format_number(font_size) << ' ' << SET_FONT_AND_SIZE << '\n'
     end
 
@@ -323,6 +336,20 @@ module Pdfbox::Pdmodel
     end
 
     private def encode_text(text : String, font : Font::PDFont) : Bytes
+      # complex text layout: apply GSUB rules for Type0 fonts
+      if font.is_a?(Font::PDType0Font)
+        type0 = font.as(Font::PDType0Font)
+
+        if worker = @gsub_workers[type0]?
+          glyph_ids = Set(Int32).new
+          encoded = encode_for_gsub(worker, glyph_ids, type0, text)
+
+          if type0.will_be_subset?
+            type0.add_glyphs_to_subset(glyph_ids)
+          end
+          return encoded
+        end
+      end
       font.encode(text)
     rescue ex : Exception
       offset = 0
@@ -339,6 +366,51 @@ module Pdfbox::Pdmodel
         offset += 1
       end
       raise ex
+    end
+
+    # Port of Java PDAbstractContentStream.encodeForGsub — tokenize the text on
+    # spaces and apply GSUB rules per word, encoding the resulting glyph IDs.
+    private def encode_for_gsub(worker : Fontbox::TTF::Gsub::GsubWorker,
+                                glyph_ids : Set(Int32),
+                                font : Font::PDType0Font,
+                                text : String) : Bytes
+      output = ::IO::Memory.new
+      # Java StringUtil.tokenizeOnSpace keeps whitespace runs as separate tokens.
+      tokens = text.split(/(?<=\s)|(?=\s)/).reject(&.empty?)
+      tokens.each do |token|
+        if token.each_char.all?(&.whitespace?)
+          output.write(font.encode(token))
+        else
+          glyph_ids.concat(apply_gsub_rules(worker, output, font, token))
+        end
+      end
+      output.to_slice
+    end
+
+    # Port of Java PDAbstractContentStream.applyGSUBRules — map the word's code
+    # points to glyph IDs, apply GSUB transforms, and encode the result.
+    private def apply_gsub_rules(worker : Fontbox::TTF::Gsub::GsubWorker,
+                                 output : ::IO::Memory,
+                                 font : Font::PDType0Font,
+                                 word : String) : Set(Int32)
+      original_glyph_ids = [] of Int32
+      if cmap_lookup = font.cmap_lookup
+        word.each_char do |char|
+          glyph_id = cmap_lookup.glyph_id(char.ord)
+          if glyph_id <= 0
+            raise IllegalStateError.new(
+              "could not find the glyphId for the character: #{char}, codePoint: #{char.ord} (0x#{char.ord.to_s(16).upcase})")
+          end
+          original_glyph_ids << glyph_id
+        end
+      end
+
+      glyph_ids_after_gsub = worker.apply_transforms(original_glyph_ids)
+
+      glyph_ids_after_gsub.each do |glyph_id|
+        output.write(font.encode_glyph_id(glyph_id))
+      end
+      Set.new(glyph_ids_after_gsub)
     end
 
     private def write_pdf_literal_string(bytes : Bytes) : Nil

@@ -24,21 +24,14 @@ class Pdfbox::Pdmodel::Font::PDType0Font < Pdfbox::Pdmodel::Font::PDFont
   Log = ::Log.for(self)
   Cos = Pdfbox::Cos
 
-  class GsubData
-    NO_DATA_FOUND = new
-  end
-
-  class CmapLookup
-  end
-
   class PDCIDFontType2Embedder
   end
 
   # Instance variables
   @descendant_font : PDCIDFont?
   @no_unicode = Set(Int32).new
-  @gsub_data : GsubData
-  @cmap_lookup : CmapLookup?
+  @gsub_data : ::Fontbox::TTF::Model::GsubData
+  @cmap_lookup : Fontbox::TTF::CmapLookup?
   @c_map : Fontbox::CMap::CMap?
   @c_map_ucs2 : Fontbox::CMap::CMap?
   @is_cmap_predefined : Bool = false
@@ -55,7 +48,7 @@ class Pdfbox::Pdmodel::Font::PDType0Font < Pdfbox::Pdmodel::Font::PDFont
   def initialize(font_dictionary : Pdfbox::Cos::Dictionary)
     super(font_dictionary)
 
-    @gsub_data = GsubData::NO_DATA_FOUND
+    @gsub_data = ::Fontbox::TTF::Model::GsubData::NO_DATA_FOUND
     @cmap_lookup = nil
 
     descendant_fonts = @dict.get_array(Pdfbox::Cos::Name::DESCENDANT_FONTS)
@@ -95,9 +88,9 @@ class Pdfbox::Pdmodel::Font::PDType0Font < Pdfbox::Pdmodel::Font::PDFont
     @embed_subset = embed_subset
     ttf.enable_vertical_substitutions if vertical
 
-    # Initialize other fields
-    @gsub_data = GsubData::NO_DATA_FOUND
-    @cmap_lookup = nil
+    # Port of Java PDType0Font constructor: gsubData and cmapLookup from the TTF
+    @gsub_data = ttf.gsub_data
+    @cmap_lookup = ttf.unicode_cmap_lookup(false)
     base_font_name = embed_subset ? subset_font_name(ttf.name) : ttf.name
 
     @dict[Pdfbox::Cos::Name::SUBTYPE] = Pdfbox::Cos::Name.new("Type0")
@@ -399,6 +392,20 @@ class Pdfbox::Pdmodel::Font::PDType0Font < Pdfbox::Pdmodel::Font::PDFont
     subsetter.force_invisible(0xFEFF)
     @subset_unicode_to_old_gid = subsetter.unicode_to_gid.dup
 
+    # Port of Java PDCIDFontType2Embedder.buildToUnicodeCMap: also resolve
+    # unicode for glyph IDs added via GSUB (which have no direct codepoint
+    # mapping), so the subset ToUnicode covers every glyph.
+    if cmap_lookup = @cmap_lookup
+      @subset_glyph_ids.each do |gid|
+        next if @subset_unicode_to_old_gid.has_value?(gid)
+        if codes = cmap_lookup.char_codes(gid)
+          codes.first?
+        end.try do |code_point|
+          @subset_unicode_to_old_gid[code_point] = gid
+        end
+      end
+    end
+
     subset_bytes_io = ::IO::Memory.new
     subsetter.write_to_stream(subset_bytes_io)
     subset_bytes = subset_bytes_io.to_slice
@@ -467,11 +474,11 @@ class Pdfbox::Pdmodel::Font::PDType0Font < Pdfbox::Pdmodel::Font::PDFont
     @is_descendant_cjk
   end
 
-  def gsub_data : GsubData
+  def gsub_data : ::Fontbox::TTF::Model::GsubData
     @gsub_data
   end
 
-  def cmap_lookup : CmapLookup?
+  def cmap_lookup : Fontbox::TTF::CmapLookup?
     @cmap_lookup
   end
 
