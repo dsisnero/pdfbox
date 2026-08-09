@@ -31,7 +31,7 @@ module Fontbox
         @esc_char = 0
         @character_set = ""
         @characters = 0
-        @is_base_font = false
+        @is_base_font = true
         @v_vector = [] of Float32
         @is_fixed_v = false
         @cap_height = 0.0_f32
