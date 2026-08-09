@@ -125,18 +125,7 @@ describe Pdfbox::Text::PDFTextStripper do
     doc = Pdfbox::Pdmodel::Document.load(pdf_path)
     begin
       actual = Pdfbox::Text::PDFTextStripper.new.get_text(doc).strip
-      # Note: Java PDFBox outputs "Hello محمد World." but our bidi implementation
-      # reverses RTL text to visual order: "Hello دمحم World."
-      # The ExtractText tool tests pass with reversed Arabic, so we accept
-      # the reversed version as correct for our implementation.
-      # TODO: Investigate bidi algorithm differences with Java
-      if actual == "Hello دمحم World."
-        # Our current output - accept it
-        actual.should eq("Hello دمحم World.")
-      else
-        # Fall back to original expected
-        actual.should eq(expected)
-      end
+      actual.should eq(expected)
     ensure
       doc.close
     end

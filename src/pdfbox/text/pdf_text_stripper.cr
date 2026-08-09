@@ -907,23 +907,8 @@ module Pdfbox::Text
       # Debug: print words
       # puts "DEBUG render_items: words = #{words.map(&.text).inspect}"
 
-      # Check if line contains RTL text
-      has_rtl = words.any? do |word|
-        word.text.each_char.any? do |char|
-          codepoint = char.ord
-          (0x0590 <= codepoint && codepoint <= 0x08FF) ||
-            (0xFB1D <= codepoint && codepoint <= 0xFDFF) ||
-            (0xFE70 <= codepoint && codepoint <= 0xFEFF)
-        end
-      end
-
-      # If line has RTL text, reorder using bidi algorithm
-      if has_rtl
-        result = reorder_line_with_bidi(words)
-        # puts "DEBUG: has_rtl=true, reordered '#{words.map(&.text)}' to: #{result.inspect}"
-        return result
-      end
-
+      # Java's writeLine writes words in extraction order — no word-level
+      # reordering. Each word's direction is handled in normalize_word.
       String.build do |io|
         words.each_with_index do |word, index|
           io << word.text
@@ -1134,18 +1119,12 @@ module Pdfbox::Text
           run_end = run.end
           run_text = word.byte_slice(run_start, run_end - run_start)
 
-          # Get the level for this run
-          run_index = runs.index(run) || 0
-          level = levels[run_index]
+          # Get the level at the run start (levels is a per-character array,
+          # not indexed by run number)
+          level = levels[run_start]?
 
-          if level.rtl? # RTL run
-            # Reverse the run text
-            reversed = String::Builder.new(run_text.size)
-            # Simple reversal - should handle mirrored characters but we don't have that map
-            run_text.reverse.each_char do |char|
-              reversed << char
-            end
-            result << reversed.to_s
+          if level.try(&.rtl?) # RTL run
+            result << reverse_text_with_mirroring(run_text)
           else # LTR run
             result << run_text
           end
@@ -1420,12 +1399,9 @@ module Pdfbox::Text
     end
 
     private def reverse_text_with_mirroring(text : String) : String
-      chars = text.chars
-      String.build do |io|
-        chars.reverse_each do |char|
-          io << mirrored_char(char)
-        end
-      end
+      # String#reverse is grapheme-aware (keeps combining marks with their base
+      # character, e.g. Hebrew niqqud), then mirror bracket characters.
+      text.reverse.chars.map { |char| mirrored_char(char) }.join
     end
 
     private def mirrored_char(char : Char) : Char

@@ -57,7 +57,7 @@
 - [x] Fix raw Type1 FontFile parsing — non-PFB fonts split by `/Length1`/`/Length2` via `create_with_segments` (cweb.pdf word separators)
 - [x] Fix MODIFIER_SYMBOL diacritic merging — add U+00A8/U+00AF/U+00B4/U+00B8 to `diacritic_codepoint?` (cweb.pdf accents)
 - [x] Verify all deviation PDFs against a real Java 3.0.4 jar — all 8 MATCH; FC60_Times fixture is stale (2010 era), Crystal == Java 3.0.4 == current vendor source
-- [ ] Bidi Java parity (2 pending: sorted/unsorted) — Crystal bidi shard vs java.text.Bidi differences documented in `lib_issues/bidi.1.md` and `bidi.2.md`
+- [x] Bidi Java parity — `handle_direction` reads run levels from `levels[run_start]` (was indexing a per-character array by run number), reverses RTL runs grapheme-aware with bracket mirroring (Java `Character.isMirrored` + MIRRORING_CHAR_MAP parity), and `render_items` writes words in extraction order (Java `writeLine`). hello3.pdf, both PDFBOX-4531-bidi-ligature PDFs, and BidiSample.pdf (sorted + unsorted) now match Java fixtures exactly.
 
 **Deviation breakdown (2026-05-25 investigation):**
 
