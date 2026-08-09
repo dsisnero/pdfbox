@@ -149,6 +149,7 @@
 - [x] GSUB specs: all 65 examples pass, no compile errors
 - [x] GSUB: multiple/alternate/ligature substitution — end-to-end wiring in `PDPageContentStream.show_text`: `set_font` creates a GsubWorker for Type0 fonts with GSUB data, and `encode_text` routes through `encode_for_gsub`/`apply_gsub_rules` (codepoints → glyph IDs → GSUB transforms → `encode_glyph_id`), matching Java `PDAbstractContentStream.encodeForGsub`/`applyGSUBRules`. `PDType0Font` now stores the real Fontbox CmapLookup and GsubData from the TTF (was a stub). Subset ToUnicode resolves gid→unicode via cmap for GSUB-added glyphs; `write_fixed` writes signed 16-bit (negative italic angles).
 - [x] GSUB: Tamil worker adjustments — wired into factory (Java's GsubWorkerForTamil also uses Gujarati logic per upstream TODO, so Crystal matches the Java source).
+- [x] FontBox AFM module complete — FontMetricsTest/CharMetricTest/CompositeTest parity: unmodifiable collection getters (UnmodifiableList wrapper), `metric_sets=` 0..2 validation, and character width/height/average computation from char metrics.
 - [x] Various TTF table TODO comments — reduced from 50+ to a handful of inline code comments (logging TODOs converted to NOTE comments, dead stubs removed). Remaining TODOs are either faithful copies of upstream Java TODO comments (e.g. Tamil worker Gujarati logic) or minor inline notes, not feature gaps.
 
 ---
