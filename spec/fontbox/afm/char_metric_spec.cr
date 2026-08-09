@@ -70,9 +70,10 @@ describe Fontbox::AFM::CharMetric do
       ligatures = char_metric.ligatures
       ligatures.size.should eq(1)
       ligatures[0].successor.should eq("successor")
-      # In Java, the returned list is unmodifiable; we can test that adding raises an error.
-      # Crystal arrays are modifiable, but we can mimic by returning a read-only view.
-      # For now, skip that check.
+      # Java returns unmodifiable lists.
+      expect_raises(Exception) do
+        ligatures << ligature
+      end
     end
   end
 end

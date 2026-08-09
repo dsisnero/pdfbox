@@ -2,7 +2,9 @@ module Fontbox
   module AFM
     class CharMetric
       property character_code, name, wx, w0x, w1x, wy, w0y, w1y,
-        w, w0, w1, vv, bounding_box, ligatures
+        w, w0, w1, vv, bounding_box
+
+      @ligatures : Array(Ligature)
 
       def initialize
         @character_code = 0
@@ -19,6 +21,11 @@ module Fontbox
         @vv = [] of Float32
         @bounding_box = Fontbox::Util::BoundingBox.new(0.0_f32, 0.0_f32, 0.0_f32, 0.0_f32)
         @ligatures = [] of Ligature
+      end
+
+      # Port of Java getLigatures: the returned list is unmodifiable.
+      def ligatures : UnmodifiableList(Ligature)
+        UnmodifiableList.new(@ligatures)
       end
 
       def add_ligature(ligature : Ligature)

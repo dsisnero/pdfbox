@@ -17,8 +17,10 @@ describe Fontbox::AFM::Composite do
       parts = comp.parts
       parts.size.should eq(1)
       parts[0].name.should eq("part")
-      # In Java, the returned list is unmodifiable; we can test that adding raises an error.
-      # For now, skip that check.
+      # Java returns unmodifiable lists.
+      expect_raises(Exception) do
+        parts << part
+      end
     end
   end
 end
