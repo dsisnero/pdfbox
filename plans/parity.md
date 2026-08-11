@@ -198,7 +198,14 @@
   - Writer now generates a document `/ID` (SHA-256 of time + Info values, or reuses the document's existing ID) — fresh documents previously had no `/ID`, so `prepare_for_decryption` could not validate the password and never set up a handler.
   - The writer reuses the document ID computed during encryption prep, so the trailer `/ID` matches the ID the `/O`/`/U`/key were derived from.
   - `Cos::String` values are now encrypted on write (`SecurityHandler#encrypt_string` mirroring `decrypt_string`), threaded through the writer via the enclosing object's key; the `/Encrypt` dict is excluded (matching Java's `willEncrypt = false`). This also fixed the garbled embedded-file name-tree keys in `testProtectionInnerAttachment`.
-- [ ] Encrypted-string AES path parity — string encryption currently uses RC4 only (mirroring the existing stream handling); AES-encrypted strings (revision 4+) need `CryptFilter` dispatch (Java `testPDFBox4308`/`testPDFBox5955`).
+- [x] `testPDFBox4308` — colorspace lookup string shared between a direct value and an indirect reference round-trips RC4-40 encryption uncorrupted, using the real `PDFBOX-4308.pdf` fixture (downloaded from the Java maven-wget URL with SHA512 verified).
+- [x] `testPDFBox5955` — 40-bit and 48-bit RC4 documents load (with and without the owner password) and extract their text, using `PDFBOX-5955-{40,48}bit.pdf` fixtures (SHA512-verified).
+- [x] `testPDFBox5639` — AESV3 (R=5) document with excess bytes loads with `JUL2023rfi` and reports 2 pages. Required true AES stream support:
+  - `decrypt_stream`/`encrypt_stream` now dispatch through `encrypt_data` (RC4 / AES-128 / AES-256) instead of always using RC4; previously the AES helpers were dead code and `@use_aes` was never set during password-based decryption.
+  - `prepare_for_decryption` detects AES from the revision or the `/CF/StdCF` crypt-filter method (`AESV2`), matching Java's `StandardSecurityHandler`.
+  - AES streams now use PKCS#7 padding (ISO 32000-1 7.6.2) instead of `NoPadding`, so non-block-aligned data encrypts/decrypts correctly.
+  - The AES/RC4 cipher helpers were moved from `StandardSecurityHandler` into the base `SecurityHandler` so the stream/string decrypt paths can use them.
+- [ ] Encrypted-string AES path parity — `decrypt_string`/`encrypt_string` still use RC4 only; AES-encrypted strings (revision 4+) need the same crypt-filter dispatch plus AES-128 "sAlT" padding stripping (no current test exercises it).
 
 ---
 

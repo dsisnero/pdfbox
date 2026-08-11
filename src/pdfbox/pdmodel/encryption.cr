@@ -487,15 +487,11 @@ module Pdfbox::Pdmodel::Encryption
       enc_key = @encryption_key
       return unless enc_key
 
-      # Generate object key
-      object_key = compute_object_key(enc_key, obj_num, gen_num)
-
-      # Decrypt the stream data
-      rc4 = RC4.new(object_key)
-      decrypted_data = rc4.process(stream.data)
-
-      # Replace stream data with decrypted data
-      stream.data = decrypted_data
+      # Dispatch to the correct algorithm (RC4, AES-128 or AES-256)
+      input = ::IO::Memory.new(stream.data)
+      output = ::IO::Memory.new
+      encrypt_data(obj_num, gen_num, input, output, true)
+      stream.data = output.to_slice
     end
 
     # Encrypt a COS string with the key derived for the given object.
@@ -557,15 +553,11 @@ module Pdfbox::Pdmodel::Encryption
       enc_key = @encryption_key
       return unless enc_key
 
-      # Generate object key
-      object_key = compute_object_key(enc_key, obj_num, gen_num)
-
-      # Encrypt the stream data
-      rc4 = RC4.new(object_key)
-      encrypted_data = rc4.process(stream.data)
-
-      # Replace stream data with encrypted data
-      stream.data = encrypted_data
+      # Dispatch to the correct algorithm (RC4, AES-128 or AES-256)
+      input = ::IO::Memory.new(stream.data)
+      output = ::IO::Memory.new
+      encrypt_data(obj_num, gen_num, input, output, false)
+      stream.data = output.to_slice
     end
 
     protected def encrypt_data(obj_num : Int64, gen_num : Int64, input : ::IO, output : ::IO, decrypt : Bool) : Nil
@@ -616,6 +608,103 @@ module Pdfbox::Pdmodel::Encryption
       # Use first (n+5) bytes as key, where n is encryption key length
       key_length = encryption_key.size
       digest[0, Math.min(key_length + 5, digest.size)]
+    end
+
+    protected def encrypt_data_rc4(key : Bytes, input : ::IO, output : ::IO) : Nil
+      # Read all input data
+      data = Bytes.new(input.size.to_i32)
+      input.read_fully(data)
+
+      rc4 = RC4.new(key)
+      result = rc4.process(data)
+      output.write(result)
+    end
+
+    private def encrypt_data_rc4(key : Bytes, data : Bytes) : Bytes
+      rc4 = RC4.new(key)
+      rc4.process(data)
+    end
+
+    private def encrypt_data_aes_other(key : Bytes, input : ::IO, output : ::IO, decrypt : Bool) : Nil
+      # AES with key length other than 256 bits (typically AES-128)
+      iv = Bytes.new(16, 0_u8)
+
+      unless prepare_aes_initialization_vector(decrypt, iv, input, output)
+        return
+      end
+
+      cipher = create_cipher(key, iv, decrypt)
+
+      buffer = Bytes.new(256)
+      while (n = input.read(buffer)) > 0
+        dst = cipher.update(buffer[0, n])
+        output.write(dst) if dst && !dst.empty?
+      end
+
+      final = cipher.final
+      output.write(final) if final && !final.empty?
+    end
+
+    private def encrypt_data_aes256(input : ::IO, output : ::IO, decrypt : Bool) : Nil
+      # AES-256 encryption
+      iv = Bytes.new(16, 0_u8)
+
+      unless prepare_aes_initialization_vector(decrypt, iv, input, output)
+        return
+      end
+
+      encryption_key = @encryption_key
+      return unless encryption_key
+
+      cipher = create_cipher(encryption_key, iv, decrypt)
+
+      # Read and process in chunks
+      buffer = Bytes.new(4096)
+      while (n = input.read(buffer)) > 0
+        dst = cipher.update(buffer[0, n])
+        output.write(dst) if dst && !dst.empty?
+      end
+
+      final = cipher.final
+      output.write(final) if final && !final.empty?
+    end
+
+    private def prepare_aes_initialization_vector(decrypt : Bool, iv : Bytes, input : ::IO, output : ::IO) : Bool
+      # For encryption: generate random IV and write it to output
+      # For decryption: read IV from input
+      if decrypt
+        # Read IV from input
+        bytes_read = input.read(iv)
+        return false if bytes_read != 16
+      else
+        # Generate random IV for encryption
+        Random::Secure.random_bytes(iv)
+        output.write(iv)
+      end
+      true
+    end
+
+    private def create_cipher(key : Bytes, iv : Bytes, decrypt : Bool) : OpenSSL::Cipher
+      # Determine cipher based on key length
+      cipher_name = if key.size == 32
+                      "AES-256-CBC"
+                    else
+                      "AES-128-CBC"
+                    end
+
+      cipher = OpenSSL::Cipher.new(cipher_name)
+
+      if decrypt
+        cipher.decrypt
+      else
+        cipher.encrypt
+      end
+
+      cipher.key = key
+      cipher.iv = iv
+      # PDF AES streams use PKCS#7-style padding (ISO 32000-1 7.6.2)
+      cipher.padding = true
+      cipher
     end
   end
 
@@ -757,6 +846,19 @@ module Pdfbox::Pdmodel::Encryption
         enc_key = Bytes.new(16) { |i| i < enc_key.size ? enc_key[i] : 0_u8 }
       end
       set_encryption_key(enc_key)
+
+      # Detect AES usage from the crypt filter dictionary, matching Java's
+      # StandardSecurityHandler (crypt filters are used only when V is 4 or 5).
+      set_use_aes(false)
+      if enc_revision == REVISION_5 || enc_revision == REVISION_6
+        set_use_aes(true)
+      else
+        std_cf = encryption.std_crypt_filter_dictionary
+        if std_cf
+          method = std_cf.crypt_filter_method
+          set_use_aes(method.try(&.value) == "AESV2")
+        end
+      end
     end
 
     def prepare_document_for_encryption(document : Pdfbox::Pdmodel::Document) : Nil
@@ -1413,102 +1515,6 @@ module Pdfbox::Pdmodel::Encryption
         end
       end
       result
-    end
-
-    protected def encrypt_data_rc4(key : Bytes, input : ::IO, output : ::IO) : Nil
-      # Read all input data
-      data = Bytes.new(input.size.to_i32)
-      input.read_fully(data)
-
-      rc4 = RC4.new(key)
-      result = rc4.process(data)
-      output.write(result)
-    end
-
-    private def encrypt_data_rc4(key : Bytes, data : Bytes) : Bytes
-      rc4 = RC4.new(key)
-      rc4.process(data)
-    end
-
-    private def encrypt_data_aes_other(key : Bytes, input : ::IO, output : ::IO, decrypt : Bool) : Nil
-      # AES with key length other than 256 bits (typically AES-128)
-      iv = Bytes.new(16, 0_u8)
-
-      unless prepare_aes_initialization_vector(decrypt, iv, input, output)
-        return
-      end
-
-      cipher = create_cipher(key, iv, decrypt)
-
-      buffer = Bytes.new(256)
-      while (n = input.read(buffer)) > 0
-        dst = cipher.update(buffer[0, n])
-        output.write(dst) if dst && !dst.empty?
-      end
-
-      final = cipher.final
-      output.write(final) if final && !final.empty?
-    end
-
-    private def encrypt_data_aes256(input : ::IO, output : ::IO, decrypt : Bool) : Nil
-      # AES-256 encryption
-      iv = Bytes.new(16, 0_u8)
-
-      unless prepare_aes_initialization_vector(decrypt, iv, input, output)
-        return
-      end
-
-      encryption_key = @encryption_key
-      return unless encryption_key
-
-      cipher = create_cipher(encryption_key, iv, decrypt)
-
-      # Read and process in chunks
-      buffer = Bytes.new(4096)
-      while (n = input.read(buffer)) > 0
-        dst = cipher.update(buffer[0, n])
-        output.write(dst) if dst && !dst.empty?
-      end
-
-      final = cipher.final
-      output.write(final) if final && !final.empty?
-    end
-
-    private def prepare_aes_initialization_vector(decrypt : Bool, iv : Bytes, input : ::IO, output : ::IO) : Bool
-      # For encryption: generate random IV and write it to output
-      # For decryption: read IV from input
-      if decrypt
-        # Read IV from input
-        bytes_read = input.read(iv)
-        return false if bytes_read != 16
-      else
-        # Generate random IV for encryption
-        Random::Secure.random_bytes(iv)
-        output.write(iv)
-      end
-      true
-    end
-
-    private def create_cipher(key : Bytes, iv : Bytes, decrypt : Bool) : OpenSSL::Cipher
-      # Determine cipher based on key length
-      cipher_name = if key.size == 32
-                      "AES-256-CBC"
-                    else
-                      "AES-128-CBC"
-                    end
-
-      cipher = OpenSSL::Cipher.new(cipher_name)
-
-      if decrypt
-        cipher.decrypt
-      else
-        cipher.encrypt
-      end
-
-      cipher.key = key
-      cipher.iv = iv
-      cipher.padding = false # PDF uses no padding
-      cipher
     end
   end
 
