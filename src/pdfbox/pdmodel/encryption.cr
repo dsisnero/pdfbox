@@ -501,15 +501,12 @@ module Pdfbox::Pdmodel::Encryption
       enc_key = @encryption_key
       return string unless enc_key
 
-      # Generate object key
-      object_key = compute_object_key(enc_key, obj_num, gen_num)
-
-      # Encrypt the string data
-      rc4 = RC4.new(object_key)
-      encrypted_bytes = rc4.process(string.bytes)
-
-      # Create new string with encrypted data
-      Pdfbox::Cos::String.new(encrypted_bytes)
+      # Dispatch to the correct algorithm (RC4, AES-128 or AES-256),
+      # matching Java's SecurityHandler.encryptString.
+      input = ::IO::Memory.new(string.bytes)
+      output = ::IO::Memory.new
+      encrypt_data(obj_num, gen_num, input, output, false)
+      Pdfbox::Cos::String.new(output.to_slice)
     end
 
     private def decrypt_string(string : Pdfbox::Cos::String, obj_num : Int64, gen_num : Int64) : Pdfbox::Cos::String
@@ -517,15 +514,12 @@ module Pdfbox::Pdmodel::Encryption
       enc_key = @encryption_key
       return string unless enc_key
 
-      # Generate object key
-      object_key = compute_object_key(enc_key, obj_num, gen_num)
-
-      # Decrypt the string data
-      rc4 = RC4.new(object_key)
-      decrypted_bytes = rc4.process(string.bytes)
-
-      # Create new string with decrypted data
-      Pdfbox::Cos::String.new(decrypted_bytes)
+      # Dispatch to the correct algorithm (RC4, AES-128 or AES-256),
+      # matching Java's SecurityHandler.decryptString.
+      input = ::IO::Memory.new(string.bytes)
+      output = ::IO::Memory.new
+      encrypt_data(obj_num, gen_num, input, output, true)
+      Pdfbox::Cos::String.new(output.to_slice)
     end
 
     private def decrypt_array(array : Pdfbox::Cos::Array, obj_num : Int64, gen_num : Int64) : Pdfbox::Cos::Array
@@ -602,6 +596,12 @@ module Pdfbox::Pdmodel::Encryption
         (gen_num & 0xFF).to_u8,
         ((gen_num >> 8) & 0xFF).to_u8,
       ])
+
+      # Algorithm 1.A: for AES-128 (AESV2), append the 'sAlT' bytes to the
+      # hash input, matching Java's calcFinalKey.
+      if @use_aes
+        md5.update(Bytes[0x73_u8, 0x41_u8, 0x6c_u8, 0x54_u8])
+      end
 
       digest = md5.final
 

@@ -205,7 +205,7 @@
   - `prepare_for_decryption` detects AES from the revision or the `/CF/StdCF` crypt-filter method (`AESV2`), matching Java's `StandardSecurityHandler`.
   - AES streams now use PKCS#7 padding (ISO 32000-1 7.6.2) instead of `NoPadding`, so non-block-aligned data encrypts/decrypts correctly.
   - The AES/RC4 cipher helpers were moved from `StandardSecurityHandler` into the base `SecurityHandler` so the stream/string decrypt paths can use them.
-- [ ] Encrypted-string AES path parity — `decrypt_string`/`encrypt_string` still use RC4 only; AES-encrypted strings (revision 4+) need the same crypt-filter dispatch plus AES-128 "sAlT" padding stripping (no current test exercises it).
+- [x] AES COS-string encryption — `encrypt_string`/`decrypt_string` now dispatch through `encrypt_data` (RC4/AES-128/AES-256) like the stream paths, and `compute_object_key` appends the `sAlT` bytes for AES-128 (Algorithm 1.A, matching Java's `calcFinalKey`). Verified by `testAESStringRoundTrip`: a `prefer_aes` (AESV2) document's strings are written as genuine AES-CBC ciphertext (IV + 16-byte blocks) and decrypt back to their original values.
 
 ---
 

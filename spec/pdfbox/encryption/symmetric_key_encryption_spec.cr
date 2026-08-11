@@ -337,6 +337,42 @@ describe Pdfbox::Pdmodel::Encryption do
     end
   end
 
+  it "testAESStringRoundTrip" do
+    # AES-encrypted COS strings (revision 4, AESV2) must round-trip through
+    # save+reload. The writer encrypts strings with AES-128-CBC and the reader
+    # decrypts them back to the original values.
+    file = File.join(test_results_dir, "AES-string-roundtrip.pdf")
+    doc = Pdfbox::Pdmodel::Document.create
+    begin
+      page = Pdfbox::Pdmodel::Page.new
+      doc.add_page(page)
+      page.cos_object.not_nil![Pdfbox::Cos::Name.new("AESStr")] = Pdfbox::Cos::String.new("AES secret")
+      page.cos_object.not_nil![Pdfbox::Cos::Name.new("AESStr2")] = Pdfbox::Cos::String.new("0x1234")
+
+      spp = Pdfbox::Pdmodel::Encryption::StandardProtectionPolicy.new(OWNERPASSWORD, USERPASSWORD, permission)
+      spp.encryption_key_length = 128
+      spp.prefer_aes = true
+      doc.protect(spp)
+      doc.save(file)
+    ensure
+      doc.close
+    end
+
+    reopened = Pdfbox::Loader.load_pdf(file, USERPASSWORD)
+    begin
+      reopened.encrypted?.should be_true
+      page_dict = reopened.pages[0].cos_object.not_nil!
+      s = page_dict[Pdfbox::Cos::Name.new("AESStr")]
+      s = s.object if s.is_a?(Pdfbox::Cos::Object)
+      s.as(Pdfbox::Cos::String).value.should eq("AES secret")
+      s2 = page_dict[Pdfbox::Cos::Name.new("AESStr2")]
+      s2 = s2.object if s2.is_a?(Pdfbox::Cos::Object)
+      s2.as(Pdfbox::Cos::String).value.should eq("0x1234")
+    ensure
+      reopened.close
+    end
+  end
+
   it "testPDFBox5639" do
     # PDFBOX-5639: test AESV3 with R=5 and excess bytes.
     file = get_file_resource_path("PDFBOX-5639.pdf")
