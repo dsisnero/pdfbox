@@ -32,7 +32,12 @@ module Pdfbox::Pdfwriter
     @use_xref_streams : Bool = true
 
     def initialize(@destination : ::IO, @document : Pdfbox::Pdmodel::Document, @parameters : Pdfbox::Pdfwriter::Compress::CompressParameters = Pdfbox::Pdfwriter::Compress::CompressParameters::DEFAULT_COMPRESSION)
-      if encryption = @document.encryption
+      if @document.all_security_to_be_removed?
+        # Matching Java COSWriter: when security is to be removed, do not
+        # encrypt and do not write an /Encrypt entry.
+        @will_encrypt = false
+        @security_handler = nil
+      elsif encryption = @document.encryption
         @security_handler = encryption.security_handler
         @will_encrypt = !@security_handler.nil?
         @security_handler.try(&.prepare_document_for_encryption(@document))
@@ -212,7 +217,7 @@ module Pdfbox::Pdfwriter
           roots << page_dict
         end
       end
-      if encryption = @document.encryption
+      if (encryption = @document.encryption) && !@document.all_security_to_be_removed?
         roots << encryption.dictionary
       end
       roots
@@ -384,7 +389,7 @@ module Pdfbox::Pdfwriter
         end
       end
 
-      if encryption = @document.encryption
+      if (encryption = @document.encryption) && !@document.all_security_to_be_removed?
         enc_id = encryption.dictionary.object_id.to_u64
         if enc_key = object_keys[enc_id]?
           xref_dict[Pdfbox::Cos::Name.new("Encrypt")] = ref_obj(enc_key)
@@ -482,7 +487,7 @@ module Pdfbox::Pdfwriter
         end
       end
 
-      if encryption = @document.encryption
+      if (encryption = @document.encryption) && !@document.all_security_to_be_removed?
         enc_id = encryption.dictionary.object_id.to_u64
         if enc_key = object_keys[enc_id]?
           @destination << "/Encrypt " << enc_key.number << " 0 R\n"

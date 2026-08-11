@@ -148,7 +148,7 @@ module Pdfbox::Pdmodel
       subset_embedded_fonts
 
       # Prepare encryption if document is protected
-      if encrypted? && (encryption = self.encryption) && (handler = encryption.security_handler)
+      if encrypted? && !all_security_to_be_removed? && (encryption = self.encryption) && (handler = encryption.security_handler)
         if handler.is_a?(Pdfbox::Pdmodel::Encryption::StandardSecurityHandler)
           handler.prepare_document_for_encryption(self)
         end
