@@ -28,6 +28,7 @@ module Pdfbox::Pdfwriter
     @parameters : Pdfbox::Pdfwriter::Compress::CompressParameters
     @will_encrypt : Bool = false
     @security_handler : Pdfbox::Pdmodel::Encryption::SecurityHandler?
+    @current_object_key : Pdfbox::Cos::ObjectKey?
     @use_xref_streams : Bool = true
 
     def initialize(@destination : ::IO, @document : Pdfbox::Pdmodel::Document, @parameters : Pdfbox::Pdfwriter::Compress::CompressParameters = Pdfbox::Pdfwriter::Compress::CompressParameters::DEFAULT_COMPRESSION)
@@ -51,14 +52,52 @@ module Pdfbox::Pdfwriter
       write_header(header)
       cos_writer = COSWriter.new(@destination, @will_encrypt, @security_handler)
 
-      trailer = @document.trailer
+      trailer = @document.trailer || Pdfbox::Cos::Dictionary.new
       catalog = @document.document_catalog
+
+      ensure_document_id(trailer)
 
       if @use_xref_streams && @parameters.compress?
         write_compressed(cos_writer, catalog, trailer)
       else
         write_standard(cos_writer, catalog, trailer)
       end
+    end
+
+    # Generate a document ID for the trailer if missing, matching the behavior
+    # of Apache PDFBox COSWriter. Reuses the document's existing ID (e.g. one
+    # computed during encryption preparation or loaded from the source trailer);
+    # otherwise generates a SHA-256 of the current time plus the values of the
+    # Info dictionary, if present.
+    private def ensure_document_id(trailer : Pdfbox::Cos::Dictionary) : Nil
+      id_val = trailer[Pdfbox::Cos::Name.new("ID")]
+      return if id_val.is_a?(Pdfbox::Cos::Array) && id_val.size == 2
+
+      if doc_id = @document.document_id
+        id_array = Pdfbox::Cos::Array.new
+        id_array << Pdfbox::Cos::String.new(doc_id)
+        id_array << Pdfbox::Cos::String.new(doc_id)
+        trailer[Pdfbox::Cos::Name.new("ID")] = id_array
+        return
+      end
+
+      sha256 = Digest::SHA256.new
+      sha256.update(Time.utc.to_unix_ms.to_s)
+
+      if info_val = trailer[Pdfbox::Cos::Name.new("Info")]?
+        info_base = info_val.is_a?(Pdfbox::Cos::Object) ? info_val.object : info_val
+        if info_base.is_a?(Pdfbox::Cos::Dictionary)
+          info_base.entries.each_value do |cos_base|
+            sha256.update(cos_base.to_s)
+          end
+        end
+      end
+
+      digest = sha256.final
+      id_array = Pdfbox::Cos::Array.new
+      id_array << Pdfbox::Cos::String.new(digest)
+      id_array << Pdfbox::Cos::String.new(digest)
+      trailer[Pdfbox::Cos::Name.new("ID")] = id_array
     end
 
     # Write using compressed object streams (PDF 1.5+).
@@ -232,6 +271,16 @@ module Pdfbox::Pdfwriter
                                       object_keys : Hash(UInt64, Pdfbox::Cos::ObjectKey),
                                       object_wrapper : Hash(UInt64, UInt64),
                                       key : Pdfbox::Cos::ObjectKey) : Nil
+      # The encryption dictionary is written without encrypting its strings,
+      # matching Java COSWriter which sets willEncrypt = false for it.
+      is_encryption_dict = false
+      if (enc = @document.encryption) && obj.is_a?(Pdfbox::Cos::Dictionary)
+        is_encryption_dict = obj.same?(enc.dictionary)
+      end
+      object_key = @will_encrypt && !is_encryption_dict ? key : nil
+      @current_object_key = object_key
+      cos_writer.current_object_key = object_key
+
       case obj
       when Pdfbox::Cos::Stream
         write_stream_with_refs(obj, cos_writer, object_keys, object_wrapper, key)
@@ -242,6 +291,9 @@ module Pdfbox::Pdfwriter
       else
         cos_writer.write(obj)
       end
+
+      @current_object_key = nil
+      cos_writer.current_object_key = nil
     end
 
     # Write a stream, remapping its dictionary's indirect references through
@@ -527,7 +579,7 @@ module Pdfbox::Pdfwriter
           raise WriteError.new("Stream should have been collected")
         end
       when Pdfbox::Cos::String
-        write_pdf_string(@destination, value.bytes, value.force_hex_form?)
+        write_encrypted_string(value)
       when Pdfbox::Cos::Name
         @destination << '/' << value.value
       when Pdfbox::Cos::Integer
@@ -541,6 +593,14 @@ module Pdfbox::Pdfwriter
       else
         @destination << "null"
       end
+    end
+
+    # Write a COS string, encrypting it when writing an encrypted document.
+    private def write_encrypted_string(string : Pdfbox::Cos::String) : Nil
+      if @will_encrypt && (handler = @security_handler) && (key = @current_object_key)
+        string = handler.encrypt_string(string, key.number, key.generation)
+      end
+      write_pdf_string(@destination, string.bytes, string.force_hex_form?)
     end
 
     private def write_pdf_string(io : ::IO, bytes : Bytes, hex : Bool = false) : Nil
@@ -619,8 +679,15 @@ module Pdfbox::Pdfwriter
     @destination : ::IO
     @will_encrypt : Bool = false
     @security_handler : Pdfbox::Pdmodel::Encryption::SecurityHandler?
+    @current_object_key : Pdfbox::Cos::ObjectKey?
 
     def initialize(@destination : ::IO, @will_encrypt : Bool = false, @security_handler : Pdfbox::Pdmodel::Encryption::SecurityHandler? = nil)
+    end
+
+    # Set the object key of the indirect object currently being written.
+    # Used to derive the per-object key for encrypting strings.
+    def current_object_key=(key : Pdfbox::Cos::ObjectKey?) : Nil
+      @current_object_key = key
     end
 
     # Write a COS object
@@ -673,8 +740,13 @@ module Pdfbox::Pdfwriter
       @destination << ']'
     end
 
-    # Write a COS string
+    # Write a COS string, encrypting it when writing an encrypted document.
+    # Matching Java's COSWriter.visitFromString, strings are encrypted with the
+    # key derived for the enclosing indirect object.
     def write_string(string : Pdfbox::Cos::String) : Nil
+      if @will_encrypt && (handler = @security_handler) && (key = @current_object_key)
+        string = handler.encrypt_string(string, key.number, key.generation)
+      end
       PDFIO.write_string(@destination, string.bytes, string.force_hex_form?)
     end
 

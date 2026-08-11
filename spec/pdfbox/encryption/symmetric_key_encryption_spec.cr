@@ -258,6 +258,47 @@ describe Pdfbox::Pdmodel::Encryption do
   end
 
   it "testPDFBox4453" do
+    # PDFBOX-4453: verify that identical encrypted strings are really decrypted each.
+    testcount = 1000
+    file = File.join(test_results_dir, "PDFBOX-4453.pdf")
+    doc = Pdfbox::Pdmodel::Document.create
+    begin
+      doc.add_page(Pdfbox::Pdmodel::Page.new)
+      testcount.times do |i|
+        # strings must be in different dictionaries so that the actual
+        # encryption key changes
+        dict = Pdfbox::Cos::Dictionary.new
+        doc.pages[0].cos_object.not_nil![Pdfbox::Cos::Name.new("_Test-#{i}")] = dict
+        # need two different keys so that there are both encrypted and decrypted COSStrings
+        # with value "0"
+        dict.set_string("key1", "3")
+        dict.set_string("key2", "0")
+      end
+
+      # RC4-40
+      spp = Pdfbox::Pdmodel::Encryption::StandardProtectionPolicy.new("12345", "",
+        Pdfbox::Pdmodel::Encryption::AccessPermission.new)
+      spp.encryption_key_length = 40
+      spp.prefer_aes = false
+      doc.protect(spp)
+      doc.save(file)
+    ensure
+      doc.close
+    end
+
+    reopened = Pdfbox::Loader.load_pdf(file)
+    begin
+      reopened.encrypted?.should be_true
+      testcount.times do |i|
+        dict_value = reopened.pages[0].cos_object.not_nil![Pdfbox::Cos::Name.new("_Test-#{i}")]
+        dict_value = dict_value.object if dict_value.is_a?(Pdfbox::Cos::Object)
+        dict = dict_value.as(Pdfbox::Cos::Dictionary)
+        dict.get_string(Pdfbox::Cos::Name.new("key1")).should eq("3")
+        dict.get_string(Pdfbox::Cos::Name.new("key2")).should eq("0")
+      end
+    ensure
+      reopened.close
+    end
   end
 
   it "testPDFBox5639" do

@@ -498,6 +498,24 @@ module Pdfbox::Pdmodel::Encryption
       stream.data = decrypted_data
     end
 
+    # Encrypt a COS string with the key derived for the given object.
+    # Corresponds to SecurityHandler.encryptString in Apache PDFBox.
+    def encrypt_string(string : Pdfbox::Cos::String, obj_num : Int64, gen_num : Int64) : Pdfbox::Cos::String
+      # Get encryption key
+      enc_key = @encryption_key
+      return string unless enc_key
+
+      # Generate object key
+      object_key = compute_object_key(enc_key, obj_num, gen_num)
+
+      # Encrypt the string data
+      rc4 = RC4.new(object_key)
+      encrypted_bytes = rc4.process(string.bytes)
+
+      # Create new string with encrypted data
+      Pdfbox::Cos::String.new(encrypted_bytes)
+    end
+
     private def decrypt_string(string : Pdfbox::Cos::String, obj_num : Int64, gen_num : Int64) : Pdfbox::Cos::String
       # Get encryption key
       enc_key = @encryption_key
