@@ -16,7 +16,11 @@
 require "../../spec_helper"
 
 def get_file_resource_as_byte_array(filename : String) : Bytes
-  File.read("spec/resources/pdfbox/encryption/#{filename}").to_slice
+  File.read(get_file_resource_path(filename)).to_slice
+end
+
+def get_file_resource_path(filename : String) : String
+  "spec/resources/pdfbox/encryption/#{filename}"
 end
 
 def check_perms(input_file_as_byte_array : Bytes, password : String,
@@ -232,9 +236,41 @@ describe Pdfbox::Pdmodel::Encryption do
   end
 
   it "testPDFBox4308" do
+    # PDFBOX-4308: index colorspace table string must not be corrupted when
+    # encrypting (a colorspace referenced both directly and indirectly from the
+    # same Java object was encrypted twice / with the wrong object number).
+    filename = "PDFBOX-4308.pdf"
+    input_file_as_byte_array = get_file_resource_as_byte_array(filename)
+    size_prior_to_encryption = input_file_as_byte_array.size
+
+    test_symm_encr_for_key_size(filename, 40, false, size_prior_to_encryption, input_file_as_byte_array,
+      USERPASSWORD, OWNERPASSWORD, permission)
   end
 
   it "testPDFBox5955" do
+    # PDFBOX-5955: unusual RC4 encryption that has 40 or 48 bits instead of 128.
+    file_40_bit = get_file_resource_path("PDFBOX-5955-40bit.pdf")
+    file_48_bit = get_file_resource_path("PDFBOX-5955-48bit.pdf")
+
+    [file_40_bit, file_48_bit].each_with_index do |f, i|
+      expected = i == 0 ? "0x0446615747" : "0x02988E82AFF8"
+      doc = Pdfbox::Loader.load_pdf(f)
+      begin
+        stripper = Pdfbox::Text::PDFTextStripper.new
+        text = stripper.get_text(doc)
+        text.should contain(expected)
+      ensure
+        doc.close
+      end
+      doc = Pdfbox::Loader.load_pdf(f, "ownerpass")
+      begin
+        stripper = Pdfbox::Text::PDFTextStripper.new
+        text = stripper.get_text(doc)
+        text.should contain(expected)
+      ensure
+        doc.close
+      end
+    end
   end
 
   it "testProtectionInnerAttachment" do
@@ -302,5 +338,13 @@ describe Pdfbox::Pdmodel::Encryption do
   end
 
   it "testPDFBox5639" do
+    # PDFBOX-5639: test AESV3 with R=5 and excess bytes.
+    file = get_file_resource_path("PDFBOX-5639.pdf")
+    document = Pdfbox::Loader.load_pdf(file, "JUL2023rfi")
+    begin
+      document.number_of_pages.should eq(2)
+    ensure
+      document.close
+    end
   end
 end
