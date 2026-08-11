@@ -14,7 +14,7 @@ make clean
 
 crystal tool format --check src spec
 ameba src spec
-crystal spec -Dpreview_mt -Dexecution_context
+crystal spec
 shards install
 shards update
 ```
@@ -36,13 +36,14 @@ shards update
 - Port tests first and match Java behavior exactly; do not simplify behavior for convenience.
 - Prefer Crystal idioms only when they preserve the Java logic and observable semantics.
 - Keep the repo shippable: run format, ameba, and specs before committing.
-- Use `./temp` for temporary artifacts and keep repository-local tooling state out of version control.
+- Spec-dependent fixtures belong under `spec/` — `spec/fixtures` for standalone fixtures, or `spec/resources/<module>/` mirroring the Java `src/test/resources` layout for vendor-parity fixtures.
+- Use `./temp` only for ad-hoc scripts and throwaway artifacts; it is cleaned periodically, so never put spec dependencies there.
 
 ## Workflow
 
 - Follow `plans/parity.md` to pick what to work on next.
 - Work on one phase to completion before stopping: close every unchecked item in that phase.
-- Before committing, clean the quality gates: `crystal tool format --check src spec`, `ameba src spec`, and `crystal spec -Dpreview_mt -Dexecution_context`.
+- Before committing, clean the quality gates: `crystal tool format --check src spec`, `ameba src spec`, and `crystal spec`.
 - Update `plans/parity.md` (check off completed items) and the inventory, then commit with a detailed description of what was implemented.
 
 ## Commit Convention
@@ -57,4 +58,4 @@ Port COSDocumentCompressionTest#testAlteredDoc with Flate stream parity
 
 - Run `ameba --fix src spec` before the final lint/spec pass when code changes.
 - Prefer vendor fixtures and Java tests over synthetic replacements when porting parity behavior.
-- Keep temporary scripts and downloaded fixtures under `./temp`.
+- Keep temporary scripts under `./temp`; never rely on them as spec dependencies since the directory is cleaned periodically.

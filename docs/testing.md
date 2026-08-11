@@ -12,8 +12,10 @@ Run the quality gates after significant changes:
 crystal tool format --check src spec
 ameba --fix src spec
 ameba src spec
-crystal spec -Dpreview_mt -Dexecution_context
+crystal spec
 ```
 
-If a spec depends on an external fixture that is not committed, place temporary
-downloads in `./temp` and avoid relying on system temp directories.
+Spec-dependent fixtures belong under `spec/`: `spec/fixtures` for standalone
+fixtures, or `spec/resources/<module>/` mirroring the Java `src/test/resources`
+layout for vendor-parity fixtures. Do not put spec dependencies in `./temp`,
+which is cleaned periodically.

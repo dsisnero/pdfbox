@@ -8,11 +8,12 @@ Use the normal local loop:
 crystal tool format --check src spec
 ameba --fix src spec
 ameba src spec
-crystal spec -Dpreview_mt -Dexecution_context
+crystal spec
 ```
 
-Temporary files, ad hoc scripts, and downloaded fixtures belong in `./temp`.
-`make clean` removes temporary artifacts from that directory.
+Temporary files and ad hoc scripts belong in `./temp`; `make clean` removes
+them from that directory. Spec-dependent fixtures must not live there — place
+them under `spec/` (`spec/fixtures` or `spec/resources/<module>/`).
 
 Use `bd` for task tracking and keep work in focused commits that can be pushed
 independently.

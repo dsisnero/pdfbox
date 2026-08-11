@@ -14,7 +14,7 @@ lint:
 	ameba src spec
 
 test:
-	crystal spec -Dpreview_mt -Dexecution_context
+	crystal spec
 
 clean:
 	rm -rf ./temp/*
