@@ -18,7 +18,7 @@
 |---|---|
 | Java source files (vendor) | ~1,289 |
 | Crystal source files (ported) | ~415 (`src/` has 464 `.cr` files) |
-| Passing tests | 1,810 |
+| Passing tests | 1,824 |
 | Pending tests | 0 |
 | Failures | 0 |
 | Errors | 0 |
@@ -28,7 +28,7 @@
 | Inventory: ported | 78 |
 | Inventory: partial | 38 |
 | Inventory: missing | 12,391 (mostly debugger/benchmark/examples out of scope) |
-| Fixed since last update | BlendModeTest port (separable blend-channel functions, non-separable hue/saturation/color/luminosity, `get_instance` COS map, singleton constants). Page-tree Kids indirection resolution. remove_page_from_tree implementation. COSArrayList retainAll CosObject inner check. Writer catalog /Version update. OpenTypeFont CFF path uses CFF charset. Encryption key length default (256→128). COS increment test (save/load page count). Document version test (1.4→1.6). FontMapper/TrueTypeCollection fixture fixes. BOM/diacritic normalization in text comparison. Bidi Crystal-specific regression tests. |
+| Fixed since last update | Optional content model (TestOptionalContentGroups generation + PDFBOX-4496, catalog `/OCProperties` with 1.5 version bump). RenderingIntentTest/RenderingMode parity. BlendModeTest port (separable blend-channel functions, non-separable hue/saturation/color/luminosity, `get_instance` COS map, singleton constants). Page-tree Kids indirection resolution. remove_page_from_tree implementation. COSArrayList retainAll CosObject inner check. Writer catalog /Version update. OpenTypeFont CFF path uses CFF charset. Encryption key length default (256→128). COS increment test (save/load page count). Document version test (1.4→1.6). FontMapper/TrueTypeCollection fixture fixes. BOM/diacritic normalization in text comparison. Bidi Crystal-specific regression tests. |
 | Active porting plans | 1 (`plans/active/CosParserPort.md`) |
 
 ---
@@ -124,6 +124,8 @@
 - [x] Indirect `Cos::Object` reference resolution for font names, show-text arrays, and TJ array items
 - [x] `Cos::Number` handling for Tw/Tc word/character spacing in PDFGraphicsStreamEngine
 - [x] `BlendMode` parity — ported against `BlendModeTest.java`: all 17 `BlendMode.*` constants with their blend-channel functions (12 separable: Normal/Multiply/Screen/Overlay/Darken/Lighten/ColorDodge/ColorBurn/HardLight/SoftLight/Difference/Exclusion) and blend functions (4 non-separable: Hue/Saturation/Color/Luminosity, via `getSaturationRGB`/`getLuminosityRGB` integer-math ports), plus `separable_blend_mode?`, `cos_name`, `blend_channel_function`, `blend_function`, and the `get_instance` COS name/array map (`Compatible` → `Normal`, integer-array fallback to `Normal`); singleton instances memoized so `get_instance` returns the same objects as the constants
+- [x] `RenderingIntent`/`RenderingMode` parity — ported against `RenderingIntentTest.java`: `from_string` name mapping with empty-string fallback to RelativeColorimetric, `to_s_value` round-trip, `fills_text?` for Fill
+- [x] Optional content model — ported against `TestOptionalContentGroups.java` generation tests (`testOCGGeneration`, `testOCGsWithSameNameCanHaveDifferentVisibility`, PDFBOX-4496 `setGroupEnabled` same-name): `PDOptionalContentProperties#add_group`/`group_enabled?`/`set_group_enabled` (returns true only when the group already had an ON/OFF setting), `base_state` default ON + setter, `group_names`/`optional_content_groups`/`group`/`has_group?`, and `DocumentCatalog#oc_properties`/`oc_properties=` (sets `/OCProperties`, bumps document version to 1.5)
 
 ---
 

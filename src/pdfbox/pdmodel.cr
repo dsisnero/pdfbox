@@ -970,6 +970,26 @@ module Pdfbox::Pdmodel
         nil
       end
     end
+
+    # Get optional content properties dictionary, or nil if none.
+    def oc_properties : Graphics::OptionalContent::PDOptionalContentProperties?
+      value = @cos_dict[Cos::Name.new("OCProperties")]
+      return unless value
+      value = value.object if value.is_a?(Cos::Object)
+      return unless value.is_a?(Cos::Dictionary)
+      Graphics::OptionalContent::PDOptionalContentProperties.new(value)
+    end
+
+    # Set the optional content properties dictionary. The document version is
+    # incremented to 1.5 if lower.
+    def oc_properties=(properties : Graphics::OptionalContent::PDOptionalContentProperties) : Graphics::OptionalContent::PDOptionalContentProperties
+      @cos_dict[Cos::Name.new("OCProperties")] = properties.cos_object
+
+      if doc = @document
+        doc.version = 1.5_f32 if doc.version < 1.5
+      end
+      properties
+    end
   end
 
   # Output intent class for color reproduction characteristics

@@ -65,9 +65,9 @@ module Pdfbox::Pdmodel::Graphics::OptionalContent
 
     def base_state=(state : BaseState) : BaseState
       name = case state
-             when BaseState::On        then "ON"
-             when BaseState::Off       then "OFF"
-             when BaseState::Unchanged then "UNCHANGED"
+             in BaseState::On        then "ON"
+             in BaseState::Off       then "OFF"
+             in BaseState::Unchanged then "UNCHANGED"
              end
       get_d.set_name("BaseState", name)
       state
