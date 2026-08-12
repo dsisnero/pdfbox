@@ -18,7 +18,7 @@
 |---|---|
 | Java source files (vendor) | ~1,289 |
 | Crystal source files (ported) | ~415 (`src/` has 464 `.cr` files) |
-| Passing tests | 1,630 |
+| Passing tests | 1,810 |
 | Pending tests | 0 |
 | Failures | 0 |
 | Errors | 0 |
@@ -28,7 +28,7 @@
 | Inventory: ported | 78 |
 | Inventory: partial | 38 |
 | Inventory: missing | 12,391 (mostly debugger/benchmark/examples out of scope) |
-| Fixed since last update | Page-tree Kids indirection resolution. remove_page_from_tree implementation. COSArrayList retainAll CosObject inner check. Writer catalog /Version update. OpenTypeFont CFF path uses CFF charset. Encryption key length default (256→128). COS increment test (save/load page count). Document version test (1.4→1.6). FontMapper/TrueTypeCollection fixture fixes. BOM/diacritic normalization in text comparison. Bidi Crystal-specific regression tests. |
+| Fixed since last update | BlendModeTest port (separable blend-channel functions, non-separable hue/saturation/color/luminosity, `get_instance` COS map, singleton constants). Page-tree Kids indirection resolution. remove_page_from_tree implementation. COSArrayList retainAll CosObject inner check. Writer catalog /Version update. OpenTypeFont CFF path uses CFF charset. Encryption key length default (256→128). COS increment test (save/load page count). Document version test (1.4→1.6). FontMapper/TrueTypeCollection fixture fixes. BOM/diacritic normalization in text comparison. Bidi Crystal-specific regression tests. |
 | Active porting plans | 1 (`plans/active/CosParserPort.md`) |
 
 ---
@@ -123,6 +123,7 @@
 - [x] Marked content operators (BMC, EMC, MP, DP, BDC) — all 5 implemented, marked content stack + points on PDFStreamEngine
 - [x] Indirect `Cos::Object` reference resolution for font names, show-text arrays, and TJ array items
 - [x] `Cos::Number` handling for Tw/Tc word/character spacing in PDFGraphicsStreamEngine
+- [x] `BlendMode` parity — ported against `BlendModeTest.java`: all 17 `BlendMode.*` constants with their blend-channel functions (12 separable: Normal/Multiply/Screen/Overlay/Darken/Lighten/ColorDodge/ColorBurn/HardLight/SoftLight/Difference/Exclusion) and blend functions (4 non-separable: Hue/Saturation/Color/Luminosity, via `getSaturationRGB`/`getLuminosityRGB` integer-math ports), plus `separable_blend_mode?`, `cos_name`, `blend_channel_function`, `blend_function`, and the `get_instance` COS name/array map (`Compatible` → `Normal`, integer-array fallback to `Normal`); singleton instances memoized so `get_instance` returns the same objects as the constants
 
 ---
 
