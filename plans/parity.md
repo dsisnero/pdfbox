@@ -167,6 +167,7 @@
 - [x] `PDDocumentInformation`: title, author, subject, keywords, creator, producer, dates — all getters/setters
 - [x] Font subsetting wired into save — `subset_embedded_fonts` calls `PDType0Font.subset` before every save
 - [x] PDRectangle.contains / thread_beads / bead rect semantics for article flow
+- [x] CIE-based colour spaces — `PDLab` (name, 3 components, a/b ranges defaulting to -100..100, whitepoint 1,1,1 / blackpoint 0,0,0, initial colour, Lab→XYZ→sRGB) and `PDICCBased` (stream-backed, `/N` component count), plus `PDTristimulus` and the `PDCIEDictionaryBasedColorSpace` base — ported against `PDLabTest.java` and `PDICCBasedTest.java` (PDFBOX-2812); both wired into `PDColorSpace.create` instead of the `PDDeviceRGB` fallback
 
 ---
 

@@ -31,9 +31,11 @@ module Pdfbox::Pdmodel::Graphics::Color
           first = first.object if first.is_a?(Cos::Object)
           if first.is_a?(Cos::Name)
             case first.value
+            when "Lab"
+              PDLab.new(cos_base)
             when "ICCBased"
-              PDDeviceRGB::INSTANCE # Simplified fallback
-            when "CalGray", "CalRGB", "Lab"
+              PDICCBased.new(cos_base)
+            when "CalGray", "CalRGB"
               PDDeviceRGB::INSTANCE # Simplified fallback
             else
               nil
