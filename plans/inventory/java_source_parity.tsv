@@ -10131,62 +10131,62 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/de
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/destination/PDPageXYZDestination.java::method::PDPageXYZDestination.setLeft	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/destination/PDPageXYZDestination.java::method::PDPageXYZDestination.setTop	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/destination/PDPageXYZDestination.java::method::PDPageXYZDestination.setZoom	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDDocumentOutline.java::class::PDDocumentOutline	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDDocumentOutline.java::method::PDDocumentOutline.closeNode	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDDocumentOutline.java::method::PDDocumentOutline.isNodeOpen	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDDocumentOutline.java::method::PDDocumentOutline.openNode	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineItem.java::class::PDOutlineItem	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineItem.java::const::BOLD_FLAG	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineItem.java::const::ITALIC_FLAG	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineItem.java::method::PDOutlineItem.findDestinationPage	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineItem.java::method::PDOutlineItem.getAction	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineItem.java::method::PDOutlineItem.getDestination	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineItem.java::method::PDOutlineItem.getNextSibling	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineItem.java::method::PDOutlineItem.getPreviousSibling	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineItem.java::method::PDOutlineItem.getStructureElement	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineItem.java::method::PDOutlineItem.getTextColor	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineItem.java::method::PDOutlineItem.getTitle	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineItem.java::method::PDOutlineItem.insertSiblingAfter	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineItem.java::method::PDOutlineItem.insertSiblingBefore	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineItem.java::method::PDOutlineItem.isBold	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineItem.java::method::PDOutlineItem.isItalic	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineItem.java::method::PDOutlineItem.setAction	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineItem.java::method::PDOutlineItem.setBold	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineItem.java::method::PDOutlineItem.setDestination	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineItem.java::method::PDOutlineItem.setItalic	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineItem.java::method::PDOutlineItem.setNextSibling	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineItem.java::method::PDOutlineItem.setPreviousSibling	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineItem.java::method::PDOutlineItem.setStructureElement	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineItem.java::method::PDOutlineItem.setTextColor	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineItem.java::method::PDOutlineItem.setTitle	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineItemIterator.java::class::PDOutlineItemIterator	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineItemIterator.java::method::PDOutlineItemIterator.hasNext	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineItemIterator.java::method::PDOutlineItemIterator.next	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineItemIterator.java::method::PDOutlineItemIterator.remove	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineNode.java::class::PDOutlineNode	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineNode.java::const::LOG	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineNode.java::method::PDOutlineNode.addFirst	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineNode.java::method::PDOutlineNode.addLast	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineNode.java::method::PDOutlineNode.append	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineNode.java::method::PDOutlineNode.children	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineNode.java::method::PDOutlineNode.closeNode	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineNode.java::method::PDOutlineNode.getFirstChild	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineNode.java::method::PDOutlineNode.getLastChild	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineNode.java::method::PDOutlineNode.getOpenCount	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineNode.java::method::PDOutlineNode.getOutlineItem	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineNode.java::method::PDOutlineNode.getParent	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineNode.java::method::PDOutlineNode.hasChildren	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineNode.java::method::PDOutlineNode.isNodeOpen	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineNode.java::method::PDOutlineNode.openNode	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineNode.java::method::PDOutlineNode.prepend	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineNode.java::method::PDOutlineNode.requireSingleNode	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineNode.java::method::PDOutlineNode.setFirstChild	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineNode.java::method::PDOutlineNode.setLastChild	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineNode.java::method::PDOutlineNode.setOpenCount	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineNode.java::method::PDOutlineNode.setParent	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineNode.java::method::PDOutlineNode.switchNodeCount	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineNode.java::method::PDOutlineNode.updateParentOpenCount	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineNode.java::method::PDOutlineNode.updateParentOpenCountForAddedChild	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDDocumentOutline.java::class::PDDocumentOutline	ported	src/pdfbox/pdmodel/interactive/documentnavigation/outline/	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDDocumentOutline.java::method::PDDocumentOutline.closeNode	ported	src/pdfbox/pdmodel/interactive/documentnavigation/outline/	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDDocumentOutline.java::method::PDDocumentOutline.isNodeOpen	ported	src/pdfbox/pdmodel/interactive/documentnavigation/outline/	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDDocumentOutline.java::method::PDDocumentOutline.openNode	ported	src/pdfbox/pdmodel/interactive/documentnavigation/outline/	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineItem.java::class::PDOutlineItem	ported	src/pdfbox/pdmodel/interactive/documentnavigation/outline/	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineItem.java::const::BOLD_FLAG	ported	src/pdfbox/pdmodel/interactive/documentnavigation/outline/	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineItem.java::const::ITALIC_FLAG	ported	src/pdfbox/pdmodel/interactive/documentnavigation/outline/	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineItem.java::method::PDOutlineItem.findDestinationPage	partial	-	action/destination/structure-element/color surface not yet ported
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineItem.java::method::PDOutlineItem.getAction	partial	-	action/destination/structure-element/color surface not yet ported
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineItem.java::method::PDOutlineItem.getDestination	partial	-	action/destination/structure-element/color surface not yet ported
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineItem.java::method::PDOutlineItem.getNextSibling	ported	src/pdfbox/pdmodel/interactive/documentnavigation/outline/	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineItem.java::method::PDOutlineItem.getPreviousSibling	ported	src/pdfbox/pdmodel/interactive/documentnavigation/outline/	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineItem.java::method::PDOutlineItem.getStructureElement	partial	-	action/destination/structure-element/color surface not yet ported
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineItem.java::method::PDOutlineItem.getTextColor	partial	-	action/destination/structure-element/color surface not yet ported
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineItem.java::method::PDOutlineItem.getTitle	ported	src/pdfbox/pdmodel/interactive/documentnavigation/outline/	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineItem.java::method::PDOutlineItem.insertSiblingAfter	ported	src/pdfbox/pdmodel/interactive/documentnavigation/outline/	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineItem.java::method::PDOutlineItem.insertSiblingBefore	ported	src/pdfbox/pdmodel/interactive/documentnavigation/outline/	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineItem.java::method::PDOutlineItem.isBold	ported	src/pdfbox/pdmodel/interactive/documentnavigation/outline/	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineItem.java::method::PDOutlineItem.isItalic	ported	src/pdfbox/pdmodel/interactive/documentnavigation/outline/	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineItem.java::method::PDOutlineItem.setAction	partial	-	action/destination/structure-element/color surface not yet ported
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineItem.java::method::PDOutlineItem.setBold	ported	src/pdfbox/pdmodel/interactive/documentnavigation/outline/	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineItem.java::method::PDOutlineItem.setDestination	partial	-	action/destination/structure-element/color surface not yet ported
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineItem.java::method::PDOutlineItem.setItalic	ported	src/pdfbox/pdmodel/interactive/documentnavigation/outline/	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineItem.java::method::PDOutlineItem.setNextSibling	ported	src/pdfbox/pdmodel/interactive/documentnavigation/outline/	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineItem.java::method::PDOutlineItem.setPreviousSibling	ported	src/pdfbox/pdmodel/interactive/documentnavigation/outline/	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineItem.java::method::PDOutlineItem.setStructureElement	partial	-	action/destination/structure-element/color surface not yet ported
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineItem.java::method::PDOutlineItem.setTextColor	partial	-	action/destination/structure-element/color surface not yet ported
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineItem.java::method::PDOutlineItem.setTitle	ported	src/pdfbox/pdmodel/interactive/documentnavigation/outline/	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineItemIterator.java::class::PDOutlineItemIterator	ported	src/pdfbox/pdmodel/interactive/documentnavigation/outline/	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineItemIterator.java::method::PDOutlineItemIterator.hasNext	ported	src/pdfbox/pdmodel/interactive/documentnavigation/outline/	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineItemIterator.java::method::PDOutlineItemIterator.next	ported	src/pdfbox/pdmodel/interactive/documentnavigation/outline/	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineItemIterator.java::method::PDOutlineItemIterator.remove	partial	-	action/destination/structure-element/color surface not yet ported
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineNode.java::class::PDOutlineNode	ported	src/pdfbox/pdmodel/interactive/documentnavigation/outline/	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineNode.java::const::LOG	partial	-	action/destination/structure-element/color surface not yet ported
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineNode.java::method::PDOutlineNode.addFirst	ported	src/pdfbox/pdmodel/interactive/documentnavigation/outline/	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineNode.java::method::PDOutlineNode.addLast	ported	src/pdfbox/pdmodel/interactive/documentnavigation/outline/	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineNode.java::method::PDOutlineNode.append	ported	src/pdfbox/pdmodel/interactive/documentnavigation/outline/	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineNode.java::method::PDOutlineNode.children	ported	src/pdfbox/pdmodel/interactive/documentnavigation/outline/	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineNode.java::method::PDOutlineNode.closeNode	ported	src/pdfbox/pdmodel/interactive/documentnavigation/outline/	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineNode.java::method::PDOutlineNode.getFirstChild	ported	src/pdfbox/pdmodel/interactive/documentnavigation/outline/	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineNode.java::method::PDOutlineNode.getLastChild	ported	src/pdfbox/pdmodel/interactive/documentnavigation/outline/	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineNode.java::method::PDOutlineNode.getOpenCount	ported	src/pdfbox/pdmodel/interactive/documentnavigation/outline/	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineNode.java::method::PDOutlineNode.getOutlineItem	partial	-	action/destination/structure-element/color surface not yet ported
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineNode.java::method::PDOutlineNode.getParent	ported	src/pdfbox/pdmodel/interactive/documentnavigation/outline/	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineNode.java::method::PDOutlineNode.hasChildren	ported	src/pdfbox/pdmodel/interactive/documentnavigation/outline/	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineNode.java::method::PDOutlineNode.isNodeOpen	ported	src/pdfbox/pdmodel/interactive/documentnavigation/outline/	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineNode.java::method::PDOutlineNode.openNode	ported	src/pdfbox/pdmodel/interactive/documentnavigation/outline/	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineNode.java::method::PDOutlineNode.prepend	ported	src/pdfbox/pdmodel/interactive/documentnavigation/outline/	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineNode.java::method::PDOutlineNode.requireSingleNode	ported	src/pdfbox/pdmodel/interactive/documentnavigation/outline/	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineNode.java::method::PDOutlineNode.setFirstChild	partial	-	action/destination/structure-element/color surface not yet ported
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineNode.java::method::PDOutlineNode.setLastChild	partial	-	action/destination/structure-element/color surface not yet ported
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineNode.java::method::PDOutlineNode.setOpenCount	ported	src/pdfbox/pdmodel/interactive/documentnavigation/outline/	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineNode.java::method::PDOutlineNode.setParent	partial	-	action/destination/structure-element/color surface not yet ported
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineNode.java::method::PDOutlineNode.switchNodeCount	ported	src/pdfbox/pdmodel/interactive/documentnavigation/outline/	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineNode.java::method::PDOutlineNode.updateParentOpenCount	ported	src/pdfbox/pdmodel/interactive/documentnavigation/outline/	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/PDOutlineNode.java::method::PDOutlineNode.updateParentOpenCountForAddedChild	ported	src/pdfbox/pdmodel/interactive/documentnavigation/outline/	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/AppearanceGeneratorHelper.java::class::AppearanceGeneratorHelper	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/AppearanceGeneratorHelper.java::const::BMC	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/AppearanceGeneratorHelper.java::const::DEFAULT_FONT_SIZE	missing	-	baseline

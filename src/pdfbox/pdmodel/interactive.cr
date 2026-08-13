@@ -89,6 +89,7 @@ require "./interactive/annotation/pdannotation_square"
 require "./interactive/form"
 require "./interactive/measurement"
 require "./interactive/pagenavigation"
+require "./interactive/documentnavigation/outline"
 require "./interactive/viewerpreferences"
 
 module Pdfbox::Pdmodel::Interactive

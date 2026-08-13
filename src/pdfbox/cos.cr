@@ -693,6 +693,17 @@ module Pdfbox::Cos
     RES_FORK                    = new("ResFork")
     OBJ_STM                     = new("ObjStm")
     FIRST                       = new("First")
+    LAST                        = new("Last")
+    PARENT                      = new("Parent")
+    PREV                        = new("Prev")
+    NEXT                        = new("Next")
+    COUNT                       = new("Count")
+    OUTLINES                    = new("Outlines")
+    TITLE                       = new("Title")
+    A                           = new("A")
+    C                           = new("C")
+    F                           = new("F")
+    SE                          = new("SE")
     EXTENDS                     = new("Extends")
     STANDARD_ENCODING           = new("StandardEncoding")
     WIN_ANSI_ENCODING           = new("WinAnsiEncoding")
@@ -1266,6 +1277,7 @@ module Pdfbox::Cos
     end
 
     def ==(other : self) : Bool
+      return true if other.same?(self)
       return false unless other.class == self.class
       @entries == other.@entries
     end
