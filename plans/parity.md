@@ -18,7 +18,7 @@
 |---|---|
 | Java source files (vendor) | ~1,289 |
 | Crystal source files (ported) | ~415 (`src/` has 464 `.cr` files) |
-| Passing tests | 1,829 |
+| Passing tests | 1,834 |
 | Pending tests | 0 |
 | Failures | 0 |
 | Errors | 0 |
@@ -28,7 +28,7 @@
 | Inventory: ported | 78 |
 | Inventory: partial | 38 |
 | Inventory: missing | 12,391 (mostly debugger/benchmark/examples out of scope) |
-| Fixed since last update | PDInlineImage model port (stencil/W/H/BPC/colorspace/suffix/filters). Optional content model (TestOptionalContentGroups generation + PDFBOX-4496, catalog `/OCProperties` with 1.5 version bump). RenderingIntentTest/RenderingMode parity. BlendModeTest port (separable blend-channel functions, non-separable hue/saturation/color/luminosity, `get_instance` COS map, singleton constants). Page-tree Kids indirection resolution. remove_page_from_tree implementation. COSArrayList retainAll CosObject inner check. Writer catalog /Version update. OpenTypeFont CFF path uses CFF charset. Encryption key length default (256→128). COS increment test (save/load page count). Document version test (1.4→1.6). FontMapper/TrueTypeCollection fixture fixes. BOM/diacritic normalization in text comparison. Bidi Crystal-specific regression tests. |
+| Fixed since last update | JPEGFactory port (`create_from_stream`/`create_from_byte_array`, SOF-marker width/height/numComponents parsing, DeviceGray/DeviceRGB/DeviceCMYK selection, CMYK inverted Decode array, exact JPEG-stream save/load round-trip). PDInlineImage model port (stencil/W/H/BPC/colorspace/suffix/filters). Optional content model (TestOptionalContentGroups generation + PDFBOX-4496, catalog `/OCProperties` with 1.5 version bump). RenderingIntentTest/RenderingMode parity. BlendModeTest port (separable blend-channel functions, non-separable hue/saturation/color/luminosity, `get_instance` COS map, singleton constants). Page-tree Kids indirection resolution. remove_page_from_tree implementation. COSArrayList retainAll CosObject inner check. Writer catalog /Version update. OpenTypeFont CFF path uses CFF charset. Encryption key length default (256→128). COS increment test (save/load page count). Document version test (1.4→1.6). FontMapper/TrueTypeCollection fixture fixes. BOM/diacritic normalization in text comparison. Bidi Crystal-specific regression tests. |
 | Active porting plans | 1 (`plans/active/CosParserPort.md`) |
 
 ---
@@ -172,6 +172,7 @@
 - [x] Font subsetting wired into save — `subset_embedded_fonts` calls `PDType0Font.subset` before every save
 - [x] PDRectangle.contains / thread_beads / bead rect semantics for article flow
 - [x] CIE-based colour spaces — `PDLab` (name, 3 components, a/b ranges defaulting to -100..100, whitepoint 1,1,1 / blackpoint 0,0,0, initial colour, Lab→XYZ→sRGB) and `PDICCBased` (stream-backed, `/N` component count), plus `PDTristimulus` and the `PDCIEDictionaryBasedColorSpace` base — ported against `PDLabTest.java` and `PDICCBasedTest.java` (PDFBOX-2812); both wired into `PDColorSpace.create` instead of the `PDDeviceRGB` fallback
+- [x] `JPEGFactory` port — `create_from_stream`/`create_from_byte_array` preserve the JPEG stream byte-for-byte and select the color space from the SOF (Start of Frame) frame-component count (1 → `PDDeviceGray`, 3 → `PDDeviceRGB`, 4 → `PDDeviceCMYK`, PDFBOX-4691/5137 numFrameComponents semantics); CMYK images get the inverted `Decode` array `[1 0 1 0 1 0 1 0]`; `PDImageXObject#color_space` now resolves the `/ColorSpace` COS entry instead of hardcoding `PDDeviceRGB` — ported against `JPEGFactoryTest.java` (`testCreateFromStream*` color-space/dimension assertions, `checkJpegStream` exact-bytes round-trip; AWT `BufferedImage`/`ImageIO` `createFromImage` paths out of scope)
 
 ---
 

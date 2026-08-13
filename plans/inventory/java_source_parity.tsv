@@ -8284,20 +8284,20 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/CCITTFactory.java:
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/CCITTFactory.java::method::CCITTFactory.readshort	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/CustomFactory.java::interface::CustomFactory	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/CustomFactory.java::method::createFromByteArray	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/JPEGFactory.java::class::Dimensions	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/JPEGFactory.java::class::JPEGFactory	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/JPEGFactory.java::const::LOG	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/JPEGFactory.java::method::JPEGFactory.createFromByteArray	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/JPEGFactory.java::method::JPEGFactory.createFromImage	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/JPEGFactory.java::method::JPEGFactory.createFromStream	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/JPEGFactory.java::method::JPEGFactory.createJPEG	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/JPEGFactory.java::method::JPEGFactory.encodeImageToJPEGStream	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/JPEGFactory.java::method::JPEGFactory.getAlphaImage	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/JPEGFactory.java::method::JPEGFactory.getColorImage	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/JPEGFactory.java::method::JPEGFactory.getColorSpaceFromAWT	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/JPEGFactory.java::method::JPEGFactory.getJPEGImageWriter	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/JPEGFactory.java::method::JPEGFactory.getNumComponentsFromImageMetadata	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/JPEGFactory.java::method::JPEGFactory.retrieveDimensions	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/JPEGFactory.java::class::Dimensions	ported	src/pdfbox/pdmodel/graphics/image/jpeg_factory.cr	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/JPEGFactory.java::class::JPEGFactory	ported	src/pdfbox/pdmodel/graphics/image/jpeg_factory.cr	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/JPEGFactory.java::const::LOG	partial	-	AWT BufferedImage/ImageIO path, out of scope
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/JPEGFactory.java::method::JPEGFactory.createFromByteArray	ported	src/pdfbox/pdmodel/graphics/image/jpeg_factory.cr	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/JPEGFactory.java::method::JPEGFactory.createFromImage	partial	-	AWT BufferedImage/ImageIO path, out of scope
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/JPEGFactory.java::method::JPEGFactory.createFromStream	ported	src/pdfbox/pdmodel/graphics/image/jpeg_factory.cr	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/JPEGFactory.java::method::JPEGFactory.createJPEG	partial	-	AWT BufferedImage/ImageIO path, out of scope
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/JPEGFactory.java::method::JPEGFactory.encodeImageToJPEGStream	partial	-	AWT BufferedImage/ImageIO path, out of scope
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/JPEGFactory.java::method::JPEGFactory.getAlphaImage	partial	-	AWT BufferedImage/ImageIO path, out of scope
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/JPEGFactory.java::method::JPEGFactory.getColorImage	partial	-	AWT BufferedImage/ImageIO path, out of scope
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/JPEGFactory.java::method::JPEGFactory.getColorSpaceFromAWT	partial	-	AWT BufferedImage/ImageIO path, out of scope
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/JPEGFactory.java::method::JPEGFactory.getJPEGImageWriter	partial	-	AWT BufferedImage/ImageIO path, out of scope
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/JPEGFactory.java::method::JPEGFactory.getNumComponentsFromImageMetadata	partial	-	AWT BufferedImage/ImageIO path, out of scope
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/JPEGFactory.java::method::JPEGFactory.retrieveDimensions	ported	src/pdfbox/pdmodel/graphics/image/jpeg_factory.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/LosslessFactory.java::class::LosslessFactory	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/LosslessFactory.java::class::PredictorEncoder	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/LosslessFactory.java::const::USE_PREDICTOR_ENCODER	missing	-	baseline

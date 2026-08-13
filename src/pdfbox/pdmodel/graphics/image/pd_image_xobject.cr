@@ -118,12 +118,26 @@ module Pdfbox::Pdmodel::Graphics::Image
     end
 
     def color_space : Pdfbox::Pdmodel::Graphics::Color::PDColorSpace
-      # TODO: Implement proper color space parsing
-      Pdfbox::Pdmodel::Graphics::Color::PDDeviceRGB.new
+      cos_base = @dict[Pdfbox::Cos::Name.new("ColorSpace")]?
+      if cos_base.is_a?(Pdfbox::Cos::Object)
+        cos_base = cos_base.object
+      end
+      if cos_base
+        if result = Pdfbox::Pdmodel::Graphics::Color::PDColorSpace.create(cos_base)
+          return result
+        end
+        raise ::IO::Error.new("Illegal type of image color space: #{cos_base}")
+      elsif stencil?
+        # stencil mask color space must be gray, it is often missing
+        Pdfbox::Pdmodel::Graphics::Color::PDDeviceGray::INSTANCE
+      else
+        # an image without a color space is always broken
+        raise ::IO::Error.new("could not determine color space")
+      end
     end
 
     def color_space=(color_space : Pdfbox::Pdmodel::Graphics::Color::PDColorSpace) : Nil
-      # TODO: Implement proper color space setting
+      @dict[Pdfbox::Cos::Name.new("ColorSpace")] = color_space.cos_object
     end
 
     def height : Int32
