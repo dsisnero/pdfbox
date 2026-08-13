@@ -1176,30 +1176,30 @@ pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/PDInlineImageTest.
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/PDInlineImageTest.java::method::PDInlineImageTest.testShortCCITT1	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/PDInlineImageTest.java::method::PDInlineImageTest.testShortCCITT2	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/PDInlineImageTest.java::method::PDInlineImageTest.testShortCCITT3	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverterTest.java::class::PNGConverterTest	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverterTest.java::class::PNGConverterTest	ported	spec/pdfbox/pdmodel/graphics/image/png_converter_spec.cr	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverterTest.java::const::PARENTDIR	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverterTest.java::method::PNGConverterTest.checkImageConvert	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverterTest.java::method::PNGConverterTest.checkImageConvertFail	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverterTest.java::method::PNGConverterTest.dumpChunkTypes	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverterTest.java::method::PNGConverterTest.getImageWithProfileData	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverterTest.java::method::PNGConverterTest.setup	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverterTest.java::method::PNGConverterTest.testCRCImpl	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverterTest.java::method::PNGConverterTest.testCheckConverterState	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverterTest.java::method::PNGConverterTest.testChunkSane	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverterTest.java::method::PNGConverterTest.testImageConversionGray	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverterTest.java::method::PNGConverterTest.testImageConversionGrayAlpha	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverterTest.java::method::PNGConverterTest.testImageConversionGrayGamma	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverterTest.java::method::PNGConverterTest.testImageConversionIntentIndexed	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverterTest.java::method::PNGConverterTest.testImageConversionRGB	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverterTest.java::method::PNGConverterTest.testImageConversionRGB16BitICC	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverterTest.java::method::PNGConverterTest.testImageConversionRGBAlpha	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverterTest.java::method::PNGConverterTest.testImageConversionRGBGamma	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverterTest.java::method::PNGConverterTest.testImageConversionRGBIndexed	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverterTest.java::method::PNGConverterTest.testImageConversionRGBIndexedAlpha1Bit	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverterTest.java::method::PNGConverterTest.testImageConversionRGBIndexedAlpha2Bit	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverterTest.java::method::PNGConverterTest.testImageConversionRGBIndexedAlpha4Bit	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverterTest.java::method::PNGConverterTest.testImageConversionRGBIndexedAlpha8Bit	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverterTest.java::method::PNGConverterTest.testMapPNGRenderIntent	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverterTest.java::method::PNGConverterTest.checkImageConvert	partial	-	convertPNGImage XObject paths not yet ported or AWT pixel comparisons out of scope
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverterTest.java::method::PNGConverterTest.checkImageConvertFail	partial	-	convertPNGImage XObject paths not yet ported or AWT pixel comparisons out of scope
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverterTest.java::method::PNGConverterTest.dumpChunkTypes	partial	-	convertPNGImage XObject paths not yet ported or AWT pixel comparisons out of scope
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverterTest.java::method::PNGConverterTest.getImageWithProfileData	partial	-	convertPNGImage XObject paths not yet ported or AWT pixel comparisons out of scope
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverterTest.java::method::PNGConverterTest.setup	partial	-	convertPNGImage XObject paths not yet ported or AWT pixel comparisons out of scope
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverterTest.java::method::PNGConverterTest.testCRCImpl	ported	spec/pdfbox/pdmodel/graphics/image/png_converter_spec.cr	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverterTest.java::method::PNGConverterTest.testCheckConverterState	ported	spec/pdfbox/pdmodel/graphics/image/png_converter_spec.cr	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverterTest.java::method::PNGConverterTest.testChunkSane	ported	spec/pdfbox/pdmodel/graphics/image/png_converter_spec.cr	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverterTest.java::method::PNGConverterTest.testImageConversionGray	partial	-	convertPNGImage XObject paths not yet ported or AWT pixel comparisons out of scope
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverterTest.java::method::PNGConverterTest.testImageConversionGrayAlpha	partial	-	convertPNGImage XObject paths not yet ported or AWT pixel comparisons out of scope
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverterTest.java::method::PNGConverterTest.testImageConversionGrayGamma	partial	-	convertPNGImage XObject paths not yet ported or AWT pixel comparisons out of scope
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverterTest.java::method::PNGConverterTest.testImageConversionIntentIndexed	partial	-	convertPNGImage XObject paths not yet ported or AWT pixel comparisons out of scope
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverterTest.java::method::PNGConverterTest.testImageConversionRGB	partial	-	convertPNGImage XObject paths not yet ported or AWT pixel comparisons out of scope
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverterTest.java::method::PNGConverterTest.testImageConversionRGB16BitICC	partial	-	convertPNGImage XObject paths not yet ported or AWT pixel comparisons out of scope
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverterTest.java::method::PNGConverterTest.testImageConversionRGBAlpha	partial	-	convertPNGImage XObject paths not yet ported or AWT pixel comparisons out of scope
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverterTest.java::method::PNGConverterTest.testImageConversionRGBGamma	partial	-	convertPNGImage XObject paths not yet ported or AWT pixel comparisons out of scope
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverterTest.java::method::PNGConverterTest.testImageConversionRGBIndexed	partial	-	convertPNGImage XObject paths not yet ported or AWT pixel comparisons out of scope
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverterTest.java::method::PNGConverterTest.testImageConversionRGBIndexedAlpha1Bit	partial	-	convertPNGImage XObject paths not yet ported or AWT pixel comparisons out of scope
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverterTest.java::method::PNGConverterTest.testImageConversionRGBIndexedAlpha2Bit	partial	-	convertPNGImage XObject paths not yet ported or AWT pixel comparisons out of scope
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverterTest.java::method::PNGConverterTest.testImageConversionRGBIndexedAlpha4Bit	partial	-	convertPNGImage XObject paths not yet ported or AWT pixel comparisons out of scope
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverterTest.java::method::PNGConverterTest.testImageConversionRGBIndexedAlpha8Bit	partial	-	convertPNGImage XObject paths not yet ported or AWT pixel comparisons out of scope
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverterTest.java::method::PNGConverterTest.testMapPNGRenderIntent	ported	spec/pdfbox/pdmodel/graphics/image/png_converter_spec.cr	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/ValidateXImage.java::class::ValidateXImage	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/ValidateXImage.java::method::ValidateXImage.checkIdent	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/ValidateXImage.java::method::ValidateXImage.colorCount	missing	-	baseline

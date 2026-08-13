@@ -8412,52 +8412,52 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDInlineImage.java
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDInlineImage.java::method::PDInlineImage.setStencil	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDInlineImage.java::method::PDInlineImage.setWidth	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDInlineImage.java::method::PDInlineImage.toLongName	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::class::Chunk	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::class::MultipleInputStream	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::class::PNGConverter	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::class::PNGConverterState	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::const::CHUNK_CHRM	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::const::CHUNK_GAMA	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::const::CHUNK_HIST	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::const::CHUNK_ICCP	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::const::CHUNK_IDAT	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::const::CHUNK_IEND	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::const::CHUNK_IHDR	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::const::CHUNK_ITXT	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::const::CHUNK_KBKG	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::const::CHUNK_PHYS	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::const::CHUNK_PLTE	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::const::CHUNK_SBIT	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::const::CHUNK_SPLT	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::const::CHUNK_SRGB	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::const::CHUNK_TEXT	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::const::CHUNK_TIME	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::const::CHUNK_TRNS	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::const::CHUNK_ZTXT	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::const::CRC_TABLE	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::const::LOG	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::method::Chunk.getData	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::method::MultipleInputStream.available	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::method::MultipleInputStream.ensureStream	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::method::MultipleInputStream.read	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::method::PNGConverter.buildDecodeParams	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::method::PNGConverter.buildImageObject	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::method::PNGConverter.buildIndexImage	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::method::PNGConverter.buildTransparencyMaskFromIndexedData	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::method::PNGConverter.checkChunkSane	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::method::PNGConverter.checkConverterState	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::method::PNGConverter.convertPNGImage	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::method::PNGConverter.convertPng	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::method::PNGConverter.crc	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::method::PNGConverter.createCOSStreamwithIccProfile	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::method::PNGConverter.getIDATInputStream	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::method::PNGConverter.makeCrcTable	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::method::PNGConverter.mapPNGRenderIntent	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::method::PNGConverter.parsePNGChunks	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::method::PNGConverter.readInt	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::method::PNGConverter.readPNGFloat	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::method::PNGConverter.setupIndexedColorSpace	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::method::PNGConverter.updateCrc	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::class::Chunk	ported	src/pdfbox/pdmodel/graphics/image/png_converter.cr	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::class::MultipleInputStream	partial	-	PNG-to-XObject conversion path not yet ported (needs PDIndexed/ICC/soft mask)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::class::PNGConverter	ported	src/pdfbox/pdmodel/graphics/image/png_converter.cr	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::class::PNGConverterState	ported	src/pdfbox/pdmodel/graphics/image/png_converter.cr	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::const::CHUNK_CHRM	ported	src/pdfbox/pdmodel/graphics/image/png_converter.cr	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::const::CHUNK_GAMA	ported	src/pdfbox/pdmodel/graphics/image/png_converter.cr	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::const::CHUNK_HIST	ported	src/pdfbox/pdmodel/graphics/image/png_converter.cr	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::const::CHUNK_ICCP	ported	src/pdfbox/pdmodel/graphics/image/png_converter.cr	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::const::CHUNK_IDAT	ported	src/pdfbox/pdmodel/graphics/image/png_converter.cr	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::const::CHUNK_IEND	ported	src/pdfbox/pdmodel/graphics/image/png_converter.cr	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::const::CHUNK_IHDR	ported	src/pdfbox/pdmodel/graphics/image/png_converter.cr	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::const::CHUNK_ITXT	ported	src/pdfbox/pdmodel/graphics/image/png_converter.cr	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::const::CHUNK_KBKG	ported	src/pdfbox/pdmodel/graphics/image/png_converter.cr	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::const::CHUNK_PHYS	ported	src/pdfbox/pdmodel/graphics/image/png_converter.cr	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::const::CHUNK_PLTE	ported	src/pdfbox/pdmodel/graphics/image/png_converter.cr	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::const::CHUNK_SBIT	ported	src/pdfbox/pdmodel/graphics/image/png_converter.cr	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::const::CHUNK_SPLT	ported	src/pdfbox/pdmodel/graphics/image/png_converter.cr	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::const::CHUNK_SRGB	ported	src/pdfbox/pdmodel/graphics/image/png_converter.cr	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::const::CHUNK_TEXT	ported	src/pdfbox/pdmodel/graphics/image/png_converter.cr	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::const::CHUNK_TIME	ported	src/pdfbox/pdmodel/graphics/image/png_converter.cr	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::const::CHUNK_TRNS	ported	src/pdfbox/pdmodel/graphics/image/png_converter.cr	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::const::CHUNK_ZTXT	ported	src/pdfbox/pdmodel/graphics/image/png_converter.cr	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::const::CRC_TABLE	ported	src/pdfbox/pdmodel/graphics/image/png_converter.cr	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::const::LOG	partial	-	PNG-to-XObject conversion path not yet ported (needs PDIndexed/ICC/soft mask)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::method::Chunk.getData	ported	src/pdfbox/pdmodel/graphics/image/png_converter.cr	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::method::MultipleInputStream.available	partial	-	PNG-to-XObject conversion path not yet ported (needs PDIndexed/ICC/soft mask)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::method::MultipleInputStream.ensureStream	partial	-	PNG-to-XObject conversion path not yet ported (needs PDIndexed/ICC/soft mask)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::method::MultipleInputStream.read	partial	-	PNG-to-XObject conversion path not yet ported (needs PDIndexed/ICC/soft mask)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::method::PNGConverter.buildDecodeParams	partial	-	PNG-to-XObject conversion path not yet ported (needs PDIndexed/ICC/soft mask)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::method::PNGConverter.buildImageObject	partial	-	PNG-to-XObject conversion path not yet ported (needs PDIndexed/ICC/soft mask)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::method::PNGConverter.buildIndexImage	partial	-	PNG-to-XObject conversion path not yet ported (needs PDIndexed/ICC/soft mask)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::method::PNGConverter.buildTransparencyMaskFromIndexedData	partial	-	PNG-to-XObject conversion path not yet ported (needs PDIndexed/ICC/soft mask)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::method::PNGConverter.checkChunkSane	ported	src/pdfbox/pdmodel/graphics/image/png_converter.cr	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::method::PNGConverter.checkConverterState	ported	src/pdfbox/pdmodel/graphics/image/png_converter.cr	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::method::PNGConverter.convertPNGImage	partial	-	PNG-to-XObject conversion path not yet ported (needs PDIndexed/ICC/soft mask)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::method::PNGConverter.convertPng	partial	-	PNG-to-XObject conversion path not yet ported (needs PDIndexed/ICC/soft mask)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::method::PNGConverter.crc	ported	src/pdfbox/pdmodel/graphics/image/png_converter.cr	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::method::PNGConverter.createCOSStreamwithIccProfile	partial	-	PNG-to-XObject conversion path not yet ported (needs PDIndexed/ICC/soft mask)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::method::PNGConverter.getIDATInputStream	partial	-	PNG-to-XObject conversion path not yet ported (needs PDIndexed/ICC/soft mask)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::method::PNGConverter.makeCrcTable	ported	src/pdfbox/pdmodel/graphics/image/png_converter.cr	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::method::PNGConverter.mapPNGRenderIntent	ported	src/pdfbox/pdmodel/graphics/image/png_converter.cr	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::method::PNGConverter.parsePNGChunks	partial	-	PNG-to-XObject conversion path not yet ported (needs PDIndexed/ICC/soft mask)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::method::PNGConverter.readInt	partial	-	PNG-to-XObject conversion path not yet ported (needs PDIndexed/ICC/soft mask)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::method::PNGConverter.readPNGFloat	partial	-	PNG-to-XObject conversion path not yet ported (needs PDIndexed/ICC/soft mask)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::method::PNGConverter.setupIndexedColorSpace	partial	-	PNG-to-XObject conversion path not yet ported (needs PDIndexed/ICC/soft mask)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PNGConverter.java::method::PNGConverter.updateCrc	partial	-	PNG-to-XObject conversion path not yet ported (needs PDIndexed/ICC/soft mask)
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/SampledImageReader.java::class::SampledImageReader	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/SampledImageReader.java::const::LOG	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/SampledImageReader.java::method::SampledImageReader.applyColorKeyMask	missing	-	baseline
