@@ -8,40 +8,76 @@ module Pdfbox::Pdmodel::Graphics::Image
     @stream : Pdfbox::Cos::Stream?
 
     # Creates a PDImageXObject from an image file.
-    # JPEG files are embedded directly with DCTDecode filter.
-    # Other formats are converted to raw RGB with FlateDecode compression.
+    # Java: PDImageXObject.createFromFile(imagePath, doc)
     def self.create_from_file(image_path : String, document : Pdfbox::Pdmodel::Document) : PDImageXObject
-      ext = File.extname(image_path).downcase
+      create_from_file_by_extension(image_path, document)
+    end
+
+    # Creates a PDImageXObject from an image file, dispatching on the file-name suffix.
+    # JPEG files are embedded directly with DCTDecode filter; other formats are converted
+    # to raw RGB with FlateDecode compression.
+    # Java: PDImageXObject.createFromFileByExtension(file, doc)
+    def self.create_from_file_by_extension(image_path : String, document : Pdfbox::Pdmodel::Document) : PDImageXObject
+      name = File.basename(image_path)
+      dot = name.rindex('.')
+      raise ::ArgumentError.new("Image type not supported: #{name}") unless dot
+
+      ext = name[dot + 1, name.size - dot - 1].downcase
       case ext
-      when ".jpg", ".jpeg"
-        create_from_jpeg(image_path, document)
-      else
+      when "jpg", "jpeg"
+        JPEGFactory.create_from_stream(document, ::File.open(image_path))
+      when "tif", "tiff", "gif", "bmp", "png"
+        # CCITTFax (tif/tiff) decoding not yet in the Crystal filter set; raster fallback
         create_from_raster(image_path, document)
+      else
+        raise ::ArgumentError.new("Image type not supported: #{name}")
       end
     end
 
-    private def self.create_from_jpeg(image_path : String, document : Pdfbox::Pdmodel::Document) : PDImageXObject
-      file_data = File.read(image_path)
-      image_bytes = file_data.to_slice
+    # Creates a PDImageXObject from an image file, dispatching on the file content magic bytes.
+    # Java: PDImageXObject.createFromFileByContent(file, doc)
+    def self.create_from_file_by_content(image_path : String, document : Pdfbox::Pdmodel::Document) : PDImageXObject
+      file_type = Util::FileTypeDetector.detect_file_type(::File.read(image_path).to_slice)
+      dispatch_by_file_type(file_type, image_path, document)
+    end
 
-      # Read dimensions from the JPEG header using crimage
-      config = CrImage.read_config(image_path)
-      width = config.width
-      height = config.height
+    # Creates a PDImageXObject from a byte array of an image file, dispatching on content magic bytes.
+    # Java: PDImageXObject.createFromByteArray(document, byteArray, name)
+    def self.create_from_byte_array(document : Pdfbox::Pdmodel::Document, bytes : Bytes, name : String?) : PDImageXObject
+      file_type = Util::FileTypeDetector.detect_file_type(bytes)
+      case file_type
+      when Util::FileType::Jpeg
+        JPEGFactory.create_from_byte_array(document, bytes)
+      when Util::FileType::Png, Util::FileType::Gif, Util::FileType::Bmp
+        create_from_raster_bytes(bytes, document)
+      when Util::FileType::Tiff
+        # CCITTFax decoding not yet in the Crystal filter set; raster fallback
+        create_from_raster_bytes(bytes, document)
+      else
+        raise ::ArgumentError.new("Image type #{file_type} not supported: #{name}")
+      end
+    end
 
-      stream = Pdfbox::Cos::Stream.new
-      stream.data = image_bytes
-      stream[Pdfbox::Cos::Name.new("Filter")] = Pdfbox::Cos::Name.new("DCTDecode")
-      stream[Pdfbox::Cos::Name.new("Width")] = Pdfbox::Cos::Integer.new(width)
-      stream[Pdfbox::Cos::Name.new("Height")] = Pdfbox::Cos::Integer.new(height)
-      stream[Pdfbox::Cos::Name.new("BitsPerComponent")] = Pdfbox::Cos::Integer.new(8)
-      stream[Pdfbox::Cos::Name.new("ColorSpace")] = Pdfbox::Cos::Name.new("DeviceRGB")
-
-      new(document, stream, stream)
+    private def self.dispatch_by_file_type(file_type : Util::FileType, image_path : String, document : Pdfbox::Pdmodel::Document) : PDImageXObject
+      case file_type
+      when Util::FileType::Jpeg
+        JPEGFactory.create_from_stream(document, ::File.open(image_path))
+      when Util::FileType::Tiff
+        # CCITTFax decoding not yet in the Crystal filter set; raster fallback
+        create_from_raster(image_path, document)
+      when Util::FileType::Bmp, Util::FileType::Gif, Util::FileType::Png
+        create_from_raster(image_path, document)
+      else
+        raise ::ArgumentError.new("Image type #{file_type} not supported: #{File.basename(image_path)}")
+      end
     end
 
     private def self.create_from_raster(image_path : String, document : Pdfbox::Pdmodel::Document) : PDImageXObject
-      img = CrImage.read(image_path)
+      create_from_raster_bytes(File.read(image_path).to_slice, document)
+    end
+
+    private def self.create_from_raster_bytes(image_bytes : Bytes, document : Pdfbox::Pdmodel::Document) : PDImageXObject
+      img = CrImage.read(::IO::Memory.new(image_bytes))
       bounds = img.bounds
       width = bounds.width
       height = bounds.height
