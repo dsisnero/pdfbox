@@ -14,6 +14,24 @@ module Pdfbox::Pdmodel::Interactive::DocumentNavigation::Outline
       @starting_item = starting_item
     end
 
+    # Java parity: hasNext() — true if the starting item exists and the current item
+    # has not yet reached the end of the sibling list.
+    def has_next? : Bool
+      starting_item = @starting_item
+      return false unless starting_item
+
+      current = @current_item
+      return true if current.nil?
+
+      sibling = current.next_sibling
+      sibling != nil && sibling != starting_item
+    end
+
+    # Java parity: remove() is not supported.
+    def remove : Nil
+      raise Pdfbox::Cos::UnsupportedOperationError.new("Iterator.remove() is not supported")
+    end
+
     def next
       return stop if @done
 
