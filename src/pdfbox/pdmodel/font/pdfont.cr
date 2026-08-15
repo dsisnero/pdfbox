@@ -200,6 +200,17 @@ abstract class Pdfbox::Pdmodel::Font::PDFont
     @dict
   end
 
+  # Java PDFont.equals: two fonts are equal if they wrap the same COS dictionary.
+  def ==(other : self) : Bool
+    cos_object == other.cos_object
+  end
+
+  def ==(other) : Bool
+    other.is_a?(PDFont) && cos_object == other.cos_object
+  end
+
+  def_hash cos_object
+
   # Get font descriptor
   def font_descriptor : PDFontDescriptor?
     desc_dict = @dict.get_dictionary(Pdfbox::Cos::Name::FONT_DESC)

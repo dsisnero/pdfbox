@@ -61,6 +61,16 @@ module Pdfbox::Pdmodel::Interactive::Annotation
     def content_stream : Common::PDStream
       Common::PDStream.new(require_stream_object)
     end
+
+    def form_type : Int32
+      @stream.get_int(Cos::Name.new("FormType"), 0_i64).to_i32
+    end
+
+    def form_type=(value : Int) : Int32
+      int_value = value.to_i32
+      @stream.set_int(Cos::Name.new("FormType"), int_value)
+      int_value
+    end
   end
 
   class PDAppearanceEntry

@@ -1,6 +1,6 @@
 # A choice field in an interactive form (base for list box and combo box)
 module Pdfbox::Pdmodel::Interactive::Form
-  class PDChoice < PDTerminalField
+  class PDChoice < PDVariableText
     FLAG_COMBO                = 1 << 17
     FLAG_EDIT                 = 1 << 18
     FLAG_SORT                 = 1 << 19

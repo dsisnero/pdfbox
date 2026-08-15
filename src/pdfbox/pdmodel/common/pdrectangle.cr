@@ -172,6 +172,17 @@ module Pdfbox::Pdmodel::Common
       upper_right_y - lower_left_y
     end
 
+    # Translates the rectangle so that its lower left corner is at the origin.
+    # Java PDRectangle#createRetranslatedRectangle.
+    def create_retranslated_rectangle : PDRectangle
+      PDRectangle.new(
+        0.0_f32,
+        0.0_f32,
+        width,
+        height
+      )
+    end
+
     # Standard page size methods (return immutable constants)
     def self.letter : PDRectangle
       LETTER

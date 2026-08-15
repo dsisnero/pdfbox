@@ -11,6 +11,14 @@ describe "Examples::Interactive::Form::CreateSimpleForms parity" do
       catalog.acro_form = acro_form
     end
 
+    # Default resources + default appearance are required before setting a value,
+    # because setValue generates the field appearance (Java CreateSimpleForm).
+    font = Pdfbox::Pdmodel::Font::PDType1Font.new(Pdfbox::Pdmodel::Font::Standard14Fonts::FontName::HELVETICA)
+    resources = Pdfbox::Pdmodel::PDResources.new
+    resources.put(Pdfbox::Cos::Name.new("Helv"), font)
+    acro_form.default_resources = resources
+    acro_form.default_appearance = "/Helv 0 Tf 0 g"
+
     # Create a text field with widget
     text_dict = Pdfbox::Cos::Dictionary.new
     text_dict[Pdfbox::Cos::Name.new("FT")] = Pdfbox::Cos::Name.new("Tx")

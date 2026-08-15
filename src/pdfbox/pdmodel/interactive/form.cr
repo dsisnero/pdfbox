@@ -1,8 +1,11 @@
 # Form classes for interactive PDF forms
 require "./form/pdfield"
 require "./form/pdterminal_field"
+require "./form/pdvariable_text"
 require "./form/pdnon_terminal_field"
 require "./form/pdacro_form"
+require "./form/pd_default_appearance_string"
+require "./form/appearance_generator_helper"
 require "./form/pdfield_factory"
 require "./form/pdtext_field"
 require "./form/pdbutton"

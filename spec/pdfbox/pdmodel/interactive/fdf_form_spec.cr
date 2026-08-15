@@ -6,6 +6,14 @@ private def build_form_document : Pdfbox::Pdmodel::Document
   form = Pdfbox::Pdmodel::Interactive::Form::PDAcroForm.new(doc)
   doc.document_catalog.not_nil!.acro_form = form
 
+  # Default resources + default appearance are required before setting a value,
+  # because setValue generates the field appearance (Java ApplyChange).
+  font = Pdfbox::Pdmodel::Font::PDType1Font.new(Pdfbox::Pdmodel::Font::Standard14Fonts::FontName::HELVETICA)
+  resources = Pdfbox::Pdmodel::PDResources.new
+  resources.put(Pdfbox::Cos::Name.new("Helv"), font)
+  form.default_resources = resources
+  form.default_appearance = "/Helv 12 Tf 0 g"
+
   text_dict = Pdfbox::Cos::Dictionary.new
   text_dict[Pdfbox::Cos::Name.new("FT")] = Pdfbox::Cos::Name.new("Tx")
   text_dict[Pdfbox::Cos::Name.new("T")] = Pdfbox::Cos::String.new("name")
@@ -70,6 +78,14 @@ describe "PDAcroForm FDF parity" do
     doc = Pdfbox::Pdmodel::Document.new
     form = Pdfbox::Pdmodel::Interactive::Form::PDAcroForm.new(doc)
     doc.document_catalog.not_nil!.acro_form = form
+
+    # Default resources + default appearance are required before setting a value,
+    # because setValue generates the field appearance (Java ApplyChange).
+    font = Pdfbox::Pdmodel::Font::PDType1Font.new(Pdfbox::Pdmodel::Font::Standard14Fonts::FontName::HELVETICA)
+    resources = Pdfbox::Pdmodel::PDResources.new
+    resources.put(Pdfbox::Cos::Name.new("Helv"), font)
+    form.default_resources = resources
+    form.default_appearance = "/Helv 12 Tf 0 g"
 
     child_dict = Pdfbox::Cos::Dictionary.new
     child_dict[Pdfbox::Cos::Name.new("FT")] = Pdfbox::Cos::Name.new("Tx")

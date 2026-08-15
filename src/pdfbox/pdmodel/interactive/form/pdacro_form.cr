@@ -7,6 +7,7 @@ module Pdfbox::Pdmodel::Interactive::Form
     @document : Pdmodel::Document
     @dictionary : Cos::Dictionary
     @field_cache : Hash(String, PDField)?
+    @scripting_handler : ScriptingHandler?
 
     def initialize(@document : Pdmodel::Document)
       @dictionary = Cos::Dictionary.new
@@ -24,6 +25,16 @@ module Pdfbox::Pdmodel::Interactive::Form
     # Get the document
     def document : Pdmodel::Document
       @document
+    end
+
+    # Get the scripting handler used to format values.
+    def scripting_handler : ScriptingHandler?
+      @scripting_handler
+    end
+
+    # Set the scripting handler used to format values.
+    def scripting_handler=(handler : ScriptingHandler?) : ScriptingHandler?
+      @scripting_handler = handler
     end
 
     # Get all fields in the form
@@ -83,10 +94,29 @@ module Pdfbox::Pdmodel::Interactive::Form
     end
 
     # Get the default resources
-    def default_resources : Pdmodel::Resources?
+    def default_resources : Pdmodel::PDResources?
       dr = @dictionary[Cos::Name.new("DR")]
+      dr = dr.object if dr.is_a?(Cos::Object)
       return unless dr.is_a?(Cos::Dictionary)
-      Pdmodel::Resources.new(dr)
+      Pdmodel::PDResources.new(dr)
+    end
+
+    # Set the default resources
+    def default_resources=(value : Pdmodel::PDResources) : Pdmodel::PDResources
+      @dictionary[Cos::Name.new("DR")] = value.cos_object
+      value
+    end
+
+    # Get the default appearance string (DA entry)
+    def default_appearance : String?
+      value = @dictionary[Cos::Name.new("DA")]
+      value.as?(Cos::String).try(&.value)
+    end
+
+    # Set the default appearance string
+    def default_appearance=(value : String) : String
+      @dictionary.set_string(Cos::Name.new("DA"), value)
+      value
     end
 
     # Check if NeedAppearances flag is set

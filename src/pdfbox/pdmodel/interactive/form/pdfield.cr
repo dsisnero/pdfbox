@@ -41,11 +41,15 @@ module Pdfbox::Pdmodel::Interactive::Form
     # Get the fully qualified field name
     def fully_qualified_name : String
       parts = [] of String
-      parts << partial_name if partial_name
+      if name = partial_name
+        parts << name
+      end
 
       current = parent
       while current
-        parts.unshift(current.partial_name) if current.partial_name
+        if name = current.partial_name
+          parts.unshift(name)
+        end
         current = current.parent
       end
 
@@ -101,5 +105,26 @@ module Pdfbox::Pdmodel::Interactive::Form
 
     # Get the widget annotations associated with this field
     abstract def widgets : Array(Annotation::PDAnnotationWidget)
+
+    # Get the additional actions of the field (Java PDField#getActions).
+    def actions : Action::PDFormFieldAdditionalActions?
+      cos_dict = @dictionary.get_dictionary(Cos::Name.new("AA"))
+      return unless cos_dict
+      Action::PDFormFieldAdditionalActions.new(cos_dict)
+    end
+
+    # Get an inheritable attribute, walking up the parent chain and falling
+    # back to the AcroForm dictionary (Java PDField#getInheritableAttribute).
+    def get_inheritable_attribute(key : Cos::Name) : Cos::Base?
+      if @dictionary.has_key?(key)
+        value = @dictionary[key]
+        value.is_a?(Cos::Object) ? value.object : value
+      elsif parent = @parent
+        parent.get_inheritable_attribute(key)
+      else
+        value = @acro_form.cos_object[key]?
+        value.is_a?(Cos::Object) ? value.object : value
+      end
+    end
   end
 end

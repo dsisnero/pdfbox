@@ -28,6 +28,23 @@ module Pdfbox::Pdmodel
       resource_entry("Font", name)
     end
 
+    def get_font(name : Pdfbox::Cos::Name) : Pdfbox::Pdmodel::Font::PDFont?
+      entry = font(name)
+      return unless entry
+      dictionary = entry.is_a?(Pdfbox::Cos::Object) ? entry.object : entry
+      return unless dictionary.is_a?(Pdfbox::Cos::Dictionary)
+      Pdfbox::Pdmodel::Font::PDFontFactory.create_font(dictionary, @resource_cache)
+    end
+
+    def add(font : Pdfbox::Pdmodel::Font::PDFont) : Pdfbox::Cos::Name
+      add_resource("Font", font.cos_object, "F")
+    end
+
+    def put(name : Pdfbox::Cos::Name, font : Pdfbox::Pdmodel::Font::PDFont) : Pdfbox::Cos::Name
+      subdictionary("Font")[name] = font.cos_object
+      name
+    end
+
     def font_names : Array(Pdfbox::Cos::Name)
       resource_names("Font")
     end

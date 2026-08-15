@@ -134,7 +134,7 @@ module Pdfbox::Pdmodel::Interactive::Annotation::Handlers
           if acro_form
             default_resources = acro_form.default_resources
             if default_resources
-              font = default_resources.font(@font_name)
+              font = default_resources.get_font(@font_name)
             end
           end
         end

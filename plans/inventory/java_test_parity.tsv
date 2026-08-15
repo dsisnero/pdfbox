@@ -1237,7 +1237,7 @@ pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/annotation/Appearance
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/annotation/AppearanceGenerationTest.java::method::AppearanceGenerationTest.renderTest	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/annotation/AppearanceGenerationTest.java::method::AppearanceGenerationTest.setUp	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/annotation/AppearanceGenerationTest.java::method::AppearanceGenerationTest.tearDown	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/annotation/AppearanceGenerationTest.java::method::AppearanceGenerationTest.testTinyHorizontalFieldWith0FontSize	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/annotation/AppearanceGenerationTest.java::method::AppearanceGenerationTest.testTinyHorizontalFieldWith0FontSize	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/annotation/PDAnnotationTest.java::class::PDAnnotationTest	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/annotation/PDAnnotationTest.java::method::PDAnnotationTest.createDefaultWidgetAnnotation	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/annotation/PDAnnotationTest.java::method::PDAnnotationTest.createWidgetAnnotationFromField	missing	-	baseline
@@ -1435,11 +1435,11 @@ pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDChoiceTest.jav
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDChoiceTest.java::method::PDChoiceTest.getOptionsFromMixed	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDChoiceTest.java::method::PDChoiceTest.getOptionsFromStrings	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDChoiceTest.java::method::PDChoiceTest.setUp	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDDefaultAppearanceStringTest.java::class::PDDefaultAppearanceStringTest	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDDefaultAppearanceStringTest.java::method::PDDefaultAppearanceStringTest.setUp	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDDefaultAppearanceStringTest.java::method::PDDefaultAppearanceStringTest.testFontResourceUnavailable	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDDefaultAppearanceStringTest.java::method::PDDefaultAppearanceStringTest.testParseDAString	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDDefaultAppearanceStringTest.java::method::PDDefaultAppearanceStringTest.testWrongNumberOfColorArguments	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDDefaultAppearanceStringTest.java::class::PDDefaultAppearanceStringTest	ported	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDDefaultAppearanceStringTest.java::method::PDDefaultAppearanceStringTest.setUp	ported	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDDefaultAppearanceStringTest.java::method::PDDefaultAppearanceStringTest.testFontResourceUnavailable	ported	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDDefaultAppearanceStringTest.java::method::PDDefaultAppearanceStringTest.testParseDAString	ported	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDDefaultAppearanceStringTest.java::method::PDDefaultAppearanceStringTest.testWrongNumberOfColorArguments	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDFieldTreeTest.java::class::PDFieldTreeTest	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDFieldTreeTest.java::method::PDFieldTreeTest.test5044	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDSignatureFieldTest.java::class::PDSignatureFieldTest	missing	-	baseline

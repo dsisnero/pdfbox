@@ -3,7 +3,7 @@ module Pdfbox::Pdmodel::Interactive
     FONT_SCALE = 1000.0_f32
 
     class Builder
-      @contents : Pdfbox::Pdmodel::PDPageContentStream
+      @contents : Pdfbox::Pdmodel::PDAppearanceContentStream
       @appearance_style : AppearanceStyle?
       @wrap_lines = false
       @width = 0.0_f32
@@ -12,7 +12,7 @@ module Pdfbox::Pdmodel::Interactive
       @horizontal_offset = 0.0_f32
       @vertical_offset = 0.0_f32
 
-      def initialize(@contents : Pdfbox::Pdmodel::PDPageContentStream)
+      def initialize(@contents : Pdfbox::Pdmodel::PDAppearanceContentStream)
       end
 
       def style(value : AppearanceStyle) : self
@@ -61,7 +61,7 @@ module Pdfbox::Pdmodel::Interactive
     @appearance_style : AppearanceStyle
     @wrap_lines : Bool
     @width : Float32
-    @contents : Pdfbox::Pdmodel::PDPageContentStream
+    @contents : Pdfbox::Pdmodel::PDAppearanceContentStream
     @text_content : PlainText?
     @text_alignment : TextAlign
     @horizontal_offset : Float32

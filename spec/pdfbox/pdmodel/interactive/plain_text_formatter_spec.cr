@@ -46,16 +46,8 @@ end
 
 describe Pdfbox::Pdmodel::Interactive::PlainTextFormatter do
   it "writes wrapped text through the existing content stream" do
-    document = Pdfbox::Pdmodel::Document.new
-    page = Pdfbox::Pdmodel::Page.new
-    document.add_page(page)
-
-    contents = Pdfbox::Pdmodel::PDPageContentStream.new(
-      document,
-      page,
-      Pdfbox::Pdmodel::PDPageContentStream::AppendMode::OVERWRITE,
-      false
-    )
+    appearance_stream = Pdfbox::Pdmodel::Interactive::Annotation::PDAppearanceStream.new(Pdfbox::Cos::Stream.new)
+    contents = Pdfbox::Pdmodel::PDAppearanceContentStream.new(appearance_stream)
     font = Pdfbox::Pdmodel::Font::PDType1Font.new(Pdfbox::Pdmodel::Font::Standard14Fonts::FontName::HELVETICA)
     style = Pdfbox::Pdmodel::Interactive::AppearanceStyle.new
     style.font = font
@@ -78,7 +70,7 @@ describe Pdfbox::Pdmodel::Interactive::PlainTextFormatter do
     contents.end_text
     contents.close
 
-    stream_text = String.new(page.contents.as(Pdfbox::Cos::Dictionary).create_input_stream.getb_to_end)
+    stream_text = String.new(appearance_stream.require_stream_object.data)
     stream_text.should contain("Td")
     stream_text.should contain("(alpha")
     stream_text.should contain("(beta")

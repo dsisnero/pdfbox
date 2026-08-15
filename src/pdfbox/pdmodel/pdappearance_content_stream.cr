@@ -7,11 +7,21 @@ module Pdfbox::Pdmodel
     @buffer : ::IO::Memory
     @stream : Interactive::Annotation::PDAppearanceStream
     @resources : PDResources
+    @output : ::IO::Memory?
     @font_name : String?
     @in_text_mode = false
     @closed = false
 
     def initialize(@stream : Interactive::Annotation::PDAppearanceStream)
+      @buffer = ::IO::Memory.new
+      @resources = @stream.resources || begin
+        created = PDResources.new
+        @stream.resources = created
+        created
+      end
+    end
+
+    def initialize(@stream : Interactive::Annotation::PDAppearanceStream, @output : ::IO::Memory)
       @buffer = ::IO::Memory.new
       @resources = @stream.resources || begin
         created = PDResources.new
@@ -62,6 +72,16 @@ module Pdfbox::Pdmodel
     def non_stroking_color=(color : Graphics::Color::PDColor) : Graphics::Color::PDColor
       write_color(color, stroking: false)
       color
+    end
+
+    def non_stroking_color(r : Number, g : Number, b : Number) : Nil
+      write_operands(r, g, b)
+      write_operator(NON_STROKING_RGB)
+    end
+
+    def non_stroking_color(gray : Number) : Nil
+      write_operands(gray)
+      write_operator(NON_STROKING_GRAY)
     end
 
     def line_dash_pattern(pattern : Enumerable(Number), phase : Number) : Nil
@@ -115,6 +135,14 @@ module Pdfbox::Pdmodel
 
     def close_path : Nil
       write_operator(CLOSE_PATH)
+    end
+
+    def clip : Nil
+      write_operator(CLIP_NON_ZERO)
+    end
+
+    def close_and_stroke : Nil
+      write_operator(CLOSE_AND_STROKE)
     end
 
     def stroke : Nil
@@ -209,9 +237,13 @@ module Pdfbox::Pdmodel
     def close : Nil
       return if @closed
       @closed = true
-      cos_stream = @stream.require_stream_object
-      cos_stream.data = @buffer.to_slice
-      cos_stream.set_int(Cos::Name::LENGTH, @buffer.size)
+      if output = @output
+        output.write(@buffer.to_slice)
+      else
+        cos_stream = @stream.require_stream_object
+        cos_stream.data = @buffer.to_slice
+        cos_stream.set_int(Cos::Name::LENGTH, @buffer.size)
+      end
     end
 
     private def write_color(color : Graphics::Color::PDColor, *, stroking : Bool) : Nil

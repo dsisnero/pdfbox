@@ -1,6 +1,6 @@
 # A text field in an interactive form
 module Pdfbox::Pdmodel::Interactive::Form
-  class PDTextField < PDTerminalField
+  class PDTextField < PDVariableText
     FLAG_MULTILINE          = 1 << 12
     FLAG_PASSWORD           = 1 << 13
     FLAG_FILE_SELECT        = 1 << 20
@@ -29,6 +29,19 @@ module Pdfbox::Pdmodel::Interactive::Form
 
     def value=(value : String)
       @dictionary[Cos::Name.new("V")] = Cos::String.new(value)
+      apply_change
+    end
+
+    # Constructs appearance streams and appearance dictionaries for all widget
+    # annotations. Java PDTextField#constructAppearances.
+    def construct_appearances : Nil
+      helper = AppearanceGeneratorHelper.new(self)
+      helper.set_appearance_value(value_as_string)
+    end
+
+    protected def apply_change : Nil
+      construct_appearances
+      # if we supported JavaScript we would raise a field changed event here
     end
 
     # Check if multiline
@@ -39,6 +52,16 @@ module Pdfbox::Pdmodel::Interactive::Form
     # Check if password field
     def password? : Bool
       (field_flags & FLAG_PASSWORD) != 0
+    end
+
+    # Check if file select field
+    def file_select? : Bool
+      (field_flags & FLAG_FILE_SELECT) != 0
+    end
+
+    # Check if comb field
+    def comb? : Bool
+      (field_flags & FLAG_COMB) != 0
     end
 
     # Get default value
