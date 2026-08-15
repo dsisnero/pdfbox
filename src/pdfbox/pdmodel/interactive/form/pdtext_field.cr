@@ -33,8 +33,34 @@ module Pdfbox::Pdmodel::Interactive::Form
       end
     end
 
+    # Java PDTextField#getValue: returns the value string or an empty string.
+    def value : String
+      value = @dictionary[Cos::Name.new("V")]
+      value = value.object if value.is_a?(Cos::Object)
+      case value
+      when Cos::String
+        value.value
+      when Cos::Stream
+        io = value.create_input_stream
+        io.gets_to_end
+      else
+        ""
+      end
+    end
+
     def value=(value : String)
       @dictionary[Cos::Name.new("V")] = Cos::String.new(value)
+      apply_change
+    end
+
+    # Java PDTextField#setValue(null): removes the /V entry and still applies
+    # the change (appearance generation).
+    def value=(value : String?)
+      if value
+        @dictionary[Cos::Name.new("V")] = Cos::String.new(value)
+      else
+        @dictionary.delete(Cos::Name.new("V"))
+      end
       apply_change
     end
 
@@ -55,9 +81,21 @@ module Pdfbox::Pdmodel::Interactive::Form
       (field_flags & FLAG_MULTILINE) != 0
     end
 
+    # Set the multiline bit.
+    def multiline=(value : Bool) : Bool
+      @dictionary.set_flag(Cos::Name.new("Ff"), FLAG_MULTILINE, value)
+      value
+    end
+
     # Check if password field
     def password? : Bool
       (field_flags & FLAG_PASSWORD) != 0
+    end
+
+    # Set the password bit.
+    def password=(value : Bool) : Bool
+      @dictionary.set_flag(Cos::Name.new("Ff"), FLAG_PASSWORD, value)
+      value
     end
 
     # Check if file select field
@@ -65,9 +103,43 @@ module Pdfbox::Pdmodel::Interactive::Form
       (field_flags & FLAG_FILE_SELECT) != 0
     end
 
+    # Set the file select bit.
+    def file_select=(value : Bool) : Bool
+      @dictionary.set_flag(Cos::Name.new("Ff"), FLAG_FILE_SELECT, value)
+      value
+    end
+
     # Check if comb field
     def comb? : Bool
       (field_flags & FLAG_COMB) != 0
+    end
+
+    # Set the comb bit.
+    def comb=(value : Bool) : Bool
+      @dictionary.set_flag(Cos::Name.new("Ff"), FLAG_COMB, value)
+      value
+    end
+
+    # Check if do not scroll field
+    def do_not_scroll? : Bool
+      (field_flags & FLAG_DO_NOT_SCROLL) != 0
+    end
+
+    # Set the do not scroll bit.
+    def do_not_scroll=(value : Bool) : Bool
+      @dictionary.set_flag(Cos::Name.new("Ff"), FLAG_DO_NOT_SCROLL, value)
+      value
+    end
+
+    # Check if do not spell check field
+    def do_not_spell_check? : Bool
+      (field_flags & FLAG_DO_NOT_SPELL_CHECK) != 0
+    end
+
+    # Set the do not spell check bit.
+    def do_not_spell_check=(value : Bool) : Bool
+      @dictionary.set_flag(Cos::Name.new("Ff"), FLAG_DO_NOT_SPELL_CHECK, value)
+      value
     end
 
     # Get default value

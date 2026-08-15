@@ -23,5 +23,18 @@ module Pdfbox::Pdmodel::Interactive::Form
 
       result
     end
+
+    # Sets the field's widget annotations. Java PDTerminalField#setWidgets.
+    # ameba:disable Naming/AccessorMethodName
+    def set_widgets(children : Array(Annotation::PDAnnotationWidget)) : Nil
+      kids_array = Cos::Array.new
+      children.each do |widget|
+        kids_array.add(widget.cos_object)
+      end
+      @dictionary[Cos::Name.new("Kids")] = kids_array
+      children.each do |widget|
+        widget.cos_object[Cos::Name.new("Parent")] = cos_object
+      end
+    end
   end
 end

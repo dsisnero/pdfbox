@@ -34,8 +34,71 @@ module Pdfbox::Pdmodel::Interactive::Form
       end
     end
 
+    # Set the selected value of this field, and try to update the visual appearance.
+    # Java PDChoice#setValue(String): removes the I key for single valued fields.
     def value=(value : String)
-      @dictionary[Cos::Name.new("V")] = Cos::String.new(value)
+      @dictionary.set_string(Cos::Name.new("V"), value)
+
+      # remove I key for single valued choice field
+      set_selected_options_index(nil)
+
+      apply_change
+    end
+
+    # Sets the default value of this field.
+    def default_value=(value : String) : String
+      @dictionary.set_string(Cos::Name.new("DV"), value)
+      value
+    end
+
+    # Returns the selected values, or an empty Array. This list always contains a
+    # single item unless #multi_select? is true. Java PDChoice#getValue.
+    def value : Array(String)
+      get_value_for(Cos::Name.new("V"))
+    end
+
+    # Returns the default values, or an empty Array. Java PDChoice#getDefaultValue.
+    def default_value : Array(String)
+      get_value_for(Cos::Name.new("DV"))
+    end
+
+    private def get_value_for(name : Cos::Name) : Array(String)
+      value = @dictionary[name]?
+      value = value.object if value.is_a?(Cos::Object)
+      case value
+      when Cos::String
+        [value.value]
+      when Cos::Array
+        value.items.compact_map do |item|
+          item.as?(Cos::String).try(&.value)
+        end
+      else
+        [] of String
+      end
+    end
+
+    # Set the selected values. Java PDChoice#setValue(List).
+    # ameba:disable Naming/AccessorMethodName
+    def set_values(values : Array(String)?) : Nil
+      if values && !values.empty?
+        unless multi_select?
+          raise ArgumentError.new("The list box does not allow multiple selections.")
+        end
+        options = get_options
+        unless options.each.all? { |option| values.includes?(option) }
+          raise ArgumentError.new("The values are not contained in the selectable options.")
+        end
+        cos_values = Cos::Array.new
+        values.each do |entry|
+          cos_values.add(Cos::String.new(entry))
+        end
+        @dictionary[Cos::Name.new("V")] = cos_values
+        update_selected_options_index(values, options)
+      else
+        @dictionary.delete(Cos::Name.new("V"))
+        @dictionary.delete(Cos::Name.new("I"))
+      end
+      apply_change
     end
 
     # Get the options (array of display value / export value pairs)
@@ -119,9 +182,101 @@ module Pdfbox::Pdmodel::Interactive::Form
       @dictionary[Cos::Name.new("Opt")] = arr
     end
 
+    # Set the display values - the 'Opt' key. Java PDChoice#setOptions(List).
+    # ameba:disable Naming/AccessorMethodName
+    def set_options(display_values : Array(String)?) : Nil
+      if display_values && !display_values.empty?
+        values = sort? ? display_values.sort : display_values
+        arr = Cos::Array.new
+        values.each do |entry|
+          arr.add(Cos::String.new(entry))
+        end
+        @dictionary[Cos::Name.new("Opt")] = arr
+      else
+        @dictionary.delete(Cos::Name.new("Opt"))
+      end
+    end
+
+    # Set the display and export values - the 'Opt' key. Java
+    # PDChoice#setOptions(List, List).
+    def set_options(export_values : Array(String)?, display_values : Array(String)?) : Nil
+      if export_values && display_values && !export_values.empty? && !display_values.empty?
+        if export_values.size != display_values.size
+          raise ArgumentError.new("The number of entries for exportValue and displayValue shall be the same.")
+        end
+
+        key_value_pairs = export_values.zip(display_values)
+        if sort?
+          key_value_pairs = key_value_pairs.sort_by { |_key, value| value }
+        end
+
+        options = Cos::Array.new
+        key_value_pairs.each do |key, value|
+          entry = Cos::Array.new
+          entry.add(Cos::String.new(key))
+          entry.add(Cos::String.new(value))
+          options.add(entry)
+        end
+        @dictionary[Cos::Name.new("Opt")] = options
+      else
+        @dictionary.delete(Cos::Name.new("Opt"))
+      end
+    end
+
+    # Java PDChoice#getOptionsExportValues: same as #get_options (export values).
+    # ameba:disable Naming/AccessorMethodName
+    def get_options_export_values : Array(String)
+      get_options
+    end
+
+    # Set the selected options index - the 'I' key.
+    # ameba:disable Naming/AccessorMethodName
+    def set_selected_options_index(values : Array(Int)?) : Nil
+      if values && !values.empty?
+        unless multi_select?
+          raise ArgumentError.new("Setting the indices is not allowed for choice fields not allowing multiple selections.")
+        end
+        arr = Cos::Array.new
+        values.each do |entry|
+          arr.add(Cos::Integer.new(entry.to_i64))
+        end
+        @dictionary[Cos::Name.new("I")] = arr
+      else
+        @dictionary.delete(Cos::Name.new("I"))
+      end
+    end
+
+    # Get the selected options indices - the 'I' key.
+    # ameba:disable Naming/AccessorMethodName
+    def get_selected_options_index : Array(Int32)
+      value = @dictionary[Cos::Name.new("I")]?
+      value = value.object if value.is_a?(Cos::Object)
+      return [] of Int32 unless value.is_a?(Cos::Array)
+      value.items.compact_map do |item|
+        case item
+        when Cos::Integer then item.value.to_i32
+        when Cos::Float   then item.value.to_i32
+        else                   nil
+        end
+      end
+    end
+
+    # Update the 'I' key based on values set.
+    private def update_selected_options_index(values : Array(String), options : Array(String)) : Nil
+      indices = values.compact_map { |value| options.index(value) }
+      indices.sort!
+      set_selected_options_index(indices)
+    end
+
     # Check if combo box
     def combo? : Bool
       (field_flags & FLAG_COMBO) != 0
+    end
+
+    # Set the Combo bit.
+    def combo=(value : Bool) : Bool
+      @dictionary.set_flag(Cos::Name.new("Ff"), FLAG_COMBO, value)
+      value
     end
 
     # Check if editable
@@ -129,9 +284,64 @@ module Pdfbox::Pdmodel::Interactive::Form
       (field_flags & FLAG_EDIT) != 0
     end
 
-    # Check if multi-select
+    # Set the Edit bit.
+    def editable=(value : Bool) : Bool
+      @dictionary.set_flag(Cos::Name.new("Ff"), FLAG_EDIT, value)
+      value
+    end
+
+    # Check if sorted. Java PDChoice#isSort.
+    def sort? : Bool
+      (field_flags & FLAG_SORT) != 0
+    end
+
+    # Set the Sort bit.
+    def sort=(value : Bool) : Bool
+      @dictionary.set_flag(Cos::Name.new("Ff"), FLAG_SORT, value)
+      value
+    end
+
+    # Check if multi-select. Java PDChoice#isMultiSelect.
     def multi_select? : Bool
       (field_flags & FLAG_MULTI_SELECT) != 0
+    end
+
+    # Set the MultiSelect bit.
+    def multi_select=(value : Bool) : Bool
+      @dictionary.set_flag(Cos::Name.new("Ff"), FLAG_MULTI_SELECT, value)
+      value
+    end
+
+    # Check if do not spell check. Java PDChoice#isDoNotSpellCheck.
+    def do_not_spell_check? : Bool
+      (field_flags & FLAG_DO_NOT_SPELL_CHECK) != 0
+    end
+
+    # Set the DoNotSpellCheck bit.
+    def do_not_spell_check=(value : Bool) : Bool
+      @dictionary.set_flag(Cos::Name.new("Ff"), FLAG_DO_NOT_SPELL_CHECK, value)
+      value
+    end
+
+    # Check if commit on selection change. Java PDChoice#isCommitOnSelChange.
+    def commit_on_sel_change? : Bool
+      (field_flags & FLAG_COMMIT_ON_SEL_CHANGE) != 0
+    end
+
+    # Set the CommitOnSelChange bit.
+    def commit_on_sel_change=(value : Bool) : Bool
+      @dictionary.set_flag(Cos::Name.new("Ff"), FLAG_COMMIT_ON_SEL_CHANGE, value)
+      value
+    end
+
+    protected def apply_change : Nil
+      construct_appearances
+    end
+
+    # Java PDChoice#constructAppearances is abstract; PDListBox/PDComboBox
+    # implement it via the AppearanceGeneratorHelper.
+    def construct_appearances : Nil
+      raise Pdfbox::Cos::UnsupportedOperationError.new("construct_appearances is not supported for a base choice field")
     end
   end
 end

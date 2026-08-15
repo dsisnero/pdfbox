@@ -200,7 +200,7 @@ module Pdfbox::Pdmodel::Interactive::Form
     def check_value(value : String) : Nil
       on_values = get_on_values
       if Cos::Name.new("Off").value != value && !on_values.includes?(value)
-        raise ArgumentError.new("value '#{value}' is not a valid option for the field #{fully_qualified_name}, valid values are: #{on_values.to_a} and #{Cos::Name.new("Off").value}")
+        raise ArgumentError.new("value '#{value}' is not a valid option for the field #{fully_qualified_name}, valid values are: [#{on_values.to_a.join(", ")}] and #{Cos::Name.new("Off").value}")
       end
     end
 

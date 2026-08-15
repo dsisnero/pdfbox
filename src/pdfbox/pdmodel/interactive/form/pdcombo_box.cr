@@ -10,5 +10,11 @@ module Pdfbox::Pdmodel::Interactive::Form
       super(acro_form)
       @dictionary.set_flag(Cos::Name.new("Ff"), PDChoice::FLAG_COMBO, true)
     end
+
+    # Java PDComboBox#constructAppearances.
+    def construct_appearances : Nil
+      helper = AppearanceGeneratorHelper.new(self)
+      helper.set_appearance_value("")
+    end
   end
 end
