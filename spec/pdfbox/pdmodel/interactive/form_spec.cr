@@ -75,9 +75,21 @@ describe "PDCheckBox" do
     dict = Pdfbox::Cos::Dictionary.new
     field = Pdfbox::Pdmodel::Interactive::Form::PDCheckBox.new(form, dict, nil)
 
+    # The field's own dictionary is its widget (no Kids array). Give it a normal
+    # appearance subdictionary with the On ("Yes") and Off states so the value
+    # can be validated (Java PDCheckBoxTest uses a fixture PDF for this).
+    normal = Pdfbox::Cos::Dictionary.new
+    normal[Pdfbox::Cos::Name.new("Yes")] = Pdfbox::Cos::Stream.new
+    normal[Pdfbox::Cos::Name.new("Off")] = Pdfbox::Cos::Stream.new
+    ap = Pdfbox::Cos::Dictionary.new
+    ap[Pdfbox::Cos::Name.new("N")] = normal
+    dict[Pdfbox::Cos::Name.new("AP")] = ap
+
     field.value = "Yes"
     field.value_as_string.should eq("Yes")
     field.checked?.should be_true
+    dict.get_name_as_string(Pdfbox::Cos::Name.new("V")).should eq("Yes")
+    dict.get_name_as_string(Pdfbox::Cos::Name.new("AS")).should eq("Yes")
   end
 end
 

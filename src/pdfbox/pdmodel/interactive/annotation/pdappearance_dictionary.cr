@@ -102,6 +102,7 @@ module Pdfbox::Pdmodel::Interactive::Annotation
 
       map = {} of Cos::Name => PDAppearanceStream
       @entry.entries.each do |name, value|
+        value = value.object if value.is_a?(Cos::Object)
         if stream = value.as?(Cos::Dictionary)
           map[name] = PDAppearanceStream.new(stream)
         end

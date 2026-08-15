@@ -13,6 +13,12 @@ module Pdfbox::Pdmodel::Interactive::Form
       super(form, dictionary, parent)
     end
 
+    # Convenience constructor for a new text field (Java PDTextField(PDAcroForm)).
+    def initialize(acro_form : PDAcroForm)
+      super(acro_form, Cos::Dictionary.new, nil)
+      @dictionary[Cos::Name.new("FT")] = Cos::Name.new("Tx")
+    end
+
     def field_type : String
       "Tx"
     end

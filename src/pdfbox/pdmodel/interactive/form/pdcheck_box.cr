@@ -1,58 +1,44 @@
-# A checkbox field in an interactive form
+# A check box toggles between two states, on and off.
 module Pdfbox::Pdmodel::Interactive::Form
   class PDCheckBox < PDButton
     def initialize(form : PDAcroForm, dictionary : Cos::Dictionary, parent : PDNonTerminalField?)
       super(form, dictionary, parent)
     end
 
-    def value_as_string : String
-      value = @dictionary[Cos::Name.new("V")]
-      case value
-      when Cos::Name
-        value.value
-      else
-        "Off"
-      end
+    # Convenience constructor for a new check box (Java PDCheckBox(PDAcroForm)).
+    def initialize(acro_form : PDAcroForm)
+      super(acro_form)
     end
 
-    def value=(value : String)
-      @dictionary[Cos::Name.new("V")] = Cos::Name.new(value)
-      # Also update the appearance state (AS)
-      @dictionary[Cos::Name.new("AS")] = Cos::Name.new(value)
-    end
-
-    # Check if checked
+    # This will tell if this check box is currently checked or not.
     def checked? : Bool
-      value = value_as_string
-      value != "Off" && !value.empty?
+      value == get_on_value
     end
 
-    # Check the box
-    def check
-      # Get the export value (the "on" state name)
-      on_value = export_value
-      self.value = on_value
+    # Checks the check box.
+    def check : Nil
+      self.value = get_on_value
     end
 
-    # Uncheck the box
-    def uncheck
-      self.value = "Off"
+    # Unchecks the check box.
+    def uncheck : Nil
+      self.value = Cos::Name.new("Off").value
     end
 
-    # Get the export value (on state name)
-    def export_value : String
-      # Look for the on state in the appearance dictionary
-      appearance = @dictionary[Cos::Name.new("AP")]
-      if appearance.is_a?(Cos::Dictionary)
-        normal = appearance[Cos::Name.new("N")]
-        if normal.is_a?(Cos::Dictionary)
-          # Find a key that isn't "Off"
-          normal.entries.each do |key, _|
-            return key.value unless key.value == "Off"
+    # Get the value which sets the check box to the On state.
+    # ameba:disable Naming/AccessorMethodName
+    def get_on_value : String
+      widget = widgets[0]
+      ap_dictionary = widget.appearance
+      if ap_dictionary
+        normal_appearance = ap_dictionary.normal_appearance
+        if normal_appearance
+          normal_appearance.sub_dictionary.keys.each do |entry|
+            return entry.value unless entry == Cos::Name.new("Off")
           end
         end
       end
-      "Yes" # Default on value
+      ""
     end
   end
 end

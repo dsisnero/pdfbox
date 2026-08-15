@@ -63,6 +63,14 @@ describe "Examples::Interactive::Form::CreateSimpleForms parity" do
     check_dict = Pdfbox::Cos::Dictionary.new
     check_dict[Pdfbox::Cos::Name.new("FT")] = Pdfbox::Cos::Name.new("Btn")
     check_dict[Pdfbox::Cos::Name.new("T")] = Pdfbox::Cos::String.new("CheckBox1")
+    # Give the checkbox a normal appearance subdictionary so the value can be
+    # validated (the field's own dictionary is its widget, no Kids array).
+    normal = Pdfbox::Cos::Dictionary.new
+    normal[Pdfbox::Cos::Name.new("Yes")] = Pdfbox::Cos::Stream.new
+    normal[Pdfbox::Cos::Name.new("Off")] = Pdfbox::Cos::Stream.new
+    check_ap = Pdfbox::Cos::Dictionary.new
+    check_ap[Pdfbox::Cos::Name.new("N")] = normal
+    check_dict[Pdfbox::Cos::Name.new("AP")] = check_ap
     check_field = Pdfbox::Pdmodel::Interactive::Form::PDCheckBox.new(acro_form, check_dict, nil)
     acro_form.add_field(check_field)
 

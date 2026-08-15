@@ -1,0 +1,240 @@
+require "../../../../spec_helper"
+require "../../../../../src/pdfbox"
+
+private ANNOTATION_DIR = "vendor/pdfbox/pdfbox/src/test/resources/org/apache/pdfbox/pdmodel/interactive/form"
+private NAME_OF_PDF    = "AcroFormsBasicFields.pdf"
+
+# Source of truth:
+#   vendor/pdfbox/pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDButtonTest.java
+# Fixture-based tests against AcroFormsBasicFields.pdf (target/pdfs fixtures for
+# PDFBOX-3656/3682 are generated at build time and are not checked in).
+describe Pdfbox::Pdmodel::Interactive::Form::PDButton do
+  it "PDButtonTest#retrieveAcrobatCheckBoxProperties" do
+    file = SpecPaths.resolve("#{ANNOTATION_DIR}/#{NAME_OF_PDF}")
+    document = Pdfbox::Loader.load_pdf(file)
+    begin
+      acro_form = document.document_catalog.not_nil!.acro_form
+      checkbox = acro_form.not_nil!.get_field("Checkbox").as(Pdfbox::Pdmodel::Interactive::Form::PDCheckBox)
+      checkbox.should_not be_nil
+      checkbox.get_on_value.should eq("Yes")
+      checkbox.get_on_values.size.should eq(1)
+      checkbox.get_on_values.includes?("Yes").should be_true
+    ensure
+      document.close
+    end
+  end
+
+  it "PDButtonTest#testAcrobatCheckBoxProperties" do
+    file = SpecPaths.resolve("#{ANNOTATION_DIR}/#{NAME_OF_PDF}")
+    document = Pdfbox::Loader.load_pdf(file)
+    begin
+      acro_form = document.document_catalog.not_nil!.acro_form
+      checkbox = acro_form.not_nil!.get_field("Checkbox").as(Pdfbox::Pdmodel::Interactive::Form::PDCheckBox)
+      checkbox.value.should eq("Off")
+      checkbox.checked?.should be_false
+
+      checkbox.check
+      checkbox.value.should eq(checkbox.get_on_value)
+      checkbox.checked?.should be_true
+
+      checkbox.value = "Yes"
+      checkbox.value.should eq(checkbox.get_on_value)
+      checkbox.checked?.should be_true
+      checkbox.cos_object.get_name_as_string(Pdfbox::Cos::Name.new("AS")).should eq("Yes")
+
+      checkbox.value = "Off"
+      Pdfbox::Cos::Name.new("Off").value.should eq(checkbox.value)
+      checkbox.checked?.should be_false
+      checkbox.cos_object.get_name_as_string(Pdfbox::Cos::Name.new("AS")).should eq("Off")
+
+      checkbox = acro_form.not_nil!.get_field("Checkbox-DefaultValue").as(Pdfbox::Pdmodel::Interactive::Form::PDCheckBox)
+      checkbox.default_value.should eq(checkbox.get_on_value)
+
+      checkbox.default_value = "Off"
+      Pdfbox::Cos::Name.new("Off").value.should eq(checkbox.default_value)
+    ensure
+      document.close
+    end
+  end
+
+  it "PDButtonTest#setCheckboxInvalidValue" do
+    file = SpecPaths.resolve("#{ANNOTATION_DIR}/#{NAME_OF_PDF}")
+    document = Pdfbox::Loader.load_pdf(file)
+    begin
+      acro_form = document.document_catalog.not_nil!.acro_form
+      checkbox = acro_form.not_nil!.get_field("Checkbox").as(Pdfbox::Pdmodel::Interactive::Form::PDCheckBox)
+      expect_raises(ArgumentError) { checkbox.value = "InvalidValue" }
+    ensure
+      document.close
+    end
+  end
+
+  it "PDButtonTest#retrieveAcrobatRadioButtonProperties" do
+    file = SpecPaths.resolve("#{ANNOTATION_DIR}/#{NAME_OF_PDF}")
+    document = Pdfbox::Loader.load_pdf(file)
+    begin
+      acro_form = document.document_catalog.not_nil!.acro_form
+      radio_button = acro_form.not_nil!.get_field("RadioButtonGroup").as(Pdfbox::Pdmodel::Interactive::Form::PDRadioButton)
+      radio_button.should_not be_nil
+      radio_button.get_on_values.size.should eq(2)
+      radio_button.get_on_values.includes?("RadioButton01").should be_true
+      radio_button.get_on_values.includes?("RadioButton02").should be_true
+    ensure
+      document.close
+    end
+  end
+
+  it "PDButtonTest#testAcrobatRadioButtonProperties" do
+    file = SpecPaths.resolve("#{ANNOTATION_DIR}/#{NAME_OF_PDF}")
+    document = Pdfbox::Loader.load_pdf(file)
+    begin
+      acro_form = document.document_catalog.not_nil!.acro_form
+      radio_button = acro_form.not_nil!.get_field("RadioButtonGroup").as(Pdfbox::Pdmodel::Interactive::Form::PDRadioButton)
+
+      # Set value so that first radio button option is selected
+      radio_button.value = "RadioButton01"
+      radio_button.value.should eq("RadioButton01")
+      radio_button.widgets[0].cos_object.get_name_as_string(Pdfbox::Cos::Name.new("AS")).should eq("RadioButton01")
+      radio_button.widgets[1].cos_object.get_name_as_string(Pdfbox::Cos::Name.new("AS")).should eq("Off")
+
+      # Set value so that second radio button option is selected
+      radio_button.value = "RadioButton02"
+      radio_button.value.should eq("RadioButton02")
+      radio_button.widgets[0].cos_object.get_name_as_string(Pdfbox::Cos::Name.new("AS")).should eq("Off")
+      radio_button.widgets[1].cos_object.get_name_as_string(Pdfbox::Cos::Name.new("AS")).should eq("RadioButton02")
+    ensure
+      document.close
+    end
+  end
+
+  it "PDButtonTest#testAcrobatCheckBoxGroupProperties" do
+    file = SpecPaths.resolve("#{ANNOTATION_DIR}/#{NAME_OF_PDF}")
+    document = Pdfbox::Loader.load_pdf(file)
+    begin
+      acro_form = document.document_catalog.not_nil!.acro_form
+      checkbox = acro_form.not_nil!.get_field("CheckboxGroup").as(Pdfbox::Pdmodel::Interactive::Form::PDCheckBox)
+      checkbox.value.should eq("Off")
+      checkbox.checked?.should be_false
+
+      checkbox.check
+      checkbox.value.should eq(checkbox.get_on_value)
+      checkbox.checked?.should be_true
+
+      checkbox.get_on_values.size.should eq(3)
+      checkbox.get_on_values.includes?("Option1").should be_true
+      checkbox.get_on_values.includes?("Option2").should be_true
+      checkbox.get_on_values.includes?("Option3").should be_true
+
+      # test a value which sets one of the individual checkboxes within the group
+      checkbox.value = "Option1"
+      checkbox.value.should eq("Option1")
+      checkbox.value_as_string.should eq("Option1")
+
+      checkbox.widgets[0].cos_object.get_name_as_string(Pdfbox::Cos::Name.new("AS")).should eq("Option1")
+      checkbox.widgets[1].cos_object.get_name_as_string(Pdfbox::Cos::Name.new("AS")).should eq("Off")
+      checkbox.widgets[2].cos_object.get_name_as_string(Pdfbox::Cos::Name.new("AS")).should eq("Off")
+      checkbox.widgets[3].cos_object.get_name_as_string(Pdfbox::Cos::Name.new("AS")).should eq("Off")
+
+      # test a value which sets two of the individual checkboxes within the group
+      checkbox.value = "Option3"
+      checkbox.value.should eq("Option3")
+      checkbox.value_as_string.should eq("Option3")
+
+      checkbox.widgets[0].cos_object.get_name_as_string(Pdfbox::Cos::Name.new("AS")).should eq("Off")
+      checkbox.widgets[1].cos_object.get_name_as_string(Pdfbox::Cos::Name.new("AS")).should eq("Off")
+      checkbox.widgets[2].cos_object.get_name_as_string(Pdfbox::Cos::Name.new("AS")).should eq("Option3")
+      checkbox.widgets[3].cos_object.get_name_as_string(Pdfbox::Cos::Name.new("AS")).should eq("Option3")
+    ensure
+      document.close
+    end
+  end
+
+  it "PDButtonTest#setCheckboxGroupInvalidValue" do
+    file = SpecPaths.resolve("#{ANNOTATION_DIR}/#{NAME_OF_PDF}")
+    document = Pdfbox::Loader.load_pdf(file)
+    begin
+      acro_form = document.document_catalog.not_nil!.acro_form
+      checkbox = acro_form.not_nil!.get_field("CheckboxGroup").as(Pdfbox::Pdmodel::Interactive::Form::PDCheckBox)
+      expect_raises(ArgumentError) { checkbox.value = "InvalidValue" }
+    ensure
+      document.close
+    end
+  end
+
+  it "PDButtonTest#setValueForAbstractedAcrobatCheckBox" do
+    file = SpecPaths.resolve("#{ANNOTATION_DIR}/#{NAME_OF_PDF}")
+    document = Pdfbox::Loader.load_pdf(file)
+    begin
+      acro_form = document.document_catalog.not_nil!.acro_form
+      checkbox = acro_form.not_nil!.get_field("Checkbox").as(Pdfbox::Pdmodel::Interactive::Form::PDField)
+      checkbox.value = "Yes"
+      checkbox.value_as_string.should eq(checkbox.as(Pdfbox::Pdmodel::Interactive::Form::PDCheckBox).get_on_value)
+      checkbox.as(Pdfbox::Pdmodel::Interactive::Form::PDCheckBox).checked?.should be_true
+      checkbox.cos_object.get_name_as_string(Pdfbox::Cos::Name.new("AS")).should eq("Yes")
+
+      checkbox.value = "Off"
+      Pdfbox::Cos::Name.new("Off").value.should eq(checkbox.value_as_string)
+      checkbox.as(Pdfbox::Pdmodel::Interactive::Form::PDCheckBox).checked?.should be_false
+      checkbox.cos_object.get_name_as_string(Pdfbox::Cos::Name.new("AS")).should eq("Off")
+    ensure
+      document.close
+    end
+  end
+
+  it "PDButtonTest#setValueForAbstractedAcrobatRadioButton" do
+    file = SpecPaths.resolve("#{ANNOTATION_DIR}/#{NAME_OF_PDF}")
+    document = Pdfbox::Loader.load_pdf(file)
+    begin
+      acro_form = document.document_catalog.not_nil!.acro_form
+      radio_button = acro_form.not_nil!.get_field("RadioButtonGroup").as(Pdfbox::Pdmodel::Interactive::Form::PDField)
+
+      radio_button.value = "RadioButton01"
+      radio_button.value_as_string.should eq("RadioButton01")
+      radio_button.widgets[0].cos_object.get_name_as_string(Pdfbox::Cos::Name.new("AS")).should eq("RadioButton01")
+      radio_button.widgets[1].cos_object.get_name_as_string(Pdfbox::Cos::Name.new("AS")).should eq("Off")
+
+      radio_button.value = "RadioButton02"
+      radio_button.value_as_string.should eq("RadioButton02")
+      radio_button.widgets[0].cos_object.get_name_as_string(Pdfbox::Cos::Name.new("AS")).should eq("Off")
+      radio_button.widgets[1].cos_object.get_name_as_string(Pdfbox::Cos::Name.new("AS")).should eq("RadioButton02")
+    ensure
+      document.close
+    end
+  end
+
+  it "PDButtonTest#setAbstractedCheckboxInvalidValue" do
+    file = SpecPaths.resolve("#{ANNOTATION_DIR}/#{NAME_OF_PDF}")
+    document = Pdfbox::Loader.load_pdf(file)
+    begin
+      acro_form = document.document_catalog.not_nil!.acro_form
+      checkbox = acro_form.not_nil!.get_field("Checkbox").as(Pdfbox::Pdmodel::Interactive::Form::PDField)
+      expect_raises(ArgumentError) { checkbox.value = "InvalidValue" }
+    ensure
+      document.close
+    end
+  end
+
+  it "PDButtonTest#setAbstractedRadioButtonInvalidValue" do
+    file = SpecPaths.resolve("#{ANNOTATION_DIR}/#{NAME_OF_PDF}")
+    document = Pdfbox::Loader.load_pdf(file)
+    begin
+      acro_form = document.document_catalog.not_nil!.acro_form
+      radio_button = acro_form.not_nil!.get_field("RadioButtonGroup").as(Pdfbox::Pdmodel::Interactive::Form::PDField)
+      expect_raises(ArgumentError) { radio_button.value = "InvalidValue" }
+    ensure
+      document.close
+    end
+  end
+
+  it "PDButtonTest#setRadioButtonInvalidValue" do
+    file = SpecPaths.resolve("#{ANNOTATION_DIR}/#{NAME_OF_PDF}")
+    document = Pdfbox::Loader.load_pdf(file)
+    begin
+      acro_form = document.document_catalog.not_nil!.acro_form
+      radio_button = acro_form.not_nil!.get_field("RadioButtonGroup").as(Pdfbox::Pdmodel::Interactive::Form::PDRadioButton)
+      expect_raises(ArgumentError) { radio_button.value = "InvalidValue" }
+    ensure
+      document.close
+    end
+  end
+end
