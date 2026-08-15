@@ -116,7 +116,9 @@ module Pdfbox::Pdmodel::Interactive::Annotation
     end
 
     def normal_appearance : PDAppearanceEntry?
-      @dictionary[Cos::Name.new("N")]?.as?(Cos::Dictionary).try { |entry| PDAppearanceEntry.new(entry) }
+      entry = @dictionary[Cos::Name.new("N")]?
+      entry = entry.object if entry.is_a?(Cos::Object)
+      entry.as?(Cos::Dictionary).try { |dict| PDAppearanceEntry.new(dict) }
     end
 
     def normal_appearance=(entry : PDAppearanceEntry) : PDAppearanceEntry
@@ -130,7 +132,9 @@ module Pdfbox::Pdmodel::Interactive::Annotation
     end
 
     def rollover_appearance : PDAppearanceEntry?
-      @dictionary[Cos::Name.new("R")]?.as?(Cos::Dictionary).try { |entry| PDAppearanceEntry.new(entry) } || normal_appearance
+      entry = @dictionary[Cos::Name.new("R")]?
+      entry = entry.object if entry.is_a?(Cos::Object)
+      entry.as?(Cos::Dictionary).try { |dict| PDAppearanceEntry.new(dict) } || normal_appearance
     end
 
     def rollover_appearance=(entry : PDAppearanceEntry) : PDAppearanceEntry
@@ -144,7 +148,9 @@ module Pdfbox::Pdmodel::Interactive::Annotation
     end
 
     def down_appearance : PDAppearanceEntry?
-      @dictionary[Cos::Name.new("D")]?.as?(Cos::Dictionary).try { |entry| PDAppearanceEntry.new(entry) } || normal_appearance
+      entry = @dictionary[Cos::Name.new("D")]?
+      entry = entry.object if entry.is_a?(Cos::Object)
+      entry.as?(Cos::Dictionary).try { |dict| PDAppearanceEntry.new(dict) } || normal_appearance
     end
 
     def down_appearance=(entry : PDAppearanceEntry) : PDAppearanceEntry

@@ -8,22 +8,16 @@ module Pdfbox::Pdmodel::Interactive::Form
     def widgets : Array(Annotation::PDAnnotationWidget)
       result = [] of Annotation::PDAnnotationWidget
 
-      # Check if this dictionary is itself a widget
-      subtype = @dictionary[Cos::Name.new("Subtype")]
-      if subtype.is_a?(Cos::Name) && subtype.value == "Widget"
-        result << Annotation::PDAnnotationWidget.new(@dictionary)
-      end
-
-      # Check for Kids array containing widgets
+      # Match Java PDTerminalField#getWidgets: a field without a Kids array
+      # is itself the widget; otherwise collect the widget kids.
       kids = @dictionary[Cos::Name.new("Kids")]
-      if kids.is_a?(Cos::Array)
+      kids = kids.object if kids.is_a?(Cos::Object)
+      if kids.nil?
+        result << Annotation::PDAnnotationWidget.new(@dictionary)
+      elsif kids.is_a?(Cos::Array) && !kids.items.empty?
         kids.items.each do |kid|
-          if kid.is_a?(Cos::Dictionary)
-            kid_subtype = kid[Cos::Name.new("Subtype")]
-            if kid_subtype.is_a?(Cos::Name) && kid_subtype.value == "Widget"
-              result << Annotation::PDAnnotationWidget.new(kid)
-            end
-          end
+          kid_dict = kid.is_a?(Cos::Dictionary) ? kid : (kid.is_a?(Cos::Object) ? kid.object.as?(Cos::Dictionary) : nil)
+          result << Annotation::PDAnnotationWidget.new(kid_dict) if kid_dict
         end
       end
 
