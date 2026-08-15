@@ -873,7 +873,43 @@ module Pdfbox::Pdmodel
       document = @document
       return unless document
 
-      Interactive::Form::PDAcroForm.new(document, form_dict)
+      acro_form = Interactive::Form::PDAcroForm.new(document, form_dict)
+      apply_acro_form_default_fixup(acro_form)
+      acro_form
+    end
+
+    # PDFBOX-3732/4303/4393: Adobe Acrobat adds /Helv (Helvetica) and /ZaDb
+    # (ZapfDingbats) to the AcroForm default resources, plus a default
+    # appearance /DA entry. This runs once when the AcroForm is accessed at
+    # the PD level (Java AcroFormDefaultsProcessor).
+    private def apply_acro_form_default_fixup(acro_form : Interactive::Form::PDAcroForm) : Nil
+      adobe_default_appearance_string = "/Helv 0 Tf 0 g "
+
+      if acro_form.default_appearance.empty?
+        acro_form.default_appearance = adobe_default_appearance_string
+      end
+
+      default_resources = acro_form.default_resources
+      if default_resources.nil?
+        default_resources = Pdfbox::Pdmodel::PDResources.new
+        acro_form.default_resources = default_resources
+      end
+
+      font_dict = default_resources.cos_object.as(Pdfbox::Cos::Dictionary)[Pdfbox::Cos::Name.new("Font")]?.as?(Pdfbox::Cos::Dictionary)
+      unless font_dict
+        font_dict = Pdfbox::Cos::Dictionary.new
+        default_resources.cos_object.as(Pdfbox::Cos::Dictionary)[Pdfbox::Cos::Name.new("Font")] = font_dict
+      end
+
+      helv = Pdfbox::Cos::Name.new("Helv")
+      unless font_dict.has_key?(helv)
+        default_resources.put(helv, Pdfbox::Pdmodel::Font::PDType1Font.new(Pdfbox::Pdmodel::Font::Standard14Fonts::FontName::HELVETICA))
+      end
+
+      za_db = Pdfbox::Cos::Name.new("ZaDb")
+      unless font_dict.has_key?(za_db)
+        default_resources.put(za_db, Pdfbox::Pdmodel::Font::PDType1Font.new(Pdfbox::Pdmodel::Font::Standard14Fonts::FontName::ZAPF_DINGBATS))
+      end
     end
 
     def acro_form=(form : Interactive::Form::PDAcroForm) : Interactive::Form::PDAcroForm

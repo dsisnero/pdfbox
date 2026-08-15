@@ -107,10 +107,11 @@ module Pdfbox::Pdmodel::Interactive::Form
       value
     end
 
-    # Get the default appearance string (DA entry)
-    def default_appearance : String?
+    # Get the default appearance string (DA entry). Java PDAcroForm#getDefaultAppearance.
+    def default_appearance : String
       value = @dictionary[Cos::Name.new("DA")]
-      value.as?(Cos::String).try(&.value)
+      value = value.object if value.is_a?(Cos::Object)
+      value.as?(Cos::String).try(&.value) || ""
     end
 
     # Set the default appearance string
