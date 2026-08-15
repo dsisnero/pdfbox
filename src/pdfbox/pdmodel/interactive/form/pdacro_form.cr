@@ -141,6 +141,16 @@ module Pdfbox::Pdmodel::Interactive::Form
       fields_array.add(field.cos_object)
     end
 
+    # Set the fields of the form. Java PDAcroForm#setFields.
+    # ameba:disable Naming/AccessorMethodName
+    def set_fields(fields : Enumerable(PDField)) : Nil
+      fields_array = Cos::Array.new
+      fields.each do |field|
+        fields_array.add(field.cos_object)
+      end
+      @dictionary[Cos::Name.new("Fields")] = fields_array
+    end
+
     def import_fdf(fdf : Pdfbox::Pdmodel::Fdf::FDFDocument) : Nil
       fdf.catalog.fdf.fields.try(&.each do |field|
         next unless name = field.partial_field_name
