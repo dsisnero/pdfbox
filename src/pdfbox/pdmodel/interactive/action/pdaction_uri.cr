@@ -13,12 +13,18 @@ module Pdfbox::Pdmodel::Interactive::Action
 
     def uri : String?
       value = cos_object[Cos::Name.new("URI")]?
-      case value
-      when Cos::String
-        value.value
-      else
-        nil
+      return nil unless value.is_a?(Cos::String)
+
+      bytes = value.bytes
+      if bytes.size >= 2
+        # UTF-16 (BE or LE) - let Cos::String#value decode the BOM
+        if (bytes[0] == 0xFE_u8 && bytes[1] == 0xFF_u8) ||
+           (bytes[0] == 0xFF_u8 && bytes[1] == 0xFE_u8)
+          return value.value
+        end
       end
+      # Java PDActionURI#getURI: non-UTF-16 bytes are decoded as UTF-8
+      ::String.new(bytes, "UTF-8")
     end
 
     def uri=(value : String) : String
