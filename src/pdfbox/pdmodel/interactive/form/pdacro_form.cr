@@ -196,6 +196,12 @@ module Pdfbox::Pdmodel::Interactive::Form
       flatten(get_field_tree, false)
     end
 
+    # Rebuild the /Fields entry from page-level widget annotations when it is
+    # empty. Java AcroFormOrphanWidgetsProcessor (PDFBOX-3891/4985).
+    def rebuild_fields_from_widgets : Nil
+      AcroFormOrphanWidgetsProcessor.new(@document).process
+    end
+
     # Flatten the specified form fields.
     #
     # *fields*: fields to be flattened. *refresh_appearances*: regenerate the
