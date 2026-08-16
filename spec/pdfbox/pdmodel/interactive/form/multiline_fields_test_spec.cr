@@ -31,6 +31,16 @@ private def font_size_from_appearance_stream(field : Pdfbox::Pdmodel::Interactiv
   0.0_f32
 end
 
+private def text_lines_from_appearance_stream(field : Pdfbox::Pdmodel::Interactive::Form::PDField) : Array(String)
+  widget = field.widgets[0]
+  stream = widget.normal_appearance_stream
+  return [] of String unless stream
+
+  parser = Pdfbox::Pdfparser::PDFStreamParser.new(stream.not_nil!.require_stream_object.create_input_stream.getb_to_end)
+  tokens = parser.parse
+  tokens.compact_map { |token| token.as?(Pdfbox::Cos::String).try(&.value) }
+end
+
 describe Pdfbox::Pdmodel::Interactive::Form::PDTextField do
   it "MultilineFieldsTest#fillFields" do
     file = SpecPaths.resolve("#{ANNOTATION_DIR}/#{NAME_OF_PDF}")
@@ -79,6 +89,27 @@ describe Pdfbox::Pdmodel::Interactive::Form::PDTextField do
       font_size_from_appearance_stream(field_singleline).should be_close(font_size_singleline, 0.001)
       font_size_from_appearance_stream(field_multiline_autoscale).should be_close(font_size_multiline_autoscale, 0.001)
       font_size_from_appearance_stream(field_singleline_autoscale).should be_close(font_size_singleline_autoscale, 0.025)
+    ensure
+      document.close
+    end
+  end
+
+  it "MultilineFieldsTest#testMultilineBreak (PDFBOX-3835)" do
+    file = SpecPaths.resolve("#{ANNOTATION_DIR}/PDFBOX-3835-input-acrobat-wrap.pdf")
+    document = Pdfbox::Loader.load_pdf(file)
+    begin
+      acro_form = document.document_catalog.not_nil!.acro_form
+      field_input = acro_form.not_nil!.get_field("filled").as(Pdfbox::Pdmodel::Interactive::Form::PDTextField)
+
+      field_value = field_input.value
+      acrobat_lines = text_lines_from_appearance_stream(field_input)
+      field_input.value = field_value
+      pdfbox_lines = text_lines_from_appearance_stream(field_input)
+
+      pdfbox_lines.size.should eq(acrobat_lines.size)
+      acrobat_lines.each_with_index do |line, i|
+        pdfbox_lines[i].size.should eq(line.size)
+      end
     ensure
       document.close
     end
