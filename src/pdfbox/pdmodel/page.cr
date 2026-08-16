@@ -244,26 +244,7 @@ module Pdfbox::Pdmodel
         end
         next unless dict.is_a?(Cos::Dictionary)
 
-        # Check subtype and create appropriate annotation
-        subtype = dict[Cos::Name.new("Subtype")]
-        if subtype.is_a?(Cos::Name)
-          case subtype.value
-          when "Highlight"
-            actual_list << Interactive::Annotation::PDAnnotationHighlight.new(dict)
-          when "Link"
-            actual_list << Interactive::Annotation::PDAnnotationLink.new(dict)
-          when "Circle"
-            actual_list << Interactive::Annotation::PDAnnotationCircle.new(dict)
-          when "Square"
-            actual_list << Interactive::Annotation::PDAnnotationSquare.new(dict)
-          else
-            # Generic annotation as fallback
-            actual_list << Interactive::Annotation::PDAnnotation.new(dict)
-          end
-        else
-          # No subtype, create generic annotation
-          actual_list << Interactive::Annotation::PDAnnotation.new(dict)
-        end
+        actual_list << Interactive::Annotation::PDAnnotation.create_annotation(dict)
       end
 
       Common::COSArrayList(Interactive::Annotation::PDAnnotation).new(actual_list, annots)

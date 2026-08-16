@@ -10,9 +10,10 @@ module Pdfbox::Pdmodel::Interactive::Form
       # Check if it's a non-terminal field (has Kids with field names)
       if field.has_key?(Cos::Name.new("Kids"))
         kids = field[Cos::Name.new("Kids")]
+        kids = kids.object if kids.is_a?(Cos::Object)
         if kids.is_a?(Cos::Array) && !kids.items.empty?
           kids.items.each do |kid|
-            kid_dict = kid.is_a?(Cos::Dictionary) ? kid : nil
+            kid_dict = kid.is_a?(Cos::Dictionary) ? kid : (kid.is_a?(Cos::Object) ? kid.object.as?(Cos::Dictionary) : nil)
             if kid_dict && kid_dict.has_key?(Cos::Name.new("T"))
               return PDNonTerminalField.new(form, field, parent)
             end

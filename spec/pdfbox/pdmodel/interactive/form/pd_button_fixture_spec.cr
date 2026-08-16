@@ -3,6 +3,7 @@ require "../../../../../src/pdfbox"
 
 private ANNOTATION_DIR = "vendor/pdfbox/pdfbox/src/test/resources/org/apache/pdfbox/pdmodel/interactive/form"
 private NAME_OF_PDF    = "AcroFormsBasicFields.pdf"
+private RESOURCE_DIR   = "spec/resources/pdfbox/pdmodel/interactive/form"
 
 # Source of truth:
 #   vendor/pdfbox/pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDButtonTest.java
@@ -233,6 +234,43 @@ describe Pdfbox::Pdmodel::Interactive::Form::PDButton do
       acro_form = document.document_catalog.not_nil!.acro_form
       radio_button = acro_form.not_nil!.get_field("RadioButtonGroup").as(Pdfbox::Pdmodel::Interactive::Form::PDRadioButton)
       expect_raises(ArgumentError) { radio_button.value = "InvalidValue" }
+    ensure
+      document.close
+    end
+  end
+
+  it "PDButtonTest#testRadioButtonWithOptions (PDFBOX-3656)" do
+    # Fixture downloaded from the Java maven-wget URL (SHA512 verified).
+    file = SpecPaths.resolve("#{RESOURCE_DIR}/PDFBOX-3656.pdf")
+    document = Pdfbox::Loader.load_pdf(file)
+    begin
+      radio_button = document.document_catalog.not_nil!.acro_form.not_nil!.get_field("Checking/Savings").as(Pdfbox::Pdmodel::Interactive::Form::PDRadioButton)
+      radio_button.value = "Off"
+      radio_button.widgets.each do |widget|
+        widget.cos_object[Pdfbox::Cos::Name.new("AS")].as(Pdfbox::Cos::Name).value.should eq("Off")
+      end
+    ensure
+      document.close
+    end
+  end
+
+  it "PDButtonTest#testOptionsAndNamesNotNumbers (PDFBOX-3682)" do
+    # Fixture downloaded from the Java maven-wget URL (SHA512 verified).
+    file = SpecPaths.resolve("#{RESOURCE_DIR}/PDFBOX-3682.pdf")
+    document = Pdfbox::Loader.load_pdf(file)
+    begin
+      acro_form = document.document_catalog.not_nil!.acro_form
+      acro_form.not_nil!.get_field("RadioButton").as(Pdfbox::Pdmodel::Interactive::Form::PDField).value = "c"
+      radio_button = acro_form.not_nil!.get_field("RadioButton").as(Pdfbox::Pdmodel::Interactive::Form::PDRadioButton)
+      radio_button.value = "c"
+
+      # test that the old behavior is now invalid
+      radio_button.value_as_string.should_not eq("2")
+      radio_button.widgets[2].cos_object.get_name_as_string(Pdfbox::Cos::Name.new("AS")).should_not eq("2")
+
+      # test for the correct behavior
+      radio_button.value_as_string.should eq("c")
+      radio_button.widgets[2].cos_object.get_name_as_string(Pdfbox::Cos::Name.new("AS")).should eq("c")
     ensure
       document.close
     end

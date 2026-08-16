@@ -96,8 +96,12 @@ module Pdfbox::Pdmodel::Interactive::Annotation
       @dictionary.get_dictionary(Cos::Name.new("AP")).try { |entry| PDAppearanceDictionary.new(entry) }
     end
 
-    def appearance=(value : PDAppearanceDictionary) : PDAppearanceDictionary
-      @dictionary[Cos::Name.new("AP")] = value.cos_object
+    def appearance=(value : PDAppearanceDictionary?) : PDAppearanceDictionary?
+      if value
+        @dictionary[Cos::Name.new("AP")] = value.cos_object
+      else
+        @dictionary.delete(Cos::Name.new("AP"))
+      end
       value
     end
 

@@ -72,7 +72,10 @@ module Pdfbox::Pdfparser
       original_source = @source
 
       iteration_count = 0
-      max_iterations = 3_000_000 # safety limit for ~3MB file
+      # Scale the iteration limit with the actual scan range so objects in
+      # files larger than ~3 MB are still found. Each loop iteration advances
+      # at least one byte, so range_size is a safe upper bound.
+      max_iterations = range_size
 
       begin
         @source = memory_source

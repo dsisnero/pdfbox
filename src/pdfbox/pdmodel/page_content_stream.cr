@@ -282,6 +282,22 @@ module Pdfbox::Pdmodel
       @buffer << "/#{resource_name} " << SET_GRAPHICS_STATE_PARAMS << '\n'
     end
 
+    def save_graphics_state : Nil
+      raise_if_in_text_mode("saveGraphicsState is not allowed within a text block.")
+      write_operator(SAVE)
+    end
+
+    def restore_graphics_state : Nil
+      raise_if_in_text_mode("restoreGraphicsState is not allowed within a text block.")
+      write_operator(RESTORE)
+    end
+
+    def draw_form(form : Graphics::Form::PDFormXObject) : Nil
+      raise_if_in_text_mode("drawForm is not allowed within a text block.")
+      resource_name = add_form_to_xobject_resources(form)
+      @buffer << '/' << resource_name << ' ' << DRAW_OBJECT << '\n'
+    end
+
     def close : Nil
       return if @closed
       @closed = true
@@ -454,6 +470,13 @@ module Pdfbox::Pdmodel
       xobjects = ensure_resource_subdictionary("XObject")
       resource_name = "Im#{xobjects.size + 1}"
       xobjects[Cos::Name.new(resource_name)] = image.cos_object
+      resource_name
+    end
+
+    private def add_form_to_xobject_resources(form : Graphics::Form::PDFormXObject) : String
+      xobjects = ensure_resource_subdictionary("XObject")
+      resource_name = "Fm#{xobjects.size + 1}"
+      xobjects[Cos::Name.new(resource_name)] = form.cos_object
       resource_name
     end
 

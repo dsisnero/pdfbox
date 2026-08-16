@@ -940,7 +940,19 @@ module Pdfbox::Cos
     end
 
     def remove_object(value : Base) : Bool
-      !!@items.delete(value)
+      removed = !!@items.delete(value)
+      if !removed && value.is_a?(Dictionary)
+        # Java COSArray.removeObject: an indirect COSObject entry pointing to the
+        # target dict must also be removed.
+        index = @items.index do |entry|
+          entry.is_a?(Object) && entry.object == value
+        end
+        if index
+          @items.delete_at(index)
+          return true
+        end
+      end
+      removed
     end
 
     def remove_all(values : Enumerable(Base)) : Nil

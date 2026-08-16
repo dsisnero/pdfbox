@@ -25,14 +25,15 @@ module Pdfbox::Pdmodel::Interactive::Form
     # Get child fields
     def children : Array(PDField)
       kids = @dictionary[Cos::Name.new("Kids")]
+      kids = kids.object if kids.is_a?(Cos::Object)
       return [] of PDField unless kids.is_a?(Cos::Array)
 
       result = [] of PDField
       kids.items.each do |kid|
-        if kid.is_a?(Cos::Dictionary)
-          field = PDFieldFactory.create_field(@acro_form, kid, self)
-          result << field if field
-        end
+        kid_dict = kid.is_a?(Cos::Dictionary) ? kid : (kid.is_a?(Cos::Object) ? kid.object.as?(Cos::Dictionary) : nil)
+        next unless kid_dict
+        field = PDFieldFactory.create_field(@acro_form, kid_dict, self)
+        result << field if field
       end
       result
     end

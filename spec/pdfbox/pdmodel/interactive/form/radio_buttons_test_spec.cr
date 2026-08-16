@@ -6,7 +6,7 @@ private TESTFILE_3656  = "PDFBOX-3656-SF1199AEG (Complete).pdf"
 
 # Source of truth:
 #   vendor/pdfbox/pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/TestRadioButtons.java
-# PDFBOX-5831 uses a remote JIRA attachment (not checked in) - out of scope.
+# PDFBOX-5831 fixture downloaded from the Java JIRA attachment URL (SHA512 recorded).
 describe Pdfbox::Pdmodel::Interactive::Form::PDRadioButton do
   it "TestRadioButtons#testRadioButtonPDModel" do
     document = Pdfbox::Pdmodel::Document.new
@@ -191,6 +191,37 @@ describe Pdfbox::Pdmodel::Interactive::Form::PDRadioButton do
       field.set_value_index(4)
       field.value.should eq("Checking")
       field.get_selected_index.should eq(4)
+    ensure
+      document.close
+    end
+  end
+
+  it "TestRadioButtons#testPDFBox5831NumericValueForOpt" do
+    file = SpecPaths.resolve("spec/resources/pdfbox/pdmodel/interactive/form/PDFBOX-5831.pdf")
+    document = Pdfbox::Loader.load_pdf(file)
+    begin
+      acro_form = document.document_catalog.not_nil!.acro_form
+      field = acro_form.not_nil!.get_field("Formular1[0].Seite1[0].TF_P[0].Optionsfeldliste[0]").as(Pdfbox::Pdmodel::Interactive::Form::PDRadioButton)
+
+      field.set_value_index(0)
+      field.value.should eq("1")
+      field.cos_object.get_name_as_string(Pdfbox::Cos::Name.new("V")).should eq("0")
+      field.get_selected_index.should eq(0)
+
+      field.value = "1"
+      field.value.should eq("1")
+      field.cos_object.get_name_as_string(Pdfbox::Cos::Name.new("V")).should eq("0")
+      field.get_selected_index.should eq(0)
+
+      field.set_value_index(1)
+      field.value.should eq("2")
+      field.cos_object.get_name_as_string(Pdfbox::Cos::Name.new("V")).should eq("1")
+      field.get_selected_index.should eq(1)
+
+      field.value = "2"
+      field.value.should eq("2")
+      field.cos_object.get_name_as_string(Pdfbox::Cos::Name.new("V")).should eq("1")
+      field.get_selected_index.should eq(1)
     ensure
       document.close
     end

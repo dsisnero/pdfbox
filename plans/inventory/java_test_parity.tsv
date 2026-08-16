@@ -1397,12 +1397,12 @@ pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroFormTest.j
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroFormTest.java::method::PDAcroFormTest.testBadDA	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroFormTest.java::method::PDAcroFormTest.testDontAddMissingInformationOnDocumentLoad	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroFormTest.java::method::PDAcroFormTest.testFieldsEntry	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroFormTest.java::method::PDAcroFormTest.testFlatten	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroFormTest.java::method::PDAcroFormTest.testFlatten	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroFormTest.java::method::PDAcroFormTest.testFlattenSpecificFieldsOnly	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroFormTest.java::method::PDAcroFormTest.testFlattenWidgetNoRef	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroFormTest.java::method::PDAcroFormTest.testIllegalFieldsDefinition	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroFormTest.java::method::PDAcroFormTest.testPDFBox3347	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroFormTest.java::method::PDAcroFormTest.testPDFBox5797	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroFormTest.java::method::PDAcroFormTest.testFlattenWidgetNoRef	ported	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroFormTest.java::method::PDAcroFormTest.testIllegalFieldsDefinition	ported	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroFormTest.java::method::PDAcroFormTest.testPDFBox3347	ported	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroFormTest.java::method::PDAcroFormTest.testPDFBox5797	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDButtonTest.java::class::PDButtonTest	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDButtonTest.java::const::IN_DIR	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDButtonTest.java::const::NAME_OF_PDF	ported	-	baseline
@@ -1426,8 +1426,8 @@ pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDButtonTest.jav
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDButtonTest.java::method::PDButtonTest.testAcrobatCheckBoxGroupProperties	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDButtonTest.java::method::PDButtonTest.testAcrobatCheckBoxProperties	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDButtonTest.java::method::PDButtonTest.testAcrobatRadioButtonProperties	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDButtonTest.java::method::PDButtonTest.testOptionsAndNamesNotNumbers	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDButtonTest.java::method::PDButtonTest.testRadioButtonWithOptions	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDButtonTest.java::method::PDButtonTest.testOptionsAndNamesNotNumbers	ported	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDButtonTest.java::method::PDButtonTest.testRadioButtonWithOptions	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDChoiceTest.java::class::PDChoiceTest	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDChoiceTest.java::method::PDChoiceTest.createComboBox	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDChoiceTest.java::method::PDChoiceTest.createListBox	ported	-	baseline
@@ -1441,7 +1441,7 @@ pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDDefaultAppeara
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDDefaultAppearanceStringTest.java::method::PDDefaultAppearanceStringTest.testParseDAString	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDDefaultAppearanceStringTest.java::method::PDDefaultAppearanceStringTest.testWrongNumberOfColorArguments	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDFieldTreeTest.java::class::PDFieldTreeTest	missing	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDFieldTreeTest.java::method::PDFieldTreeTest.test5044	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDFieldTreeTest.java::method::PDFieldTreeTest.test5044	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDSignatureFieldTest.java::class::PDSignatureFieldTest	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDSignatureFieldTest.java::method::PDSignatureFieldTest.createDefaultSignatureField	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDSignatureFieldTest.java::method::PDSignatureFieldTest.setUp	ported	-	baseline
@@ -1488,7 +1488,7 @@ pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/TestRadioButtons
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/TestRadioButtons.java::method::TestRadioButtons.testPDFBox4617IndexForSetByIndex	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/TestRadioButtons.java::method::TestRadioButtons.testPDFBox4617IndexForSetByOption	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/TestRadioButtons.java::method::TestRadioButtons.testPDFBox4617IndexNoneSelected	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/TestRadioButtons.java::method::TestRadioButtons.testPDFBox5831NumericValueForOpt	missing	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/TestRadioButtons.java::method::TestRadioButtons.testPDFBox5831NumericValueForOpt	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/TestRadioButtons.java::method::TestRadioButtons.testRadioButtonPDModel	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/pagenavigation/PDTransitionDirectionTest.java::class::PDTransitionDirectionTest	missing	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/pagenavigation/PDTransitionDirectionTest.java::method::PDTransitionDirectionTest.getCOSBase	missing	-	baseline

@@ -156,4 +156,29 @@ describe Pdfbox::Pdmodel::Interactive::Form::PDAcroForm do
       pdf_document.close
     end
   end
+
+  it "PDAcroFormTest#testPDFBox3347" do
+    # Fixture downloaded from the Java JIRA attachment URL (SHA512 recorded).
+    file = SpecPaths.resolve("spec/resources/pdfbox/pdmodel/interactive/form/PDFBOX-3347.pdf")
+    document = Pdfbox::Loader.load_pdf(file)
+    begin
+      acro_form = document.document_catalog.not_nil!.acro_form
+      field = acro_form.not_nil!.get_field("Krematorier")
+      field.should_not be_nil
+      field = field.not_nil!
+
+      set = Set(String).new
+      field.widgets.each do |annot|
+        appearance = annot.appearance
+        normal = appearance.try(&.normal_appearance)
+        normal.try(&.sub_dictionary.keys.each do |name|
+          set.add(name.value) unless name == Pdfbox::Cos::Name.new("Off")
+        end)
+      end
+
+      set.to_a.sort.should eq(["Nynäshamn", "Råcksta", "Silverdal", "Skogskrem", "St Botvid", "Storkällan"])
+    ensure
+      document.close
+    end
+  end
 end
