@@ -679,6 +679,11 @@ module Pdfbox::Pdmodel::Interactive::Form
     # Writes the stream to the actual stream in the COSStream.
     private def write_to_stream(data : Bytes, appearance_stream : Annotation::PDAppearanceStream) : Nil
       cos_stream = appearance_stream.require_stream_object
+      # the data written here is already decoded; drop the filter entries so a
+      # subsequent read via create_input_stream does not re-decode it (Java
+      # createOutputStream without filters removes them).
+      cos_stream.delete(Cos::Name.new("Filter"))
+      cos_stream.delete(Cos::Name.new("DecodeParms"))
       cos_stream.data = data
       cos_stream.set_int(Cos::Name::LENGTH, data.size)
     end

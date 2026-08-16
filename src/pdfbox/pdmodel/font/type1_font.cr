@@ -258,7 +258,29 @@ class Pdfbox::Pdmodel::Font::PDType1Font < Pdfbox::Pdmodel::Font::PDSimpleFont
     descriptor.font_name = name
     descriptor.italic = name.includes?("Italic") || name.includes?("Oblique")
     descriptor.force_bold = name.includes?("Bold")
+    if bbox = STANDARD14_FONT_BBOX[name]?
+      descriptor.font_bounding_box = Common::PDRectangle.new(bbox[0], bbox[1], bbox[2], bbox[3])
+      descriptor.ascent = bbox[3]
+      descriptor.descent = bbox[1]
+      descriptor.cap_height = bbox[3]
+    end
     descriptor
+  end
+
+  # Java PDFont.loadFontDescriptor: a Standard 14 font loaded from a dictionary
+  # without /FontDescriptor gets a descriptor built from the AFM.
+  def font_descriptor : PDFontDescriptor?
+    descriptor = super
+    return descriptor if descriptor
+
+    if standard14?
+      mapped_name = Standard14Fonts.get_mapped_font_name(get_base_font)
+      if mapped_name.is_a?(Standard14Fonts::FontName)
+        return build_standard14_font_descriptor(mapped_name)
+      end
+    end
+
+    nil
   end
 
   def get_path(name : String)

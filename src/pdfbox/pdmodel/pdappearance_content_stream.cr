@@ -300,9 +300,20 @@ module Pdfbox::Pdmodel
         created
       end
 
+      # Reuse an existing resource name if the font is already registered
+      # (Java PDAppearanceContentStream.setFont reuses the DA font resource name).
+      target_dict = font.cos_object
+      fonts.entries.each do |key, value|
+        entry = value.is_a?(Cos::Object) ? value.object : value
+        if entry.is_a?(Cos::Dictionary) && entry == target_dict
+          @font_name = key.value
+          return
+        end
+      end
+
       font_name = "F#{fonts.size + 1}"
       @font_name = font_name
-      fonts[Pdfbox::Cos::Name.new(font_name)] = font.cos_object
+      fonts[Cos::Name.new(font_name)] = font.cos_object
     end
 
     private def current_font : Pdfbox::Pdmodel::Font::PDFont?
