@@ -8,6 +8,13 @@ module Pdfbox::Filter
       raise NotImplementedError.new("encode must be implemented by subclasses")
     end
 
+    # Decode with stream parameters. The default implementation ignores the
+    # parameters and delegates to decode(Bytes); filters that need DecodeParms
+    # (e.g. CCITTFaxFilter) override this.
+    def decode(encoded : Bytes, _decode_params : Pdfbox::Cos::Dictionary?, _width : Int32 = 0, _height : Int32 = 0) : Bytes
+      decode(encoded)
+    end
+
     # Java parity: Filter.decode must reject an empty filter list.
     def self.decode(input : Bytes, filters : Array(Filter), _decode_params : Pdfbox::Cos::Dictionary, _index = nil, _options = nil) : Bytes
       raise ArgumentError.new("filters must not be empty") if filters.empty?

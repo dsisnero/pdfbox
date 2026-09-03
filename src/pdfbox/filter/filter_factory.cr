@@ -5,12 +5,34 @@ module Pdfbox::Filter
     @filters : Hash(String, Filter)
 
     def initialize
+      flate = FlateFilter.new.as(Filter)
+      ascii85 = ASCII85Filter.new.as(Filter)
+      ascii_hex = ASCIIHexFilter.new.as(Filter)
+      run_length = RunLengthDecodeFilter.new.as(Filter)
+      lzw = LZWFilter.new.as(Filter)
+      ccitt_fax = CCITTFaxFilter.new.as(Filter)
+      dct = DCTFilter.new.as(Filter)
       @filters = {
         "Identity"        => IdentityFilter.new.as(Filter),
-        "FlateDecode"     => FlateFilter.new.as(Filter),
-        "ASCII85Decode"   => ASCII85Filter.new.as(Filter),
-        "RunLengthDecode" => RunLengthDecodeFilter.new.as(Filter),
-        "LZWDecode"       => LZWFilter.new.as(Filter),
+        "FlateDecode"     => flate,
+        "ASCII85Decode"   => ascii85,
+        "ASCIIHexDecode"  => ascii_hex,
+        "RunLengthDecode" => run_length,
+        "LZWDecode"       => lzw,
+        "Crypt"           => CryptFilter.new.as(Filter),
+        "CCITTFaxDecode"  => ccitt_fax,
+        "DCTDecode"       => dct,
+        # PDF 32000-1 table 6 filter abbreviations for the filters present in
+        # the Crystal filter set (Java FilterFactory registers both the full
+        # name and the abbreviation). JPX/JBIG2 filters are not in the Crystal
+        # set yet, so their abbreviations are not registered.
+        "A85" => ascii85,
+        "AHx" => ascii_hex,
+        "CCF" => ccitt_fax,
+        "DCT" => dct,
+        "Fl"  => flate,
+        "LZW" => lzw,
+        "RL"  => run_length,
       }
     end
 
@@ -28,7 +50,7 @@ module Pdfbox::Filter
 
     def filter(name : Pdfbox::Cos::Name) : Filter
       found = @filters[name.value]?
-      raise ArgumentError.new("Unknown filter: #{name.value}") unless found
+      raise ::IO::Error.new("Invalid filter: #{name.value}") unless found
       found
     end
 

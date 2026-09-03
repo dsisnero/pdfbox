@@ -36,6 +36,10 @@ describe Pdfbox::Filter::Filter do
       end
 
       Pdfbox::Filter::FilterFactory::INSTANCE.get_all_filters.each do |filter|
+        # Skip filters that don't support encode round-tripping (Java
+        # TestFilters#testFilters skips DCTFilter/CCITTFaxFilter/JPXFilter/
+        # JBIG2Filter; the Crystal CCITT/DCT filters are decode-only like Java).
+        next if filter.is_a?(Pdfbox::Filter::CCITTFaxFilter) || filter.is_a?(Pdfbox::Filter::DCTFilter)
         encoded = filter.encode(original)
         decoded = filter.decode(encoded)
         decoded.should eq(original)

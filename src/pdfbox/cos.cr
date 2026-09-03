@@ -1399,34 +1399,16 @@ module Pdfbox::Cos
     end
 
     private def decode_with_filter(data : Bytes, filter : Name) : Bytes
-      case filter.value
-      when "FlateDecode"
-        io = ::IO::Memory.new(data)
-        reader = Compress::Zlib::Reader.new(io)
-        output = ::IO::Memory.new
-        ::IO.copy(reader, output)
-        reader.close
-        output.to_slice
-      when "ASCII85Decode"
-        ascii85_decode(data)
-      else
-        raise UnsupportedOperationError.new("Unsupported stream decode filter: #{filter.value}")
-      end
+      decode_parms = self[Name.new("DecodeParms")]?
+      decode_parms = decode_parms.object if decode_parms.is_a?(Object)
+      parms_dict = decode_parms.as?(Dictionary)
+      width = get_int(Name.new("Width"), 0).to_i32
+      height = get_int(Name.new("Height"), 0).to_i32
+      Pdfbox::Filter::FilterFactory::INSTANCE.filter(filter).decode(data, parms_dict, width, height)
     end
 
     private def encode_with_filter(data : Bytes, filter : Name) : Bytes
-      case filter.value
-      when "FlateDecode"
-        output = ::IO::Memory.new
-        writer = Compress::Zlib::Writer.new(output)
-        writer.write(data)
-        writer.close
-        output.to_slice
-      when "ASCII85Decode"
-        ascii85_encode(data)
-      else
-        raise UnsupportedOperationError.new("Unsupported stream encode filter: #{filter.value}")
-      end
+      Pdfbox::Filter::FilterFactory::INSTANCE.filter(filter).encode(data)
     end
 
     private def ascii85_encode(data : Bytes) : Bytes
