@@ -13,7 +13,7 @@ module Pdfbox::Filter
       begin
         while (next_command = reader.read_bits(chunk)) != EOD
           if next_command == CLEAR_TABLE
-            chunk = 9
+            chunk = 9 # ameba:disable Lint/UselessAssign
             code_table = create_code_table
             prev = nil
             next

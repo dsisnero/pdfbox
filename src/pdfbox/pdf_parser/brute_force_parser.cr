@@ -957,24 +957,22 @@ module Pdfbox::Pdfparser
 
       object_offsets = bf_cos_object_offsets
       object_offsets.each do |key, offset|
-        begin
-          # Get object from parser's pool
-          cos_object = @parser.object_from_pool(key)
-          base_object = cos_object.object
-          next unless base_object.is_a?(Cos::Dictionary)
+        # Get object from parser's pool
+        cos_object = @parser.object_from_pool(key)
+        base_object = cos_object.object
+        next unless base_object.is_a?(Cos::Dictionary)
 
-          dictionary = base_object
+        dictionary = base_object
 
-          # Check if it's a document catalog
-          if catalog?(dictionary)
-            root_object = compare_cos_objects(cos_object, offset, root_object).as(Cos::Object?)
-            # Check if it's an info dictionary
-          elsif info?(dictionary)
-            info_object = compare_cos_objects(cos_object, offset, info_object).as(Cos::Object?)
-          end
-        rescue ex
-          Log.debug { "Error processing object #{key}: #{ex.message}" }
+        # Check if it's a document catalog
+        if catalog?(dictionary)
+          root_object = compare_cos_objects(cos_object, offset, root_object).as(Cos::Object?)
+          # Check if it's an info dictionary
+        elsif info?(dictionary)
+          info_object = compare_cos_objects(cos_object, offset, info_object).as(Cos::Object?)
         end
+      rescue ex
+        Log.debug { "Error processing object #{key}: #{ex.message}" }
       end
 
       found_root = false

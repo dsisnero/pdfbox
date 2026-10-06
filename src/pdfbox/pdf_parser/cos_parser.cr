@@ -193,9 +193,6 @@ module Pdfbox::Pdfparser
 
     # Looks for and parses startxref. We first look for last '%%EOF' marker.
     private def startxref_offset : Int64
-      buf = Bytes.empty
-      skip_bytes = 0_i64
-
       begin
         trail_byte_count = @file_len < @read_trail_bytes ? @file_len.to_i32 : @read_trail_bytes
         buf = Bytes.new(trail_byte_count)
@@ -1050,7 +1047,6 @@ module Pdfbox::Pdfparser
     end
 
     private def read_until_end_stream(filter_stream : EndstreamFilterStream) : Int64
-      buf_size = 0
       char_match_count = 0
       keyw = ENDSTREAM
       # last character position of shortest keyword ('endobj')
@@ -1143,7 +1139,6 @@ module Pdfbox::Pdfparser
         end
       end
       stream_start_position = position
-      stream_length = 0_i64
       if !stream_length_obj.nil? && validate_stream_length(stream_length_obj.as(Pdfbox::Cos::Number).value.to_i64)
         stream_length = stream_length_obj.as(Pdfbox::Cos::Number).value.to_i64
         # skip stream
@@ -1225,7 +1220,6 @@ module Pdfbox::Pdfparser
       if header.starts_with?(header_marker) && !header.matches?(/#{Regex.escape(header_marker)}\\d\\.\\d/)
         if header.size < header_marker.size + 3
           # No version number at all, set to 1.4 as default
-          header = header_marker + default_version
           Log.debug { "No version found, set to #{default_version} as default." }
         else
           header_garbage = header[header_marker.size + 3..-1] + "\n"

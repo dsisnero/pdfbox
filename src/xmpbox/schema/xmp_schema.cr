@@ -56,7 +56,7 @@ module Xmpbox
       end
 
       # Port of Java setAboutAsSimple
-      def set_about_as_simple(about : String?) : Nil
+      def set_about_as_simple(about : String?) : Nil # ameba:disable Naming/AccessorMethodName
         if about.nil?
           remove_attribute(XmpConstants::ABOUT_NAME)
         else

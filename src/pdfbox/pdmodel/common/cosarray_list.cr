@@ -261,14 +261,14 @@ module Pdfbox::Pdmodel::Common
       end
       if element.is_a?(String)
         cos_item = Cos::String.new(element)
-        if (parent_dict = @parent_dict) && index == 0
-          parent_dict[dict_key] = cos_item if dict_key = @dict_key
+        if (parent_dict = @parent_dict) && index == 0 && (dict_key = @dict_key)
+          parent_dict[dict_key] = cos_item
         end
         @array.items[index] = cos_item
       elsif element.responds_to?(:cos_object)
         cos_item = element.cos_object
-        if (parent_dict = @parent_dict) && index == 0
-          parent_dict[dict_key] = cos_item if dict_key = @dict_key
+        if (parent_dict = @parent_dict) && index == 0 && (dict_key = @dict_key)
+          parent_dict[dict_key] = cos_item
         end
         @array.items[index] = cos_item
       else

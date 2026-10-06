@@ -175,7 +175,6 @@ module Pdfbox::Pdfparser
     # The stream is closed after reading the object numbers.
     # @return a map of all object numbers and the corresponding offset within the object stream.
     def read_object_numbers : Hash(Int64, Int32)
-      object_numbers = nil
       begin
         object_numbers = private_read_object_numbers
       ensure

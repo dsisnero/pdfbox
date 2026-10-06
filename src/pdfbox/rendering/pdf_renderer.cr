@@ -7,7 +7,7 @@ require "../contentstream/pdf_graphics_stream_engine"
 module Pdfbox::Rendering
   class PDFRenderer
     getter document : Pdfbox::Pdmodel::Document
-    property subsampling_allowed : Bool = false
+    property? subsampling_allowed : Bool = false
 
     def initialize(@document : Pdfbox::Pdmodel::Document)
     end
@@ -57,49 +57,49 @@ module Pdfbox::Rendering
     end
 
     def render : CrImage::RGBA
-      @image = CrImage.rgba(@width, @height)
-      process_page(@page.not_nil!)
+      img = CrImage.rgba(@width, @height)
+      @image = img
+      page = @page || raise "Page not set on PageDrawer"
+      process_page(page)
       process_annotations
-      @image.not_nil!
+      img
     end
 
     private def process_annotations : Nil
       return unless pg = @page
       pg.annotations.each do |annot|
-        begin
-          next if annot.responds_to?(:hidden?) && annot.hidden?
-          stream = annot.normal_appearance_stream
-          next unless stream
+        next if annot.responds_to?(:hidden?) && annot.hidden?
+        stream = annot.normal_appearance_stream
+        next unless stream
 
-          stream_obj = stream.stream_object
-          next unless stream_obj
-          data = stream_obj.create_input_stream.getb_to_end
-          next if data.empty?
+        stream_obj = stream.stream_object
+        next unless stream_obj
+        data = stream_obj.create_input_stream.getb_to_end
+        next if data.empty?
 
-          # Get annotation rectangle and appearance bbox
-          rect = annot.rectangle
-          bbox = stream.bbox
+        # Get annotation rectangle and appearance bbox
+        rect = annot.rectangle
+        bbox = stream.bbox
 
-          # Save graphics state
-          gs = graphics_state
-          saved_matrix = gs.current_transformation_matrix.clone
+        # Save graphics state
+        gs = graphics_state
+        saved_matrix = gs.current_transformation_matrix.clone
 
-          if rect && bbox && rect.width > 0 && rect.height > 0 &&
-             bbox.width > 0 && bbox.height > 0
-            # Compute transformation matrix from appearance bbox to annotation rect
-            matrix = Pdfbox::Util::Matrix.new
-            matrix.translate(rect.lower_left_x, rect.lower_left_y)
-            matrix.scale((rect.width / bbox.width).to_f32, (rect.height / bbox.height).to_f32)
-            matrix.translate(-bbox.lower_left_x, -bbox.lower_left_y)
-            gs.current_transformation_matrix.concatenate(matrix)
-          end
-
-          process_stream_operators(data)
-
-          # Restore graphics state
-          gs.current_transformation_matrix = saved_matrix
-        rescue ex
+        if rect && bbox && rect.width > 0 && rect.height > 0 &&
+           bbox.width > 0 && bbox.height > 0
+          # Compute transformation matrix from appearance bbox to annotation rect
+          matrix = Pdfbox::Util::Matrix.new
+          matrix.translate(rect.lower_left_x, rect.lower_left_y)
+          matrix.scale((rect.width / bbox.width).to_f32, (rect.height / bbox.height).to_f32)
+          matrix.translate(-bbox.lower_left_x, -bbox.lower_left_y)
+          gs.current_transformation_matrix.concatenate(matrix)
         end
+
+        process_stream_operators(data)
+
+        # Restore graphics state
+        gs.current_transformation_matrix = saved_matrix
+      rescue ex
       end
     end
 

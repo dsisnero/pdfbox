@@ -198,11 +198,11 @@ module Pdfbox::Text
     def begin_marked_content_sequence(tag : Cos::Name? = nil, properties : Cos::Base? = nil) : Nil
       marked_content = Pdmodel::DocumentInterchange::MarkedContent::PDMarkedContent.create(tag,
         properties.try(&.as?(Cos::Dictionary)))
-      @marked_contents_stack ||= [] of Pdmodel::DocumentInterchange::MarkedContent::PDMarkedContent
-      @marked_contents_stack.not_nil! << marked_content
+      stack = @marked_contents_stack ||= [] of Pdmodel::DocumentInterchange::MarkedContent::PDMarkedContent
+      stack << marked_content
       @actual_text = marked_content.actual_text
-      if @actual_text
-        @actual_text = @actual_text.not_nil!.gsub("\u00AD", "") # remove soft hyphens
+      if actual_text = @actual_text
+        @actual_text = actual_text.gsub("\u00AD", "") # remove soft hyphens
         @first_actual_text_position = true
       end
       super
@@ -826,7 +826,7 @@ module Pdfbox::Text
               current = PositionWrapper.new(position)
               current.set_line_start
               if llsp = last_line_start_position
-                is_paragraph_separation(current, previous, llsp, max_height_for_line)
+                paragraph_separation?(current, previous, llsp, max_height_for_line)
               end
 
               io << render_items(line)
@@ -975,7 +975,7 @@ module Pdfbox::Text
 
     def test_is_paragraph_separation(position : PositionWrapper, last_position : PositionWrapper,
                                      last_line_start_position : PositionWrapper?, max_height_for_line : Float32) : Nil
-      is_paragraph_separation(position, last_position, last_line_start_position, max_height_for_line)
+      paragraph_separation?(position, last_position, last_line_start_position, max_height_for_line)
     end
 
     # Port of Java multiplyFloat: multiply 2 floats, truncate to 3 decimal places
@@ -984,17 +984,20 @@ module Pdfbox::Text
     end
 
     # Port of Java isParagraphSeparation
-    private def is_paragraph_separation(position : PositionWrapper, last_position : PositionWrapper,
-                                        last_line_start_position : PositionWrapper?, max_height_for_line : Float32) : Nil
+    private def paragraph_separation?(position : PositionWrapper, last_position : PositionWrapper,
+                                      last_line_start_position : PositionWrapper?, max_height_for_line : Float32) : Nil
       result = false
       if last_line_start_position.nil?
         result = true
       else
-        y_gap = (position.text_position.not_nil!.y_dir_adj - last_position.text_position.not_nil!.y_dir_adj).abs
+        position_text = position.text_position.not_nil!                  # ameba:disable Lint/NotNil
+        last_position_text = last_position.text_position.not_nil!        # ameba:disable Lint/NotNil
+        last_line_text = last_line_start_position.text_position.not_nil! # ameba:disable Lint/NotNil
+        y_gap = (position_text.y_dir_adj - last_position_text.y_dir_adj).abs
         new_y_val = multiply_float(@drop_threshold, max_height_for_line)
-        x_gap = position.text_position.not_nil!.x_dir_adj - last_line_start_position.text_position.not_nil!.x_dir_adj
-        new_x_val = multiply_float(@indent_threshold, position.text_position.not_nil!.width_of_space)
-        position_width = multiply_float(0.25_f32, position.text_position.not_nil!.width)
+        x_gap = position_text.x_dir_adj - last_line_text.x_dir_adj
+        new_x_val = multiply_float(@indent_threshold, position_text.width_of_space)
+        position_width = multiply_float(0.25_f32, position_text.width)
 
         if y_gap > new_y_val
           result = true
@@ -1004,7 +1007,7 @@ module Pdfbox::Text
           else
             position.set_hanging_indent
           end
-        elsif x_gap < -position.text_position.not_nil!.width_of_space
+        elsif x_gap < -position_text.width_of_space
           if !last_line_start_position.paragraph_start?
             result = true
           end
@@ -1566,7 +1569,7 @@ module Pdfbox::Text
                 current = PositionWrapper.new(position)
                 current.set_line_start
                 if llsp = last_line_start_position
-                  is_paragraph_separation(current, previous, llsp, max_height_for_line)
+                  paragraph_separation?(current, previous, llsp, max_height_for_line)
                 end
                 if current.paragraph_start?
                   if previous.article_start?

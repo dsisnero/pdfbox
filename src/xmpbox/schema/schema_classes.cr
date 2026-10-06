@@ -527,15 +527,15 @@ module Xmpbox
         }
       end
 
-      def set_part_value_with_string(value : String) : Nil
+      def set_part_value_with_string(value : String) : Nil # ameba:disable Naming/AccessorMethodName
         set_integer_property_value(PART, value.to_i32)
       end
 
-      def set_part_value_with_int(value : Int32) : Nil
+      def set_part_value_with_int(value : Int32) : Nil # ameba:disable Naming/AccessorMethodName
         set_integer_property_value(PART, value)
       end
 
-      def set_part(value : Int32) : Nil
+      def set_part(value : Int32) : Nil # ameba:disable Naming/AccessorMethodName
         set_part_value_with_int(value)
       end
 
@@ -547,7 +547,7 @@ module Xmpbox
         integer_property_value(PART)
       end
 
-      def set_amd(value : String) : Nil
+      def set_amd(value : String) : Nil # ameba:disable Naming/AccessorMethodName
         set_text_property_value(AMD, value)
       end
 
@@ -574,7 +574,7 @@ module Xmpbox
         nil
       end
 
-      def set_conformance(value : String) : Nil
+      def set_conformance(value : String) : Nil # ameba:disable Naming/AccessorMethodName
         unless VALID_CONFORMANCE.includes?(value)
           raise Type::BadFieldValueException.new(
             "The value '#{value}' isn't a valid PDF/A conformance level (must be A, B, U, e or f)")
@@ -597,15 +597,15 @@ module Xmpbox
         nil
       end
 
-      def set_rev_value_with_string(value : String) : Nil
+      def set_rev_value_with_string(value : String) : Nil # ameba:disable Naming/AccessorMethodName
         set_integer_property_value(REV, value.to_i32)
       end
 
-      def set_rev_value_with_int(value : Int32) : Nil
+      def set_rev_value_with_int(value : Int32) : Nil # ameba:disable Naming/AccessorMethodName
         set_integer_property_value(REV, value)
       end
 
-      def set_rev(value : Int32) : Nil
+      def set_rev(value : Int32) : Nil # ameba:disable Naming/AccessorMethodName
         set_rev_value_with_int(value)
       end
 

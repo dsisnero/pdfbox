@@ -46,10 +46,8 @@ module Xmpbox
         "%Y-%m-%dT%H:%M%:z",
       ]
       parse_formats.each do |time_format|
-        begin
-          return Time.parse(date, time_format, Time::Location::UTC)
-        rescue Time::Format::Error
-        end
+        return Time.parse(date, time_format, Time::Location::UTC)
+      rescue Time::Format::Error
       end
 
       if date.matches?(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/)

@@ -379,15 +379,9 @@ module Pdfbox::Pdmodel::Interactive::Form
       # write font and color from the /DA string, with the calculated font size
       @default_appearance.write_to(contents, font_size)
 
-      # calculate the y-position of the baseline
-      y = 0.0_f32
-
       # calculate font metrics at font size
       font_scale_y = font_size / FONT_SCALE
       font_bounding_box_at_size = font.bounding_box.height * font_scale_y
-
-      font_cap_at_size = 0.0_f32
-      font_descent_at_size = 0.0_f32
 
       if descriptor = font.font_descriptor
         font_cap_at_size = descriptor.cap_height * font_scale_y
@@ -400,6 +394,7 @@ module Pdfbox::Pdmodel::Interactive::Form
         font_descent_at_size = font_descent * font_scale_y
       end
 
+      # calculate the y-position of the baseline
       if @field.is_a?(PDTextField) && @field.as(PDTextField).multiline?
         y = content_rect.upper_right_y - font_bounding_box_at_size
       else

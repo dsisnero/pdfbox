@@ -44,7 +44,6 @@ module Pdfbox::Pdfparser
       prev = start_xref_offset
       # ---- parse whole chain of xref tables/object streams using PREV reference
       prev_set = Set(Int64).new
-      trailer = nil
 
       while prev > 0
         # save expected position for loop detection

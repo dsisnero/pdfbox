@@ -598,7 +598,6 @@ class Pdfbox::Pdmodel::Font::PDTrueTypeFont < Pdfbox::Pdmodel::Font::PDSimpleFon
     ttf = @ttf
     return Fontbox::Util::Path.new if ttf.nil?
 
-    path = nil
     if (otf = @otf) && otf.post_script?
       path = get_path_from_outlines(code)
     else
