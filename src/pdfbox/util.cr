@@ -1,3 +1,5 @@
+require "./util/xml_util"
+
 module Pdfbox::Util
   # Ported from Apache PDFBox StringUtil.
   module StringUtil
@@ -729,10 +731,8 @@ module Pdfbox::Util
       }
 
       formats.each do |fmt|
-        begin
-          return Time.parse(prepared, fmt, Time::Location::UTC)
-        rescue Time::Format::Error | ArgumentError
-        end
+        return Time.parse(prepared, fmt, Time::Location::UTC)
+      rescue Time::Format::Error | ArgumentError
       end
 
       nil
@@ -809,10 +809,8 @@ module Pdfbox::Util
       }
 
       formats.each do |fmt|
-        begin
-          return Time.parse(normalized, fmt, Time::Location::UTC)
-        rescue Time::Format::Error
-        end
+        return Time.parse(normalized, fmt, Time::Location::UTC)
+      rescue Time::Format::Error
       end
       nil
     end
