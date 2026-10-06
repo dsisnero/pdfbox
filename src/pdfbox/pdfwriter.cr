@@ -4,6 +4,8 @@
 # corresponding to the pdfwriter package in Apache PDFBox.
 require "./cos"
 require "./content_stream/operator"
+require "./content_stream/missing_operand_exception"
+require "./content_stream/empty_graphics_stack_exception"
 require "./content_stream/operator_name"
 require "./pdfwriter/compress"
 
