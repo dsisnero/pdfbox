@@ -5,6 +5,14 @@ require "openssl"
 require "io"
 
 module Pdfbox::Pdmodel::Encryption
+  # Indicates that an invalid password was supplied.
+  # Java: org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException
+  class InvalidPasswordException < ::IO::Error
+    def initialize(message : String)
+      super(message)
+    end
+  end
+
   # SASLPrep string preparation as per RFC 4013.
   # Ported from Apache PDFBox SaslPrep.java.
   module SaslPrep
@@ -20,12 +28,12 @@ module Pdfbox::Pdmodel::Encryption
       chars = str.chars
 
       result = String.build do |io|
-        chars.each do |ch|
-          cp = ch.ord
+        chars.each do |char|
+          cp = char.ord
           if non_ascii_space?(cp)
             io << ' '
           elsif !mapped_to_nothing?(cp)
-            io << ch
+            io << char
           end
         end
       end
@@ -36,16 +44,16 @@ module Pdfbox::Pdmodel::Encryption
       contains_l_cat = false
       initial_rand_al_cat = false
 
-      normalized.each_char_with_index do |ch, i|
-        cp = ch.ord
+      normalized.each_char_with_index do |char, i|
+        cp = char.ord
         if prohibited?(cp)
           raise ArgumentError.new("Prohibited character U+#{cp.to_s(16).upcase} at position #{i}")
         end
-        is_rand_al = rtl_char?(ch)
+        is_rand_al = rtl_char?(char)
         contains_rand_al_cat ||= is_rand_al
-        contains_l_cat ||= ltr_char?(ch)
+        contains_l_cat ||= ltr_char?(char)
         initial_rand_al_cat ||= (i == 0 && is_rand_al)
-        if !allow_unassigned && unassigned?(ch)
+        if !allow_unassigned && unassigned?(char)
           raise ArgumentError.new("Unassigned character at position #{i}")
         end
       end
@@ -826,7 +834,7 @@ module Pdfbox::Pdmodel::Encryption
           perm.set_read_only
           set_current_access_permission(perm)
         else
-          raise ::IO::Error.new("Cannot decrypt PDF, the password is incorrect")
+          raise InvalidPasswordException.new("Cannot decrypt PDF, the password is incorrect")
         end
       end
 
@@ -1557,7 +1565,7 @@ module Pdfbox::Pdmodel::Encryption
 
       # Derive encryption key: SHA1/SHA256 of seed + all recipient bytes
       sha_input_size = seed.size
-      recipients_fields.each { |f| sha_input_size += f.size }
+      recipients_fields.each { |field| sha_input_size += field.size }
       sha_input = Bytes.new(sha_input_size)
       seed.copy_to(sha_input)
       offset = 20
