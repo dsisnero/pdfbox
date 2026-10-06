@@ -2,6 +2,7 @@
 #
 # This module contains the high-level PDF document model classes,
 # corresponding to the pdmodel package in Apache PDFBox.
+require "./pdmodel/missing_resource_exception"
 require "./pdmodel/common"
 require "./pdmodel/encryption"
 require "./pdmodel/interactive"
@@ -835,6 +836,18 @@ module Pdfbox::Pdmodel
       return unless outlines_dict.is_a?(Cos::Dictionary)
 
       DocumentOutline.new(outlines_dict)
+    end
+
+    # Get the structure tree root (Java PDDocumentCatalog#getStructureTreeRoot).
+    def structure_tree_root : DocumentInterchange::LogicalStructure::PDStructureTreeRoot?
+      dict = @cos_dict.get_dictionary(Cos::Name.new("StructTreeRoot"))
+      dict ? DocumentInterchange::LogicalStructure::PDStructureTreeRoot.new(dict) : nil
+    end
+
+    # Set the document's structure tree root (Java PDDocumentCatalog#setStructureTreeRoot).
+    def structure_tree_root=(tree_root : DocumentInterchange::LogicalStructure::PDStructureTreeRoot) : DocumentInterchange::LogicalStructure::PDStructureTreeRoot
+      @cos_dict[Cos::Name.new("StructTreeRoot")] = tree_root.cos_object
+      tree_root
     end
 
     def document_outline=(outline : DocumentOutline) : DocumentOutline

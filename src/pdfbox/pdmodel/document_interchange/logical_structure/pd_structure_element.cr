@@ -154,6 +154,109 @@ module Pdfbox::Pdmodel::DocumentInterchange::LogicalStructure
       kid_objects
     end
 
+    # Returns the attributes together with their revision numbers (A).
+    # Java PDStructureElement#getAttributes.
+    def attributes : Revisions(PDAttributeObject)
+      revisions = Revisions(PDAttributeObject).new
+      a = @dictionary.get_dictionary_object(Pdfbox::Cos::Name.new("A"))
+      if a.is_a?(Pdfbox::Cos::Array)
+        array = a
+        attribute_object = nil.as(PDAttributeObject?)
+        array.items.each do |item|
+          item = item.object if item.is_a?(Pdfbox::Cos::Object)
+          if item.is_a?(Pdfbox::Cos::Dictionary)
+            attribute_object = PDAttributeObject.create(item)
+            attribute_object.structure_element = self
+            revisions.add_object(attribute_object, 0)
+          elsif item.is_a?(Pdfbox::Cos::Integer)
+            if attribute_object
+              revisions.set_revision_number(attribute_object, item.value.to_i32)
+            end
+          end
+        end
+      end
+      if a.is_a?(Pdfbox::Cos::Dictionary)
+        attribute_object = PDAttributeObject.create(a)
+        attribute_object.structure_element = self
+        revisions.add_object(attribute_object, 0)
+      end
+      revisions
+    end
+
+    # Sets the attributes together with their revision numbers (A).
+    # Java PDStructureElement#setAttributes.
+    def attributes=(revisions : Revisions(PDAttributeObject)) : Nil
+      key = Pdfbox::Cos::Name.new("A")
+      if revisions.size == 1 && revisions.get_revision_number(0) == 0
+        attribute_object = revisions.get_object(0)
+        attribute_object.structure_element = self
+        @dictionary.set_item(key, attribute_object.cos_object)
+        return
+      end
+      array = Pdfbox::Cos::Array.new
+      revisions.size.times do |i|
+        attribute_object = revisions.get_object(i)
+        attribute_object.structure_element = self
+        revision_number = revisions.get_revision_number(i)
+        if revision_number < 0
+          raise ArgumentError.new("The revision number shall be > -1")
+        end
+        array.add(attribute_object.cos_object)
+        array.add(Pdfbox::Cos::Integer.get(revision_number.to_i64))
+      end
+      @dictionary.set_item(key, array)
+    end
+
+    # Returns the class names together with their revision numbers (C).
+    # Java PDStructureElement#getClassNames.
+    def class_names : Revisions(String)
+      class_names = Revisions(String).new
+      c = @dictionary.get_dictionary_object(Pdfbox::Cos::Name.new("C"))
+      if c.is_a?(Pdfbox::Cos::Name)
+        class_names.add_object(c.value, 0)
+      end
+      if c.is_a?(Pdfbox::Cos::Array)
+        array = c
+        class_name = nil.as(String?)
+        array.items.each do |item|
+          item = item.object if item.is_a?(Pdfbox::Cos::Object)
+          if item.is_a?(Pdfbox::Cos::Name)
+            class_name = item.value
+            class_names.add_object(class_name, 0)
+          elsif item.is_a?(Pdfbox::Cos::Integer)
+            if class_name
+              class_names.set_revision_number(class_name, item.value.to_i32)
+            end
+          end
+        end
+      end
+      class_names
+    end
+
+    # Notifies the structure element that an attribute object changed.
+    # Java PDStructureElement#attributeChanged.
+    def attribute_changed(attribute_object : PDAttributeObject) : Nil
+      key = Pdfbox::Cos::Name.new("A")
+      a = @dictionary.get_dictionary_object(key)
+      if a.is_a?(Pdfbox::Cos::Array)
+        array = a
+        array.items.each_with_index do |entry, i|
+          entry = entry.object if entry.is_a?(Pdfbox::Cos::Object)
+          if entry == attribute_object.cos_object
+            next_base = array.items[i + 1]?
+            if next_base.is_a?(Pdfbox::Cos::Integer)
+              array.items[i + 1] = Pdfbox::Cos::Integer.get(revision_number.to_i64)
+            end
+          end
+        end
+      else
+        array = Pdfbox::Cos::Array.new
+        array.add(a) if a
+        array.add(Pdfbox::Cos::Integer.get(revision_number.to_i64))
+        @dictionary.set_item(key, array)
+      end
+    end
+
     private def append_kid_base(object : Pdfbox::Cos::Base) : Nil
       k = @dictionary[Pdfbox::Cos::Name.new("K")]
       if k.nil?
