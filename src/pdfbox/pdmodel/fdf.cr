@@ -1,4 +1,6 @@
 require "xml"
+require "./fdf/fdf_annotation"
+require "./fdf/fdf_annotation_subtypes"
 
 module Pdfbox::Pdmodel::Fdf
   class FDFNamedPageReference
@@ -499,6 +501,7 @@ module Pdfbox::Pdmodel::Fdf
     property file : String?
     property id : Array(String)?
     property fields : Array(FDFField)?
+    property annotations : Array(FDFAnnotation)?
     property status : String?
     property target : String?
     property encoding : String? = "PDFDocEncoding"
@@ -550,9 +553,11 @@ module Pdfbox::Pdmodel::Fdf
 
   class FDFDocument
     property catalog : FDFCatalog
+    property cos_document : Pdfbox::Cos::Document?
 
     def initialize
       @catalog = FDFCatalog.new
+      @cos_document = nil
     end
 
     def self.load_xfdf(path : String) : self
@@ -585,6 +590,65 @@ module Pdfbox::Pdmodel::Fdf
       parser.parse
     end
 
+    # Builds a FDFDocument model from a parsed COS /FDF dictionary (Java
+    # FDFParser builds the model from the COS catalog). Falls back to empty
+    # when no fields/pages are present.
+    def self.from_cos_dictionary(fdf_dict : Pdfbox::Cos::Dictionary) : self
+      doc = new
+
+      if file_cos = dereference_cos(fdf_dict[Pdfbox::Cos::Name.new("F")]?)
+        doc.catalog.fdf.file = file_cos.value if file_cos.is_a?(Pdfbox::Cos::String)
+      end
+
+      if id_cos = dereference_cos(fdf_dict[Pdfbox::Cos::Name.new("ID")]?)
+        if id_cos.is_a?(Pdfbox::Cos::Array)
+          ids = id_cos.items.compact_map { |item| item.as?(Pdfbox::Cos::String).try(&.value) }
+          doc.catalog.fdf.id = ids unless ids.empty?
+        end
+      end
+
+      if fields_cos = dereference_cos(fdf_dict[Pdfbox::Cos::Name.new("Fields")]?)
+        if fields_cos.is_a?(Pdfbox::Cos::Array)
+          fields = fields_cos.items.compact_map do |item|
+            dict = dereference_cos(item)
+            dict.is_a?(Pdfbox::Cos::Dictionary) ? field_from_cos(dict) : nil
+          end
+          doc.catalog.fdf.fields = fields unless fields.empty?
+        end
+      end
+
+      doc
+    end
+
+    private def self.dereference_cos(base : Pdfbox::Cos::Base?) : Pdfbox::Cos::Base?
+      case base
+      when Pdfbox::Cos::Object
+        base.object
+      else
+        base
+      end
+    end
+
+    private def self.field_from_cos(dict : Pdfbox::Cos::Dictionary) : FDFField?
+      field = FDFField.new
+      if t_cos = dereference_cos(dict[Pdfbox::Cos::Name.new("T")]?)
+        field.partial_field_name = t_cos.value if t_cos.is_a?(Pdfbox::Cos::String)
+      end
+      if v_cos = dereference_cos(dict[Pdfbox::Cos::Name.new("V")]?)
+        field.cos_value = v_cos
+      end
+      if kids_cos = dereference_cos(dict[Pdfbox::Cos::Name.new("Kids")]?)
+        if kids_cos.is_a?(Pdfbox::Cos::Array)
+          kids = kids_cos.items.compact_map do |item|
+            kid_dict = dereference_cos(item)
+            kid_dict.is_a?(Pdfbox::Cos::Dictionary) ? field_from_cos(kid_dict) : nil
+          end
+          field.kids = kids unless kids.empty?
+        end
+      end
+      field
+    end
+
     def save(path : String) : Nil
       File.write(path, to_fdf)
     end
@@ -601,8 +665,8 @@ module Pdfbox::Pdmodel::Fdf
       io << to_xfdf
     end
 
-    def get_document : Nil # ameba:disable Naming/AccessorMethodName
-      nil
+    def get_document : Pdfbox::Cos::Document? # ameba:disable Naming/AccessorMethodName
+      @cos_document
     end
 
     def set_catalog(catalog : FDFCatalog) : FDFCatalog # ameba:disable Naming/AccessorMethodName
@@ -1548,6 +1612,19 @@ module Pdfbox::Pdmodel::Fdf
             fields << FDFField.from_xfdf(field_node)
           end
           fdf.fields = fields unless fields.empty?
+        when "annots"
+          annots = [] of FDFAnnotation
+          child.children.each do |annot_node|
+            next unless annot_node.element?
+            begin
+              if annot = FDFAnnotation.from_element(annot_node)
+                annots << annot
+              end
+            rescue ex
+              Log.warn { "Error parsing annotation information [#{annot_node.name}]. Annotation ignored: #{ex.message}" }
+            end
+          end
+          fdf.annotations = annots unless annots.empty?
         end
       end
     end

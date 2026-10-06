@@ -1189,7 +1189,9 @@ module Pdfbox::Cos
     end
 
     # Get the dictionary object, dereferencing COSObject and treating COSNull as nil
-    private def get_dictionary_object(key : Name) : Base?
+    # Get the dictionary object at the given key, dereferencing indirect
+    # references and skipping null. Java COSDictionary#getDictionaryObject.
+    def get_dictionary_object(key : Name) : Base?
       value = self[key]?
       return unless value
       if value.is_a?(Object)
