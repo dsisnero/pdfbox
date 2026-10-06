@@ -15,7 +15,7 @@ module Pdfbox::Pdmodel::Common
 
     protected def convert_cos_to_pd(base : Cos::Base) : Cos::Integer
       unless base.is_a?(Cos::Integer)
-        raise "integer expected here, but got #{base}"
+        raise ::IO::Error.new("integer expected here, but got #{base}")
       end
       base
     end
