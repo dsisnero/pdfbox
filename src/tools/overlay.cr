@@ -11,6 +11,7 @@ module Tools
     @odd_page_overlay : String? = nil
     @even_page_overlay : String? = nil
     @use_all_pages : String? = nil
+    @specific_page_overlays = {} of Int32 => String
     @position = "BACKGROUND"
     @adjust_rotation = false
 
@@ -52,6 +53,7 @@ module Tools
       @odd_page_overlay = nil
       @even_page_overlay = nil
       @use_all_pages = nil
+      @specific_page_overlays = {} of Int32 => String
       @position = "BACKGROUND"
       @adjust_rotation = false
     end
@@ -66,6 +68,13 @@ module Tools
         parser.on("--first FILE", "Overlay file used for the first page") { |value| @first_page_overlay = value }
         parser.on("--last FILE", "Overlay file used for the last page") { |value| @last_page_overlay = value }
         parser.on("--useAllPages FILE", "Overlay file used for all pages (repeating)") { |value| @use_all_pages = value }
+        parser.on("--page PAGE=FILE", "Overlay file used for the given page number, may occur more than once") do |value|
+          page_num, _, file = value.partition('=')
+          if file.empty?
+            raise ArgumentError.new("-page expects '<pageNumber>=<overlayFile>'")
+          end
+          @specific_page_overlays[page_num.to_i] = file
+        end
         parser.on("--position POS", "FOREGROUND or BACKGROUND (default: BACKGROUND)") { |value| @position = value }
         parser.on("--adjustRotation", "Adjust rotation for rotated source pages") { @adjust_rotation = true }
         parser.on("-h", "--help", "Show this help") do
@@ -83,6 +92,7 @@ module Tools
             --first FILE              Overlay for first page
             --last FILE               Overlay for last page
             --useAllPages FILE        Overlay for all pages (repeating)
+            --page PAGE=FILE          Overlay for a specific page (repeatable)
             --position POS            FOREGROUND or BACKGROUND (default)
             --adjustRotation          Adjust rotation for rotated pages
             -h, --help                Show this help
@@ -158,7 +168,7 @@ module Tools
       overlayer.adjust_rotation = @adjust_rotation
 
       # Java: PDDocument result = overlayer.overlay(specificPageOverlayFile)
-      result = overlayer.overlay
+      result = overlayer.overlay(@specific_page_overlays)
 
       # Java: result.save(outfile)
       result.save(outfile)

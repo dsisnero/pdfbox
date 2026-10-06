@@ -64,7 +64,7 @@ module Tools
         parser.on("--format FORMAT", "The image file format (default: jpg)") do |value|
           @image_format = value.downcase
         end
-        parser.on("--prefix PREFIX", "The filename prefix for image files") do |value|
+        parser.on("--prefix PREFIX", "--outputPrefix PREFIX", "The filename prefix for image files") do |value|
           @output_prefix = value
         end
         parser.on("--page PAGE", "The only page to extract (1-based)") do |value|
@@ -79,7 +79,7 @@ module Tools
         parser.on("--color COLOR", "The color depth (RGB, ARGB, GRAY, etc.) (default: RGB)") do |value|
           @image_type = value.upcase
         end
-        parser.on("--dpi DPI", "The DPI of the output image, default: screen resolution or 96 if unknown") do |value|
+        parser.on("--dpi DPI", "--resolution DPI", "The DPI of the output image, default: screen resolution or 96 if unknown") do |value|
           @dpi = value.to_i
         end
         parser.on("--quality QUALITY", "The quality to be used when compressing the image (0 <= quality <= 1)") do |value|

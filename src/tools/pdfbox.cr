@@ -22,7 +22,6 @@ module Tools
         export:images
         export:xmp
         export:text
-        export:html
         export:fdf
         export:xfdf
         import:fdf
@@ -53,8 +52,6 @@ module Tools
                       handle_debug
                     when "export:text"
                       ExtractText.new(@out, @err).call(command_args)
-                    when "export:html"
-                      ExtractText.new(@out, @err).call(["--html"] + command_args)
                     when "export:xmp"
                       ExtractXMP.new(@out, @err).call(command_args)
                     when "export:images"

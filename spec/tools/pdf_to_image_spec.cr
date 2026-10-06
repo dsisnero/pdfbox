@@ -58,4 +58,24 @@ describe Tools::PDFToImage do
       result.should eq(0)
     end
   end
+
+  it "accepts -outputPrefix alias for -prefix" do
+    if File.exists?(hello3_path)
+      stderr = IO::Memory.new
+      stdout = IO::Memory.new
+      tool = Tools::PDFToImage.new(stdout, stderr)
+      result = tool.call(["-i", hello3_path, "--outputPrefix", "prefix_test", "--page", "1"])
+      result.should eq(0)
+    end
+  end
+
+  it "accepts -resolution alias for -dpi" do
+    if File.exists?(hello3_path)
+      stderr = IO::Memory.new
+      stdout = IO::Memory.new
+      tool = Tools::PDFToImage.new(stdout, stderr)
+      result = tool.call(["-i", hello3_path, "--resolution", "72", "--page", "1"])
+      result.should eq(0)
+    end
+  end
 end

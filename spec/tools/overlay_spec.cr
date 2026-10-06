@@ -32,6 +32,53 @@ describe Tools::Overlay do
       exit_code.should eq(1)
       stderr.to_s.should contain("Input file not found")
     end
+
+    it "accepts repeatable -page <pageNum>=<file> overlay option" do
+      input_file = File.tempname("pdfbox_overlay_page_input_", ".pdf")
+      overlay_file = File.tempname("pdfbox_overlay_page_overlay_", ".pdf")
+      output_file = File.tempname("pdfbox_overlay_page_output_", ".pdf")
+      begin
+        doc = Pdfbox::Pdmodel::Document.create
+        doc.add_page(Pdfbox::Pdmodel::Page.new)
+        doc.add_page(Pdfbox::Pdmodel::Page.new)
+        doc.save(input_file)
+        doc.close
+
+        doc2 = Pdfbox::Pdmodel::Document.create
+        doc2.add_page(Pdfbox::Pdmodel::Page.new)
+        doc2.save(overlay_file)
+        doc2.close
+
+        stdout = IO::Memory.new
+        stderr = IO::Memory.new
+        overlayer = Tools::Overlay.new(stdout, stderr)
+        exit_code = overlayer.call([
+          "-i", input_file,
+          "-o", output_file,
+          "-page", "1=#{overlay_file}",
+          "-page", "2=#{overlay_file}",
+        ])
+
+        exit_code.should eq(0)
+        File.exists?(output_file).should be_true
+        doc3 = Pdfbox::Pdmodel::Document.load(output_file)
+        doc3.number_of_pages.should eq(2)
+        doc3.close
+      ensure
+        File.delete(input_file) if File.exists?(input_file)
+        File.delete(overlay_file) if File.exists?(overlay_file)
+        File.delete(output_file) if File.exists?(output_file)
+      end
+    end
+
+    it "reports error for malformed -page value" do
+      stdout = IO::Memory.new
+      stderr = IO::Memory.new
+      tool = Tools::Overlay.new(stdout, stderr)
+      exit_code = tool.call(["-i", "in.pdf", "-o", "out.pdf", "-page", "1"])
+      exit_code.should eq(1)
+      stderr.to_s.should contain("Error: -page expects '<pageNumber>=<overlayFile>'")
+    end
   end
 
   describe "overlay functionality" do

@@ -148,4 +148,19 @@ describe Tools::PrintPDF do
     stderr_io.to_s.should contain("noColorOpt")
     stderr_io.to_s.should contain("silentPrint")
   end
+
+  it "lists available printers via the listPrinters subcommand" do
+    stdout_io = IO::Memory.new
+    stderr_io = IO::Memory.new
+    backend = FakePrintBackend.new
+    backend.printers = ["Office", "Lobby"] of String
+    tool = FakePrintPDF.new(backend, stdout_io, stderr_io)
+
+    code = tool.call(["listPrinters"])
+
+    code.should eq(0)
+    stderr_io.to_s.should contain("Available printer names:")
+    stderr_io.to_s.should contain("    Office")
+    stderr_io.to_s.should contain("    Lobby")
+  end
 end

@@ -230,4 +230,27 @@ describe Tools::TextToPDF do
       File.delete(pdf_file) if File.exists?(pdf_file)
     end
   end
+
+  it "accepts -charset option (Java TextToPDF has it)" do
+    text_file = File.tempname("pdfbox_texttopdf_charset_", ".txt")
+    pdf_file = File.tempname("pdfbox_texttopdf_charset_", ".pdf")
+    begin
+      File.write(text_file, "Café résumé\n")
+
+      stdout = IO::Memory.new
+      stderr = IO::Memory.new
+      tool = Tools::TextToPDF.new(stdout, stderr)
+      exit_code = tool.call(["-i", text_file, "-o", pdf_file, "-charset", "UTF-8"])
+
+      exit_code.should eq(0)
+      File.exists?(pdf_file).should be_true
+
+      doc = Pdfbox::Pdmodel::Document.load(pdf_file)
+      doc.number_of_pages.should eq(1)
+      doc.close
+    ensure
+      File.delete(text_file) if File.exists?(text_file)
+      File.delete(pdf_file) if File.exists?(pdf_file)
+    end
+  end
 end

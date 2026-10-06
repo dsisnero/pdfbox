@@ -12,7 +12,6 @@ describe Tools::PDFBox do
       export:images
       export:xmp
       export:text
-      export:html
       export:fdf
       export:xfdf
       import:fdf

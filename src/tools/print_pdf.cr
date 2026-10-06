@@ -240,6 +240,10 @@ module Tools
     end
 
     def call(args : Array(String)) : Int32
+      if args.first? == "listPrinters"
+        return list_printers
+      end
+
       reset
       build_option_parser.parse(normalize_args(args))
 
@@ -297,6 +301,15 @@ module Tools
       @dpi = 0
       @no_center = false
       @no_color_opt = false
+    end
+
+    # Java PrintPDF#showAvailablePrinters (listPrinters subcommand).
+    private def list_printers : Int32
+      @err.puts("Available printer names:")
+      @backend.available_printers.each do |printer|
+        @err.puts("    #{printer}")
+      end
+      0
     end
 
     private def build_option_parser : OptionParser

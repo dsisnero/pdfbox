@@ -17,6 +17,7 @@ module Tools
     @margins = [DEFAULT_MARGIN, DEFAULT_MARGIN, DEFAULT_MARGIN, DEFAULT_MARGIN]
     @standard_font = "Helvetica"
     @ttf_path : String? = nil
+    @charset = "UTF-8"
 
     def initialize(@out : IO = STDOUT, @err : IO = STDERR)
     end
@@ -57,6 +58,7 @@ module Tools
       @margins = [DEFAULT_MARGIN, DEFAULT_MARGIN, DEFAULT_MARGIN, DEFAULT_MARGIN]
       @standard_font = "Helvetica"
       @ttf_path = nil
+      @charset = "UTF-8"
     end
 
     private def build_option_parser : OptionParser
@@ -77,6 +79,7 @@ module Tools
         end
         parser.on("-standardFont NAME", "--standardFont NAME", "Standard font: Helvetica, Courier, Times-Roman, etc.") { |value| @standard_font = value }
         parser.on("-ttf FILE", "--ttf FILE", "TTF font file to use") { |value| @ttf_path = value }
+        parser.on("-charset CHARSET", "--charset CHARSET", "The charset to use (default: UTF-8)") { |value| @charset = value }
         parser.on("-h", "--help", "Show this help") do
           @out.puts <<-HELP
           Usage: pdfbox fromtext [options]
@@ -91,6 +94,7 @@ module Tools
             --margins L,R,T,B        Margins (default: 40,40,40,40)
             -standardFont NAME       Standard font (default: Helvetica)
             -ttf FILE                TTF font file to use
+            -charset CHARSET         The charset to use (default: UTF-8)
             -h, --help               Show this help
 
           Example:
@@ -142,53 +146,56 @@ module Tools
       content_stream : Pdfbox::Pdmodel::PDPageContentStream? = nil
       y = 0.0_f32
 
-      File.each_line(infile) do |raw_line|
-        text_is_empty = false
-        line = raw_line.chomp("\r")
-        words = line.split(' ', remove_empty: false)
+      File.open(infile, "r") do |file|
+        file.set_encoding(@charset)
+        file.each_line do |raw_line|
+          text_is_empty = false
+          line = raw_line.chomp("\r")
+          words = line.split(' ', remove_empty: false)
 
-        line_index = 0
-        while line_index < words.size
-          next_line_parts = [] of String
-          add_space = false
+          line_index = 0
+          while line_index < words.size
+            next_line_parts = [] of String
+            add_space = false
 
-          loop do
-            word = words[line_index]
-            if add_space
-              candidate = (next_line_parts + [""]).join(" ") + word
-              width = (font.get_string_width(candidate) / FONT_SCALE) * @font_size
-              break if width >= actual_media_box.width - left_margin - right_margin
-            end
-            next_line_parts << word
-            add_space = true
-            line_index += 1
-            break if line_index >= words.size
-          end
-
-          drawn_text = next_line_parts.join(" ")
-
-          if page.nil? || y - line_height < bottom_margin
-            if cs = content_stream
-              cs.end_text
-              cs.close
+            loop do
+              word = words[line_index]
+              if add_space
+                candidate = (next_line_parts + [""]).join(" ") + word
+                width = (font.get_string_width(candidate) / FONT_SCALE) * @font_size
+                break if width >= actual_media_box.width - left_margin - right_margin
+              end
+              next_line_parts << word
+              add_space = true
+              line_index += 1
+              break if line_index >= words.size
             end
 
-            page = Pdfbox::Pdmodel::Page.new
-            page.media_box = actual_media_box
-            doc.add_page(page)
+            drawn_text = next_line_parts.join(" ")
 
-            content_stream = Pdfbox::Pdmodel::PDPageContentStream.new(doc, page)
-            content_stream.set_font(font, @font_size)
-            content_stream.begin_text
+            if page.nil? || y - line_height < bottom_margin
+              if cs = content_stream
+                cs.end_text
+                cs.close
+              end
 
-            y = actual_media_box.height - top_margin
-            y += line_height - font_height * @font_size
-            content_stream.as(Pdfbox::Pdmodel::PDPageContentStream).new_line_at_offset(left_margin, y)
+              page = Pdfbox::Pdmodel::Page.new
+              page.media_box = actual_media_box
+              doc.add_page(page)
+
+              content_stream = Pdfbox::Pdmodel::PDPageContentStream.new(doc, page)
+              content_stream.set_font(font, @font_size)
+              content_stream.begin_text
+
+              y = actual_media_box.height - top_margin
+              y += line_height - font_height * @font_size
+              content_stream.as(Pdfbox::Pdmodel::PDPageContentStream).new_line_at_offset(left_margin, y)
+            end
+
+            content_stream.as(Pdfbox::Pdmodel::PDPageContentStream).new_line_at_offset(0, -line_height)
+            y -= line_height
+            content_stream.as(Pdfbox::Pdmodel::PDPageContentStream).show_text(drawn_text)
           end
-
-          content_stream.as(Pdfbox::Pdmodel::PDPageContentStream).new_line_at_offset(0, -line_height)
-          y -= line_height
-          content_stream.as(Pdfbox::Pdmodel::PDPageContentStream).show_text(drawn_text)
         end
       end
 

@@ -89,34 +89,32 @@ module Tools
 
       # Process each input file
       infiles.each do |infile|
-        begin
-          # Load document
-          document = Pdfbox::Loader.load_pdf(infile, @password)
+        # Load document
+        document = Pdfbox::Loader.load_pdf(infile, @password)
 
-          # Check if document is encrypted and we don't have permission
-          if document.encryption && !document.current_access_permission.can_extract_content?
-            @err.puts("Error: Cannot extract pages from encrypted document #{infile} without proper permissions")
-            return 1
-          end
-
-          # Extract all pages using PageExtractor
-          extractor = Pdfbox::Multipdf::PageExtractor.new(document, 1, document.number_of_pages)
-          extracted_doc = extractor.extract
-
-          # Add pages to merged document
-          extracted_doc.pages.each do |page|
-            merged_doc.add_page(page)
-          end
-
-          @err.puts("Added #{document.number_of_pages} pages from #{File.basename(infile)}") if @err.tty?
-        rescue ex : IO::Error
-          if ex.message.to_s.downcase.includes?("password")
-            @err.puts("Error: Incorrect password for #{infile} or unable to decrypt")
-          else
-            @err.puts("Error loading #{infile}: #{ex.message}")
-          end
-          return 4
+        # Check if document is encrypted and we don't have permission
+        if document.encryption && !document.current_access_permission.can_extract_content?
+          @err.puts("Error: Cannot extract pages from encrypted document #{infile} without proper permissions")
+          return 1
         end
+
+        # Extract all pages using PageExtractor
+        extractor = Pdfbox::Multipdf::PageExtractor.new(document, 1, document.number_of_pages)
+        extracted_doc = extractor.extract
+
+        # Add pages to merged document
+        extracted_doc.pages.each do |page|
+          merged_doc.add_page(page)
+        end
+
+        @err.puts("Added #{document.number_of_pages} pages from #{File.basename(infile)}") if @err.tty?
+      rescue ex : IO::Error
+        if ex.message.to_s.downcase.includes?("password")
+          @err.puts("Error: Incorrect password for #{infile} or unable to decrypt")
+        else
+          @err.puts("Error loading #{infile}: #{ex.message}")
+        end
+        return 4
       end
 
       # Save merged document
