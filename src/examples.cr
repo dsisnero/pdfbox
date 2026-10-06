@@ -1,0 +1,7 @@
+require "./examples/interactive/form/create_simple_form"
+require "./examples/interactive/form/add_border_to_field"
+require "./examples/interactive/form/create_multi_widgets_form"
+require "./examples/interactive/form/create_check_box"
+require "./examples/interactive/form/create_radio_buttons"
+require "./examples/interactive/form/create_push_button"
+require "./examples/interactive/form/create_simple_form_with_embedded_font"

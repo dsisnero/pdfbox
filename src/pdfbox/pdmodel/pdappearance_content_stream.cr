@@ -84,6 +84,11 @@ module Pdfbox::Pdmodel
       write_operator(NON_STROKING_GRAY)
     end
 
+    def stroking_color(gray : Number) : Nil
+      write_operands(gray)
+      write_operator(STROKING_COLOR_GRAY)
+    end
+
     def line_dash_pattern(pattern : Enumerable(Number), phase : Number) : Nil
       @buffer << '['
       first = true
@@ -224,6 +229,19 @@ module Pdfbox::Pdmodel
       @buffer << '/' << resource_name.value << ' ' << DRAW_OBJECT << '\n'
     end
 
+    def draw_image(image : Graphics::Image::PDImageXObject, x : Number, y : Number, width : Number, height : Number) : Nil
+      write_operator(SAVE)
+      write_operands(width, 0, 0, height, x, y)
+      write_operator(CONCAT)
+      resource_name = add_image_to_xobject_resources(image)
+      @buffer << '/' << resource_name << ' ' << DRAW_OBJECT << '\n'
+      write_operator(RESTORE)
+    end
+
+    def draw_image(image : Graphics::Image::PDImageXObject, x : Number, y : Number) : Nil
+      draw_image(image, x, y, image.width, image.height)
+    end
+
     def draw_shape(_line_width : Number, has_stroke : Bool, has_background : Bool) : Nil
       if has_stroke && has_background
         fill_and_stroke
@@ -314,6 +332,19 @@ module Pdfbox::Pdmodel
       font_name = "F#{fonts.size + 1}"
       @font_name = font_name
       fonts[Cos::Name.new(font_name)] = font.cos_object
+    end
+
+    private def add_image_to_xobject_resources(image : Graphics::Image::PDImageXObject) : String
+      dictionary = @resources.cos_object.as(Pdfbox::Cos::Dictionary)
+      xobjects = dictionary[Pdfbox::Cos::Name.new("XObject")]?.as?(Pdfbox::Cos::Dictionary) || begin
+        created = Pdfbox::Cos::Dictionary.new
+        dictionary[Pdfbox::Cos::Name.new("XObject")] = created
+        created
+      end
+
+      resource_name = "Im#{xobjects.size + 1}"
+      xobjects[Cos::Name.new(resource_name)] = image.cos_object
+      resource_name
     end
 
     private def current_font : Pdfbox::Pdmodel::Font::PDFont?
