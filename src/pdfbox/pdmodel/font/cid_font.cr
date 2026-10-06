@@ -65,7 +65,7 @@ module Pdfbox::Pdmodel::Font
       size = w_array.size
       counter = 0
       while counter < size - 1
-        first_code_base = w_array[counter]?
+        first_code_base = deref_cos(w_array[counter]?)
         counter += 1
         break unless first_code_base
         unless first_code_base.is_a?(Pdfbox::Cos::Number)
@@ -73,7 +73,7 @@ module Pdfbox::Pdmodel::Font
           next
         end
         first_code = first_code_base.as(Pdfbox::Cos::Number).to_i
-        next_base = w_array[counter]?
+        next_base = deref_cos(w_array[counter]?)
         counter += 1
         break unless next_base
 
@@ -81,7 +81,7 @@ module Pdfbox::Pdmodel::Font
           array = next_base.as(Pdfbox::Cos::Array)
           array_size = array.size
           (0...array_size).each do |i|
-            width_base = array[i]?
+            width_base = deref_cos(array[i]?)
             next unless width_base
             if width_base.is_a?(Pdfbox::Cos::Number)
               width = width_base.as(Pdfbox::Cos::Number).to_f32
@@ -95,8 +95,8 @@ module Pdfbox::Pdmodel::Font
             Log.warn { "premature end of widths array" }
             break
           end
-          second_code_base = next_base
-          range_width_base = w_array[counter]?
+          second_code_base = deref_cos(next_base)
+          range_width_base = deref_cos(w_array[counter]?)
           counter += 1
           break unless range_width_base
           unless second_code_base.is_a?(Pdfbox::Cos::Number) && range_width_base.is_a?(Pdfbox::Cos::Number)
@@ -194,6 +194,16 @@ module Pdfbox::Pdmodel::Font
             @position_vectors[cid_val] = PDFont::Vector.new(v1x, v1y)
           end
         end
+      end
+    end
+
+    # Dereferences a COS object wrapper (Java COSArray.getObject / COSBase).
+    private def deref_cos(base : Pdfbox::Cos::Base?) : Pdfbox::Cos::Base?
+      case base
+      when Pdfbox::Cos::Object
+        base.object
+      else
+        base
       end
     end
 

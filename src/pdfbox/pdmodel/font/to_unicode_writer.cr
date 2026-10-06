@@ -91,7 +91,7 @@ module Pdfbox::Pdmodel::Font
       sorted_entries = @cid_to_unicode.to_a.sort_by { |cid, _| cid }
 
       sorted_entries.each do |cid, text|
-        if prev && allow_cid_to_unicode_range(prev, {cid, text})
+        if prev && self.class.allow_cid_to_unicode_range(prev, {cid, text})
           # extend range
           src_to[src_to.size - 1] = cid
         else
@@ -132,7 +132,8 @@ module Pdfbox::Pdmodel::Font
 
     # allow_cid_to_unicode_range returns true if the CID and Unicode destination string are allowed to follow one another
     # according to the Adobe 1.7 specification as described in Section 5.9, Example 5.16.
-    private def allow_cid_to_unicode_range(prev : Tuple(Int32, String)?, next_entry : Tuple(Int32, String)?) : Bool
+    # Java ToUnicodeWriter.allowCIDToUnicodeRange.
+    def self.allow_cid_to_unicode_range(prev : Tuple(Int32, String)?, next_entry : Tuple(Int32, String)?) : Bool
       return false unless prev && next_entry
       prev_cid, prev_text = prev
       next_cid, next_text = next_entry
@@ -141,7 +142,8 @@ module Pdfbox::Pdmodel::Font
     end
 
     # allow_code_range returns true if the 16-bit values are sequential and differ only in the low-order byte.
-    private def allow_code_range(prev : Int32, next_code : Int32) : Bool
+    # Java ToUnicodeWriter.allowCodeRange.
+    def self.allow_code_range(prev : Int32, next_code : Int32) : Bool
       return false if (prev + 1) != next_code
 
       prev_h = (prev >> 8) & 0xFF
@@ -153,17 +155,17 @@ module Pdfbox::Pdmodel::Font
     end
 
     # allow_destination_range returns true if the code points represented by the strings are sequential and differ
-    # only in the low-order byte.
-    private def allow_destination_range(prev : String, next_str : String) : Bool
+    # only in the low-order byte. Java ToUnicodeWriter.allowDestinationRange.
+    def self.allow_destination_range(prev : String, next_str : String) : Bool
       return false if prev.empty? || next_str.empty?
 
-      prev_code = prev.each_char.first.ord
-      next_code = next_str.each_char.first.ord
+      prev_code = prev.codepoint_at(0) || 0
+      next_code = next_str.codepoint_at(0) || 0
 
       # Allow the new destination string if:
       # 1. It is sequential with the previous one and differs only in the low-order byte
       # 2. The previous string does not contain any UTF-16 surrogates
-      allow_code_range(prev_code, next_code) && prev.size == 1 && prev.each_char.first.ord < 0x10000
+      allow_code_range(prev_code, next_code) && prev.each_codepoint.to_a.size == 1
     end
 
     # Convert a 16-bit integer to 4-digit hexadecimal string
