@@ -312,6 +312,30 @@ describe Pdfbox::Pdmodel::Document do
     end
   end
 
+  describe "locale-independent save" do
+    it "TestPDDocument#testSaveArabicLocale" do
+      # Java PDFBOX-3481: XRef offsets must not be locale-dependent. Crystal's
+      # number formatting is always ASCII, so the behavioral contract is that a
+      # saved document round-trips through load.
+      baos = IO::Memory.new
+
+      doc = Pdfbox::Pdmodel::Document.new
+      begin
+        doc.add_page(Pdfbox::Pdmodel::Page.new)
+        doc.save(baos)
+      ensure
+        doc.close
+      end
+
+      load_doc = Pdfbox::Pdmodel::Document.load(IO::Memory.new(baos.to_slice))
+      begin
+        load_doc.number_of_pages.should eq(1)
+      ensure
+        load_doc.close
+      end
+    end
+  end
+
   describe "xref table integration" do
     it "generates PDF with xref stream by default" do
       doc = Pdfbox::Pdmodel::Document.new

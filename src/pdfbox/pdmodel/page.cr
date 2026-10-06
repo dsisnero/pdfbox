@@ -225,14 +225,18 @@ module Pdfbox::Pdmodel
     # Get annotations on this page
     def annotations : Common::COSArrayList(Interactive::Annotation::PDAnnotation)
       annots = @cos_page.try(&.[Cos::Name.new("Annots")])
-      return Common::COSArrayList(Interactive::Annotation::PDAnnotation).new unless annots
 
       # Handle indirect references
       if annots.is_a?(Cos::Object)
         annots = annots.object
       end
 
-      return Common::COSArrayList(Interactive::Annotation::PDAnnotation).new unless annots.is_a?(Cos::Array)
+      unless annots.is_a?(Cos::Array)
+        # Lazily create the Annots array in the page dictionary when missing,
+        # so that add() writes it back (Java PDPage#getAnnotations behavior).
+        cos_page = @cos_page || default_page_dictionary
+        return Common::COSArrayList(Interactive::Annotation::PDAnnotation).new(cos_page, Cos::Name.new("Annots"))
+      end
 
       # Convert COSArray to list of PDAnnotation
       actual_list = [] of Interactive::Annotation::PDAnnotation
@@ -248,6 +252,13 @@ module Pdfbox::Pdmodel
       end
 
       Common::COSArrayList(Interactive::Annotation::PDAnnotation).new(actual_list, annots)
+    end
+
+    # Get annotations filtered by the given predicate. Java PDPage#getAnnotations(AnnotationFilter).
+
+    def get_annotations(&block : Interactive::Annotation::PDAnnotation -> Bool) : Common::COSArrayList(Interactive::Annotation::PDAnnotation)
+      filtered = annotations.select(&block)
+      Common::COSArrayList(Interactive::Annotation::PDAnnotation).new(filtered, Cos::Array.new)
     end
 
     # Set annotations on this page
