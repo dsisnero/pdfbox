@@ -2,7 +2,7 @@
   "base": "/Volumes/extreme_ssd/repos/github.com/dsisnero/pdfbox/vendor/pdfbox",
   "parser_requested": "tree-sitter",
   "backend": "chiasmus-tree-sitter",
-  "binary": "/Users/dominic/.local/bin/chiasmus-discover --language java --dir /Volumes/extreme_ssd/repos/github.com/dsisnero/pdfbox/vendor/pdfbox --parser tree-sitter",
+  "binary": "/Users/dominic/.agents/skills/crystal_forge/skills/cross-language-crystal-parity/bin/darwin-aarch64/chiasmus-discover --language java --dir /Volumes/extreme_ssd/repos/github.com/dsisnero/pdfbox/vendor/pdfbox --parser tree-sitter",
   "include_paths": [
     "."
   ],
