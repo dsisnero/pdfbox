@@ -14,13 +14,13 @@ module Pdfbox::Pdmodel::Graphics::Image
       unless filters.empty?
         decoded = @raw_data
         filters.each do |filter_name|
-          # CCITT/DCT/JPX are not implemented in the Crystal filter set; the raw
-          # data is kept as-is for those so the model surface still works.
-          begin
-            decoded = Filter::FilterFactory::INSTANCE.filter(Pdfbox::Cos::Name.new(filter_name)).decode(decoded)
-          rescue ArgumentError
-            next
-          end
+          # CCITT/DCT/JPX inline images are not decoded here (no DecodeParms/
+          # dimensions); the raw data is kept as-is so the model surface works.
+
+          filter = Filter::FilterFactory::INSTANCE.filter(Pdfbox::Cos::Name.new(filter_name))
+          decoded = filter.decode(decoded) unless filter.is_a?(Filter::CCITTFaxFilter) || filter.is_a?(Filter::DCTFilter)
+        rescue ::IO::Error
+          next
         end
         @decoded_data = decoded
       end
