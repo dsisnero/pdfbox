@@ -1,10 +1,11 @@
 # DeviceCMYK color space - subtractive CMYK (cyan, magenta, yellow, black) model
 module Pdfbox::Pdmodel::Graphics::Color
   class PDDeviceCMYK < PDDeviceColorSpace
-    # Single instance of this class (singleton pattern)
+    # Single instance of this class (singleton pattern).
+    # Java has a protected constructor so power users can subclass it.
     INSTANCE = new
 
-    private def initialize
+    def initialize
     end
 
     def name : String
@@ -13,6 +14,10 @@ module Pdfbox::Pdmodel::Graphics::Color
 
     def number_of_components : Int32
       4
+    end
+
+    def default_decode : Array(Float32)
+      [0.0_f32, 1.0_f32, 0.0_f32, 1.0_f32, 0.0_f32, 1.0_f32, 0.0_f32, 1.0_f32]
     end
 
     def initial_color : PDColor
