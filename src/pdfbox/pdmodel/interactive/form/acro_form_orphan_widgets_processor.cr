@@ -34,11 +34,9 @@ module Pdfbox::Pdmodel::Interactive::Form
       non_terminal_fields_map = {} of String => PDField
 
       @document.pages.each do |page|
-        begin
-          handle_annotations(acro_form, resources, fields, page.annotations, non_terminal_fields_map)
-        rescue ex
-          Log.debug { "couldn't read annotations for page #{ex.message}" }
-        end
+        handle_annotations(acro_form, resources, fields, page.annotations, non_terminal_fields_map)
+      rescue ex
+        Log.debug { "couldn't read annotations for page #{ex.message}" }
       end
 
       Log.debug { "set_fields with #{fields.size} fields" }
