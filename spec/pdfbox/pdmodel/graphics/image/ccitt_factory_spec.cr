@@ -13,6 +13,13 @@ module Pdfbox::Pdmodel::Graphics::Image
   module CCITTFactorySpecHelpers
     IMAGE_DIR = SpecPaths.resolve("vendor/pdfbox/pdfbox/src/test/resources/org/apache/pdfbox/pdmodel/graphics/image")
 
+    # Flips every bit in a 1-bit raster.
+    def self.invert_bits(bytes : Bytes) : Bytes
+      inverted = Bytes.new(bytes.size)
+      bytes.each_with_index { |byte, i| inverted[i] = (~byte & 0xFF).to_u8 }
+      inverted
+    end
+
     # Dictionary-level assertions of Java ValidateXImage.validate (without the
     # pixel round-trip / ImageIO.write parts, which are render-compare advisory).
     def self.validate_image(ximage : PDImageXObject?, bpc : Int32, width : Int32, height : Int32, format : String, color_space_name : String)
@@ -107,6 +114,60 @@ module Pdfbox::Pdmodel::Graphics::Image
             ximage.should_not be_nil
             CCITTFactorySpecHelpers.validate_image(ximage, 1, 344, 287, "tiff", "DeviceGray")
           end
+        ensure
+          doc.close
+        end
+      end
+    end
+
+    describe "TestCCITTFactory#testCreateFromBufferedChessImage" do
+      it "G4-encodes a 1-bit chess raster so it decodes back to the source" do
+        width = 343
+        height = 287
+        (width % 8).should_not eq(0) # not a multiple of 8, like the Java test
+        row_bytes = (width + 7) // 8
+
+        # Java builds the raster by toggling black/white per pixel (x outer, y inner).
+        bitmap = Bytes.new(row_bytes * height)
+        (0...width).each do |x|
+          (0...height).each do |y|
+            next unless (x * height + y).even? # black
+            bitmap[y * row_bytes + x // 8] |= (1_u8 << (7 - (x % 8)))
+          end
+        end
+
+        doc = Pdfbox::Pdmodel::Document.create
+        begin
+          ximage = CCITTFactory.create_from_image(doc, width, height, bitmap)
+          CCITTFactorySpecHelpers.validate_image(ximage, 1, width, height, "tiff", "DeviceGray")
+
+          # /BlackIs1 is not set, so the decoder inverts: 0 = black.
+          decoded = ximage.stream.not_nil!.create_input_stream.gets_to_end
+          decoded.bytesize.should eq(row_bytes * height)
+          decoded.to_slice.should eq(CCITTFactorySpecHelpers.invert_bits(bitmap))
+        ensure
+          doc.close
+        end
+      end
+    end
+
+    describe "TestCCITTFactory#testCreateFromBufferedImage" do
+      it "G4-encodes the raster from a TIFF-derived bitmap" do
+        doc = Pdfbox::Pdmodel::Document.create
+        begin
+          reference = CCITTFactory.create_from_file(doc, File.join(CCITTFactorySpecHelpers::IMAGE_DIR, "ccittg4.tif"))
+          reference.should_not be_nil
+          cols = reference.not_nil!.width
+          rows = reference.not_nil!.height
+
+          # 0 = black; createFromImage expects bit 1 = black.
+          visual = reference.not_nil!.stream.not_nil!.create_input_stream.gets_to_end.to_slice
+
+          ximage = CCITTFactory.create_from_image(doc, cols, rows, CCITTFactorySpecHelpers.invert_bits(visual))
+          CCITTFactorySpecHelpers.validate_image(ximage, 1, cols, rows, "tiff", "DeviceGray")
+
+          decoded = ximage.stream.not_nil!.create_input_stream.gets_to_end.to_slice
+          decoded.should eq(visual)
         ensure
           doc.close
         end

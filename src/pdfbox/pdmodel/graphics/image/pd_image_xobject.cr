@@ -280,8 +280,8 @@ module Pdfbox::Pdmodel::Graphics::Image
       ::IO::Memory.new(stream.data)
     end
 
-    # Helper method to get the COS stream
-    private def get_stream : Pdfbox::Cos::Stream?
+    # The underlying COS stream. Java getCOSObject() returns the COSStream.
+    def stream : Pdfbox::Cos::Stream?
       @stream || (@dict.is_a?(Pdfbox::Cos::Stream) ? @dict.as(Pdfbox::Cos::Stream) : nil)
     end
   end

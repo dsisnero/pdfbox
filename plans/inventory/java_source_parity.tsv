@@ -8276,10 +8276,10 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/form/PDTransparencyGroup
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/CCITTFactory.java::class::CCITTFactory	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/CCITTFactory.java::method::CCITTFactory.createFromByteArray	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/CCITTFactory.java::method::CCITTFactory.createFromFile	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/CCITTFactory.java::method::CCITTFactory.createFromImage	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/CCITTFactory.java::method::CCITTFactory.createFromImage	ported	src/pdfbox/pdmodel/graphics/image/ccitt_factory.cr	ported with G4 encoder
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/CCITTFactory.java::method::CCITTFactory.createFromRandomAccessImpl	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/CCITTFactory.java::method::CCITTFactory.extractFromTiff	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/CCITTFactory.java::method::CCITTFactory.prepareImageXObject	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/CCITTFactory.java::method::CCITTFactory.prepareImageXObject	ported	src/pdfbox/pdmodel/graphics/image/ccitt_factory.cr	ported with G4 encoder
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/CCITTFactory.java::method::CCITTFactory.readlong	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/CCITTFactory.java::method::CCITTFactory.readshort	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/CustomFactory.java::interface::CustomFactory	missing	-	baseline

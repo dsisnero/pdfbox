@@ -24,31 +24,32 @@ module Pdfbox::Pdmodel::Graphics::Image
       create_from_byte_array(document, data, number)
     end
 
-    # Creates a new CCITT Fax compressed image XObject from an in-memory 1-bit
-    # black-and-white raster. Java CCITTFactory#createFromImage.
+    # Creates a new CCITT Group 4 compressed image XObject from an in-memory
+    # 1-bit black-and-white raster (bit 1 = black). Java CCITTFactory#createFromImage.
     def self.create_from_image(document : Pdmodel::Document, width : Int32, height : Int32, binary_data : Bytes) : PDImageXObject
-      # Flip bits so black=0 (avoid needing /BlackIs1).
-      flipped = Bytes.new(binary_data.size)
-      binary_data.each_with_index do |byte, i|
-        flipped[i] = (~byte & 0xFF).to_u8
-      end
-
-      prepare_image_x_object(document, flipped, width, height)
+      prepare_image_x_object(document, binary_data, width, height)
     end
 
+    # Encodes the raster with the CCITT G4 encoder and wraps it in a
+    # PDImageXObject. Java CCITTFactory#prepareImageXObject.
     private def self.prepare_image_x_object(document : Pdmodel::Document, byte_array : Bytes, width : Int32, height : Int32) : PDImageXObject
+      params = Pdfbox::Cos::Dictionary.new
+      params.set_int(Pdfbox::Cos::Name.new("Columns"), width)
+      params.set_int(Pdfbox::Cos::Name.new("Rows"), height)
+
+      encoded = Pdfbox::Filter::CCITTFaxFilter.new.encode(byte_array, params)
+
       dict = Pdfbox::Cos::Dictionary.new
       dict.set_int(Pdfbox::Cos::Name.new("Width"), width)
       dict.set_int(Pdfbox::Cos::Name.new("Height"), height)
-      dict.set_int(Pdfbox::Cos::Name.new("Columns"), width)
-      dict.set_int(Pdfbox::Cos::Name.new("Rows"), height)
-      dict.set_int(Pdfbox::Cos::Name.new("K"), -1)
       dict.set_int(Pdfbox::Cos::Name.new("BitsPerComponent"), 1)
       dict.set_name(Pdfbox::Cos::Name.new("ColorSpace"), "DeviceGray")
       dict.set_name(Pdfbox::Cos::Name.new("Filter"), "CCITTFaxDecode")
-      dict[Pdfbox::Cos::Name.new("DecodeParms")] = dict
 
-      stream = Pdfbox::Cos::Stream.new(dict.entries, byte_array)
+      params.set_int(Pdfbox::Cos::Name.new("K"), -1)
+      dict[Pdfbox::Cos::Name.new("DecodeParms")] = params
+
+      stream = Pdfbox::Cos::Stream.new(dict.entries, encoded)
       PDImageXObject.new(document, dict, stream)
     end
 
