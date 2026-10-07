@@ -316,6 +316,17 @@ module Pdfbox::Pdmodel::Encryption
       @bytes
     end
 
+    # Returns the permission bytes in the format expected for public key
+    # encryption. Mirror of Java `AccessPermission.getPermissionBytesForPublicKey`,
+    # which forces the bits Adobe Acrobat/Reader rely on.
+    def permission_bytes_for_public_key : Int32
+      set_permission_bit(1, true)
+      set_permission_bit(7, false)
+      set_permission_bit(8, false)
+      (13..32).each { |bit| set_permission_bit(bit, false) }
+      @bytes
+    end
+
     def has_any_revision3_permission_set? : Bool
       can_assemble_document? ||
         can_extract_for_accessibility? ||
@@ -1562,7 +1573,8 @@ module Pdfbox::Pdmodel::Encryption
     end
 
     def initialize(policy : PublicKeyProtectionPolicy)
-      super(policy)
+      super()
+      @policy = policy
     end
 
     # Prepare document for encryption with recipient public keys.
@@ -1585,7 +1597,7 @@ module Pdfbox::Pdmodel::Encryption
       Random::Secure.random_bytes(seed)
 
       # Compute recipient fields (PKCS#7 envelopes per recipient)
-      recipients_fields = compute_recipients_fields(seed, policy, get_key_length_bits // 8)
+      recipients_fields = compute_recipients_fields(seed, policy)
 
       # Derive encryption key: SHA1/SHA256 of seed + all recipient bytes
       sha_input_size = seed.size
@@ -1621,14 +1633,14 @@ module Pdfbox::Pdmodel::Encryption
 
     # Compute PKCS#7 recipient fields for each recipient.
     # Each field contains the 20-byte seed + 4 permission bytes, encrypted
-    # with the recipient's RSA public key using RC2_CBC + RSA envelope.
-    private def compute_recipients_fields(seed : Bytes, policy : PublicKeyProtectionPolicy, key_length : Int32) : Array(Bytes)
+    # with the recipient's RSA public key using a PKCS#7 EnvelopedData.
+    private def compute_recipients_fields(seed : Bytes, policy : PublicKeyProtectionPolicy) : Array(Bytes)
       fields = [] of Bytes
       policy.recipients.each do |recipient|
         cert = recipient.x509_certificate
         next unless cert
 
-        permission = recipient.permissions.permission_bytes
+        permission = recipient.permissions.permission_bytes_for_public_key
 
         # Build PKCS#7 input: seed + 4 permission bytes (big-endian)
         pkcs7_input = Bytes.new(24)
@@ -1638,63 +1650,16 @@ module Pdfbox::Pdmodel::Encryption
         pkcs7_input[22] = ((permission >> 8) & 0xFF).to_u8
         pkcs7_input[23] = (permission & 0xFF).to_u8
 
-        # Create DER-encoded PKCS#7 envelope using RSA public key
-        der_envelope = create_der_for_recipient(pkcs7_input, cert, key_length)
-        fields << der_envelope if der_envelope
+        fields << create_der_for_recipient(pkcs7_input, cert)
       end
       fields
     end
 
-    # Create DER-encoded PKCS#7 EnvelopedData for a recipient.
-    # Encrypts the input with an ephemeral RC2 key, wraps the key with RSA.
-    # NOTE: Full ASN.1/DER PKCS#7 encoding requires BouncyCastle or equivalent.
-    # This stub uses OpenSSL for RSA encryption; full PKCS#7 envelope pending.
-    private def create_der_for_recipient(input : Bytes, cert : OpenSSL::X509::Certificate, key_length : Int32) : Bytes?
-      # Generate ephemeral RC2 session key
-      ephemeral_key = Bytes.new(16)
-      Random::Secure.random_bytes(ephemeral_key)
-
-      # Encrypt input with RC2 using the ephemeral key
-      rc2_encrypted = encrypt_data_rc2(input, ephemeral_key)
-
-      # Encrypt ephemeral key with recipient's RSA public key
-      rsa_encrypted_key = encrypt_session_key_rsa(ephemeral_key, cert)
-
-      return unless rc2_encrypted && rsa_encrypted_key
-
-      # Build simplified PKCS#7 envelope:
-      # [rc2_encrypted_data | rsa_encrypted_key | cert_serial]
-      envelope = ::IO::Memory.new
-      envelope.write(rc2_encrypted)
-      envelope.write(rsa_encrypted_key)
-      envelope.to_slice
-    end
-
-    # Encrypt data using RC2 (simplified RC2-CBC).
-    private def encrypt_data_rc2(data : Bytes, key : Bytes) : Bytes
-      cipher = OpenSSL::Cipher.new("rc2")
-      cipher.encrypt
-      cipher.key = key
-      iv = Bytes.new(8, 0_u8) # RC2 block size is 8 bytes
-      cipher.iv = iv
-      encrypted = cipher.update(data) + cipher.final
-      encrypted
-    rescue
-      result = Bytes.new(data.size)
-      data.each_with_index { |b, i| result[i] = b ^ key[i % key.size] }
-      result
-    end
-
-    # Encrypt session key with recipient's RSA public key.
-    # NOTE: Requires OpenSSL RSA support. Crystal stdlib OpenSSL lacks RSA.
-    # For now, returns the key XOR'd with a derived value as a placeholder.
-    # Replace with actual RSA when openssl_ext shard is available.
-    private def encrypt_session_key_rsa(key : Bytes, cert : OpenSSL::X509::Certificate) : Bytes?
-      # Placeholder: return key with simple transform
-      # Real implementation uses: cert.public_key.encrypt(key, RSA_PKCS1_PADDING)
-      result = Bytes.new(key.size)
-      key.each_with_index { |b, i| result[i] = b ^ 0xAA_u8 }
-      result
+    # Create a DER-encoded PKCS#7 EnvelopedData for a recipient.
+    # Encrypts the input with a fresh RC2-CBC key and wraps the key with the
+    # recipient's RSA public key, matching `createDERForRecipient`.
+    private def create_der_for_recipient(input : Bytes, cert : OpenSSL::X509::Certificate) : Bytes
+      Crypto::PKCS7.encrypt(input, [cert.to_unsafe])
     end
 
     # Prepare for decryption using recipient private key.
@@ -1742,12 +1707,23 @@ module Pdfbox::Pdmodel::Encryption
         end
       end
 
-      raise ::IO::Error.new("The certificate matches none of the recipient entries") unless found_recipient
+      unless found_recipient
+        cert_serial = pk_material.keystore.certificate_serial_hex || "unknown"
+        extra_info = String.build do |io|
+          all_recipient_bytes.each do |field|
+            Crypto::PKCS7.recipient_serials(field).each_with_index do |rid_serial, index|
+              io << '\n' << (index + 1) << ": serial-#: rid " << rid_serial << " vs. cert " << cert_serial << ' '
+            end
+          end
+        end
+        raise InvalidPasswordException.new("The certificate matches none of #{all_recipient_bytes.size} recipient entries#{extra_info}")
+      end
       raise ::IO::Error.new("Enveloped data does not contain 24 bytes") unless enveloped_data && enveloped_data.size == 24
 
-      # Set access permissions from last 4 bytes
+      # Set access permissions from last 4 bytes (big-endian, matching
+      # AccessPermission(byte[])).
       access_bytes = enveloped_data[20, 4]
-      access_permission = access_bytes.to_a.reverse.reduce(0) { |acc, b| (acc << 8) | b }
+      access_permission = access_bytes.reduce(0) { |acc, b| (acc << 8) | b }
       current = AccessPermission.new(access_permission)
       current.set_read_only
       set_current_access_permission(current)
@@ -1798,7 +1774,7 @@ module Pdfbox::Pdmodel::Encryption
 
       array = Cos::Array.new
       recipients.each do |recipient|
-        array.add(Cos::String.new(String.new(recipient)))
+        array.add(Cos::String.new(recipient))
       end
 
       crypt_filter.dictionary[Cos::Name.new("Recipients")] = array

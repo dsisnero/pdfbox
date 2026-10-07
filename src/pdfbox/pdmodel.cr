@@ -427,11 +427,13 @@ module Pdfbox::Pdmodel
       end
 
       # For StandardProtectionPolicy, create a StandardSecurityHandler
-      if policy.is_a?(Encryption::StandardProtectionPolicy)
-        security_handler = Encryption::StandardSecurityHandler.new(policy)
-      else
-        raise ::IO::Error.new("Unsupported protection policy type: #{policy.class}")
-      end
+      security_handler = if policy.is_a?(Encryption::StandardProtectionPolicy)
+                           Encryption::StandardSecurityHandler.new(policy)
+                         elsif policy.is_a?(Encryption::PublicKeyProtectionPolicy)
+                           Encryption::PublicKeySecurityHandler.new(policy)
+                         else
+                           raise ::IO::Error.new("Unsupported protection policy type: #{policy.class}")
+                         end
 
       # Set the security handler on the encryption
       if encryption = @encryption
@@ -475,6 +477,10 @@ module Pdfbox::Pdmodel
     # Get current access permissions for encrypted documents
     def current_access_permission : Encryption::AccessPermission
       @current_access_permission || Encryption::AccessPermission.new
+    end
+
+    def current_access_permission=(permission : Encryption::AccessPermission) : Encryption::AccessPermission
+      @current_access_permission = permission
     end
 
     def all_security_to_be_removed=(remove_all_security : Bool) : Bool

@@ -1738,6 +1738,7 @@ module Pdfbox::Pdfparser
                          found_catalog_dict
                        rescue ex
                          raise ex unless @lenient
+                         raise ex if ex.is_a?(Pdfbox::Pdmodel::Encryption::InvalidPasswordException)
                          Log.warn { "XRef parsing failed in lenient mode, attempting brute-force trailer reconstruction: #{ex.message}" }
                          xref = XRef.new
                          @xref = xref
@@ -1790,6 +1791,9 @@ module Pdfbox::Pdfparser
       # where the parsed encryption dictionary carries the prepared handler).
       if parsed_encryption = @encryption
         doc.encryption = parsed_encryption
+        if handler = @security_handler
+          doc.current_access_permission = handler.current_access_permission
+        end
       end
 
       # Add parsed pages to document

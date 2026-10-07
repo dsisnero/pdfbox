@@ -363,7 +363,11 @@ module Pdfbox::Pdfparser
         @access_permission = handler.current_access_permission
         @security_handler = handler
       rescue ex
-        if lenient?
+        # Invalid passwords/keys must surface even in lenient mode; other failures
+        # are tolerated so malformed files can still be parsed.
+        if ex.is_a?(Pdfbox::Pdmodel::Encryption::InvalidPasswordException)
+          raise ex
+        elsif lenient?
           Log.warn { "prepare_decryption failed: #{ex.message}" }
         else
           raise ex

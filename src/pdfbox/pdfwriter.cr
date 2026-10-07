@@ -31,6 +31,7 @@ module Pdfbox::Pdfwriter
     @will_encrypt : Bool = false
     @security_handler : Pdfbox::Pdmodel::Encryption::SecurityHandler?
     @current_object_key : Pdfbox::Cos::ObjectKey?
+    @encryption_object_ids : Set(UInt64)?
     @use_xref_streams : Bool = true
 
     def initialize(@destination : ::IO, @document : Pdfbox::Pdmodel::Document, @parameters : Pdfbox::Pdfwriter::Compress::CompressParameters = Pdfbox::Pdfwriter::Compress::CompressParameters::DEFAULT_COMPRESSION)
@@ -273,17 +274,43 @@ module Pdfbox::Pdfwriter
       end
     end
 
+    # Object ids reachable from the document's encryption dictionary. These are
+    # written without encryption (the encryption dictionary itself, plus values
+    # such as the public key /Recipients array that may be hoisted into their
+    # own indirect objects by `collect_objects`).
+    private def encryption_object_ids : Set(UInt64)
+      @encryption_object_ids ||= begin
+        ids = Set(UInt64).new
+        if encryption = @document.encryption
+          stack = [encryption.dictionary.as(Pdfbox::Cos::Base)]
+          until stack.empty?
+            node = stack.pop
+            next unless ids.add?(node.object_id.to_u64)
+
+            case node
+            when Pdfbox::Cos::Dictionary
+              node.entries.each_value { |value| stack << value }
+            when Pdfbox::Cos::Array
+              node.items.each { |item| stack << item }
+            when Pdfbox::Cos::Stream
+              node.entries.each_value { |value| stack << value }
+            end
+          end
+        end
+        ids
+      end
+    end
+
     private def write_indirect_object(obj : Pdfbox::Cos::Base,
                                       cos_writer : COSWriter,
                                       object_keys : Hash(UInt64, Pdfbox::Cos::ObjectKey),
                                       object_wrapper : Hash(UInt64, UInt64),
                                       key : Pdfbox::Cos::ObjectKey) : Nil
-      # The encryption dictionary is written without encrypting its strings,
-      # matching Java COSWriter which sets willEncrypt = false for it.
-      is_encryption_dict = false
-      if (enc = @document.encryption) && obj.is_a?(Pdfbox::Cos::Dictionary)
-        is_encryption_dict = obj.same?(enc.dictionary)
-      end
+      # The encryption dictionary and everything reachable from it (e.g. the
+      # /Recipients array for public key encryption) is written without
+      # encrypting its strings/streams, matching Java COSWriter which sets
+      # willEncrypt = false for the encryption dictionary.
+      is_encryption_dict = encryption_object_ids.includes?(obj.object_id.to_u64)
       object_key = @will_encrypt && !is_encryption_dict ? key : nil
       @current_object_key = object_key
       cos_writer.current_object_key = object_key
