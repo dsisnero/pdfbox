@@ -62,8 +62,6 @@ module Tools
               -i, --input FILE       The PDF file to decrypt (required)
               -o, --output FILE      The decrypted PDF file (default: overwrite input)
               -h, --help             Show this help
-
-            Note: Certificate-based decryption (--keyStore, --alias) is not yet implemented.
           HELP
           )
           exit 0
@@ -88,15 +86,21 @@ module Tools
         return 1
       end
 
-      # Note: Certificate-based decryption not yet implemented
-      if @key_store || @alias
-        @err.puts("Warning: Certificate-based decryption (--keyStore, --alias) is not yet implemented")
-        @err.puts("Attempting password-based decryption only")
-      end
-
-      # Load document with password
+      # Load document with a password, or with a PKCS#12 keystore for
+      # certificate-based decryption (Java Loader.loadPDF(infile, password,
+      # keyStoreStream, alias)).
       begin
-        document = Pdfbox::Loader.load_pdf(infile, @password)
+        document = if key_store = @key_store
+                     unless File.exists?(key_store)
+                       @err.puts("Error: Keystore does not exist: #{key_store}")
+                       return 1
+                     end
+                     File.open(key_store) do |key_store_io|
+                       Pdfbox::Loader.load_pdf(File.read(infile).to_slice, @password, key_store_io, @alias)
+                     end
+                   else
+                     Pdfbox::Loader.load_pdf(infile, @password)
+                   end
 
         # Check if document is encrypted
         unless document.encryption

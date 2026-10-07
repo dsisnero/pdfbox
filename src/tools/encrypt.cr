@@ -132,13 +132,12 @@ module Tools
       # Load document
       document = Pdfbox::Loader.load_pdf(infile)
 
-      # Check if already encrypted
-      # Note: We don't have is_encrypted? method yet, so we'll skip this check
-      # if document.is_encrypted?
-      #   @err.puts("Error: Document is already encrypted.")
-      #   document.close
-      #   return 1
-      # end
+      # Check if already encrypted (Java PDDocument#isEncrypted)
+      if document.encrypted?
+        @err.puts("Error: Document is already encrypted.")
+        document.close
+        return 1
+      end
 
       # Create access permissions
       ap = Pdfbox::Pdmodel::Encryption::AccessPermission.new
@@ -152,10 +151,32 @@ module Tools
       ap.can_print_faithful = @can_print_faithful
 
       if !@cert_file_list.empty?
-        # Public key encryption (certificate-based) - not implemented yet
-        @err.puts("Error: Public key encryption (certificate-based) is not yet implemented")
-        document.close
-        return 1
+        # Certificate-based encryption (Java Loader + PublicKeyProtectionPolicy)
+        policy = Pdfbox::Pdmodel::Encryption::PublicKeyProtectionPolicy.new
+        recipient = Pdfbox::Pdmodel::Encryption::PublicKeyRecipient.new
+        recipient.permissions = ap
+
+        @cert_file_list.each do |cert_file|
+          unless File.exists?(cert_file)
+            @err.puts("Error: Certificate file not found: #{cert_file}")
+            document.close
+            return 1
+          end
+
+          certificate = read_certificate(cert_file)
+          unless certificate
+            @err.puts("Error: Could not read X.509 certificate: #{cert_file}")
+            document.close
+            return 1
+          end
+
+          recipient.x509_certificate = certificate
+          policy.add_recipient(recipient)
+        end
+
+        policy.encryption_key_length = @key_length
+        document.protect(policy)
+        document.save(outfile)
       else
         # Standard password-based encryption
         if @owner_password.empty? && @user_password.empty?
@@ -181,6 +202,26 @@ module Tools
 
       document.close
       0
+    end
+
+    # Parse an X.509 certificate from a PEM or DER file (Java CertificateFactory
+    # "X.509" accepts both encodings).
+    private def read_certificate(path : String) : OpenSSL::X509::Certificate?
+      contents = File.read(path)
+      if contents.includes?("-----BEGIN CERTIFICATE-----")
+        body = contents.split("-----BEGIN CERTIFICATE-----")[1]?
+        body = body.try(&.split("-----END CERTIFICATE-----")[0]?)
+        return nil unless body
+
+        der = Base64.decode(body.gsub(/\s/, ""))
+        certificate, _ = OpenSSL::X509::Certificate.from_der?(der)
+        certificate
+      else
+        certificate, _ = OpenSSL::X509::Certificate.from_der?(contents.to_slice)
+        certificate
+      end
+    rescue
+      nil
     end
   end
 end
