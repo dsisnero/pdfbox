@@ -23,6 +23,18 @@ module Pdfbox
       load_pdf(data, password)
     end
 
+    # Loads a PDF that may be protected with public key security, using the
+    # PKCS#12 *key_store* (with the document password as keystore password) and
+    # an optional key *key_alias*.
+    def self.load_pdf(data : Bytes, password : String, key_store : ::IO, key_alias : String? = nil) : Pdmodel::Document
+      source = Pdfbox::IO::RandomAccessReadBuffer.new(data)
+      parser = Pdfbox::Pdfparser::Parser.new(source, password, key_store, key_alias)
+      parser.lenient = true
+      document = parser.parse(password)
+      document.source_bytes = data
+      document
+    end
+
     def self.load_fdf(path : String) : Pdmodel::Fdf::FDFDocument
       File.open(path) do |file|
         load_fdf(file)

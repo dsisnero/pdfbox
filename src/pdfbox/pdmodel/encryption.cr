@@ -1,5 +1,6 @@
 # Encryption types for PDFBox Crystal
 require "../cos"
+require "../crypto/pkcs"
 require "digest"
 require "openssl"
 require "io"
@@ -387,6 +388,8 @@ module Pdfbox::Pdmodel::Encryption
   end
 
   class PublicKeyDecryptionMaterial < DecryptionMaterial
+    @keystore : Crypto::PKCS12?
+
     def initialize(@key_store : ::IO, @alias : String?, @password : String)
     end
 
@@ -396,6 +399,21 @@ module Pdfbox::Pdmodel::Encryption
 
     def alias : String?
       @alias
+    end
+
+    # The decoded PKCS#12 keystore, parsed on first use and cached.
+    def keystore : Crypto::PKCS12
+      @keystore ||= Crypto::PKCS12.new(@key_store.gets_to_end.to_slice, @password)
+    end
+
+    # The certificate contained in the keystore.
+    def certificate : LibCrypto::X509
+      keystore.certificate
+    end
+
+    # The private key contained in the keystore.
+    def private_key : LibCrypto::EVP_PKEY
+      keystore.private_key
     end
   end
 
@@ -429,6 +447,12 @@ module Pdfbox::Pdmodel::Encryption
 
     protected def get_key_length_bits : Int32
       @key_length
+    end
+
+    # The key length in bits used by this security handler.
+    # Mirror of Java `SecurityHandler.getKeyLength()`.
+    def key_length : Int32
+      get_key_length_bits
     end
 
     protected def compute_version_number : Int32
@@ -1674,10 +1698,10 @@ module Pdfbox::Pdmodel::Encryption
     end
 
     # Prepare for decryption using recipient private key.
-    def prepare_for_decryption(encryption : PDEncryption, document_id_array : Cos::Array?,
-                               decryption_material : DecryptionMaterial?) : Nil
-      material = decryption_material.as?(PublicKeyDecryptionMaterial)
-      raise ::IO::Error.new("Provided decryption material is not compatible") unless material
+    def prepare_for_decryption(encryption : PDEncryption, document_id : Bytes?,
+                               material : DecryptionMaterial) : Nil
+      pk_material = material.as?(PublicKeyDecryptionMaterial)
+      raise ::IO::Error.new("Provided decryption material is not compatible") unless pk_material
 
       crypt_filter = encryption.default_crypt_filter_dictionary
       if crypt_filter && crypt_filter.length != 0
@@ -1710,7 +1734,7 @@ module Pdfbox::Pdmodel::Encryption
 
         # Try to decrypt with private key
         unless found_recipient
-          decrypted = decrypt_recipient_data_rsa(recipient_bytes, material)
+          decrypted = decrypt_recipient_data_rsa(recipient_bytes, pk_material)
           if decrypted && decrypted.size == 24
             found_recipient = true
             enveloped_data = decrypted
@@ -1759,13 +1783,12 @@ module Pdfbox::Pdmodel::Encryption
       set_encryption_key(md_result[0, get_key_length_bits // 8])
     end
 
-    # Decrypt recipient data using private key from keystore.
-    # NOTE: Requires OpenSSL RSA support. Crystal stdlib lacks RSA.
+    # Decrypt recipient data using the private key from the PKCS#12 keystore.
+    # Parses the PKCS#7 CMS EnvelopedData and matches the recipient by
+    # certificate; returns the 24-byte seed + permission content, or nil when
+    # the certificate matches none of the enveloped recipients.
     private def decrypt_recipient_data_rsa(recipient_bytes : Bytes, material : PublicKeyDecryptionMaterial) : Bytes?
-      # Placeholder: try to decrypt using OpenSSL if available
-      # Real implementation parses PKCS#7 CMS EnvelopedData,
-      # matches recipient by cert serial, and decrypts with private key
-      nil
+      Crypto::PKCS7.decrypt(recipient_bytes, material.keystore)
     end
 
     private def prepare_encryption_dict_aes(encryption : PDEncryption, aes_name : Cos::Name, recipients : Array(Bytes)) : Nil

@@ -31,8 +31,9 @@ module Pdfbox::Pdfparser
     @brute_force_parser : BruteForceParser?
     @lenient : Bool
 
-    def initialize(source : Pdfbox::IO::RandomAccessRead)
-      super(source)
+    def initialize(source : Pdfbox::IO::RandomAccessRead, password : String = "",
+                   key_store_input_stream : ::IO? = nil, key_alias : String? = nil)
+      super(source, nil, password, key_store_input_stream, key_alias)
       @trailer = nil
       @xref = nil
       @xref_trailer_resolver = nil
@@ -1783,6 +1784,13 @@ module Pdfbox::Pdfparser
 
       Log.debug { "catalog_dict = #{catalog_dict.inspect}" }
       doc = Pdfbox::Pdmodel::Document.new(catalog_dict, version, @trailer)
+
+      # Reuse the parser's encryption dictionary so the document exposes the
+      # security handler that actually prepared decryption (mirrors PDFBox,
+      # where the parsed encryption dictionary carries the prepared handler).
+      if parsed_encryption = @encryption
+        doc.encryption = parsed_encryption
+      end
 
       # Add parsed pages to document
       pages.each do |page|

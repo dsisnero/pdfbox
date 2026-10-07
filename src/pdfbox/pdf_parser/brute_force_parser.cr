@@ -546,7 +546,7 @@ module Pdfbox::Pdfparser
         Log.debug { "bf_search_for_obj_streams: processing stream #{i + 1}/#{obj_stream_offsets.size} at offset #{offset}, key #{key}" }
         begin
           # Parse the object stream at offset
-          stream = parse_object_stream_at_offset(offset)
+          stream = parse_object_stream_at_offset(offset, key)
           # Log.debug { "bf_search_for_obj_streams: parsed stream, object count: #{stream["N"]?}" }
           # stream is a Cos::Stream
           # Get object numbers from stream
@@ -571,9 +571,9 @@ module Pdfbox::Pdfparser
       @source.seek(origin_offset)
     end
 
-    private def parse_object_stream_at_offset(offset : Int64) : Cos::Stream
+    private def parse_object_stream_at_offset(offset : Int64, key : Cos::ObjectKey) : Cos::Stream
       # Use parser to parse indirect object at offset
-      obj = @parser.parse_indirect_object_at_offset(offset)
+      obj = @parser.parse_indirect_object_at_offset(offset, key)
       unless obj.is_a?(Cos::Stream)
         raise "Object at offset #{offset} is not a stream"
       end
