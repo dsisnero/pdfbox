@@ -4654,24 +4654,24 @@ pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxDecoderStream.java::method
 pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxDecoderStream.java::method::Node.toString	ported	src/pdfbox/filter/ccitt_fax_filter.cr + ccitt_fax_decoder_stream.cr + tiff_extension.cr	stale inventory; class ported
 pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxDecoderStream.java::method::Node.walk	ported	src/pdfbox/filter/ccitt_fax_filter.cr + ccitt_fax_decoder_stream.cr + tiff_extension.cr	stale inventory; class ported
 pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxDecoderStream.java::method::Tree.fill	ported	src/pdfbox/filter/ccitt_fax_filter.cr + ccitt_fax_decoder_stream.cr + tiff_extension.cr	stale inventory; class ported
-pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxEncoderStream.java::class::CCITTFaxEncoderStream	partial	-	G4 encoder (CCITTFaxEncoderStream) not ported; decode-only CCITT support
-pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxEncoderStream.java::class::Code	partial	-	G4 encoder (CCITTFaxEncoderStream) not ported; decode-only CCITT support
-pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxEncoderStream.java::const::BLACK_NONTERMINATING_CODES	partial	-	G4 encoder (CCITTFaxEncoderStream) not ported; decode-only CCITT support
-pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxEncoderStream.java::const::BLACK_TERMINATING_CODES	partial	-	G4 encoder (CCITTFaxEncoderStream) not ported; decode-only CCITT support
-pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxEncoderStream.java::const::WHITE_NONTERMINATING_CODES	partial	-	G4 encoder (CCITTFaxEncoderStream) not ported; decode-only CCITT support
-pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxEncoderStream.java::const::WHITE_TERMINATING_CODES	partial	-	G4 encoder (CCITTFaxEncoderStream) not ported; decode-only CCITT support
-pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxEncoderStream.java::method::CCITTFaxEncoderStream.clearOutputBuffer	partial	-	G4 encoder (CCITTFaxEncoderStream) not ported; decode-only CCITT support
-pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxEncoderStream.java::method::CCITTFaxEncoderStream.close	partial	-	G4 encoder (CCITTFaxEncoderStream) not ported; decode-only CCITT support
-pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxEncoderStream.java::method::CCITTFaxEncoderStream.encode2D	partial	-	G4 encoder (CCITTFaxEncoderStream) not ported; decode-only CCITT support
-pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxEncoderStream.java::method::CCITTFaxEncoderStream.encodeRow	partial	-	G4 encoder (CCITTFaxEncoderStream) not ported; decode-only CCITT support
-pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxEncoderStream.java::method::CCITTFaxEncoderStream.encodeRowType6	partial	-	G4 encoder (CCITTFaxEncoderStream) not ported; decode-only CCITT support
-pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxEncoderStream.java::method::CCITTFaxEncoderStream.fill	partial	-	G4 encoder (CCITTFaxEncoderStream) not ported; decode-only CCITT support
-pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxEncoderStream.java::method::CCITTFaxEncoderStream.flush	partial	-	G4 encoder (CCITTFaxEncoderStream) not ported; decode-only CCITT support
-pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxEncoderStream.java::method::CCITTFaxEncoderStream.getNextChanges	partial	-	G4 encoder (CCITTFaxEncoderStream) not ported; decode-only CCITT support
-pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxEncoderStream.java::method::CCITTFaxEncoderStream.getNextRefChanges	partial	-	G4 encoder (CCITTFaxEncoderStream) not ported; decode-only CCITT support
-pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxEncoderStream.java::method::CCITTFaxEncoderStream.write	partial	-	G4 encoder (CCITTFaxEncoderStream) not ported; decode-only CCITT support
-pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxEncoderStream.java::method::CCITTFaxEncoderStream.writeEOL	partial	-	G4 encoder (CCITTFaxEncoderStream) not ported; decode-only CCITT support
-pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxEncoderStream.java::method::CCITTFaxEncoderStream.writeRun	partial	-	G4 encoder (CCITTFaxEncoderStream) not ported; decode-only CCITT support
+pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxEncoderStream.java::class::CCITTFaxEncoderStream	ported	-	G4 encoder ported (CCITTFaxEncoderStream + CCITTFaxFilter#encode)
+pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxEncoderStream.java::class::Code	ported	-	G4 encoder ported (CCITTFaxEncoderStream + CCITTFaxFilter#encode)
+pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxEncoderStream.java::const::BLACK_NONTERMINATING_CODES	ported	-	G4 encoder ported (CCITTFaxEncoderStream + CCITTFaxFilter#encode)
+pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxEncoderStream.java::const::BLACK_TERMINATING_CODES	ported	-	G4 encoder ported (CCITTFaxEncoderStream + CCITTFaxFilter#encode)
+pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxEncoderStream.java::const::WHITE_NONTERMINATING_CODES	ported	-	G4 encoder ported (CCITTFaxEncoderStream + CCITTFaxFilter#encode)
+pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxEncoderStream.java::const::WHITE_TERMINATING_CODES	ported	-	G4 encoder ported (CCITTFaxEncoderStream + CCITTFaxFilter#encode)
+pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxEncoderStream.java::method::CCITTFaxEncoderStream.clearOutputBuffer	ported	-	G4 encoder ported (CCITTFaxEncoderStream + CCITTFaxFilter#encode)
+pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxEncoderStream.java::method::CCITTFaxEncoderStream.close	ported	-	G4 encoder ported (CCITTFaxEncoderStream + CCITTFaxFilter#encode)
+pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxEncoderStream.java::method::CCITTFaxEncoderStream.encode2D	ported	-	G4 encoder ported (CCITTFaxEncoderStream + CCITTFaxFilter#encode)
+pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxEncoderStream.java::method::CCITTFaxEncoderStream.encodeRow	ported	-	G4 encoder ported (CCITTFaxEncoderStream + CCITTFaxFilter#encode)
+pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxEncoderStream.java::method::CCITTFaxEncoderStream.encodeRowType6	ported	-	G4 encoder ported (CCITTFaxEncoderStream + CCITTFaxFilter#encode)
+pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxEncoderStream.java::method::CCITTFaxEncoderStream.fill	ported	-	G4 encoder ported (CCITTFaxEncoderStream + CCITTFaxFilter#encode)
+pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxEncoderStream.java::method::CCITTFaxEncoderStream.flush	ported	-	G4 encoder ported (CCITTFaxEncoderStream + CCITTFaxFilter#encode)
+pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxEncoderStream.java::method::CCITTFaxEncoderStream.getNextChanges	ported	-	G4 encoder ported (CCITTFaxEncoderStream + CCITTFaxFilter#encode)
+pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxEncoderStream.java::method::CCITTFaxEncoderStream.getNextRefChanges	ported	-	G4 encoder ported (CCITTFaxEncoderStream + CCITTFaxFilter#encode)
+pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxEncoderStream.java::method::CCITTFaxEncoderStream.write	ported	-	G4 encoder ported (CCITTFaxEncoderStream + CCITTFaxFilter#encode)
+pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxEncoderStream.java::method::CCITTFaxEncoderStream.writeEOL	ported	-	G4 encoder ported (CCITTFaxEncoderStream + CCITTFaxFilter#encode)
+pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxEncoderStream.java::method::CCITTFaxEncoderStream.writeRun	ported	-	G4 encoder ported (CCITTFaxEncoderStream + CCITTFaxFilter#encode)
 pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxFilter.java::class::CCITTFaxFilter	ported	src/pdfbox/filter/ccitt_fax_filter.cr + ccitt_fax_decoder_stream.cr + tiff_extension.cr	stale inventory; class ported
 pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxFilter.java::method::CCITTFaxFilter.decode	ported	src/pdfbox/filter/ccitt_fax_filter.cr + ccitt_fax_decoder_stream.cr + tiff_extension.cr	stale inventory; class ported
 pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxFilter.java::method::CCITTFaxFilter.encode	ported	src/pdfbox/filter/ccitt_fax_filter.cr + ccitt_fax_decoder_stream.cr + tiff_extension.cr	stale inventory; class ported

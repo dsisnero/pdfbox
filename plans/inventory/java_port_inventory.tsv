@@ -4654,27 +4654,27 @@ pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxDecoderStream.java::method
 pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxDecoderStream.java::method::Node.toString	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxDecoderStream.java::method::Node.walk	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxDecoderStream.java::method::Tree.fill	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxEncoderStream.java::class::CCITTFaxEncoderStream	class	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxEncoderStream.java::class::Code	class	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxEncoderStream.java::const::BLACK_NONTERMINATING_CODES	const	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxEncoderStream.java::const::BLACK_TERMINATING_CODES	const	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxEncoderStream.java::const::WHITE_NONTERMINATING_CODES	const	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxEncoderStream.java::const::WHITE_TERMINATING_CODES	const	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxEncoderStream.java::method::CCITTFaxEncoderStream.clearOutputBuffer	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxEncoderStream.java::method::CCITTFaxEncoderStream.close	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxEncoderStream.java::method::CCITTFaxEncoderStream.encode2D	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxEncoderStream.java::method::CCITTFaxEncoderStream.encodeRow	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxEncoderStream.java::method::CCITTFaxEncoderStream.encodeRowType6	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxEncoderStream.java::method::CCITTFaxEncoderStream.fill	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxEncoderStream.java::method::CCITTFaxEncoderStream.flush	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxEncoderStream.java::method::CCITTFaxEncoderStream.getNextChanges	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxEncoderStream.java::method::CCITTFaxEncoderStream.getNextRefChanges	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxEncoderStream.java::method::CCITTFaxEncoderStream.write	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxEncoderStream.java::method::CCITTFaxEncoderStream.writeEOL	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxEncoderStream.java::method::CCITTFaxEncoderStream.writeRun	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxEncoderStream.java::class::CCITTFaxEncoderStream	class	ported	-	G4 encoder ported (CCITTFaxEncoderStream + CCITTFaxFilter#encode)
+pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxEncoderStream.java::class::Code	class	ported	-	G4 encoder ported (CCITTFaxEncoderStream + CCITTFaxFilter#encode)
+pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxEncoderStream.java::const::BLACK_NONTERMINATING_CODES	const	ported	-	G4 encoder ported (CCITTFaxEncoderStream + CCITTFaxFilter#encode)
+pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxEncoderStream.java::const::BLACK_TERMINATING_CODES	const	ported	-	G4 encoder ported (CCITTFaxEncoderStream + CCITTFaxFilter#encode)
+pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxEncoderStream.java::const::WHITE_NONTERMINATING_CODES	const	ported	-	G4 encoder ported (CCITTFaxEncoderStream + CCITTFaxFilter#encode)
+pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxEncoderStream.java::const::WHITE_TERMINATING_CODES	const	ported	-	G4 encoder ported (CCITTFaxEncoderStream + CCITTFaxFilter#encode)
+pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxEncoderStream.java::method::CCITTFaxEncoderStream.clearOutputBuffer	method	ported	-	G4 encoder ported (CCITTFaxEncoderStream + CCITTFaxFilter#encode)
+pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxEncoderStream.java::method::CCITTFaxEncoderStream.close	method	ported	-	G4 encoder ported (CCITTFaxEncoderStream + CCITTFaxFilter#encode)
+pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxEncoderStream.java::method::CCITTFaxEncoderStream.encode2D	method	ported	-	G4 encoder ported (CCITTFaxEncoderStream + CCITTFaxFilter#encode)
+pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxEncoderStream.java::method::CCITTFaxEncoderStream.encodeRow	method	ported	-	G4 encoder ported (CCITTFaxEncoderStream + CCITTFaxFilter#encode)
+pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxEncoderStream.java::method::CCITTFaxEncoderStream.encodeRowType6	method	ported	-	G4 encoder ported (CCITTFaxEncoderStream + CCITTFaxFilter#encode)
+pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxEncoderStream.java::method::CCITTFaxEncoderStream.fill	method	ported	-	G4 encoder ported (CCITTFaxEncoderStream + CCITTFaxFilter#encode)
+pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxEncoderStream.java::method::CCITTFaxEncoderStream.flush	method	ported	-	G4 encoder ported (CCITTFaxEncoderStream + CCITTFaxFilter#encode)
+pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxEncoderStream.java::method::CCITTFaxEncoderStream.getNextChanges	method	ported	-	G4 encoder ported (CCITTFaxEncoderStream + CCITTFaxFilter#encode)
+pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxEncoderStream.java::method::CCITTFaxEncoderStream.getNextRefChanges	method	ported	-	G4 encoder ported (CCITTFaxEncoderStream + CCITTFaxFilter#encode)
+pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxEncoderStream.java::method::CCITTFaxEncoderStream.write	method	ported	-	G4 encoder ported (CCITTFaxEncoderStream + CCITTFaxFilter#encode)
+pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxEncoderStream.java::method::CCITTFaxEncoderStream.writeEOL	method	ported	-	G4 encoder ported (CCITTFaxEncoderStream + CCITTFaxFilter#encode)
+pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxEncoderStream.java::method::CCITTFaxEncoderStream.writeRun	method	ported	-	G4 encoder ported (CCITTFaxEncoderStream + CCITTFaxFilter#encode)
 pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxFilter.java::class::CCITTFaxFilter	class	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxFilter.java::method::CCITTFaxFilter.decode	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxFilter.java::method::CCITTFaxFilter.encode	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxFilter.java::method::CCITTFaxFilter.encode	method	ported	src/pdfbox/filter/ccitt_fax_filter.cr + ccitt_fax_encoder_stream.cr	ported with G4 encoder
 pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxFilter.java::method::CCITTFaxFilter.invertBitmap	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/filter/CCITTFaxFilter.java::method::CCITTFaxFilter.readFromDecoderStream	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/filter/CryptFilter.java::class::CryptFilter	class	partial	src	auto-generated

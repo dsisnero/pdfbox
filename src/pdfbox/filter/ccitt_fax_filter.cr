@@ -54,6 +54,19 @@ module Pdfbox::Filter
       decompressed
     end
 
+    # Encodes image data to Group 4. Java: CCITTFaxFilter#encode, which reads
+    # Columns/Rows from the decode parameters and pipes through
+    # CCITTFaxEncoderStream.
+    def encode(input : Bytes, parameters : Pdfbox::Cos::Dictionary?) : Bytes
+      cols = parameters.try(&.get_int(Pdfbox::Cos::Name.new("Columns"), 0).to_i32) || 0
+      rows = parameters.try(&.get_int(Pdfbox::Cos::Name.new("Rows"), 0).to_i32) || 0
+
+      io = ::IO::Memory.new
+      encoder = CCITTFaxEncoderStream.new(io, cols, rows, TIFFExtension::FILL_LEFT_TO_RIGHT)
+      encoder.write(input)
+      io.to_slice
+    end
+
     private def boolean_parm(dict : Pdfbox::Cos::Dictionary, key : Pdfbox::Cos::Name, default : Bool) : Bool
       value = dict[key]?
       value = value.object if value.is_a?(Pdfbox::Cos::Object)
