@@ -5345,7 +5345,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::met
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.curveTo1	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.curveTo2	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.drawForm	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.drawImage	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.drawImage	ported	src/pdfbox/pdmodel/page_content_stream.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.encodeForGsub	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.endMarkedContent	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.endText	missing	-	baseline
@@ -8046,7 +8046,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDColorSpace.java:
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDColorSpace.java::method::PDColorSpace.getCOSObject	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDColorSpace.java::method::PDColorSpace.getDefaultDecode	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDColorSpace.java::method::PDColorSpace.getInitialColor	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDColorSpace.java::method::PDColorSpace.getName	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDColorSpace.java::method::PDColorSpace.getName	ported	src/pdfbox/pdmodel/graphics/color/pdcolor_space.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDColorSpace.java::method::PDColorSpace.getNumberOfComponents	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDColorSpace.java::method::PDColorSpace.toRGB	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDColorSpace.java::method::PDColorSpace.toRGBImage	missing	-	baseline

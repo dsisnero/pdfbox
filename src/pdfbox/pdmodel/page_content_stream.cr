@@ -152,8 +152,39 @@ module Pdfbox::Pdmodel
       write_operator(RESTORE)
     end
 
-    def draw_image(_image : Graphics::Image::PDInlineImage, _x : Number, _y : Number, _width : Number, _height : Number) : Nil
+    # Writes an inline image directly into the content stream.
+    # Java PDAbstractContentStream#drawImage(PDInlineImage, x, y, width, height).
+    def draw_image(image : Graphics::Image::PDInlineImage, x : Number, y : Number, width : Number, height : Number) : Nil
       raise_if_in_text_mode("drawImage is not allowed within a text block.")
+      write_operator(SAVE)
+      write_operands(width, 0, 0, height, x, y)
+      write_operator(CONCAT)
+
+      dict = String.build do |builder|
+        builder << BEGIN_INLINE_IMAGE
+        builder << "\n /W " << image.width
+        builder << "\n /H " << image.height
+        if color_space = image.color_space
+          builder << "\n /CS /" << color_space.name
+        end
+        if (decode = image.decode) && !decode.items.empty?
+          builder << "\n /D ["
+          decode.items.each do |base|
+            value = base.is_a?(Cos::Number) ? base.to_i : 0
+            builder << value << ' '
+          end
+          builder << ']'
+        end
+        builder << "\n /IM true" if image.stencil?
+        builder << "\n /BPC " << image.bits_per_component
+      end
+      @buffer << dict << '\n'
+
+      write_operator(BEGIN_INLINE_IMAGE_DATA)
+      @buffer.write(image.data)
+      @buffer << '\n'
+      write_operator(END_INLINE_IMAGE)
+      write_operator(RESTORE)
     end
 
     def add_rect(_x : Number, _y : Number, _width : Number, _height : Number) : Nil

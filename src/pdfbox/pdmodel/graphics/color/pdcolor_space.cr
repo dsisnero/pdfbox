@@ -10,6 +10,9 @@ module Pdfbox::Pdmodel::Graphics::Color
     # Returns the COS representation of this color space.
     abstract def cos_object : Cos::Base
 
+    # Returns the color space name (Java PDColorSpace#getName).
+    abstract def name : String
+
     # Returns the initial color for this color space (all zeros).
     def initial_color : PDColor
       components = Array(Float32).new(number_of_components, 0.0_f32)
