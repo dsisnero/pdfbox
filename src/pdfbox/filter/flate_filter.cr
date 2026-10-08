@@ -9,6 +9,11 @@ module Pdfbox::Filter
       output.to_slice
     end
 
+    # Java FlateFilter#decode applies the DecodeParms predictor after inflation.
+    def decode(encoded : Bytes, decode_params : Pdfbox::Cos::Dictionary?, _width : Int32 = 0, _height : Int32 = 0) : Bytes
+      Predictor.decode_data(decode(encoded), decode_params)
+    end
+
     def encode(input : Bytes) : Bytes
       output = ::IO::Memory.new
       writer = Compress::Zlib::Writer.new(output)

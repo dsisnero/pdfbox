@@ -52,6 +52,11 @@ module Pdfbox::Filter
       output.to_slice
     end
 
+    # Java LZWFilter#decode applies the DecodeParms predictor after decoding.
+    def decode(encoded : Bytes, decode_params : Pdfbox::Cos::Dictionary?, _width : Int32 = 0, _height : Int32 = 0) : Bytes
+      Predictor.decode_data(decode(encoded), decode_params)
+    end
+
     def encode(input : Bytes) : Bytes
       code_table = create_code_table
       code_lookup = create_code_lookup

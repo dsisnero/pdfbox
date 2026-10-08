@@ -4767,22 +4767,22 @@ pdfbox/src/main/java/org/apache/pdfbox/filter/LZWFilter.java::const::LOG	missing
 pdfbox/src/main/java/org/apache/pdfbox/filter/LZWFilter.java::method::LZWFilter.calculateChunk	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/filter/LZWFilter.java::method::LZWFilter.createCodeTable	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/filter/LZWFilter.java::method::LZWFilter.createInitialCodeTable	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/filter/LZWFilter.java::method::LZWFilter.decode	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/filter/LZWFilter.java::method::LZWFilter.decode	ported	src/pdfbox/filter/lzw_filter.cr	params-aware decode applies predictor
 pdfbox/src/main/java/org/apache/pdfbox/filter/LZWFilter.java::method::LZWFilter.doLZWDecode	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/filter/LZWFilter.java::method::LZWFilter.encode	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/filter/LZWFilter.java::method::LZWFilter.findPatternCode	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/filter/MissingImageReaderException.java::class::MissingImageReaderException	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/filter/Predictor.java::class::Predictor	ported	src/.../predictor.cr	stale inventory; class ported
-pdfbox/src/main/java/org/apache/pdfbox/filter/Predictor.java::class::PredictorOutputStream	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/filter/Predictor.java::method::Predictor.calcSetBitSeq	ported	src/.../predictor.cr	stale inventory; class ported
-pdfbox/src/main/java/org/apache/pdfbox/filter/Predictor.java::method::Predictor.calculateRowLength	ported	src/.../predictor.cr	stale inventory; class ported
-pdfbox/src/main/java/org/apache/pdfbox/filter/Predictor.java::method::Predictor.decodePredictorRow	ported	src/.../predictor.cr	stale inventory; class ported
-pdfbox/src/main/java/org/apache/pdfbox/filter/Predictor.java::method::Predictor.getBitSeq	ported	src/.../predictor.cr	stale inventory; class ported
-pdfbox/src/main/java/org/apache/pdfbox/filter/Predictor.java::method::Predictor.wrapPredictor	ported	src/.../predictor.cr	stale inventory; class ported
-pdfbox/src/main/java/org/apache/pdfbox/filter/Predictor.java::method::PredictorOutputStream.decodeAndWriteRow	ported	src/.../predictor.cr	stale inventory; class ported
-pdfbox/src/main/java/org/apache/pdfbox/filter/Predictor.java::method::PredictorOutputStream.flipRows	ported	src/.../predictor.cr	stale inventory; class ported
-pdfbox/src/main/java/org/apache/pdfbox/filter/Predictor.java::method::PredictorOutputStream.flush	ported	src/.../predictor.cr	stale inventory; class ported
-pdfbox/src/main/java/org/apache/pdfbox/filter/Predictor.java::method::PredictorOutputStream.write	ported	src/.../predictor.cr	stale inventory; class ported
+pdfbox/src/main/java/org/apache/pdfbox/filter/Predictor.java::class::Predictor	ported	src/pdfbox/filter/predictor.cr	predictor decode implemented (decode_predictor_row/decode_data); end-to-end specs
+pdfbox/src/main/java/org/apache/pdfbox/filter/Predictor.java::class::PredictorOutputStream	ported	src/pdfbox/filter/predictor.cr	predictor row buffering implemented as Predictor.decode_data/apply
+pdfbox/src/main/java/org/apache/pdfbox/filter/Predictor.java::method::Predictor.calcSetBitSeq	ported	src/pdfbox/filter/predictor.cr	predictor decode implemented (decode_predictor_row/decode_data); end-to-end specs
+pdfbox/src/main/java/org/apache/pdfbox/filter/Predictor.java::method::Predictor.calculateRowLength	ported	src/pdfbox/filter/predictor.cr	predictor decode implemented (decode_predictor_row/decode_data); end-to-end specs
+pdfbox/src/main/java/org/apache/pdfbox/filter/Predictor.java::method::Predictor.decodePredictorRow	ported	src/pdfbox/filter/predictor.cr	predictor decode implemented (decode_predictor_row/decode_data); end-to-end specs
+pdfbox/src/main/java/org/apache/pdfbox/filter/Predictor.java::method::Predictor.getBitSeq	ported	src/pdfbox/filter/predictor.cr	predictor decode implemented (decode_predictor_row/decode_data); end-to-end specs
+pdfbox/src/main/java/org/apache/pdfbox/filter/Predictor.java::method::Predictor.wrapPredictor	ported	src/pdfbox/filter/predictor.cr	predictor decode implemented (decode_predictor_row/decode_data); end-to-end specs
+pdfbox/src/main/java/org/apache/pdfbox/filter/Predictor.java::method::PredictorOutputStream.decodeAndWriteRow	ported	src/pdfbox/filter/predictor.cr	predictor decode implemented (decode_predictor_row/decode_data); end-to-end specs
+pdfbox/src/main/java/org/apache/pdfbox/filter/Predictor.java::method::PredictorOutputStream.flipRows	ported	src/pdfbox/filter/predictor.cr	predictor decode implemented (decode_predictor_row/decode_data); end-to-end specs
+pdfbox/src/main/java/org/apache/pdfbox/filter/Predictor.java::method::PredictorOutputStream.flush	ported	src/pdfbox/filter/predictor.cr	predictor decode implemented (decode_predictor_row/decode_data); end-to-end specs
+pdfbox/src/main/java/org/apache/pdfbox/filter/Predictor.java::method::PredictorOutputStream.write	ported	src/pdfbox/filter/predictor.cr	predictor decode implemented (decode_predictor_row/decode_data); end-to-end specs
 pdfbox/src/main/java/org/apache/pdfbox/filter/RunLengthDecodeFilter.java::class::RunLengthDecodeFilter	ported	src/.../run_length_decode_filter.cr	stale inventory; class ported
 pdfbox/src/main/java/org/apache/pdfbox/filter/RunLengthDecodeFilter.java::const::RUN_LENGTH_EOD	ported	src/.../run_length_decode_filter.cr	stale inventory; class ported
 pdfbox/src/main/java/org/apache/pdfbox/filter/RunLengthDecodeFilter.java::method::RunLengthDecodeFilter.decode	ported	src/.../run_length_decode_filter.cr	stale inventory; class ported
