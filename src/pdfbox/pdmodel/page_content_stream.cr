@@ -49,6 +49,20 @@ module Pdfbox::Pdmodel
       write_operator(MOVE_TEXT)
     end
 
+    # Set the text matrix (Tm). Java PDAbstractContentStream#setTextMatrix.
+    # ameba:disable Naming/AccessorMethodName
+    def set_text_matrix(matrix : Pdfbox::Util::Matrix) : Nil
+      write_operands(
+        matrix.get_value(0, 0),
+        matrix.get_value(0, 1),
+        matrix.get_value(1, 0),
+        matrix.get_value(1, 1),
+        matrix.get_value(2, 0),
+        matrix.get_value(2, 1)
+      )
+      write_operator(SET_MATRIX)
+    end
+
     # Begin a marked content sequence without properties (BMC).
     # Java PDAbstractContentStream#beginMarkedContent(COSName).
     def begin_marked_content(tag : Cos::Name) : Nil

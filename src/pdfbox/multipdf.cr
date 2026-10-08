@@ -495,4 +495,126 @@ module Pdfbox::Multipdf
       extracted
     end
   end
+
+  # Imports pages as Form XObjects and appends them as optional-content layers.
+  # Port of Apache PDFBox multipdf/LayerUtility (portable subset: wrapInSaveRestore,
+  # importPageAsForm, appendFormAsLayer).
+  class LayerUtility
+    def initialize(@target_doc : Pdmodel::Document)
+    end
+
+    def document : Pdmodel::Document
+      @target_doc
+    end
+
+    # Wrap the page's contents in a save/restore pair (q ... Q).
+    def wrap_in_save_restore(page : Pdmodel::Page) : Nil
+      save = Pdfbox::Cos::Stream.new
+      save.create_output_stream.tap do |io|
+        io << "q\n"
+        io.close
+      end
+      restore = Pdfbox::Cos::Stream.new
+      restore.create_output_stream.tap do |io|
+        io << "Q\n"
+        io.close
+      end
+
+      cos_page = page.cos_object || raise "page missing COS dictionary"
+      contents = cos_page[Pdfbox::Cos::Name.new("Contents")]?
+      contents = contents.object if contents.is_a?(Pdfbox::Cos::Object)
+
+      case contents
+      when Pdfbox::Cos::Stream
+        array = Pdfbox::Cos::Array.new
+        array.add(save)
+        array.add(contents)
+        array.add(restore)
+        cos_page[Pdfbox::Cos::Name.new("Contents")] = array
+      when Pdfbox::Cos::Array
+        contents.add(0, save)
+        contents.add(restore)
+      else
+        raise ::IO::Error.new("Contents are unknown type: #{contents.class}")
+      end
+    end
+
+    # Import a page from a source document as a Form XObject.
+    def import_page_as_form(source_doc : Pdmodel::Document, page_number : Int32) : Pdmodel::Graphics::Form::PDFormXObject
+      import_page_as_form(source_doc, source_doc.get_page(page_number))
+    end
+
+    def import_page_as_form(_source_doc : Pdmodel::Document, page : Pdmodel::Page) : Pdmodel::Graphics::Form::PDFormXObject
+      cos_page = page.cos_object || raise "page missing COS dictionary"
+      contents = cos_page[Pdfbox::Cos::Name.new("Contents")]?
+      contents = contents.object if contents.is_a?(Pdfbox::Cos::Object)
+
+      stream = Pdfbox::Cos::Stream.new
+      copy_contents(stream, contents)
+      form = Pdmodel::Graphics::Form::PDFormXObject.new(stream)
+
+      if resources = page.resources
+        form.resources = Pdfbox::Pdmodel::PDResources.new(resources.cos_object)
+      end
+
+      view_box = page.crop_box || page.media_box
+      if view_box
+        form.bbox = Pdfbox::Pdmodel::Common::PDRectangle.new(
+          view_box.lower_left_x.to_f32,
+          view_box.lower_left_y.to_f32,
+          view_box.width.to_f32,
+          view_box.height.to_f32
+        )
+      end
+      form
+    end
+
+    # Append a form over the page as an optional-content layer (marked content /OC
+    # plus an OCG added to the catalog OCProperties).
+    def append_form_as_layer(target_page : Pdmodel::Page, form : Pdmodel::Graphics::Form::PDFormXObject,
+                             transform : Pdfbox::Util::Matrix, layer_name : String) : Pdmodel::Graphics::OptionalContent::PDOptionalContentGroup
+      catalog = @target_doc.document_catalog || raise "document has no catalog"
+      ocprops = catalog.oc_properties
+      unless ocprops
+        ocprops = Pdmodel::Graphics::OptionalContent::PDOptionalContentProperties.new
+        catalog.oc_properties = ocprops
+      end
+      if ocprops.has_group?(layer_name)
+        raise ArgumentError.new("Optional group (layer) already exists: #{layer_name}")
+      end
+
+      layer = Pdmodel::Graphics::OptionalContent::PDOptionalContentGroup.new(layer_name)
+      ocprops.add_group(layer)
+
+      content_stream = Pdfbox::Pdmodel::PDPageContentStream.new(
+        @target_doc, target_page, Pdfbox::Pdmodel::PDPageContentStream::AppendMode::APPEND, false
+      )
+      content_stream.begin_marked_content(Pdfbox::Cos::Name.new("OC"), layer)
+      content_stream.save_graphics_state
+      content_stream.transform(transform)
+      content_stream.draw_form(form)
+      content_stream.restore_graphics_state
+      content_stream.end_marked_content
+      content_stream.close
+
+      layer
+    end
+
+    private def copy_contents(target : Pdfbox::Cos::Stream, contents : Pdfbox::Cos::Base?) : Nil
+      data = case contents
+             when Pdfbox::Cos::Stream
+               contents.data
+             when Pdfbox::Cos::Array
+               buffer = ::IO::Memory.new
+               contents.items.each do |item|
+                 item = item.object if item.is_a?(Pdfbox::Cos::Object)
+                 buffer.write(item.data) if item.is_a?(Pdfbox::Cos::Stream)
+               end
+               buffer.to_slice
+             else
+               Bytes.empty
+             end
+      target.data = data
+    end
+  end
 end

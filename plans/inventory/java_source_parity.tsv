@@ -4788,16 +4788,16 @@ pdfbox/src/main/java/org/apache/pdfbox/filter/RunLengthDecodeFilter.java::const:
 pdfbox/src/main/java/org/apache/pdfbox/filter/RunLengthDecodeFilter.java::method::RunLengthDecodeFilter.decode	ported	src/.../run_length_decode_filter.cr	stale inventory; class ported
 pdfbox/src/main/java/org/apache/pdfbox/filter/RunLengthDecodeFilter.java::method::RunLengthDecodeFilter.encode	ported	src/.../run_length_decode_filter.cr	stale inventory; class ported
 pdfbox/src/main/java/org/apache/pdfbox/filter/TIFFExtension.java::interface::TIFFExtension	ported	src/pdfbox/filter/ccitt_fax_filter.cr + ccitt_fax_decoder_stream.cr + tiff_extension.cr	stale inventory; class ported
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/LayerUtility.java::class::LayerUtility	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/LayerUtility.java::class::LayerUtility	ported	src/pdfbox/multipdf.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/LayerUtility.java::const::DEBUG	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/LayerUtility.java::const::LOG	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/LayerUtility.java::const::PAGE_TO_FORM_FILTER	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/LayerUtility.java::method::LayerUtility.appendFormAsLayer	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/LayerUtility.java::method::LayerUtility.getDocument	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/LayerUtility.java::method::LayerUtility.appendFormAsLayer	ported	src/pdfbox/multipdf.cr	baseline
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/LayerUtility.java::method::LayerUtility.getDocument	ported	src/pdfbox/multipdf.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/LayerUtility.java::method::LayerUtility.importOcProperties	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/LayerUtility.java::method::LayerUtility.importPageAsForm	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/LayerUtility.java::method::LayerUtility.importPageAsForm	ported	src/pdfbox/multipdf.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/LayerUtility.java::method::LayerUtility.transferDict	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/LayerUtility.java::method::LayerUtility.wrapInSaveRestore	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/LayerUtility.java::method::LayerUtility.wrapInSaveRestore	ported	src/pdfbox/multipdf.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::class::LayoutPage	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::class::Overlay	ported	src/.../overlay.cr	stale inventory; class ported
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::const::LOG	ported	src/.../overlay.cr	stale inventory; class ported
@@ -5380,7 +5380,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::met
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.setRenderingMode	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.setStrokingColor	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.setStrokingColorSpaceStack	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.setTextMatrix	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.setTextMatrix	ported	src/pdfbox/pdmodel/page_content_stream.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.setTextRise	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.setWordSpacing	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.shadingFill	missing	-	baseline

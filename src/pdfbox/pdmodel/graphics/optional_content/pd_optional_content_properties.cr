@@ -179,7 +179,9 @@ module Pdfbox::Pdmodel::Graphics::OptionalContent
     end
 
     private def get_ocgs : Pdfbox::Cos::Array
-      ocgs = @dict[Pdfbox::Cos::Name.new("OCGs")].as?(Pdfbox::Cos::Array)
+      value = @dict[Pdfbox::Cos::Name.new("OCGs")]?
+      value = value.object if value.is_a?(Pdfbox::Cos::Object)
+      ocgs = value.as?(Pdfbox::Cos::Array)
       unless ocgs
         ocgs = Pdfbox::Cos::Array.new
         @dict.set_item("OCGs", ocgs)
@@ -188,7 +190,9 @@ module Pdfbox::Pdmodel::Graphics::OptionalContent
     end
 
     private def get_d : Pdfbox::Cos::Dictionary
-      d = @dict[Pdfbox::Cos::Name.new("D")].as?(Pdfbox::Cos::Dictionary)
+      value = @dict[Pdfbox::Cos::Name.new("D")]?
+      value = value.object if value.is_a?(Pdfbox::Cos::Object)
+      d = value.as?(Pdfbox::Cos::Dictionary)
       unless d
         d = Pdfbox::Cos::Dictionary.new
         d.set_string("Name", "Top")
@@ -198,6 +202,7 @@ module Pdfbox::Pdmodel::Graphics::OptionalContent
     end
 
     private def to_dictionary(object : Pdfbox::Cos::Base) : Pdfbox::Cos::Dictionary?
+      object = object.object if object.is_a?(Pdfbox::Cos::Object)
       object.as?(Pdfbox::Cos::Dictionary)
     end
 
