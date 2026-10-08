@@ -617,4 +617,124 @@ module Pdfbox::Multipdf
       target.data = data
     end
   end
+
+  # Deep-clones COS objects into a destination document.
+  # Port of Apache PDFBox multipdf/PDFCloneUtility.
+  class PDFCloneUtility
+    def initialize(@destination : Pdmodel::Document)
+      @cloned_version = {} of UInt64 => Pdfbox::Cos::Base
+      @cloned_values = Set(UInt64).new
+    end
+
+    def destination : Pdmodel::Document
+      @destination
+    end
+
+    # Deep-clone a COS object into the destination document, remapping indirect
+    # references. Java PDFCloneUtility#cloneForNewDocument.
+    def clone_for_new_document(base : Pdfbox::Cos::Base?) : Pdfbox::Cos::Base?
+      return nil unless base
+
+      if existing = @cloned_version[base.object_id]?
+        return existing
+      end
+      # Don't clone a clone.
+      return base if @cloned_values.includes?(base.object_id)
+
+      retval = clone_cos_base_for_new_document(base)
+      @cloned_version[base.object_id] = retval
+      @cloned_values << retval.object_id
+      retval
+    end
+
+    # Merge the members of base into target (Java PDFCloneUtility#cloneMerge).
+    def clone_merge(base : Pdfbox::Pdmodel::Common::COSObjectable, target : Pdfbox::Pdmodel::Common::COSObjectable) : Nil
+      return if base.same?(target)
+
+      clone_merge_cos_base(base.cos_object, target.cos_object)
+    end
+
+    private def clone_cos_base_for_new_document(base : Pdfbox::Cos::Base) : Pdfbox::Cos::Base
+      case base
+      when Pdfbox::Cos::Object
+        clone_for_new_document(base.object) || Pdfbox::Cos::Null.instance
+      when Pdfbox::Cos::Array
+        clone_cos_array(base)
+      when Pdfbox::Cos::Stream
+        clone_cos_stream(base)
+      when Pdfbox::Cos::Dictionary
+        clone_cos_dictionary(base)
+      else
+        base
+      end
+    end
+
+    private def clone_cos_array(array : Pdfbox::Cos::Array) : Pdfbox::Cos::Array
+      new_array = Pdfbox::Cos::Array.new
+      array.items.each do |value|
+        if has_self_reference(array, value)
+          new_array.add(new_array)
+        else
+          new_array.add(clone_for_new_document(value) || Pdfbox::Cos::Null.instance)
+        end
+      end
+      new_array
+    end
+
+    private def clone_cos_stream(stream : Pdfbox::Cos::Stream) : Pdfbox::Cos::Stream
+      new_stream = Pdfbox::Cos::Stream.new
+      new_stream.data = stream.data
+      @cloned_version[stream.object_id] = new_stream
+      stream.entries.each do |key, value|
+        if has_self_reference(stream, value)
+          new_stream[key] = new_stream
+        else
+          new_stream[key] = clone_for_new_document(value) || Pdfbox::Cos::Null.instance
+        end
+      end
+      new_stream
+    end
+
+    private def clone_cos_dictionary(dictionary : Pdfbox::Cos::Dictionary) : Pdfbox::Cos::Dictionary
+      new_dictionary = Pdfbox::Cos::Dictionary.new
+      @cloned_version[dictionary.object_id] = new_dictionary
+      dictionary.entries.each do |key, value|
+        if has_self_reference(dictionary, value)
+          new_dictionary[key] = new_dictionary
+        else
+          new_dictionary[key] = clone_for_new_document(value) || Pdfbox::Cos::Null.instance
+        end
+      end
+      new_dictionary
+    end
+
+    private def clone_merge_cos_base(source : Pdfbox::Cos::Base, target : Pdfbox::Cos::Base) : Nil
+      source_base = source.is_a?(Pdfbox::Cos::Object) ? source.object : source
+      target_base = target.is_a?(Pdfbox::Cos::Object) ? target.object : target
+      return unless source_base && target_base
+
+      if source_base.is_a?(Pdfbox::Cos::Array) && target_base.is_a?(Pdfbox::Cos::Array)
+        source_base.items.each do |value|
+          target_base.add(clone_for_new_document(value) || Pdfbox::Cos::Null.instance)
+        end
+      elsif source_base.is_a?(Pdfbox::Cos::Dictionary) && target_base.is_a?(Pdfbox::Cos::Dictionary)
+        source_base.entries.each do |key, value|
+          if existing = target_base[key]?
+            clone_merge_cos_base(value, existing)
+          else
+            target_base[key] = clone_for_new_document(value) || Pdfbox::Cos::Null.instance
+          end
+        end
+      end
+    end
+
+    # True if an array/dictionary element refers back to its parent.
+    private def has_self_reference(parent : Pdfbox::Cos::Base, value : Pdfbox::Cos::Base) : Bool
+      if value.is_a?(Pdfbox::Cos::Object)
+        actual = value.object
+        return true if actual && actual.same?(parent)
+      end
+      false
+    end
+  end
 end

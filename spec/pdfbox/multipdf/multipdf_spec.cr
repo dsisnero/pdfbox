@@ -8,6 +8,25 @@ describe "Pdfbox::Multipdf parity" do
   # PDFCloneUtility, LayerUtility, PDFMergerUtility, Overlay, PageExtractor, and related structure tree handling.
 
   it "PDFCloneUtilityTest#testClonePDFWithCosArrayStream" do
+    src_doc = Pdfbox::Pdmodel::Document.new
+    dst_doc = Pdfbox::Pdmodel::Document.new
+    src_page = Pdfbox::Pdmodel::Page.new
+    src_doc.add_page(src_page)
+    Pdfbox::Pdmodel::PDPageContentStream.new(
+      src_doc, src_page, Pdfbox::Pdmodel::PDPageContentStream::AppendMode::APPEND, true
+    ).close
+    Pdfbox::Pdmodel::PDPageContentStream.new(
+      src_doc, src_page, Pdfbox::Pdmodel::PDPageContentStream::AppendMode::APPEND, true
+    ).close
+
+    cloner = Pdfbox::Multipdf::PDFCloneUtility.new(dst_doc)
+    cloner.destination.should be(dst_doc)
+
+    cloned_dict = cloner.clone_for_new_document(src_page.cos_object.not_nil!)
+    cloned_dict = cloned_dict.as(Pdfbox::Cos::Dictionary)
+    cloned_page = Pdfbox::Pdmodel::Page.new(cloned_dict)
+    cloned_page.content_streams.size.should eq(2)
+    cloned_page.content_streams.each(&.should_not be_nil)
   end
 
   it "PDFCloneUtilityTest#testClonePDFWithCosArrayStream2" do

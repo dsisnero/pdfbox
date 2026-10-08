@@ -212,6 +212,27 @@ module Pdfbox::Pdmodel
       stream
     end
 
+    # The page's content streams (/Contents as a single stream or array).
+    # Java PDPage#getContentStreams.
+    def content_streams : Array(Cos::Stream)
+      cos_page = @cos_page
+      return [] of Cos::Stream unless cos_page
+
+      base = cos_page[Cos::Name.new("Contents")]?
+      base = base.object if base.is_a?(Cos::Object)
+      case base
+      when Cos::Stream
+        [base]
+      when Cos::Array
+        base.items.compact_map do |item|
+          item = item.object if item.is_a?(Cos::Object)
+          item.as?(Cos::Stream)
+        end
+      else
+        [] of Cos::Stream
+      end
+    end
+
     def contents_base : Cos::Base?
       cos_page = @cos_page
       return unless cos_page

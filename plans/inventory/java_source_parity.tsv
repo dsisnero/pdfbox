@@ -4840,16 +4840,16 @@ pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.se
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.setOddPageOverlayFile	ported	src/.../overlay.cr	stale inventory; class ported
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.setOddPageOverlayPDF	ported	src/.../overlay.cr	stale inventory; class ported
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.setOverlayPosition	ported	src/.../overlay.cr	stale inventory; class ported
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFCloneUtility.java::class::PDFCloneUtility	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFCloneUtility.java::class::PDFCloneUtility	ported	src/pdfbox/multipdf.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFCloneUtility.java::const::LOG	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFCloneUtility.java::method::PDFCloneUtility.cloneCOSArray	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFCloneUtility.java::method::PDFCloneUtility.cloneCOSBaseForNewDocument	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFCloneUtility.java::method::PDFCloneUtility.cloneCOSDictionary	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFCloneUtility.java::method::PDFCloneUtility.cloneCOSStream	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFCloneUtility.java::method::PDFCloneUtility.cloneForNewDocument	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFCloneUtility.java::method::PDFCloneUtility.cloneMerge	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFCloneUtility.java::method::PDFCloneUtility.cloneMergeCOSBase	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFCloneUtility.java::method::PDFCloneUtility.getDestination	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFCloneUtility.java::method::PDFCloneUtility.cloneCOSArray	ported	src/pdfbox/multipdf.cr	baseline
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFCloneUtility.java::method::PDFCloneUtility.cloneCOSBaseForNewDocument	ported	src/pdfbox/multipdf.cr	baseline
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFCloneUtility.java::method::PDFCloneUtility.cloneCOSDictionary	ported	src/pdfbox/multipdf.cr	baseline
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFCloneUtility.java::method::PDFCloneUtility.cloneCOSStream	ported	src/pdfbox/multipdf.cr	baseline
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFCloneUtility.java::method::PDFCloneUtility.cloneForNewDocument	ported	src/pdfbox/multipdf.cr	baseline
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFCloneUtility.java::method::PDFCloneUtility.cloneMerge	ported	src/pdfbox/multipdf.cr	baseline
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFCloneUtility.java::method::PDFCloneUtility.cloneMergeCOSBase	ported	src/pdfbox/multipdf.cr	baseline
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFCloneUtility.java::method::PDFCloneUtility.getDestination	ported	src/pdfbox/multipdf.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFCloneUtility.java::method::PDFCloneUtility.hasSelfReference	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::class::PDFMergerUtility	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::const::LOG	missing	-	baseline
@@ -5547,7 +5547,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getAr
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getBBox	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getBleedBox	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getCOSObject	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getContentStreams	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getContentStreams	ported	src/pdfbox/pdmodel/page.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getContents	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getContentsForRandomAccess	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getContentsForStreamParsing	missing	-	baseline

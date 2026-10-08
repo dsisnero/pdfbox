@@ -719,9 +719,9 @@ pdfbox/src/test/java/org/apache/pdfbox/multipdf/OverlayTest.java::method::Overla
 pdfbox/src/test/java/org/apache/pdfbox/multipdf/OverlayTest.java::method::OverlayTest.testRotatedOverlays	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/multipdf/OverlayTest.java::method::OverlayTest.testRotatedOverlaysMap	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/multipdf/PDFCloneUtilityTest.java::class::PDFCloneUtilityTest	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/multipdf/PDFCloneUtilityTest.java::method::PDFCloneUtilityTest.testClonePDFWithCosArrayStream	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/multipdf/PDFCloneUtilityTest.java::method::PDFCloneUtilityTest.testClonePDFWithCosArrayStream2	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/multipdf/PDFCloneUtilityTest.java::method::PDFCloneUtilityTest.testDirectIndirect	ported	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/multipdf/PDFCloneUtilityTest.java::method::PDFCloneUtilityTest.testClonePDFWithCosArrayStream	ported	spec/pdfbox/multipdf/multipdf_spec.cr	baseline
+pdfbox/src/test/java/org/apache/pdfbox/multipdf/PDFCloneUtilityTest.java::method::PDFCloneUtilityTest.testClonePDFWithCosArrayStream2	partial	-	needs PDFMergerUtility#appendDocument (not yet ported)
+pdfbox/src/test/java/org/apache/pdfbox/multipdf/PDFCloneUtilityTest.java::method::PDFCloneUtilityTest.testDirectIndirect	partial	-	needs PDFMergerUtility#appendDocument (not yet ported)
 pdfbox/src/test/java/org/apache/pdfbox/multipdf/PDFMergerUtilityTest.java::class::ElementCounter	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/multipdf/PDFMergerUtilityTest.java::class::PDFMergerUtilityTest	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/multipdf/PDFMergerUtilityTest.java::const::DPI	ported	-	baseline
