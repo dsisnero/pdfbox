@@ -186,6 +186,7 @@ module Pdfbox::Contentstream
       add_operator(OperatorStrokePath.new(self))
       add_operator(OperatorCloseAndStrokePath.new(self))
       add_operator(OperatorFillNonZeroRule.new(self))
+      add_operator(OperatorLegacyFillNonZeroRule.new(self))
       add_operator(OperatorFillEvenOddRule.new(self))
       add_operator(OperatorFillNonZeroAndStrokePath.new(self))
       add_operator(OperatorFillEvenOddAndStrokePath.new(self))
@@ -237,7 +238,9 @@ module Pdfbox::Contentstream
       add_operator(OperatorSetStrokingDeviceCMYKColor.new(self))
       add_operator(OperatorSetNonStrokingDeviceCMYKColor.new(self))
       add_operator(OperatorSetStrokingColor.new(self))
+      add_operator(OperatorSetStrokingColorN.new(self))
       add_operator(OperatorSetNonStrokingColor.new(self))
+      add_operator(OperatorSetNonStrokingColorN.new(self))
 
       # Marked content operators
       add_operator(OperatorBeginMarkedContent.new(self))
@@ -490,6 +493,13 @@ module Pdfbox::Contentstream
 
     def process(arguments : Array(Cos::Base)) : Nil
       context.fill_path(0) # WIND_NON_ZERO
+    end
+  end
+
+  # LegacyFillNonZeroRule operator (F): same as f.
+  class OperatorLegacyFillNonZeroRule < OperatorFillNonZeroRule
+    def name : String
+      "F"
     end
   end
 
@@ -1131,6 +1141,20 @@ module Pdfbox::Contentstream
         arg.is_a?(Cos::Number) ? arg.value.to_f32 : 0.0_f32
       end
       context.graphics_state.non_stroking_color = Pdmodel::Graphics::Color::PDColor.new(components, cs)
+    end
+  end
+
+  # SetStrokingColorN operator (SCN): pattern-capable variant of SC.
+  class OperatorSetStrokingColorN < OperatorSetStrokingColor
+    def name : String
+      "SCN"
+    end
+  end
+
+  # SetNonStrokingColorN operator (scn): pattern-capable variant of sc.
+  class OperatorSetNonStrokingColorN < OperatorSetNonStrokingColor
+    def name : String
+      "scn"
     end
   end
 

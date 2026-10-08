@@ -3474,8 +3474,8 @@ pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetNonStroki
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetNonStrokingColor.java::method::SetNonStrokingColor.getColorSpace	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetNonStrokingColor.java::method::SetNonStrokingColor.getName	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetNonStrokingColor.java::method::SetNonStrokingColor.setColor	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetNonStrokingColorN.java::class::SetNonStrokingColorN	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetNonStrokingColorN.java::method::SetNonStrokingColorN.getName	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetNonStrokingColorN.java::class::SetNonStrokingColorN	ported	src/pdfbox/contentstream/pdf_graphics_stream_engine.cr	baseline
+pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetNonStrokingColorN.java::method::SetNonStrokingColorN.getName	ported	src/pdfbox/contentstream/pdf_graphics_stream_engine.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetNonStrokingColorSpace.java::class::SetNonStrokingColorSpace	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetNonStrokingColorSpace.java::method::SetNonStrokingColorSpace.getName	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetNonStrokingColorSpace.java::method::SetNonStrokingColorSpace.process	missing	-	baseline
@@ -3493,8 +3493,8 @@ pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetStrokingC
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetStrokingColor.java::method::SetStrokingColor.getColorSpace	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetStrokingColor.java::method::SetStrokingColor.getName	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetStrokingColor.java::method::SetStrokingColor.setColor	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetStrokingColorN.java::class::SetStrokingColorN	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetStrokingColorN.java::method::SetStrokingColorN.getName	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetStrokingColorN.java::class::SetStrokingColorN	ported	src/pdfbox/contentstream/pdf_graphics_stream_engine.cr	baseline
+pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetStrokingColorN.java::method::SetStrokingColorN.getName	ported	src/pdfbox/contentstream/pdf_graphics_stream_engine.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetStrokingColorSpace.java::class::SetStrokingColorSpace	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetStrokingColorSpace.java::method::SetStrokingColorSpace.getName	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetStrokingColorSpace.java::method::SetStrokingColorSpace.process	missing	-	baseline
@@ -3565,8 +3565,8 @@ pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/FillNonZe
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/FillNonZeroRule.java::method::FillNonZeroRule.process	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/GraphicsOperatorProcessor.java::class::GraphicsOperatorProcessor	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/GraphicsOperatorProcessor.java::method::GraphicsOperatorProcessor.getGraphicsContext	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/LegacyFillNonZeroRule.java::class::LegacyFillNonZeroRule	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/LegacyFillNonZeroRule.java::method::LegacyFillNonZeroRule.getName	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/LegacyFillNonZeroRule.java::class::LegacyFillNonZeroRule	ported	src/pdfbox/contentstream/pdf_graphics_stream_engine.cr	baseline
+pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/LegacyFillNonZeroRule.java::method::LegacyFillNonZeroRule.getName	ported	src/pdfbox/contentstream/pdf_graphics_stream_engine.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/LineTo.java::class::LineTo	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/LineTo.java::const::LOG	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/LineTo.java::method::LineTo.getName	missing	-	baseline
