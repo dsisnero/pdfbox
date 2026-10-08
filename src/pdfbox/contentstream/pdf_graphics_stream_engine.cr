@@ -1246,7 +1246,8 @@ module Pdfbox::Contentstream
       page = context.page
       return unless page
 
-      resources = page.resources
+      # Use the current (possibly form-scoped) resources, falling back to the page.
+      resources = context.resources || page.resources
       return unless resources
 
       xobject = resources.xobject(name_arg)
@@ -1268,7 +1269,18 @@ module Pdfbox::Contentstream
         image = Pdmodel::Graphics::Image::PDImageXObject.new(doc, xobject, xobject.as?(Cos::Stream))
         context.draw_image(image)
       when "Form"
-        # Form XObject handling - not yet implemented
+        if form = xobject.as?(Cos::Stream)
+          context.increase_level
+          begin
+            if context.level > 50
+              Log.error { "recursion is too deep, skipping form XObject" }
+            else
+              context.process_form_xobject(form)
+            end
+          ensure
+            context.decrease_level
+          end
+        end
       end
     end
   end

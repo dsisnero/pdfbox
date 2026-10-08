@@ -1125,7 +1125,7 @@ pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/JPEGFactoryTest.ja
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/JPEGFactoryTest.java::method::JPEGFactoryTest.testCreateFromStream	ported	spec/pdfbox/pdmodel/graphics/image/jpeg_factory_spec.cr	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/JPEGFactoryTest.java::method::JPEGFactoryTest.testCreateFromStream256	ported	spec/pdfbox/pdmodel/graphics/image/jpeg_factory_spec.cr	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/JPEGFactoryTest.java::method::JPEGFactoryTest.testCreateFromStreamCMYK	ported	spec/pdfbox/pdmodel/graphics/image/jpeg_factory_spec.cr	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/JPEGFactoryTest.java::method::JPEGFactoryTest.testPDFBox5137	partial	-	AWT BufferedImage/ImageIO createFromImage path, out of scope
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/JPEGFactoryTest.java::method::JPEGFactoryTest.testPDFBox5137	ported	spec/pdfbox/pdmodel/graphics/image/jpeg_factory_spec.cr	structural validate + checkJpegStream; AWT getImage out of scope
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/LosslessFactoryTest.java::class::LosslessFactoryTest	ported	spec/pdfbox/pdmodel/graphics/image/lossless_factory_spec.cr	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/LosslessFactoryTest.java::const::TESTRESULTSDIR	ported	-	no output-dir setup needed in Crystal (in-memory asserts)
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/image/LosslessFactoryTest.java::method::LosslessFactoryTest.checkIdentRGB	partial	-	AWT BufferedImage/ImageIO pixel comparison, out of scope (Chunk K)

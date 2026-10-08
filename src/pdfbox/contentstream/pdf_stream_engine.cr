@@ -438,7 +438,26 @@ module Pdfbox::Contentstream
       process_form_xobject(xobject)
     end
 
-    private def process_form_xobject(stream : Cos::Stream) : Nil
+    # Current recursion level, used to guard form XObject recursion.
+    # Java PDFStreamEngine#getLevel.
+    def level : Int32
+      @level
+    end
+
+    # Increase the recursion level (Java PDFStreamEngine#increaseLevel).
+    def increase_level : Nil
+      @level += 1
+    end
+
+    # Decrease the recursion level (Java PDFStreamEngine#decreaseLevel).
+    def decrease_level : Nil
+      @level -= 1
+      Log.warn { "level is below 0, this indicates that decreaseLevel() was called too often" } if @level < 0
+    end
+
+    # Processes a Form XObject's content stream, temporarily switching to the
+    # form's resources and applying its /Matrix. Java PDFStreamEngine#showForm.
+    def process_form_xobject(stream : Cos::Stream) : Nil
       parent_resources = @resources
       parent_initial_matrix = @initial_matrix
       saved_stack = @graphics_stack.as(Array).map(&.clone)

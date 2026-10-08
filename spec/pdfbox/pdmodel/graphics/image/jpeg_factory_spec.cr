@@ -81,6 +81,53 @@ describe Pdfbox::Pdmodel::Graphics::Image::JPEGFactory do
   end
 
   # Source of truth: JPEGFactoryTest.checkJpegStream — the JPEG stream can be extracted
+  # PDFBOX-5137 / PDFBOX-5196: numFrameComponents (not numScanComponents) selects
+  # the color space; checkJpegStream extracts the raw JPEG after save/reload.
+  describe "TestPDFBox5137" do
+    it "uses numFrameComponents for the color space and preserves the JPEG stream" do
+      lotus_jpeg = SpecPaths.resolve("spec/resources/pdfbox/pdmodel/graphics/image/PDFBOX-5196-lotus.jpg")
+      original = ::File.read(lotus_jpeg).to_slice
+      outfile = File.tempname("pdfbox_5137_", ".pdf")
+      begin
+        doc = Pdfbox::Pdmodel::Document.create
+        image = Pdfbox::Pdmodel::Graphics::Image::JPEGFactory.create_from_byte_array(doc, original)
+
+        # Java ValidateXImage.validate(ximage, 8, 500, 500, "jpg", DeviceRGB).
+        cos = image.cos_object.as(Pdfbox::Cos::Stream)
+        cos[Pdfbox::Cos::Name.new("Type")].as(Pdfbox::Cos::Name).value.should eq("XObject")
+        cos[Pdfbox::Cos::Name.new("Subtype")].as(Pdfbox::Cos::Name).value.should eq("Image")
+        cos.data.size.should be > 0
+        image.bits_per_component.should eq(8)
+        image.width.should eq(500)
+        image.height.should eq(500)
+        image.suffix.should eq("jpg")
+        image.color_space.should eq(Pdfbox::Pdmodel::Graphics::Color::PDDeviceRGB::INSTANCE)
+
+        page = Pdfbox::Pdmodel::Page.new
+        doc.add_page(page)
+        content = Pdfbox::Pdmodel::PDPageContentStream.new(doc, page)
+        content.draw_image(image, 0, 0, image.width, image.height)
+        content.close
+        doc.save(outfile)
+        doc.close
+
+        # Java checkJpegStream: Im1's DCT stream equals the original JPEG.
+        reloaded = Pdfbox::Pdmodel::Document.load(outfile)
+        resources = reloaded.pages[0].resources.not_nil!
+        xobject_dict = resources.cos_object[Pdfbox::Cos::Name.new("XObject")]
+        xobject_dict = xobject_dict.object.as(Pdfbox::Cos::Base) if xobject_dict.is_a?(Pdfbox::Cos::Object)
+        entry = xobject_dict.as(Pdfbox::Cos::Dictionary).entries.values.first
+        entry = entry.object.as(Pdfbox::Cos::Base) if entry.is_a?(Pdfbox::Cos::Object)
+        stream = entry.as(Pdfbox::Cos::Stream)
+
+        stream.create_input_stream(["DCTDecode"]).gets_to_end.to_slice.should eq(original)
+        reloaded.close
+      ensure
+        File.delete(outfile) if File.exists?(outfile)
+      end
+    end
+  end
+
   # from a saved/reloaded PDF exactly as it was passed to createFromStream.
   describe "JPEG stream round-trip" do
     it "extracts the exact JPEG bytes after save and reload" do

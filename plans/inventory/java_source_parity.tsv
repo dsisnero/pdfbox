@@ -3544,10 +3544,10 @@ pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/CurveToRe
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/CurveToReplicateInitialPoint.java::const::LOG	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/CurveToReplicateInitialPoint.java::method::CurveToReplicateInitialPoint.getName	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/CurveToReplicateInitialPoint.java::method::CurveToReplicateInitialPoint.process	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/DrawObject.java::class::DrawObject	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/DrawObject.java::const::LOG	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/DrawObject.java::method::DrawObject.getName	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/DrawObject.java::method::DrawObject.process	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/DrawObject.java::class::DrawObject	ported	src/pdfbox/contentstream/pdf_graphics_stream_engine.cr	form XObject Do + 50-level recursion guard
+pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/DrawObject.java::const::LOG	ported	src/pdfbox/contentstream/pdf_graphics_stream_engine.cr	form XObject Do + 50-level recursion guard
+pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/DrawObject.java::method::DrawObject.getName	ported	src/pdfbox/contentstream/pdf_graphics_stream_engine.cr	form XObject Do + 50-level recursion guard
+pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/DrawObject.java::method::DrawObject.process	ported	src/pdfbox/contentstream/pdf_graphics_stream_engine.cr	form XObject Do + 50-level recursion guard
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/EndPath.java::class::EndPath	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/EndPath.java::method::EndPath.getName	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/EndPath.java::method::EndPath.process	missing	-	baseline
