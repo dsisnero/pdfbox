@@ -9246,10 +9246,10 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/annotation/PDAnnotati
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/annotation/PDAnnotationFreeText.java::const::IT_FREE_TEXT_CALLOUT	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/annotation/PDAnnotationFreeText.java::const::IT_FREE_TEXT_TYPE_WRITER	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/annotation/PDAnnotationFreeText.java::const::SUB_TYPE	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/annotation/PDAnnotationFreeText.java::method::PDAnnotationFreeText.constructAppearances	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/annotation/PDAnnotationFreeText.java::method::PDAnnotationFreeText.constructAppearances	ported	src/pdfbox/pdmodel/interactive/annotation/pdannotation_free_text.cr + handlers/pdfree_text_appearance_handler.cr	FreeText default appearance handler + clip/PlainTextFormatter
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/annotation/PDAnnotationFreeText.java::method::PDAnnotationFreeText.getBorderEffect	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/annotation/PDAnnotationFreeText.java::method::PDAnnotationFreeText.getCallout	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/annotation/PDAnnotationFreeText.java::method::PDAnnotationFreeText.getDefaultAppearance	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/annotation/PDAnnotationFreeText.java::method::PDAnnotationFreeText.getDefaultAppearance	ported	src/pdfbox/pdmodel/interactive/annotation/pdannotation_free_text.cr + handlers/pdfree_text_appearance_handler.cr	FreeText default appearance handler + clip/PlainTextFormatter
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/annotation/PDAnnotationFreeText.java::method::PDAnnotationFreeText.getDefaultStyleString	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/annotation/PDAnnotationFreeText.java::method::PDAnnotationFreeText.getLineEndingStyle	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/annotation/PDAnnotationFreeText.java::method::PDAnnotationFreeText.getQ	missing	-	baseline
@@ -9640,10 +9640,10 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/annotation/handlers/P
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/annotation/handlers/PDFreeTextAppearanceHandler.java::class::PDFreeTextAppearanceHandler	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/annotation/handlers/PDFreeTextAppearanceHandler.java::const::COLOR_PATTERN	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/annotation/handlers/PDFreeTextAppearanceHandler.java::const::LOG	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/annotation/handlers/PDFreeTextAppearanceHandler.java::method::PDFreeTextAppearanceHandler.extractFontDetails	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/annotation/handlers/PDFreeTextAppearanceHandler.java::method::PDFreeTextAppearanceHandler.extractFontDetails	ported	src/pdfbox/pdmodel/interactive/annotation/pdannotation_free_text.cr + handlers/pdfree_text_appearance_handler.cr	FreeText default appearance handler + clip/PlainTextFormatter
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/annotation/handlers/PDFreeTextAppearanceHandler.java::method::PDFreeTextAppearanceHandler.extractNonStrokingColor	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/annotation/handlers/PDFreeTextAppearanceHandler.java::method::PDFreeTextAppearanceHandler.generateDownAppearance	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/annotation/handlers/PDFreeTextAppearanceHandler.java::method::PDFreeTextAppearanceHandler.generateNormalAppearance	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/annotation/handlers/PDFreeTextAppearanceHandler.java::method::PDFreeTextAppearanceHandler.generateNormalAppearance	ported	src/pdfbox/pdmodel/interactive/annotation/pdannotation_free_text.cr + handlers/pdfree_text_appearance_handler.cr	FreeText default appearance handler + clip/PlainTextFormatter
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/annotation/handlers/PDFreeTextAppearanceHandler.java::method::PDFreeTextAppearanceHandler.generateRolloverAppearance	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/annotation/handlers/PDHighlightAppearanceHandler.java::class::PDHighlightAppearanceHandler	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/annotation/handlers/PDHighlightAppearanceHandler.java::const::LOG	missing	-	baseline

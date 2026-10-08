@@ -8,14 +8,6 @@ module Pdfbox::Pdmodel::Interactive::Annotation::Handlers
     @font_size : Float32 = 10_f32
     @font_name : Cos::Name = Cos::Name.new("Helv")
 
-    def initialize(@annotation : Annotation::PDAnnotation)
-      super
-    end
-
-    def initialize(@annotation : Annotation::PDAnnotation, @document : Pdmodel::PDDocument)
-      super
-    end
-
     def generate_normal_appearance : Nil
       ann = @annotation.as(Annotation::PDAnnotationFreeText)
       paths_array = if Annotation::PDAnnotationFreeText::IT_FREE_TEXT_CALLOUT == ann.intent
@@ -141,38 +133,51 @@ module Pdfbox::Pdmodel::Interactive::Annotation::Handlers
         font ||= default_font
 
         y_delta = 0.7896_f32
-        x_offset, _y_offset, clip_y = case rotation
-                                      when 180
-                                        {-border_box.upper_right_x + ab.width * 2,
-                                         -border_box.lower_left_y - ab.width * 2 - y_delta * @font_size,
-                                         -border_box.upper_right_y + ab.width * 2}
-                                      when 90
-                                        {border_box.lower_left_y + ab.width * 2,
-                                         -border_box.lower_left_x - ab.width * 2 - y_delta * @font_size,
-                                         -border_box.upper_right_x + ab.width * 2}
-                                      when 270
-                                        {-border_box.upper_right_y + ab.width * 2,
-                                         border_box.upper_right_x - ab.width * 2 - y_delta * @font_size,
-                                         border_box.lower_left_x + ab.width * 2}
-                                      else
-                                        {border_box.lower_left_x + ab.width * 2,
-                                         border_box.upper_right_y - ab.width * 2 - y_delta * @font_size,
-                                         border_box.lower_left_y + ab.width * 2}
-                                      end
+        x_offset, y_offset, clip_y = case rotation
+                                     when 180
+                                       {-border_box.upper_right_x + ab.width * 2,
+                                        -border_box.lower_left_y - ab.width * 2 - y_delta * @font_size,
+                                        -border_box.upper_right_y + ab.width * 2}
+                                     when 90
+                                       {border_box.lower_left_y + ab.width * 2,
+                                        -border_box.lower_left_x - ab.width * 2 - y_delta * @font_size,
+                                        -border_box.upper_right_x + ab.width * 2}
+                                     when 270
+                                       {-border_box.upper_right_y + ab.width * 2,
+                                        border_box.upper_right_x - ab.width * 2 - y_delta * @font_size,
+                                        border_box.lower_left_x + ab.width * 2}
+                                     else
+                                       {border_box.lower_left_x + ab.width * 2,
+                                        border_box.upper_right_y - ab.width * 2 - y_delta * @font_size,
+                                        border_box.lower_left_y + ab.width * 2}
+                                     end
 
+        # Clip the writing area (Java PDFreeTextAppearanceHandler: cs.addRect(...); cs.clip()).
         cs.add_rect(x_offset, clip_y, clip_width, clip_height)
-        # Clip not yet implemented on PDAppearanceContentStream
-        # cs.clip
+        cs.clip
 
-        annotation_contents = ann.contents
-        if annotation_contents
+        if annotation_contents = ann.contents
           cs.begin_text
           cs.set_font(font, @font_size)
           cs.non_stroking_color = text_color
-          # PlainTextFormatter not yet ported - text rendering deferred
-          # TODO: Port PlainTextFormatter for FreeText annotation
-          cs.show_text(annotation_contents)
-          cs.end_text
+
+          appearance_style = Pdfbox::Pdmodel::Interactive::AppearanceStyle.new
+          appearance_style.font = font
+          appearance_style.font_size = @font_size
+          formatter = Pdfbox::Pdmodel::Interactive::PlainTextFormatter::Builder.new(cs)
+            .style(appearance_style)
+            .text(Pdfbox::Pdmodel::Interactive::PlainText.new(annotation_contents))
+            .width(width - ab.width * 4)
+            .wrap_lines(true)
+            .initial_offset(x_offset, y_offset)
+            .build
+          begin
+            formatter.format
+          rescue ex : ArgumentError
+            raise ::IO::Error.new(ex.message)
+          ensure
+            cs.end_text
+          end
         end
 
         if paths_array.size > 0 && (bbox_rect = rectangle)

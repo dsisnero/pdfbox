@@ -89,5 +89,15 @@ module Pdfbox::Pdmodel::Interactive::Annotation
       cos_object[Cos::Name.new("RD")] = value.cos_object
       value
     end
+
+    # Java PDAnnotationFreeText#constructAppearances: use the custom handler if
+    # set, otherwise build a default PDFreeTextAppearanceHandler.
+    def construct_appearances(document : Pdfbox::Pdmodel::Document? = nil) : Nil
+      if handler = custom_appearance_handler
+        handler.generate_appearance_streams
+      else
+        Handlers::PDFreeTextAppearanceHandler.new(self, document).generate_appearance_streams
+      end
+    end
   end
 end
