@@ -75,8 +75,7 @@ module Pdfbox::Pdmodel::Common
 
     # This will get a stream with some filters applied but not others
     def create_input_stream(stop_filters : Array(String)?) : ::IO
-      # For now, ignore stop_filters as filter support is not fully implemented
-      @stream.create_input_stream
+      @stream.create_input_stream(stop_filters || [] of String)
     end
 
     # This will get the length of the filtered/compressed stream

@@ -111,6 +111,8 @@ describe Pdfbox::Pdmodel::Graphics::Image::JPEGFactory do
         stream = xobject.as(Pdfbox::Cos::Stream)
         stream[Pdfbox::Cos::Name.new("Filter")].as(Pdfbox::Cos::Name).value.should eq("DCTDecode")
         stream.data.should eq(original)
+        # Java checkJpegStream: createInputStream([DCTDecode]) yields the raw JPEG.
+        stream.create_input_stream(["DCTDecode"]).gets_to_end.to_slice.should eq(original)
         reloaded.close
       ensure
         File.delete(outfile) if File.exists?(outfile)

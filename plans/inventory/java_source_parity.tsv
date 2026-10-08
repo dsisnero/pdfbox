@@ -4522,7 +4522,7 @@ pdfbox/src/main/java/org/apache/pdfbox/cos/COSStream.java::const::LOG	missing	-	
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSStream.java::method::COSStream.accept	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSStream.java::method::COSStream.checkClosed	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSStream.java::method::COSStream.close	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSStream.java::method::COSStream.createInputStream	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSStream.java::method::COSStream.createInputStream	ported	src/pdfbox/cos.cr + pdstream.cr + pd_image_xobject.cr	stop-filter createInputStream implemented
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSStream.java::method::COSStream.createOutputStream	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSStream.java::method::COSStream.createRawInputStream	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSStream.java::method::COSStream.createRawOutputStream	missing	-	baseline
@@ -5848,7 +5848,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDRectangle.java::method::
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDRectangle.java::method::PDRectangle.transform	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::class::PDStream	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::const::LOG	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.createInputStream	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.createInputStream	ported	src/pdfbox/cos.cr + pdstream.cr + pd_image_xobject.cr	stop-filter createInputStream implemented
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.createOutputStream	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.getCOSObject	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.getDecodeParms	missing	-	baseline
@@ -8348,7 +8348,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObject.jav
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObject.java::method::PDImageXObject.createFromFile	ported	src/pdfbox/pdmodel/graphics/image/pd_image_xobject.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObject.java::method::PDImageXObject.createFromFileByContent	ported	src/pdfbox/pdmodel/graphics/image/pd_image_xobject.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObject.java::method::PDImageXObject.createFromFileByExtension	ported	src/pdfbox/pdmodel/graphics/image/pd_image_xobject.cr	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObject.java::method::PDImageXObject.createInputStream	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObject.java::method::PDImageXObject.createInputStream	ported	src/pdfbox/cos.cr + pdstream.cr + pd_image_xobject.cr	stop-filter createInputStream implemented
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObject.java::method::PDImageXObject.createRawStream	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObject.java::method::PDImageXObject.createThumbnail	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObject.java::method::PDImageXObject.extractMatte	missing	-	baseline

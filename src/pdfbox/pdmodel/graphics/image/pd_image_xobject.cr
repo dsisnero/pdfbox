@@ -267,20 +267,10 @@ module Pdfbox::Pdmodel::Graphics::Image
     end
 
     def create_input_stream(stop_filters : Array(String)) : ::IO
-      # Get the stream data
-      stream = @stream
-      unless stream
-        # Try to get stream from dictionary
-        if @dict.is_a?(Pdfbox::Cos::Stream)
-          stream = @dict.as(Pdfbox::Cos::Stream)
-        else
-          return ::IO::Memory.new
-        end
-      end
+      source = stream
+      return ::IO::Memory.new unless source
 
-      # Create input stream from stream data
-      # TODO: Implement filter decoding based on stop_filters
-      ::IO::Memory.new(stream.data)
+      source.create_input_stream(stop_filters)
     end
 
     # The underlying COS stream. Java getCOSObject() returns the COSStream.

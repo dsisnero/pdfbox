@@ -1336,6 +1336,13 @@ module Pdfbox::Cos
       ::IO::Memory.new(decode_filters(@data, self[Name::FILTER]))
     end
 
+    # Gets a stream with some filters applied but not others: decoding stops
+    # before the first filter whose name is in stop_filters.
+    def create_input_stream(stop_filters : ::Array(::String)) : ::IO
+      raise ::IO::Error.new("COSStream has no data") unless has_data
+      ::IO::Memory.new(decode_filters_with_stop(@data, self[Name::FILTER], stop_filters))
+    end
+
     def create_raw_output_stream : ::IO
       StreamOutput.new(self, nil, false)
     end
@@ -1374,6 +1381,27 @@ module Pdfbox::Cos
         decoded = data
         filters.items.each do |item|
           filter = item.as?(Name) || raise Error.new("Invalid stream filter entry: #{item.inspect}")
+          decoded = decode_with_filter(decoded, filter)
+        end
+        decoded
+      else
+        raise Error.new("Unsupported stream filter type: #{filters.class}")
+      end
+    end
+
+    # Like decode_filters, but stops decoding before the first filter whose name
+    # appears in stop_filters (Java PDStream#createInputStream(List)).
+    def decode_filters_with_stop(data : Bytes, filters : Base?, stop_filters : ::Array(::String)) : Bytes
+      return data if filters.nil?
+
+      case filters
+      when Name
+        stop_filters.includes?(filters.value) ? data : decode_with_filter(data, filters)
+      when Array
+        decoded = data
+        filters.items.each do |item|
+          filter = item.as?(Name) || raise Error.new("Invalid stream filter entry: #{item.inspect}")
+          break if stop_filters.includes?(filter.value)
           decoded = decode_with_filter(decoded, filter)
         end
         decoded
