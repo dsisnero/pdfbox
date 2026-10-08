@@ -187,33 +187,39 @@ module Pdfbox::Pdmodel
       write_operator(RESTORE)
     end
 
-    def add_rect(_x : Number, _y : Number, _width : Number, _height : Number) : Nil
+    def add_rect(x : Number, y : Number, width : Number, height : Number) : Nil
       raise_if_in_text_mode("addRect is not allowed within a text block.")
+      write_operands(x, y, width, height)
       write_operator(APPEND_RECT)
     end
 
-    def curve_to(_x1 : Number, _y1 : Number, _x2 : Number, _y2 : Number, _x3 : Number, _y3 : Number) : Nil
+    def curve_to(x1 : Number, y1 : Number, x2 : Number, y2 : Number, x3 : Number, y3 : Number) : Nil
       raise_if_in_text_mode("curveTo is not allowed within a text block.")
+      write_operands(x1, y1, x2, y2, x3, y3)
       write_operator(CURVE_TO)
     end
 
-    def curve_to1(_x1 : Number, _y1 : Number, _x3 : Number, _y3 : Number) : Nil
+    def curve_to1(x1 : Number, y1 : Number, x3 : Number, y3 : Number) : Nil
       raise_if_in_text_mode("curveTo1 is not allowed within a text block.")
+      write_operands(x1, y1, x3, y3)
       write_operator(CURVE_TO_REPLICATE_FINAL_POINT)
     end
 
-    def curve_to2(_x2 : Number, _y2 : Number, _x3 : Number, _y3 : Number) : Nil
+    def curve_to2(x2 : Number, y2 : Number, x3 : Number, y3 : Number) : Nil
       raise_if_in_text_mode("curveTo2 is not allowed within a text block.")
+      write_operands(x2, y2, x3, y3)
       write_operator(CURVE_TO_REPLICATE_INITIAL_POINT)
     end
 
-    def move_to(_x : Number, _y : Number) : Nil
+    def move_to(x : Number, y : Number) : Nil
       raise_if_in_text_mode("moveTo is not allowed within a text block.")
+      write_operands(x, y)
       write_operator(MOVE_TO)
     end
 
-    def line_to(_x : Number, _y : Number) : Nil
+    def line_to(x : Number, y : Number) : Nil
       raise_if_in_text_mode("lineTo is not allowed within a text block.")
+      write_operands(x, y)
       write_operator(LINE_TO)
     end
 
