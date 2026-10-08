@@ -166,11 +166,17 @@ describe Pdfbox::Pdmodel::Graphics::Image::PDImageXObject do
       doc.try(&.close)
     end
 
-    it "dispatches PNG bytes with png suffix" do
+    it "dispatches PNG bytes through PNGConverter (no recoding) with png suffix" do
       doc = Pdfbox::Pdmodel::Document.create
       bytes = ::File.read(image_path("png.png")).to_slice
       image = Pdfbox::Pdmodel::Graphics::Image::PDImageXObject.create_from_byte_array(doc, bytes, "png.png")
       image.suffix.should eq("png")
+      image.width.should eq(343)
+      image.height.should eq(287)
+      # PNGConverter adds a PNG Predictor 15 DecodeParms; the raster fallback does not.
+      decode_parms = image.cos_object.get_dictionary(Pdfbox::Cos::Name.new("DecodeParms"))
+      decode_parms.should_not be_nil
+      decode_parms.not_nil!.get_int(Pdfbox::Cos::Name.new("Predictor"), 0).should eq(15)
     ensure
       doc.try(&.close)
     end

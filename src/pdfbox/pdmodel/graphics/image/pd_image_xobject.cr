@@ -48,7 +48,10 @@ module Pdfbox::Pdmodel::Graphics::Image
       case file_type
       when Util::FileType::Jpeg
         JPEGFactory.create_from_byte_array(document, bytes)
-      when Util::FileType::Png, Util::FileType::Gif, Util::FileType::Bmp
+      when Util::FileType::Png
+        # Java: try to convert the PNG directly (no recoding), fall back to raster.
+        PNGConverter.convert_png_image(document, bytes) || create_from_raster_bytes(bytes, document)
+      when Util::FileType::Gif, Util::FileType::Bmp
         create_from_raster_bytes(bytes, document)
       when Util::FileType::Tiff
         # CCITTFax decoding not yet in the Crystal filter set; raster fallback

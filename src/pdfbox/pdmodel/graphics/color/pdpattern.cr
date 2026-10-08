@@ -11,6 +11,10 @@ module Pdfbox::Pdmodel::Graphics::Color
       @underlying_color_space
     end
 
+    def cos_object : Cos::Base
+      Cos::Name.new("Pattern")
+    end
+
     def number_of_components : Int32
       @underlying_color_space.try(&.number_of_components) || 0
     end

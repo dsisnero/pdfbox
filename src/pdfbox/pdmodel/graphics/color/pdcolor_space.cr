@@ -7,6 +7,9 @@ module Pdfbox::Pdmodel::Graphics::Color
     # Converts color components to RGB
     abstract def to_rgb(components : Array(Float32)) : Array(Float32)
 
+    # Returns the COS representation of this color space.
+    abstract def cos_object : Cos::Base
+
     # Returns the initial color for this color space (all zeros).
     def initial_color : PDColor
       components = Array(Float32).new(number_of_components, 0.0_f32)
@@ -35,6 +38,8 @@ module Pdfbox::Pdmodel::Graphics::Color
               PDLab.new(cos_base)
             when "ICCBased"
               PDICCBased.new(cos_base)
+            when "Indexed"
+              PDIndexed.new(cos_base)
             when "CalGray", "CalRGB"
               PDDeviceRGB::INSTANCE # Simplified fallback
             else
