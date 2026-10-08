@@ -884,6 +884,75 @@ module Pdfbox::Pdmodel
       DocumentNameDictionary.new(names_dict, self)
     end
 
+    # Resolves a named destination to a page destination via the /Names /Dests
+    # name tree, falling back to the catalog /Dests dictionary.
+    # Java PDDocumentCatalog#findNamedDestinationPage.
+    def find_named_destination_page(named_dest : Interactive::DocumentNavigation::Destination::PDNamedDestination) : Interactive::DocumentNavigation::Destination::PDPageDestination?
+      name = named_dest.named_destination
+      return nil unless name
+
+      names_dict = @cos_dict[Cos::Name.new("Names")]?
+      names_dict = names_dict.object if names_dict.is_a?(Cos::Object)
+      if names_dict.is_a?(Cos::Dictionary)
+        dests_tree_dict = names_dict[Cos::Name.new("Dests")]?
+        dests_tree_dict = dests_tree_dict.object if dests_tree_dict.is_a?(Cos::Object)
+        if dests_tree_dict.is_a?(Cos::Dictionary)
+          if result = find_page_destination_in_tree(dests_tree_dict, name)
+            return result
+          end
+        end
+      end
+
+      dests_dict = @cos_dict[Cos::Name.new("Dests")]?
+      dests_dict = dests_dict.object if dests_dict.is_a?(Cos::Object)
+      if dests_dict.is_a?(Cos::Dictionary)
+        entry = dests_dict[Cos::Name.new(name)]?
+        entry = entry.object if entry.is_a?(Cos::Object)
+        if entry
+          return Interactive::DocumentNavigation::Destination::PDDestination
+            .create(entry)
+            .as?(Interactive::DocumentNavigation::Destination::PDPageDestination)
+        end
+      end
+
+      nil
+    end
+
+    # Recursively walks a /Names /Dests name tree (Names arrays or Kids) for a
+    # named page destination.
+    private def find_page_destination_in_tree(node : Cos::Dictionary, name : String) : Interactive::DocumentNavigation::Destination::PDPageDestination?
+      names = node[Cos::Name::NAMES]?
+      names = names.object if names.is_a?(Cos::Object)
+      if names.is_a?(Cos::Array)
+        i = 0
+        while i + 1 < names.size
+          key = names[i]
+          if key.is_a?(Cos::String) && key.value == name
+            value = names[i + 1]
+            value = value.object if value.is_a?(Cos::Object)
+            return Interactive::DocumentNavigation::Destination::PDDestination
+              .create(value)
+              .as?(Interactive::DocumentNavigation::Destination::PDPageDestination)
+          end
+          i += 2
+        end
+      end
+
+      kids = node[Cos::Name.new("Kids")]?
+      kids = kids.object if kids.is_a?(Cos::Object)
+      if kids.is_a?(Cos::Array)
+        kids.items.each do |kid|
+          kid = kid.object if kid.is_a?(Cos::Object)
+          next unless kid.is_a?(Cos::Dictionary)
+          if result = find_page_destination_in_tree(kid, name)
+            return result
+          end
+        end
+      end
+
+      nil
+    end
+
     def acro_form : Interactive::Form::PDAcroForm?
       form_dict = @cos_dict[Cos::Name.new("AcroForm")]
       form_dict = form_dict.object if form_dict.is_a?(Cos::Object)
