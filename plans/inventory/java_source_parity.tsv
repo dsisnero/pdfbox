@@ -4532,7 +4532,7 @@ pdfbox/src/main/java/org/apache/pdfbox/cos/COSStream.java::method::COSStream.get
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSStream.java::method::COSStream.getLength	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSStream.java::method::COSStream.getStreamCache	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSStream.java::method::COSStream.hasData	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSStream.java::method::COSStream.toTextString	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSStream.java::method::COSStream.toTextString	ported	src/pdfbox/cos.cr	decodes stream data as PDF text string
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSStream.java::method::COSStream.write	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSString.java::class::COSString	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSString.java::const::FORCE_PARSING	missing	-	baseline
@@ -10494,7 +10494,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDVariableText.j
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDVariableText.java::method::PDVariableText.getDefaultAppearanceString	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDVariableText.java::method::PDVariableText.getDefaultStyleString	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDVariableText.java::method::PDVariableText.getQ	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDVariableText.java::method::PDVariableText.getRichTextValue	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDVariableText.java::method::PDVariableText.getRichTextValue	ported	src/pdfbox/pdmodel/interactive/form/pdvariable_text.cr	uses COSStream#to_text_string
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDVariableText.java::method::PDVariableText.getStringOrStream	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDVariableText.java::method::PDVariableText.setDefaultAppearance	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDVariableText.java::method::PDVariableText.setDefaultStyleString	missing	-	baseline

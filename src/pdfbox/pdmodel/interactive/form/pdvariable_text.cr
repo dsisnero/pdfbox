@@ -93,9 +93,7 @@ module Pdfbox::Pdmodel::Interactive::Form
       when Cos::String
         base.value
       when Cos::Stream
-        # TODO: toTextString parity
-        io = base.create_input_stream
-        io.gets_to_end
+        base.to_text_string
       else
         ""
       end

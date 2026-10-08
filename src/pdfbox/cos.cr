@@ -1343,6 +1343,14 @@ module Pdfbox::Cos
       ::IO::Memory.new(decode_filters_with_stop(@data, self[Name::FILTER], stop_filters))
     end
 
+    # Decodes the stream data as a PDF text string (UTF-16BE/PDFDocEncoding),
+    # returning "" when the stream cannot be read. Java COSStream#toTextString.
+    def to_text_string : ::String
+      Cos::String.new(create_input_stream.gets_to_end.to_slice).value
+    rescue
+      ""
+    end
+
     def create_raw_output_stream : ::IO
       StreamOutput.new(self, nil, false)
     end

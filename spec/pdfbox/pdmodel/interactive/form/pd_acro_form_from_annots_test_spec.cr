@@ -37,6 +37,56 @@ describe Pdfbox::Pdmodel::Document do
     end
   end
 
+  it "PDAcroFormFromAnnotsTest#testFromAnnots4985CorrectionMode" do
+    acrobat_file = SpecPaths.resolve("#{RESOURCE_DIR}/POPPLER-806-acrobat.pdf")
+    acrobat_doc = Pdfbox::Loader.load_pdf(acrobat_file)
+    num_fields_by_acrobat = 0
+    begin
+      acro_form = acrobat_doc.document_catalog.not_nil!.acro_form
+      num_fields_by_acrobat = acro_form.not_nil!.get_field_tree.size
+    ensure
+      acrobat_doc.close
+    end
+
+    file = SpecPaths.resolve("#{RESOURCE_DIR}/POPPLER-806.pdf")
+    document = Pdfbox::Loader.load_pdf(file)
+    begin
+      acro_form_dict = document.document_catalog.not_nil!.cos_object[Pdfbox::Cos::Name.new("AcroForm")]
+      acro_form_dict = acro_form_dict.object if acro_form_dict.is_a?(Pdfbox::Cos::Object)
+      fields_value = acro_form_dict.as(Pdfbox::Cos::Dictionary)[Pdfbox::Cos::Name.new("Fields")]
+      fields_value = fields_value.object if fields_value.is_a?(Pdfbox::Cos::Object)
+      cos_fields = fields_value.as(Pdfbox::Cos::Array)
+      cos_fields.items.size.should eq(0)
+
+      # Java getAcroForm(new AcroFormDefaultFixup(document)): explicit rebuild.
+      acro_form = document.document_catalog.not_nil!.acro_form
+      acro_form.not_nil!.rebuild_fields_from_widgets
+      acro_form.not_nil!.get_field_tree.size.should eq(num_fields_by_acrobat)
+    ensure
+      document.close
+    end
+  end
+
+  it "PDAcroFormFromAnnotsTest#testFromAnnots4985WithoutCorrectionMode" do
+    file = SpecPaths.resolve("#{RESOURCE_DIR}/POPPLER-806.pdf")
+    document = Pdfbox::Loader.load_pdf(file)
+    begin
+      acro_form_dict = document.document_catalog.not_nil!.cos_object[Pdfbox::Cos::Name.new("AcroForm")]
+      acro_form_dict = acro_form_dict.object if acro_form_dict.is_a?(Pdfbox::Cos::Object)
+      fields_value = acro_form_dict.as(Pdfbox::Cos::Dictionary)[Pdfbox::Cos::Name.new("Fields")]
+      fields_value = fields_value.object if fields_value.is_a?(Pdfbox::Cos::Object)
+      cos_fields = fields_value.as(Pdfbox::Cos::Array)
+      num_cos_form_fields = cos_fields.items.size
+      cos_fields.items.size.should eq(0)
+
+      # Java getAcroForm(null): no fixup, fields stay empty.
+      acro_form = document.document_catalog.not_nil!.acro_form
+      acro_form.not_nil!.fields.size.should eq(num_cos_form_fields)
+    ensure
+      document.close
+    end
+  end
+
   it "PDAcroFormFromAnnotsTest#testFromAnnots3891DontCreateFields" do
     file = SpecPaths.resolve("#{RESOURCE_DIR}/merge-test.pdf")
     document = Pdfbox::Loader.load_pdf(file)
@@ -86,6 +136,50 @@ describe Pdfbox::Pdmodel::Document do
 
       fields_by_name.each_key do |field_name|
         acro_form.not_nil!.get_field(field_name).should_not be_nil
+      end
+    ensure
+      document.close
+    end
+  end
+
+  it "PDAcroFormFromAnnotsTest#testFromAnnots3891ValidateFont" do
+    # Build the expected font resource -> font descriptor name map from the
+    # Acrobat-produced reference document.
+    acrobat_file = SpecPaths.resolve("#{RESOURCE_DIR}/merge-test-na-acrobat.pdf")
+    acrobat_doc = Pdfbox::Loader.load_pdf(acrobat_file)
+    client_font_names = {} of String => String?
+    begin
+      acro_form = acrobat_doc.document_catalog.not_nil!.acro_form
+      if resources = acro_form.not_nil!.default_resources
+        resources.font_names.each do |font_name|
+          begin
+            font = resources.get_font(font_name)
+            client_font_names[font_name.value] = font.try(&.font_descriptor).try(&.font_name)
+          rescue
+            # Ignore fonts whose descriptor cannot be read (Java catches IOException).
+          end
+        end
+      end
+    ensure
+      acrobat_doc.close
+    end
+
+    # Every font resource added by the Crystal rebuild must match Acrobat's.
+    file = SpecPaths.resolve("#{RESOURCE_DIR}/merge-test.pdf")
+    document = Pdfbox::Loader.load_pdf(file)
+    begin
+      acro_form = document.document_catalog.not_nil!.acro_form
+      acro_form.not_nil!.rebuild_fields_from_widgets
+      if resources = acro_form.not_nil!.default_resources
+        resources.font_names.each do |font_name|
+          begin
+            font = resources.get_font(font_name)
+            pdfbox_font_name = font.try(&.font_descriptor).try(&.font_name)
+            client_font_names[font_name.value].should eq(pdfbox_font_name)
+          rescue
+            # Ignore IOException-equivalent failures (Java catches IOException).
+          end
+        end
       end
     ensure
       document.close

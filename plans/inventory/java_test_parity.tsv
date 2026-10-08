@@ -274,8 +274,8 @@ fontbox/src/test/java/org/apache/fontbox/ttf/TTFSubsetterTest.java::method::TTFS
 fontbox/src/test/java/org/apache/fontbox/ttf/TTFSubsetterTest.java::method::TTFSubsetterTest.testPDFBox5728	ported	spec/fontbox/ttf/ttf_subsetter_spec.cr	stale inventory; covered by existing spec
 fontbox/src/test/java/org/apache/fontbox/ttf/TTFSubsetterTest.java::method::TTFSubsetterTest.testPDFBox6015	ported	spec/fontbox/ttf/ttf_subsetter_spec.cr	stale inventory; covered by existing spec
 fontbox/src/test/java/org/apache/fontbox/ttf/TestCMapSubtable.java::class::TestCMapSubtable	partial	-	CMap subtable parity not yet covered in Crystal
-fontbox/src/test/java/org/apache/fontbox/ttf/TestCMapSubtable.java::method::TestCMapSubtable.testPDFBox5328	partial	-	CMap subtable parity not yet covered in Crystal
-fontbox/src/test/java/org/apache/fontbox/ttf/TestCMapSubtable.java::method::TestCMapSubtable.testVerticalSubstitution	partial	-	CMap subtable parity not yet covered in Crystal
+fontbox/src/test/java/org/apache/fontbox/ttf/TestCMapSubtable.java::method::TestCMapSubtable.testPDFBox5328	ported	spec/fontbox/ttf/cmap_table_spec.cr	ported (Java source of truth)
+fontbox/src/test/java/org/apache/fontbox/ttf/TestCMapSubtable.java::method::TestCMapSubtable.testVerticalSubstitution	ported	spec/fontbox/ttf/cmap_table_spec.cr	ported (Java source of truth)
 fontbox/src/test/java/org/apache/fontbox/ttf/TestTTFParser.java::class::TestTTFParser	ported	spec/fontbox/ttf/ttf_parser_spec.cr	stale inventory; covered by existing spec
 fontbox/src/test/java/org/apache/fontbox/ttf/TestTTFParser.java::method::TestTTFParser.testPostTable	ported	spec/fontbox/ttf/ttf_parser_spec.cr	stale inventory; covered by existing spec
 fontbox/src/test/java/org/apache/fontbox/ttf/TestTTFParser.java::method::TestTTFParser.testUTCDate	ported	spec/fontbox/ttf/ttf_parser_spec.cr	stale inventory; covered by existing spec
