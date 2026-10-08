@@ -2,7 +2,7 @@
 # small image directly within the content stream.
 # Port of Apache PDFBox PDInlineImage (model-level surface).
 module Pdfbox::Pdmodel::Graphics::Image
-  class PDInlineImage
+  class PDInlineImage < PDImage
     @parameters : Pdfbox::Cos::Dictionary
     @resources : Pdfbox::Pdmodel::PDResources?
     @raw_data : Bytes
@@ -40,8 +40,8 @@ module Pdfbox::Pdmodel::Graphics::Image
       end
     end
 
-    def bits_per_component=(value : Int32) : Nil
-      @parameters.set_int("BPC", value)
+    def bits_per_component=(bits_per_component : Int32) : Nil
+      @parameters.set_int("BPC", bits_per_component)
     end
 
     def color_space : Pdfbox::Pdmodel::Graphics::Color::PDColorSpace?
@@ -68,8 +68,8 @@ module Pdfbox::Pdmodel::Graphics::Image
       h.to_i32
     end
 
-    def height=(value : Int32) : Nil
-      @parameters.set_int("H", value)
+    def height=(height : Int32) : Nil
+      @parameters.set_int("H", height)
     end
 
     def width : Int32
@@ -78,8 +78,8 @@ module Pdfbox::Pdmodel::Graphics::Image
       w.to_i32
     end
 
-    def width=(value : Int32) : Nil
-      @parameters.set_int("W", value)
+    def width=(width : Int32) : Nil
+      @parameters.set_int("W", width)
     end
 
     def interpolate? : Bool
@@ -128,8 +128,19 @@ module Pdfbox::Pdmodel::Graphics::Image
       im.is_a?(Pdfbox::Cos::Boolean) && im.value
     end
 
-    def stencil=(value : Bool) : Nil
-      @parameters.set_boolean("IM", value)
+    def stencil=(is_stencil : Bool) : Nil
+      @parameters.set_boolean("IM", is_stencil)
+    end
+
+    # Returns the decoded image data as an input stream.
+    def create_input_stream : ::IO
+      ::IO::Memory.new(@decoded_data)
+    end
+
+    def create_input_stream(stop_filters : Array(String)) : ::IO
+      stop_filters # unused: inline images keep their raw data
+
+      create_input_stream
     end
 
     def data : Bytes

@@ -46,6 +46,25 @@ module Pdfbox::Contentstream
       @page
     end
 
+    # The BI (inline image) operator carries its parameters and data on the
+    # operator; build a PDInlineImage and hand it to drawImage.
+    # Java contentstream/operator/graphics/BeginInlineImage.
+    def process_operator(operator : ContentStream::Operator, arguments : Array(Cos::Base)) : Nil
+      if operator.name == "BI"
+        process_inline_image(operator)
+        return
+      end
+      super
+    end
+
+    private def process_inline_image(operator : ContentStream::Operator) : Nil
+      parameters = operator.image_parameters
+      data = operator.image_data
+      return unless parameters && data
+
+      draw_image(Pdmodel::Graphics::Image::PDInlineImage.new(parameters, data))
+    end
+
     # Returns the current graphics state.
     def graphics_state : Pdmodel::Graphics::State::PDGraphicsState
       @graphics_state_stack.last || raise "Graphics state stack empty"

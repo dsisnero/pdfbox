@@ -20,8 +20,8 @@ module Pdfbox::Pdmodel::Graphics::Image
     # Set the number of bits per component.
     abstract def bits_per_component=(bits_per_component : Int32) : Nil
 
-    # Returns the image's color space.
-    abstract def color_space : Pdfbox::Pdmodel::Graphics::Color::PDColorSpace
+    # Returns the image's color space, or nil if it cannot be determined.
+    abstract def color_space : Pdfbox::Pdmodel::Graphics::Color::PDColorSpace?
 
     # Sets the color space for this image.
     abstract def color_space=(color_space : Pdfbox::Pdmodel::Graphics::Color::PDColorSpace) : Nil
@@ -43,8 +43,8 @@ module Pdfbox::Pdmodel::Graphics::Image
     # Sets the decode array.
     abstract def decode=(decode : Pdfbox::Cos::Array) : Nil
 
-    # Returns the decode array.
-    abstract def decode : Pdfbox::Cos::Array
+    # Returns the decode array, or nil if none is set.
+    abstract def decode : Pdfbox::Cos::Array?
 
     # Returns true if the image should be interpolated when rendered.
     abstract def interpolate? : Bool

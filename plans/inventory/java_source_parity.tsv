@@ -3510,9 +3510,9 @@ pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetStrokingD
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/AppendRectangleToPath.java::class::AppendRectangleToPath	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/AppendRectangleToPath.java::method::AppendRectangleToPath.getName	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/AppendRectangleToPath.java::method::AppendRectangleToPath.process	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/BeginInlineImage.java::class::BeginInlineImage	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/BeginInlineImage.java::method::BeginInlineImage.getName	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/BeginInlineImage.java::method::BeginInlineImage.process	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/BeginInlineImage.java::class::BeginInlineImage	ported	src/pdfbox/contentstream/pdf_graphics_stream_engine.cr	baseline
+pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/BeginInlineImage.java::method::BeginInlineImage.getName	ported	src/pdfbox/contentstream/pdf_graphics_stream_engine.cr	baseline
+pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/BeginInlineImage.java::method::BeginInlineImage.process	ported	src/pdfbox/contentstream/pdf_graphics_stream_engine.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/ClipEvenOddRule.java::class::ClipEvenOddRule	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/ClipEvenOddRule.java::method::ClipEvenOddRule.getName	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/ClipEvenOddRule.java::method::ClipEvenOddRule.process	missing	-	baseline
@@ -8384,7 +8384,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObject.jav
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObject.java::method::PDImageXObject.setStencil	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObject.java::method::PDImageXObject.setStructParent	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObject.java::method::PDImageXObject.setWidth	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDInlineImage.java::class::PDInlineImage	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDInlineImage.java::class::PDInlineImage	ported	src/pdfbox/pdmodel/graphics/image/pd_inline_image.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDInlineImage.java::method::PDInlineImage.createColorSpace	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDInlineImage.java::method::PDInlineImage.createInputStream	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDInlineImage.java::method::PDInlineImage.getBitsPerComponent	missing	-	baseline
