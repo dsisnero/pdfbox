@@ -98,6 +98,13 @@ module Pdfbox::Pdmodel
       add_resource("Shading", shading.cos_object, "sh")
     end
 
+    # Adds a property list to the resources. Java PDResources#add(PDPropertyList):
+    # optional content groups use prefix "oc", other property lists "Prop".
+    def add(properties : DocumentInterchange::MarkedContent::PDPropertyList) : Pdfbox::Cos::Name
+      prefix = properties.is_a?(Graphics::OptionalContent::PDOptionalContentGroup) ? "oc" : "Prop"
+      add_resource("Properties", properties.cos_object, prefix)
+    end
+
     def put(name : Pdfbox::Cos::Name, state : Graphics::State::PDExtendedGraphicsState) : Graphics::State::PDExtendedGraphicsState
       subdictionary("ExtGState")[name] = state.cos_object
       state

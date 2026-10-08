@@ -5332,7 +5332,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::con
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.addComment	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.addRect	ported	src/pdfbox/pdmodel/page_content_stream.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.applyGSUBRules	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.beginMarkedContent	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.beginMarkedContent	ported	src/pdfbox/pdmodel/page_content_stream.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.beginText	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.clip	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.clipEvenOdd	missing	-	baseline
@@ -5347,7 +5347,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::met
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.drawForm	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.drawImage	ported	src/pdfbox/pdmodel/page_content_stream.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.encodeForGsub	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.endMarkedContent	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.endMarkedContent	ported	src/pdfbox/pdmodel/page_content_stream.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.endText	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.fill	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.fillAndStroke	missing	-	baseline
@@ -8470,7 +8470,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/SampledImageReader
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/SampledImageReader.java::method::SampledImageReader.getRawRaster	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/SampledImageReader.java::method::SampledImageReader.getStencilImage	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/SampledImageReader.java::method::SampledImageReader.readRasterFromAny	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/optionalcontent/PDOptionalContentGroup.java::class::PDOptionalContentGroup	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/optionalcontent/PDOptionalContentGroup.java::class::PDOptionalContentGroup	ported	src/pdfbox/pdmodel/graphics/optional_content/pd_optional_content_group.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/optionalcontent/PDOptionalContentGroup.java::enum::RenderState	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/optionalcontent/PDOptionalContentGroup.java::method::PDOptionalContentGroup.getName	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/optionalcontent/PDOptionalContentGroup.java::method::PDOptionalContentGroup.getRenderState	missing	-	baseline

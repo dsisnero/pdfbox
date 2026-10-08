@@ -49,6 +49,41 @@ module Pdfbox::Pdmodel
       write_operator(MOVE_TEXT)
     end
 
+    # Begin a marked content sequence without properties (BMC).
+    # Java PDAbstractContentStream#beginMarkedContent(COSName).
+    def begin_marked_content(tag : Cos::Name) : Nil
+      @buffer << '/' << tag.value << ' ' << BEGIN_MARKED_CONTENT << '\n'
+    end
+
+    # Begin a marked content sequence with an MCID (BDC).
+    # Java PDAbstractContentStream#beginMarkedContent(COSName, int).
+    def begin_marked_content(tag : Cos::Name, mcid : Int32) : Nil
+      raise ArgumentError.new("mcid should not be negative") if mcid < 0
+      @buffer << '/' << tag.value << " <</MCID " << mcid << ">> " << BEGIN_MARKED_CONTENT_SEQ << '\n'
+    end
+
+    # Begin a marked content sequence referencing a property list (BDC).
+    # Java PDAbstractContentStream#beginMarkedContent(COSName, PDPropertyList).
+    def begin_marked_content(tag : Cos::Name, property_list : DocumentInterchange::MarkedContent::PDPropertyList) : Nil
+      @buffer << '/' << tag.value << ' '
+
+      dict = property_list.cos_object
+      mcid = dict.get_int(Cos::Name.new("MCID"), -1_i64)
+      if mcid > -1 && dict.entries.size == 1
+        # PDFBOX-5890: simplified notation when only an MCID is present.
+        @buffer << "<</MCID " << mcid << ">> " << BEGIN_MARKED_CONTENT_SEQ << '\n'
+      else
+        resource_name = add_property_list_to_resources(property_list)
+        @buffer << '/' << resource_name << ' ' << BEGIN_MARKED_CONTENT_SEQ << '\n'
+      end
+    end
+
+    # End the current marked content sequence (EMC).
+    # Java PDAbstractContentStream#endMarkedContent.
+    def end_marked_content : Nil
+      write_operator(END_MARKED_CONTENT)
+    end
+
     def set_font(font : Font::PDFont, font_size : Number) : Nil
       add_font_to_resources(font)
       @document.register_font_for_save(font)
@@ -522,6 +557,14 @@ module Pdfbox::Pdmodel
       shadings = ensure_resource_subdictionary("Shading")
       resource_name = "sh#{shadings.size + 1}"
       shadings[Cos::Name.new(resource_name)] = shading.cos_object
+      resource_name
+    end
+
+    private def add_property_list_to_resources(property_list : DocumentInterchange::MarkedContent::PDPropertyList) : String
+      properties = ensure_resource_subdictionary("Properties")
+      prefix = property_list.is_a?(Graphics::OptionalContent::PDOptionalContentGroup) ? "oc" : "Prop"
+      resource_name = "#{prefix}#{properties.size + 1}"
+      properties[Cos::Name.new(resource_name)] = property_list.cos_object
       resource_name
     end
 

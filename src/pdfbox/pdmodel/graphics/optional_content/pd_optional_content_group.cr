@@ -1,25 +1,23 @@
+require "../../document_interchange/marked_content/pd_property_list"
+
 module Pdfbox::Pdmodel::Graphics::OptionalContent
-  class PDOptionalContentGroup
+  # Optional content group (Java PDOptionalContentGroup extends PDPropertyList).
+  class PDOptionalContentGroup < Pdfbox::Pdmodel::DocumentInterchange::MarkedContent::PDPropertyList
     TYPE = "OCG"
 
-    @dict : Pdfbox::Cos::Dictionary
-
     def initialize(name : String)
-      @dict = Pdfbox::Cos::Dictionary.new
+      super(Pdfbox::Cos::Dictionary.new)
       @dict.set_name("Type", TYPE)
       self.name = name
     end
 
-    def initialize(@dict : Pdfbox::Cos::Dictionary)
-      type = @dict[Pdfbox::Cos::Name.new("Type")]
+    def initialize(dict : Pdfbox::Cos::Dictionary)
+      type = dict[Pdfbox::Cos::Name.new("Type")]
       type_name = type.as?(Pdfbox::Cos::Name).try(&.value)
       if type_name != TYPE
         raise ArgumentError.new("Provided dictionary is not of type '/#{TYPE}'")
       end
-    end
-
-    def cos_object : Pdfbox::Cos::Dictionary
-      @dict
+      super(dict)
     end
 
     def name : String?
