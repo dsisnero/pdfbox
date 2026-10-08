@@ -186,9 +186,10 @@ module Pdfbox::Pdmodel
       write_operator(LINE_TO)
     end
 
-    def shading_fill(_shading : Graphics::Shading::PDShadingType1) : Nil
+    def shading_fill(shading : Graphics::Shading::PDShading) : Nil
       raise_if_in_text_mode("shadingFill is not allowed within a text block.")
-      write_operator(SHADING_FILL)
+      resource_name = add_shading_to_resources(shading)
+      @buffer << '/' << resource_name << ' ' << SHADING_FILL << '\n'
     end
 
     def stroke : Nil
@@ -477,6 +478,13 @@ module Pdfbox::Pdmodel
       xobjects = ensure_resource_subdictionary("XObject")
       resource_name = "Fm#{xobjects.size + 1}"
       xobjects[Cos::Name.new(resource_name)] = form.cos_object
+      resource_name
+    end
+
+    private def add_shading_to_resources(shading : Graphics::Shading::PDShading) : String
+      shadings = ensure_resource_subdictionary("Shading")
+      resource_name = "sh#{shadings.size + 1}"
+      shadings[Cos::Name.new(resource_name)] = shading.cos_object
       resource_name
     end
 

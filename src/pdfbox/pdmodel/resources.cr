@@ -85,6 +85,19 @@ module Pdfbox::Pdmodel
       add_resource("Pattern", pattern.cos_object, prefix)
     end
 
+    # Returns the shading resource, or nil. Java PDResources#getShading.
+    def shading(name : Pdfbox::Cos::Name) : Graphics::Shading::PDShading?
+      base = resource_entry("Shading", name)
+      return unless base
+      dict = base.as?(Pdfbox::Cos::Dictionary)
+      dict ? Graphics::Shading::PDShading.create(dict) : nil
+    end
+
+    # Adds a shading to the resources (name prefix "sh"). Java PDResources#add(PDShading).
+    def add(shading : Graphics::Shading::PDShading) : Pdfbox::Cos::Name
+      add_resource("Shading", shading.cos_object, "sh")
+    end
+
     def put(name : Pdfbox::Cos::Name, state : Graphics::State::PDExtendedGraphicsState) : Graphics::State::PDExtendedGraphicsState
       subdictionary("ExtGState")[name] = state.cos_object
       state
