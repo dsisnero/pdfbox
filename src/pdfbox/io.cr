@@ -18,6 +18,18 @@ module Pdfbox::IO
       total
     end
 
+    # Read up to buffer.size bytes into buffer. Returns the number of bytes
+    # read (0 when EOD is reached immediately). Java IOUtils#populateBuffer.
+    def self.populate_buffer(input : ::IO, buffer : Bytes) : Int64
+      remaining = buffer.size
+      while remaining > 0
+        buffer_read = input.read(buffer[buffer.size - remaining, remaining])
+        break if buffer_read <= 0
+        remaining -= buffer_read
+      end
+      (buffer.size - remaining).to_i64
+    end
+
     # Read all bytes from an IO
     def self.to_byte_array(io : ::IO) : Bytes
       io.rewind if io.responds_to?(:rewind)
@@ -816,6 +828,187 @@ module Pdfbox::IO
       tmp_bytes = @buffer_bytes[first]
       @buffer_bytes[first] = @buffer_bytes[second]
       @buffer_bytes[second] = tmp_bytes
+    end
+  end
+
+  # Describes where a ScratchFile stores its data. Port of the observable subset
+  # of org.apache.pdfbox.io.MemoryUsageSetting used by the test suite.
+  class MemoryUsageSetting
+    @main_memory_only : Bool
+    @temp_file_only : Bool
+    @max_main_memory : Int64
+    @max_storage_memory : Int64
+
+    private def initialize(@main_memory_only : Bool, @temp_file_only : Bool,
+                           @max_main_memory : Int64, @max_storage_memory : Int64)
+    end
+
+    # Java MemoryUsageSetting#setupMainMemoryOnly.
+    def self.setup_main_memory_only : MemoryUsageSetting
+      new(true, false, -1_i64, -1_i64)
+    end
+
+    # Java MemoryUsageSetting#setupTempFileOnly.
+    def self.setup_temp_file_only : MemoryUsageSetting
+      new(false, true, 0_i64, -1_i64)
+    end
+
+    def main_memory_only? : Bool
+      @main_memory_only
+    end
+
+    def temp_file_only? : Bool
+      @temp_file_only
+    end
+
+    def max_main_memory : Int64
+      @max_main_memory
+    end
+
+    def max_storage_memory : Int64
+      @max_storage_memory
+    end
+  end
+
+  # Manages a set of scratch buffers that live in memory or in a temp file.
+  # Port of org.apache.pdfbox.io.ScratchFile (page packing is replaced by a
+  # contiguous storage per buffer, which preserves the observable behavior).
+  class ScratchFile
+    PAGE_SIZE = 4096
+
+    def initialize(@setting : MemoryUsageSetting)
+      @buffers = [] of ScratchFileBuffer
+      @temp_files = [] of ::File
+      @closed = false
+    end
+
+    def create_buffer : ScratchFileBuffer
+      raise ::IO::Error.new("ScratchFile already closed") if @closed
+      buffer = ScratchFileBuffer.new(self)
+      @buffers << buffer
+      buffer
+    end
+
+    def close : Nil
+      return if @closed
+      # Copy to avoid mutation while each buffer removes itself.
+      @buffers.dup.each(&.close_from_scratch_file)
+      @temp_files.each { |file| file.close rescue nil }
+      @closed = true
+    end
+
+    def closed? : Bool
+      @closed
+    end
+
+    # Allocate backing storage for a new buffer.
+    protected def create_storage : ::IO
+      if @setting.temp_file_only?
+        file = ::File.tempfile("pdfbox-scratch")
+        @temp_files << file
+        file
+      else
+        ::IO::Memory.new
+      end
+    end
+
+    protected def remove_buffer(buffer : ScratchFileBuffer) : Nil
+      @buffers.delete(buffer)
+    end
+  end
+
+  # A random-access read/write buffer backed by a ScratchFile. Port of
+  # org.apache.pdfbox.io.ScratchFileBuffer's observable behavior.
+  class ScratchFileBuffer < RandomAccessRead
+    @storage : ::IO
+    @size : Int64
+
+    def initialize(scratch_file : ScratchFile)
+      @scratch_file = scratch_file
+      @storage = scratch_file.create_storage
+      @size = 0_i64
+    end
+
+    def position : Int64
+      check_closed
+      @storage.pos.to_i64
+    end
+
+    def length : Int64
+      check_closed
+      @size
+    end
+
+    def seek(position : Int64) : Nil
+      check_closed
+      if position > @size
+        raise ::IO::EOFError.new("seek to #{position} but size is #{@size}")
+      end
+      if position < 0
+        raise ::IO::Error.new("Negative seek offset: #{position}")
+      end
+      @storage.pos = position
+    end
+
+    def read : UInt8?
+      check_closed
+      return if eof?
+      @storage.read_byte
+    end
+
+    def read(buffer : Bytes) : Int32
+      check_closed
+      return -1 if eof?
+      max = Math.min(buffer.size.to_i64, @size - @storage.pos).to_i32
+      return -1 if max <= 0
+      @storage.read(buffer[0, max])
+    end
+
+    def peek : UInt8?
+      check_closed
+      return if eof?
+      @storage.peek.try(&.first?)
+    end
+
+    def eof? : Bool
+      check_closed
+      @storage.pos.to_i64 >= @size
+    end
+
+    def write(value : Int32) : Nil
+      check_closed
+      @storage.write_byte(value.to_u8)
+      @size = Math.max(@size, @storage.pos.to_i64)
+    end
+
+    def write(bytes : Bytes) : Nil
+      check_closed
+      @storage.write(bytes)
+      @size = Math.max(@size, @storage.pos.to_i64)
+    end
+
+    def write(bytes : Bytes, offset : Int32, length : Int32) : Nil
+      check_closed
+      raise "Invalid offset #{offset} or length #{length} for buffer size #{bytes.size}" if offset < 0 || length < 0 || offset + length > bytes.size
+      @storage.write(bytes[offset, length])
+      @size = Math.max(@size, @storage.pos.to_i64)
+    end
+
+    def create_view(start_position : Int64, stream_length : Int64) : RandomAccessRead
+      raise Pdfbox::Cos::UnsupportedOperationError.new("#{self.class.name}.create_view isn't supported.")
+    end
+
+    def close : Nil
+      close_from_scratch_file
+      @scratch_file.remove_buffer(self)
+    end
+
+    # Close the buffer without removing it from the owning ScratchFile. Used by
+    # ScratchFile#close while iterating the buffer list.
+    def close_from_scratch_file : Nil
+      return if closed?
+      @storage.close rescue nil
+      @closed = true
     end
   end
 end
