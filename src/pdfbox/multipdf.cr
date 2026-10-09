@@ -750,6 +750,7 @@ module Pdfbox::Multipdf
 
     @sources = [] of Pdmodel::Document
     @destination_file_name : String?
+    @destination_stream : ::IO?
     @acro_form_merge_mode : AcroFormMergeMode = AcroFormMergeMode::PDFBOX_LEGACY_MODE
 
     def destination_file_name : String?
@@ -758,6 +759,14 @@ module Pdfbox::Multipdf
 
     def destination_file_name=(value : String?) : String?
       @destination_file_name = value
+    end
+
+    def destination_stream : ::IO?
+      @destination_stream
+    end
+
+    def destination_stream=(value : ::IO?) : ::IO?
+      @destination_stream = value
     end
 
     def acro_form_merge_mode : AcroFormMergeMode
@@ -780,11 +789,16 @@ module Pdfbox::Multipdf
     # Merge all sources into the destination file (Java PDFMergerUtility#mergeDocuments).
     def merge_documents(destination_file : String? = nil) : Nil
       out_path = @destination_file_name || destination_file
-      raise ArgumentError.new("destination file name is not set") unless out_path
+      out_stream = @destination_stream
+      raise ArgumentError.new("destination file name is not set") unless out_path || out_stream
 
       destination = Pdmodel::Document.create
       @sources.each { |source| append_document(destination, source) }
-      destination.save(out_path)
+      if out_stream
+        destination.save(out_stream)
+      elsif out_path
+        destination.save(out_path)
+      end
       destination.close
     end
 
@@ -794,42 +808,442 @@ module Pdfbox::Multipdf
 
       cloner = PDFCloneUtility.new(destination)
       merge_information(destination, source, cloner)
-      source.pages.to_a.each do |page|
+
+      source_catalog = source.document_catalog
+      dest_catalog = destination.document_catalog
+      return unless source_catalog && dest_catalog
+
+      destination.set_version(source.version) if destination.version < source.version
+
+      merge_acro_forms(destination, source, cloner)
+      merge_threads(dest_catalog, source_catalog, cloner)
+      merge_names(dest_catalog, source_catalog, cloner)
+      merge_dests(dest_catalog, source_catalog, cloner)
+      merge_outline(dest_catalog, source_catalog, cloner)
+      merge_page_mode(dest_catalog, source_catalog)
+      merge_oc_properties(dest_catalog, source_catalog, cloner)
+      merge_pages_and_structure(destination, source, cloner)
+    end
+
+    private def merge_threads(dest_catalog : Pdmodel::DocumentCatalog, source_catalog : Pdmodel::DocumentCatalog,
+                              cloner : PDFCloneUtility) : Nil
+      src_threads = source_catalog.cos_object.get_dictionary_object(Cos::Name.new("Threads"))
+      return unless src_threads
+
+      cloned = cloner.clone_for_new_document(src_threads)
+      dest_threads = dest_catalog.cos_object.get_dictionary_object(Cos::Name.new("Threads"))
+      if dest_threads.nil?
+        dest_catalog.cos_object[Cos::Name.new("Threads")] = cloned || Cos::Null::INSTANCE
+      elsif cloned.is_a?(Cos::Array) && dest_threads.is_a?(Cos::Array)
+        cloned.items.each { |item| dest_threads.add(item) }
+      end
+    end
+
+    private def merge_names(dest_catalog : Pdmodel::DocumentCatalog, source_catalog : Pdmodel::DocumentCatalog,
+                            cloner : PDFCloneUtility) : Nil
+      source_names = source_catalog.names
+      if source_names
+        if dest_names = dest_catalog.names
+          cloner.clone_merge(source_names, dest_names)
+        else
+          cloned = cloner.clone_for_new_document(source_names.cos_object)
+          dest_catalog.cos_object[Cos::Name.new("Names")] = cloned || Cos::Null::INSTANCE
+        end
+      end
+      # Java: an /IDTree under /Names doesn't belong there.
+      if (dest_names = dest_catalog.names) && dest_names.cos_object.has_key?(Cos::Name::ID_TREE)
+        dest_names.cos_object.delete(Cos::Name::ID_TREE)
+      end
+    end
+
+    private def merge_dests(dest_catalog : Pdmodel::DocumentCatalog, source_catalog : Pdmodel::DocumentCatalog,
+                            cloner : PDFCloneUtility) : Nil
+      source_dests = source_catalog.dests
+      return unless source_dests
+
+      if dest_dests = dest_catalog.dests
+        cloner.clone_merge(source_dests, dest_dests)
+      else
+        cloned = cloner.clone_for_new_document(source_dests.cos_object)
+        dest_catalog.cos_object[Cos::Name.new("Dests")] = cloned || Cos::Null::INSTANCE
+      end
+    end
+
+    private def merge_outline(dest_catalog : Pdmodel::DocumentCatalog, source_catalog : Pdmodel::DocumentCatalog,
+                              cloner : PDFCloneUtility) : Nil
+      source_outline = source_catalog.document_outline
+      return unless source_outline
+
+      dest_outline = dest_catalog.document_outline
+      if dest_outline.nil? || dest_outline.first_child.nil?
+        cloned = cloner.clone_for_new_document(source_outline.cos_object)
+        return unless cloned
+
+        dest_catalog.document_outline = Pdmodel::DocumentOutline.new(cloned.as(Cos::Dictionary))
+      end
+    end
+
+    private def merge_page_mode(dest_catalog : Pdmodel::DocumentCatalog, source_catalog : Pdmodel::DocumentCatalog) : Nil
+      name = Cos::Name.new("PageMode")
+      return unless dest_catalog.cos_object.get_dictionary_object(name).nil?
+
+      if src_mode = source_catalog.cos_object.get_dictionary_object(name)
+        dest_catalog.cos_object[name] = src_mode
+      end
+    end
+
+    private def merge_oc_properties(dest_catalog : Pdmodel::DocumentCatalog, source_catalog : Pdmodel::DocumentCatalog,
+                                    cloner : PDFCloneUtility) : Nil
+      if dest_catalog.oc_properties.nil? && (source_ocp = source_catalog.oc_properties)
+        cloned = cloner.clone_for_new_document(source_ocp.cos_object)
+        dest_catalog.oc_properties = Pdmodel::Graphics::OptionalContent::PDOptionalContentProperties.new(cloned.as(Cos::Dictionary)) if cloned
+      end
+    end
+
+    # Clone source pages and merge the logical structure hierarchy.
+    # Java PDFMergerUtility#appendDocument (page loop + structure tree merge).
+    private def merge_pages_and_structure(destination : Pdmodel::Document, source : Pdmodel::Document,
+                                          cloner : PDFCloneUtility) : Nil
+      source_catalog = source.document_catalog
+      return unless source_catalog
+      dest_catalog = destination.document_catalog
+      return unless dest_catalog
+
+      merge_struct_tree = false
+      dest_parent_tree_next_key = -1
+      src_number_tree_as_map = {} of Int32 => Pdmodel::Common::PDParentTreeValue
+      dest_number_tree_as_map = {} of Int32 => Pdmodel::Common::PDParentTreeValue
+
+      src_struct_tree = source_catalog.structure_tree_root
+      dest_struct_tree = dest_catalog.structure_tree_root
+      if dest_struct_tree.nil? && src_struct_tree
+        # Create a dummy structure tree so the source tree is cloned.
+        dest_struct_tree = Pdmodel::DocumentInterchange::LogicalStructure::PDStructureTreeRoot.new
+        dest_catalog.structure_tree_root = dest_struct_tree
+        dest_struct_tree.parent_tree = new_parent_tree_node
+        # PDFBOX-4429: remove bogus StructParent(s) from the destination.
+        destination.pages.each do |page|
+          page.cos_object.try(&.delete(Cos::Name::STRUCT_PARENTS))
+          page.annotations.each { |annot| annot.cos_object.delete(Cos::Name::STRUCT_PARENT) }
+        end
+      end
+
+      if dest_struct_tree
+        dest_parent_tree = dest_struct_tree.parent_tree
+        dest_parent_tree_next_key = dest_struct_tree.parent_tree_next_key
+        if dest_parent_tree
+          dest_number_tree_as_map = PDFMergerUtility.get_number_tree_as_map(dest_parent_tree)
+          if dest_parent_tree_next_key < 0
+            dest_parent_tree_next_key = dest_number_tree_as_map.empty? ? 0 : dest_number_tree_as_map.keys.max + 1
+          end
+          if dest_parent_tree_next_key >= 0 && src_struct_tree
+            src_parent_tree = src_struct_tree.parent_tree
+            if src_parent_tree
+              src_number_tree_as_map = PDFMergerUtility.get_number_tree_as_map(src_parent_tree)
+              merge_struct_tree = true unless src_number_tree_as_map.empty?
+            end
+          end
+        end
+      end
+
+      obj_mapping = {} of UInt64 => Cos::Dictionary
+      source.pages.each do |page|
         page_dict = page.cos_object
         next unless page_dict
 
         cloned = cloner.clone_for_new_document(page_dict)
         next unless cloned
 
-        cloned_dict = cloned.as(Pdfbox::Cos::Dictionary)
-        # The clone carries the source /Parent; the destination tree sets it.
-        cloned_dict.delete(Pdfbox::Cos::Name.new("Parent"))
-        destination.add_page(Pdmodel::Page.new(cloned_dict))
-      end
-
-      merge_acro_forms(destination, source, cloner)
-
-      source_catalog = source.document_catalog
-      destination_catalog = destination.document_catalog
-      if source_catalog && destination_catalog
-        # Merge the optional content properties if the destination has none.
-        if destination_catalog.oc_properties.nil? && (source_ocp = source_catalog.oc_properties)
-          cloned_dict = cloner.clone_for_new_document(source_ocp.cos_object).as(Pdfbox::Cos::Dictionary)
-          destination_catalog.oc_properties = Pdmodel::Graphics::OptionalContent::PDOptionalContentProperties.new(cloned_dict)
+        new_page_dict = cloned.as(Cos::Dictionary)
+        new_page = Pdmodel::Page.new(new_page_dict)
+        unless merge_struct_tree
+          new_page_dict.delete(Cos::Name::STRUCT_PARENTS)
+          new_page.annotations.each { |annot| annot.cos_object.delete(Cos::Name::STRUCT_PARENT) }
         end
-
-        # Merge the named destinations (/Dests). Java cloneMerge / clone.
-        if source_dests = source_catalog.dests
-          if dest_dests = destination_catalog.dests
-            cloner.clone_merge(source_dests, dest_dests)
-          else
-            cloned = cloner.clone_for_new_document(source_dests.cos_object).as(Pdfbox::Cos::Dictionary)
-            destination_catalog.cos_object[Pdfbox::Cos::Name.new("Dests")] = cloned
+        if crop = page.crop_box
+          new_page.crop_box = Pdmodel::Rectangle.new(crop.lower_left_x, crop.lower_left_y, crop.upper_right_x, crop.upper_right_y)
+        end
+        if media = page.media_box
+          new_page.media_box = Pdmodel::Rectangle.new(media.lower_left_x, media.lower_left_y, media.upper_right_x, media.upper_right_y)
+        end
+        new_page.rotation = page.rotation
+        if resources = page.resources
+          cloned_resources = cloner.clone_for_new_document(resources.cos_object)
+          new_page.resources = cloned_resources ? Pdmodel::Resources.new(cloned_resources.as(Cos::Dictionary)) : Pdmodel::Resources.new
+        else
+          new_page.resources = Pdmodel::Resources.new
+        end
+        if merge_struct_tree
+          update_struct_parent_entries(new_page, dest_parent_tree_next_key)
+          obj_mapping[page_dict.object_id.to_u64] = new_page_dict
+          old_annotations = page.annotations
+          new_annotations = new_page.annotations
+          old_annotations.size.times do |index|
+            next if index >= new_annotations.size
+            obj_mapping[old_annotations.get(index).cos_object.object_id.to_u64] = new_annotations.get(index).cos_object
           end
         end
-
-        merge_open_action(destination_catalog, source_catalog, cloner)
+        destination.add_page(new_page)
       end
+
+      merge_open_action(dest_catalog, source_catalog, cloner)
+
+      return unless merge_struct_tree && src_struct_tree && dest_struct_tree
+
+      update_page_references(cloner, src_number_tree_as_map, obj_mapping)
+      max_src_key = -1
+      src_number_tree_as_map.each do |src_key, value|
+        max_src_key = Math.max(src_key, max_src_key)
+        cloned_value = cloner.clone_for_new_document(value.cos_object)
+        next unless cloned_value
+        dest_number_tree_as_map[dest_parent_tree_next_key + src_key] = Pdmodel::Common::PDParentTreeValue.new(cloned_value)
+      end
+      dest_parent_tree_next_key += max_src_key + 1
+      new_parent_tree = new_parent_tree_node
+      new_parent_tree.numbers = dest_number_tree_as_map
+      dest_struct_tree.parent_tree = new_parent_tree
+      dest_struct_tree.parent_tree_next_key = dest_parent_tree_next_key
+
+      merge_k_entries(cloner, src_struct_tree, dest_struct_tree)
+      merge_role_map(src_struct_tree, dest_struct_tree, cloner)
+      merge_id_tree(cloner, src_struct_tree, dest_struct_tree)
+      merge_mark_info(dest_catalog, source_catalog)
+      merge_language(dest_catalog, source_catalog)
+      merge_viewer_preferences(dest_catalog, source_catalog, cloner)
+    end
+
+    private def new_parent_tree_node : Pdmodel::Common::PDNumberTreeNode(Pdmodel::Common::PDParentTreeValue)
+      Pdmodel::Common::PDNumberTreeNode(Pdmodel::Common::PDParentTreeValue).new(
+        ->(base : Cos::Base) { Pdmodel::Common::PDParentTreeValue.new(base) }
+      )
+    end
+
+    private def update_struct_parent_entries(page : Pdmodel::Page, offset : Int32) : Nil
+      struct_parents = page.struct_parents
+      page.struct_parents = struct_parents + offset if struct_parents >= 0
+      annotations = page.annotations.to_a
+      annotations.each do |annot|
+        struct_parent = annot.struct_parent
+        annot.struct_parent = struct_parent + offset if struct_parent >= 0
+      end
+      page.annotations = annotations
+    end
+
+    private def update_page_references(cloner : PDFCloneUtility,
+                                       number_tree_as_map : Hash(Int32, Pdmodel::Common::PDParentTreeValue),
+                                       obj_mapping : Hash(UInt64, Cos::Dictionary)) : Nil
+      number_tree_as_map.each_value do |value|
+        base = value.cos_object
+        if base.is_a?(Cos::Array)
+          update_page_references(cloner, base, obj_mapping)
+        elsif base.is_a?(Cos::Dictionary)
+          update_page_references(cloner, base, obj_mapping)
+        end
+      end
+    end
+
+    private def update_page_references(cloner : PDFCloneUtility, entry : Cos::Dictionary,
+                                       obj_mapping : Hash(UInt64, Cos::Dictionary)) : Nil
+      if page_dict = entry.get_dictionary(Cos::Name::PG)
+        if mapped = obj_mapping[page_dict.object_id.to_u64]?
+          entry[Cos::Name::PG] = mapped
+        end
+      end
+      if obj_dict = entry.get_dictionary(Cos::Name::OBJ)
+        if mapped = obj_mapping[obj_dict.object_id.to_u64]?
+          entry[Cos::Name::OBJ] = mapped
+        else
+          cloned = cloner.clone_for_new_document(obj_dict)
+          entry[Cos::Name::OBJ] = cloned || Cos::Null::INSTANCE
+        end
+      end
+      k_entry = entry.get_dictionary_object(Cos::Name::K)
+      if k_entry.is_a?(Cos::Array)
+        update_page_references(cloner, k_entry, obj_mapping)
+      elsif k_entry.is_a?(Cos::Dictionary)
+        update_page_references(cloner, k_entry, obj_mapping)
+      end
+    end
+
+    private def update_page_references(cloner : PDFCloneUtility, entry : Cos::Array,
+                                       obj_mapping : Hash(UInt64, Cos::Dictionary)) : Nil
+      entry.items.each do |item|
+        item = item.object if item.is_a?(Cos::Object)
+        if item.is_a?(Cos::Array)
+          update_page_references(cloner, item, obj_mapping)
+        elsif item.is_a?(Cos::Dictionary)
+          update_page_references(cloner, item, obj_mapping)
+        end
+      end
+    end
+
+    private def merge_k_entries(cloner : PDFCloneUtility,
+                                src_struct_tree : Pdmodel::DocumentInterchange::LogicalStructure::PDStructureTreeRoot,
+                                dest_struct_tree : Pdmodel::DocumentInterchange::LogicalStructure::PDStructureTreeRoot) : Nil
+      src_k_array = Cos::Array.new
+      cloned_src = cloner.clone_for_new_document(src_struct_tree.k)
+      if cloned_src.is_a?(Cos::Array)
+        cloned_src.items.each { |item| src_k_array.add(item) }
+      elsif cloned_src.is_a?(Cos::Dictionary)
+        src_k_array.add(cloned_src)
+      end
+      return if src_k_array.empty?
+
+      dst_k_array = Cos::Array.new
+      dst_k_entry = dest_struct_tree.k
+      if dst_k_entry.is_a?(Cos::Array)
+        dst_k_entry.items.each { |item| dst_k_array.add(item) }
+      elsif dst_k_entry.is_a?(Cos::Dictionary)
+        dst_k_array.add(dst_k_entry)
+      end
+
+      if dst_k_array.size == 1
+        top = dst_k_array[0]?.as?(Cos::Dictionary)
+        if top && top.get_name_as_string(Cos::Name.new("S")) == "Document"
+          k_level_one = top.get_array(Cos::Name::K)
+          if k_level_one && has_only_documents_or_parts?(k_level_one)
+            src_k_array.items.each { |item| k_level_one.add(item) }
+            update_parent_entry(k_level_one, top, Cos::Name.new("Part"))
+            return
+          end
+        end
+      end
+
+      if dst_k_array.empty?
+        update_parent_entry(src_k_array, dest_struct_tree.cos_object, nil)
+        dest_struct_tree.k = src_k_array
+        return
+      end
+
+      src_k_array.items.each { |item| dst_k_array.add(item) }
+      k_level_zero = Cos::Dictionary.new
+      new_structure_type = has_only_documents_or_parts?(dst_k_array) ? Cos::Name.new("Part") : nil
+      update_parent_entry(dst_k_array, k_level_zero, new_structure_type)
+      k_level_zero[Cos::Name::K] = dst_k_array
+      k_level_zero[Cos::Name::P] = Cos::Object.new(dest_struct_tree.cos_object)
+      k_level_zero.set_name(Cos::Name.new("S"), "Document")
+      dest_struct_tree.k = k_level_zero
+    end
+
+    private def has_only_documents_or_parts?(k_array : Cos::Array) : Bool
+      k_array.items.all? do |item|
+        item = item.object if item.is_a?(Cos::Object)
+        dict = item.as?(Cos::Dictionary)
+        next false unless dict
+        s = dict.get_name_as_string(Cos::Name.new("S"))
+        s == "Document" || s == "Part"
+      end
+    end
+
+    private def update_parent_entry(k_array : Cos::Array, new_parent : Cos::Base, new_structure_type : Cos::Name?) : Nil
+      k_array.items.each do |item|
+        item = item.object if item.is_a?(Cos::Object)
+        dict = item.as?(Cos::Dictionary)
+        next unless dict
+        # Wrap the parent in an indirect reference so the /K <-> /P cycle is
+        # written as an object reference instead of recursing inline.
+        if new_parent.is_a?(Cos::Dictionary)
+          dict[Cos::Name::P] = Cos::Object.new(new_parent)
+        else
+          dict[Cos::Name::P] = new_parent
+        end
+        dict[Cos::Name::S] = new_structure_type if new_structure_type
+      end
+    end
+
+    private def merge_role_map(src_struct_tree : Pdmodel::DocumentInterchange::LogicalStructure::PDStructureTreeRoot,
+                               dest_struct_tree : Pdmodel::DocumentInterchange::LogicalStructure::PDStructureTreeRoot,
+                               cloner : PDFCloneUtility) : Nil
+      src_dict = src_struct_tree.cos_object.get_dictionary(Cos::Name::ROLE_MAP)
+      return unless src_dict
+
+      dest_dict = dest_struct_tree.cos_object.get_dictionary(Cos::Name::ROLE_MAP)
+      if dest_dict.nil?
+        cloned = cloner.clone_for_new_document(src_dict)
+        dest_struct_tree.cos_object[Cos::Name::ROLE_MAP] = cloned || Cos::Null::INSTANCE
+        return
+      end
+      src_dict.entries.each do |key, value|
+        dest_value = dest_dict.get_dictionary_object(key)
+        next if dest_value && dest_value == value
+        next if dest_dict.has_key?(key)
+        cloned = cloner.clone_for_new_document(value)
+        dest_dict[key] = cloned || Cos::Null::INSTANCE
+      end
+    end
+
+    private def merge_id_tree(cloner : PDFCloneUtility,
+                              src_struct_tree : Pdmodel::DocumentInterchange::LogicalStructure::PDStructureTreeRoot,
+                              dest_struct_tree : Pdmodel::DocumentInterchange::LogicalStructure::PDStructureTreeRoot) : Nil
+      src_id_tree = src_struct_tree.id_tree
+      return unless src_id_tree
+
+      dest_id_tree = dest_struct_tree.id_tree
+      dest_names = dest_id_tree ? PDFMergerUtility.get_id_tree_as_map(dest_id_tree) : {} of String => Pdmodel::DocumentInterchange::LogicalStructure::PDStructureElement
+      PDFMergerUtility.get_id_tree_as_map(src_id_tree).each do |key, value|
+        next if dest_names.has_key?(key)
+        cloned = cloner.clone_for_new_document(value.cos_object)
+        next unless cloned
+        dest_names[key] = Pdmodel::DocumentInterchange::LogicalStructure::PDStructureElement.new(cloned.as(Cos::Dictionary))
+      end
+      new_dest_id_tree = Pdmodel::Common::PDStructureElementNameTreeNode.new
+      new_dest_id_tree.names = dest_names
+      dest_struct_tree.id_tree = new_dest_id_tree
+    end
+
+    private def merge_mark_info(dest_catalog : Pdmodel::DocumentCatalog, source_catalog : Pdmodel::DocumentCatalog) : Nil
+      name = Cos::Name.new("MarkInfo")
+      dest_mark = dest_catalog.cos_object.get_dictionary(name) || Cos::Dictionary.new
+      src_mark = source_catalog.cos_object.get_dictionary(name) || Cos::Dictionary.new
+      dest_mark.set_boolean(Cos::Name.new("Marked"), true)
+      dest_mark.set_boolean(Cos::Name.new("Suspect"), dict_boolean(src_mark, "Suspect") || dict_boolean(dest_mark, "Suspect"))
+      dest_mark.set_boolean(Cos::Name.new("UserProperties"), dict_boolean(src_mark, "UserProperties") || dict_boolean(dest_mark, "UserProperties"))
+      dest_catalog.cos_object[name] = dest_mark
+    end
+
+    private def merge_language(dest_catalog : Pdmodel::DocumentCatalog, source_catalog : Pdmodel::DocumentCatalog) : Nil
+      return unless dest_catalog.cos_object.get_dictionary_object(Cos::Name::LANG).nil?
+
+      if src_lang = source_catalog.cos_object.get_dictionary_object(Cos::Name::LANG)
+        dest_catalog.cos_object[Cos::Name::LANG] = src_lang
+      end
+    end
+
+    private def merge_viewer_preferences(dest_catalog : Pdmodel::DocumentCatalog, source_catalog : Pdmodel::DocumentCatalog,
+                                         cloner : PDFCloneUtility) : Nil
+      name = Cos::Name.new("ViewerPreferences")
+      src_vp = source_catalog.cos_object.get_dictionary(name)
+      return unless src_vp
+
+      dest_vp = dest_catalog.cos_object.get_dictionary(name) || Cos::Dictionary.new
+      merge_into(src_vp, dest_vp, cloner, Set(Cos::Name).new)
+      {
+        "HideToolbar", "HideMenubar", "HideWindowUI",
+        "FitWindow", "CenterWindow", "DisplayDocTitle",
+      }.each do |flag|
+        flag_name = Cos::Name.new(flag)
+        if dict_boolean(src_vp, flag) || dict_boolean(dest_vp, flag)
+          dest_vp.set_boolean(flag_name, true)
+        end
+      end
+      dest_catalog.cos_object[name] = dest_vp
+    end
+
+    # Java PDFMergerUtility#mergeInto: copy entries not in `exclude` and not
+    # already present, deep-cloning values.
+    private def merge_into(src : Cos::Dictionary, dst : Cos::Dictionary, cloner : PDFCloneUtility,
+                           exclude : Set(Cos::Name)) : Nil
+      src.entries.each do |key, value|
+        next if exclude.includes?(key)
+        next if dst.has_key?(key)
+        cloned = cloner.clone_for_new_document(value)
+        dst[key] = cloned || Cos::Null::INSTANCE
+      end
+    end
+
+    private def dict_boolean(dict : Cos::Dictionary, key : String) : Bool
+      value = dict.get_dictionary_object(Cos::Name.new(key))
+      value.is_a?(Cos::Boolean) && value.value
     end
 
     # Merge simple and nested entries of the source document information into the

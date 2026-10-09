@@ -920,8 +920,12 @@ module Pdfbox::Pdmodel
     end
 
     # Set the document's structure tree root (Java PDDocumentCatalog#setStructureTreeRoot).
-    def structure_tree_root=(tree_root : DocumentInterchange::LogicalStructure::PDStructureTreeRoot) : DocumentInterchange::LogicalStructure::PDStructureTreeRoot
-      @cos_dict[Cos::Name.new("StructTreeRoot")] = tree_root.cos_object
+    def structure_tree_root=(tree_root : DocumentInterchange::LogicalStructure::PDStructureTreeRoot?) : DocumentInterchange::LogicalStructure::PDStructureTreeRoot?
+      if tree_root
+        @cos_dict[Cos::Name.new("StructTreeRoot")] = tree_root.cos_object
+      else
+        @cos_dict.delete(Cos::Name.new("StructTreeRoot"))
+      end
       tree_root
     end
 
@@ -1562,6 +1566,7 @@ module Pdfbox::Pdmodel
 
   # Document names dictionary (corresponds to PDDocumentNameDictionary in Apache PDFBox)
   class DocumentNameDictionary
+    include Pdfbox::Pdmodel::Common::COSObjectable
     Log = ::Log.for(self)
 
     @names_dict : Cos::Dictionary
@@ -1572,7 +1577,7 @@ module Pdfbox::Pdmodel
 
     # Get the underlying COS dictionary
     def cos_object : Cos::Dictionary
-      @cos_dict
+      @names_dict
     end
 
     # Get the destination output intent stream

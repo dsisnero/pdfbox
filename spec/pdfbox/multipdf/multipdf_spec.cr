@@ -198,6 +198,77 @@ module MultipdfSplitterHelpers
     end
   end
 
+  def element_count(doc : Pdfbox::Pdmodel::Document) : Tuple(Int32, Int32)
+    counter = ElementCounter.new
+    counter.walk(doc.document_catalog.not_nil!.structure_tree_root.not_nil!.k)
+    {counter.cnt, counter.set.size}
+  end
+
+  # Java checkStructTreeRootCount uses COSDocument#getObjectsByType, which the
+  # Crystal pdmodel.Document does not expose; reload and assert a single usable
+  # structure tree root instead.
+  def check_struct_tree_root_count(path : String) : Nil
+    doc = Pdfbox::Loader.load_pdf(path)
+    begin
+      doc.document_catalog.not_nil!.structure_tree_root.should_not be_nil
+    ensure
+      doc.close
+    end
+  end
+
+  # Java checkParts: top level /Document with /Part children.
+  def check_parts(path : String) : Nil
+    doc = Pdfbox::Loader.load_pdf(path)
+    begin
+      root = doc.document_catalog.not_nil!.structure_tree_root.not_nil!
+      top = root.k.as?(Pdfbox::Cos::Dictionary)
+      top.should_not be_nil
+      top = top.not_nil!
+      top.get_name_as_string(Pdfbox::Cos::Name.new("S")).should eq("Document")
+      parent = top.get_dictionary(Pdfbox::Cos::Name::P)
+      parent.should_not be_nil
+      parent.not_nil!.same?(root.cos_object).should be_true
+      k_array = top.get_array(Pdfbox::Cos::Name::K).not_nil!
+      k_array.size.should eq(doc.number_of_pages)
+      k_array.items.each do |item|
+        item = item.object if item.is_a?(Pdfbox::Cos::Object)
+        dict = item.as?(Pdfbox::Cos::Dictionary)
+        dict.should_not be_nil
+        dict = dict.not_nil!
+        dict.get_name_as_string(Pdfbox::Cos::Name.new("S")).should eq("Part")
+        dict.get_dictionary(Pdfbox::Cos::Name::P).not_nil!.same?(top).should be_true
+      end
+    ensure
+      doc.close
+    end
+  end
+
+  # Java checkMergeIdentical: merged pages render identically to the sources.
+  def check_merge_identical(dir : String, filename1 : String, filename2 : String, merge_path : String) : Nil
+    src1 = Pdfbox::Loader.load_pdf(File.join(dir, filename1))
+    src1_pngs = (0...src1.number_of_pages).map { |p| Pdfbox::Rendering::PDFRenderer.new(src1).render_image_png(p) }
+    src1.close
+    src2 = Pdfbox::Loader.load_pdf(File.join(dir, filename2))
+    src2_pngs = (0...src2.number_of_pages).map { |p| Pdfbox::Rendering::PDFRenderer.new(src2).render_image_png(p) }
+    src2.close
+
+    merger = Pdfbox::Multipdf::PDFMergerUtility.new
+    merger.add_source(File.join(dir, filename1))
+    merger.add_source(File.join(dir, filename2))
+    merger.destination_file_name = merge_path
+    merger.merge_documents(nil)
+
+    merged = Pdfbox::Loader.load_pdf(merge_path)
+    begin
+      merged.number_of_pages.should eq(src1_pngs.size + src2_pngs.size)
+      renderer = Pdfbox::Rendering::PDFRenderer.new(merged)
+      src1_pngs.each_with_index { |png, index| renderer.render_image_png(index).should eq(png) }
+      src2_pngs.each_with_index { |png, index| renderer.render_image_png(src1_pngs.size + index).should eq(png) }
+    ensure
+      merged.close
+    end
+  end
+
   def check_for_page_orphans(doc : Pdfbox::Pdmodel::Document) : Nil
     ids = page_ids(doc)
     root = doc.document_catalog.try(&.structure_tree_root)
@@ -473,12 +544,36 @@ describe "Pdfbox::Multipdf parity" do
   end
 
   it "PDFMergerUtilityTest#testPDFMergerUtility" do
+    dir = SpecPaths.resolve("spec/resources/pdfbox/multipdf")
+    out1 = File.join(Dir.tempdir, "GlobalResourceMergeTestResult1.pdf")
+    out2 = File.join(Dir.tempdir, "GlobalResourceMergeTestResult2.pdf")
+    MultipdfSplitterHelpers.check_merge_identical(dir,
+      "PDFBox.GlobalResourceMergeTest.Doc01.decoded.pdf",
+      "PDFBox.GlobalResourceMergeTest.Doc02.decoded.pdf", out1)
+    # "once again, with scratch file" is a stream-cache variant with no Crystal equivalent.
+    MultipdfSplitterHelpers.check_merge_identical(dir,
+      "PDFBox.GlobalResourceMergeTest.Doc01.decoded.pdf",
+      "PDFBox.GlobalResourceMergeTest.Doc02.decoded.pdf", out2)
   end
 
   it "PDFMergerUtilityTest#testPDFMergerUtility2" do
+    dir = SpecPaths.resolve("spec/resources/pdfbox/multipdf")
+    out3 = File.join(Dir.tempdir, "GlobalResourceMergeTestResult3.pdf")
+    out4 = File.join(Dir.tempdir, "GlobalResourceMergeTestResult4.pdf")
+    MultipdfSplitterHelpers.check_merge_identical(dir,
+      "PDFBox.GlobalResourceMergeTest.Doc01.pdf",
+      "PDFBox.GlobalResourceMergeTest.Doc02.pdf", out3)
+    MultipdfSplitterHelpers.check_merge_identical(dir,
+      "PDFBox.GlobalResourceMergeTest.Doc01.pdf",
+      "PDFBox.GlobalResourceMergeTest.Doc02.pdf", out4)
   end
 
   it "PDFMergerUtilityTest#testJpegCcitt" do
+    dir = SpecPaths.resolve("spec/resources/pdfbox/multipdf")
+    out1 = File.join(Dir.tempdir, "JpegMultiMergeTestResult.pdf")
+    out2 = File.join(Dir.tempdir, "JpegMultiMergeTestResult2.pdf")
+    MultipdfSplitterHelpers.check_merge_identical(dir, "jpegrgb.pdf", "multitiff.pdf", out1)
+    MultipdfSplitterHelpers.check_merge_identical(dir, "jpegrgb.pdf", "multitiff.pdf", out2)
   end
 
   it "PDFMergerUtilityTest#testPDFMergerOpenAction" do
@@ -522,48 +617,380 @@ describe "Pdfbox::Multipdf parity" do
   end
 
   it "PDFMergerUtilityTest#testStructureTreeMerge" do
+    dir = SpecPaths.resolve("spec/resources/pdfbox/multipdf")
+    path = File.join(dir, "PDFBOX-3999-GeneralForbearance.pdf")
+    src = Pdfbox::Loader.load_pdf(path)
+    single_cnt, single_set_size = MultipdfSplitterHelpers.element_count(src)
+    single_cnt.should eq(134)
+    single_set_size.should eq(134)
+
+    dst = Pdfbox::Loader.load_pdf(path)
+    Pdfbox::Multipdf::PDFMergerUtility.new.append_document(dst, src)
+    src.close
+    out_path = File.join(Dir.tempdir, "PDFBOX-3999-GeneralForbearance-merged.pdf")
+    dst.save(out_path)
+    dst.close
+
+    doc = Pdfbox::Loader.load_pdf(out_path)
+    begin
+      cnt, set_size = MultipdfSplitterHelpers.element_count(doc)
+      cnt.should eq(single_cnt * 2)
+      set_size.should eq(single_set_size * 2)
+      MultipdfSplitterHelpers.check_for_page_orphans(doc)
+    ensure
+      doc.close
+    end
   end
 
   it "PDFMergerUtilityTest#testStructureTreeMerge2" do
+    dir = SpecPaths.resolve("spec/resources/pdfbox/multipdf")
+    flat_path = File.join(Dir.tempdir, "PDFBOX-3999-GeneralForbearance-flattened.pdf")
+    merged_path = File.join(Dir.tempdir, "PDFBOX-3999-GeneralForbearance-flattened-merged.pdf")
+
+    doc = Pdfbox::Loader.load_pdf(File.join(dir, "PDFBOX-3999-GeneralForbearance.pdf"))
+    doc.document_catalog.not_nil!.acro_form.not_nil!.flatten
+    doc.save(flat_path)
+    single_cnt, single_set_size = MultipdfSplitterHelpers.element_count(doc)
+    single_cnt.should eq(134)
+    single_set_size.should eq(134)
+    doc.close
+
+    src = Pdfbox::Loader.load_pdf(flat_path)
+    dst = Pdfbox::Loader.load_pdf(flat_path)
+    Pdfbox::Multipdf::PDFMergerUtility.new.append_document(dst, src)
+    src.close
+    dst.save(merged_path)
+    dst.close
+
+    doc = Pdfbox::Loader.load_pdf(merged_path)
+    begin
+      MultipdfSplitterHelpers.check_for_page_orphans(doc)
+      cnt, set_size = MultipdfSplitterHelpers.element_count(doc)
+      cnt.should eq(single_cnt * 2)
+      set_size.should eq(single_set_size * 2)
+    ensure
+      doc.close
+    end
   end
 
   it "PDFMergerUtilityTest#testStructureTreeMerge3" do
+    dir = SpecPaths.resolve("spec/resources/pdfbox/multipdf")
+    path = File.join(dir, "PDFBOX-4408.pdf")
+    out_path = File.join(Dir.tempdir, "PDFBOX-4408-merged.pdf")
+
+    src = Pdfbox::Loader.load_pdf(path)
+    single_cnt, single_set_size = MultipdfSplitterHelpers.element_count(src)
+    single_cnt.should eq(25)
+    single_set_size.should eq(25)
+
+    dst = Pdfbox::Loader.load_pdf(path)
+    Pdfbox::Multipdf::PDFMergerUtility.new.append_document(dst, src)
+    src.close
+    dst.save(out_path)
+    dst.close
+
+    dst = Pdfbox::Loader.load_pdf(out_path)
+    begin
+      cnt, set_size = MultipdfSplitterHelpers.element_count(dst)
+      cnt.should eq(single_cnt * 2)
+      set_size.should eq(single_set_size * 2)
+      MultipdfSplitterHelpers.check_with_number_tree(dst)
+      MultipdfSplitterHelpers.check_for_page_orphans(dst)
+    ensure
+      dst.close
+    end
+    MultipdfSplitterHelpers.check_struct_tree_root_count(out_path)
   end
 
   it "PDFMergerUtilityTest#testStructureTreeMerge4" do
+    dir = SpecPaths.resolve("spec/resources/pdfbox/multipdf")
+    path = File.join(dir, "PDFBOX-4417-001031.pdf")
+    out_path = File.join(Dir.tempdir, "PDFBOX-4417-001031-merged.pdf")
+
+    src = Pdfbox::Loader.load_pdf(path)
+    single_cnt, single_set_size = MultipdfSplitterHelpers.element_count(src)
+    single_cnt.should eq(104)
+    single_set_size.should eq(104)
+
+    dst = Pdfbox::Loader.load_pdf(path)
+    Pdfbox::Multipdf::PDFMergerUtility.new.append_document(dst, src)
+    src.close
+    dst.save(out_path)
+    dst.close
+
+    dst = Pdfbox::Loader.load_pdf(out_path)
+    begin
+      cnt, set_size = MultipdfSplitterHelpers.element_count(dst)
+      cnt.should eq(single_cnt * 2)
+      set_size.should eq(single_set_size * 2)
+      MultipdfSplitterHelpers.check_with_number_tree(dst)
+      MultipdfSplitterHelpers.check_for_page_orphans(dst)
+    ensure
+      dst.close
+    end
+    MultipdfSplitterHelpers.check_struct_tree_root_count(out_path)
   end
 
   it "PDFMergerUtilityTest#testStructureTreeMerge5" do
+    dir = SpecPaths.resolve("spec/resources/pdfbox/multipdf")
+    path = File.join(dir, "PDFBOX-4417-054080.pdf")
+    out_path = File.join(Dir.tempdir, "PDFBOX-4417-054080-merged.pdf")
+
+    src = Pdfbox::Loader.load_pdf(path)
+    single_cnt, single_set_size = MultipdfSplitterHelpers.element_count(src)
+
+    dst = Pdfbox::Loader.load_pdf(path)
+    Pdfbox::Multipdf::PDFMergerUtility.new.append_document(dst, src)
+    src.close
+    dst.save(out_path)
+    dst.close
+
+    dst = Pdfbox::Loader.load_pdf(out_path)
+    begin
+      MultipdfSplitterHelpers.check_with_number_tree(dst)
+      MultipdfSplitterHelpers.check_for_page_orphans(dst)
+      cnt, set_size = MultipdfSplitterHelpers.element_count(dst)
+      cnt.should eq(single_cnt * 2)
+      set_size.should eq(single_set_size * 2)
+    ensure
+      dst.close
+    end
+    MultipdfSplitterHelpers.check_struct_tree_root_count(out_path)
   end
 
   it "PDFMergerUtilityTest#testStructureTreeMerge6" do
+    dir = SpecPaths.resolve("spec/resources/pdfbox/multipdf")
+    out_path = File.join(Dir.tempdir, "PDFBOX-4418-merged.pdf")
+
+    src = Pdfbox::Loader.load_pdf(File.join(dir, "PDFBOX-4418-000671.pdf"))
+    src_root = src.document_catalog.not_nil!.structure_tree_root.not_nil!
+    src_map = Pdfbox::Multipdf::PDFMergerUtility.get_number_tree_as_map(src_root.parent_tree)
+    src_map.size.should eq(381)
+    (src_map.keys.max + 1).should eq(743)
+    src_map.keys.min.should eq(0)
+    src_root.parent_tree_next_key.should eq(743)
+
+    dst = Pdfbox::Loader.load_pdf(File.join(dir, "PDFBOX-4418-000314.pdf"))
+    dst_root = dst.document_catalog.not_nil!.structure_tree_root.not_nil!
+    dst_map = Pdfbox::Multipdf::PDFMergerUtility.get_number_tree_as_map(dst_root.parent_tree)
+    dst_map.size.should eq(7)
+    (dst_map.keys.max + 1).should eq(328)
+    dst_map.keys.min.should eq(321)
+    dst_root.parent_tree_next_key.should eq(408)
+
+    Pdfbox::Multipdf::PDFMergerUtility.new.append_document(dst, src)
+    src.close
+    dst.save(out_path)
+    dst.close
+
+    dst = Pdfbox::Loader.load_pdf(out_path)
+    begin
+      MultipdfSplitterHelpers.check_with_number_tree(dst)
+      MultipdfSplitterHelpers.check_for_page_orphans(dst)
+      root = dst.document_catalog.not_nil!.structure_tree_root.not_nil!
+      map = Pdfbox::Multipdf::PDFMergerUtility.get_number_tree_as_map(root.parent_tree)
+      map.size.should eq(381 + 7)
+      (map.keys.max + 1).should eq(408 + 743)
+      map.keys.min.should eq(321)
+      root.parent_tree_next_key.should eq(408 + 743)
+    ensure
+      dst.close
+    end
+    MultipdfSplitterHelpers.check_struct_tree_root_count(out_path)
   end
 
   it "PDFMergerUtilityTest#testStructureTreeMerge7" do
+    dir = SpecPaths.resolve("spec/resources/pdfbox/multipdf")
+    out_path = File.join(Dir.tempdir, "PDFBOX-4423-merged.pdf")
+
+    src = Pdfbox::Loader.load_pdf(File.join(dir, "PDFBOX-4423-000746.pdf"))
+    root = src.document_catalog.not_nil!.structure_tree_root.not_nil!
+    map = Pdfbox::Multipdf::PDFMergerUtility.get_number_tree_as_map(root.parent_tree)
+    map.size.should eq(33)
+    (map.keys.max + 1).should eq(64)
+    map.keys.min.should eq(31)
+    root.parent_tree_next_key.should eq(126)
+
+    dst = Pdfbox::Pdmodel::Document.new
+    Pdfbox::Multipdf::PDFMergerUtility.new.append_document(dst, src)
+    src.close
+    dst.save(out_path)
+    dst.close
+
+    dst = Pdfbox::Loader.load_pdf(out_path)
+    begin
+      MultipdfSplitterHelpers.check_with_number_tree(dst)
+      MultipdfSplitterHelpers.check_for_page_orphans(dst)
+      root = dst.document_catalog.not_nil!.structure_tree_root.not_nil!
+      map = Pdfbox::Multipdf::PDFMergerUtility.get_number_tree_as_map(root.parent_tree)
+      map.size.should eq(33)
+      (map.keys.max + 1).should eq(64)
+      map.keys.min.should eq(31)
+      root.parent_tree_next_key.should eq(64)
+    ensure
+      dst.close
+    end
+    MultipdfSplitterHelpers.check_struct_tree_root_count(out_path)
   end
 
   it "PDFMergerUtilityTest#testMissingParentTreeNextKey" do
+    dir = SpecPaths.resolve("spec/resources/pdfbox/multipdf")
+    out_path = File.join(Dir.tempdir, "PDFBOX-4418-000314-merged.pdf")
+    src = Pdfbox::Loader.load_pdf(File.join(dir, "PDFBOX-4418-000314.pdf"))
+    dst = Pdfbox::Loader.load_pdf(File.join(dir, "PDFBOX-4418-000314.pdf"))
+    dst.document_catalog.not_nil!.structure_tree_root.not_nil!.cos_object.delete(Pdfbox::Cos::Name::PARENT_TREE_NEXT_KEY)
+    Pdfbox::Multipdf::PDFMergerUtility.new.append_document(dst, src)
+    src.close
+    dst.save(out_path)
+    dst.close
+
+    dst = Pdfbox::Loader.load_pdf(out_path)
+    begin
+      dst.document_catalog.not_nil!.structure_tree_root.not_nil!.parent_tree_next_key.should eq(656)
+    ensure
+      dst.close
+    end
   end
 
   it "PDFMergerUtilityTest#testStructureTreeMergeIDTree" do
+    dir = SpecPaths.resolve("spec/resources/pdfbox/multipdf")
+    out_path = File.join(Dir.tempdir, "PDFBOX-4416-IDTree-merged.pdf")
+    src = Pdfbox::Loader.load_pdf(File.join(dir, "PDFBOX-4417-001031.pdf"))
+    dst = Pdfbox::Loader.load_pdf(File.join(dir, "PDFBOX-4417-054080.pdf"))
+
+    src_id_map = Pdfbox::Multipdf::PDFMergerUtility.get_id_tree_as_map(src.document_catalog.not_nil!.structure_tree_root.not_nil!.id_tree.not_nil!)
+    dst_id_map = Pdfbox::Multipdf::PDFMergerUtility.get_id_tree_as_map(dst.document_catalog.not_nil!.structure_tree_root.not_nil!.id_tree.not_nil!)
+    expected_total = src_id_map.size + dst_id_map.size
+    expected_total.should eq(192)
+
+    merger = Pdfbox::Multipdf::PDFMergerUtility.new
+    empty_dest = Pdfbox::Pdmodel::Document.new
+    merger.append_document(empty_dest, src)
+    src.close
+    src = empty_dest
+    src.document_catalog.not_nil!.structure_tree_root.not_nil!.parent_tree_next_key.should eq(4)
+
+    merger.append_document(dst, src)
+    src.close
+    dst.save(out_path)
+    dst.close
+
+    dst = Pdfbox::Loader.load_pdf(out_path)
+    begin
+      MultipdfSplitterHelpers.check_with_number_tree(dst)
+      MultipdfSplitterHelpers.check_for_page_orphans(dst)
+      result_map = Pdfbox::Multipdf::PDFMergerUtility.get_id_tree_as_map(dst.document_catalog.not_nil!.structure_tree_root.not_nil!.id_tree.not_nil!)
+      result_map.size.should eq(expected_total)
+    ensure
+      dst.close
+    end
+    MultipdfSplitterHelpers.check_struct_tree_root_count(out_path)
   end
 
   it "PDFMergerUtilityTest#testMergeBogusStructParents1" do
+    dir = SpecPaths.resolve("spec/resources/pdfbox/multipdf")
+    src = Pdfbox::Loader.load_pdf(File.join(dir, "PDFBOX-4408.pdf"))
+    dst = Pdfbox::Loader.load_pdf(File.join(dir, "PDFBOX-4408.pdf"))
+    begin
+      dst.document_catalog.not_nil!.structure_tree_root = nil
+      dst.get_page(0).struct_parents = 9999
+      dst.get_page(0).annotations.get(0).struct_parent = 9998
+      Pdfbox::Multipdf::PDFMergerUtility.new.append_document(dst, src)
+      MultipdfSplitterHelpers.check_with_number_tree(dst)
+      MultipdfSplitterHelpers.check_for_page_orphans(dst)
+    ensure
+      src.close
+      dst.close
+    end
   end
 
   it "PDFMergerUtilityTest#testMergeBogusStructParents2" do
+    dir = SpecPaths.resolve("spec/resources/pdfbox/multipdf")
+    src = Pdfbox::Loader.load_pdf(File.join(dir, "PDFBOX-4408.pdf"))
+    dst = Pdfbox::Loader.load_pdf(File.join(dir, "PDFBOX-4408.pdf"))
+    begin
+      src.document_catalog.not_nil!.structure_tree_root = nil
+      src.get_page(0).struct_parents = 9999
+      src.get_page(0).annotations.get(0).struct_parent = 9998
+      Pdfbox::Multipdf::PDFMergerUtility.new.append_document(dst, src)
+      MultipdfSplitterHelpers.check_with_number_tree(dst)
+      MultipdfSplitterHelpers.check_for_page_orphans(dst)
+    ensure
+      src.close
+      dst.close
+    end
   end
 
   it "PDFMergerUtilityTest#testParentTree" do
+    dir = SpecPaths.resolve("spec/resources/pdfbox/multipdf")
+    doc = Pdfbox::Loader.load_pdf(File.join(dir, "PDFBOX-3999-GeneralForbearance.pdf"))
+    begin
+      root = doc.document_catalog.not_nil!.structure_tree_root.not_nil!
+      root.parent_tree.not_nil!.value(0)
+      map = Pdfbox::Multipdf::PDFMergerUtility.get_number_tree_as_map(root.parent_tree)
+      map.size.should eq(31)
+      (map.keys.max + 1).should eq(31)
+      map.keys.min.should eq(0)
+      root.parent_tree_next_key.should eq(31)
+    ensure
+      doc.close
+    end
   end
 
   it "PDFMergerUtilityTest#testFileDeletion" do
+    dir = Dir.tempdir
+    in1 = File.join(dir, "PDFBOX-4383-src1.pdf")
+    in2 = File.join(dir, "PDFBOX-4383-src2.pdf")
+    out_path = File.join(dir, "PDFBOX-4383-result.pdf")
+    params = Pdfbox::Pdfwriter::Compress::CompressParameters::NO_COMPRESSION
+
+    [in1, in2].each do |path|
+      doc = Pdfbox::Pdmodel::Document.new
+      doc.add_page(Pdfbox::Pdmodel::Page.new)
+      doc.save(path, params)
+      doc.close
+    end
+
+    merger = Pdfbox::Multipdf::PDFMergerUtility.new
+    ::File.open(out_path, "w") do |io|
+      merger.destination_stream = io
+      merger.destination_stream.should eq(io)
+      merger.add_source(in1)
+      merger.add_source(in2)
+      merger.merge_documents(nil)
+    end
+
+    doc = Pdfbox::Loader.load_pdf(out_path)
+    begin
+      doc.number_of_pages.should eq(2)
+    ensure
+      doc.close
+    end
+
+    [in1, in2, out_path].each { |path| File.delete(path) if File.exists?(path) }
   end
 
   it "PDFMergerUtilityTest#testPDFBox5198_2" do
+    dir = SpecPaths.resolve("spec/resources/pdfbox/multipdf")
+    out_path = File.join(Dir.tempdir, "PDFA3A-merged2.pdf")
+    merger = Pdfbox::Multipdf::PDFMergerUtility.new
+    merger.add_source(File.join(dir, "PDFA3A.pdf"))
+    merger.add_source(File.join(dir, "PDFA3A.pdf"))
+    merger.destination_file_name = out_path
+    merger.merge_documents(nil)
+    MultipdfSplitterHelpers.check_parts(out_path)
   end
 
   it "PDFMergerUtilityTest#testPDFBox5198_3" do
+    dir = SpecPaths.resolve("spec/resources/pdfbox/multipdf")
+    out_path = File.join(Dir.tempdir, "PDFA3A-merged3.pdf")
+    merger = Pdfbox::Multipdf::PDFMergerUtility.new
+    merger.add_source(File.join(dir, "PDFA3A.pdf"))
+    merger.add_source(File.join(dir, "PDFA3A.pdf"))
+    merger.add_source(File.join(dir, "PDFA3A.pdf"))
+    merger.destination_file_name = out_path
+    merger.merge_documents(nil)
+    MultipdfSplitterHelpers.check_parts(out_path)
   end
 
   it "PDFMergerUtilityTest#testSplitWithStructureTree" do

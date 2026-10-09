@@ -55,7 +55,9 @@ class Pdfbox::Pdmodel::Common::PDNumberTreeNode(T)
   # @return The list of children or nil if there are no children.
   def kids : Common::COSArrayList(PDNumberTreeNode(T))?
     retval = nil
-    kids_array = @node[Cos::Name::KIDS].as?(Cos::Array)
+    kids_raw = @node[Cos::Name::KIDS]
+    kids_raw = kids_raw.object if kids_raw.is_a?(Cos::Object)
+    kids_array = kids_raw.as?(Cos::Array)
     if kids_array
       pd_objects = [] of PDNumberTreeNode(T)
       kids_array.items.each_with_index do |base, i|
@@ -128,7 +130,9 @@ class Pdfbox::Pdmodel::Common::PDNumberTreeNode(T)
   #
   # @return A map of COS objects.
   def numbers : Hash(Int32, T)?
-    numbers_array = @node[Cos::Name::NUMS].as?(Cos::Array)
+    numbers_raw = @node[Cos::Name::NUMS]
+    numbers_raw = numbers_raw.object if numbers_raw.is_a?(Cos::Object)
+    numbers_array = numbers_raw.as?(Cos::Array)
     if numbers_array
       size = numbers_array.size
       indices = {} of Int32 => T
@@ -202,7 +206,9 @@ class Pdfbox::Pdmodel::Common::PDNumberTreeNode(T)
   # @return The highest value for a key in the map or nil if missing.
   def upper_limit : Int32?
     retval = nil
-    arr = @node[Cos::Name::LIMITS].as?(Cos::Array)
+    limits_raw = @node[Cos::Name::LIMITS]
+    limits_raw = limits_raw.object if limits_raw.is_a?(Cos::Object)
+    arr = limits_raw.as?(Cos::Array)
     if arr && arr.size > 1
       elem = arr[1]
       retval = elem.as?(Cos::Integer).try(&.value.to_i32)
@@ -231,7 +237,9 @@ class Pdfbox::Pdmodel::Common::PDNumberTreeNode(T)
   # @return The lowest value for a key in the map or nil if missing.
   def lower_limit : Int32?
     retval = nil
-    arr = @node[Cos::Name::LIMITS].as?(Cos::Array)
+    limits_raw = @node[Cos::Name::LIMITS]
+    limits_raw = limits_raw.object if limits_raw.is_a?(Cos::Object)
+    arr = limits_raw.as?(Cos::Array)
     if arr && arr.size > 0
       elem = arr[0]
       retval = elem.as?(Cos::Integer).try(&.value.to_i32)

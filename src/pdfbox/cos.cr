@@ -796,6 +796,7 @@ module Pdfbox::Cos
     PARENT_TREE_NEXT_KEY = new("ParentTreeNextKey")
     ID_TREE              = new("IDTree")
     CLASS_MAP            = new("ClassMap")
+    LANG                 = new("Lang")
 
     def initialize(@value : ::String)
     end

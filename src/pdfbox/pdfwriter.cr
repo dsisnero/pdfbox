@@ -719,6 +719,9 @@ module Pdfbox::Pdfwriter
     @will_encrypt : Bool = false
     @security_handler : Pdfbox::Pdmodel::Encryption::SecurityHandler?
     @current_object_key : Pdfbox::Cos::ObjectKey?
+    # Object ids currently being written inline; used to break cyclic direct
+    # dictionaries/arrays (e.g. /K <-> /P) that would otherwise recurse forever.
+    @inline_stack = Set(UInt64).new
 
     def initialize(@destination : ::IO, @will_encrypt : Bool = false, @security_handler : Pdfbox::Pdmodel::Encryption::SecurityHandler? = nil)
     end
@@ -757,26 +760,56 @@ module Pdfbox::Pdfwriter
 
     # Write a COS dictionary
     def write_dictionary(dict : Pdfbox::Cos::Dictionary) : Nil
-      @destination << "<<"
-      dict.entries.each do |key, value|
-        write_name(key)
-        PDFIO.write_whitespace(@destination)
-        write(value)
-        PDFIO.write_whitespace(@destination)
+      id = dict.object_id.to_u64
+      if @inline_stack.includes?(id)
+        write_cycle_break(dict)
+        return
       end
-      @destination << ">>"
+      @inline_stack.add(id)
+      begin
+        @destination << "<<"
+        dict.entries.each do |key, value|
+          write_name(key)
+          PDFIO.write_whitespace(@destination)
+          write(value)
+          PDFIO.write_whitespace(@destination)
+        end
+        @destination << ">>"
+      ensure
+        @inline_stack.delete(id)
+      end
     end
 
     # Write a COS array
     def write_array(array : Pdfbox::Cos::Array) : Nil
-      @destination << '['
-      array.items.each_with_index do |item, index|
-        write(item)
-        if index < array.size - 1
-          PDFIO.write_whitespace(@destination)
-        end
+      id = array.object_id.to_u64
+      if @inline_stack.includes?(id)
+        write_cycle_break(array)
+        return
       end
-      @destination << ']'
+      @inline_stack.add(id)
+      begin
+        @destination << '['
+        array.items.each_with_index do |item, index|
+          write(item)
+          if index < array.size - 1
+            PDFIO.write_whitespace(@destination)
+          end
+        end
+        @destination << ']'
+      ensure
+        @inline_stack.delete(id)
+      end
+    end
+
+    # Break a cyclic inline reference: emit an indirect reference when the
+    # object has an assigned key, otherwise a null placeholder.
+    private def write_cycle_break(object : Pdfbox::Cos::Base) : Nil
+      if key = object.key
+        @destination << key.number << ' ' << key.generation << " R"
+      else
+        @destination << "null"
+      end
     end
 
     # Write a COS string, encrypting it when writing an encrypted document.
