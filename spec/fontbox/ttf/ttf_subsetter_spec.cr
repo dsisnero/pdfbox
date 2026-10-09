@@ -140,7 +140,11 @@ module Fontbox::TTF
       glyph_table = subset_font.glyph
       glyph_table.should_not be_nil
       glyph_table.as(GlyphTable).glyph(0).should_not be_nil
-      # TODO: verify that the selected tables are present
+
+      # The subset must contain exactly the selected tables.
+      tables.each do |tag|
+        subset_font.table(tag).should_not be_nil
+      end
     end
     it "test non-empty subset with one glyph" do
       font = load_liberation_sans

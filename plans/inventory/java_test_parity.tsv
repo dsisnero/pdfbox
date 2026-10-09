@@ -1223,11 +1223,11 @@ pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/state/RenderingIntentTes
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/state/RenderingIntentTest.java::method::RenderingIntentTest.fromStringInputNotNullOutputNotNull5	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/state/RenderingIntentTest.java::method::RenderingIntentTest.stringValueOutputNotNull	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/graphics/state/RenderingIntentTest.java::method::RenderingIntentTest.testIsFill	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/action/PDActionURITest.java::class::PDActionURITest	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/action/PDActionURITest.java::method::PDActionURITest.testUTF16BEURI	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/action/PDActionURITest.java::method::PDActionURITest.testUTF16LEURI	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/action/PDActionURITest.java::method::PDActionURITest.testUTF7URI	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/action/PDActionURITest.java::method::PDActionURITest.testUTF8URI	ported	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/action/PDActionURITest.java::class::PDActionURITest	ported	spec/pdfbox/pdmodel/interactive/action/pd_action_uri_test_spec.cr	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/action/PDActionURITest.java::method::PDActionURITest.testUTF16BEURI	ported	spec/pdfbox/pdmodel/interactive/action/pd_action_uri_test_spec.cr	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/action/PDActionURITest.java::method::PDActionURITest.testUTF16LEURI	ported	spec/pdfbox/pdmodel/interactive/action/pd_action_uri_test_spec.cr	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/action/PDActionURITest.java::method::PDActionURITest.testUTF7URI	ported	spec/pdfbox/pdmodel/interactive/action/pd_action_uri_test_spec.cr	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/action/PDActionURITest.java::method::PDActionURITest.testUTF8URI	ported	spec/pdfbox/pdmodel/interactive/action/pd_action_uri_test_spec.cr	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/annotation/AppearanceGenerationTest.java::class::AppearanceGenerationTest	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/annotation/AppearanceGenerationTest.java::const::DELTA	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/annotation/AppearanceGenerationTest.java::const::IN_DIR	ported	-	baseline
