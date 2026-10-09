@@ -701,7 +701,7 @@ pdfbox/src/test/java/org/apache/pdfbox/multipdf/MergeAcroFormsTest.java::method:
 pdfbox/src/test/java/org/apache/pdfbox/multipdf/MergeAcroFormsTest.java::method::MergeAcroFormsTest.setUp	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/multipdf/MergeAcroFormsTest.java::method::MergeAcroFormsTest.testAPEntry	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/multipdf/MergeAcroFormsTest.java::method::MergeAcroFormsTest.testAnnotsEntry	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/multipdf/MergeAcroFormsTest.java::method::MergeAcroFormsTest.testLegacyModeMerge	ported	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/multipdf/MergeAcroFormsTest.java::method::MergeAcroFormsTest.testLegacyModeMerge	ported	spec/pdfbox/multipdf/multipdf_spec.cr	baseline
 pdfbox/src/test/java/org/apache/pdfbox/multipdf/MergeAnnotationsTest.java::class::MergeAnnotationsTest	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/multipdf/MergeAnnotationsTest.java::const::OUT_DIR	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/multipdf/MergeAnnotationsTest.java::const::TARGET_PDF_DIR	ported	-	baseline
@@ -773,7 +773,7 @@ pdfbox/src/test/java/org/apache/pdfbox/multipdf/PDFMergerUtilityTest.java::metho
 pdfbox/src/test/java/org/apache/pdfbox/multipdf/PDFMergerUtilityTest.java::method::PDFMergerUtilityTest.testStructureTreeMergeIDTree	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/multipdf/PageExtractorTest.java::class::PageExtractorTest	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/multipdf/PageExtractorTest.java::method::PageExtractorTest.closeDoc	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/multipdf/PageExtractorTest.java::method::PageExtractorTest.testExtract	ported	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/multipdf/PageExtractorTest.java::method::PageExtractorTest.testExtract	ported	spec/pdfbox/multipdf/multipdf_spec.cr	baseline
 pdfbox/src/test/java/org/apache/pdfbox/multipdf/TestLayerUtility.java::class::TestLayerUtility	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/multipdf/TestLayerUtility.java::const::TESTRESULTSDIR	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/multipdf/TestLayerUtility.java::method::TestLayerUtility.createMainPDF	ported	-	baseline

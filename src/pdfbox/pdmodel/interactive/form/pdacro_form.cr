@@ -74,7 +74,7 @@ module Pdfbox::Pdmodel::Interactive::Form
     # ameba:disable Naming/AccessorMethodName
     def get_field_tree : Array(PDField)
       result = [] of PDField
-      seen = Set(Cos::Dictionary).new
+      seen = Set(UInt64).new
 
       fields.each do |field|
         walk_field_tree(field, seen, result)
@@ -83,13 +83,13 @@ module Pdfbox::Pdmodel::Interactive::Form
       result
     end
 
-    private def walk_field_tree(node : PDField, seen : Set(Cos::Dictionary), result : Array(PDField)) : Nil
+    private def walk_field_tree(node : PDField, seen : Set(UInt64), result : Array(PDField)) : Nil
       result << node
-      seen.add(node.cos_object)
+      seen.add(node.cos_object.object_id)
       return unless node.is_a?(PDNonTerminalField)
 
       node.children.each do |kid|
-        if seen.includes?(kid.cos_object)
+        if seen.includes?(kid.cos_object.object_id)
           Log.warn { "Child of field '#{node.fully_qualified_name}' already exists elsewhere, ignored to avoid recursion" }
         else
           walk_field_tree(kid, seen, result)

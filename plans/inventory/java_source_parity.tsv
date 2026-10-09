@@ -4856,13 +4856,13 @@ pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::const::LO
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::enum::AcroFormMergeMode	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::enum::DocumentMergeMode	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.acroFormJoinFieldsMode	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.acroFormLegacyMode	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.addSource	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.addSources	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.acroFormLegacyMode	ported	src/pdfbox/multipdf.cr	baseline
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.addSource	ported	src/pdfbox/multipdf.cr	baseline
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.addSources	ported	src/pdfbox/multipdf.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.appendDocument	ported	src/pdfbox/multipdf.cr	baseline
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.getAcroFormMergeMode	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.getAcroFormMergeMode	ported	src/pdfbox/multipdf.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.getDestinationDocumentInformation	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.getDestinationFileName	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.getDestinationFileName	ported	src/pdfbox/multipdf.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.getDestinationMetadata	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.getDestinationStream	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.getDocumentMergeMode	missing	-	baseline
@@ -4873,7 +4873,7 @@ pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::P
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.isIgnoreAcroFormErrors	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.legacyMergeDocuments	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.mergeAcroForm	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.mergeDocuments	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.mergeDocuments	ported	src/pdfbox/multipdf.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.mergeIDTree	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.mergeInto	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.mergeKEntries	missing	-	baseline
@@ -4884,9 +4884,9 @@ pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::P
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.mergeRoleMap	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.mergeViewerPreferences	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.optimizedMergeDocuments	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.setAcroFormMergeMode	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.setAcroFormMergeMode	ported	src/pdfbox/multipdf.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.setDestinationDocumentInformation	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.setDestinationFileName	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.setDestinationFileName	ported	src/pdfbox/multipdf.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.setDestinationMetadata	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.setDestinationStream	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.setDocumentMergeMode	missing	-	baseline
@@ -4894,7 +4894,7 @@ pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::P
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.updatePageReferences	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.updateParentEntry	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.updateStructParentEntries	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/PageExtractor.java::class::PageExtractor	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/PageExtractor.java::class::PageExtractor	ported	src/pdfbox/multipdf.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PageExtractor.java::method::PageExtractor.extract	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PageExtractor.java::method::PageExtractor.getEndPage	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PageExtractor.java::method::PageExtractor.getStartPage	missing	-	baseline
@@ -10248,7 +10248,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java:
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.getDocument	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.getField	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.getFieldIterator	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.getFieldTree	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.getFieldTree	ported	src/pdfbox/pdmodel/interactive/form/pdacro_form.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.getFields	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.getNeedAppearances	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.getQ	missing	-	baseline
@@ -10393,7 +10393,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDFieldFactory.j
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDFieldFactory.java::method::PDFieldFactory.createButtonSubType	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDFieldFactory.java::method::PDFieldFactory.createChoiceSubType	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDFieldFactory.java::method::PDFieldFactory.createField	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDFieldFactory.java::method::PDFieldFactory.findFieldType	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDFieldFactory.java::method::PDFieldFactory.findFieldType	ported	src/pdfbox/pdmodel/interactive/form/pdfield_factory.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDFieldTree.java::class::FieldIterator	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDFieldTree.java::class::PDFieldTree	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDFieldTree.java::const::LOG	missing	-	baseline

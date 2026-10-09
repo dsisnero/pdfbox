@@ -740,8 +740,53 @@ module Pdfbox::Multipdf
 
   # Merges PDF documents, appending one document's pages into another.
   # Port of Apache PDFBox multipdf/PDFMergerUtility (portable subset:
-  # appendDocument(destination, source)).
+  # appendDocument(destination, source) and mergeDocuments).
   class PDFMergerUtility
+    enum AcroFormMergeMode
+      PDFBOX_LEGACY_MODE
+      JOIN_FIELDS_MODE
+    end
+
+    @sources = [] of Pdmodel::Document
+    @destination_file_name : String?
+    @acro_form_merge_mode : AcroFormMergeMode = AcroFormMergeMode::PDFBOX_LEGACY_MODE
+
+    def destination_file_name : String?
+      @destination_file_name
+    end
+
+    def destination_file_name=(value : String?) : String?
+      @destination_file_name = value
+    end
+
+    def acro_form_merge_mode : AcroFormMergeMode
+      @acro_form_merge_mode
+    end
+
+    def acro_form_merge_mode=(value : AcroFormMergeMode) : AcroFormMergeMode
+      @acro_form_merge_mode = value
+    end
+
+    # Register a source file to be merged (Java PDFMergerUtility#addSource).
+    def add_source(path : String) : Nil
+      @sources << Pdfbox::Loader.load_pdf(path)
+    end
+
+    def add_source(document : Pdmodel::Document) : Nil
+      @sources << document
+    end
+
+    # Merge all sources into the destination file (Java PDFMergerUtility#mergeDocuments).
+    def merge_documents(destination_file : String? = nil) : Nil
+      out_path = @destination_file_name || destination_file
+      raise ArgumentError.new("destination file name is not set") unless out_path
+
+      destination = Pdmodel::Document.create
+      @sources.each { |source| append_document(destination, source) }
+      destination.save(out_path)
+      destination.close
+    end
+
     # Append all pages of source into destination (Java PDFMergerUtility#appendDocument).
     def append_document(destination : Pdmodel::Document, source : Pdmodel::Document) : Nil
       return if destination.same?(source)
@@ -760,6 +805,8 @@ module Pdfbox::Multipdf
         destination.add_page(Pdmodel::Page.new(cloned_dict))
       end
 
+      merge_acro_forms(destination, source, cloner)
+
       # Merge the optional content properties if the destination has none.
       source_catalog = source.document_catalog
       destination_catalog = destination.document_catalog
@@ -769,6 +816,52 @@ module Pdfbox::Multipdf
           destination_catalog.oc_properties = Pdmodel::Graphics::OptionalContent::PDOptionalContentProperties.new(cloned_dict)
         end
       end
+    end
+
+    # Merge the source AcroForm into the destination. Legacy mode keeps unique
+    # fully-qualified field names (Java PDFMergerUtility#mergeAcroForm legacy).
+    private def merge_acro_forms(destination : Pdmodel::Document, source : Pdmodel::Document, cloner : PDFCloneUtility) : Nil
+      source_form = source.document_catalog.try(&.acro_form)
+      return unless source_form
+
+      catalog = destination.document_catalog
+      return unless catalog
+
+      destination_form = catalog.acro_form
+      if destination_form.nil?
+        cloned = cloner.clone_for_new_document(source_form.cos_object).as(Pdfbox::Cos::Dictionary)
+        catalog.acro_form = Pdmodel::Interactive::Form::PDAcroForm.new(destination, cloned)
+        return
+      end
+
+      # Java PDFMergerUtility#acroFormLegacyMode: clone every source root field,
+      # renaming ones that clash with an existing FQN to a unique dummyFieldNameN.
+      src_fields = source_form.fields
+      return if src_fields.empty?
+
+      prefix = "dummyFieldName"
+      next_num = 1
+      destination_form.get_field_tree.each do |field|
+        name = field.partial_name
+        next unless name && name.starts_with?(prefix)
+
+        suffix = name[prefix.size..]
+        next_num = Math.max(next_num, suffix.to_i + 1) if suffix.matches?(/\A\d+\z/)
+      end
+
+      fields_base = destination_form.cos_object[Pdfbox::Cos::Name.new("Fields")]?
+      fields_base = fields_base.object if fields_base.is_a?(Pdfbox::Cos::Object)
+      dest_fields = fields_base.as?(Pdfbox::Cos::Array) || Pdfbox::Cos::Array.new
+
+      src_fields.each do |src_field|
+        cloned = cloner.clone_for_new_document(src_field.cos_object).as(Pdfbox::Cos::Dictionary)
+        if destination_form.get_field(src_field.fully_qualified_name)
+          cloned.set_string("T", "#{prefix}#{next_num}")
+          next_num += 1
+        end
+        dest_fields.add(cloned)
+      end
+      destination_form.cos_object[Pdfbox::Cos::Name.new("Fields")] = dest_fields
     end
   end
 end

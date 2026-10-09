@@ -94,6 +94,35 @@ describe "Pdfbox::Multipdf parity" do
   end
 
   it "MergeAcroFormsTest#testLegacyModeMerge" do
+    in_dir = SpecPaths.resolve("vendor/pdfbox/pdfbox/src/test/resources/org/apache/pdfbox/multipdf")
+    out_path = File.join(Dir.tempdir, "PDFBoxLegacyMerge-SameMerged.pdf")
+    to_be_merged = File.join(in_dir, "AcroFormForMerge.pdf")
+
+    merger = Pdfbox::Multipdf::PDFMergerUtility.new
+    merger.destination_file_name = out_path
+    merger.destination_file_name.should eq(out_path)
+    merger.add_source(to_be_merged)
+    merger.add_source(to_be_merged)
+    merger.merge_documents(nil)
+    merger.acro_form_merge_mode = Pdfbox::Multipdf::PDFMergerUtility::AcroFormMergeMode::PDFBOX_LEGACY_MODE
+    merger.acro_form_merge_mode.should eq(Pdfbox::Multipdf::PDFMergerUtility::AcroFormMergeMode::PDFBOX_LEGACY_MODE)
+
+    compliant = Pdfbox::Loader.load_pdf(File.join(in_dir, "PDFBoxLegacyMerge-SameMerged.pdf"))
+    compared = Pdfbox::Loader.load_pdf(out_path)
+    begin
+      compliant_form = compliant.document_catalog.not_nil!.acro_form
+      compared_form = compared.document_catalog.not_nil!.acro_form
+      compliant_form.should_not be_nil
+      compared_form.should_not be_nil
+      compliant_form.not_nil!.fields.size.should eq(compared_form.not_nil!.fields.size)
+
+      compliant_form.not_nil!.get_field_tree.each do |field|
+        compared_form.not_nil!.get_field(field.fully_qualified_name).should_not be_nil
+      end
+    ensure
+      compliant.close
+      compared.close
+    end
   end
 
   it "MergeAcroFormsTest#testAnnotsEntry" do
@@ -115,6 +144,31 @@ describe "Pdfbox::Multipdf parity" do
   end
 
   it "PageExtractorTest#testExtract" do
+    source_path = SpecPaths.resolve("vendor/pdfbox/pdfbox/src/test/resources/input/cweb.pdf")
+    source_pdf = Pdfbox::Loader.load_pdf(source_path)
+    begin
+      result = Pdfbox::Multipdf::PageExtractor.new(source_pdf).extract
+      result.number_of_pages.should eq(source_pdf.number_of_pages)
+      result.close
+
+      result = Pdfbox::Multipdf::PageExtractor.new(source_pdf, 1, 1).extract
+      result.number_of_pages.should eq(1)
+      result.close
+
+      result = Pdfbox::Multipdf::PageExtractor.new(source_pdf, 1, 5).extract
+      result.number_of_pages.should eq(5)
+      result.close
+
+      result = Pdfbox::Multipdf::PageExtractor.new(source_pdf, 5, 10).extract
+      result.number_of_pages.should eq(6)
+      result.close
+
+      result = Pdfbox::Multipdf::PageExtractor.new(source_pdf, 2, 1).extract
+      result.number_of_pages.should eq(0)
+      result.close
+    ensure
+      source_pdf.close
+    end
   end
 
   it "PDFMergerUtilityTest#testPDFMergerUtility" do

@@ -21,7 +21,7 @@ module Pdfbox::Pdmodel::Interactive::Form
         end
       end
 
-      field_type = find_field_type(field, Set(Cos::Dictionary).new)
+      field_type = find_field_type(field, Set(UInt64).new)
       return unless field_type
 
       case field_type
@@ -62,8 +62,8 @@ module Pdfbox::Pdmodel::Interactive::Form
       ff.value.to_i32
     end
 
-    private def self.find_field_type(dic : Cos::Dictionary, seen : Set(Cos::Dictionary)) : String?
-      return unless seen.add?(dic)
+    private def self.find_field_type(dic : Cos::Dictionary, seen : Set(UInt64)) : String?
+      return unless seen.add?(dic.object_id)
 
       ft = dic[Cos::Name.new("FT")]
       if ft.is_a?(Cos::Name)
