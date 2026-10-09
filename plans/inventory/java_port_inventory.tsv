@@ -1280,7 +1280,7 @@ examples/src/main/java/org/apache/pdfbox/examples/util/SplitBooklet.java::method
 examples/src/main/java/org/apache/pdfbox/examples/util/SplitBooklet.java::method::SplitBooklet.usage	method	missing	-	auto-generated
 fontbox/src/main/java/org/apache/fontbox/EncodedFont.java::interface::EncodedFont	interface	missing	-	auto-generated
 fontbox/src/main/java/org/apache/fontbox/EncodedFont.java::method::getEncoding	method	missing	-	auto-generated
-fontbox/src/main/java/org/apache/fontbox/FontBoxFont.java::interface::FontBoxFont	interface	missing	-	auto-generated
+fontbox/src/main/java/org/apache/fontbox/FontBoxFont.java::interface::FontBoxFont	interface	ported	src/fontbox/font_box_font.cr	reconciled: class present
 fontbox/src/main/java/org/apache/fontbox/FontBoxFont.java::method::getFontBBox	method	missing	-	auto-generated
 fontbox/src/main/java/org/apache/fontbox/FontBoxFont.java::method::getFontMatrix	method	missing	-	auto-generated
 fontbox/src/main/java/org/apache/fontbox/FontBoxFont.java::method::getName	method	missing	-	auto-generated
@@ -1620,7 +1620,7 @@ fontbox/src/main/java/org/apache/fontbox/cff/CFFParser.java::const::LOG	const	mi
 fontbox/src/main/java/org/apache/fontbox/cff/CFFParser.java::const::TAG_OTTO	const	missing	-	auto-generated
 fontbox/src/main/java/org/apache/fontbox/cff/CFFParser.java::const::TAG_TTCF	const	missing	-	auto-generated
 fontbox/src/main/java/org/apache/fontbox/cff/CFFParser.java::const::TAG_TTFONLY	const	missing	-	auto-generated
-fontbox/src/main/java/org/apache/fontbox/cff/CFFParser.java::interface::ByteSource	interface	missing	-	auto-generated
+fontbox/src/main/java/org/apache/fontbox/cff/CFFParser.java::interface::ByteSource	interface	ported	src/fontbox/cff/cff_parser.cr	reconciled: class present
 fontbox/src/main/java/org/apache/fontbox/cff/CFFParser.java::method::CFFBuiltInEncoding.add	method	ported	src	auto-generated
 fontbox/src/main/java/org/apache/fontbox/cff/CFFParser.java::method::CFFBytesource.getBytes	method	missing	-	auto-generated
 fontbox/src/main/java/org/apache/fontbox/cff/CFFParser.java::method::CFFParser.concatenateMatrix	method	partial	src	auto-generated
@@ -1734,7 +1734,7 @@ fontbox/src/main/java/org/apache/fontbox/cff/CharStringCommand.java::method::get
 fontbox/src/main/java/org/apache/fontbox/cff/CharStringCommand.java::method::getType2KeyWord	method	missing	-	auto-generated
 fontbox/src/main/java/org/apache/fontbox/cff/CharStringCommand.java::method::getValue	method	missing	-	auto-generated
 fontbox/src/main/java/org/apache/fontbox/cff/CharStringCommand.java::method::toString	method	missing	-	auto-generated
-fontbox/src/main/java/org/apache/fontbox/cff/DataInput.java::interface::DataInput	interface	missing	-	auto-generated
+fontbox/src/main/java/org/apache/fontbox/cff/DataInput.java::interface::DataInput	interface	ported	src/fontbox/cff/data_input.cr	reconciled: class present
 fontbox/src/main/java/org/apache/fontbox/cff/DataInput.java::method::getPosition	method	missing	-	auto-generated
 fontbox/src/main/java/org/apache/fontbox/cff/DataInput.java::method::hasRemaining	method	missing	-	auto-generated
 fontbox/src/main/java/org/apache/fontbox/cff/DataInput.java::method::length	method	missing	-	auto-generated
@@ -1775,7 +1775,7 @@ fontbox/src/main/java/org/apache/fontbox/cff/EmbeddedCharset.java::method::Embed
 fontbox/src/main/java/org/apache/fontbox/cff/EmbeddedCharset.java::method::EmbeddedCharset.getSID	method	ported	src	auto-generated
 fontbox/src/main/java/org/apache/fontbox/cff/EmbeddedCharset.java::method::EmbeddedCharset.getSIDForGID	method	ported	src	auto-generated
 fontbox/src/main/java/org/apache/fontbox/cff/EmbeddedCharset.java::method::EmbeddedCharset.isCIDFont	method	ported	src	auto-generated
-fontbox/src/main/java/org/apache/fontbox/cff/FDSelect.java::interface::FDSelect	interface	missing	-	auto-generated
+fontbox/src/main/java/org/apache/fontbox/cff/FDSelect.java::interface::FDSelect	interface	ported	src/fontbox/cff/cff_cid_font.cr	reconciled: class present
 fontbox/src/main/java/org/apache/fontbox/cff/FDSelect.java::method::getFDIndex	method	missing	-	auto-generated
 fontbox/src/main/java/org/apache/fontbox/cff/Type1CharString.java::class::Type1CharString	class	partial	src	auto-generated
 fontbox/src/main/java/org/apache/fontbox/cff/Type1CharString.java::const::LOG	const	missing	-	auto-generated
@@ -1954,7 +1954,7 @@ fontbox/src/main/java/org/apache/fontbox/ttf/CFFTable.java::method::CFFBytesourc
 fontbox/src/main/java/org/apache/fontbox/ttf/CFFTable.java::method::CFFTable.getFont	method	ported	src	auto-generated
 fontbox/src/main/java/org/apache/fontbox/ttf/CFFTable.java::method::CFFTable.read	method	ported	src	auto-generated
 fontbox/src/main/java/org/apache/fontbox/ttf/CFFTable.java::method::CFFTable.readHeaders	method	ported	src	auto-generated
-fontbox/src/main/java/org/apache/fontbox/ttf/CmapLookup.java::interface::CmapLookup	interface	missing	-	auto-generated
+fontbox/src/main/java/org/apache/fontbox/ttf/CmapLookup.java::interface::CmapLookup	interface	ported	src/fontbox/ttf/cmap_lookup.cr	reconciled: class present
 fontbox/src/main/java/org/apache/fontbox/ttf/CmapLookup.java::method::getCharCodes	method	missing	-	auto-generated
 fontbox/src/main/java/org/apache/fontbox/ttf/CmapLookup.java::method::getGlyphId	method	missing	-	auto-generated
 fontbox/src/main/java/org/apache/fontbox/ttf/CmapSubtable.java::class::CmapSubtable	class	partial	src	auto-generated
@@ -2104,7 +2104,7 @@ fontbox/src/main/java/org/apache/fontbox/ttf/GlyphData.java::method::GlyphData.g
 fontbox/src/main/java/org/apache/fontbox/ttf/GlyphData.java::method::GlyphData.getYMinimum	method	ported	src	auto-generated
 fontbox/src/main/java/org/apache/fontbox/ttf/GlyphData.java::method::GlyphData.initData	method	ported	src	auto-generated
 fontbox/src/main/java/org/apache/fontbox/ttf/GlyphData.java::method::GlyphData.initEmptyData	method	ported	src	auto-generated
-fontbox/src/main/java/org/apache/fontbox/ttf/GlyphDescription.java::interface::GlyphDescription	interface	missing	-	auto-generated
+fontbox/src/main/java/org/apache/fontbox/ttf/GlyphDescription.java::interface::GlyphDescription	interface	ported	src/fontbox/ttf/ttf_tables.cr	reconciled: class present
 fontbox/src/main/java/org/apache/fontbox/ttf/GlyphDescription.java::method::getContourCount	method	missing	-	auto-generated
 fontbox/src/main/java/org/apache/fontbox/ttf/GlyphDescription.java::method::getEndPtOfContours	method	missing	-	auto-generated
 fontbox/src/main/java/org/apache/fontbox/ttf/GlyphDescription.java::method::getFlags	method	missing	-	auto-generated
@@ -2643,8 +2643,8 @@ fontbox/src/main/java/org/apache/fontbox/ttf/TTFTable.java::method::TTFTable.set
 fontbox/src/main/java/org/apache/fontbox/ttf/TTFTable.java::method::TTFTable.setOffset	method	ported	src	auto-generated
 fontbox/src/main/java/org/apache/fontbox/ttf/TTFTable.java::method::TTFTable.setTag	method	ported	src	auto-generated
 fontbox/src/main/java/org/apache/fontbox/ttf/TrueTypeCollection.java::class::TrueTypeCollection	class	partial	src	auto-generated
-fontbox/src/main/java/org/apache/fontbox/ttf/TrueTypeCollection.java::interface::TrueTypeFontHeadersProcessor	interface	missing	-	auto-generated
-fontbox/src/main/java/org/apache/fontbox/ttf/TrueTypeCollection.java::interface::TrueTypeFontProcessor	interface	missing	-	auto-generated
+fontbox/src/main/java/org/apache/fontbox/ttf/TrueTypeCollection.java::interface::TrueTypeFontHeadersProcessor	interface	ported	src/fontbox/ttf/true_type_collection.cr	reconciled: class present
+fontbox/src/main/java/org/apache/fontbox/ttf/TrueTypeCollection.java::interface::TrueTypeFontProcessor	interface	ported	src/fontbox/ttf/true_type_collection.cr	reconciled: class present
 fontbox/src/main/java/org/apache/fontbox/ttf/TrueTypeCollection.java::method::TrueTypeCollection.close	method	ported	src	auto-generated
 fontbox/src/main/java/org/apache/fontbox/ttf/TrueTypeCollection.java::method::TrueTypeCollection.createBufferedDataStream	method	ported	src	auto-generated
 fontbox/src/main/java/org/apache/fontbox/ttf/TrueTypeCollection.java::method::TrueTypeCollection.createFontParserAtIndexAndSeek	method	ported	src	auto-generated
@@ -2750,7 +2750,7 @@ fontbox/src/main/java/org/apache/fontbox/ttf/gsub/CompoundCharacterTokenizer.jav
 fontbox/src/main/java/org/apache/fontbox/ttf/gsub/DefaultGsubWorker.java::class::DefaultGsubWorker	class	partial	src	auto-generated
 fontbox/src/main/java/org/apache/fontbox/ttf/gsub/DefaultGsubWorker.java::const::LOG	const	missing	-	auto-generated
 fontbox/src/main/java/org/apache/fontbox/ttf/gsub/DefaultGsubWorker.java::method::DefaultGsubWorker.applyTransforms	method	ported	src	auto-generated
-fontbox/src/main/java/org/apache/fontbox/ttf/gsub/GlyphArraySplitter.java::interface::GlyphArraySplitter	interface	missing	-	auto-generated
+fontbox/src/main/java/org/apache/fontbox/ttf/gsub/GlyphArraySplitter.java::interface::GlyphArraySplitter	interface	ported	src/fontbox/ttf/gsub/glyph_array_splitter.cr	reconciled: class present
 fontbox/src/main/java/org/apache/fontbox/ttf/gsub/GlyphArraySplitter.java::method::split	method	missing	-	auto-generated
 fontbox/src/main/java/org/apache/fontbox/ttf/gsub/GlyphArraySplitterRegexImpl.java::class::GlyphArraySplitterRegexImpl	class	partial	src	auto-generated
 fontbox/src/main/java/org/apache/fontbox/ttf/gsub/GlyphArraySplitterRegexImpl.java::const::GLYPH_ID_SEPARATOR	const	missing	-	auto-generated
@@ -2776,7 +2776,7 @@ fontbox/src/main/java/org/apache/fontbox/ttf/gsub/GlyphSubstitutionDataExtractor
 fontbox/src/main/java/org/apache/fontbox/ttf/gsub/GlyphSubstitutionDataExtractor.java::method::ScriptTableDetails.getFeatureName	method	partial	src	auto-generated
 fontbox/src/main/java/org/apache/fontbox/ttf/gsub/GlyphSubstitutionDataExtractor.java::method::ScriptTableDetails.getLanguage	method	partial	src	auto-generated
 fontbox/src/main/java/org/apache/fontbox/ttf/gsub/GlyphSubstitutionDataExtractor.java::method::ScriptTableDetails.getScriptTable	method	partial	src	auto-generated
-fontbox/src/main/java/org/apache/fontbox/ttf/gsub/GsubWorker.java::interface::GsubWorker	interface	missing	-	auto-generated
+fontbox/src/main/java/org/apache/fontbox/ttf/gsub/GsubWorker.java::interface::GsubWorker	interface	ported	src/fontbox/ttf/gsub/gsub_worker.cr	reconciled: class present
 fontbox/src/main/java/org/apache/fontbox/ttf/gsub/GsubWorker.java::method::applyTransforms	method	missing	-	auto-generated
 fontbox/src/main/java/org/apache/fontbox/ttf/gsub/GsubWorkerFactory.java::class::GsubWorkerFactory	class	partial	src	auto-generated
 fontbox/src/main/java/org/apache/fontbox/ttf/gsub/GsubWorkerFactory.java::const::LOG	const	missing	-	auto-generated
@@ -2854,7 +2854,7 @@ fontbox/src/main/java/org/apache/fontbox/ttf/gsub/GsubWorkerForTamil.java::metho
 fontbox/src/main/java/org/apache/fontbox/ttf/gsub/GsubWorkerForTamil.java::method::GsubWorkerForTamil.getRephGlyphIds	method	ported	src	auto-generated
 fontbox/src/main/java/org/apache/fontbox/ttf/gsub/GsubWorkerForTamil.java::method::GsubWorkerForTamil.getbeforeRephGlyphIds	method	ported	src	auto-generated
 fontbox/src/main/java/org/apache/fontbox/ttf/gsub/GsubWorkerForTamil.java::method::GsubWorkerForTamil.repositionGlyphs	method	ported	src	auto-generated
-fontbox/src/main/java/org/apache/fontbox/ttf/model/GsubData.java::interface::GsubData	interface	missing	-	auto-generated
+fontbox/src/main/java/org/apache/fontbox/ttf/model/GsubData.java::interface::GsubData	interface	ported	src/fontbox/ttf/ttf_tables.cr	reconciled: class present
 fontbox/src/main/java/org/apache/fontbox/ttf/model/GsubData.java::method::getActiveScriptName	method	missing	-	auto-generated
 fontbox/src/main/java/org/apache/fontbox/ttf/model/GsubData.java::method::getFeature	method	missing	-	auto-generated
 fontbox/src/main/java/org/apache/fontbox/ttf/model/GsubData.java::method::getLanguage	method	missing	-	auto-generated
@@ -2875,7 +2875,7 @@ fontbox/src/main/java/org/apache/fontbox/ttf/model/MapBackedScriptFeature.java::
 fontbox/src/main/java/org/apache/fontbox/ttf/model/MapBackedScriptFeature.java::method::MapBackedScriptFeature.getName	method	ported	src	auto-generated
 fontbox/src/main/java/org/apache/fontbox/ttf/model/MapBackedScriptFeature.java::method::MapBackedScriptFeature.getReplacementForGlyphs	method	ported	src	auto-generated
 fontbox/src/main/java/org/apache/fontbox/ttf/model/MapBackedScriptFeature.java::method::MapBackedScriptFeature.hashCode	method	partial	src	auto-generated
-fontbox/src/main/java/org/apache/fontbox/ttf/model/ScriptFeature.java::interface::ScriptFeature	interface	missing	-	auto-generated
+fontbox/src/main/java/org/apache/fontbox/ttf/model/ScriptFeature.java::interface::ScriptFeature	interface	ported	src/fontbox/ttf/ttf_tables.cr	reconciled: class present
 fontbox/src/main/java/org/apache/fontbox/ttf/model/ScriptFeature.java::method::canReplaceGlyphs	method	missing	-	auto-generated
 fontbox/src/main/java/org/apache/fontbox/ttf/model/ScriptFeature.java::method::getAllGlyphIdsForSubstitution	method	missing	-	auto-generated
 fontbox/src/main/java/org/apache/fontbox/ttf/model/ScriptFeature.java::method::getName	method	missing	-	auto-generated
@@ -2994,7 +2994,7 @@ fontbox/src/main/java/org/apache/fontbox/type1/Token.java::method::Token.getKind
 fontbox/src/main/java/org/apache/fontbox/type1/Token.java::method::Token.getText	method	partial	src	auto-generated
 fontbox/src/main/java/org/apache/fontbox/type1/Token.java::method::Token.intValue	method	ported	src	auto-generated
 fontbox/src/main/java/org/apache/fontbox/type1/Token.java::method::Token.toString	method	partial	src	auto-generated
-fontbox/src/main/java/org/apache/fontbox/type1/Type1CharStringReader.java::interface::Type1CharStringReader	interface	missing	-	auto-generated
+fontbox/src/main/java/org/apache/fontbox/type1/Type1CharStringReader.java::interface::Type1CharStringReader	interface	ported	src/fontbox/cff/type1_char_string_reader.cr	reconciled: class present
 fontbox/src/main/java/org/apache/fontbox/type1/Type1CharStringReader.java::method::getType1CharString	method	missing	-	auto-generated
 fontbox/src/main/java/org/apache/fontbox/type1/Type1Font.java::class::Type1Font	class	partial	src	auto-generated
 fontbox/src/main/java/org/apache/fontbox/type1/Type1Font.java::method::Type1Font.createWithPFB	method	ported	src	auto-generated
@@ -3168,7 +3168,7 @@ io/src/main/java/org/apache/pdfbox/io/RandomAccessInputStream.java::method::Rand
 io/src/main/java/org/apache/pdfbox/io/RandomAccessInputStream.java::method::RandomAccessInputStream.skip	method	ported	src	auto-generated
 io/src/main/java/org/apache/pdfbox/io/RandomAccessOutputStream.java::class::RandomAccessOutputStream	class	missing	-	auto-generated
 io/src/main/java/org/apache/pdfbox/io/RandomAccessOutputStream.java::method::RandomAccessOutputStream.write	method	missing	-	auto-generated
-io/src/main/java/org/apache/pdfbox/io/RandomAccessRead.java::interface::RandomAccessRead	interface	missing	-	auto-generated
+io/src/main/java/org/apache/pdfbox/io/RandomAccessRead.java::interface::RandomAccessRead	interface	ported	src/pdfbox/io.cr	reconciled: class present
 io/src/main/java/org/apache/pdfbox/io/RandomAccessRead.java::method::available	method	missing	-	auto-generated
 io/src/main/java/org/apache/pdfbox/io/RandomAccessRead.java::method::createView	method	missing	-	auto-generated
 io/src/main/java/org/apache/pdfbox/io/RandomAccessRead.java::method::getPosition	method	missing	-	auto-generated
@@ -3263,11 +3263,11 @@ io/src/main/java/org/apache/pdfbox/io/ScratchFile.java::method::ScratchFile.getP
 io/src/main/java/org/apache/pdfbox/io/ScratchFile.java::method::ScratchFile.initPages	method	missing	-	auto-generated
 io/src/main/java/org/apache/pdfbox/io/ScratchFile.java::method::ScratchFile.markPagesAsFree	method	missing	-	auto-generated
 io/src/main/java/org/apache/pdfbox/io/ScratchFile.java::method::ScratchFile.readPage	method	missing	-	auto-generated
-io/src/main/java/org/apache/pdfbox/io/ScratchFile.java::method::ScratchFile.removeBuffer	method	missing	-	auto-generated
+io/src/main/java/org/apache/pdfbox/io/ScratchFile.java::method::ScratchFile.removeBuffer	method	ported	src/pdfbox/io.cr	reconciled: method present
 io/src/main/java/org/apache/pdfbox/io/ScratchFile.java::method::ScratchFile.writePage	method	missing	-	auto-generated
 io/src/main/java/org/apache/pdfbox/io/ScratchFileBuffer.java::class::ScratchFileBuffer	class	ported	src/pdfbox/io.cr	auto-generated
 io/src/main/java/org/apache/pdfbox/io/ScratchFileBuffer.java::method::ScratchFileBuffer.addPage	method	missing	-	auto-generated
-io/src/main/java/org/apache/pdfbox/io/ScratchFileBuffer.java::method::ScratchFileBuffer.checkClosed	method	missing	-	auto-generated
+io/src/main/java/org/apache/pdfbox/io/ScratchFileBuffer.java::method::ScratchFileBuffer.checkClosed	method	ported	src/pdfbox/io.cr	reconciled: method present
 io/src/main/java/org/apache/pdfbox/io/ScratchFileBuffer.java::method::ScratchFileBuffer.clear	method	ported	src/pdfbox/io.cr	auto-generated
 io/src/main/java/org/apache/pdfbox/io/ScratchFileBuffer.java::method::ScratchFileBuffer.close	method	ported	src/pdfbox/io.cr	auto-generated
 io/src/main/java/org/apache/pdfbox/io/ScratchFileBuffer.java::method::ScratchFileBuffer.createView	method	ported	src/pdfbox/io.cr	auto-generated
@@ -3294,7 +3294,7 @@ pdfbox/src/main/java/org/apache/pdfbox/Loader.java::class::Loader	class	partial	
 pdfbox/src/main/java/org/apache/pdfbox/Loader.java::method::Loader.loadFDF	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/Loader.java::method::Loader.loadPDF	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/Loader.java::method::Loader.loadXFDF	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDContentStream.java::interface::PDContentStream	interface	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDContentStream.java::interface::PDContentStream	interface	ported	src/pdfbox/pdmodel/font/type3_char_proc.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDContentStream.java::method::getBBox	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDContentStream.java::method::getContents	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDContentStream.java::method::getContentsForRandomAccess	method	missing	-	auto-generated
@@ -4560,7 +4560,7 @@ pdfbox/src/main/java/org/apache/pdfbox/cos/COSUpdateState.java::method::COSUpdat
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSUpdateState.java::method::COSUpdateState.setOriginDocumentState	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSUpdateState.java::method::COSUpdateState.toIncrement	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSUpdateState.java::method::COSUpdateState.update	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/ICOSParser.java::interface::ICOSParser	interface	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/cos/ICOSParser.java::interface::ICOSParser	interface	ported	src/pdfbox/cos/icosparser.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/cos/ICOSParser.java::method::createRandomAccessReadView	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/cos/ICOSParser.java::method::dereferenceCOSObject	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/cos/ICOSVisitor.java::interface::ICOSVisitor	interface	missing	-	auto-generated
@@ -4787,7 +4787,7 @@ pdfbox/src/main/java/org/apache/pdfbox/filter/RunLengthDecodeFilter.java::class:
 pdfbox/src/main/java/org/apache/pdfbox/filter/RunLengthDecodeFilter.java::const::RUN_LENGTH_EOD	const	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/filter/RunLengthDecodeFilter.java::method::RunLengthDecodeFilter.decode	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/filter/RunLengthDecodeFilter.java::method::RunLengthDecodeFilter.encode	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/filter/TIFFExtension.java::interface::TIFFExtension	interface	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/filter/TIFFExtension.java::interface::TIFFExtension	interface	ported	src/pdfbox/filter/tiff_extension.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/LayerUtility.java::class::LayerUtility	class	ported	src/pdfbox/multipdf.cr	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/LayerUtility.java::const::DEBUG	const	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/LayerUtility.java::const::LOG	const	missing	-	auto-generated
@@ -4850,7 +4850,7 @@ pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFCloneUtility.java::method::PD
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFCloneUtility.java::method::PDFCloneUtility.cloneMerge	method	ported	src/pdfbox/multipdf.cr	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFCloneUtility.java::method::PDFCloneUtility.cloneMergeCOSBase	method	ported	src/pdfbox/multipdf.cr	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFCloneUtility.java::method::PDFCloneUtility.getDestination	method	ported	src/pdfbox/multipdf.cr	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFCloneUtility.java::method::PDFCloneUtility.hasSelfReference	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFCloneUtility.java::method::PDFCloneUtility.hasSelfReference	method	ported	src/pdfbox/multipdf.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::class::PDFMergerUtility	class	ported	src/pdfbox/multipdf.cr	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::const::LOG	const	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::enum::AcroFormMergeMode	enum	missing	-	auto-generated
@@ -4864,7 +4864,7 @@ pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::P
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.getDestinationDocumentInformation	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.getDestinationFileName	method	ported	src/pdfbox/multipdf.cr	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.getDestinationMetadata	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.getDestinationStream	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.getDestinationStream	method	ported	src/pdfbox/multipdf.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.getDocumentMergeMode	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.getIDTreeAsMap	method	ported	src/pdfbox/multipdf.cr	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.getNumberTreeAsMap	method	ported	src/pdfbox/multipdf.cr	auto-generated
@@ -4888,7 +4888,7 @@ pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::P
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.setDestinationDocumentInformation	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.setDestinationFileName	method	ported	src/pdfbox/multipdf.cr	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.setDestinationMetadata	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.setDestinationStream	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.setDestinationStream	method	ported	src/pdfbox/multipdf.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.setDocumentMergeMode	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.setIgnoreAcroFormErrors	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.updatePageReferences	method	ported	src/pdfbox/multipdf.cr	auto-generated
@@ -5174,7 +5174,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdfparser/xref/ObjectStreamXReference.jav
 pdfbox/src/main/java/org/apache/pdfbox/pdfparser/xref/ObjectStreamXReference.java::method::ObjectStreamXReference.getSecondColumnValue	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdfparser/xref/ObjectStreamXReference.java::method::ObjectStreamXReference.getThirdColumnValue	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdfparser/xref/ObjectStreamXReference.java::method::ObjectStreamXReference.toString	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdfparser/xref/XReferenceEntry.java::interface::XReferenceEntry	interface	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdfparser/xref/XReferenceEntry.java::interface::XReferenceEntry	interface	ported	src/pdfbox/pdf_parser/xref/xreference_entry.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/pdfparser/xref/XReferenceEntry.java::method::getFirstColumnValue	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdfparser/xref/XReferenceEntry.java::method::getReferencedKey	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdfparser/xref/XReferenceEntry.java::method::getSecondColumnValue	method	missing	-	auto-generated
@@ -5651,7 +5651,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PageLayout.java::method::stringVa
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PageMode.java::enum::PageMode	enum	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PageMode.java::method::fromString	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PageMode.java::method::stringValue	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/ResourceCache.java::interface::ResourceCache	interface	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/ResourceCache.java::interface::ResourceCache	interface	ported	src/pdfbox/pdmodel/resource_cache.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/ResourceCache.java::method::getColorSpace	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/ResourceCache.java::method::getExtGState	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/ResourceCache.java::method::getFont	method	missing	-	auto-generated
@@ -5716,9 +5716,9 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/COSDictionaryMap.java::met
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/COSDictionaryMap.java::method::COSDictionaryMap.size	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/COSDictionaryMap.java::method::COSDictionaryMap.toString	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/COSDictionaryMap.java::method::COSDictionaryMap.values	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/COSObjectable.java::interface::COSObjectable	interface	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/COSObjectable.java::interface::COSObjectable	interface	ported	src/pdfbox/pdmodel/common/cos_objectable.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/COSObjectable.java::method::getCOSObject	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDDestinationOrAction.java::interface::PDDestinationOrAction	interface	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDDestinationOrAction.java::interface::PDDestinationOrAction	interface	ported	src/pdfbox/pdmodel/common/pd_destination_or_action.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDDictionaryWrapper.java::class::PDDictionaryWrapper	class	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDDictionaryWrapper.java::method::PDDictionaryWrapper.equals	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDDictionaryWrapper.java::method::PDDictionaryWrapper.getCOSObject	method	ported	src	auto-generated
@@ -6069,7 +6069,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/function/type4/Instruction
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/function/type4/InstructionSequenceBuilder.java::method::InstructionSequenceBuilder.parseInt	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/function/type4/InstructionSequenceBuilder.java::method::InstructionSequenceBuilder.parseReal	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/function/type4/InstructionSequenceBuilder.java::method::InstructionSequenceBuilder.token	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/function/type4/Operator.java::interface::Operator	interface	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/function/type4/Operator.java::interface::Operator	interface	ported	src/pdfbox/content_stream/operator.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/function/type4/Operator.java::method::execute	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/function/type4/Operators.java::class::Operators	class	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/function/type4/Operators.java::const::ABS	const	missing	-	auto-generated
@@ -6126,7 +6126,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/function/type4/Parser.java
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/function/type4/Parser.java::const::SPACE	const	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/function/type4/Parser.java::const::TAB	const	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/function/type4/Parser.java::enum::State	enum	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/function/type4/Parser.java::interface::SyntaxHandler	interface	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/function/type4/Parser.java::interface::SyntaxHandler	interface	ported	src/pdfbox/pdmodel/common/function/type4/parser.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/function/type4/Parser.java::method::AbstractSyntaxHandler.comment	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/function/type4/Parser.java::method::AbstractSyntaxHandler.newLine	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/function/type4/Parser.java::method::AbstractSyntaxHandler.whitespace	method	ported	src	auto-generated
@@ -7613,7 +7613,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDFontLike.java::method::get
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDFontLike.java::method::hasExplicitWidth	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDFontLike.java::method::isDamaged	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDFontLike.java::method::isEmbedded	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDMMType1Font.java::class::PDMMType1Font	class	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDMMType1Font.java::class::PDMMType1Font	class	ported	src/pdfbox/pdmodel/font/mm_type1_font.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDPanose.java::class::PDPanose	class	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDPanose.java::const::LENGTH	const	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDPanose.java::method::PDPanose.getFamilyClass	method	ported	src	auto-generated
@@ -7632,28 +7632,28 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDPanoseClassification.java:
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDPanoseClassification.java::method::PDPanoseClassification.getWeight	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDPanoseClassification.java::method::PDPanoseClassification.getXHeight	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDPanoseClassification.java::method::PDPanoseClassification.toString	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDSimpleFont.java::class::PDSimpleFont	class	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDSimpleFont.java::class::PDSimpleFont	class	ported	src/pdfbox/pdmodel/font/simple_font.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDSimpleFont.java::const::LOG	const	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDSimpleFont.java::method::PDSimpleFont.addToSubset	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDSimpleFont.java::method::PDSimpleFont.assignGlyphList	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDSimpleFont.java::method::PDSimpleFont.getEncoding	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDSimpleFont.java::method::PDSimpleFont.getFontBoxFont	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDSimpleFont.java::method::PDSimpleFont.getGlyphList	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDSimpleFont.java::method::PDSimpleFont.getPath	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDSimpleFont.java::method::PDSimpleFont.getStandard14Width	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDSimpleFont.java::method::PDSimpleFont.getSymbolicFlag	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDSimpleFont.java::method::PDSimpleFont.hasExplicitWidth	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDSimpleFont.java::method::PDSimpleFont.hasGlyph	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDSimpleFont.java::method::PDSimpleFont.isFontSymbolic	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDSimpleFont.java::method::PDSimpleFont.isNonZeroBoundingBox	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDSimpleFont.java::method::PDSimpleFont.isStandard14	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDSimpleFont.java::method::PDSimpleFont.isSymbolic	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDSimpleFont.java::method::PDSimpleFont.isVertical	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDSimpleFont.java::method::PDSimpleFont.readEncoding	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDSimpleFont.java::method::PDSimpleFont.readEncodingFromFont	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDSimpleFont.java::method::PDSimpleFont.subset	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDSimpleFont.java::method::PDSimpleFont.toUnicode	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDSimpleFont.java::method::PDSimpleFont.willBeSubset	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDSimpleFont.java::method::PDSimpleFont.addToSubset	method	ported	src/pdfbox/pdmodel/font/simple_font.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDSimpleFont.java::method::PDSimpleFont.assignGlyphList	method	ported	src/pdfbox/pdmodel/font/simple_font.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDSimpleFont.java::method::PDSimpleFont.getEncoding	method	ported	src/pdfbox/pdmodel/font/simple_font.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDSimpleFont.java::method::PDSimpleFont.getFontBoxFont	method	ported	src/pdfbox/pdmodel/font/simple_font.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDSimpleFont.java::method::PDSimpleFont.getGlyphList	method	ported	src/pdfbox/pdmodel/font/simple_font.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDSimpleFont.java::method::PDSimpleFont.getPath	method	ported	src/pdfbox/pdmodel/font/simple_font.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDSimpleFont.java::method::PDSimpleFont.getStandard14Width	method	ported	src/pdfbox/pdmodel/font/simple_font.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDSimpleFont.java::method::PDSimpleFont.getSymbolicFlag	method	ported	src/pdfbox/pdmodel/font/simple_font.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDSimpleFont.java::method::PDSimpleFont.hasExplicitWidth	method	ported	src/pdfbox/pdmodel/font/simple_font.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDSimpleFont.java::method::PDSimpleFont.hasGlyph	method	ported	src/pdfbox/pdmodel/font/simple_font.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDSimpleFont.java::method::PDSimpleFont.isFontSymbolic	method	ported	src/pdfbox/pdmodel/font/simple_font.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDSimpleFont.java::method::PDSimpleFont.isNonZeroBoundingBox	method	ported	src/pdfbox/pdmodel/font/simple_font.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDSimpleFont.java::method::PDSimpleFont.isStandard14	method	ported	src/pdfbox/pdmodel/font/simple_font.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDSimpleFont.java::method::PDSimpleFont.isSymbolic	method	ported	src/pdfbox/pdmodel/font/simple_font.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDSimpleFont.java::method::PDSimpleFont.isVertical	method	ported	src/pdfbox/pdmodel/font/simple_font.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDSimpleFont.java::method::PDSimpleFont.readEncoding	method	ported	src/pdfbox/pdmodel/font/simple_font.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDSimpleFont.java::method::PDSimpleFont.readEncodingFromFont	method	ported	src/pdfbox/pdmodel/font/simple_font.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDSimpleFont.java::method::PDSimpleFont.subset	method	ported	src/pdfbox/pdmodel/font/simple_font.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDSimpleFont.java::method::PDSimpleFont.toUnicode	method	ported	src/pdfbox/pdmodel/font/simple_font.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDSimpleFont.java::method::PDSimpleFont.willBeSubset	method	ported	src/pdfbox/pdmodel/font/simple_font.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDTrueTypeFont.java::class::PDTrueTypeFont	class	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDTrueTypeFont.java::const::INVERTED_MACOS_ROMAN	const	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDTrueTypeFont.java::const::LOG	const	missing	-	auto-generated
@@ -7686,72 +7686,72 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDTrueTypeFontEmbedder.java:
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDTrueTypeFontEmbedder.java::method::PDTrueTypeFontEmbedder.buildSubset	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDTrueTypeFontEmbedder.java::method::PDTrueTypeFontEmbedder.getFontEncoding	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDTrueTypeFontEmbedder.java::method::PDTrueTypeFontEmbedder.setWidths	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::class::PDType0Font	class	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::class::PDType0Font	class	ported	src/pdfbox/pdmodel/font/type0_font.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::const::LOG	const	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.addGlyphsToSubset	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.addToSubset	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.codeToCID	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.codeToGID	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.encode	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.encodeGlyphId	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.addGlyphsToSubset	method	ported	src/pdfbox/pdmodel/font/type0_font.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.addToSubset	method	ported	src/pdfbox/pdmodel/font/type0_font.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.codeToCID	method	ported	src/pdfbox/pdmodel/font/type0_font.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.codeToGID	method	ported	src/pdfbox/pdmodel/font/type0_font.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.encode	method	ported	src/pdfbox/pdmodel/font/type0_font.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.encodeGlyphId	method	ported	src/pdfbox/pdmodel/font/type0_font.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.fetchCMapUCS2	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.getAverageFontWidth	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.getBaseFont	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.getBoundingBox	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.getAverageFontWidth	method	ported	src/pdfbox/pdmodel/font/type0_font.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.getBaseFont	method	ported	src/pdfbox/pdmodel/font/type0_font.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.getBoundingBox	method	ported	src/pdfbox/pdmodel/font/type0_font.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.getCMap	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.getCMapUCS2	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.getCmapLookup	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.getDescendantFont	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.getDisplacement	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.getFontDescriptor	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.getFontMatrix	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.getGsubData	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.getHeight	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.getName	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.getNormalizedPath	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.getPath	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.getPositionVector	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.getStandard14Width	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.getWidth	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.getWidthFromFont	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.hasExplicitWidth	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.hasGlyph	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.isDamaged	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.isEmbedded	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.isStandard14	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.isVertical	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.getCmapLookup	method	ported	src/pdfbox/pdmodel/font/type0_font.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.getDescendantFont	method	ported	src/pdfbox/pdmodel/font/type0_font.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.getDisplacement	method	ported	src/pdfbox/pdmodel/font/type0_font.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.getFontDescriptor	method	ported	src/pdfbox/pdmodel/font/type0_font.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.getFontMatrix	method	ported	src/pdfbox/pdmodel/font/type0_font.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.getGsubData	method	ported	src/pdfbox/pdmodel/font/type0_font.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.getHeight	method	ported	src/pdfbox/pdmodel/font/type0_font.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.getName	method	ported	src/pdfbox/pdmodel/font/type0_font.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.getNormalizedPath	method	ported	src/pdfbox/pdmodel/font/type0_font.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.getPath	method	ported	src/pdfbox/pdmodel/font/type0_font.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.getPositionVector	method	ported	src/pdfbox/pdmodel/font/type0_font.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.getStandard14Width	method	ported	src/pdfbox/pdmodel/font/type0_font.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.getWidth	method	ported	src/pdfbox/pdmodel/font/type0_font.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.getWidthFromFont	method	ported	src/pdfbox/pdmodel/font/type0_font.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.hasExplicitWidth	method	ported	src/pdfbox/pdmodel/font/type0_font.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.hasGlyph	method	ported	src/pdfbox/pdmodel/font/type0_font.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.isDamaged	method	ported	src/pdfbox/pdmodel/font/type0_font.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.isEmbedded	method	ported	src/pdfbox/pdmodel/font/type0_font.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.isStandard14	method	ported	src/pdfbox/pdmodel/font/type0_font.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.isVertical	method	ported	src/pdfbox/pdmodel/font/type0_font.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.load	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.loadVertical	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.readCode	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.readEncoding	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.subset	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.readCode	method	ported	src/pdfbox/pdmodel/font/type0_font.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.readEncoding	method	ported	src/pdfbox/pdmodel/font/type0_font.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.subset	method	ported	src/pdfbox/pdmodel/font/type0_font.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.toString	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.toUnicode	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.willBeSubset	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1CFont.java::class::PDType1CFont	class	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.toUnicode	method	ported	src/pdfbox/pdmodel/font/type0_font.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.willBeSubset	method	ported	src/pdfbox/pdmodel/font/type0_font.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1CFont.java::class::PDType1CFont	class	ported	src/pdfbox/pdmodel/font/type1c_font.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1CFont.java::const::LOG	const	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1CFont.java::method::PDType1CFont.codeToName	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1CFont.java::method::PDType1CFont.encode	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1CFont.java::method::PDType1CFont.codeToName	method	ported	src/pdfbox/pdmodel/font/type1c_font.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1CFont.java::method::PDType1CFont.encode	method	ported	src/pdfbox/pdmodel/font/type1c_font.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1CFont.java::method::PDType1CFont.generateBoundingBox	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1CFont.java::method::PDType1CFont.getAverageCharacterWidth	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1CFont.java::method::PDType1CFont.getAverageFontWidth	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1CFont.java::method::PDType1CFont.getBaseFont	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1CFont.java::method::PDType1CFont.getBoundingBox	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1CFont.java::method::PDType1CFont.getCFFType1Font	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1CFont.java::method::PDType1CFont.getFontBoxFont	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1CFont.java::method::PDType1CFont.getFontMatrix	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1CFont.java::method::PDType1CFont.getHeight	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1CFont.java::method::PDType1CFont.getName	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1CFont.java::method::PDType1CFont.getNameInFont	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1CFont.java::method::PDType1CFont.getNormalizedPath	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1CFont.java::method::PDType1CFont.getPath	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1CFont.java::method::PDType1CFont.getStringWidth	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1CFont.java::method::PDType1CFont.getWidthFromFont	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1CFont.java::method::PDType1CFont.hasGlyph	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1CFont.java::method::PDType1CFont.isDamaged	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1CFont.java::method::PDType1CFont.isEmbedded	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1CFont.java::method::PDType1CFont.readCode	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1CFont.java::method::PDType1CFont.readEncodingFromFont	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1CFont.java::method::PDType1CFont.getAverageFontWidth	method	ported	src/pdfbox/pdmodel/font/type1c_font.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1CFont.java::method::PDType1CFont.getBaseFont	method	ported	src/pdfbox/pdmodel/font/type1c_font.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1CFont.java::method::PDType1CFont.getBoundingBox	method	ported	src/pdfbox/pdmodel/font/type1c_font.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1CFont.java::method::PDType1CFont.getCFFType1Font	method	ported	src/pdfbox/pdmodel/font/type1c_font.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1CFont.java::method::PDType1CFont.getFontBoxFont	method	ported	src/pdfbox/pdmodel/font/type1c_font.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1CFont.java::method::PDType1CFont.getFontMatrix	method	ported	src/pdfbox/pdmodel/font/type1c_font.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1CFont.java::method::PDType1CFont.getHeight	method	ported	src/pdfbox/pdmodel/font/type1c_font.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1CFont.java::method::PDType1CFont.getName	method	ported	src/pdfbox/pdmodel/font/type1c_font.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1CFont.java::method::PDType1CFont.getNameInFont	method	ported	src/pdfbox/pdmodel/font/type1c_font.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1CFont.java::method::PDType1CFont.getNormalizedPath	method	ported	src/pdfbox/pdmodel/font/type1c_font.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1CFont.java::method::PDType1CFont.getPath	method	ported	src/pdfbox/pdmodel/font/type1c_font.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1CFont.java::method::PDType1CFont.getStringWidth	method	ported	src/pdfbox/pdmodel/font/type1c_font.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1CFont.java::method::PDType1CFont.getWidthFromFont	method	ported	src/pdfbox/pdmodel/font/type1c_font.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1CFont.java::method::PDType1CFont.hasGlyph	method	ported	src/pdfbox/pdmodel/font/type1c_font.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1CFont.java::method::PDType1CFont.isDamaged	method	ported	src/pdfbox/pdmodel/font/type1c_font.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1CFont.java::method::PDType1CFont.isEmbedded	method	ported	src/pdfbox/pdmodel/font/type1c_font.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1CFont.java::method::PDType1CFont.readCode	method	ported	src/pdfbox/pdmodel/font/type1c_font.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1CFont.java::method::PDType1CFont.readEncodingFromFont	method	ported	src/pdfbox/pdmodel/font/type1c_font.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1Font.java::class::PDType1Font	class	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1Font.java::const::ALT_NAMES	const	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1Font.java::const::LOG	const	missing	-	auto-generated
@@ -7823,11 +7823,11 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType3Font.java::method::PD
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType3Font.java::method::PDType3Font.readCode	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType3Font.java::method::PDType3Font.readEncoding	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType3Font.java::method::PDType3Font.readEncodingFromFont	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDVectorFont.java::interface::PDVectorFont	interface	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDVectorFont.java::interface::PDVectorFont	interface	ported	src/pdfbox/pdmodel/font/vector_font.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDVectorFont.java::method::getNormalizedPath	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDVectorFont.java::method::getPath	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDVectorFont.java::method::hasGlyph	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/Standard14Fonts.java::class::Standard14Fonts	class	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/Standard14Fonts.java::class::Standard14Fonts	class	ported	src/pdfbox/pdmodel/font/standard14_fonts.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/Standard14Fonts.java::const::ALIASES	const	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/Standard14Fonts.java::const::FONTS	const	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/Standard14Fonts.java::const::GENERIC_FONTS	const	missing	-	auto-generated
@@ -7894,17 +7894,17 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/Encoding.java::meth
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/Encoding.java::method::Encoding.getName	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/Encoding.java::method::Encoding.getNameToCodeMap	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/Encoding.java::method::Encoding.overwrite	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/GlyphList.java::class::GlyphList	class	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/GlyphList.java::class::GlyphList	class	ported	src/pdfbox/pdmodel/font/encoding/glyph_list.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/GlyphList.java::const::DEFAULT	const	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/GlyphList.java::const::LOG	const	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/GlyphList.java::const::ZAPF_DINGBATS	const	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/GlyphList.java::method::GlyphList.codePointToName	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/GlyphList.java::method::GlyphList.codePointToName	method	ported	src/pdfbox/pdmodel/font/encoding/glyph_list.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/GlyphList.java::method::GlyphList.getAdobeGlyphList	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/GlyphList.java::method::GlyphList.getZapfDingbats	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/GlyphList.java::method::GlyphList.load	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/GlyphList.java::method::GlyphList.loadList	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/GlyphList.java::method::GlyphList.sequenceToName	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/GlyphList.java::method::GlyphList.toUnicode	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/GlyphList.java::method::GlyphList.loadList	method	ported	src/pdfbox/pdmodel/font/encoding/glyph_list.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/GlyphList.java::method::GlyphList.sequenceToName	method	ported	src/pdfbox/pdmodel/font/encoding/glyph_list.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/GlyphList.java::method::GlyphList.toUnicode	method	ported	src/pdfbox/pdmodel/font/encoding/glyph_list.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/MacExpertEncoding.java::class::MacExpertEncoding	class	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/MacExpertEncoding.java::const::INSTANCE	const	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/MacExpertEncoding.java::const::MAC_EXPERT_ENCODING_TABLE	const	missing	-	auto-generated
@@ -7924,11 +7924,11 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/StandardEncoding.ja
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/StandardEncoding.java::const::STANDARD_ENCODING_TABLE	const	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/StandardEncoding.java::method::StandardEncoding.getCOSObject	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/StandardEncoding.java::method::StandardEncoding.getEncodingName	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/SymbolEncoding.java::class::SymbolEncoding	class	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/SymbolEncoding.java::class::SymbolEncoding	class	ported	src/pdfbox/pdmodel/font/encoding/symbol_encoding.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/SymbolEncoding.java::const::INSTANCE	const	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/SymbolEncoding.java::const::SYMBOL_ENCODING_TABLE	const	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/SymbolEncoding.java::method::SymbolEncoding.getCOSObject	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/SymbolEncoding.java::method::SymbolEncoding.getEncodingName	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/SymbolEncoding.java::method::SymbolEncoding.getCOSObject	method	ported	src/pdfbox/pdmodel/font/encoding/symbol_encoding.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/SymbolEncoding.java::method::SymbolEncoding.getEncodingName	method	ported	src/pdfbox/pdmodel/font/encoding/symbol_encoding.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/Type1Encoding.java::class::Type1Encoding	class	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/Type1Encoding.java::method::Type1Encoding.fromFontBox	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/Type1Encoding.java::method::Type1Encoding.getCOSObject	method	ported	src	auto-generated
@@ -7938,11 +7938,11 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/WinAnsiEncoding.jav
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/WinAnsiEncoding.java::const::WIN_ANSI_ENCODING_TABLE	const	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/WinAnsiEncoding.java::method::WinAnsiEncoding.getCOSObject	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/WinAnsiEncoding.java::method::WinAnsiEncoding.getEncodingName	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/ZapfDingbatsEncoding.java::class::ZapfDingbatsEncoding	class	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/ZapfDingbatsEncoding.java::class::ZapfDingbatsEncoding	class	ported	src/pdfbox/pdmodel/font/encoding/zapf_dingbats_encoding.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/ZapfDingbatsEncoding.java::const::INSTANCE	const	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/ZapfDingbatsEncoding.java::const::ZAPFDINGBATS_ENCODING_TABLE	const	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/ZapfDingbatsEncoding.java::method::ZapfDingbatsEncoding.getCOSObject	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/ZapfDingbatsEncoding.java::method::ZapfDingbatsEncoding.getEncodingName	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/ZapfDingbatsEncoding.java::method::ZapfDingbatsEncoding.getCOSObject	method	ported	src/pdfbox/pdmodel/font/encoding/zapf_dingbats_encoding.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/ZapfDingbatsEncoding.java::method::ZapfDingbatsEncoding.getEncodingName	method	ported	src/pdfbox/pdmodel/font/encoding/zapf_dingbats_encoding.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/PDFontSetting.java::class::PDFontSetting	class	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/PDFontSetting.java::method::PDFontSetting.getCOSObject	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/PDFontSetting.java::method::PDFontSetting.getFont	method	partial	src	auto-generated
@@ -7985,8 +7985,8 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/blend/BlendMode.java::co
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/blend/BlendMode.java::const::SATURATION	const	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/blend/BlendMode.java::const::SCREEN	const	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/blend/BlendMode.java::const::SOFT_LIGHT	const	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/blend/BlendMode.java::interface::BlendChannelFunction	interface	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/blend/BlendMode.java::interface::BlendFunction	interface	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/blend/BlendMode.java::interface::BlendChannelFunction	interface	ported	src/pdfbox/pdmodel/graphics/blend/blend_mode.cr	reconciled: class present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/blend/BlendMode.java::interface::BlendFunction	interface	ported	src/pdfbox/pdmodel/graphics/blend/blend_mode.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/blend/BlendMode.java::method::BlendMode.blend	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/blend/BlendMode.java::method::BlendMode.blendChannel	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/blend/BlendMode.java::method::BlendMode.createBlendModeMap	method	partial	src	auto-generated
@@ -8159,17 +8159,17 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::m
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.toRGBImage	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.toRawImage	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.toString	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDIndexed.java::class::PDIndexed	class	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDIndexed.java::method::PDIndexed.getBaseColorSpace	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDIndexed.java::method::PDIndexed.getDefaultDecode	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDIndexed.java::class::PDIndexed	class	ported	src/pdfbox/pdmodel/graphics/color/pdindexed.cr	reconciled: class present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDIndexed.java::method::PDIndexed.getBaseColorSpace	method	ported	src/pdfbox/pdmodel/graphics/color/pdindexed.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDIndexed.java::method::PDIndexed.getDefaultDecode	method	ported	src/pdfbox/pdmodel/graphics/color/pdindexed.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDIndexed.java::method::PDIndexed.getHival	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDIndexed.java::method::PDIndexed.getInitialColor	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDIndexed.java::method::PDIndexed.getName	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDIndexed.java::method::PDIndexed.getNumberOfComponents	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDIndexed.java::method::PDIndexed.getInitialColor	method	ported	src/pdfbox/pdmodel/graphics/color/pdindexed.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDIndexed.java::method::PDIndexed.getName	method	ported	src/pdfbox/pdmodel/graphics/color/pdindexed.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDIndexed.java::method::PDIndexed.getNumberOfComponents	method	ported	src/pdfbox/pdmodel/graphics/color/pdindexed.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDIndexed.java::method::PDIndexed.initRgbColorTable	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDIndexed.java::method::PDIndexed.readColorTable	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDIndexed.java::method::PDIndexed.readLookupData	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDIndexed.java::method::PDIndexed.toRGB	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDIndexed.java::method::PDIndexed.readLookupData	method	ported	src/pdfbox/pdmodel/graphics/color/pdindexed.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDIndexed.java::method::PDIndexed.toRGB	method	ported	src/pdfbox/pdmodel/graphics/color/pdindexed.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDIndexed.java::method::PDIndexed.toRGBImage	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDIndexed.java::method::PDIndexed.toRawImage	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDIndexed.java::method::PDIndexed.toString	method	missing	-	auto-generated
@@ -8317,7 +8317,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/LosslessFactory.ja
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/LosslessFactory.java::method::PredictorEncoder.pngFilterSub	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/LosslessFactory.java::method::PredictorEncoder.pngFilterUp	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/LosslessFactory.java::method::PredictorEncoder.preparePredictorPDImage	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImage.java::interface::PDImage	interface	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImage.java::interface::PDImage	interface	ported	src/pdfbox/pdmodel/graphics/image/pd_image.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImage.java::method::createInputStream	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImage.java::method::getBitsPerComponent	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImage.java::method::getCOSObject	method	missing	-	auto-generated
@@ -8602,9 +8602,9 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.setAntiAlias	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.setBBox	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.setBackground	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.setColorSpace	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.setColorSpace	method	ported	src/pdfbox/pdmodel/graphics/shading.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.setFunction	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.setShadingType	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.setShadingType	method	ported	src/pdfbox/pdmodel/graphics/shading.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.toPaint	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShadingType1.java::class::PDShadingType1	class	ported	src/pdfbox/pdmodel/graphics/shading.cr + shading/pd_shading_type1.cr + resources.cr	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShadingType1.java::method::PDShadingType1.getDomain	method	partial	src	auto-generated
@@ -9153,7 +9153,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/action/PDWindowsLaunc
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/action/PDWindowsLaunchParams.java::method::PDWindowsLaunchParams.setExecuteParam	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/action/PDWindowsLaunchParams.java::method::PDWindowsLaunchParams.setFilename	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/action/PDWindowsLaunchParams.java::method::PDWindowsLaunchParams.setOperation	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/annotation/AnnotationFilter.java::interface::AnnotationFilter	interface	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/annotation/AnnotationFilter.java::interface::AnnotationFilter	interface	ported	src/pdfbox/pdmodel/interactive/annotation/annotation_filter.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/annotation/AnnotationFilter.java::method::accept	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/annotation/PDAnnotation.java::class::PDAnnotation	class	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/annotation/PDAnnotation.java::const::FLAG_HIDDEN	const	missing	-	auto-generated
@@ -9612,7 +9612,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/annotation/handlers/P
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/annotation/handlers/PDAbstractAppearanceHandler.java::method::PDAbstractAppearanceHandler.handleBorderBox	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/annotation/handlers/PDAbstractAppearanceHandler.java::method::PDAbstractAppearanceHandler.setOpacity	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/annotation/handlers/PDAbstractAppearanceHandler.java::method::PDAbstractAppearanceHandler.setTransformationMatrix	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/annotation/handlers/PDAppearanceHandler.java::interface::PDAppearanceHandler	interface	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/annotation/handlers/PDAppearanceHandler.java::interface::PDAppearanceHandler	interface	ported	src/pdfbox/pdmodel/interactive/annotation/handlers/pdappearance_handler.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/annotation/handlers/PDAppearanceHandler.java::method::generateAppearanceStreams	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/annotation/handlers/PDAppearanceHandler.java::method::generateDownAppearance	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/annotation/handlers/PDAppearanceHandler.java::method::generateNormalAppearance	method	missing	-	auto-generated
@@ -10506,7 +10506,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDXFAResource.ja
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDXFAResource.java::method::PDXFAResource.getBytesFromStream	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDXFAResource.java::method::PDXFAResource.getCOSObject	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDXFAResource.java::method::PDXFAResource.getDocument	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/ScriptingHandler.java::interface::ScriptingHandler	interface	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/ScriptingHandler.java::interface::ScriptingHandler	interface	ported	src/pdfbox/pdmodel/interactive/form/scripting_handler.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/ScriptingHandler.java::method::calculate	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/ScriptingHandler.java::method::format	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/ScriptingHandler.java::method::keyboard	method	missing	-	auto-generated
