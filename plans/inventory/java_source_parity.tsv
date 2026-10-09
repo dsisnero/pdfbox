@@ -4798,48 +4798,48 @@ pdfbox/src/main/java/org/apache/pdfbox/multipdf/LayerUtility.java::method::Layer
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/LayerUtility.java::method::LayerUtility.importPageAsForm	ported	src/pdfbox/multipdf.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/LayerUtility.java::method::LayerUtility.transferDict	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/LayerUtility.java::method::LayerUtility.wrapInSaveRestore	ported	src/pdfbox/multipdf.cr	baseline
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::class::LayoutPage	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::class::Overlay	ported	src/.../overlay.cr	stale inventory; class ported
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::const::LOG	ported	src/.../overlay.cr	stale inventory; class ported
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::enum::Position	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.addOriginalContent	ported	src/.../overlay.cr	stale inventory; class ported
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.calculateAffineTransform	ported	src/.../overlay.cr	stale inventory; class ported
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.close	ported	src/.../overlay.cr	stale inventory; class ported
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.createAdjustedLayoutPage	ported	src/.../overlay.cr	stale inventory; class ported
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.createCombinedContentStream	ported	src/.../overlay.cr	stale inventory; class ported
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.createContentStreamList	ported	src/.../overlay.cr	stale inventory; class ported
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.createLayoutPage	ported	src/.../overlay.cr	stale inventory; class ported
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.createLayoutPageFromDocument	ported	src/.../overlay.cr	stale inventory; class ported
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.createOverlayFormXObject	ported	src/.../overlay.cr	stale inventory; class ported
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.createOverlayStream	ported	src/.../overlay.cr	stale inventory; class ported
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.createPageOverlayLayoutPageMap	ported	src/.../overlay.cr	stale inventory; class ported
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.createStream	ported	src/.../overlay.cr	stale inventory; class ported
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.float2String	ported	src/.../overlay.cr	stale inventory; class ported
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.getDefaultOverlayFile	ported	src/.../overlay.cr	stale inventory; class ported
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.getInputFile	ported	src/.../overlay.cr	stale inventory; class ported
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.getLayoutPage	ported	src/.../overlay.cr	stale inventory; class ported
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.loadPDF	ported	src/.../overlay.cr	stale inventory; class ported
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.loadPDFs	ported	src/.../overlay.cr	stale inventory; class ported
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.overlay	ported	src/.../overlay.cr	stale inventory; class ported
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.overlayDocuments	ported	src/.../overlay.cr	stale inventory; class ported
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.overlayPage	ported	src/.../overlay.cr	stale inventory; class ported
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.processPages	ported	src/.../overlay.cr	stale inventory; class ported
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.setAdjustRotation	ported	src/.../overlay.cr	stale inventory; class ported
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.setAllPagesOverlayFile	ported	src/.../overlay.cr	stale inventory; class ported
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.setAllPagesOverlayPDF	ported	src/.../overlay.cr	stale inventory; class ported
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.setDefaultOverlayFile	ported	src/.../overlay.cr	stale inventory; class ported
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.setDefaultOverlayPDF	ported	src/.../overlay.cr	stale inventory; class ported
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.setEvenPageOverlayFile	ported	src/.../overlay.cr	stale inventory; class ported
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.setEvenPageOverlayPDF	ported	src/.../overlay.cr	stale inventory; class ported
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.setFirstPageOverlayFile	ported	src/.../overlay.cr	stale inventory; class ported
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.setFirstPageOverlayPDF	ported	src/.../overlay.cr	stale inventory; class ported
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.setInputFile	ported	src/.../overlay.cr	stale inventory; class ported
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.setInputPDF	ported	src/.../overlay.cr	stale inventory; class ported
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.setLastPageOverlayFile	ported	src/.../overlay.cr	stale inventory; class ported
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.setLastPageOverlayPDF	ported	src/.../overlay.cr	stale inventory; class ported
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.setOddPageOverlayFile	ported	src/.../overlay.cr	stale inventory; class ported
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.setOddPageOverlayPDF	ported	src/.../overlay.cr	stale inventory; class ported
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.setOverlayPosition	ported	src/.../overlay.cr	stale inventory; class ported
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::class::LayoutPage	missing	src/pdfbox/multipdf.cr	ported
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::class::Overlay	ported	src/pdfbox/multipdf.cr	ported
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::const::LOG	ported	src/pdfbox/multipdf.cr	ported
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::enum::Position	missing	src/pdfbox/multipdf.cr	ported
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.addOriginalContent	ported	src/pdfbox/multipdf.cr	ported
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.calculateAffineTransform	ported	src/pdfbox/multipdf.cr	ported
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.close	ported	src/pdfbox/multipdf.cr	ported
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.createAdjustedLayoutPage	ported	src/pdfbox/multipdf.cr	ported
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.createCombinedContentStream	ported	src/pdfbox/multipdf.cr	ported
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.createContentStreamList	ported	src/pdfbox/multipdf.cr	ported
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.createLayoutPage	ported	src/pdfbox/multipdf.cr	ported
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.createLayoutPageFromDocument	ported	src/pdfbox/multipdf.cr	ported
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.createOverlayFormXObject	ported	src/pdfbox/multipdf.cr	ported
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.createOverlayStream	ported	src/pdfbox/multipdf.cr	ported
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.createPageOverlayLayoutPageMap	ported	src/pdfbox/multipdf.cr	ported
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.createStream	ported	src/pdfbox/multipdf.cr	ported
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.float2String	ported	src/pdfbox/multipdf.cr	ported
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.getDefaultOverlayFile	ported	src/pdfbox/multipdf.cr	ported
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.getInputFile	ported	src/pdfbox/multipdf.cr	ported
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.getLayoutPage	ported	src/pdfbox/multipdf.cr	ported
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.loadPDF	ported	src/pdfbox/multipdf.cr	ported
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.loadPDFs	ported	src/pdfbox/multipdf.cr	ported
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.overlay	ported	src/pdfbox/multipdf.cr	ported
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.overlayDocuments	ported	src/pdfbox/multipdf.cr	ported
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.overlayPage	ported	src/pdfbox/multipdf.cr	ported
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.processPages	ported	src/pdfbox/multipdf.cr	ported
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.setAdjustRotation	ported	src/pdfbox/multipdf.cr	ported
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.setAllPagesOverlayFile	ported	src/pdfbox/multipdf.cr	ported
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.setAllPagesOverlayPDF	ported	src/pdfbox/multipdf.cr	ported
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.setDefaultOverlayFile	ported	src/pdfbox/multipdf.cr	ported
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.setDefaultOverlayPDF	ported	src/pdfbox/multipdf.cr	ported
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.setEvenPageOverlayFile	ported	src/pdfbox/multipdf.cr	ported
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.setEvenPageOverlayPDF	ported	src/pdfbox/multipdf.cr	ported
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.setFirstPageOverlayFile	ported	src/pdfbox/multipdf.cr	ported
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.setFirstPageOverlayPDF	ported	src/pdfbox/multipdf.cr	ported
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.setInputFile	ported	src/pdfbox/multipdf.cr	ported
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.setInputPDF	ported	src/pdfbox/multipdf.cr	ported
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.setLastPageOverlayFile	ported	src/pdfbox/multipdf.cr	ported
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.setLastPageOverlayPDF	ported	src/pdfbox/multipdf.cr	ported
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.setOddPageOverlayFile	ported	src/pdfbox/multipdf.cr	ported
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.setOddPageOverlayPDF	ported	src/pdfbox/multipdf.cr	ported
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.setOverlayPosition	ported	src/pdfbox/multipdf.cr	ported
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFCloneUtility.java::class::PDFCloneUtility	ported	src/pdfbox/multipdf.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFCloneUtility.java::const::LOG	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFCloneUtility.java::method::PDFCloneUtility.cloneCOSArray	ported	src/pdfbox/multipdf.cr	baseline

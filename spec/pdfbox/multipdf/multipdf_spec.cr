@@ -269,6 +269,49 @@ module MultipdfSplitterHelpers
     end
   end
 
+  # Java OverlayTest#checkIdenticalRendering: each page renders identically.
+  def check_identical_rendering(model_path : String, result_path : String) : Nil
+    model = Pdfbox::Loader.load_pdf(model_path)
+    result = Pdfbox::Loader.load_pdf(result_path)
+    begin
+      model.number_of_pages.should eq(result.number_of_pages)
+      model_renderer = Pdfbox::Rendering::PDFRenderer.new(model)
+      result_renderer = Pdfbox::Rendering::PDFRenderer.new(result)
+      model.number_of_pages.times do |page|
+        model_renderer.render_image_png(page).should eq(result_renderer.render_image_png(page))
+      end
+    ensure
+      model.close
+      result.close
+    end
+  end
+
+  # Java OverlayTest#testRotatedOverlay.
+  def test_rotated_overlay(in_dir : String, out_dir : String, rotation : Int32) : Nil
+    overlay = Pdfbox::Multipdf::Overlay.new
+    base = Pdfbox::Loader.load_pdf(File.join(in_dir, "OverlayTestBaseRot0.pdf"))
+    begin
+      overlay.input_pdf = base
+      overlay_doc = Pdfbox::Loader.load_pdf(File.join(in_dir, "rot#{rotation}.pdf"))
+      begin
+        overlay.default_overlay_pdf = overlay_doc
+        overlayed = overlay.overlay({} of Int32 => String)
+        begin
+          overlayed.save(File.join(out_dir, "Overlayed-with-rot#{rotation}.pdf"))
+        ensure
+          overlayed.close
+        end
+      ensure
+        overlay_doc.close
+      end
+    ensure
+      base.close
+      overlay.close
+    end
+    check_identical_rendering(File.join(in_dir, "Overlayed-with-rot#{rotation}.pdf"),
+      File.join(out_dir, "Overlayed-with-rot#{rotation}.pdf"))
+  end
+
   def check_for_page_orphans(doc : Pdfbox::Pdmodel::Document) : Nil
     ids = page_ids(doc)
     root = doc.document_catalog.try(&.structure_tree_root)
@@ -374,8 +417,7 @@ describe "Pdfbox::Multipdf parity" do
     end
   end
 
-  it "TestLayerUtility#testLayerImport" do
-  end
+  # TestLayerUtility#testLayerImport is ported in spec/pdfbox/multipdf/layer_utility_test_spec.cr.
 
   it "MergeAcroFormsTest#testLegacyModeMerge" do
     in_dir = SpecPaths.resolve("vendor/pdfbox/pdfbox/src/test/resources/org/apache/pdfbox/multipdf")
@@ -507,12 +549,77 @@ describe "Pdfbox::Multipdf parity" do
   end
 
   it "OverlayTest#testRotatedOverlays" do
+    in_dir = SpecPaths.resolve("vendor/pdfbox/pdfbox/src/test/resources/org/apache/pdfbox/multipdf").to_s
+    out_dir = File.join(Dir.tempdir, "overlay-rot")
+    Dir.mkdir_p(out_dir)
+    {0, 90, 180, 270}.each do |rotation|
+      MultipdfSplitterHelpers.test_rotated_overlay(in_dir, out_dir, rotation)
+    end
   end
 
   it "OverlayTest#testRotatedOverlaysMap" do
+    in_dir = SpecPaths.resolve("vendor/pdfbox/pdfbox/src/test/resources/org/apache/pdfbox/multipdf").to_s
+    out_dir = File.join(Dir.tempdir, "overlay-map")
+    Dir.mkdir_p(out_dir)
+    four_pages = File.join(out_dir, "OverlayTestBaseRot0_4Pages.pdf")
+
+    base_document = Pdfbox::Loader.load_pdf(File.join(in_dir, "OverlayTestBaseRot0.pdf"))
+    doc = Pdfbox::Pdmodel::Document.new
+    begin
+      4.times { doc.import_page(base_document.get_page(0)) }
+      doc.save(four_pages)
+    ensure
+      doc.close
+      base_document.close
+    end
+
+    overlay = Pdfbox::Multipdf::Overlay.new
+    begin
+      expect_raises(Exception) { overlay.overlay({} of Int32 => String) }
+      specific_page_overlay_map = {
+        1 => File.join(in_dir, "rot0.pdf"),
+        2 => File.join(in_dir, "rot90.pdf"),
+        3 => File.join(in_dir, "rot180.pdf"),
+        4 => File.join(in_dir, "rot270.pdf"),
+      }
+      overlay.input_pdf = Pdfbox::Loader.load_pdf(four_pages)
+      overlayed = overlay.overlay(specific_page_overlay_map)
+      begin
+        document_list = Pdfbox::Multipdf::Splitter.new.split(overlayed)
+        {0, 90, 180, 270}.each_with_index do |rotation, index|
+          result = File.join(out_dir, "Overlayed-with-rot#{rotation}.pdf")
+          document_list[index].save(result)
+          MultipdfSplitterHelpers.check_identical_rendering(
+            File.join(in_dir, "Overlayed-with-rot#{rotation}.pdf"), result)
+        end
+      ensure
+        overlayed.close
+      end
+    ensure
+      overlay.close
+    end
   end
 
   it "OverlayTest#testOverlayOnRotatedSourcePages" do
+    in_dir = SpecPaths.resolve("vendor/pdfbox/pdfbox/src/test/resources/org/apache/pdfbox/multipdf").to_s
+    result = File.join(Dir.tempdir, "PDFBOX-6049-Result.pdf")
+
+    overlay = Pdfbox::Multipdf::Overlay.new
+    begin
+      overlay.input_file = File.join(in_dir, "PDFBOX-6049-Source.pdf")
+      overlay.default_overlay_file = File.join(in_dir, "PDFBOX-6049-Overlay.pdf")
+      overlay.position = Pdfbox::Multipdf::Overlay::Position::FOREGROUND
+      overlay.adjust_rotation = true
+      result_doc = overlay.overlay({} of Int32 => String)
+      begin
+        result_doc.save(result)
+      ensure
+        result_doc.close
+      end
+    ensure
+      overlay.close
+    end
+    MultipdfSplitterHelpers.check_identical_rendering(File.join(in_dir, "PDFBOX-6049-ExpectedResult.pdf"), result)
   end
 
   it "PageExtractorTest#testExtract" do

@@ -40,6 +40,15 @@ Turns the remaining `PDFMergerUtilityTest` placeholders into real tests.
   containers (the `/K` <-> `/P` structure-tree cycle) instead of recursing
   forever.
 
+## Follow-up (Chunk AN)
+
+- [x] `Overlay#default_overlay_pdf=`; `Overlay#extract_content_text`/
+  `#add_original_content` dereference indirect `/Contents` (indirect overlay
+  content produced an empty Form XObject). `OverlayTest#testRotatedOverlays`,
+  `#testRotatedOverlaysMap`, `#testOverlayOnRotatedSourcePages` now render
+  pixel-identically to the Java model PDFs. No empty `it` blocks remain in
+  `multipdf_spec.cr`.
+
 ## Deferred
 
 - `mergeOutputIntents`, `mergePageLabels`, `mergeMetadata`, and the outline

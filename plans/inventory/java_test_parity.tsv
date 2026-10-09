@@ -714,10 +714,10 @@ pdfbox/src/test/java/org/apache/pdfbox/multipdf/OverlayTest.java::const::OUT_DIR
 pdfbox/src/test/java/org/apache/pdfbox/multipdf/OverlayTest.java::method::OverlayTest.checkIdenticalRendering	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/multipdf/OverlayTest.java::method::OverlayTest.createBaseFile	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/multipdf/OverlayTest.java::method::OverlayTest.setUp	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/multipdf/OverlayTest.java::method::OverlayTest.testOverlayOnRotatedSourcePages	ported	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/multipdf/OverlayTest.java::method::OverlayTest.testOverlayOnRotatedSourcePages	ported	spec/pdfbox/multipdf/multipdf_spec.cr	baseline
 pdfbox/src/test/java/org/apache/pdfbox/multipdf/OverlayTest.java::method::OverlayTest.testRotatedOverlay	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/multipdf/OverlayTest.java::method::OverlayTest.testRotatedOverlays	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/multipdf/OverlayTest.java::method::OverlayTest.testRotatedOverlaysMap	ported	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/multipdf/OverlayTest.java::method::OverlayTest.testRotatedOverlays	ported	spec/pdfbox/multipdf/multipdf_spec.cr	baseline
+pdfbox/src/test/java/org/apache/pdfbox/multipdf/OverlayTest.java::method::OverlayTest.testRotatedOverlaysMap	ported	spec/pdfbox/multipdf/multipdf_spec.cr	baseline
 pdfbox/src/test/java/org/apache/pdfbox/multipdf/PDFCloneUtilityTest.java::class::PDFCloneUtilityTest	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/multipdf/PDFCloneUtilityTest.java::method::PDFCloneUtilityTest.testClonePDFWithCosArrayStream	ported	spec/pdfbox/multipdf/multipdf_spec.cr	baseline
 pdfbox/src/test/java/org/apache/pdfbox/multipdf/PDFCloneUtilityTest.java::method::PDFCloneUtilityTest.testClonePDFWithCosArrayStream2	ported	spec/pdfbox/multipdf/multipdf_spec.cr	via PDFMergerUtility#append_document
@@ -779,7 +779,7 @@ pdfbox/src/test/java/org/apache/pdfbox/multipdf/TestLayerUtility.java::const::TE
 pdfbox/src/test/java/org/apache/pdfbox/multipdf/TestLayerUtility.java::method::TestLayerUtility.createMainPDF	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/multipdf/TestLayerUtility.java::method::TestLayerUtility.createOverlay1	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/multipdf/TestLayerUtility.java::method::TestLayerUtility.setUp	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/multipdf/TestLayerUtility.java::method::TestLayerUtility.testLayerImport	ported	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/multipdf/TestLayerUtility.java::method::TestLayerUtility.testLayerImport	ported	spec/pdfbox/multipdf/layer_utility_test_spec.cr	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdfparser/EndstreamFilterStreamTest.java::class::EndstreamFilterStreamTest	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdfparser/EndstreamFilterStreamTest.java::method::EndstreamFilterStreamTest.testEndstreamFilterStream	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdfparser/EndstreamFilterStreamTest.java::method::EndstreamFilterStreamTest.testPDFBox2079EmbeddedFile	ported	-	baseline

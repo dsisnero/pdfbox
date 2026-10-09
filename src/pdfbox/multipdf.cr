@@ -64,6 +64,11 @@ module Pdfbox::Multipdf
       end
     end
 
+    def default_overlay_pdf=(document : Pdmodel::Document) : Nil
+      @default_overlay_document = document
+      @default_overlay_page = create_layout_page_from_document(document)
+    end
+
     def first_page_overlay_file=(filename : String) : Nil
       @first_page_overlay_document = load_pdf(filename)
       if doc = @first_page_overlay_document
@@ -207,6 +212,7 @@ module Pdfbox::Multipdf
 
     # Java: addOriginalContent(COSBase, COSArray)
     private def add_original_content(contents : Cos::Base?, content_array : Cos::Array) : Nil
+      contents = contents.object if contents.is_a?(Cos::Object)
       return unless contents
 
       if contents.is_a?(Cos::Stream)
@@ -398,14 +404,17 @@ module Pdfbox::Multipdf
 
     # Extract content text from a COS content (stream or array of streams)
     private def extract_content_text(contents : Cos::Base?) : String
+      contents = contents.object if contents.is_a?(Cos::Object)
       return "" unless contents
 
       if contents.is_a?(Cos::Stream)
+        return "" unless contents.has_data
         String.new(contents.create_input_stream.getb_to_end)
       elsif contents.is_a?(Cos::Array)
         parts = [] of String
         contents.each do |item|
-          if item.is_a?(Cos::Stream)
+          item = item.object if item.is_a?(Cos::Object)
+          if item.is_a?(Cos::Stream) && item.has_data
             parts << String.new(item.create_input_stream.getb_to_end)
           end
         end
