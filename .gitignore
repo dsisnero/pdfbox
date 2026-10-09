@@ -54,3 +54,6 @@ fix_*.rb
 
 # chiasmus analysis artifacts
 /.chiasmus/
+
+# chiasmus reconciliation bundle
+/plans/generated/
