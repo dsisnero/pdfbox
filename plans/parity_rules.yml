@@ -1,0 +1,111 @@
+# Cross-language reconciliation rules for the Apache PDFBox (Java) -> Crystal port.
+#
+# Consumed by:
+#   chiasmus-parity --source-facts <java.pl> --crystal-facts <crystal.pl> \
+#     --map-rules plans/parity_rules.yml --format maps
+#
+# See chiasmus.cr docs/parity-rule-data.md for the schema and a full walkthrough.
+#
+# Tracked location; a machine-local copy may also live at
+# `.chiasmus/parity_rules.yml` (that directory is gitignored).
+version: 1
+source_language: java
+target_language: crystal
+
+# Break canonical-key ties (e.g. Cos::Stream vs PDStream both -> `stream`) using
+# the owner (package / module) leaf before reporting `ambiguous`.
+match_owner: true
+
+# How to normalize *Java* symbols before matching.
+source:
+  # Java packages are not carried in the extracted qualified names today, but
+  # list them so rules stay correct if the extractor starts emitting them.
+  strip_namespace:
+    - "org.apache.pdfbox."
+    - "org.apache.fontbox."
+    - "org.apache.xmpbox."
+    - "com.tom_roush.pdfbox."
+  # PDFBox class-name prefixes. Longest match wins, so list order is not
+  # significant. COSBase -> Base, PDDocumentInformation -> DocumentInformation,
+  # FDFAnnotation -> Annotation.
+  strip_prefix:
+    - COS
+    - PD
+    - FDF
+    - PDF
+  # getOpenAction -> OpenAction, setPage -> Page, isLandscape -> Landscape.
+  strip_accessor: true
+  # Canonicalize Java types so they compare with Crystal's (see target.type_map).
+  type_map:
+    int: int
+    long: int64
+    void: nil
+    boolean: bool
+    double: float64
+    float: float64
+    byte: int8
+    short: int16
+    char: char
+    String: string
+    Object: object
+    Integer: int
+    Boolean: bool
+    Long: int64
+    Double: float64
+    Float: float64
+
+# How to normalize *Crystal* symbols before matching.
+target:
+  strip_namespace:
+    - "Pdfbox::"
+    - "Pdfbox."
+  # The port drops most PDFBox prefixes but keeps a few (COSWriter, COSParser).
+  # Stripping here lets both spellings meet at the same canonical key.
+  strip_prefix:
+    - COS
+    - PD
+    - PDF
+  strip_accessor: false
+  # Canonicalize Crystal types to the same tokens as source.type_map.
+  type_map:
+    Int32: int
+    Int64: int64
+    Nil: nil
+    Bool: bool
+    Float64: float64
+    Float32: float32
+    Int8: int8
+    Int16: int16
+    Char: char
+    String: string
+    Object: object
+
+# Explicit source -> target renames applied after the side normalization above.
+# Rename `source` values are matched against the *normalized* source name
+# (post prefix/accessor stripping), and the `target` value is canonicalized the
+# same way target symbols are. Use only when no generic rule can derive the
+# mapping, e.g.:
+#   - source: DefaultResourceCache
+#     target: ResourceCache
+renames: []
+
+# Many-to-one consolidation: any Java source name matching the glob maps to the
+# named Crystal target. Use for families collapsed into one implementation, e.g.
+# contentstream operator classes that dispatch through a single method:
+#   - source: "Operator*"
+#     target: process_operator
+#     reason: operator classes dispatch via process_operator
+consolidate: []
+
+# Explicit owner/namespace aliases (canonical key -> canonical key), resolved
+# transitively. These are the package/module leaf spellings that differ between
+# the Java source and the Crystal port and cannot be derived lexically.
+owner_aliases:
+  - source: contentstream
+    target: content_stream
+  - source: filetypedetector
+    target: file_type_detector
+  - source: markedcontent
+    target: marked_content
+  - source: viewerpreferences
+    target: viewer_preferences
