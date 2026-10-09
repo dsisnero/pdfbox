@@ -22,6 +22,13 @@ module Pdfbox::Pdmodel::DocumentInterchange::LogicalStructure
       read_name("Type")
     end
 
+    # The page this structure element belongs to (/Pg), if any. Java
+    # PDStructureElement#getPage.
+    def page : Pdfbox::Pdmodel::Page?
+      page_dict = @dictionary.get_dictionary(Pdfbox::Cos::Name::PG)
+      page_dict ? Pdfbox::Pdmodel::Page.new(page_dict) : nil
+    end
+
     def structure_type : String?
       read_name("S")
     end

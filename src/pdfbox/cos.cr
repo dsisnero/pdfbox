@@ -96,6 +96,13 @@ module Pdfbox::Cos
       @key = key
     end
 
+    # Collects and clears all indirect object keys reachable from this object.
+    # Used to avoid overlapping object numbers when importing a page into
+    # another document. Java COSBase/COSDictionary/COSArray#resetObjectKeys.
+    def reset_object_keys(indirect_objects : Set(ObjectKey)) : Set(ObjectKey)
+      indirect_objects
+    end
+
     def update_state : UpdateState
       @update_state ||= UpdateState.new
     end
@@ -771,6 +778,24 @@ module Pdfbox::Cos
     REGISTRY         = new("Registry")
     ORDERING         = new("Ordering")
     SUPPLEMENT       = new("Supplement")
+    # Structure tree / logical structure keys
+    K                    = new("K")
+    PG                   = new("Pg")
+    ID                   = new("ID")
+    OBJ                  = new("Obj")
+    MCR                  = new("MCR")
+    OBJR                 = new("OBJR")
+    ANNOTS               = new("Annots")
+    ANNOT                = new("Annot")
+    LINK                 = new("Link")
+    B                    = new("B")
+    STRUCT_PARENTS       = new("StructParents")
+    STRUCT_PARENT        = new("StructParent")
+    ROLE_MAP             = new("RoleMap")
+    PARENT_TREE          = new("ParentTree")
+    PARENT_TREE_NEXT_KEY = new("ParentTreeNextKey")
+    ID_TREE              = new("IDTree")
+    CLASS_MAP            = new("ClassMap")
 
     def initialize(@value : ::String)
     end
@@ -962,6 +987,35 @@ module Pdfbox::Cos
     def retain_all(values : Enumerable(Base)) : Nil
       keep = values.to_set
       @items.select! { |item| keep.includes?(item) }
+    end
+
+    # Java COSArray#resetObjectKeys.
+    def reset_object_keys(indirect_objects : Set(ObjectKey)) : Set(ObjectKey)
+      key = self.key
+      if key
+        return indirect_objects if indirect_objects.includes?(key)
+        indirect_objects.add(key)
+        self.key = nil
+      end
+      @items.each do |raw|
+        next unless raw
+        indirect_key = raw.is_a?(Object) ? raw.key : nil
+        cos_base : Base = raw
+        if indirect_key
+          next if indirect_objects.includes?(indirect_key)
+          # dereference object first, then reset its key
+          cos_base = raw.as(Object).object || Null::INSTANCE
+          raw.key = nil
+        end
+        if cos_base.is_a?(Dictionary)
+          cos_base.reset_object_keys(indirect_objects)
+        elsif cos_base.is_a?(Array)
+          cos_base.reset_object_keys(indirect_objects)
+        elsif indirect_key
+          indirect_objects.add(indirect_key)
+        end
+      end
+      indirect_objects
     end
 
     def grow_to_size(size : Int, fill_value : Base = Null.instance) : Nil
@@ -1276,6 +1330,43 @@ module Pdfbox::Cos
 
     def as_unmodifiable_dictionary : Dictionary
       UnmodifiableDictionary.new(@entries)
+    end
+
+    # Reset all object keys to avoid overlapping numbers when saving the new pdf.
+    # Java COSDictionary#resetImportedObjectKeys.
+    def reset_imported_object_keys : Nil
+      reset_object_keys(Set(ObjectKey).new).clear
+    end
+
+    # Java COSDictionary#resetObjectKeys.
+    def reset_object_keys(indirect_objects : Set(ObjectKey)) : Set(ObjectKey)
+      key = self.key
+      if key
+        return indirect_objects if indirect_objects.includes?(key)
+        indirect_objects.add(key)
+        self.key = nil
+      end
+      @entries.each do |entry_key, raw|
+        indirect_key = raw.is_a?(Object) ? raw.key : nil
+        cos_base : Base? = raw
+        if indirect_key
+          next if indirect_objects.includes?(indirect_key)
+          # dereference object first, then reset its key
+          cos_base = raw.as(Object).object
+          raw.key = nil
+        end
+        if cos_base.is_a?(Dictionary)
+          # skip PARENT and P references to avoid recursions
+          unless entry_key == Name::PARENT || entry_key == Name::P
+            cos_base.reset_object_keys(indirect_objects)
+          end
+        elsif cos_base.is_a?(Array)
+          cos_base.reset_object_keys(indirect_objects)
+        elsif indirect_key
+          indirect_objects.add(indirect_key)
+        end
+      end
+      indirect_objects
     end
 
     # Write this dictionary in PDF format to the given IO

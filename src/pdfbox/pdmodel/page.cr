@@ -133,6 +133,22 @@ module Pdfbox::Pdmodel
       degrees
     end
 
+    # The key of this page in the structural parent tree, or -1 if absent.
+    # Java PDPage#getStructParents.
+    def struct_parents : Int32
+      cos_page = @cos_page
+      return -1 unless cos_page
+      cos_page.get_int(Cos::Name::STRUCT_PARENTS, -1_i64).to_i32
+    end
+
+    def struct_parents=(value : Int) : Int32
+      cos_page = @cos_page || default_page_dictionary
+      @cos_page = cos_page
+      int_value = value.to_i32
+      cos_page.set_int(Cos::Name::STRUCT_PARENTS, int_value)
+      int_value
+    end
+
     # Get page resources
     def resources : Resources?
       cos_page = @cos_page

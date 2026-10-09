@@ -172,12 +172,14 @@ abstract class Pdfbox::Pdmodel::Common::PDNameTreeNode(T)
       i = 0
       while i + 1 < size
         base = names_array[i]
+        base = base.object if base.is_a?(Cos::Object)
         unless base.is_a?(Cos::String)
           raise "Expected string, found #{base} in name tree at index #{i}"
         end
         key = base.as(Cos::String).value
         cos_value = names_array[i + 1]
-        names_hash[key] = convert_cos_to_pd(cos_value)
+        cos_value = cos_value.object if cos_value.is_a?(Cos::Object)
+        names_hash[key] = convert_cos_to_pd(cos_value) if cos_value
         i += 2
       end
       names_hash

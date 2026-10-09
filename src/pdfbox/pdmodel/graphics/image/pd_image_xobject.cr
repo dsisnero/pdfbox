@@ -130,6 +130,18 @@ module Pdfbox::Pdmodel::Graphics::Image
       @dict
     end
 
+    # Java PDImageXObject#getStructParent: key in the structural parent tree,
+    # or -1 if there isn't any.
+    def struct_parent : Int32
+      @dict.get_int(Pdfbox::Cos::Name::STRUCT_PARENT, -1_i64).to_i32
+    end
+
+    def struct_parent=(value : Int) : Int32
+      int_value = value.to_i32
+      @dict.set_int(Pdfbox::Cos::Name::STRUCT_PARENT, int_value)
+      int_value
+    end
+
     def empty? : Bool
       # TODO: Implement based on stream data
       false

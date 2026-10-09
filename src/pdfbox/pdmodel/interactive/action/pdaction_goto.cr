@@ -17,9 +17,13 @@ module Pdfbox::Pdmodel::Interactive::Action
 
     def destination=(destination : Pdfbox::Pdmodel::Interactive::DocumentNavigation::Destination::PDDestination) : Pdfbox::Pdmodel::Interactive::DocumentNavigation::Destination::PDDestination
       if page_destination = destination.as?(Pdfbox::Pdmodel::Interactive::DocumentNavigation::Destination::PDPageDestination)
-        page = page_destination.cos_object[0]?
-        if page && !page.is_a?(Cos::Dictionary) && !page.is_a?(Cos::Null)
-          raise ArgumentError.new("Destination of a GoTo action must be a page dictionary object")
+        dest_array = page_destination.cos_object
+        unless dest_array.empty?
+          page = dest_array[0]?
+          page = page.object if page.is_a?(Cos::Object)
+          unless page.is_a?(Cos::Dictionary)
+            raise ArgumentError.new("Destination of a GoTo action must be a page dictionary object")
+          end
         end
       end
       cos_object[Cos::Name.new("D")] = destination.cos_object

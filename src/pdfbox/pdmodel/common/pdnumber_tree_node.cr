@@ -137,13 +137,15 @@ class Pdfbox::Pdmodel::Common::PDNumberTreeNode(T)
       i = 0
       while i + 1 < size
         base = numbers_array[i]
+        base = base.object if base.is_a?(Cos::Object)
         unless base.is_a?(Cos::Integer)
           Log.error { "page labels ignored, index #{i} should be a number, but is #{base}" }
           return
         end
         key = base.as(Cos::Integer).value.to_i32
         cos_value = numbers_array[i + 1]
-        indices[key] = convert_cos_to_pd(cos_value)
+        cos_value = cos_value.object if cos_value.is_a?(Cos::Object)
+        indices[key] = convert_cos_to_pd(cos_value) if cos_value
         i += 2
       end
       indices

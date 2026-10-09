@@ -43,6 +43,18 @@ module Pdfbox::Pdmodel::Graphics::Form
       Pdfbox::Pdmodel::Common::PDStream.new(@stream)
     end
 
+    # Java PDFormXObject#getStructParents: key in the structural parent tree,
+    # or -1 if there isn't any.
+    def struct_parents : Int32
+      @stream.get_int(Pdfbox::Cos::Name::STRUCT_PARENTS, -1_i64).to_i32
+    end
+
+    def struct_parents=(value : Int) : Int32
+      int_value = value.to_i32
+      @stream.set_int(Pdfbox::Cos::Name::STRUCT_PARENTS, int_value)
+      int_value
+    end
+
     def resources : Pdfbox::Pdmodel::PDResources?
       @stream.get_dictionary(Pdfbox::Cos::Name.new("Resources")).try do |dictionary|
         Pdfbox::Pdmodel::PDResources.new(dictionary, @cache)

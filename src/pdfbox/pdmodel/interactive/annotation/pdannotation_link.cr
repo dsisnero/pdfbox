@@ -18,8 +18,12 @@ module Pdfbox::Pdmodel::Interactive::Annotation
       Action::PDActionFactory.create_action(cos_object.get_dictionary(Cos::Name.new("A")))
     end
 
-    def action=(value : Action::PDAction) : Action::PDAction
-      cos_object[Cos::Name.new("A")] = value.cos_object
+    def action=(value : Action::PDAction?) : Action::PDAction?
+      if value
+        cos_object[Cos::Name.new("A")] = value.cos_object
+      else
+        cos_object.delete(Cos::Name.new("A"))
+      end
       value
     end
 
@@ -36,8 +40,12 @@ module Pdfbox::Pdmodel::Interactive::Annotation
       DocumentNavigation::Destination::PDDestination.create(cos_object[Cos::Name.new("Dest")]?)
     end
 
-    def destination=(value : DocumentNavigation::Destination::PDDestination) : DocumentNavigation::Destination::PDDestination
-      cos_object[Cos::Name.new("Dest")] = value.cos_object.as(Cos::Base)
+    def destination=(value : DocumentNavigation::Destination::PDDestination?) : DocumentNavigation::Destination::PDDestination?
+      if value
+        cos_object[Cos::Name.new("Dest")] = value.cos_object.as(Cos::Base)
+      else
+        cos_object.delete(Cos::Name.new("Dest"))
+      end
       value
     end
 

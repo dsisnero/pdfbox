@@ -20,9 +20,9 @@ module Pdfbox::Pdmodel::Interactive::DocumentNavigation::Destination
       value.as?(Cos::Dictionary)
     end
 
-    def page=(page : Cos::Dictionary) : Cos::Dictionary
+    def page=(page : Cos::Dictionary?) : Cos::Dictionary?
       @array.grow_to_size(1, Cos::Null.instance)
-      @array[0] = page
+      @array[0] = page || Cos::Null.instance
       page
     end
 

@@ -754,12 +754,12 @@ pdfbox/src/test/java/org/apache/pdfbox/multipdf/PDFMergerUtilityTest.java::metho
 pdfbox/src/test/java/org/apache/pdfbox/multipdf/PDFMergerUtilityTest.java::method::PDFMergerUtilityTest.testPDFMergerUtility	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/multipdf/PDFMergerUtilityTest.java::method::PDFMergerUtilityTest.testPDFMergerUtility2	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/multipdf/PDFMergerUtilityTest.java::method::PDFMergerUtilityTest.testParentTree	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/multipdf/PDFMergerUtilityTest.java::method::PDFMergerUtilityTest.testSinglePageSplit	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/multipdf/PDFMergerUtilityTest.java::method::PDFMergerUtilityTest.testSplitWithBrokenDestination	ported	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/multipdf/PDFMergerUtilityTest.java::method::PDFMergerUtilityTest.testSinglePageSplit	ported	spec/pdfbox/multipdf/multipdf_spec.cr	baseline
+pdfbox/src/test/java/org/apache/pdfbox/multipdf/PDFMergerUtilityTest.java::method::PDFMergerUtilityTest.testSplitWithBrokenDestination	ported	spec/pdfbox/multipdf/multipdf_spec.cr	baseline
 pdfbox/src/test/java/org/apache/pdfbox/multipdf/PDFMergerUtilityTest.java::method::PDFMergerUtilityTest.testSplitWithNamedDestinations	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/multipdf/PDFMergerUtilityTest.java::method::PDFMergerUtilityTest.testSplitWithOrphanPopupAnnotation	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/multipdf/PDFMergerUtilityTest.java::method::PDFMergerUtilityTest.testSplitWithPgEntryAtTheTop	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/multipdf/PDFMergerUtilityTest.java::method::PDFMergerUtilityTest.testSplitWithPopupAnnotations	ported	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/multipdf/PDFMergerUtilityTest.java::method::PDFMergerUtilityTest.testSplitWithPopupAnnotations	ported	spec/pdfbox/multipdf/multipdf_spec.cr	baseline
 pdfbox/src/test/java/org/apache/pdfbox/multipdf/PDFMergerUtilityTest.java::method::PDFMergerUtilityTest.testSplitWithStructureTree	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/multipdf/PDFMergerUtilityTest.java::method::PDFMergerUtilityTest.testSplitWithStructureTreeAndDestinations	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/multipdf/PDFMergerUtilityTest.java::method::PDFMergerUtilityTest.testSplitWithStructureTreeAndDestinationsAndRemovedAnnotations	ported	-	baseline

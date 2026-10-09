@@ -227,6 +227,46 @@ module Pdfbox::Pdmodel
       add_page(page)
     end
 
+    # Import a page from another document into this one. The page dictionary is
+    # shallow-cloned, the /Parent entry is removed, the content is decoded and
+    # re-embedded as a Flate stream, and indirect object keys are reset to avoid
+    # overlapping object numbers. Java PDDocument#importPage.
+    def import_page(page : Page) : Page
+      cos_page = page.cos_object
+      raise ArgumentError.new("page has no COS dictionary") unless cos_page
+
+      imported_page = Page.new(Cos::Dictionary.new(cos_page.entries.dup))
+      imported_dict = imported_page.cos_object
+      raise ArgumentError.new("imported page has no COS dictionary") unless imported_dict
+      imported_dict.delete(Cos::Name::PARENT)
+
+      streams = page.content_streams
+      unless streams.empty?
+        decoded = ::IO::Memory.new
+        streams.each_with_index do |stream, index|
+          decoded << "\n" if index > 0
+          decoded.write(stream.create_input_stream.getb_to_end) if stream.has_data
+        end
+        imported_stream = Cos::Stream.new
+        output = imported_stream.create_output_stream(Cos::Name::FLATE_DECODE)
+        output.write(decoded.to_slice)
+        output.close
+        imported_page.contents = imported_stream
+      end
+
+      imported_dict.reset_imported_object_keys
+      add_page(imported_page)
+
+      if crop = page.crop_box
+        imported_page.crop_box = Rectangle.new(crop.lower_left_x, crop.lower_left_y, crop.upper_right_x, crop.upper_right_y)
+      end
+      if media = page.media_box
+        imported_page.media_box = Rectangle.new(media.lower_left_x, media.lower_left_y, media.upper_right_x, media.upper_right_y)
+      end
+      imported_page.rotation = page.rotation
+      imported_page
+    end
+
     # Get all pages in the document
     def pages : Array(Page)
       ensure_pages_loaded

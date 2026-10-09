@@ -1,4 +1,5 @@
 require "./pdmodel"
+require "./multipdf/splitter"
 
 module Pdfbox::Multipdf
   # Source of truth: vendor/pdfbox/pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java
@@ -897,6 +898,40 @@ module Pdfbox::Multipdf
         dest_fields.add(cloned)
       end
       destination_form.cos_object[Pdfbox::Cos::Name.new("Fields")] = dest_fields
+    end
+
+    # Flatten a number tree into a single map. Java PDFMergerUtility#getNumberTreeAsMap.
+    def self.get_number_tree_as_map(tree : Pdmodel::Common::PDNumberTreeNode(T)?) : Hash(Int32, T) forall T
+      result = {} of Int32 => T
+      return result unless tree
+
+      if numbers = tree.numbers
+        numbers.each { |key, value| result[key] = value }
+      end
+      if kids = tree.kids
+        kids.size.times do |i|
+          get_number_tree_as_map(kids.get(i)).each { |key, value| result[key] = value }
+        end
+      end
+      result
+    end
+
+    # Flatten a name tree of structure elements. Java PDFMergerUtility#getIDTreeAsMap.
+    def self.get_id_tree_as_map(tree : Pdmodel::Common::PDNameTreeNode(
+                                  Pdmodel::DocumentInterchange::LogicalStructure::PDStructureElement,
+                                )?) : Hash(String, Pdmodel::DocumentInterchange::LogicalStructure::PDStructureElement)
+      result = {} of String => Pdmodel::DocumentInterchange::LogicalStructure::PDStructureElement
+      return result unless tree
+
+      if names = tree.names
+        names.each { |key, value| result[key] = value }
+      end
+      if kids = tree.kids
+        kids.size.times do |i|
+          get_id_tree_as_map(kids.get(i)).each { |key, value| result[key] = value }
+        end
+      end
+      result
     end
   end
 end

@@ -1,5 +1,175 @@
 require "../../spec_helper"
 
+# Helpers mirroring PDFMergerUtilityTest's structure-tree orphan checks.
+module MultipdfSplitterHelpers
+  extend self
+
+  def page_ids(doc : Pdfbox::Pdmodel::Document) : Set(UInt64)
+    ids = Set(UInt64).new
+    doc.pages.each do |page|
+      page.cos_object.try { |dict| ids.add(dict.object_id.to_u64) }
+    end
+    ids
+  end
+
+  def check_for_page(ids : Set(UInt64), structure_element) : Nil
+    if page = structure_element.page
+      dict = page.cos_object
+      ids.includes?(dict.object_id.to_u64).should be_true
+    end
+  end
+
+  class ElementCounter
+    getter cnt : Int32 = 0
+    getter set : Set(UInt64) = Set(UInt64).new
+
+    def walk(base : Pdfbox::Cos::Base?) : Nil
+      case base
+      when Pdfbox::Cos::Array
+        base.items.each do |element|
+          element = element.object if element.is_a?(Pdfbox::Cos::Object)
+          walk(element)
+        end
+      when Pdfbox::Cos::Dictionary
+        kdict = base
+        if kdict.has_key?(Pdfbox::Cos::Name::PG)
+          @cnt += 1
+          @set.add(kdict.object_id.to_u64)
+        elsif kdict.has_key?(Pdfbox::Cos::Name::K)
+          if kid_array = kdict.get_array(Pdfbox::Cos::Name::K)
+            kid_array.items.each do |element|
+              element = element.object if element.is_a?(Pdfbox::Cos::Object)
+              if element.is_a?(Pdfbox::Cos::Dictionary) &&
+                 element.has_key?(Pdfbox::Cos::Name::PG) &&
+                 element.has_key?(Pdfbox::Cos::Name.new("MCID"))
+                @cnt += 1
+                @set.add(kdict.object_id.to_u64)
+                break
+              end
+            end
+          end
+        end
+        if kdict.has_key?(Pdfbox::Cos::Name::K)
+          walk(kdict.get_dictionary_object(Pdfbox::Cos::Name::K))
+        end
+      end
+    end
+  end
+
+  def check_element(ids : Set(UInt64), base : Pdfbox::Cos::Base?, parent_dict : Pdfbox::Cos::Dictionary) : Nil
+    case base
+    when Pdfbox::Cos::Array
+      base.items.each do |element|
+        element = element.object if element.is_a?(Pdfbox::Cos::Object)
+        check_element(ids, element, parent_dict)
+      end
+    when Pdfbox::Cos::Dictionary
+      kdict = base
+      if kdict.has_key?(Pdfbox::Cos::Name::PG)
+        check_for_page(ids, Pdfbox::Pdmodel::DocumentInterchange::LogicalStructure::PDStructureElement.new(kdict))
+      end
+      if kdict.has_key?(Pdfbox::Cos::Name::K)
+        check_element(ids, kdict.get_dictionary_object(Pdfbox::Cos::Name::K), kdict)
+        node = Pdfbox::Pdmodel::DocumentInterchange::LogicalStructure::PDStructureElement.new(kdict)
+        node.kids.each do |kid|
+          next unless kid.is_a?(Pdfbox::Pdmodel::DocumentInterchange::LogicalStructure::PDStructureElement)
+          parent = kid.parent
+          parent.should_not be_nil
+          parent.not_nil!.cos_object.same?(kdict).should be_true
+        end
+        return
+      end
+
+      if kdict.has_key?(Pdfbox::Cos::Name::KIDS)
+        check_element(ids, kdict.get_dictionary_object(Pdfbox::Cos::Name::KIDS), kdict)
+      elsif kdict.has_key?(Pdfbox::Cos::Name::NUMS)
+        check_element(ids, kdict.get_dictionary_object(Pdfbox::Cos::Name::NUMS), kdict)
+      end
+
+      type = kdict.get_name_as_string(Pdfbox::Cos::Name::TYPE)
+      if type == "OBJR" || type == "MCR"
+        (kdict.get_dictionary(Pdfbox::Cos::Name::PG).nil? &&
+          parent_dict.get_dictionary(Pdfbox::Cos::Name::PG).nil?).should be_false
+      end
+
+      if kdict.has_key?(Pdfbox::Cos::Name::OBJ)
+        obj = kdict.get_dictionary(Pdfbox::Cos::Name::OBJ)
+        if obj
+          obj_type = obj.get_name_as_string(Pdfbox::Cos::Name::TYPE)
+          obj_subtype = obj.get_name_as_string(Pdfbox::Cos::Name::SUBTYPE)
+          if obj_type == "Annot" || obj_subtype == "Link"
+            annot = Pdfbox::Pdmodel::Interactive::Annotation::PDAnnotation.create_annotation(obj)
+            page = annot.page
+            if annot.is_a?(Pdfbox::Pdmodel::Interactive::Annotation::PDAnnotationLink)
+              link = annot
+              destination = link.destination
+              if destination.nil?
+                action = link.action
+                if action.is_a?(Pdfbox::Pdmodel::Interactive::Action::PDActionGoTo)
+                  destination = action.destination
+                end
+              end
+              if destination.is_a?(Pdfbox::Pdmodel::Interactive::DocumentNavigation::Destination::PDPageDestination)
+                dest_page_dict = destination.page
+                if dest_page_dict
+                  ids.includes?(dest_page_dict.object_id.to_u64).should be_true
+                end
+              end
+            end
+            if page
+              ids.includes?(page.cos_object.not_nil!.object_id.to_u64).should be_true
+            end
+          else
+            raise "Other type: #{obj_type}, obj: #{obj}"
+          end
+        end
+      end
+    end
+  end
+
+  def check_for_id_tree_orphans(ids : Set(UInt64), structure_tree_root) : Nil
+    id_tree = structure_tree_root.id_tree
+    return unless id_tree
+    map = Pdfbox::Multipdf::PDFMergerUtility.get_id_tree_as_map(id_tree)
+    map.each_value do |element|
+      check_for_page(ids, element) if element.page
+      unless element.kids.empty?
+        check_element(ids, element.cos_object.get_dictionary_object(Pdfbox::Cos::Name::K), element.cos_object)
+      end
+    end
+  end
+
+  def check_parent_tree_against_k(structure_tree_root) : Nil
+    counter = ElementCounter.new
+    counter.walk(structure_tree_root.k)
+    map = Pdfbox::Multipdf::PDFMergerUtility.get_number_tree_as_map(structure_tree_root.parent_tree)
+    map.each_value do |value|
+      base = value.cos_object
+      next unless base.is_a?(Pdfbox::Cos::Array)
+      base.items.each do |element|
+        element = element.object if element.is_a?(Pdfbox::Cos::Object)
+        if element.is_a?(Pdfbox::Cos::Dictionary)
+          counter.set.includes?(element.object_id.to_u64).should be_true
+        end
+      end
+    end
+  end
+
+  def check_for_page_orphans(doc : Pdfbox::Pdmodel::Document) : Nil
+    ids = page_ids(doc)
+    root = doc.document_catalog.try(&.structure_tree_root)
+    root.should_not be_nil
+    root = root.not_nil!
+    if parent_tree = root.parent_tree
+      check_element(ids, parent_tree.cos_object, root.cos_object)
+    end
+    root.k.should_not be_nil
+    check_element(ids, root.k, root.cos_object)
+    check_for_id_tree_orphans(ids, root)
+    check_parent_tree_against_k(root)
+  end
+end
+
 describe "Pdfbox::Multipdf parity" do
   # Source of truth:
   # vendor/pdfbox/pdfbox/src/test/java/org/apache/pdfbox/multipdf/
@@ -362,13 +532,123 @@ describe "Pdfbox::Multipdf parity" do
   it "PDFMergerUtilityTest#testSplitWithStructureTreeAndDestinationsAndRemovedAnnotations" do
   end
 
-  it "PDFMergerUtilityTest#testSinglePageSplit" do
-  end
-
   it "PDFMergerUtilityTest#testSplitWithPopupAnnotations" do
+    dir = SpecPaths.resolve("spec/resources/pdfbox/multipdf")
+    doc = Pdfbox::Loader.load_pdf(File.join(dir, "PDFBOX-5809-509329.pdf"))
+    begin
+      splitter = Pdfbox::Multipdf::Splitter.new
+      splitter.set_start_page(3)
+      splitter.set_end_page(3)
+      splitter.set_split_at_page(1)
+      split_result = splitter.split(doc)
+      split_result.size.should eq(1)
+
+      dst_doc = split_result[0]
+      begin
+        MultipdfSplitterHelpers.check_for_page_orphans(dst_doc)
+        dst_doc.number_of_pages.should eq(1)
+        annotations = dst_doc.get_page(0).annotations
+        annotations.size.should eq(5)
+        annotation_text3 = annotations.get(3).as(Pdfbox::Pdmodel::Interactive::Annotation::PDAnnotationText)
+        annotation_popup4 = annotations.get(4).as(Pdfbox::Pdmodel::Interactive::Annotation::PDAnnotationPopup)
+        annotation_text3.popup.not_nil!.cos_object.should eq(annotation_popup4.cos_object)
+        annotation_popup4.parent.not_nil!.cos_object.should eq(annotation_text3.cos_object)
+        annotation_text3.page.not_nil!.cos_object.same?(dst_doc.get_page(0).cos_object).should be_true
+      ensure
+        dst_doc.close
+      end
+
+      # Check that source document is ok
+      annotations = doc.get_page(2).annotations
+      annotations.size.should eq(5)
+      annotation_text3 = annotations.get(3).as(Pdfbox::Pdmodel::Interactive::Annotation::PDAnnotationText)
+      annotation_popup4 = annotations.get(4).as(Pdfbox::Pdmodel::Interactive::Annotation::PDAnnotationPopup)
+      annotation_text3.popup.not_nil!.cos_object.should eq(annotation_popup4.cos_object)
+      annotation_popup4.parent.not_nil!.cos_object.should eq(annotation_text3.cos_object)
+      annotation_text3.page.not_nil!.cos_object.same?(doc.get_page(2).cos_object).should be_true
+    ensure
+      doc.close
+    end
   end
 
   it "PDFMergerUtilityTest#testSplitWithBrokenDestination" do
+    dir = SpecPaths.resolve("spec/resources/pdfbox/multipdf")
+    doc = Pdfbox::Loader.load_pdf(File.join(dir, "PDFBOX-5811-362972.pdf"))
+    begin
+      splitter = Pdfbox::Multipdf::Splitter.new
+      splitter.set_start_page(2)
+      splitter.set_end_page(2)
+      split_result = splitter.split(doc)
+      split_result.size.should eq(1)
+
+      dst_doc = split_result[0]
+      begin
+        MultipdfSplitterHelpers.check_for_page_orphans(dst_doc)
+        dst_doc.number_of_pages.should eq(1)
+        annotations = dst_doc.get_page(0).annotations
+        annotations.size.should eq(1)
+        link = annotations.get(0).as(Pdfbox::Pdmodel::Interactive::Annotation::PDAnnotationLink)
+        link.destination.should be_nil
+      ensure
+        dst_doc.close
+      end
+
+      # Check source document
+      annotations = doc.get_page(1).annotations
+      annotations.size.should eq(1)
+      link = annotations.get(0).as(Pdfbox::Pdmodel::Interactive::Annotation::PDAnnotationLink)
+      expect_raises(Exception) { link.destination }
+    ensure
+      doc.close
+    end
+  end
+
+  it "PDFMergerUtilityTest#testSinglePageSplit" do
+    dir = SpecPaths.resolve("spec/resources/pdfbox/multipdf")
+    doc = Pdfbox::Loader.load_pdf(File.join(dir, "PDFBOX-5792-240045.pdf"))
+    split_result = [] of Pdfbox::Pdmodel::Document
+    begin
+      splitter = Pdfbox::Multipdf::Splitter.new
+      splitter.set_split_at_page(1)
+      split_result = splitter.split(doc)
+      split_result.size.should eq(6)
+      split_result.each do |dst_doc|
+        dst_doc.number_of_pages.should eq(1)
+        MultipdfSplitterHelpers.check_for_page_orphans(dst_doc)
+        dst_doc.get_page(0).annotations.each do |annot|
+          link = annot.as(Pdfbox::Pdmodel::Interactive::Annotation::PDAnnotationLink)
+          action = link.action.as(Pdfbox::Pdmodel::Interactive::Action::PDActionGoTo)
+          destination = action.destination.as(Pdfbox::Pdmodel::Interactive::DocumentNavigation::Destination::PDPageDestination)
+          destination.page.should be_nil
+        end
+      end
+
+      parent_tree_size = ->(dst_doc : Pdfbox::Pdmodel::Document) do
+        root = dst_doc.document_catalog.not_nil!.structure_tree_root.not_nil!
+        Pdfbox::Multipdf::PDFMergerUtility.get_number_tree_as_map(root.parent_tree).size
+      end
+      role_map_size = ->(dst_doc : Pdfbox::Pdmodel::Document) do
+        root = dst_doc.document_catalog.not_nil!.structure_tree_root.not_nil!
+        role_map = root.cos_object.get_dictionary(Pdfbox::Cos::Name::ROLE_MAP)
+        role_map ? role_map.size : 0
+      end
+
+      parent_tree_size.call(split_result[0]).should eq(6)
+      role_map_size.call(split_result[0]).should eq(3)
+      parent_tree_size.call(split_result[1]).should eq(6)
+      role_map_size.call(split_result[1]).should eq(3)
+      parent_tree_size.call(split_result[2]).should eq(6)
+      role_map_size.call(split_result[2]).should eq(4)
+      parent_tree_size.call(split_result[3]).should eq(5)
+      role_map_size.call(split_result[3]).should eq(4)
+      parent_tree_size.call(split_result[4]).should eq(1)
+      role_map_size.call(split_result[4]).should eq(6)
+      parent_tree_size.call(split_result[5]).should eq(1)
+      role_map_size.call(split_result[5]).should eq(7)
+    ensure
+      split_result.each(&.close)
+      doc.close
+    end
   end
 
   it "PDFMergerUtilityTest#testSplitWithNamedDestinations" do

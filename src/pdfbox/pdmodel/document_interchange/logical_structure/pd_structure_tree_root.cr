@@ -59,9 +59,41 @@ module Pdfbox::Pdmodel::DocumentInterchange::LogicalStructure
     end
 
     # Returns the ID tree (Java PDStructureTreeRoot#getIDTree).
-    def id_tree : PDStructureElementNameTreeNode?
+    def id_tree : Pdfbox::Pdmodel::Common::PDStructureElementNameTreeNode?
       id_tree_dict = @dictionary.get_dictionary(Pdfbox::Cos::Name.new("IDTree"))
-      id_tree_dict ? PDStructureElementNameTreeNode.new(id_tree_dict) : nil
+      id_tree_dict ? Pdfbox::Pdmodel::Common::PDStructureElementNameTreeNode.new(id_tree_dict) : nil
+    end
+
+    def id_tree=(tree : Pdfbox::Pdmodel::Common::PDStructureElementNameTreeNode?) : Pdfbox::Pdmodel::Common::PDStructureElementNameTreeNode?
+      if tree
+        @dictionary.set_item(Pdfbox::Cos::Name::ID_TREE, tree.cos_object)
+      else
+        @dictionary.delete(Pdfbox::Cos::Name::ID_TREE)
+      end
+      tree
+    end
+
+    # Returns the parent tree (Java PDStructureTreeRoot#getParentTree).
+    def parent_tree : Pdfbox::Pdmodel::Common::PDNumberTreeNode(Pdfbox::Pdmodel::Common::PDParentTreeValue)?
+      parent_tree_dict = @dictionary.get_dictionary(Pdfbox::Cos::Name::PARENT_TREE)
+      return nil unless parent_tree_dict
+
+      Pdfbox::Pdmodel::Common::PDNumberTreeNode(Pdfbox::Pdmodel::Common::PDParentTreeValue).new(
+        parent_tree_dict
+      ) { |base| Pdfbox::Pdmodel::Common::PDParentTreeValue.new(base) }
+    end
+
+    def parent_tree=(tree : Pdfbox::Pdmodel::Common::PDNumberTreeNode(Pdfbox::Pdmodel::Common::PDParentTreeValue)?) : Nil
+      if tree
+        @dictionary.set_item(Pdfbox::Cos::Name::PARENT_TREE, tree.cos_object)
+      else
+        @dictionary.delete(Pdfbox::Cos::Name::PARENT_TREE)
+      end
+    end
+
+    def parent_tree_next_key=(value : Int32) : Int32
+      @dictionary.set_int(Pdfbox::Cos::Name::PARENT_TREE_NEXT_KEY, value)
+      value
     end
   end
 end
