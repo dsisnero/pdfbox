@@ -807,13 +807,23 @@ module Pdfbox::Multipdf
 
       merge_acro_forms(destination, source, cloner)
 
-      # Merge the optional content properties if the destination has none.
       source_catalog = source.document_catalog
       destination_catalog = destination.document_catalog
       if source_catalog && destination_catalog
+        # Merge the optional content properties if the destination has none.
         if destination_catalog.oc_properties.nil? && (source_ocp = source_catalog.oc_properties)
           cloned_dict = cloner.clone_for_new_document(source_ocp.cos_object).as(Pdfbox::Cos::Dictionary)
           destination_catalog.oc_properties = Pdmodel::Graphics::OptionalContent::PDOptionalContentProperties.new(cloned_dict)
+        end
+
+        # Merge the named destinations (/Dests). Java cloneMerge / clone.
+        if source_dests = source_catalog.dests
+          if dest_dests = destination_catalog.dests
+            cloner.clone_merge(source_dests, dest_dests)
+          else
+            cloned = cloner.clone_for_new_document(source_dests.cos_object).as(Pdfbox::Cos::Dictionary)
+            destination_catalog.cos_object[Pdfbox::Cos::Name.new("Dests")] = cloned
+          end
         end
       end
     end

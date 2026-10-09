@@ -5458,7 +5458,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::P
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getAcroForm	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getActions	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getCOSObject	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getDests	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getDests	ported	src/pdfbox/pdmodel.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getDocumentOutline	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getLanguage	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getMarkInfo	missing	-	baseline
@@ -5518,9 +5518,9 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentInformation.java::metho
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentInformation.java::method::PDDocumentInformation.setSubject	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentInformation.java::method::PDDocumentInformation.setTitle	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentInformation.java::method::PDDocumentInformation.setTrapped	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentNameDestinationDictionary.java::class::PDDocumentNameDestinationDictionary	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentNameDestinationDictionary.java::method::PDDocumentNameDestinationDictionary.getCOSObject	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentNameDestinationDictionary.java::method::PDDocumentNameDestinationDictionary.getDestination	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentNameDestinationDictionary.java::class::PDDocumentNameDestinationDictionary	ported	src/pdfbox/pdmodel.cr	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentNameDestinationDictionary.java::method::PDDocumentNameDestinationDictionary.getCOSObject	ported	src/pdfbox/pdmodel.cr	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentNameDestinationDictionary.java::method::PDDocumentNameDestinationDictionary.getDestination	ported	src/pdfbox/pdmodel.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentNameDictionary.java::class::PDDocumentNameDictionary	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentNameDictionary.java::method::PDDocumentNameDictionary.getCOSObject	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentNameDictionary.java::method::PDDocumentNameDictionary.getDests	missing	-	baseline

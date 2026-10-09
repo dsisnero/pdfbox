@@ -774,6 +774,35 @@ module Pdfbox::Pdmodel
   end
 
   # Document catalog class
+  # A dictionary of named destinations stored directly in the document catalog
+  # (/Dests). Java PDDocumentNameDestinationDictionary.
+  class PDDocumentNameDestinationDictionary
+    include Pdfbox::Pdmodel::Common::COSObjectable
+
+    @dict : Cos::Dictionary
+
+    def initialize(dict : Cos::Dictionary)
+      @dict = dict
+    end
+
+    def cos_object : Cos::Base
+      @dict
+    end
+
+    # Returns the destination for the given name, or nil. Java getDestination.
+    def destination(name : String) : Interactive::DocumentNavigation::Destination::PDDestination?
+      base = @dict[Cos::Name.new(name)]?
+      return unless base
+      base = base.object if base.is_a?(Cos::Object)
+      if base.is_a?(Cos::Dictionary)
+        base = base[Cos::Name.new("D")]?
+        return unless base
+        base = base.object if base.is_a?(Cos::Object)
+      end
+      Interactive::DocumentNavigation::Destination::PDDestination.create(base)
+    end
+  end
+
   class DocumentCatalog
     Log = ::Log.for(self)
 
@@ -882,6 +911,17 @@ module Pdfbox::Pdmodel
       return unless names_dict.is_a?(Cos::Dictionary)
 
       DocumentNameDictionary.new(names_dict, self)
+    end
+
+    # Get the document-level /Dests dictionary. Java PDDocumentCatalog#getDests.
+    def dests : PDDocumentNameDestinationDictionary?
+      dests_dict = @cos_dict[Cos::Name.new("Dests")]
+      return unless dests_dict
+
+      dests_dict = dests_dict.object if dests_dict.is_a?(Cos::Object)
+      return unless dests_dict.is_a?(Cos::Dictionary)
+
+      PDDocumentNameDestinationDictionary.new(dests_dict)
     end
 
     # Resolves a named destination to a page destination via the /Names /Dests

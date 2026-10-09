@@ -126,12 +126,100 @@ describe "Pdfbox::Multipdf parity" do
   end
 
   it "MergeAcroFormsTest#testAnnotsEntry" do
+    dir = SpecPaths.resolve("spec/resources/pdfbox/multipdf")
+    out_path = File.join(Dir.tempdir, "PDFBOX-1031.pdf")
+
+    merger = Pdfbox::Multipdf::PDFMergerUtility.new
+    merger.destination_file_name = out_path
+    merger.add_source(File.join(dir, "PDFBOX-1031-1.pdf"))
+    merger.add_source(File.join(dir, "PDFBOX-1031-2.pdf"))
+    merger.merge_documents(nil)
+
+    merged = Pdfbox::Loader.load_pdf(out_path)
+    begin
+      merged.number_of_pages.should eq(2)
+      (0..1).each do |i|
+        page = merged.get_page(i)
+        page.cos_object.not_nil![Pdfbox::Cos::Name.new("Annots")]?.should_not be_nil
+        page.annotations.size.should eq(1)
+      end
+    ensure
+      merged.close
+    end
   end
 
   it "MergeAcroFormsTest#testAPEntry" do
+    dir = SpecPaths.resolve("spec/resources/pdfbox/multipdf")
+    out_path = File.join(Dir.tempdir, "PDFBOX-1100.pdf")
+
+    merger = Pdfbox::Multipdf::PDFMergerUtility.new
+    merger.destination_file_name = out_path
+    merger.add_source(File.join(dir, "PDFBOX-1100-1.pdf"))
+    merger.add_source(File.join(dir, "PDFBOX-1100-2.pdf"))
+    merger.merge_documents(nil)
+
+    merged = Pdfbox::Loader.load_pdf(out_path)
+    begin
+      merged.number_of_pages.should eq(2)
+      acro_form = merged.document_catalog.not_nil!.acro_form
+      acro_form.should_not be_nil
+
+      ["Testfeld", "Testfeld2"].each do |name|
+        field = acro_form.not_nil!.get_field(name)
+        field.should_not be_nil
+        field.not_nil!.cos_object[Pdfbox::Cos::Name.new("AP")]?.should_not be_nil
+        field.not_nil!.cos_object[Pdfbox::Cos::Name.new("V")]?.should_not be_nil
+      end
+    ensure
+      merged.close
+    end
   end
 
   it "MergeAnnotationsTest#testLinkAnnotations" do
+    dir = SpecPaths.resolve("spec/resources/pdfbox/multipdf")
+    out_path = File.join(Dir.tempdir, "PDFBOX-1065.pdf")
+
+    merger = Pdfbox::Multipdf::PDFMergerUtility.new
+    merger.destination_file_name = out_path
+    merger.add_source(File.join(dir, "PDFBOX-1065-1.pdf"))
+    merger.add_source(File.join(dir, "PDFBOX-1065-2.pdf"))
+    merger.merge_documents(nil)
+
+    merged = Pdfbox::Loader.load_pdf(out_path)
+    begin
+      merged.number_of_pages.should eq(6)
+
+      destinations = merged.document_catalog.not_nil!.dests
+      destinations.should_not be_nil
+      destinations.not_nil!.cos_object.entries.size.should eq(12)
+
+      source1 = merged.get_page(0).annotations
+      source2 = merged.get_page(3).annotations
+      target1 = merged.get_page(2).annotations
+      target2 = merged.get_page(5).annotations
+
+      source1.size.should eq(3)
+      target1.size.should eq(3)
+      source2.size.should eq(3)
+      target2.size.should eq(3)
+
+      match = ->(srcs : Enumerable(Pdfbox::Pdmodel::Interactive::Annotation::PDAnnotation), tgts : Enumerable(Pdfbox::Pdmodel::Interactive::Annotation::PDAnnotation)) do
+        target_names = [] of String
+        tgts.each do |a|
+          name = (a.cos_object[Pdfbox::Cos::Name.new("Dest")]?.as?(Pdfbox::Cos::Name)).try(&.value)
+          target_names << name if name
+        end
+        srcs.all? do |a|
+          src_name = (a.cos_object[Pdfbox::Cos::Name.new("Dest")]?.as?(Pdfbox::Cos::Name)).try(&.value)
+          !src_name.nil? && target_names.includes?("annoRef_#{src_name}")
+        end
+      end
+
+      match.call(source1, target1).should be_true
+      match.call(source2, target2).should be_true
+    ensure
+      merged.close
+    end
   end
 
   it "OverlayTest#testRotatedOverlays" do
