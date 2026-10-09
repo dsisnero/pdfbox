@@ -737,4 +737,38 @@ module Pdfbox::Multipdf
       false
     end
   end
+
+  # Merges PDF documents, appending one document's pages into another.
+  # Port of Apache PDFBox multipdf/PDFMergerUtility (portable subset:
+  # appendDocument(destination, source)).
+  class PDFMergerUtility
+    # Append all pages of source into destination (Java PDFMergerUtility#appendDocument).
+    def append_document(destination : Pdmodel::Document, source : Pdmodel::Document) : Nil
+      return if destination.same?(source)
+
+      cloner = PDFCloneUtility.new(destination)
+      source.pages.to_a.each do |page|
+        page_dict = page.cos_object
+        next unless page_dict
+
+        cloned = cloner.clone_for_new_document(page_dict)
+        next unless cloned
+
+        cloned_dict = cloned.as(Pdfbox::Cos::Dictionary)
+        # The clone carries the source /Parent; the destination tree sets it.
+        cloned_dict.delete(Pdfbox::Cos::Name.new("Parent"))
+        destination.add_page(Pdmodel::Page.new(cloned_dict))
+      end
+
+      # Merge the optional content properties if the destination has none.
+      source_catalog = source.document_catalog
+      destination_catalog = destination.document_catalog
+      if source_catalog && destination_catalog
+        if destination_catalog.oc_properties.nil? && (source_ocp = source_catalog.oc_properties)
+          cloned_dict = cloner.clone_for_new_document(source_ocp.cos_object).as(Pdfbox::Cos::Dictionary)
+          destination_catalog.oc_properties = Pdmodel::Graphics::OptionalContent::PDOptionalContentProperties.new(cloned_dict)
+        end
+      end
+    end
+  end
 end

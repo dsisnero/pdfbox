@@ -4851,7 +4851,7 @@ pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFCloneUtility.java::method::PD
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFCloneUtility.java::method::PDFCloneUtility.cloneMergeCOSBase	ported	src/pdfbox/multipdf.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFCloneUtility.java::method::PDFCloneUtility.getDestination	ported	src/pdfbox/multipdf.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFCloneUtility.java::method::PDFCloneUtility.hasSelfReference	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::class::PDFMergerUtility	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::class::PDFMergerUtility	ported	src/pdfbox/multipdf.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::const::LOG	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::enum::AcroFormMergeMode	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::enum::DocumentMergeMode	missing	-	baseline
@@ -4859,7 +4859,7 @@ pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::P
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.acroFormLegacyMode	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.addSource	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.addSources	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.appendDocument	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.appendDocument	ported	src/pdfbox/multipdf.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.getAcroFormMergeMode	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.getDestinationDocumentInformation	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.getDestinationFileName	missing	-	baseline
