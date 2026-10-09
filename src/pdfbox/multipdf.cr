@@ -793,6 +793,7 @@ module Pdfbox::Multipdf
       return if destination.same?(source)
 
       cloner = PDFCloneUtility.new(destination)
+      merge_information(destination, source, cloner)
       source.pages.to_a.each do |page|
         page_dict = page.cos_object
         next unless page_dict
@@ -829,6 +830,23 @@ module Pdfbox::Multipdf
 
         merge_open_action(destination_catalog, source_catalog, cloner)
       end
+    end
+
+    # Merge simple and nested entries of the source document information into the
+    # destination (deep-cloning values). Java PDFMergerUtility#mergeInto used by
+    # appendDocument for the /Info dictionary.
+    private def merge_information(destination : Pdmodel::Document, source : Pdmodel::Document, cloner : PDFCloneUtility) : Nil
+      src_info = source.document_information
+      return unless src_info
+
+      dest_info = destination.document_information
+      dest_dict = dest_info.try(&.cos_object) || Cos::Dictionary.new
+      src_info.cos_object.entries.each do |key, value|
+        next if dest_dict.has_key?(key)
+        cloned = cloner.clone_for_new_document(value)
+        dest_dict[key] = cloned || Cos::Null::INSTANCE
+      end
+      destination.set_document_information(Pdmodel::DocumentInformation.new(dest_dict)) unless dest_info
     end
 
     # Copy the source /OpenAction into the destination if it has none. Java

@@ -91,6 +91,10 @@ module Pdfbox::Pdmodel::DocumentInterchange::LogicalStructure
       end
     end
 
+    def parent_tree_next_key : Int32
+      @dictionary.get_int(Pdfbox::Cos::Name::PARENT_TREE_NEXT_KEY, -1_i64).to_i32
+    end
+
     def parent_tree_next_key=(value : Int32) : Int32
       @dictionary.set_int(Pdfbox::Cos::Name::PARENT_TREE_NEXT_KEY, value)
       value

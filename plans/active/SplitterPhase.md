@@ -39,6 +39,15 @@ link destinations, and clone the logical structure tree (`/K`, `/ParentTree`,
 
 ## Tests (red-green)
 
-- [ ] `testSplitWithBrokenDestination` (`PDFBOX-5811-362972.pdf`).
-- [ ] `testSplitWithPopupAnnotations` (`PDFBOX-5809-509329.pdf`).
-- [ ] `testSinglePageSplit` (`PDFBOX-5792-240045.pdf`) if reachable.
+- [x] `testSplitWithBrokenDestination` (`PDFBOX-5811-362972.pdf`).
+- [x] `testSplitWithPopupAnnotations` (`PDFBOX-5809-509329.pdf`).
+- [x] `testSinglePageSplit` (`PDFBOX-5792-240045.pdf`).
+- [x] `testSplitWithStructureTree` (`PDFBOX-4417-001031.pdf`).
+- [x] `testSplitWithStructureTreeAndDestinations` (`PDFBOX-5762-722238.pdf`).
+- [x] `testSplitWithStructureTreeAndDestinationsAndRemovedAnnotations` (`PDFBOX-5762-722238.pdf`).
+- [x] `testSplitWithNamedDestinations` (`PDFBOX-5840-410609.pdf`).
+- [x] `testSplitWithPgEntryAtTheTop` (`PDFBOX-6009.pdf`; `checkWithNumberTree` minus the marked-content MCID walk, no PDFMarkedContentExtractor yet).
+- [x] `testSplitWithOrphanPopupAnnotation` (`PDFBOX-6018-099267-p9-OrphanPopups.pdf`).
+- [x] `testOutlinesSelfParent` (`PDFBOX-5939-google-docs-1.pdf`) — required the writer to emit the `/Info` root.
+- [x] `testPDFBox515` (`ComSquare1.pdf`, `Ghostscript1.pdf`) — required `mergeInto` info merge and the `/Info` writer root; asserts the encoded image dims (no AWT decode accessor).
+- [x] `COSObjectKeyTest#testPDFBox5742` (render-compare; PNG byte equality).

@@ -32,7 +32,7 @@ module Pdfbox::Rendering
     def render_image_png(page_index : Int32, dpi : Number = 72) : Bytes
       img = render_image_with_dpi(page_index, dpi)
       io = ::IO::Memory.new
-      CrImage::PNG::Writer.write_to(io, img)
+      CrImage::PNG.write(io, img)
       io.to_slice
     end
   end

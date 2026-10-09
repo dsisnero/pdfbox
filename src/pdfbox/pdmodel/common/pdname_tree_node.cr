@@ -59,6 +59,7 @@ abstract class Pdfbox::Pdmodel::Common::PDNameTreeNode(T)
     if kids_array
       pd_objects = [] of PDNameTreeNode(T)
       kids_array.items.each_with_index do |base, i|
+        base = base.object if base.is_a?(Cos::Object)
         child_node : PDNameTreeNode(T)
         if base.is_a?(Cos::Dictionary)
           child_node = create_child_node(base)

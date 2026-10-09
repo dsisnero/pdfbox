@@ -119,7 +119,7 @@ module Pdfbox::Pdfwriter
       object_keys = {} of UInt64 => Pdfbox::Cos::ObjectKey
       key_objects = {} of Pdfbox::Cos::ObjectKey => Pdfbox::Cos::Base
       object_wrapper = {} of UInt64 => UInt64
-      roots = build_roots(catalog)
+      roots = build_roots(catalog, trailer)
       collect_objects(roots, object_keys, key_objects, object_wrapper)
       object_wrapper.each do |wrapper_id, inner_id|
         if inner_key = object_keys[inner_id]?
@@ -183,7 +183,7 @@ module Pdfbox::Pdfwriter
       key_objects = {} of Pdfbox::Cos::ObjectKey => Pdfbox::Cos::Base
       object_wrapper = {} of UInt64 => UInt64
 
-      roots = build_roots(catalog)
+      roots = build_roots(catalog, trailer)
       collect_objects(roots, object_keys, key_objects, object_wrapper)
       object_wrapper.each do |wrapper_id, inner_id|
         if inner_key = object_keys[inner_id]?
@@ -210,7 +210,8 @@ module Pdfbox::Pdfwriter
       write_xref_and_trailer(xref_entries, catalog, trailer, object_keys, cos_writer)
     end
 
-    private def build_roots(catalog : Pdfbox::Pdmodel::DocumentCatalog?) : Array(Pdfbox::Cos::Base)
+    private def build_roots(catalog : Pdfbox::Pdmodel::DocumentCatalog?,
+                            trailer : Pdfbox::Cos::Dictionary? = nil) : Array(Pdfbox::Cos::Base)
       roots = [] of Pdfbox::Cos::Base
       if catalog
         roots << catalog.cos_object
@@ -222,6 +223,10 @@ module Pdfbox::Pdfwriter
       end
       if (encryption = @document.encryption) && !@document.all_security_to_be_removed?
         roots << encryption.dictionary
+      end
+      if trailer && (info_val = trailer[Pdfbox::Cos::Name.new("Info")]?)
+        info_base = info_val.is_a?(Pdfbox::Cos::Object) ? info_val.object : info_val
+        roots << info_base if info_base
       end
       roots
     end

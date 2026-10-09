@@ -4875,7 +4875,7 @@ pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::P
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.mergeAcroForm	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.mergeDocuments	ported	src/pdfbox/multipdf.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.mergeIDTree	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.mergeInto	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.mergeInto	ported	src/pdfbox/multipdf.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.mergeKEntries	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.mergeLanguage	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.mergeMarkInfo	missing	-	baseline
@@ -5737,7 +5737,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDNameTreeNode.java::metho
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDNameTreeNode.java::method::PDNameTreeNode.convertCOSToPD	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDNameTreeNode.java::method::PDNameTreeNode.createChildNode	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDNameTreeNode.java::method::PDNameTreeNode.getCOSObject	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDNameTreeNode.java::method::PDNameTreeNode.getKids	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDNameTreeNode.java::method::PDNameTreeNode.getKids	ported	src/pdfbox/pdmodel/common/pdnumber_tree_node.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDNameTreeNode.java::method::PDNameTreeNode.getLowerLimit	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDNameTreeNode.java::method::PDNameTreeNode.getNames	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDNameTreeNode.java::method::PDNameTreeNode.getParent	missing	-	baseline
@@ -5754,7 +5754,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDNumberTreeNode.java::con
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDNumberTreeNode.java::method::PDNumberTreeNode.convertCOSToPD	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDNumberTreeNode.java::method::PDNumberTreeNode.createChildNode	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDNumberTreeNode.java::method::PDNumberTreeNode.getCOSObject	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDNumberTreeNode.java::method::PDNumberTreeNode.getKids	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDNumberTreeNode.java::method::PDNumberTreeNode.getKids	ported	src/pdfbox/pdmodel/common/pdnumber_tree_node.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDNumberTreeNode.java::method::PDNumberTreeNode.getLowerLimit	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDNumberTreeNode.java::method::PDNumberTreeNode.getNumbers	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDNumberTreeNode.java::method::PDNumberTreeNode.getUpperLimit	missing	-	baseline
@@ -6278,7 +6278,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstruct
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDStructureTreeRoot.java::method::PDStructureTreeRoot.getIDTree	ported	src/pdfbox/pdmodel/document_interchange/logical_structure/pd_structure_tree_root.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDStructureTreeRoot.java::method::PDStructureTreeRoot.getK	ported	src/pdfbox/pdmodel/document_interchange/logical_structure/pd_structure_tree_root.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDStructureTreeRoot.java::method::PDStructureTreeRoot.getParentTree	ported	src/pdfbox/pdmodel/document_interchange/logical_structure/pd_structure_tree_root.cr	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDStructureTreeRoot.java::method::PDStructureTreeRoot.getParentTreeNextKey	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDStructureTreeRoot.java::method::PDStructureTreeRoot.getParentTreeNextKey	ported	src/pdfbox/pdmodel/document_interchange/logical_structure/pd_structure_tree_root.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDStructureTreeRoot.java::method::PDStructureTreeRoot.getRoleMap	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDStructureTreeRoot.java::method::PDStructureTreeRoot.setClassMap	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDStructureTreeRoot.java::method::PDStructureTreeRoot.setIDTree	ported	src/pdfbox/pdmodel/document_interchange/logical_structure/pd_structure_tree_root.cr	baseline

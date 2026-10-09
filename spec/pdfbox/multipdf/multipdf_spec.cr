@@ -155,6 +155,49 @@ module MultipdfSplitterHelpers
     end
   end
 
+  def page_index(doc : Pdfbox::Pdmodel::Document, page : Pdfbox::Pdmodel::Page?) : Int32
+    return -1 unless page
+    page_index(doc, page.cos_object)
+  end
+
+  def page_index(doc : Pdfbox::Pdmodel::Document, page_dict : Pdfbox::Cos::Dictionary?) : Int32
+    return -1 unless page_dict
+    doc.pages.index { |candidate| candidate.cos_object.try(&.same?(page_dict)) } || -1
+  end
+
+  def parent_tree_size(doc : Pdfbox::Pdmodel::Document) : Int32
+    root = doc.document_catalog.not_nil!.structure_tree_root.not_nil!
+    Pdfbox::Multipdf::PDFMergerUtility.get_number_tree_as_map(root.parent_tree).size
+  end
+
+  def role_map_size(doc : Pdfbox::Pdmodel::Document) : Int32
+    root = doc.document_catalog.not_nil!.structure_tree_root.not_nil!
+    role_map = root.cos_object.get_dictionary(Pdfbox::Cos::Name::ROLE_MAP)
+    role_map ? role_map.size : 0
+  end
+
+  def id_tree_size(doc : Pdfbox::Pdmodel::Document) : Int32
+    root = doc.document_catalog.not_nil!.structure_tree_root.not_nil!
+    id_tree = root.id_tree
+    return 0 unless id_tree
+    Pdfbox::Multipdf::PDFMergerUtility.get_id_tree_as_map(id_tree).size
+  end
+
+  # Java checkWithNumberTree, minus the marked-content/MCID walk (the Crystal
+  # port has no PDFMarkedContentExtractor/PDStructureNode yet). Verifies that
+  # every page/annotation /StructParent(s) maps to a /ParentTree array entry.
+  def check_with_number_tree(doc : Pdfbox::Pdmodel::Document) : Nil
+    root = doc.document_catalog.not_nil!.structure_tree_root.not_nil!
+    root.parent_tree_next_key.should_not eq(-1)
+    map = Pdfbox::Multipdf::PDFMergerUtility.get_number_tree_as_map(root.parent_tree)
+    doc.pages.each do |page|
+      sp = page.struct_parents
+      next if sp < 0
+      map.has_key?(sp).should be_true
+      map[sp].cos_object.is_a?(Pdfbox::Cos::Array).should be_true
+    end
+  end
+
   def check_for_page_orphans(doc : Pdfbox::Pdmodel::Document) : Nil
     ids = page_ids(doc)
     root = doc.document_catalog.try(&.structure_tree_root)
@@ -524,12 +567,88 @@ describe "Pdfbox::Multipdf parity" do
   end
 
   it "PDFMergerUtilityTest#testSplitWithStructureTree" do
+    dir = SpecPaths.resolve("spec/resources/pdfbox/multipdf")
+    doc = Pdfbox::Loader.load_pdf(File.join(dir, "PDFBOX-4417-001031.pdf"))
+    begin
+      splitter = Pdfbox::Multipdf::Splitter.new
+      splitter.set_start_page(1)
+      splitter.set_end_page(2)
+      splitter.set_split_at_page(2)
+      split_result = splitter.split(doc)
+      split_result.size.should eq(1)
+      dst_doc = split_result[0]
+      begin
+        dst_doc.number_of_pages.should eq(2)
+        MultipdfSplitterHelpers.check_for_page_orphans(dst_doc)
+        MultipdfSplitterHelpers.id_tree_size(dst_doc).should eq(126)
+        MultipdfSplitterHelpers.parent_tree_size(dst_doc).should eq(2)
+        MultipdfSplitterHelpers.role_map_size(dst_doc).should eq(6)
+      ensure
+        dst_doc.close
+      end
+    ensure
+      doc.close
+    end
   end
 
   it "PDFMergerUtilityTest#testSplitWithStructureTreeAndDestinations" do
+    dir = SpecPaths.resolve("spec/resources/pdfbox/multipdf")
+    doc = Pdfbox::Loader.load_pdf(File.join(dir, "PDFBOX-5762-722238.pdf"))
+    begin
+      splitter = Pdfbox::Multipdf::Splitter.new
+      splitter.set_start_page(1)
+      splitter.set_end_page(2)
+      splitter.set_split_at_page(2)
+      split_result = splitter.split(doc)
+      split_result.size.should eq(1)
+      dst_doc = split_result[0]
+      begin
+        dst_doc.number_of_pages.should eq(2)
+        MultipdfSplitterHelpers.check_for_page_orphans(dst_doc)
+        MultipdfSplitterHelpers.parent_tree_size(dst_doc).should eq(7)
+        MultipdfSplitterHelpers.role_map_size(dst_doc).should eq(4)
+
+        annotations = dst_doc.get_page(0).annotations
+        annotations.size.should eq(5)
+        destinations = (0...5).map do |i|
+          link = annotations.get(i).as(Pdfbox::Pdmodel::Interactive::Annotation::PDAnnotationLink)
+          action = link.action.as(Pdfbox::Pdmodel::Interactive::Action::PDActionGoTo)
+          action.destination.as(Pdfbox::Pdmodel::Interactive::DocumentNavigation::Destination::PDPageDestination)
+        end
+        MultipdfSplitterHelpers.page_index(dst_doc, destinations[0].page).should eq(0)
+        MultipdfSplitterHelpers.page_index(dst_doc, destinations[1].page).should eq(1)
+        destinations[2].page.should be_nil
+        destinations[3].page.should be_nil
+        destinations[4].page.should be_nil
+      ensure
+        dst_doc.close
+      end
+    ensure
+      doc.close
+    end
   end
 
   it "PDFMergerUtilityTest#testSplitWithStructureTreeAndDestinationsAndRemovedAnnotations" do
+    dir = SpecPaths.resolve("spec/resources/pdfbox/multipdf")
+    doc = Pdfbox::Loader.load_pdf(File.join(dir, "PDFBOX-5762-722238.pdf"))
+    begin
+      doc.pages.each { |page| page.annotations = [] of Pdfbox::Pdmodel::Interactive::Annotation::PDAnnotation }
+      splitter = Pdfbox::Multipdf::Splitter.new
+      splitter.set_start_page(1)
+      splitter.set_end_page(2)
+      splitter.set_split_at_page(2)
+      split_result = splitter.split(doc)
+      split_result.size.should eq(1)
+      dst_doc = split_result[0]
+      begin
+        dst_doc.number_of_pages.should eq(2)
+        MultipdfSplitterHelpers.check_for_page_orphans(dst_doc)
+      ensure
+        dst_doc.close
+      end
+    ensure
+      doc.close
+    end
   end
 
   it "PDFMergerUtilityTest#testSplitWithPopupAnnotations" do
@@ -652,17 +771,149 @@ describe "Pdfbox::Multipdf parity" do
   end
 
   it "PDFMergerUtilityTest#testSplitWithNamedDestinations" do
+    dir = SpecPaths.resolve("spec/resources/pdfbox/multipdf")
+    doc = Pdfbox::Loader.load_pdf(File.join(dir, "PDFBOX-5840-410609.pdf"))
+    begin
+      splitter = Pdfbox::Multipdf::Splitter.new
+      splitter.set_split_at_page(6)
+      split_result = splitter.split(doc)
+      split_result.size.should eq(1)
+      dst_doc = split_result[0]
+      begin
+        MultipdfSplitterHelpers.check_for_page_orphans(dst_doc)
+        dst_doc.number_of_pages.should eq(6)
+        annotations = dst_doc.get_page(0).annotations
+        annotations.size.should eq(5)
+        destinations = (0...5).map do |i|
+          link = annotations.get(i).as(Pdfbox::Pdmodel::Interactive::Annotation::PDAnnotationLink)
+          action = link.action.as(Pdfbox::Pdmodel::Interactive::Action::PDActionGoTo)
+          action.destination.as(Pdfbox::Pdmodel::Interactive::DocumentNavigation::Destination::PDPageDestination)
+        end
+        MultipdfSplitterHelpers.page_index(dst_doc, destinations[0].page).should eq(0)
+        MultipdfSplitterHelpers.page_index(dst_doc, destinations[1].page).should eq(1)
+        MultipdfSplitterHelpers.page_index(dst_doc, destinations[2].page).should eq(3)
+        MultipdfSplitterHelpers.page_index(dst_doc, destinations[3].page).should eq(3)
+        MultipdfSplitterHelpers.page_index(dst_doc, destinations[4].page).should eq(5)
+
+        dst_doc.document_catalog.not_nil!.metadata.should_not be_nil
+
+        io = ::IO::Memory.new
+        dst_doc.save(io)
+        reloaded = Pdfbox::Loader.load_pdf(io.to_slice)
+        begin
+          reloaded.document_catalog.not_nil!.metadata.should_not be_nil
+        ensure
+          reloaded.close
+        end
+      ensure
+        dst_doc.close
+      end
+
+      # Check that source document is unchanged
+      annotations = doc.get_page(0).annotations
+      annotations.size.should eq(5)
+      link = annotations.get(0).as(Pdfbox::Pdmodel::Interactive::Annotation::PDAnnotationLink)
+      link.action.as(Pdfbox::Pdmodel::Interactive::Action::PDActionGoTo).destination
+        .is_a?(Pdfbox::Pdmodel::Interactive::DocumentNavigation::Destination::PDNamedDestination).should be_true
+    ensure
+      doc.close
+    end
   end
 
   it "PDFMergerUtilityTest#testSplitWithPgEntryAtTheTop" do
+    dir = SpecPaths.resolve("spec/resources/pdfbox/multipdf")
+    doc = Pdfbox::Loader.load_pdf(File.join(dir, "PDFBOX-6009.pdf"))
+    split_result = [] of Pdfbox::Pdmodel::Document
+    begin
+      splitter = Pdfbox::Multipdf::Splitter.new
+      splitter.set_split_at_page(1)
+      split_result = splitter.split(doc)
+      split_result.size.should eq(3)
+      split_result.each do |dst_doc|
+        dst_doc.number_of_pages.should eq(1)
+        MultipdfSplitterHelpers.check_with_number_tree(dst_doc)
+        MultipdfSplitterHelpers.check_for_page_orphans(dst_doc)
+      end
+    ensure
+      split_result.each(&.close)
+      doc.close
+    end
   end
 
   it "PDFMergerUtilityTest#testSplitWithOrphanPopupAnnotation" do
+    dir = SpecPaths.resolve("spec/resources/pdfbox/multipdf")
+    doc = Pdfbox::Loader.load_pdf(File.join(dir, "PDFBOX-6018-099267-p9-OrphanPopups.pdf"))
+    begin
+      splitter = Pdfbox::Multipdf::Splitter.new
+      split_result = splitter.split(doc)
+      split_result.size.should eq(1)
+      dst_doc = split_result[0]
+      begin
+        dst_doc.number_of_pages.should eq(1)
+        page = dst_doc.get_page(0)
+        annotations = page.annotations
+        annotations.size.should eq(2)
+        ann0 = annotations.get(0).as(Pdfbox::Pdmodel::Interactive::Annotation::PDAnnotationText)
+        ann1 = annotations.get(1).as(Pdfbox::Pdmodel::Interactive::Annotation::PDAnnotationText)
+        ann0.page.not_nil!.cos_object.same?(page.cos_object).should be_true
+        ann1.page.not_nil!.cos_object.same?(page.cos_object).should be_true
+        ann0.popup.not_nil!.parent.not_nil!.cos_object.should eq(ann0.cos_object)
+        ann1.popup.not_nil!.parent.not_nil!.cos_object.should eq(ann1.cos_object)
+      ensure
+        dst_doc.close
+      end
+    ensure
+      doc.close
+    end
   end
 
   it "PDFMergerUtilityTest#testOutlinesSelfParent" do
+    dir = SpecPaths.resolve("spec/resources/pdfbox/multipdf")
+    out_path = File.join(Dir.tempdir, "PDFBOX-5939-google-docs-result.pdf")
+    merger = Pdfbox::Multipdf::PDFMergerUtility.new
+    merger.add_source(File.join(dir, "PDFBOX-5939-google-docs-1.pdf"))
+    merger.add_source(File.join(dir, "PDFBOX-5939-google-docs-1.pdf"))
+    merger.destination_file_name = out_path
+    merger.merge_documents(nil)
+
+    merged = Pdfbox::Loader.load_pdf(out_path)
+    begin
+      merged.number_of_pages.should eq(2)
+    ensure
+      merged.close
+    end
   end
 
   it "PDFMergerUtilityTest#testPDFBox515" do
+    # PDFBOX-515 / PDFBOX-5950: the source info dictionary has a stream deep down
+    # (Info/ImPDF/Images/Kids/[0]) that must survive the merge. Java creates an
+    # image XObject and decodes it (AWT); the Crystal port has no public decode
+    # accessor for an arbitrary XObject, so this asserts the deep-cloned image
+    # dictionary's encoded dimensions instead.
+    dir = SpecPaths.resolve("spec/resources/pdfbox/multipdf")
+    out_path = File.join(Dir.tempdir, "PDFBOX-515-result.pdf")
+    merger = Pdfbox::Multipdf::PDFMergerUtility.new
+    merger.add_source(File.join(dir, "ComSquare1.pdf"))
+    merger.add_source(File.join(dir, "Ghostscript1.pdf"))
+    merger.destination_file_name = out_path
+    merger.merge_documents(nil)
+
+    merged = Pdfbox::Loader.load_pdf(out_path)
+    begin
+      merged.number_of_pages.should eq(2)
+      info = merged.document_information.not_nil!.cos_object
+      impdf = info.get_dictionary(Pdfbox::Cos::Name.new("ImPDF")).not_nil!
+      images = impdf.get_dictionary(Pdfbox::Cos::Name.new("Images")).not_nil!
+      kids = images.get_array(Pdfbox::Cos::Name::KIDS).not_nil!
+      base = kids[0]?
+      base = base.object if base.is_a?(Pdfbox::Cos::Object)
+      image_dict = base.as(Pdfbox::Cos::Dictionary)
+      stream = image_dict.as?(Pdfbox::Cos::Stream)
+      image_xobject = Pdfbox::Pdmodel::Graphics::Image::PDImageXObject.new(merged, image_dict, stream)
+      image_xobject.width.should eq(909)
+      image_xobject.height.should eq(233)
+    ensure
+      merged.close
+    end
   end
 end

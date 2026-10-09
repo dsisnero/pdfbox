@@ -77,13 +77,39 @@ describe Pdfbox::Cos::ObjectKey do
   end
 
   it "preserves rendering across split documents (PDFBOX-5742)" do
-    unless ENV["PDFBOX_OPTIONAL_RENDER_TESTS"]? == "1"
-      true.should be_true
-      next
-    end
+    # PDFBOX-5742: split and check that renderings are identical (exercises the
+    # indirect-object handling in COSArray/COSDictionary/COSParser). Java uses
+    # ValidateXImage.checkIdent; the Crystal port compares the rendered PNG bytes.
+    dir = SpecPaths.resolve("spec/resources/pdfbox/multipdf")
+    doc = Pdfbox::Loader.load_pdf(File.join(dir, "PDFBOX-5742.pdf"))
+    begin
+      original_renderer = Pdfbox::Rendering::PDFRenderer.new(doc)
+      original_png1 = original_renderer.render_image_png(0)
+      original_png2 = original_renderer.render_image_png(1)
 
-    # Java TestCOSObjectKey#testPDFBox5742 depends on Splitter + PDFRenderer + image diff helpers.
-    # This remains an opt-in integration gate until split/render parity is implemented in Crystal.
-    true.should be_true
+      splitter = Pdfbox::Multipdf::Splitter.new
+      splits = splitter.split(doc)
+      splits.size.should eq(2)
+
+      baos1 = ::IO::Memory.new
+      baos2 = ::IO::Memory.new
+      splits[0].save(baos1)
+      splits[1].save(baos2)
+      splits.each(&.close)
+
+      doc1 = Pdfbox::Loader.load_pdf(baos1.to_slice)
+      doc2 = Pdfbox::Loader.load_pdf(baos2.to_slice)
+      begin
+        doc1.number_of_pages.should eq(1)
+        doc2.number_of_pages.should eq(1)
+        Pdfbox::Rendering::PDFRenderer.new(doc1).render_image_png(0).should eq(original_png1)
+        Pdfbox::Rendering::PDFRenderer.new(doc2).render_image_png(0).should eq(original_png2)
+      ensure
+        doc1.close
+        doc2.close
+      end
+    ensure
+      doc.close
+    end
   end
 end
