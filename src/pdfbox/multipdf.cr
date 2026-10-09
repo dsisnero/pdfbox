@@ -830,8 +830,95 @@ module Pdfbox::Multipdf
       merge_dests(dest_catalog, source_catalog, cloner)
       merge_outline(dest_catalog, source_catalog, cloner)
       merge_page_mode(dest_catalog, source_catalog)
+      merge_page_labels(destination, dest_catalog, source_catalog, cloner)
+      merge_metadata(dest_catalog, source_catalog, cloner)
+      merge_output_intents(source_catalog, dest_catalog, cloner)
       merge_oc_properties(dest_catalog, source_catalog, cloner)
       merge_pages_and_structure(destination, source, cloner)
+    end
+
+    # Java PDFMergerUtility#appendDocument page label merge: append the source
+    # /PageLabels /Nums with the destination page count as an offset.
+    private def merge_page_labels(destination : Pdmodel::Document, dest_catalog : Pdmodel::DocumentCatalog,
+                                  source_catalog : Pdmodel::DocumentCatalog, cloner : PDFCloneUtility) : Nil
+      src_labels = source_catalog.cos_object.get_dictionary(Cos::Name::PAGE_LABELS)
+      return unless src_labels
+
+      dest_page_count = destination.pages.size
+      dest_labels = dest_catalog.cos_object.get_dictionary(Cos::Name::PAGE_LABELS)
+      dest_nums : Cos::Array
+      if dest_labels.nil?
+        dest_labels = Cos::Dictionary.new
+        dest_nums = Cos::Array.new
+        dest_labels[Cos::Name.new("Nums")] = dest_nums
+        dest_catalog.cos_object[Cos::Name::PAGE_LABELS] = dest_labels
+      else
+        dest_nums = dest_labels.get_array(Cos::Name.new("Nums")) || Cos::Array.new
+        dest_labels[Cos::Name.new("Nums")] = dest_nums
+      end
+
+      src_nums = src_labels.get_array(Cos::Name.new("Nums"))
+      return unless src_nums
+
+      start_size = dest_nums.size
+      index = 0
+      while index < src_nums.size
+        base = src_nums[index]?
+        base = base.object if base.is_a?(Cos::Object)
+        label_index = case base
+                      when Cos::Integer then base.value
+                      when Cos::Float   then base.value.to_i64
+                      else
+                        nil
+                      end
+        if label_index.nil?
+          # remove what we added
+          while dest_nums.size > start_size
+            dest_nums.remove(start_size)
+          end
+          break
+        end
+        dest_nums.add(Cos::Integer.new(label_index + dest_page_count))
+        cloned = cloner.clone_for_new_document(src_nums[index + 1]?)
+        dest_nums.add(cloned || Cos::Null::INSTANCE)
+        index += 2
+      end
+    end
+
+    # Java PDFMergerUtility#appendDocument metadata merge: when the destination
+    # has no /Metadata, create a new unfiltered stream from the source's decoded
+    # metadata and copy its dictionary (except /Filter and /Length).
+    private def merge_metadata(dest_catalog : Pdmodel::DocumentCatalog, source_catalog : Pdmodel::DocumentCatalog,
+                               cloner : PDFCloneUtility) : Nil
+      return unless dest_catalog.cos_object.get_stream(Cos::Name::METADATA).nil?
+
+      src_metadata = source_catalog.cos_object.get_stream(Cos::Name::METADATA)
+      return unless src_metadata
+
+      new_stream = Cos::Stream.new
+      if src_metadata.has_data
+        new_stream.data = src_metadata.create_input_stream.getb_to_end
+      end
+      merge_into(src_metadata, new_stream, cloner, Set{Cos::Name::FILTER, Cos::Name::LENGTH})
+      dest_catalog.cos_object[Cos::Name::METADATA] = new_stream
+    end
+
+    # Java PDFMergerUtility#mergeOutputIntents.
+    private def merge_output_intents(source_catalog : Pdmodel::DocumentCatalog,
+                                     dest_catalog : Pdmodel::DocumentCatalog, cloner : PDFCloneUtility) : Nil
+      src_intents = source_catalog.output_intents
+      return if src_intents.empty?
+
+      dst_intents = dest_catalog.output_intents
+      src_intents.each do |src_intent|
+        identifier = src_intent.output_condition_identifier
+        if identifier && identifier != "Custom"
+          next if dst_intents.any? { |dst_intent| dst_intent.output_condition_identifier == identifier }
+        end
+        cloned = cloner.clone_for_new_document(src_intent.cos_object)
+        next unless cloned
+        dest_catalog.add_output_intent(Pdmodel::OutputIntent.new(cloned.as(Cos::Dictionary)))
+      end
     end
 
     private def merge_threads(dest_catalog : Pdmodel::DocumentCatalog, source_catalog : Pdmodel::DocumentCatalog,
@@ -889,7 +976,34 @@ module Pdfbox::Multipdf
         return unless cloned
 
         dest_catalog.document_outline = Pdmodel::DocumentOutline.new(cloned.as(Cos::Dictionary))
+        return
       end
+
+      # Java: search the last sibling (the /Last entry is sometimes wrong) and
+      # insert each cloned source child after it.
+      dest_last = dest_outline.first_child
+      return unless dest_last
+
+      while sibling = dest_last.next_sibling
+        dest_last = sibling
+      end
+
+      src_item = source_outline.first_child
+      while src_item
+        cloned = cloner.clone_for_new_document(src_item.cos_object)
+        next_item = src_item.next_sibling
+        if cloned
+          cloned_dict = cloned.as(Cos::Dictionary)
+          cloned_dict.delete(Cos::Name::PREV)
+          cloned_dict.delete(Cos::Name::NEXT)
+          cloned_item = Pdmodel::OutlineItem.new(cloned_dict)
+          dest_last.next_sibling = cloned_item
+          cloned_dict[Cos::Name::PREV] = dest_last.cos_object
+          dest_last = cloned_item
+        end
+        src_item = next_item
+      end
+      dest_outline.cos_object[Cos::Name.new("Last")] = dest_last.cos_object
     end
 
     private def merge_page_mode(dest_catalog : Pdmodel::DocumentCatalog, source_catalog : Pdmodel::DocumentCatalog) : Nil

@@ -797,6 +797,9 @@ module Pdfbox::Cos
     ID_TREE              = new("IDTree")
     CLASS_MAP            = new("ClassMap")
     LANG                 = new("Lang")
+    METADATA             = new("Metadata")
+    PAGE_LABELS          = new("PageLabels")
+    OUTPUT_INTENTS       = new("OutputIntents")
 
     def initialize(@value : ::String)
     end
