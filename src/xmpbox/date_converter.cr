@@ -134,18 +134,18 @@ module Xmpbox
     end
 
     private def self.parse_offset_seconds(tail : String) : Int32
-      return 0 if tail.size < 3
+      return 0 if tail.size < 2
 
       sign = tail[0]
-      if sign == '+'
-        hours = tail[1, 2].to_i
-        minutes = tail.size >= 5 ? tail[3, 2].to_i : 0
-        return hours * 3600 + minutes * 60
-      end
+      return 0 unless sign == '+' || sign == '-'
 
-      hours = -tail[0, 2].to_i
-      minutes = tail.size >= 4 ? tail[2, 2].to_i : 0
-      hours * 3600 + minutes * 60
+      # PDF date offsets are written as HH'mm' (ISO 8601 basic with minute
+      # apostrophes); strip the apostrophes before reading the fields.
+      digits = tail[1, tail.size - 1].delete('\'')
+      hours = digits.size >= 2 ? digits[0, 2].to_i : 0
+      minutes = digits.size >= 4 ? (digits[2, 2].to_i? || 0) : 0
+      offset = hours * 3600 + minutes * 60
+      sign == '-' ? -offset : offset
     end
   end
 end

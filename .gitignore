@@ -51,3 +51,6 @@ scripts/
 
 # Fix scripts
 fix_*.rb
+
+# chiasmus analysis artifacts
+/.chiasmus/

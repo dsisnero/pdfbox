@@ -4928,35 +4928,35 @@ pdfbox/src/main/java/org/apache/pdfbox/multipdf/Splitter.java::method::Splitter.
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/Splitter.java::method::Splitter.setStreamCacheCreateFunction	method	ported	src/pdfbox/multipdf/splitter.cr	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/Splitter.java::method::Splitter.split	method	ported	src/pdfbox/multipdf/splitter.cr	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/Splitter.java::method::Splitter.splitAtPage	method	ported	src/pdfbox/multipdf/splitter.cr	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdfparser/BaseParser.java::class::BaseParser	class	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdfparser/BaseParser.java::const::ASCII_CR	const	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdfparser/BaseParser.java::const::ASCII_FF	const	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdfparser/BaseParser.java::const::ASCII_LF	const	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdfparser/BaseParser.java::const::ASCII_NINE	const	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdfparser/BaseParser.java::const::ASCII_NULL	const	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdfparser/BaseParser.java::const::ASCII_SPACE	const	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdfparser/BaseParser.java::const::ASCII_TAB	const	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdfparser/BaseParser.java::const::ASCII_ZERO	const	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdfparser/BaseParser.java::const::MAX_LENGTH_LONG	const	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdfparser/BaseParser.java::method::BaseParser.checkForEndOfString	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdfparser/BaseParser.java::method::BaseParser.isCR	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdfparser/BaseParser.java::method::BaseParser.isDigit	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdfparser/BaseParser.java::method::BaseParser.isEOF	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdfparser/BaseParser.java::method::BaseParser.isEOL	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdfparser/BaseParser.java::method::BaseParser.isEndOfName	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdfparser/BaseParser.java::method::BaseParser.isLF	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdfparser/BaseParser.java::method::BaseParser.isSpace	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdfparser/BaseParser.java::method::BaseParser.isWhitespace	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdfparser/BaseParser.java::method::BaseParser.readExpectedChar	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdfparser/BaseParser.java::method::BaseParser.readExpectedString	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdfparser/BaseParser.java::method::BaseParser.readInt	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdfparser/BaseParser.java::method::BaseParser.readLiteralString	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdfparser/BaseParser.java::method::BaseParser.readLong	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdfparser/BaseParser.java::method::BaseParser.readString	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdfparser/BaseParser.java::method::BaseParser.readStringNumber	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdfparser/BaseParser.java::method::BaseParser.skipLinebreak	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdfparser/BaseParser.java::method::BaseParser.skipSpaces	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdfparser/BaseParser.java::method::BaseParser.skipWhiteSpaces	method	ported	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdfparser/BaseParser.java::class::BaseParser	class	ported	src/pdfbox/pdf_parser/base_parser.cr	reconciled: class present
+pdfbox/src/main/java/org/apache/pdfbox/pdfparser/BaseParser.java::const::ASCII_CR	const	ported	src/pdfbox/pdf_parser/base_parser.cr	reconciled: class present
+pdfbox/src/main/java/org/apache/pdfbox/pdfparser/BaseParser.java::const::ASCII_FF	const	ported	src/pdfbox/pdf_parser/base_parser.cr	reconciled: class present
+pdfbox/src/main/java/org/apache/pdfbox/pdfparser/BaseParser.java::const::ASCII_LF	const	ported	src/pdfbox/pdf_parser/base_parser.cr	reconciled: class present
+pdfbox/src/main/java/org/apache/pdfbox/pdfparser/BaseParser.java::const::ASCII_NINE	const	ported	src/pdfbox/pdf_parser/base_parser.cr	reconciled: class present
+pdfbox/src/main/java/org/apache/pdfbox/pdfparser/BaseParser.java::const::ASCII_NULL	const	ported	src/pdfbox/pdf_parser/base_parser.cr	reconciled: class present
+pdfbox/src/main/java/org/apache/pdfbox/pdfparser/BaseParser.java::const::ASCII_SPACE	const	ported	src/pdfbox/pdf_parser/base_parser.cr	reconciled: class present
+pdfbox/src/main/java/org/apache/pdfbox/pdfparser/BaseParser.java::const::ASCII_TAB	const	ported	src/pdfbox/pdf_parser/base_parser.cr	reconciled: class present
+pdfbox/src/main/java/org/apache/pdfbox/pdfparser/BaseParser.java::const::ASCII_ZERO	const	ported	src/pdfbox/pdf_parser/base_parser.cr	reconciled: class present
+pdfbox/src/main/java/org/apache/pdfbox/pdfparser/BaseParser.java::const::MAX_LENGTH_LONG	const	ported	src/pdfbox/pdf_parser/base_parser.cr	reconciled: class present
+pdfbox/src/main/java/org/apache/pdfbox/pdfparser/BaseParser.java::method::BaseParser.checkForEndOfString	method	ported	src/pdfbox/pdf_parser/base_parser.cr	reconciled: class present
+pdfbox/src/main/java/org/apache/pdfbox/pdfparser/BaseParser.java::method::BaseParser.isCR	method	ported	src/pdfbox/pdf_parser/base_parser.cr	reconciled: class present
+pdfbox/src/main/java/org/apache/pdfbox/pdfparser/BaseParser.java::method::BaseParser.isDigit	method	ported	src/pdfbox/pdf_parser/base_parser.cr	reconciled: class present
+pdfbox/src/main/java/org/apache/pdfbox/pdfparser/BaseParser.java::method::BaseParser.isEOF	method	ported	src/pdfbox/pdf_parser/base_parser.cr	reconciled: class present
+pdfbox/src/main/java/org/apache/pdfbox/pdfparser/BaseParser.java::method::BaseParser.isEOL	method	ported	src/pdfbox/pdf_parser/base_parser.cr	reconciled: class present
+pdfbox/src/main/java/org/apache/pdfbox/pdfparser/BaseParser.java::method::BaseParser.isEndOfName	method	ported	src/pdfbox/pdf_parser/base_parser.cr	reconciled: class present
+pdfbox/src/main/java/org/apache/pdfbox/pdfparser/BaseParser.java::method::BaseParser.isLF	method	ported	src/pdfbox/pdf_parser/base_parser.cr	reconciled: class present
+pdfbox/src/main/java/org/apache/pdfbox/pdfparser/BaseParser.java::method::BaseParser.isSpace	method	ported	src/pdfbox/pdf_parser/base_parser.cr	reconciled: class present
+pdfbox/src/main/java/org/apache/pdfbox/pdfparser/BaseParser.java::method::BaseParser.isWhitespace	method	ported	src/pdfbox/pdf_parser/base_parser.cr	reconciled: class present
+pdfbox/src/main/java/org/apache/pdfbox/pdfparser/BaseParser.java::method::BaseParser.readExpectedChar	method	ported	src/pdfbox/pdf_parser/base_parser.cr	reconciled: class present
+pdfbox/src/main/java/org/apache/pdfbox/pdfparser/BaseParser.java::method::BaseParser.readExpectedString	method	ported	src/pdfbox/pdf_parser/base_parser.cr	reconciled: class present
+pdfbox/src/main/java/org/apache/pdfbox/pdfparser/BaseParser.java::method::BaseParser.readInt	method	ported	src/pdfbox/pdf_parser/base_parser.cr	reconciled: class present
+pdfbox/src/main/java/org/apache/pdfbox/pdfparser/BaseParser.java::method::BaseParser.readLiteralString	method	ported	src/pdfbox/pdf_parser/base_parser.cr	reconciled: class present
+pdfbox/src/main/java/org/apache/pdfbox/pdfparser/BaseParser.java::method::BaseParser.readLong	method	ported	src/pdfbox/pdf_parser/base_parser.cr	reconciled: class present
+pdfbox/src/main/java/org/apache/pdfbox/pdfparser/BaseParser.java::method::BaseParser.readString	method	ported	src/pdfbox/pdf_parser/base_parser.cr	reconciled: class present
+pdfbox/src/main/java/org/apache/pdfbox/pdfparser/BaseParser.java::method::BaseParser.readStringNumber	method	ported	src/pdfbox/pdf_parser/base_parser.cr	reconciled: class present
+pdfbox/src/main/java/org/apache/pdfbox/pdfparser/BaseParser.java::method::BaseParser.skipLinebreak	method	ported	src/pdfbox/pdf_parser/base_parser.cr	reconciled: class present
+pdfbox/src/main/java/org/apache/pdfbox/pdfparser/BaseParser.java::method::BaseParser.skipSpaces	method	ported	src/pdfbox/pdf_parser/base_parser.cr	reconciled: class present
+pdfbox/src/main/java/org/apache/pdfbox/pdfparser/BaseParser.java::method::BaseParser.skipWhiteSpaces	method	ported	src/pdfbox/pdf_parser/base_parser.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/pdfparser/BruteForceParser.java::class::BruteForceParser	class	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdfparser/BruteForceParser.java::const::EOF_MARKER	const	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdfparser/BruteForceParser.java::const::LOG	const	missing	-	auto-generated
@@ -5065,9 +5065,9 @@ pdfbox/src/main/java/org/apache/pdfbox/pdfparser/COSParser.java::method::COSPars
 pdfbox/src/main/java/org/apache/pdfbox/pdfparser/COSParser.java::method::COSParser.setEOFLookupRange	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdfparser/COSParser.java::method::COSParser.setLenient	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdfparser/COSParser.java::method::COSParser.validateStreamLength	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdfparser/EndstreamFilterStream.java::class::EndstreamFilterStream	class	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdfparser/EndstreamFilterStream.java::method::EndstreamFilterStream.calculateLength	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdfparser/EndstreamFilterStream.java::method::EndstreamFilterStream.filter	method	ported	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdfparser/EndstreamFilterStream.java::class::EndstreamFilterStream	class	ported	src/pdfbox/pdf_parser/endstream_filter_stream.cr	reconciled: class present
+pdfbox/src/main/java/org/apache/pdfbox/pdfparser/EndstreamFilterStream.java::method::EndstreamFilterStream.calculateLength	method	ported	src/pdfbox/pdf_parser/endstream_filter_stream.cr	reconciled: class present
+pdfbox/src/main/java/org/apache/pdfbox/pdfparser/EndstreamFilterStream.java::method::EndstreamFilterStream.filter	method	ported	src/pdfbox/pdf_parser/endstream_filter_stream.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/pdfparser/FDFParser.java::class::FDFParser	class	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdfparser/FDFParser.java::method::FDFParser.initialParse	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdfparser/FDFParser.java::method::FDFParser.parse	method	ported	src	auto-generated
@@ -5077,12 +5077,12 @@ pdfbox/src/main/java/org/apache/pdfbox/pdfparser/PDFObjectStreamParser.java::met
 pdfbox/src/main/java/org/apache/pdfbox/pdfparser/PDFObjectStreamParser.java::method::PDFObjectStreamParser.privateReadObjectNumbers	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdfparser/PDFObjectStreamParser.java::method::PDFObjectStreamParser.privateReadObjectOffsets	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdfparser/PDFObjectStreamParser.java::method::PDFObjectStreamParser.readObjectNumbers	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdfparser/PDFParser.java::class::PDFParser	class	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdfparser/PDFParser.java::const::LOG	const	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdfparser/PDFParser.java::method::PDFParser.createDocument	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdfparser/PDFParser.java::method::PDFParser.initialParse	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdfparser/PDFParser.java::method::PDFParser.load	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdfparser/PDFParser.java::method::PDFParser.parse	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdfparser/PDFParser.java::class::PDFParser	class	ported	src/pdfbox/pdf_parser/parser.cr	reconciled: class present
+pdfbox/src/main/java/org/apache/pdfbox/pdfparser/PDFParser.java::const::LOG	const	ported	src/pdfbox/pdf_parser/parser.cr	reconciled: class present
+pdfbox/src/main/java/org/apache/pdfbox/pdfparser/PDFParser.java::method::PDFParser.createDocument	method	ported	src/pdfbox/pdf_parser/parser.cr	reconciled: class present
+pdfbox/src/main/java/org/apache/pdfbox/pdfparser/PDFParser.java::method::PDFParser.initialParse	method	ported	src/pdfbox/pdf_parser/parser.cr	reconciled: class present
+pdfbox/src/main/java/org/apache/pdfbox/pdfparser/PDFParser.java::method::PDFParser.load	method	ported	src/pdfbox/pdf_parser/parser.cr	reconciled: class present
+pdfbox/src/main/java/org/apache/pdfbox/pdfparser/PDFParser.java::method::PDFParser.parse	method	ported	src/pdfbox/pdf_parser/parser.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/pdfparser/PDFStreamParser.java::class::PDFStreamParser	class	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdfparser/PDFStreamParser.java::const::LOG	const	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdfparser/PDFStreamParser.java::const::MAX_BIN_CHAR_TEST_LENGTH	const	missing	-	auto-generated
