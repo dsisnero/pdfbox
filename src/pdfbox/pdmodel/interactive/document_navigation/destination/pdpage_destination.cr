@@ -15,7 +15,9 @@ module Pdfbox::Pdmodel::Interactive::DocumentNavigation::Destination
 
     def page : Cos::Dictionary?
       return if @array.empty?
-      @array[0]?.as?(Cos::Dictionary)
+      value = @array[0]?
+      value = value.object if value.is_a?(Cos::Object)
+      value.as?(Cos::Dictionary)
     end
 
     def page=(page : Cos::Dictionary) : Cos::Dictionary

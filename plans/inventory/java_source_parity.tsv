@@ -4879,7 +4879,7 @@ pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::P
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.mergeKEntries	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.mergeLanguage	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.mergeMarkInfo	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.mergeOpenAction	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.mergeOpenAction	ported	src/pdfbox/multipdf.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.mergeOutputIntents	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.mergeRoleMap	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.mergeViewerPreferences	missing	-	baseline
@@ -5465,7 +5465,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::P
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getMetadata	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getNames	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getOCProperties	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getOpenAction	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getOpenAction	ported	src/pdfbox/pdmodel.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getOutputIntents	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getPageLabels	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getPageLayout	missing	-	baseline
@@ -5484,7 +5484,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::P
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setMetadata	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setNames	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setOCProperties	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setOpenAction	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setOpenAction	ported	src/pdfbox/pdmodel.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setOutputIntents	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setPageLabels	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setPageLayout	missing	-	baseline
@@ -10088,8 +10088,8 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/de
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/destination/PDNamedDestination.java::method::PDNamedDestination.setNamedDestination	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/destination/PDPageDestination.java::class::PDPageDestination	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/destination/PDPageDestination.java::method::PDPageDestination.getCOSObject	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/destination/PDPageDestination.java::method::PDPageDestination.getPage	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/destination/PDPageDestination.java::method::PDPageDestination.getPageNumber	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/destination/PDPageDestination.java::method::PDPageDestination.getPage	ported	src/pdfbox/pdmodel/interactive/document_navigation/destination/pdpage_destination.cr	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/destination/PDPageDestination.java::method::PDPageDestination.getPageNumber	ported	src/pdfbox/pdmodel/interactive/document_navigation/destination/pdpage_destination.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/destination/PDPageDestination.java::method::PDPageDestination.indexOfPageTree	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/destination/PDPageDestination.java::method::PDPageDestination.retrievePageNumber	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/documentnavigation/destination/PDPageDestination.java::method::PDPageDestination.setPage	missing	-	baseline

@@ -1,5 +1,7 @@
 module Pdfbox::Pdmodel::Interactive::Action
   class PDAction
+    include Pdfbox::Pdmodel::Common::PDDestinationOrAction
+
     TYPE = "Action"
 
     @action : Cos::Dictionary

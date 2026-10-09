@@ -825,7 +825,32 @@ module Pdfbox::Multipdf
             destination_catalog.cos_object[Pdfbox::Cos::Name.new("Dests")] = cloned
           end
         end
+
+        merge_open_action(destination_catalog, source_catalog, cloner)
       end
+    end
+
+    # Copy the source /OpenAction into the destination if it has none. Java
+    # PDFMergerUtility#mergeOpenAction.
+    private def merge_open_action(destination_catalog : Pdmodel::DocumentCatalog, source_catalog : Pdmodel::DocumentCatalog,
+                                  cloner : PDFCloneUtility) : Nil
+      return if destination_catalog.open_action
+
+      source_action = source_catalog.open_action
+      return unless source_action
+
+      cloned = cloner.clone_for_new_document(source_action.cos_object)
+      return unless cloned
+
+      open_action = case cloned
+                    when Pdfbox::Cos::Dictionary
+                      Pdfbox::Pdmodel::Interactive::Action::PDActionFactory.create_action(cloned)
+                    when Pdfbox::Cos::Array
+                      Pdfbox::Pdmodel::Interactive::DocumentNavigation::Destination::PDDestination.create(cloned)
+                    end
+      return unless open_action
+
+      destination_catalog.open_action = open_action
     end
 
     # Merge the source AcroForm into the destination. Legacy mode keeps unique

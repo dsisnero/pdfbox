@@ -269,6 +269,43 @@ describe "Pdfbox::Multipdf parity" do
   end
 
   it "PDFMergerUtilityTest#testPDFMergerOpenAction" do
+    dir = Dir.tempdir
+    p1 = File.join(dir, "MergerOpenActionTest1.pdf")
+    p2 = File.join(dir, "MergerOpenActionTest2.pdf")
+    out_path = File.join(dir, "MergerOpenActionTestResult.pdf")
+    params = Pdfbox::Pdfwriter::Compress::CompressParameters::NO_COMPRESSION
+
+    doc1 = Pdfbox::Pdmodel::Document.new
+    3.times { doc1.add_page(Pdfbox::Pdmodel::Page.new) }
+    doc1.save(p1, params)
+    doc1.close
+
+    doc2 = Pdfbox::Pdmodel::Document.new
+    3.times { doc2.add_page(Pdfbox::Pdmodel::Page.new) }
+    dest = Pdfbox::Pdmodel::Interactive::DocumentNavigation::Destination::PDPageFitDestination.new
+    dest.page = doc2.get_page(1).cos_object.not_nil!
+    doc2.document_catalog.not_nil!.open_action = dest
+    doc2.save(p2, params)
+    doc2.close
+
+    merger = Pdfbox::Multipdf::PDFMergerUtility.new
+    merger.add_source(p1)
+    merger.add_source(p2)
+    merger.destination_file_name = out_path
+    merger.merge_documents(nil)
+
+    merged = Pdfbox::Loader.load_pdf(out_path)
+    begin
+      catalog = merged.document_catalog.not_nil!
+      page_dest = catalog.open_action.as?(
+        Pdfbox::Pdmodel::Interactive::DocumentNavigation::Destination::PDPageDestination
+      )
+      page_dest.should_not be_nil
+      target = page_dest.not_nil!.page
+      merged.pages.index { |pg| pg.cos_object == target }.should eq(4)
+    ensure
+      merged.close
+    end
   end
 
   it "PDFMergerUtilityTest#testStructureTreeMerge" do

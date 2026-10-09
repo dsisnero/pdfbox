@@ -1115,7 +1115,9 @@ module Pdfbox::Pdmodel
     end
 
     # Get open action
-    def open_action : Interactive::Action::PDAction?
+    # The /OpenAction entry, which may be a destination (array) or an action
+    # (dictionary). Java PDDocumentCatalog#getOpenAction.
+    def open_action : Common::PDDestinationOrAction?
       open_action_value = @cos_dict[Cos::Name.new("OpenAction")]
       return unless open_action_value
 
@@ -1127,11 +1129,20 @@ module Pdfbox::Pdmodel
       # Return nil for boolean values (e.g., false) as per PDF spec
       return if open_action_value.is_a?(Cos::Boolean)
 
-      if open_action_value.is_a?(Cos::Dictionary)
+      case open_action_value
+      when Cos::Dictionary
         Interactive::Action::PDActionFactory.create_action(open_action_value)
-      elsif open_action_value.is_a?(Cos::Array)
-        # Array represents a destination, not an action
-        nil
+      when Cos::Array
+        Interactive::DocumentNavigation::Destination::PDDestination.create(open_action_value)
+      end
+    end
+
+    # Set the /OpenAction (destination or action). Java PDDocumentCatalog#setOpenAction.
+    def open_action=(value : Common::PDDestinationOrAction?) : Nil
+      if value
+        @cos_dict[Cos::Name.new("OpenAction")] = value.cos_object
+      else
+        @cos_dict.delete(Cos::Name.new("OpenAction"))
       end
     end
 

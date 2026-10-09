@@ -750,7 +750,7 @@ pdfbox/src/test/java/org/apache/pdfbox/multipdf/PDFMergerUtilityTest.java::metho
 pdfbox/src/test/java/org/apache/pdfbox/multipdf/PDFMergerUtilityTest.java::method::PDFMergerUtilityTest.testPDFBox515	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/multipdf/PDFMergerUtilityTest.java::method::PDFMergerUtilityTest.testPDFBox5198_2	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/multipdf/PDFMergerUtilityTest.java::method::PDFMergerUtilityTest.testPDFBox5198_3	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/multipdf/PDFMergerUtilityTest.java::method::PDFMergerUtilityTest.testPDFMergerOpenAction	ported	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/multipdf/PDFMergerUtilityTest.java::method::PDFMergerUtilityTest.testPDFMergerOpenAction	ported	spec/pdfbox/multipdf/multipdf_spec.cr	baseline
 pdfbox/src/test/java/org/apache/pdfbox/multipdf/PDFMergerUtilityTest.java::method::PDFMergerUtilityTest.testPDFMergerUtility	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/multipdf/PDFMergerUtilityTest.java::method::PDFMergerUtilityTest.testPDFMergerUtility2	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/multipdf/PDFMergerUtilityTest.java::method::PDFMergerUtilityTest.testParentTree	ported	-	baseline
