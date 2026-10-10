@@ -88,6 +88,8 @@ target:
 renames:
   - source: DefaultResourceCache
     target: ResourceCache
+  - source: FSFontInfo
+    target: FontInfo
 
 # Many-to-one consolidation: any Java source name matching the glob maps to the
 # named Crystal target. Use for families collapsed into one implementation, e.g.

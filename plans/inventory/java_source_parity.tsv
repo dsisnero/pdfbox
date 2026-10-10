@@ -7287,7 +7287,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/CMapManager.java::class::CMa
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/CMapManager.java::const::CMAP_CACHE	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/CMapManager.java::method::CMapManager.getPredefinedCMap	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/CMapManager.java::method::CMapManager.parseCMap	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/FileSystemFontProvider.java::class::FSFontInfo	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/FileSystemFontProvider.java::class::FSFontInfo	ported	src/pdfbox/pdmodel/font/font_provider.cr	reconciled: chiasmus (FSFontInfo->FontInfo)
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/FileSystemFontProvider.java::class::FileSystemFontProvider	ported	src/pdfbox/pdmodel/font/font_provider.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/FileSystemFontProvider.java::const::CHECKSUM_PLACEHOLDER	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/FileSystemFontProvider.java::const::LOG	missing	-	baseline
