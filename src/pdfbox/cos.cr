@@ -806,6 +806,8 @@ module Pdfbox::Cos
     ARTIFACT    = new("Artifact")
     ALT         = new("Alt")
     E           = new("E")
+    BBOX        = new("BBox")
+    ATTACHED    = new("Attached")
 
     def initialize(@value : ::String)
     end

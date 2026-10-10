@@ -4,7 +4,11 @@ module Pdfbox::Pdmodel::DocumentInterchange::MarkedContent
     @properties : Pdfbox::Cos::Dictionary?
     @contents : Array(Pdfbox::Cos::Base | Pdfbox::Text::TextPosition | PDMarkedContent)
 
-    def self.create(tag : Pdfbox::Cos::Name?, properties : Pdfbox::Cos::Dictionary?) : self
+    def self.create(tag : Pdfbox::Cos::Name?, properties : Pdfbox::Cos::Dictionary?) : PDMarkedContent
+      # Java PDMarkedContent#create dispatches /Artifact to PDArtifactMarkedContent.
+      if tag == Pdfbox::Cos::Name::ARTIFACT
+        return PDArtifactMarkedContent.new(properties)
+      end
       new(tag, properties)
     end
 
@@ -78,6 +82,56 @@ module Pdfbox::Pdmodel::DocumentInterchange::MarkedContent
 
     def to_s(io : IO) : Nil
       io << "tag=" << @tag << ", properties=" << @properties << ", contents=" << @contents.size
+    end
+  end
+
+  # Marked-content sequence with the /Artifact tag.
+  # Port of Apache PDFBox PDArtifactMarkedContent.
+  class PDArtifactMarkedContent < PDMarkedContent
+    def initialize(properties : Pdfbox::Cos::Dictionary?)
+      super(Pdfbox::Cos::Name::ARTIFACT, properties)
+    end
+
+    # Java PDArtifactMarkedContent#getType.
+    def type : String?
+      @properties.try(&.get_name_as_string(Pdfbox::Cos::Name::TYPE))
+    end
+
+    # Java PDArtifactMarkedContent#getSubtype.
+    def subtype : String?
+      @properties.try(&.get_name_as_string(Pdfbox::Cos::Name::SUBTYPE))
+    end
+
+    # Java PDArtifactMarkedContent#getBBox.
+    def bbox : Pdfbox::Pdmodel::Common::PDRectangle?
+      array = @properties.try(&.get_array(Pdfbox::Cos::Name::BBOX))
+      array ? Pdfbox::Pdmodel::Common::PDRectangle.new(array) : nil
+    end
+
+    def top_attached? : Bool
+      attached?("Top")
+    end
+
+    def bottom_attached? : Bool
+      attached?("Bottom")
+    end
+
+    def left_attached? : Bool
+      attached?("Left")
+    end
+
+    def right_attached? : Bool
+      attached?("Right")
+    end
+
+    # Java PDArtifactMarkedContent#isAttached.
+    private def attached?(edge : String) : Bool
+      array = @properties.try(&.get_array(Pdfbox::Cos::Name::ATTACHED))
+      return false unless array
+      array.items.any? do |item|
+        item = item.object if item.is_a?(Pdfbox::Cos::Object)
+        item.is_a?(Pdfbox::Cos::Name) && item.value == edge
+      end
     end
   end
 end
