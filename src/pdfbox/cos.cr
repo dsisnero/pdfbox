@@ -800,6 +800,12 @@ module Pdfbox::Cos
     METADATA             = new("Metadata")
     PAGE_LABELS          = new("PageLabels")
     OUTPUT_INTENTS       = new("OutputIntents")
+    # Marked-content keys
+    MCID        = new("MCID")
+    ACTUAL_TEXT = new("ActualText")
+    ARTIFACT    = new("Artifact")
+    ALT         = new("Alt")
+    E           = new("E")
 
     def initialize(@value : ::String)
     end

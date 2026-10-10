@@ -183,9 +183,9 @@ module MultipdfSplitterHelpers
     Pdfbox::Multipdf::PDFMergerUtility.get_id_tree_as_map(id_tree).size
   end
 
-  # Java checkWithNumberTree, minus the marked-content/MCID walk (the Crystal
-  # port has no PDFMarkedContentExtractor/PDStructureNode yet). Verifies that
-  # every page/annotation /StructParent(s) maps to a /ParentTree array entry.
+  # Java checkWithNumberTree: every page/annotation /StructParent(s) maps to a
+  # /ParentTree array entry, and every marked-content MCID resolves to a
+  # structure element whose kids reference the MCID.
   def check_with_number_tree(doc : Pdfbox::Pdmodel::Document) : Nil
     root = doc.document_catalog.not_nil!.structure_tree_root.not_nil!
     root.parent_tree_next_key.should_not eq(-1)
@@ -194,7 +194,45 @@ module MultipdfSplitterHelpers
       sp = page.struct_parents
       next if sp < 0
       map.has_key?(sp).should be_true
-      map[sp].cos_object.is_a?(Pdfbox::Cos::Array).should be_true
+      base = map[sp].cos_object
+      base.is_a?(Pdfbox::Cos::Array).should be_true
+      array = base.as(Pdfbox::Cos::Array)
+
+      # Java: walk the page's marked content and check each MCID.
+      extractor = Pdfbox::Text::PDFMarkedContentExtractor.new
+      extractor.process_page(page)
+      mcid_set = Set(Int32).new
+      extractor.get_marked_contents.each do |marked_content|
+        next if marked_content.properties.nil?
+        mcid = marked_content.mcid
+        next if mcid < 0
+
+        entry = array[mcid]?
+        entry = entry.object if entry.is_a?(Pdfbox::Cos::Object)
+        entry.should_not be_nil
+        mcid_set << mcid
+
+        element = Pdfbox::Pdmodel::DocumentInterchange::LogicalStructure::PDStructureElement.new(
+          entry.as(Pdfbox::Cos::Dictionary)
+        )
+        found = element.kids.any? do |kid|
+          case kid
+          when Int32
+            kid == mcid
+          when Pdfbox::Pdmodel::DocumentInterchange::LogicalStructure::PDMarkedContentReference
+            kid.mcid == mcid
+          else
+            false
+          end
+        end
+        found.should be_true
+      end
+      (mcid_set.empty? || mcid_set.max <= array.size - 1).should be_true
+
+      page.annotations.each do |annot|
+        sp2 = annot.struct_parent
+        map.has_key?(sp2).should be_true if sp2 >= 0
+      end
     end
   end
 

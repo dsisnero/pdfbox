@@ -227,7 +227,8 @@ module Pdfbox::Pdmodel::Interactive::Annotation
     end
 
     def struct_parent : Int32
-      @dictionary.get_int(Cos::Name.new("StructParent"), 0_i64).to_i32
+      # Java COSDictionary#getInt(COSName) defaults to -1 (absent).
+      @dictionary.get_int(Cos::Name::STRUCT_PARENT, -1_i64).to_i32
     end
 
     def struct_parent=(value : Int) : Int32

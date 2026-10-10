@@ -646,7 +646,8 @@ module Fontbox
           data[position] = 0_u8
           increment(data, position - 1, use_strict_mode)
         else
-          data[position] = (data[position] + 1).to_u8
+          # Java casts to byte, wrapping 255 -> 0 (e.g. at position 0).
+          data[position] = data[position] &+ 1_u8
         end
         true
       end

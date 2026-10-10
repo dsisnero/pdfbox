@@ -40,6 +40,7 @@ module Pdfbox::Pdmodel::DocumentInterchange::LogicalStructure
 
     def parent : self?
       value = @dictionary[Pdfbox::Cos::Name.new("P")]
+      value = value.object if value.is_a?(Pdfbox::Cos::Object)
       return unless value.is_a?(Pdfbox::Cos::Dictionary)
       self.class.new(value)
     end
@@ -148,9 +149,15 @@ module Pdfbox::Pdmodel::DocumentInterchange::LogicalStructure
       kid_objects = [] of Int32 | PDMarkedContentReference | self
       k = @dictionary[Pdfbox::Cos::Name.new("K")]
       return kid_objects unless k
+      # A reloaded document stores /K (and its entries) as indirect objects;
+      # Java COSDictionary#getDictionaryObject/COSArray#getObject dereference them.
+      k = k.object if k.is_a?(Pdfbox::Cos::Object)
+      return kid_objects unless k
 
       if k.is_a?(Pdfbox::Cos::Array)
         k.items.each do |item|
+          item = item.object if item.is_a?(Pdfbox::Cos::Object)
+          next unless item
           kid = create_kid(item)
           kid_objects << kid if kid
         end
@@ -276,12 +283,15 @@ module Pdfbox::Pdmodel::DocumentInterchange::LogicalStructure
     end
 
     private def create_kid(kid : Pdfbox::Cos::Base) : Int32 | PDMarkedContentReference | self | Nil
+      kid = kid.object if kid.is_a?(Pdfbox::Cos::Object)
+      return unless kid
       if kid.is_a?(Pdfbox::Cos::Integer)
         return kid.value.to_i32
       end
       return unless kid.is_a?(Pdfbox::Cos::Dictionary)
 
       type = kid[Pdfbox::Cos::Name.new("Type")]
+      type = type.object if type.is_a?(Pdfbox::Cos::Object)
       type_string = type.as?(Pdfbox::Cos::Name).try(&.value)
       return self.class.new(kid) if type_string.nil? || type_string == TYPE
       return PDMarkedContentReference.new(kid) if type_string == PDMarkedContentReference::TYPE
