@@ -85,9 +85,9 @@ target:
 # (post prefix/accessor stripping), and the `target` value is canonicalized the
 # same way target symbols are. Use only when no generic rule can derive the
 # mapping, e.g.:
-#   - source: DefaultResourceCache
-#     target: ResourceCache
-renames: []
+renames:
+  - source: DefaultResourceCache
+    target: ResourceCache
 
 # Many-to-one consolidation: any Java source name matching the glob maps to the
 # named Crystal target. Use for families collapsed into one implementation, e.g.
@@ -109,3 +109,5 @@ owner_aliases:
     target: marked_content
   - source: viewerpreferences
     target: viewer_preferences
+  - source: default_resource_cache
+    target: resource_cache

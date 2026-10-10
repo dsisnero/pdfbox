@@ -1726,7 +1726,7 @@ fontbox/src/main/java/org/apache/fontbox/cff/CFFType1Font.java::method::PrivateT
 fontbox/src/main/java/org/apache/fontbox/cff/CIDKeyedType2CharString.java::class::CIDKeyedType2CharString	ported	src/fontbox/cff/cid_keyed_type2_char_string.cr	reconciled: class present
 fontbox/src/main/java/org/apache/fontbox/cff/CIDKeyedType2CharString.java::method::CIDKeyedType2CharString.getCID	ported	src/fontbox/cff/cid_keyed_type2_char_string.cr	reconciled: method present
 fontbox/src/main/java/org/apache/fontbox/cff/CharStringCommand.java::const::COMMANDS_BY_VALUE	ported	src/.../char_string_command.cr	stale inventory; class ported
-fontbox/src/main/java/org/apache/fontbox/cff/CharStringCommand.java::enum::CharStringCommand	ported	src/.../char_string_command.cr	stale inventory; class ported
+fontbox/src/main/java/org/apache/fontbox/cff/CharStringCommand.java::enum::CharStringCommand	ported	src/fontbox/cff/char_string_command.cr	reconciled: chiasmus owner match
 fontbox/src/main/java/org/apache/fontbox/cff/CharStringCommand.java::enum::Type1KeyWord	missing	-	baseline
 fontbox/src/main/java/org/apache/fontbox/cff/CharStringCommand.java::enum::Type2KeyWord	missing	-	baseline
 fontbox/src/main/java/org/apache/fontbox/cff/CharStringCommand.java::method::getInstance	ported	src/.../char_string_command.cr	stale inventory; class ported
@@ -5308,7 +5308,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/compress/CompressParameters.jav
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/compress/CompressParameters.java::const::NO_COMPRESSION	ported	src/.../compress_parameters.cr	stale inventory; class ported
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/compress/CompressParameters.java::method::CompressParameters.getObjectStreamSize	ported	src/.../compress_parameters.cr	stale inventory; class ported
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/compress/CompressParameters.java::method::CompressParameters.isCompress	ported	src/.../compress_parameters.cr	stale inventory; class ported
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/DefaultResourceCache.java::class::DefaultResourceCache	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/DefaultResourceCache.java::class::DefaultResourceCache	ported	src/pdfbox/pdmodel/resource_cache.cr	reconciled: chiasmus owner match
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/DefaultResourceCache.java::method::DefaultResourceCache.getColorSpace	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/DefaultResourceCache.java::method::DefaultResourceCache.getExtGState	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/DefaultResourceCache.java::method::DefaultResourceCache.getFont	missing	-	baseline
@@ -5317,11 +5317,11 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/DefaultResourceCache.java::method
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/DefaultResourceCache.java::method::DefaultResourceCache.getShading	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/DefaultResourceCache.java::method::DefaultResourceCache.getXObject	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/DefaultResourceCache.java::method::DefaultResourceCache.put	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/DefaultResourceCache.java::method::DefaultResourceCache.removeColorSpace	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/DefaultResourceCache.java::method::DefaultResourceCache.removeExtState	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/DefaultResourceCache.java::method::DefaultResourceCache.removeFont	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/DefaultResourceCache.java::method::DefaultResourceCache.removeColorSpace	ported	src/pdfbox/pdmodel/resource_cache.cr	reconciled: chiasmus owner match
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/DefaultResourceCache.java::method::DefaultResourceCache.removeExtState	ported	src/pdfbox/pdmodel/resource_cache.cr	reconciled: chiasmus owner match
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/DefaultResourceCache.java::method::DefaultResourceCache.removeFont	ported	src/pdfbox/pdmodel/resource_cache.cr	reconciled: chiasmus owner match
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/DefaultResourceCache.java::method::DefaultResourceCache.removePattern	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/DefaultResourceCache.java::method::DefaultResourceCache.removeProperties	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/DefaultResourceCache.java::method::DefaultResourceCache.removeProperties	ported	src/pdfbox/pdmodel/resource_cache.cr	reconciled: chiasmus owner match
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/DefaultResourceCache.java::method::DefaultResourceCache.removeShading	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/DefaultResourceCache.java::method::DefaultResourceCache.removeXObject	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/DefaultResourceCacheCreateImpl.java::class::DefaultResourceCacheCreateImpl	missing	-	baseline
@@ -7278,10 +7278,10 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fixup/processor/PDDocumentProcess
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/CIDFontMapping.java::class::CIDFontMapping	ported	src/pdfbox/pdmodel/font/font_mapper.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/CIDFontMapping.java::method::CIDFontMapping.getTrueTypeFont	ported	src/pdfbox/pdmodel/font/font_mapper.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/CIDFontMapping.java::method::CIDFontMapping.isCIDFont	ported	src/pdfbox/pdmodel/font/font_mapper.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/CIDSystemInfo.java::class::CIDSystemInfo	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/CIDSystemInfo.java::method::CIDSystemInfo.getOrdering	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/CIDSystemInfo.java::method::CIDSystemInfo.getRegistry	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/CIDSystemInfo.java::method::CIDSystemInfo.getSupplement	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/CIDSystemInfo.java::class::CIDSystemInfo	ported	src/pdfbox/pdmodel/font/cid_system_info.cr	reconciled: chiasmus owner match
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/CIDSystemInfo.java::method::CIDSystemInfo.getOrdering	ported	src/pdfbox/pdmodel/font/cid_system_info.cr	reconciled: chiasmus owner match
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/CIDSystemInfo.java::method::CIDSystemInfo.getRegistry	ported	src/pdfbox/pdmodel/font/cid_system_info.cr	reconciled: chiasmus owner match
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/CIDSystemInfo.java::method::CIDSystemInfo.getSupplement	ported	src/pdfbox/pdmodel/font/cid_system_info.cr	reconciled: chiasmus owner match
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/CIDSystemInfo.java::method::CIDSystemInfo.toString	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/CMapManager.java::class::CMapManager	ported	src/pdfbox/pdmodel/font/cmap_manager.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/CMapManager.java::const::CMAP_CACHE	missing	-	baseline
@@ -7832,14 +7832,14 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/Standard14Fonts.java::const:
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/Standard14Fonts.java::const::FONTS	ported	src/.../standard14_fonts.cr	stale inventory; class ported
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/Standard14Fonts.java::const::GENERIC_FONTS	ported	src/.../standard14_fonts.cr	stale inventory; class ported
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/Standard14Fonts.java::enum::FontName	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/Standard14Fonts.java::method::Standard14Fonts.containsName	ported	src/.../standard14_fonts.cr	stale inventory; class ported
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/Standard14Fonts.java::method::Standard14Fonts.containsName	ported	src/pdfbox/pdmodel/font/standard14_fonts.cr	reconciled: chiasmus owner match
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/Standard14Fonts.java::method::Standard14Fonts.getAFM	ported	src/.../standard14_fonts.cr	stale inventory; class ported
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/Standard14Fonts.java::method::Standard14Fonts.getGlyphList	ported	src/.../standard14_fonts.cr	stale inventory; class ported
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/Standard14Fonts.java::method::Standard14Fonts.getGlyphList	ported	src/pdfbox/pdmodel/font/standard14_fonts.cr	reconciled: chiasmus owner match
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/Standard14Fonts.java::method::Standard14Fonts.getGlyphPath	ported	src/.../standard14_fonts.cr	stale inventory; class ported
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/Standard14Fonts.java::method::Standard14Fonts.getMappedFont	ported	src/.../standard14_fonts.cr	stale inventory; class ported
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/Standard14Fonts.java::method::Standard14Fonts.getMappedFont	ported	src/pdfbox/pdmodel/font/standard14_fonts.cr	reconciled: chiasmus owner match
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/Standard14Fonts.java::method::Standard14Fonts.getMappedFontName	ported	src/.../standard14_fonts.cr	stale inventory; class ported
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/Standard14Fonts.java::method::Standard14Fonts.getName	ported	src/.../standard14_fonts.cr	stale inventory; class ported
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/Standard14Fonts.java::method::Standard14Fonts.getNames	ported	src/.../standard14_fonts.cr	stale inventory; class ported
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/Standard14Fonts.java::method::Standard14Fonts.getNames	ported	src/pdfbox/pdmodel/font/standard14_fonts.cr	reconciled: chiasmus owner match
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/Standard14Fonts.java::method::Standard14Fonts.loadMetrics	ported	src/.../standard14_fonts.cr	stale inventory; class ported
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/Standard14Fonts.java::method::Standard14Fonts.mapName	ported	src/.../standard14_fonts.cr	stale inventory; class ported
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/Standard14Fonts.java::method::Standard14Fonts.toString	ported	src/.../standard14_fonts.cr	stale inventory; class ported
@@ -7899,9 +7899,9 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/GlyphList.java::con
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/GlyphList.java::const::LOG	ported	src/.../glyph_list.cr	stale inventory; class ported
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/GlyphList.java::const::ZAPF_DINGBATS	ported	src/.../glyph_list.cr	stale inventory; class ported
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/GlyphList.java::method::GlyphList.codePointToName	ported	src/.../glyph_list.cr	stale inventory; class ported
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/GlyphList.java::method::GlyphList.getAdobeGlyphList	ported	src/.../glyph_list.cr	stale inventory; class ported
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/GlyphList.java::method::GlyphList.getZapfDingbats	ported	src/.../glyph_list.cr	stale inventory; class ported
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/GlyphList.java::method::GlyphList.load	ported	src/.../glyph_list.cr	stale inventory; class ported
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/GlyphList.java::method::GlyphList.getAdobeGlyphList	ported	src/pdfbox/pdmodel/font/encoding/glyph_list.cr	reconciled: chiasmus owner match
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/GlyphList.java::method::GlyphList.getZapfDingbats	ported	src/pdfbox/pdmodel/font/encoding/glyph_list.cr	reconciled: chiasmus owner match
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/GlyphList.java::method::GlyphList.load	ported	src/pdfbox/pdmodel/font/encoding/glyph_list.cr	reconciled: chiasmus owner match
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/GlyphList.java::method::GlyphList.loadList	ported	src/.../glyph_list.cr	stale inventory; class ported
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/GlyphList.java::method::GlyphList.sequenceToName	ported	src/.../glyph_list.cr	stale inventory; class ported
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/GlyphList.java::method::GlyphList.toUnicode	ported	src/.../glyph_list.cr	stale inventory; class ported
@@ -8329,9 +8329,9 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImage.java::meth
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImage.java::method::getRawImage	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImage.java::method::getRawRaster	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImage.java::method::getStencilImage	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImage.java::method::getSuffix	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImage.java::method::getSuffix	ported	src/pdfbox/pdmodel/graphics/image/pd_image.cr	reconciled: chiasmus owner match
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImage.java::method::getWidth	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImage.java::method::isEmpty	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImage.java::method::isEmpty	ported	src/pdfbox/pdmodel/graphics/image/pd_image.cr	reconciled: chiasmus owner match
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImage.java::method::isStencil	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImage.java::method::setBitsPerComponent	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImage.java::method::setColorSpace	missing	-	baseline
@@ -10611,7 +10611,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/pagenavigation/PDTran
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/pagenavigation/PDTransition.java::method::PDTransition.setFlyScale	ported	src/pdfbox/pdmodel/interactive/pagenavigation/pd_transition.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/pagenavigation/PDTransition.java::method::PDTransition.setMotion	ported	src/pdfbox/pdmodel/interactive/pagenavigation/pd_transition.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/pagenavigation/PDTransitionDimension.java::enum::PDTransitionDimension	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/pagenavigation/PDTransitionDirection.java::enum::PDTransitionDirection	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/pagenavigation/PDTransitionDirection.java::enum::PDTransitionDirection	ported	src/pdfbox/pdmodel/interactive/pagenavigation/pd_transition.cr	reconciled: chiasmus owner match
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/pagenavigation/PDTransitionDirection.java::method::getCOSBase	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/pagenavigation/PDTransitionMotion.java::enum::PDTransitionMotion	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/pagenavigation/PDTransitionStyle.java::enum::PDTransitionStyle	missing	-	baseline

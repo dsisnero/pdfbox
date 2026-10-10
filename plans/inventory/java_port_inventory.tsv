@@ -1726,7 +1726,7 @@ fontbox/src/main/java/org/apache/fontbox/cff/CFFType1Font.java::method::PrivateT
 fontbox/src/main/java/org/apache/fontbox/cff/CIDKeyedType2CharString.java::class::CIDKeyedType2CharString	class	partial	src	auto-generated
 fontbox/src/main/java/org/apache/fontbox/cff/CIDKeyedType2CharString.java::method::CIDKeyedType2CharString.getCID	method	ported	src	auto-generated
 fontbox/src/main/java/org/apache/fontbox/cff/CharStringCommand.java::const::COMMANDS_BY_VALUE	const	missing	-	auto-generated
-fontbox/src/main/java/org/apache/fontbox/cff/CharStringCommand.java::enum::CharStringCommand	enum	missing	-	auto-generated
+fontbox/src/main/java/org/apache/fontbox/cff/CharStringCommand.java::enum::CharStringCommand	enum	ported	src/fontbox/cff/char_string_command.cr	reconciled: chiasmus owner match
 fontbox/src/main/java/org/apache/fontbox/cff/CharStringCommand.java::enum::Type1KeyWord	enum	missing	-	auto-generated
 fontbox/src/main/java/org/apache/fontbox/cff/CharStringCommand.java::enum::Type2KeyWord	enum	missing	-	auto-generated
 fontbox/src/main/java/org/apache/fontbox/cff/CharStringCommand.java::method::getInstance	method	missing	-	auto-generated
@@ -5308,7 +5308,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/compress/CompressParameters.jav
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/compress/CompressParameters.java::const::NO_COMPRESSION	const	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/compress/CompressParameters.java::method::CompressParameters.getObjectStreamSize	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/compress/CompressParameters.java::method::CompressParameters.isCompress	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/DefaultResourceCache.java::class::DefaultResourceCache	class	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/DefaultResourceCache.java::class::DefaultResourceCache	class	ported	src/pdfbox/pdmodel/resource_cache.cr	reconciled: chiasmus owner match
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/DefaultResourceCache.java::method::DefaultResourceCache.getColorSpace	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/DefaultResourceCache.java::method::DefaultResourceCache.getExtGState	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/DefaultResourceCache.java::method::DefaultResourceCache.getFont	method	missing	-	auto-generated
@@ -5317,11 +5317,11 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/DefaultResourceCache.java::method
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/DefaultResourceCache.java::method::DefaultResourceCache.getShading	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/DefaultResourceCache.java::method::DefaultResourceCache.getXObject	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/DefaultResourceCache.java::method::DefaultResourceCache.put	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/DefaultResourceCache.java::method::DefaultResourceCache.removeColorSpace	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/DefaultResourceCache.java::method::DefaultResourceCache.removeExtState	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/DefaultResourceCache.java::method::DefaultResourceCache.removeFont	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/DefaultResourceCache.java::method::DefaultResourceCache.removeColorSpace	method	ported	src/pdfbox/pdmodel/resource_cache.cr	reconciled: chiasmus owner match
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/DefaultResourceCache.java::method::DefaultResourceCache.removeExtState	method	ported	src/pdfbox/pdmodel/resource_cache.cr	reconciled: chiasmus owner match
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/DefaultResourceCache.java::method::DefaultResourceCache.removeFont	method	ported	src/pdfbox/pdmodel/resource_cache.cr	reconciled: chiasmus owner match
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/DefaultResourceCache.java::method::DefaultResourceCache.removePattern	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/DefaultResourceCache.java::method::DefaultResourceCache.removeProperties	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/DefaultResourceCache.java::method::DefaultResourceCache.removeProperties	method	ported	src/pdfbox/pdmodel/resource_cache.cr	reconciled: chiasmus owner match
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/DefaultResourceCache.java::method::DefaultResourceCache.removeShading	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/DefaultResourceCache.java::method::DefaultResourceCache.removeXObject	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/DefaultResourceCacheCreateImpl.java::class::DefaultResourceCacheCreateImpl	class	missing	-	auto-generated
@@ -7278,10 +7278,10 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fixup/processor/PDDocumentProcess
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/CIDFontMapping.java::class::CIDFontMapping	class	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/CIDFontMapping.java::method::CIDFontMapping.getTrueTypeFont	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/CIDFontMapping.java::method::CIDFontMapping.isCIDFont	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/CIDSystemInfo.java::class::CIDSystemInfo	class	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/CIDSystemInfo.java::method::CIDSystemInfo.getOrdering	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/CIDSystemInfo.java::method::CIDSystemInfo.getRegistry	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/CIDSystemInfo.java::method::CIDSystemInfo.getSupplement	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/CIDSystemInfo.java::class::CIDSystemInfo	class	ported	src/pdfbox/pdmodel/font/cid_system_info.cr	reconciled: chiasmus owner match
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/CIDSystemInfo.java::method::CIDSystemInfo.getOrdering	method	ported	src/pdfbox/pdmodel/font/cid_system_info.cr	reconciled: chiasmus owner match
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/CIDSystemInfo.java::method::CIDSystemInfo.getRegistry	method	ported	src/pdfbox/pdmodel/font/cid_system_info.cr	reconciled: chiasmus owner match
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/CIDSystemInfo.java::method::CIDSystemInfo.getSupplement	method	ported	src/pdfbox/pdmodel/font/cid_system_info.cr	reconciled: chiasmus owner match
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/CIDSystemInfo.java::method::CIDSystemInfo.toString	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/CMapManager.java::class::CMapManager	class	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/CMapManager.java::const::CMAP_CACHE	const	missing	-	auto-generated
@@ -7832,14 +7832,14 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/Standard14Fonts.java::const:
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/Standard14Fonts.java::const::FONTS	const	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/Standard14Fonts.java::const::GENERIC_FONTS	const	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/Standard14Fonts.java::enum::FontName	enum	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/Standard14Fonts.java::method::Standard14Fonts.containsName	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/Standard14Fonts.java::method::Standard14Fonts.containsName	method	ported	src/pdfbox/pdmodel/font/standard14_fonts.cr	reconciled: chiasmus owner match
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/Standard14Fonts.java::method::Standard14Fonts.getAFM	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/Standard14Fonts.java::method::Standard14Fonts.getGlyphList	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/Standard14Fonts.java::method::Standard14Fonts.getGlyphList	method	ported	src/pdfbox/pdmodel/font/standard14_fonts.cr	reconciled: chiasmus owner match
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/Standard14Fonts.java::method::Standard14Fonts.getGlyphPath	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/Standard14Fonts.java::method::Standard14Fonts.getMappedFont	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/Standard14Fonts.java::method::Standard14Fonts.getMappedFont	method	ported	src/pdfbox/pdmodel/font/standard14_fonts.cr	reconciled: chiasmus owner match
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/Standard14Fonts.java::method::Standard14Fonts.getMappedFontName	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/Standard14Fonts.java::method::Standard14Fonts.getName	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/Standard14Fonts.java::method::Standard14Fonts.getNames	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/Standard14Fonts.java::method::Standard14Fonts.getNames	method	ported	src/pdfbox/pdmodel/font/standard14_fonts.cr	reconciled: chiasmus owner match
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/Standard14Fonts.java::method::Standard14Fonts.loadMetrics	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/Standard14Fonts.java::method::Standard14Fonts.mapName	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/Standard14Fonts.java::method::Standard14Fonts.toString	method	missing	-	auto-generated
@@ -7899,9 +7899,9 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/GlyphList.java::con
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/GlyphList.java::const::LOG	const	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/GlyphList.java::const::ZAPF_DINGBATS	const	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/GlyphList.java::method::GlyphList.codePointToName	method	ported	src/pdfbox/pdmodel/font/encoding/glyph_list.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/GlyphList.java::method::GlyphList.getAdobeGlyphList	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/GlyphList.java::method::GlyphList.getZapfDingbats	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/GlyphList.java::method::GlyphList.load	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/GlyphList.java::method::GlyphList.getAdobeGlyphList	method	ported	src/pdfbox/pdmodel/font/encoding/glyph_list.cr	reconciled: chiasmus owner match
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/GlyphList.java::method::GlyphList.getZapfDingbats	method	ported	src/pdfbox/pdmodel/font/encoding/glyph_list.cr	reconciled: chiasmus owner match
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/GlyphList.java::method::GlyphList.load	method	ported	src/pdfbox/pdmodel/font/encoding/glyph_list.cr	reconciled: chiasmus owner match
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/GlyphList.java::method::GlyphList.loadList	method	ported	src/pdfbox/pdmodel/font/encoding/glyph_list.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/GlyphList.java::method::GlyphList.sequenceToName	method	ported	src/pdfbox/pdmodel/font/encoding/glyph_list.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/GlyphList.java::method::GlyphList.toUnicode	method	ported	src/pdfbox/pdmodel/font/encoding/glyph_list.cr	reconciled: method present
@@ -8329,9 +8329,9 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImage.java::meth
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImage.java::method::getRawImage	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImage.java::method::getRawRaster	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImage.java::method::getStencilImage	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImage.java::method::getSuffix	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImage.java::method::getSuffix	method	ported	src/pdfbox/pdmodel/graphics/image/pd_image.cr	reconciled: chiasmus owner match
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImage.java::method::getWidth	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImage.java::method::isEmpty	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImage.java::method::isEmpty	method	ported	src/pdfbox/pdmodel/graphics/image/pd_image.cr	reconciled: chiasmus owner match
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImage.java::method::isStencil	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImage.java::method::setBitsPerComponent	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImage.java::method::setColorSpace	method	missing	-	auto-generated
@@ -10611,7 +10611,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/pagenavigation/PDTran
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/pagenavigation/PDTransition.java::method::PDTransition.setFlyScale	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/pagenavigation/PDTransition.java::method::PDTransition.setMotion	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/pagenavigation/PDTransitionDimension.java::enum::PDTransitionDimension	enum	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/pagenavigation/PDTransitionDirection.java::enum::PDTransitionDirection	enum	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/pagenavigation/PDTransitionDirection.java::enum::PDTransitionDirection	enum	ported	src/pdfbox/pdmodel/interactive/pagenavigation/pd_transition.cr	reconciled: chiasmus owner match
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/pagenavigation/PDTransitionDirection.java::method::getCOSBase	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/pagenavigation/PDTransitionMotion.java::enum::PDTransitionMotion	enum	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/pagenavigation/PDTransitionStyle.java::enum::PDTransitionStyle	enum	missing	-	auto-generated
