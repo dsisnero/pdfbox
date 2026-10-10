@@ -934,6 +934,17 @@ module Pdfbox::Pdmodel
       outline
     end
 
+    # The document's /MarkInfo dictionary (Java PDDocumentCatalog#getMarkInfo).
+    def mark_info : DocumentInterchange::LogicalStructure::PDMarkInfo?
+      dict = @cos_dict.get_dictionary(Cos::Name::MARK_INFO)
+      dict ? DocumentInterchange::LogicalStructure::PDMarkInfo.new(dict) : nil
+    end
+
+    def mark_info=(value : DocumentInterchange::LogicalStructure::PDMarkInfo) : DocumentInterchange::LogicalStructure::PDMarkInfo
+      @cos_dict[Cos::Name::MARK_INFO] = value.cos_object
+      value
+    end
+
     # Java API compatibility wrapper.
     # ameba:disable Naming/AccessorMethodName
     def set_document_outline(outline : DocumentOutline) : Nil

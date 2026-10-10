@@ -130,6 +130,22 @@ describe "PDFMergerUtility appendDocument catalog merges" do
     end
   end
 
+  it "marks the destination document when merging a tagged source (mergeMarkInfo)" do
+    dir = SpecPaths.resolve("spec/resources/pdfbox/multipdf")
+    src = Pdfbox::Loader.load_pdf(File.join(dir, "PDFBOX-4408.pdf"))
+    dst = Pdfbox::Pdmodel::Document.create
+    dst.add_page(Pdfbox::Pdmodel::Page.new)
+    begin
+      Pdfbox::Multipdf::PDFMergerUtility.new.append_document(dst, src)
+      info = dst.document_catalog.not_nil!.mark_info
+      info.should_not be_nil
+      info.not_nil!.marked?.should be_true
+    ensure
+      src.close
+      dst.close
+    end
+  end
+
   it "keeps the existing destination metadata" do
     src = Pdfbox::Pdmodel::Document.create
     src.add_page(Pdfbox::Pdmodel::Page.new)

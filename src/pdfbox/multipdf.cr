@@ -1314,14 +1314,15 @@ module Pdfbox::Multipdf
       dest_struct_tree.id_tree = new_dest_id_tree
     end
 
+    # Java PDFMergerUtility#mergeMarkInfo. Note: PDMarkInfo#setSuspect writes
+    # false unconditionally (upstream quirk), so /Suspects is always cleared.
     private def merge_mark_info(dest_catalog : Pdmodel::DocumentCatalog, source_catalog : Pdmodel::DocumentCatalog) : Nil
-      name = Cos::Name.new("MarkInfo")
-      dest_mark = dest_catalog.cos_object.get_dictionary(name) || Cos::Dictionary.new
-      src_mark = source_catalog.cos_object.get_dictionary(name) || Cos::Dictionary.new
-      dest_mark.set_boolean(Cos::Name.new("Marked"), true)
-      dest_mark.set_boolean(Cos::Name.new("Suspect"), dict_boolean(src_mark, "Suspect") || dict_boolean(dest_mark, "Suspect"))
-      dest_mark.set_boolean(Cos::Name.new("UserProperties"), dict_boolean(src_mark, "UserProperties") || dict_boolean(dest_mark, "UserProperties"))
-      dest_catalog.cos_object[name] = dest_mark
+      dest_mark = dest_catalog.mark_info || Pdmodel::DocumentInterchange::LogicalStructure::PDMarkInfo.new
+      src_mark = source_catalog.mark_info || Pdmodel::DocumentInterchange::LogicalStructure::PDMarkInfo.new
+      dest_mark.marked = true
+      dest_mark.suspect = src_mark.suspect? || dest_mark.suspect?
+      dest_mark.uses_user_properties = src_mark.uses_user_properties? || dest_mark.uses_user_properties?
+      dest_catalog.mark_info = dest_mark
     end
 
     private def merge_language(dest_catalog : Pdmodel::DocumentCatalog, source_catalog : Pdmodel::DocumentCatalog) : Nil
