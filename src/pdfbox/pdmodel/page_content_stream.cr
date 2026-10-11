@@ -121,7 +121,14 @@ module Pdfbox::Pdmodel
       font = get_current_font
       @buffer << '('
       if font
-        write_pdf_literal_string(encode_text(text, font))
+        encoded = encode_text(text, font)
+        # Java PDAbstractContentStream#showText adds every shown code point to
+        # the subset (even on the GSUB path, which only records glyph IDs), so
+        # the embedded subset keeps a usable cmap for later reuse.
+        if font.will_be_subset?
+          text.each_char { |char| font.add_to_subset(char.ord) }
+        end
+        write_pdf_literal_string(encoded)
       else
         write_pdf_literal_string(text.to_slice)
       end

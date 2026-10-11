@@ -61,13 +61,9 @@ module Pdfbox::Pdmodel::Font
       FontEmbeddingSpecHelpers.validate_cid_font_type2(true)
     end
 
-    it "testReuseEmbeddedSubsettedFont (documented limitation)" do
-      # Java re-expands a reloaded embedded subset font when appending new text
-      # (the subset is re-parsed from the embedded FontFile2 and grown). The
-      # Crystal Type0 font loaded from a dictionary keeps @embed_subset=false and
-      # a nil @ttf, so appending glyphs outside the saved subset raises
-      # "could not find the glyphId". This is a documented limitation (subset
-      # re-expansion on reload is not yet supported): the appending step raises.
+    it "testReuseEmbeddedSubsettedFont" do
+      # Java TestFontEmbedding#testReuseEmbeddedSubsettedFont: reload the saved
+      # document and reuse the embedded subset font to append more text.
       text1 = "The quick brown fox"
       text2 = "xof nworb kciuq ehT"
       baos = ::IO::Memory.new
@@ -89,7 +85,6 @@ module Pdfbox::Pdmodel::Font
         ensure
           cs.close
         end
-
         doc.save(baos)
       ensure
         doc.close
@@ -97,7 +92,7 @@ module Pdfbox::Pdmodel::Font
 
       loaded = Pdfbox::Pdmodel::Document.load(::IO::Memory.new(baos.to_slice))
       begin
-        page = loaded.page(0).as(Pdfbox::Pdmodel::Page)
+        page = loaded.get_page(0)
         font = loaded.get_page(0).resources.not_nil!.font(Pdfbox::Cos::Name.new("F1")).not_nil!
         cs = Pdfbox::Pdmodel::PDPageContentStream.new(
           loaded, page, Pdfbox::Pdmodel::PDPageContentStream::AppendMode::APPEND, true
@@ -106,15 +101,22 @@ module Pdfbox::Pdmodel::Font
           cs.begin_text
           cs.set_font(font, 20)
           cs.new_line_at_offset(250, 600)
-          # Appending text whose glyphs are not in the saved subset is not yet
-          # supported: the reloaded subset font cannot re-expand.
-          expect_raises(Pdfbox::Pdmodel::IllegalStateError) { cs.show_text(text2) }
+          cs.show_text(text2)
           cs.end_text
         ensure
           cs.close
         end
+        baos.clear
+        loaded.save(baos)
       ensure
         loaded.close
+      end
+
+      final = Pdfbox::Pdmodel::Document.load(::IO::Memory.new(baos.to_slice))
+      begin
+        Pdfbox::Text::PDFTextStripper.new.get_text(final).strip.should eq("#{text1} #{text2}")
+      ensure
+        final.close
       end
     end
 
