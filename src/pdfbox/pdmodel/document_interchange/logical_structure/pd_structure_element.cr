@@ -169,8 +169,12 @@ module Pdfbox::Pdmodel::DocumentInterchange::LogicalStructure
       append_kid_base(marked_content_reference.cos_object)
     end
 
-    def kids : Array(Int32 | PDMarkedContentReference | self)
-      kid_objects = [] of Int32 | PDMarkedContentReference | self
+    def append_kid(object_reference : PDObjectReference) : Nil
+      append_kid_base(object_reference.cos_object)
+    end
+
+    def kids : Array(Int32 | PDMarkedContentReference | PDObjectReference | self)
+      kid_objects = [] of Int32 | PDMarkedContentReference | PDObjectReference | self
       k = @dictionary[Pdfbox::Cos::Name.new("K")]
       return kid_objects unless k
       # A reloaded document stores /K (and its entries) as indirect objects;
@@ -306,7 +310,7 @@ module Pdfbox::Pdmodel::DocumentInterchange::LogicalStructure
       end
     end
 
-    private def create_kid(kid : Pdfbox::Cos::Base) : Int32 | PDMarkedContentReference | self | Nil
+    private def create_kid(kid : Pdfbox::Cos::Base) : Int32 | PDMarkedContentReference | PDObjectReference | self | Nil
       kid = kid.object if kid.is_a?(Pdfbox::Cos::Object)
       return unless kid
       if kid.is_a?(Pdfbox::Cos::Integer)
@@ -319,6 +323,7 @@ module Pdfbox::Pdmodel::DocumentInterchange::LogicalStructure
       type_string = type.as?(Pdfbox::Cos::Name).try(&.value)
       return self.class.new(kid) if type_string.nil? || type_string == TYPE
       return PDMarkedContentReference.new(kid) if type_string == PDMarkedContentReference::TYPE
+      return PDObjectReference.new(kid) if type_string == PDObjectReference::TYPE
       nil
     end
 
