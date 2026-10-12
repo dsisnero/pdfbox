@@ -936,10 +936,10 @@ pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/TestEmbeddedFiles.java::cl
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/TestEmbeddedFiles.java::method::TestEmbeddedFiles.byteArrayContainsLC	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/TestEmbeddedFiles.java::method::TestEmbeddedFiles.testNullEmbeddedFile	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/TestEmbeddedFiles.java::method::TestEmbeddedFiles.testOSSpecificAttachments	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/TestPDNameTreeNode.java::class::TestPDNameTreeNode	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/TestPDNameTreeNode.java::method::TestPDNameTreeNode.setUp	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/TestPDNameTreeNode.java::method::TestPDNameTreeNode.testLowerLimit	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/TestPDNameTreeNode.java::method::TestPDNameTreeNode.testUpperLimit	ported	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/TestPDNameTreeNode.java::class::TestPDNameTreeNode	ported	spec/pdfbox/pdmodel/common/pdname_tree_node_spec.cr	ported: TestPDNameTreeNode (previously a vacuous before_each with no examples)
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/TestPDNameTreeNode.java::method::TestPDNameTreeNode.setUp	ported	spec/pdfbox/pdmodel/common/pdname_tree_node_spec.cr	ported: TestPDNameTreeNode (previously a vacuous before_each with no examples)
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/TestPDNameTreeNode.java::method::TestPDNameTreeNode.testLowerLimit	ported	spec/pdfbox/pdmodel/common/pdname_tree_node_spec.cr	ported: TestPDNameTreeNode (previously a vacuous before_each with no examples)
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/TestPDNameTreeNode.java::method::TestPDNameTreeNode.testUpperLimit	ported	spec/pdfbox/pdmodel/common/pdname_tree_node_spec.cr	ported: TestPDNameTreeNode (previously a vacuous before_each with no examples)
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/TestPDNumberTreeNode.java::class::PDTest	ported	spec/pdfbox/pdmodel/common/pdnumber_tree_node_spec.cr	ported: TestPDNumberTreeNode (previously a vacuous before_each with no examples)
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/TestPDNumberTreeNode.java::class::TestPDNumberTreeNode	ported	spec/pdfbox/pdmodel/common/pdnumber_tree_node_spec.cr	ported: TestPDNumberTreeNode (previously a vacuous before_each with no examples)
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/TestPDNumberTreeNode.java::method::PDTest.equals	ported	spec/pdfbox/pdmodel/common/pdnumber_tree_node_spec.cr	ported: TestPDNumberTreeNode (previously a vacuous before_each with no examples)
