@@ -73,6 +73,11 @@ module Xmpbox
         set_specified_simple_type_property(Type::Types::Text, qualified_name, property_value)
       end
 
+      # Port of Java setTextPropertyValueAsSimple.
+      def set_text_property_value_as_simple(simple_name : String, property_value : String?) : Nil
+        set_text_property_value(simple_name, property_value)
+      end
+
       def unqualified_text_property(name : String) : Type::TextType?
         prop = abstract_property(name)
         if prop
@@ -116,8 +121,18 @@ module Xmpbox
         nil
       end
 
+      # Port of Java getDatePropertyValueAsSimple.
+      def date_property_value_as_simple(simple_name : String) : Time?
+        date_property_value(simple_name)
+      end
+
       def set_date_property_value(qualified_name : String, date : Time?) : Nil
         set_specified_simple_type_property(Type::Types::Date, qualified_name, date)
+      end
+
+      # Port of Java setDatePropertyValueAsSimple.
+      def set_date_property_value_as_simple(simple_name : String, date : Time?) : Nil
+        set_date_property_value(simple_name, date)
       end
 
       # Boolean property accessors
@@ -147,8 +162,18 @@ module Xmpbox
         nil
       end
 
+      # Port of Java getBooleanPropertyValueAsSimple.
+      def boolean_property_value_as_simple(simple_name : String) : Bool?
+        boolean_property_value(simple_name)
+      end
+
       def set_boolean_property_value(qualified_name : String, bool : Bool?) : Nil
         set_specified_simple_type_property(Type::Types::Boolean, qualified_name, bool)
+      end
+
+      # Port of Java setBooleanPropertyValueAsSimple.
+      def set_boolean_property_value_as_simple(simple_name : String, bool : Bool?) : Nil
+        set_boolean_property_value(simple_name, bool)
       end
 
       # Integer property accessors
@@ -178,8 +203,18 @@ module Xmpbox
         nil
       end
 
+      # Port of Java getIntegerPropertyValueAsSimple.
+      def integer_property_value_as_simple(simple_name : String) : Int32?
+        integer_property_value(simple_name)
+      end
+
       def set_integer_property_value(qualified_name : String, int_value : Int32?) : Nil
         set_specified_simple_type_property(Type::Types::Integer, qualified_name, int_value)
+      end
+
+      # Port of Java setIntegerPropertyValueAsSimple.
+      def set_integer_property_value_as_simple(simple_name : String, int_value : Int32?) : Nil
+        set_integer_property_value(simple_name, int_value)
       end
 
       # Real property accessors
@@ -205,6 +240,11 @@ module Xmpbox
 
       def add_qualified_bag_value(simple_name : String, bag_value : String) : Nil
         internal_add_bag_value(simple_name, bag_value)
+      end
+
+      # Port of Java addBagValueAsSimple.
+      def add_bag_value_as_simple(simple_bag_name : String, bag_value : String) : Nil
+        internal_add_bag_value(simple_bag_name, bag_value)
       end
 
       def add_unqualified_bag_value(simple_bag_name : String, bag_value : String) : Nil
@@ -268,6 +308,11 @@ module Xmpbox
         remove_unqualified_array_value(qualified_seq_name, seq_value)
       end
 
+      # Port of Java removeUnqualifiedSequenceValue(String seqName, AbstractField seqValue).
+      def remove_unqualified_sequence_value(qualified_seq_name : String, seq_value : Type::AbstractField) : Nil
+        remove_unqualified_array_value(qualified_seq_name, seq_value)
+      end
+
       # Port of Java getUnqualifiedArrayList — returns the raw AbstractField list
       # of an array property, raising BadFieldValueException if the named property
       # exists but is not an array.
@@ -289,6 +334,11 @@ module Xmpbox
       def add_unqualified_sequence_date_value(seq_name : String, date : Time) : Nil
         add_unqualified_sequence_value(seq_name,
           metadata.type_mapping.create_date(nil, XmpConstants::DEFAULT_RDF_LOCAL_NAME, XmpConstants::LIST_NAME, date))
+      end
+
+      # Port of Java addSequenceDateValueAsSimple.
+      def add_sequence_date_value_as_simple(simple_seq_name : String, date : Time) : Nil
+        add_unqualified_sequence_date_value(simple_seq_name, date)
       end
 
       # Port of Java getUnqualifiedSequenceDateValueList.
@@ -487,6 +537,13 @@ module Xmpbox
           end
         end
         to_delete.each { |field| array.container.remove_property(field) }
+      end
+
+      private def remove_unqualified_array_value(array_name : String, field_value : Type::AbstractField) : Nil
+        abstract_prop = abstract_property(array_name)
+        return unless abstract_prop.is_a?(Type::ArrayProperty)
+        array = abstract_prop.as(Type::ArrayProperty)
+        array.container.remove_property(field_value)
       end
 
       private def reorganize_alt_order(alt : Type::ComplexPropertyContainer) : Nil

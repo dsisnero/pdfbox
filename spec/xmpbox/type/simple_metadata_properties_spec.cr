@@ -61,8 +61,6 @@ module Xmpbox
       end
 
       it "creates from native values" do
-        # Crystal types accept native values (Bool, Int, Float, String)
-        # Java also accepts String representations; not yet ported
         boolv = false
         datev = "2010-03-22T14:33:11+01:00"
         integerv = 10
@@ -75,10 +73,31 @@ module Xmpbox
         real = RealType.new(parent, nil, "test", "real", realv)
         text = TextType.new(parent, nil, "test", "text", textv)
 
-        bool.string_value.should eq(boolv.to_s)
+        bool.string_value.should eq("False")
         date.string_value.should eq(datev)
         integer.string_value.should eq(integerv.to_s)
         real.string_value.should eq(realv.to_s)
+        text.string_value.should eq(textv)
+      end
+
+      it "TestSimpleMetadataProperties#testCreationFromString" do
+        # Java types also accept String representations.
+        boolv = "False"
+        datev = "2010-03-22T14:33:11+01:00"
+        integerv = "10"
+        realv = "1.92"
+        textv = "text"
+
+        bool = BooleanType.new(parent, nil, "test", "boolean", boolv)
+        date = DateType.new(parent, nil, "test", "date", datev)
+        integer = IntegerType.new(parent, nil, "test", "integer", integerv)
+        real = RealType.new(parent, nil, "test", "real", realv)
+        text = TextType.new(parent, nil, "test", "text", textv)
+
+        bool.string_value.should eq(boolv)
+        date.string_value.should eq(datev)
+        integer.string_value.should eq(integerv)
+        real.string_value.should eq(realv)
         text.string_value.should eq(textv)
       end
 

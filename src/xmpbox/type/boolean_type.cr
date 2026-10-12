@@ -28,7 +28,8 @@ module Xmpbox
       end
 
       def string_value : String?
-        @bool_value.try(&.to_s)
+        # Java BooleanType.TRUE = "True", FALSE = "False".
+        (@bool_value || false) ? "True" : "False"
       end
 
       def value : Bool?

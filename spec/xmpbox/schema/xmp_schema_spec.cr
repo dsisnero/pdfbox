@@ -162,20 +162,122 @@ module Xmpbox
       end
 
       describe "#test_seq_management" do
-        it "adds, lists, and removes date sequence values" do
+        it "adds, lists, and removes sequence values" do
+          seq = XMPSchema.new(parent, "nsURI", "nsSchem")
           date = Time.utc
-          seq_name = "SEQDATE"
+          bool = parent.type_mapping.create_boolean(nil, "rdf", "li", true)
+          text_val = "seqValue"
+          seq_name = "SEQNAME"
 
-          schem.add_unqualified_sequence_date_value(seq_name, date)
-          dates = schem.unqualified_sequence_date_value_list(seq_name)
+          seq.add_unqualified_sequence_date_value(seq_name, date)
+          seq.add_unqualified_sequence_value(seq_name, bool)
+          seq.add_unqualified_sequence_value(seq_name, text_val)
+
+          dates = seq.unqualified_sequence_date_value_list(seq_name)
           dates.should_not be_nil
           dates.not_nil!.size.should eq(1)
           dates.not_nil![0].to_unix.should eq(date.to_unix)
 
-          schem.remove_unqualified_sequence_date_value(seq_name, date)
-          dates = schem.unqualified_sequence_date_value_list(seq_name)
-          dates.should_not be_nil
-          dates.not_nil!.size.should eq(0)
+          values = seq.unqualified_sequence_value_list(seq_name)
+          values.should_not be_nil
+          values.not_nil!.size.should eq(3)
+          values.not_nil![0].should eq(DateConverter.to_iso8601(date))
+          values.not_nil![1].should eq(bool.string_value)
+          values.not_nil![2].should eq(text_val)
+
+          seq.remove_unqualified_sequence_date_value(seq_name, date)
+          seq.unqualified_sequence_date_value_list(seq_name).not_nil!.size.should eq(0)
+
+          seq.remove_unqualified_sequence_value(seq_name, bool)
+          seq.remove_unqualified_sequence_value(seq_name, text_val)
+          seq.unqualified_sequence_value_list(seq_name).not_nil!.size.should eq(0)
+        end
+      end
+
+      describe "#test_bad_rdf_about" do
+        it "rejects an about attribute without the rdf namespace" do
+          bad = XMPSchema.new(parent, "nsURI", "nsSchem")
+          expect_raises(Type::BadFieldValueException) do
+            bad.about = Type::Attribute.new(nil, "about", "")
+          end
+        end
+      end
+
+      describe "#test_set_specified_simple_type_property" do
+        it "sets, replaces, and clears a simple text property" do
+          simple = XMPSchema.new(parent, "nsURI", "nsSchem")
+          prop = "testprop"
+          val = "value"
+          val2 = "value2"
+
+          simple.set_text_property_value_as_simple(prop, val)
+          simple.unqualified_text_property_value(prop).should eq(val)
+
+          simple.set_text_property_value_as_simple(prop, val2)
+          simple.unqualified_text_property_value(prop).should eq(val2)
+
+          simple.set_text_property_value_as_simple(prop, nil)
+          simple.unqualified_text_property(prop).should be_nil
+        end
+      end
+
+      describe "#test_specified_simple_property_former" do
+        it "replaces a simple property from a constructed type instance" do
+          simple = XMPSchema.new(parent, "nsURI", "nsSchem")
+          prop = "testprop"
+          val2 = "value2"
+
+          simple.set_text_property_value_as_simple(prop, "value")
+          text = parent.type_mapping.create_text(nil, simple.prefix, prop, val2)
+          simple.text_property = text
+
+          simple.unqualified_text_property_value(prop).should eq(val2)
+          simple.unqualified_text_property(prop).should eq(text)
+        end
+      end
+
+      describe "#test_as_simple_methods" do
+        it "reads and writes simple properties using the schema prefix" do
+          simple = XMPSchema.new(parent, "nsURI", "nsSchem")
+          bool_val = true
+          date_val = Time.utc
+          int_val = 1
+
+          simple.set_boolean_property_value_as_simple("bool", bool_val)
+          simple.set_date_property_value_as_simple("date", date_val)
+          simple.set_integer_property_value_as_simple("integer", int_val)
+          simple.set_unqualified_language_property_value("langprop", "x-default", "langVal")
+          simple.add_bag_value_as_simple("bagProp", "bagVal")
+          simple.add_unqualified_sequence_value("SeqProp", "seqval")
+          simple.add_sequence_date_value_as_simple("SeqDate", date_val)
+
+          simple.boolean_property("bool").not_nil!.value.should eq(bool_val)
+          simple.date_property("date").not_nil!.value.not_nil!.to_unix.should eq(date_val.to_unix)
+          simple.integer_property("integer").not_nil!.string_value.should eq(int_val.to_s)
+          simple.unqualified_language_property_value("langprop", "x-default").should eq("langVal")
+          simple.unqualified_bag_value_list("bagProp").not_nil!.includes?("bagVal").should be_true
+          simple.unqualified_sequence_value_list("SeqProp").not_nil!.includes?("seqval").should be_true
+          simple.unqualified_sequence_date_value_list("SeqDate").not_nil![0].to_unix.should eq(date_val.to_unix)
+          simple.unqualified_language_property_languages_value("langprop").not_nil!.includes?("x-default").should be_true
+
+          simple.boolean_property_value_as_simple("bool").should eq(bool_val)
+          simple.date_property_value_as_simple("date").not_nil!.to_unix.should eq(date_val.to_unix)
+          simple.integer_property_value_as_simple("integer").should eq(int_val)
+        end
+      end
+
+      describe "#test_list_and_container_accessor" do
+        it "exposes properties, attributes, and named property lookup" do
+          simple = XMPSchema.new(parent, "nsURI", "nsSchem")
+          bool = parent.type_mapping.create_boolean(nil, simple.prefix, "bool", true)
+          att = Type::Attribute.new(XmpConstants::RDF_NAMESPACE, "test", "vgh")
+
+          simple.attribute = att
+          simple.boolean_property = bool
+
+          simple.all_properties.includes?(bool).should be_true
+          simple.all_attributes.includes?(att).should be_true
+          simple.property("bool").should eq(bool)
         end
       end
 

@@ -334,7 +334,8 @@ describe Xmpbox::Xml::DomXmpParser do
       fired = flash.as(Xmpbox::Type::AbstractStructuredType).property("Fired")
       fired.should_not be_nil
       fired.should be_a(Xmpbox::Type::BooleanType)
-      fired.as(Xmpbox::Type::BooleanType).string_value.should eq("false")
+      # Java BooleanType.getStringValue returns "False" for the parsed "False" text.
+      fired.as(Xmpbox::Type::BooleanType).string_value.should eq("False")
     end
 
     it "strict rejects structured type as attribute, lenient stores text" do
