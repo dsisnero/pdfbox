@@ -6332,18 +6332,18 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/markedcontent
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/markedcontent/PDPropertyList.java::class::PDPropertyList	ported	src/pdfbox/pdmodel/document_interchange/marked_content/pd_property_list.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/markedcontent/PDPropertyList.java::method::PDPropertyList.create	ported	src/pdfbox/pdmodel/graphics/optional_content/pd_optional_content_membership_dictionary.cr	ported: PDOptionalContentMembershipDictionary + create dispatch
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/markedcontent/PDPropertyList.java::method::PDPropertyList.getCOSObject	ported	src/pdfbox/pdmodel/document_interchange/marked_content/pd_property_list.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/prepress/PDBoxStyle.java::class::PDBoxStyle	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/prepress/PDBoxStyle.java::const::GUIDELINE_STYLE_DASHED	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/prepress/PDBoxStyle.java::const::GUIDELINE_STYLE_SOLID	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/prepress/PDBoxStyle.java::method::PDBoxStyle.getCOSObject	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/prepress/PDBoxStyle.java::method::PDBoxStyle.getGuidelineColor	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/prepress/PDBoxStyle.java::method::PDBoxStyle.getGuidelineStyle	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/prepress/PDBoxStyle.java::method::PDBoxStyle.getGuidelineWidth	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/prepress/PDBoxStyle.java::method::PDBoxStyle.getLineDashPattern	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/prepress/PDBoxStyle.java::method::PDBoxStyle.setGuideLineColor	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/prepress/PDBoxStyle.java::method::PDBoxStyle.setGuidelineStyle	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/prepress/PDBoxStyle.java::method::PDBoxStyle.setGuidelineWidth	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/prepress/PDBoxStyle.java::method::PDBoxStyle.setLineDashPattern	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/prepress/PDBoxStyle.java::class::PDBoxStyle	ported	src/pdfbox/pdmodel/document_interchange/prepress/pd_box_style.cr	ported: PDBoxStyle
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/prepress/PDBoxStyle.java::const::GUIDELINE_STYLE_DASHED	ported	src/pdfbox/pdmodel/document_interchange/prepress/pd_box_style.cr	ported: PDBoxStyle
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/prepress/PDBoxStyle.java::const::GUIDELINE_STYLE_SOLID	ported	src/pdfbox/pdmodel/document_interchange/prepress/pd_box_style.cr	ported: PDBoxStyle
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/prepress/PDBoxStyle.java::method::PDBoxStyle.getCOSObject	ported	src/pdfbox/pdmodel/document_interchange/prepress/pd_box_style.cr	ported: PDBoxStyle
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/prepress/PDBoxStyle.java::method::PDBoxStyle.getGuidelineColor	ported	src/pdfbox/pdmodel/document_interchange/prepress/pd_box_style.cr	ported: PDBoxStyle
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/prepress/PDBoxStyle.java::method::PDBoxStyle.getGuidelineStyle	ported	src/pdfbox/pdmodel/document_interchange/prepress/pd_box_style.cr	ported: PDBoxStyle
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/prepress/PDBoxStyle.java::method::PDBoxStyle.getGuidelineWidth	ported	src/pdfbox/pdmodel/document_interchange/prepress/pd_box_style.cr	ported: PDBoxStyle
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/prepress/PDBoxStyle.java::method::PDBoxStyle.getLineDashPattern	ported	src/pdfbox/pdmodel/document_interchange/prepress/pd_box_style.cr	ported: PDBoxStyle
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/prepress/PDBoxStyle.java::method::PDBoxStyle.setGuideLineColor	ported	src/pdfbox/pdmodel/document_interchange/prepress/pd_box_style.cr	ported: PDBoxStyle
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/prepress/PDBoxStyle.java::method::PDBoxStyle.setGuidelineStyle	ported	src/pdfbox/pdmodel/document_interchange/prepress/pd_box_style.cr	ported: PDBoxStyle
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/prepress/PDBoxStyle.java::method::PDBoxStyle.setGuidelineWidth	ported	src/pdfbox/pdmodel/document_interchange/prepress/pd_box_style.cr	ported: PDBoxStyle
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/prepress/PDBoxStyle.java::method::PDBoxStyle.setLineDashPattern	ported	src/pdfbox/pdmodel/document_interchange/prepress/pd_box_style.cr	ported: PDBoxStyle
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/PDArtifactMarkedContent.java::class::PDArtifactMarkedContent	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/PDArtifactMarkedContent.java::method::PDArtifactMarkedContent.getBBox	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/PDArtifactMarkedContent.java::method::PDArtifactMarkedContent.getSubtype	missing	-	baseline
