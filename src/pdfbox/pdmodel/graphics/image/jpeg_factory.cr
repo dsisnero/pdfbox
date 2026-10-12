@@ -1,15 +1,25 @@
 require "./pd_image_xobject"
+require "./lossless_factory"
 
 module Pdfbox::Pdmodel::Graphics::Image
   # Factory for creating a PDImageXObject containing a JPEG compressed image.
-  # Port of Apache PDFBox JPEGFactory (createFromStream / createFromByteArray).
+  # Port of Apache PDFBox JPEGFactory (createFromStream / createFromByteArray /
+  # createFromImage).
   #
-  # The JPEG stream data is preserved and embedded in the PDF file without modification.
-  # The color space is derived from the number of components in the JPEG SOF (Start of
-  # Frame) marker: 1 -> DeviceGray, 3 -> DeviceRGB, 4 -> DeviceCMYK. For CMYK images the
-  # Decode array is set to invert all four components (Java parity).
+  # create_from_stream / create_from_byte_array preserve the JPEG stream data and embed
+  # it in the PDF file without modification. The color space is derived from the number
+  # of components in the JPEG SOF (Start of Frame) marker: 1 -> DeviceGray, 3 ->
+  # DeviceRGB, 4 -> DeviceCMYK. For CMYK images the Decode array is set to invert all
+  # four components (Java parity).
+  #
+  # create_from_image encodes a raster image (the Crystal equivalent of a Java
+  # BufferedImage) to JPEG. Images with transparency are flattened over an opaque white
+  # background and get a DeviceGray JPEG soft mask (Java getColorImage/getAlphaImage).
   module JPEGFactory
     extend self
+
+    # Java: JPEGFactory.DEFAULT_QUALITY
+    DEFAULT_QUALITY = 0.75_f32
 
     # Creates a new JPEG Image XObject from an input stream containing JPEG data.
     def create_from_stream(document : Pdfbox::Pdmodel::Document, io : ::IO) : PDImageXObject
@@ -53,6 +63,101 @@ module Pdfbox::Pdmodel::Graphics::Image
       end
 
       image
+    end
+
+    # Java: JPEGFactory.createFromImage(PDDocument, BufferedImage)
+    def create_from_image(document : Pdfbox::Pdmodel::Document, image : CrImage::Image) : PDImageXObject
+      create_from_image(document, image, DEFAULT_QUALITY)
+    end
+
+    # Java: JPEGFactory.createFromImage(PDDocument, BufferedImage, float quality)
+    #
+    # The quality is a fraction (Java DEFAULT_QUALITY is 0.75). A JPEG has no alpha
+    # channel, so transparent images are flattened over an opaque white background and
+    # the original alpha is stored separately as a DeviceGray soft mask.
+    def create_from_image(document : Pdfbox::Pdmodel::Document, image : CrImage::Image, quality : Float32) : PDImageXObject
+      has_alpha = LosslessFactory.has_transparency?(image)
+
+      ximage = create_from_byte_array(document, encode_image(image, quality))
+
+      if has_alpha
+        # Java getAlphaImage + ximage.getCOSObject().setItem(COSName.SMASK, xAlpha).
+        xalpha = create_from_byte_array(document, encode_jpeg(alpha_gray_image(image), quality))
+        ximage.cos_object[Pdfbox::Cos::Name.new("SMask")] = xalpha.cos_object
+      end
+      ximage
+    end
+
+    # Encodes the color plane of an image to JPEG. Grayscale images stay single-component
+    # (DeviceGray); everything else is flattened to opaque RGB (DeviceRGB).
+    #
+    # The source image is always rebuilt into a freshly constructed CrImage before being
+    # handed to the JPEG encoder: CrImage's JPEG writer cannot re-encode an image produced
+    # by its own JPEG reader (it observes a corrupted bounds rectangle). Freshly built
+    # images encode correctly.
+    private def encode_image(image : CrImage::Image, quality : Float32) : Bytes
+      if LosslessFactory.gray_image?(image)
+        encode_jpeg(gray_copy(image), quality)
+      else
+        encode_jpeg(composite_over_white(image), quality)
+      end
+    end
+
+    # Java JPEGFactory.encodeImageToJPEGStream: quality is a fraction converted to the
+    # 1..100 range expected by the encoder (0.75 -> 75).
+    private def encode_jpeg(image : CrImage::Image, quality : Float32) : Bytes
+      jpeg_quality = (quality * 100).round.to_i.clamp(1, 100)
+      io = ::IO::Memory.new
+      CrImage::JPEG.write(io, image, jpeg_quality)
+      io.to_slice
+    end
+
+    # Copies a grayscale image into a freshly constructed CrImage::Gray.
+    private def gray_copy(image : CrImage::Image) : CrImage::Gray
+      width = image.bounds.width
+      height = image.bounds.height
+      result = CrImage::Gray.new(CrImage.rect(0, 0, width, height))
+      0.upto(height - 1) do |y|
+        0.upto(width - 1) do |x|
+          gray = CrImage::Color.gray_model.convert(image.at(x, y)).as(CrImage::Color::Gray)
+          result.set_gray(x, y, gray)
+        end
+      end
+      result
+    end
+
+    # Java JPEGFactory.getColorImage: builds an opaque RGB image by compositing the source
+    # over a white background. Uses non-premultiplied components (Color::NRGBA) so the
+    # flattening matches java.awt alpha compositing.
+    private def composite_over_white(image : CrImage::Image) : CrImage::RGBA
+      width = image.bounds.width
+      height = image.bounds.height
+      result = CrImage::RGBA.new(CrImage.rect(0, 0, width, height))
+      0.upto(height - 1) do |y|
+        0.upto(width - 1) do |x|
+          color = CrImage::Color.nrgba_model.convert(image.at(x, y)).as(CrImage::Color::NRGBA)
+          a = color.a.to_i32
+          r = ((color.r.to_i32 * a) + (255 * (255 - a)) + 127) // 255
+          g = ((color.g.to_i32 * a) + (255 * (255 - a)) + 127) // 255
+          b = ((color.b.to_i32 * a) + (255 * (255 - a)) + 127) // 255
+          result.set_rgba(x, y, CrImage::Color::RGBA.new(r.to_u8, g.to_u8, b.to_u8, 255_u8))
+        end
+      end
+      result
+    end
+
+    # Java JPEGFactory.getAlphaImage: the alpha channel as an 8-bit grayscale image.
+    private def alpha_gray_image(image : CrImage::Image) : CrImage::Gray
+      width = image.bounds.width
+      height = image.bounds.height
+      result = CrImage::Gray.new(CrImage.rect(0, 0, width, height))
+      0.upto(height - 1) do |y|
+        0.upto(width - 1) do |x|
+          color = CrImage::Color.nrgba_model.convert(image.at(x, y)).as(CrImage::Color::NRGBA)
+          result.set_gray(x, y, CrImage::Color::Gray.new(color.a))
+        end
+      end
+      result
     end
 
     private record Dimensions, width : Int32, height : Int32, num_components : Int32
