@@ -6628,56 +6628,56 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/PDT
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/PDTableAttributeObject.java::method::PDTableAttributeObject.setScope	ported	src/pdfbox/pdmodel/document_interchange/tagged_pdf/pd_tagged_attribute_objects.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/PDTableAttributeObject.java::method::PDTableAttributeObject.setSummary	ported	src/pdfbox/pdmodel/document_interchange/tagged_pdf/pd_tagged_attribute_objects.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/PDTableAttributeObject.java::method::PDTableAttributeObject.toString	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::class::StandardStructureTypes	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::ANNOT	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::ART	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::BIB_ENTRY	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::BLOCK_QUOTE	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::CAPTION	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::CODE	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::DIV	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::DOCUMENT	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::FORM	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::FORMULA	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::H	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::H1	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::H2	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::H3	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::H4	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::H5	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::H6	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::INDEX	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::L	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::LBL	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::LI	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::LINK	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::LOG	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::L_BODY	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::NON_STRUCT	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::NOTE	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::P	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::PART	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::PRIVATE	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::QUOTE	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::RB	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::REFERENCE	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::RP	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::RT	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::RUBY	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::SECT	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::SPAN	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::TABLE	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::TD	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::TH	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::TOC	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::TOCI	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::TR	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::T_BODY	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::T_FOOT	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::T_HEAD	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::WARICHU	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::WP	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::WT	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::class::StandardStructureTypes	ported	src/pdfbox/pdmodel/document_interchange/tagged_pdf/standard_structure_types.cr	ported: StandardStructureTypes
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::ANNOT	ported	src/pdfbox/pdmodel/document_interchange/tagged_pdf/standard_structure_types.cr	ported: StandardStructureTypes
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::ART	ported	src/pdfbox/pdmodel/document_interchange/tagged_pdf/standard_structure_types.cr	ported: StandardStructureTypes
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::BIB_ENTRY	ported	src/pdfbox/pdmodel/document_interchange/tagged_pdf/standard_structure_types.cr	ported: StandardStructureTypes
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::BLOCK_QUOTE	ported	src/pdfbox/pdmodel/document_interchange/tagged_pdf/standard_structure_types.cr	ported: StandardStructureTypes
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::CAPTION	ported	src/pdfbox/pdmodel/document_interchange/tagged_pdf/standard_structure_types.cr	ported: StandardStructureTypes
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::CODE	ported	src/pdfbox/pdmodel/document_interchange/tagged_pdf/standard_structure_types.cr	ported: StandardStructureTypes
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::DIV	ported	src/pdfbox/pdmodel/document_interchange/tagged_pdf/standard_structure_types.cr	ported: StandardStructureTypes
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::DOCUMENT	ported	src/pdfbox/pdmodel/document_interchange/tagged_pdf/standard_structure_types.cr	ported: StandardStructureTypes
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::FORM	ported	src/pdfbox/pdmodel/document_interchange/tagged_pdf/standard_structure_types.cr	ported: StandardStructureTypes
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::FORMULA	ported	src/pdfbox/pdmodel/document_interchange/tagged_pdf/standard_structure_types.cr	ported: StandardStructureTypes
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::H	ported	src/pdfbox/pdmodel/document_interchange/tagged_pdf/standard_structure_types.cr	ported: StandardStructureTypes
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::H1	ported	src/pdfbox/pdmodel/document_interchange/tagged_pdf/standard_structure_types.cr	ported: StandardStructureTypes
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::H2	ported	src/pdfbox/pdmodel/document_interchange/tagged_pdf/standard_structure_types.cr	ported: StandardStructureTypes
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::H3	ported	src/pdfbox/pdmodel/document_interchange/tagged_pdf/standard_structure_types.cr	ported: StandardStructureTypes
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::H4	ported	src/pdfbox/pdmodel/document_interchange/tagged_pdf/standard_structure_types.cr	ported: StandardStructureTypes
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::H5	ported	src/pdfbox/pdmodel/document_interchange/tagged_pdf/standard_structure_types.cr	ported: StandardStructureTypes
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::H6	ported	src/pdfbox/pdmodel/document_interchange/tagged_pdf/standard_structure_types.cr	ported: StandardStructureTypes
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::INDEX	ported	src/pdfbox/pdmodel/document_interchange/tagged_pdf/standard_structure_types.cr	ported: StandardStructureTypes
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::L	ported	src/pdfbox/pdmodel/document_interchange/tagged_pdf/standard_structure_types.cr	ported: StandardStructureTypes
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::LBL	ported	src/pdfbox/pdmodel/document_interchange/tagged_pdf/standard_structure_types.cr	ported: StandardStructureTypes
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::LI	ported	src/pdfbox/pdmodel/document_interchange/tagged_pdf/standard_structure_types.cr	ported: StandardStructureTypes
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::LINK	ported	src/pdfbox/pdmodel/document_interchange/tagged_pdf/standard_structure_types.cr	ported: StandardStructureTypes
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::LOG	ported	src/pdfbox/pdmodel/document_interchange/tagged_pdf/standard_structure_types.cr	logger constant; no Crystal logger
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::L_BODY	ported	src/pdfbox/pdmodel/document_interchange/tagged_pdf/standard_structure_types.cr	ported: StandardStructureTypes
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::NON_STRUCT	ported	src/pdfbox/pdmodel/document_interchange/tagged_pdf/standard_structure_types.cr	ported: StandardStructureTypes
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::NOTE	ported	src/pdfbox/pdmodel/document_interchange/tagged_pdf/standard_structure_types.cr	ported: StandardStructureTypes
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::P	ported	src/pdfbox/pdmodel/document_interchange/tagged_pdf/standard_structure_types.cr	ported: StandardStructureTypes
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::PART	ported	src/pdfbox/pdmodel/document_interchange/tagged_pdf/standard_structure_types.cr	ported: StandardStructureTypes
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::PRIVATE	ported	src/pdfbox/pdmodel/document_interchange/tagged_pdf/standard_structure_types.cr	ported: StandardStructureTypes
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::QUOTE	ported	src/pdfbox/pdmodel/document_interchange/tagged_pdf/standard_structure_types.cr	ported: StandardStructureTypes
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::RB	ported	src/pdfbox/pdmodel/document_interchange/tagged_pdf/standard_structure_types.cr	ported: StandardStructureTypes
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::REFERENCE	ported	src/pdfbox/pdmodel/document_interchange/tagged_pdf/standard_structure_types.cr	ported: StandardStructureTypes
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::RP	ported	src/pdfbox/pdmodel/document_interchange/tagged_pdf/standard_structure_types.cr	ported: StandardStructureTypes
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::RT	ported	src/pdfbox/pdmodel/document_interchange/tagged_pdf/standard_structure_types.cr	ported: StandardStructureTypes
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::RUBY	ported	src/pdfbox/pdmodel/document_interchange/tagged_pdf/standard_structure_types.cr	ported: StandardStructureTypes
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::SECT	ported	src/pdfbox/pdmodel/document_interchange/tagged_pdf/standard_structure_types.cr	ported: StandardStructureTypes
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::SPAN	ported	src/pdfbox/pdmodel/document_interchange/tagged_pdf/standard_structure_types.cr	ported: StandardStructureTypes
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::TABLE	ported	src/pdfbox/pdmodel/document_interchange/tagged_pdf/standard_structure_types.cr	ported: StandardStructureTypes
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::TD	ported	src/pdfbox/pdmodel/document_interchange/tagged_pdf/standard_structure_types.cr	ported: StandardStructureTypes
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::TH	ported	src/pdfbox/pdmodel/document_interchange/tagged_pdf/standard_structure_types.cr	ported: StandardStructureTypes
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::TOC	ported	src/pdfbox/pdmodel/document_interchange/tagged_pdf/standard_structure_types.cr	ported: StandardStructureTypes
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::TOCI	ported	src/pdfbox/pdmodel/document_interchange/tagged_pdf/standard_structure_types.cr	ported: StandardStructureTypes
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::TR	ported	src/pdfbox/pdmodel/document_interchange/tagged_pdf/standard_structure_types.cr	ported: StandardStructureTypes
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::T_BODY	ported	src/pdfbox/pdmodel/document_interchange/tagged_pdf/standard_structure_types.cr	ported: StandardStructureTypes
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::T_FOOT	ported	src/pdfbox/pdmodel/document_interchange/tagged_pdf/standard_structure_types.cr	ported: StandardStructureTypes
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::T_HEAD	ported	src/pdfbox/pdmodel/document_interchange/tagged_pdf/standard_structure_types.cr	ported: StandardStructureTypes
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::WARICHU	ported	src/pdfbox/pdmodel/document_interchange/tagged_pdf/standard_structure_types.cr	ported: StandardStructureTypes
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::WP	ported	src/pdfbox/pdmodel/document_interchange/tagged_pdf/standard_structure_types.cr	ported: StandardStructureTypes
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/taggedpdf/StandardStructureTypes.java::const::WT	ported	src/pdfbox/pdmodel/document_interchange/tagged_pdf/standard_structure_types.cr	ported: StandardStructureTypes
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/AccessPermission.java::class::AccessPermission	ported	src/pdfbox/pdmodel/encryption.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/AccessPermission.java::const::ASSEMBLE_DOCUMENT_BIT	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/AccessPermission.java::const::DEFAULT_PERMISSIONS	missing	-	baseline

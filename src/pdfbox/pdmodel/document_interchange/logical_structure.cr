@@ -7,6 +7,7 @@ require "./logical_structure/pd_attribute_object"
 require "./logical_structure/pd_structure_tree_root"
 require "./logical_structure/pd_mark_info"
 require "../document_interchange/tagged_pdf/pdfour_colours"
+require "../document_interchange/tagged_pdf/standard_structure_types"
 require "../document_interchange/tagged_pdf/pd_standard_attribute_object"
 require "../document_interchange/tagged_pdf/pd_tagged_attribute_objects"
 
