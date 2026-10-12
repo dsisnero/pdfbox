@@ -906,19 +906,19 @@ pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageTree.java::method::Test
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/TestPDPageTree.java::method::TestPDPageTree.testNodeLoop	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/COSArrayListTest.java::class::COSArrayListTest	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/COSArrayListTest.java::const::OUT_DIR	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/COSArrayListTest.java::method::COSArrayListTest.addToList	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/COSArrayListTest.java::method::COSArrayListTest.getFromList	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/COSArrayListTest.java::method::COSArrayListTest.removeAllMultipleFromListByObject	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/COSArrayListTest.java::method::COSArrayListTest.removeAllUniqueFromListByObject	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/COSArrayListTest.java::method::COSArrayListTest.removeFromFilteredListByIndex	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/COSArrayListTest.java::method::COSArrayListTest.removeFromFilteredListByObject	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/COSArrayListTest.java::method::COSArrayListTest.removeFromListByIndex	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/COSArrayListTest.java::method::COSArrayListTest.removeMultipleFromListByObject	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/COSArrayListTest.java::method::COSArrayListTest.removeSingleDirectObject	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/COSArrayListTest.java::method::COSArrayListTest.removeSingleIndirectObject	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/COSArrayListTest.java::method::COSArrayListTest.removeUniqueFromListByObject	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/COSArrayListTest.java::method::COSArrayListTest.retainIndirectObject	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/COSArrayListTest.java::method::COSArrayListTest.setUp	ported	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/COSArrayListTest.java::method::COSArrayListTest.addToList	partial	-	test commented out in Java
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/COSArrayListTest.java::method::COSArrayListTest.getFromList	ported	spec/pdfbox/pdmodel/common/cosarray_list_spec.cr	ported: COSArrayListTest cases
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/COSArrayListTest.java::method::COSArrayListTest.removeAllMultipleFromListByObject	ported	spec/pdfbox/pdmodel/common/cosarray_list_spec.cr	ported: COSArrayListTest cases
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/COSArrayListTest.java::method::COSArrayListTest.removeAllUniqueFromListByObject	ported	spec/pdfbox/pdmodel/common/cosarray_list_spec.cr	ported: COSArrayListTest cases
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/COSArrayListTest.java::method::COSArrayListTest.removeFromFilteredListByIndex	ported	spec/pdfbox/pdmodel/common/cosarray_list_spec.cr	ported: COSArrayListTest cases
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/COSArrayListTest.java::method::COSArrayListTest.removeFromFilteredListByObject	ported	spec/pdfbox/pdmodel/common/cosarray_list_spec.cr	ported: COSArrayListTest cases
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/COSArrayListTest.java::method::COSArrayListTest.removeFromListByIndex	ported	spec/pdfbox/pdmodel/common/cosarray_list_spec.cr	ported: COSArrayListTest cases
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/COSArrayListTest.java::method::COSArrayListTest.removeMultipleFromListByObject	ported	spec/pdfbox/pdmodel/common/cosarray_list_spec.cr	ported: COSArrayListTest cases
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/COSArrayListTest.java::method::COSArrayListTest.removeSingleDirectObject	ported	spec/pdfbox/pdmodel/common/cosarray_list_spec.cr	ported: COSArrayListTest cases
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/COSArrayListTest.java::method::COSArrayListTest.removeSingleIndirectObject	ported	spec/pdfbox/pdmodel/common/cosarray_list_spec.cr	ported: COSArrayListTest cases
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/COSArrayListTest.java::method::COSArrayListTest.removeUniqueFromListByObject	ported	spec/pdfbox/pdmodel/common/cosarray_list_spec.cr	ported: COSArrayListTest cases
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/COSArrayListTest.java::method::COSArrayListTest.retainIndirectObject	ported	spec/pdfbox/pdmodel/common/cosarray_list_spec.cr	ported: COSArrayListTest cases
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/COSArrayListTest.java::method::COSArrayListTest.setUp	ported	spec/pdfbox/pdmodel/common/cosarray_list_spec.cr	ported: COSArrayListTest cases
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/PDImmutableRectangleTest.java::class::PDImmutableRectangleTest	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/PDImmutableRectangleTest.java::method::PDImmutableRectangleTest.testClass	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/PDImmutableRectangleTest.java::method::PDImmutableRectangleTest.testSetLowerLeftX	ported	-	baseline
