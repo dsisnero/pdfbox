@@ -2,6 +2,9 @@ module Pdfbox::Pdmodel::DocumentInterchange::TaggedPdf
   # A standard attribute object (Java PDStandardAttributeObject). Provides
   # typed getters/setters over the wrapped COS dictionary.
   abstract class PDStandardAttributeObject < LogicalStructure::PDAttributeObject
+    # Java PDStandardAttributeObject.UNSPECIFIED.
+    UNSPECIFIED = -1.0_f32
+
     protected def initialize
       super
     end
@@ -66,6 +69,101 @@ module Pdfbox::Pdmodel::DocumentInterchange::TaggedPdf
         value.value
       else
         default_value
+      end
+    end
+
+    # Returns a String or an Array(String) for a name-or-array-of-name attribute.
+    protected def get_name_or_array_of_name(name : String, default_value : String) : String | Array(String)
+      value = cos_object.get_dictionary_object(Cos::Name.new(name))
+      case value
+      when Cos::Array
+        names = value.size.times.map do |i|
+          item = value[i]
+          item = item.object if item.is_a?(Cos::Object)
+          item.is_a?(Cos::Name) ? item.value : ""
+        end.to_a
+        names
+      when Cos::Name
+        value.value
+      else
+        default_value
+      end
+    end
+
+    protected def set_array_of_name(name : String, values : Array(String)) : Nil
+      array = Cos::Array.new
+      values.each { |value| array.add(Cos::Name.new(value)) }
+      cos_object[Cos::Name.new(name)] = array
+    end
+
+    # Returns a Float, an Array(Float32), or nil for a number-or-array attribute.
+    # When the attribute is absent and the default is UNSPECIFIED, nil is returned.
+    protected def get_number_or_array_of_number(name : String, default_value : Float32) : Float32 | Array(Float32) | Nil
+      value = cos_object.get_dictionary_object(Cos::Name.new(name))
+      case value
+      when Cos::Array
+        numbers = value.size.times.map do |i|
+          item = value[i]
+          item = item.object if item.is_a?(Cos::Object)
+          case item
+          when Cos::Integer
+            item.value.to_f32
+          when Cos::Float
+            item.value.to_f32
+          else
+            0.0_f32
+          end
+        end.to_a
+        numbers
+      when Cos::Integer
+        value.value.to_f32
+      when Cos::Float
+        value.value.to_f32
+      else
+        default_value == UNSPECIFIED ? nil : default_value
+      end
+    end
+
+    protected def set_array_of_number(name : String, values : Array(Float32)) : Nil
+      array = Cos::Array.new
+      values.each { |value| array.add(Cos::Float.new(value.to_f64)) }
+      cos_object[Cos::Name.new(name)] = array
+    end
+
+    # Returns the colour (a PDGamma) for a three-value array attribute, or nil.
+    protected def get_color(name : String) : Pdfbox::Pdmodel::Graphics::Color::PDGamma?
+      array = cos_object.get_array(Cos::Name.new(name))
+      array ? Pdfbox::Pdmodel::Graphics::Color::PDGamma.new(array) : nil
+    end
+
+    protected def set_color(name : String, value : Pdfbox::Pdmodel::Graphics::Color::PDGamma?) : Nil
+      key = Cos::Name.new(name)
+      if value
+        cos_object[key] = value.cos_object
+      else
+        cos_object.delete(key)
+      end
+    end
+
+    # Returns a single colour (PDGamma, array size 3) or four colours
+    # (PDFourColours, array size 4), or nil.
+    protected def get_color_or_four_colors(name : String) : Pdfbox::Pdmodel::Graphics::Color::PDGamma | PDFourColours | Nil
+      array = cos_object.get_array(Cos::Name.new(name))
+      return unless array
+      case array.size
+      when 3
+        Pdfbox::Pdmodel::Graphics::Color::PDGamma.new(array)
+      when 4
+        PDFourColours.new(array)
+      end
+    end
+
+    protected def set_four_colors(name : String, value : PDFourColours?) : Nil
+      key = Cos::Name.new(name)
+      if value
+        cos_object[key] = value.cos_object
+      else
+        cos_object.delete(key)
       end
     end
   end
