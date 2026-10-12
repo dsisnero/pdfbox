@@ -8221,26 +8221,26 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDPattern.java::me
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDPattern.java::method::PDPattern.toRGBImage	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDPattern.java::method::PDPattern.toRawImage	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDPattern.java::method::PDPattern.toString	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDSeparation.java::class::PDSeparation	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDSeparation.java::const::ALTERNATE_CS	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDSeparation.java::const::COLORANT_NAMES	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDSeparation.java::const::TINT_TRANSFORM	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDSeparation.java::method::PDSeparation.getAlternateColorSpace	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDSeparation.java::method::PDSeparation.getColorantName	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDSeparation.java::method::PDSeparation.getDefaultDecode	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDSeparation.java::method::PDSeparation.getInitialColor	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDSeparation.java::method::PDSeparation.getName	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDSeparation.java::method::PDSeparation.getNumberOfComponents	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDSeparation.java::method::PDSeparation.setAlternateColorSpace	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDSeparation.java::method::PDSeparation.setColorantName	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDSeparation.java::method::PDSeparation.setTintTransform	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDSeparation.java::method::PDSeparation.tintTransform	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDSeparation.java::method::PDSeparation.toRGB	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDSeparation.java::method::PDSeparation.toRGBImage	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDSeparation.java::method::PDSeparation.toRGBImage2	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDSeparation.java::method::PDSeparation.toRawImage	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDSeparation.java::class::PDSeparation	ported	src/pdfbox/pdmodel/graphics/color/pd_separation.cr	ported: PDSeparation
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDSeparation.java::const::ALTERNATE_CS	ported	src/pdfbox/pdmodel/graphics/color/pd_separation.cr	ported: PDSeparation
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDSeparation.java::const::COLORANT_NAMES	ported	src/pdfbox/pdmodel/graphics/color/pd_separation.cr	ported: PDSeparation
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDSeparation.java::const::TINT_TRANSFORM	ported	src/pdfbox/pdmodel/graphics/color/pd_separation.cr	ported: PDSeparation
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDSeparation.java::method::PDSeparation.getAlternateColorSpace	ported	src/pdfbox/pdmodel/graphics/color/pd_separation.cr	ported: PDSeparation
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDSeparation.java::method::PDSeparation.getColorantName	ported	src/pdfbox/pdmodel/graphics/color/pd_separation.cr	ported: PDSeparation
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDSeparation.java::method::PDSeparation.getDefaultDecode	partial	-	PDColorSpace interface has no default_decode in Crystal
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDSeparation.java::method::PDSeparation.getInitialColor	ported	src/pdfbox/pdmodel/graphics/color/pd_separation.cr	ported: PDSeparation
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDSeparation.java::method::PDSeparation.getName	ported	src/pdfbox/pdmodel/graphics/color/pd_separation.cr	ported: PDSeparation
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDSeparation.java::method::PDSeparation.getNumberOfComponents	ported	src/pdfbox/pdmodel/graphics/color/pd_separation.cr	ported: PDSeparation
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDSeparation.java::method::PDSeparation.setAlternateColorSpace	ported	src/pdfbox/pdmodel/graphics/color/pd_separation.cr	ported: PDSeparation
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDSeparation.java::method::PDSeparation.setColorantName	ported	src/pdfbox/pdmodel/graphics/color/pd_separation.cr	ported: PDSeparation
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDSeparation.java::method::PDSeparation.setTintTransform	ported	src/pdfbox/pdmodel/graphics/color/pd_separation.cr	ported: PDSeparation
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDSeparation.java::method::PDSeparation.tintTransform	ported	src/pdfbox/pdmodel/graphics/color/pd_separation.cr	ported: PDSeparation
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDSeparation.java::method::PDSeparation.toRGB	ported	src/pdfbox/pdmodel/graphics/color/pd_separation.cr	ported: PDSeparation
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDSeparation.java::method::PDSeparation.toRGBImage	partial	-	AWT BufferedImage path, out of scope
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDSeparation.java::method::PDSeparation.toRGBImage2	partial	-	AWT BufferedImage path, out of scope
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDSeparation.java::method::PDSeparation.toRawImage	partial	-	AWT BufferedImage path, out of scope
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDSeparation.java::method::PDSeparation.toString	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDSpecialColorSpace.java::class::PDSpecialColorSpace	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDSpecialColorSpace.java::class::PDSpecialColorSpace	ported	src/pdfbox/pdmodel/graphics/color/pd_special_color_space.cr	ported: PDSpecialColorSpace base
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDTristimulus.java::class::PDTristimulus	ported	src/pdfbox/pdmodel/graphics/color/pd_tristimulus.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDTristimulus.java::method::PDTristimulus.getCOSObject	ported	src/pdfbox/pdmodel/graphics/color/pd_tristimulus.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDTristimulus.java::method::PDTristimulus.getX	ported	src/pdfbox/pdmodel/graphics/color/pd_tristimulus.cr	reconciled: method present
