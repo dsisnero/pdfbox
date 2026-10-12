@@ -95,5 +95,46 @@ module Pdfbox::Pdmodel::DocumentInterchange::LogicalStructure
     def initialize(dictionary : Cos::Dictionary)
       super(dictionary)
     end
+
+    # Java getOwnerUserProperties: the /P array as PDUserProperty objects.
+    def user_properties : Array(PDUserProperty)
+      array = cos_object.get_array(Cos::Name.new("P"))
+      return [] of PDUserProperty unless array
+      array.items.compact_map do |item|
+        item = item.object if item.is_a?(Cos::Object)
+        dict = item.as?(Cos::Dictionary)
+        dict ? PDUserProperty.new(dict, self) : nil
+      end
+    end
+
+    # Java setUserProperties: stores the list as the /P array.
+    def user_properties=(user_properties : Array(PDUserProperty)) : Nil
+      array = Cos::Array.new
+      user_properties.each { |property| array.add(property.cos_object) }
+      cos_object[Cos::Name.new("P")] = array
+    end
+
+    # Adds a user property to the /P array (Java addUserProperty).
+    def add_user_property(user_property : PDUserProperty) : Nil
+      key = Cos::Name.new("P")
+      array = cos_object.get_array(key)
+      unless array
+        array = Cos::Array.new
+        cos_object[key] = array
+      end
+      array.add(user_property.cos_object)
+    end
+
+    # Removes a user property from the /P array (Java removeUserProperty).
+    def remove_user_property(user_property : PDUserProperty?) : Nil
+      return unless user_property
+      array = cos_object.get_array(Cos::Name.new("P"))
+      return unless array
+      array.remove_object(user_property.cos_object)
+    end
+
+    # Notify a possible change of user properties (Java userPropertyChanged).
+    def user_property_changed(_user_property : PDUserProperty) : Nil
+    end
   end
 end

@@ -1,4 +1,5 @@
 require "./logical_structure/pd_marked_content_reference"
+require "./logical_structure/pd_user_property"
 require "./logical_structure/pd_structure_element"
 require "./logical_structure/revisions"
 require "./logical_structure/pd_attribute_object"
