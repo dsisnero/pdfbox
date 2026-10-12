@@ -49,6 +49,8 @@ module Pdfbox::Pdmodel::Graphics::Color
               PDCalRGB.new(cos_base)
             when "Separation"
               PDSeparation.new(cos_base)
+            when "DeviceN"
+              PDDeviceN.new(cos_base)
             else
               nil
             end

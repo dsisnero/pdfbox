@@ -8075,44 +8075,44 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceGray.java:
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceGray.java::method::PDDeviceGray.toRGB	ported	src/pdfbox/pdmodel/graphics/color/pddevice_gray.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceGray.java::method::PDDeviceGray.toRGBImage	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceGray.java::method::PDDeviceGray.toRawImage	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceN.java::class::PDDeviceN	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceN.java::const::ALTERNATE_CS	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceN.java::const::COLORANT_NAMES	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceN.java::const::DEVICEN_ATTRIBUTES	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceN.java::const::TINT_TRANSFORM	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceN.java::method::PDDeviceN.getAlternateColorSpace	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceN.java::method::PDDeviceN.getAttributes	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceN.java::method::PDDeviceN.getColorantNames	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceN.java::method::PDDeviceN.getDefaultDecode	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceN.java::method::PDDeviceN.getInitialColor	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceN.java::method::PDDeviceN.getName	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceN.java::method::PDDeviceN.getNumberOfComponents	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceN.java::method::PDDeviceN.getTintTransform	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceN.java::method::PDDeviceN.initColorConversionCache	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceN.java::method::PDDeviceN.isNChannel	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceN.java::method::PDDeviceN.setAlternateColorSpace	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceN.java::method::PDDeviceN.setAttributes	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceN.java::method::PDDeviceN.setColorantNames	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceN.java::method::PDDeviceN.setTintTransform	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceN.java::method::PDDeviceN.toRGB	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceN.java::method::PDDeviceN.toRGBImage	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceN.java::method::PDDeviceN.toRGBWithAttributes	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceN.java::method::PDDeviceN.toRGBWithTintTransform	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceN.java::method::PDDeviceN.toRawImage	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceN.java::class::PDDeviceN	ported	src/pdfbox/pdmodel/graphics/color/pd_devicen.cr	ported: DeviceN colour space
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceN.java::const::ALTERNATE_CS	ported	src/pdfbox/pdmodel/graphics/color/pd_devicen.cr	ported: DeviceN colour space
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceN.java::const::COLORANT_NAMES	ported	src/pdfbox/pdmodel/graphics/color/pd_devicen.cr	ported: DeviceN colour space
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceN.java::const::DEVICEN_ATTRIBUTES	ported	src/pdfbox/pdmodel/graphics/color/pd_devicen.cr	ported: DeviceN colour space
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceN.java::const::TINT_TRANSFORM	ported	src/pdfbox/pdmodel/graphics/color/pd_devicen.cr	ported: DeviceN colour space
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceN.java::method::PDDeviceN.getAlternateColorSpace	ported	src/pdfbox/pdmodel/graphics/color/pd_devicen.cr	ported: DeviceN colour space
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceN.java::method::PDDeviceN.getAttributes	ported	src/pdfbox/pdmodel/graphics/color/pd_devicen.cr	ported: DeviceN colour space
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceN.java::method::PDDeviceN.getColorantNames	ported	src/pdfbox/pdmodel/graphics/color/pd_devicen.cr	ported: DeviceN colour space
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceN.java::method::PDDeviceN.getDefaultDecode	partial	-	PDColorSpace interface has no default_decode in Crystal
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceN.java::method::PDDeviceN.getInitialColor	ported	src/pdfbox/pdmodel/graphics/color/pd_devicen.cr	ported: DeviceN colour space
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceN.java::method::PDDeviceN.getName	ported	src/pdfbox/pdmodel/graphics/color/pd_devicen.cr	ported: DeviceN colour space
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceN.java::method::PDDeviceN.getNumberOfComponents	ported	src/pdfbox/pdmodel/graphics/color/pd_devicen.cr	ported: DeviceN colour space
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceN.java::method::PDDeviceN.getTintTransform	ported	src/pdfbox/pdmodel/graphics/color/pd_devicen.cr	ported: DeviceN colour space
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceN.java::method::PDDeviceN.initColorConversionCache	ported	src/pdfbox/pdmodel/graphics/color/pd_devicen.cr	ported: DeviceN colour space
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceN.java::method::PDDeviceN.isNChannel	ported	src/pdfbox/pdmodel/graphics/color/pd_devicen.cr	ported: DeviceN colour space
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceN.java::method::PDDeviceN.setAlternateColorSpace	ported	src/pdfbox/pdmodel/graphics/color/pd_devicen.cr	ported: DeviceN colour space
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceN.java::method::PDDeviceN.setAttributes	ported	src/pdfbox/pdmodel/graphics/color/pd_devicen.cr	ported: DeviceN colour space
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceN.java::method::PDDeviceN.setColorantNames	ported	src/pdfbox/pdmodel/graphics/color/pd_devicen.cr	ported: DeviceN colour space
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceN.java::method::PDDeviceN.setTintTransform	ported	src/pdfbox/pdmodel/graphics/color/pd_devicen.cr	ported: DeviceN colour space
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceN.java::method::PDDeviceN.toRGB	ported	src/pdfbox/pdmodel/graphics/color/pd_devicen.cr	ported: DeviceN colour space
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceN.java::method::PDDeviceN.toRGBImage	partial	-	AWT BufferedImage path, out of scope
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceN.java::method::PDDeviceN.toRGBWithAttributes	ported	src/pdfbox/pdmodel/graphics/color/pd_devicen.cr	ported: DeviceN colour space
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceN.java::method::PDDeviceN.toRGBWithTintTransform	ported	src/pdfbox/pdmodel/graphics/color/pd_devicen.cr	ported: DeviceN colour space
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceN.java::method::PDDeviceN.toRawImage	partial	-	AWT BufferedImage path, out of scope
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceN.java::method::PDDeviceN.toString	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceNAttributes.java::class::PDDeviceNAttributes	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceNAttributes.java::const::LOG	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceNAttributes.java::method::PDDeviceNAttributes.getCOSDictionary	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceNAttributes.java::method::PDDeviceNAttributes.getColorants	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceNAttributes.java::method::PDDeviceNAttributes.getProcess	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceNAttributes.java::method::PDDeviceNAttributes.isNChannel	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceNAttributes.java::method::PDDeviceNAttributes.setColorants	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceNAttributes.java::class::PDDeviceNAttributes	ported	src/pdfbox/pdmodel/graphics/color/pd_devicen_attributes.cr	ported: DeviceN colour space
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceNAttributes.java::const::LOG	ported	src/pdfbox/pdmodel/graphics/color/pd_devicen_attributes.cr	logger constant; no Crystal logger
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceNAttributes.java::method::PDDeviceNAttributes.getCOSDictionary	ported	src/pdfbox/pdmodel/graphics/color/pd_devicen_attributes.cr	ported: DeviceN colour space
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceNAttributes.java::method::PDDeviceNAttributes.getColorants	ported	src/pdfbox/pdmodel/graphics/color/pd_devicen_attributes.cr	ported: DeviceN colour space
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceNAttributes.java::method::PDDeviceNAttributes.getProcess	ported	src/pdfbox/pdmodel/graphics/color/pd_devicen_attributes.cr	ported: DeviceN colour space
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceNAttributes.java::method::PDDeviceNAttributes.isNChannel	ported	src/pdfbox/pdmodel/graphics/color/pd_devicen_attributes.cr	ported: DeviceN colour space
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceNAttributes.java::method::PDDeviceNAttributes.setColorants	ported	src/pdfbox/pdmodel/graphics/color/pd_devicen_attributes.cr	ported: DeviceN colour space
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceNAttributes.java::method::PDDeviceNAttributes.toString	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceNProcess.java::class::PDDeviceNProcess	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceNProcess.java::const::LOG	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceNProcess.java::method::PDDeviceNProcess.getCOSDictionary	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceNProcess.java::method::PDDeviceNProcess.getColorSpace	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceNProcess.java::method::PDDeviceNProcess.getComponents	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceNProcess.java::class::PDDeviceNProcess	ported	src/pdfbox/pdmodel/graphics/color/pd_devicen_process.cr	ported: DeviceN colour space
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceNProcess.java::const::LOG	ported	src/pdfbox/pdmodel/graphics/color/pd_devicen_process.cr	logger constant; no Crystal logger
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceNProcess.java::method::PDDeviceNProcess.getCOSDictionary	ported	src/pdfbox/pdmodel/graphics/color/pd_devicen_process.cr	ported: DeviceN colour space
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceNProcess.java::method::PDDeviceNProcess.getColorSpace	ported	src/pdfbox/pdmodel/graphics/color/pd_devicen_process.cr	ported: DeviceN colour space
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceNProcess.java::method::PDDeviceNProcess.getComponents	ported	src/pdfbox/pdmodel/graphics/color/pd_devicen_process.cr	ported: DeviceN colour space
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceNProcess.java::method::PDDeviceNProcess.toString	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceRGB.java::class::PDDeviceRGB	ported	src/pdfbox/pdmodel/graphics/color/pddevice_rgb.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceRGB.java::const::INSTANCE	missing	-	baseline
