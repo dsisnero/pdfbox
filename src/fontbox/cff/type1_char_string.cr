@@ -14,6 +14,7 @@
 # limitations under the License.
 
 require "../util"
+require "../encoding/standard_encoding"
 require "log"
 
 module Fontbox::CFF
@@ -77,6 +78,10 @@ module Fontbox::CFF
       @path = Fontbox::Util::Path.new
       @left_side_bearing = Fontbox::Util::Point2D.new(0.0, 0.0)
       @width = 0
+      # Mirror Java: `path` is assigned before the sequence is processed, so a
+      # self-referencing seac accent resolves back to the in-progress path and
+      # the PDFBOX-5339 identity check terminates instead of recursing.
+      @rendered = true
       numbers = [] of Int32 | Float64
       @type1_sequence.each do |obj|
         case obj
@@ -86,7 +91,6 @@ module Fontbox::CFF
           numbers << obj
         end
       end
-      @rendered = true
     end
 
     private def handle_type1_command(numbers : Array(Int32 | Float64), command : CharStringCommand) : Nil
@@ -300,10 +304,35 @@ module Fontbox::CFF
     end
 
     # Standard Encoding Accented Character
+    #
+    # Makes an accented character from two other characters.
     private def seac(asb : Int32 | Float64, adx : Int32 | Float64, ady : Int32 | Float64,
                      bchar : Int32 | Float64, achar : Int32 | Float64) : Nil
-      # TODO: Implement SEAC (requires StandardEncoding and font.getType1CharString)
-      Log.warn { "SEAC not yet implemented for glyph #{@glyph_name} of font #{@font_name}" }
+      # base character
+      base_name = Fontbox::StandardEncoding::INSTANCE.name(bchar.to_i)
+      begin
+        base = @font.type1_char_string(base_name)
+        @path.append(base.path)
+      rescue ex : IO::Error
+        Log.warn { "invalid seac character in glyph #{@glyph_name} of font #{@font_name}" }
+      end
+      # accent character
+      accent_name = Fontbox::StandardEncoding::INSTANCE.name(achar.to_i)
+      begin
+        accent = @font.type1_char_string(accent_name)
+        accent_path = accent.path
+        if @path == accent_path
+          # PDFBOX-5339: avoid ArrayIndexOutOfBoundsException
+          # (reproducible with poc file crash-4698e0dc7833a3f959d06707e01d03cda52a83f4)
+          Log.warn { "Path for #{base_name} and for accent #{accent_name} are same, ignored" }
+          return
+        end
+        tx = @left_side_bearing.x + adx.to_f - asb.to_f
+        ty = @left_side_bearing.y + ady.to_f
+        @path.append(accent_path.translate(tx, ty))
+      rescue ex : IO::Error
+        Log.warn { "invalid seac character in glyph #{@glyph_name} of font #{@font_name}" }
+      end
     end
 
     # Add a command to the type1 sequence.

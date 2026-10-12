@@ -114,6 +114,35 @@ module Fontbox
         @bounds_dirty = true
       end
 
+      # Returns a copy of this path translated by (tx, ty).
+      def translate(tx : Float64, ty : Float64) : Path
+        translated = Path.new
+        @commands.each do |cmd|
+          case cmd
+          when MoveTo
+            translated.move_to(cmd.x + tx, cmd.y + ty)
+          when LineTo
+            translated.line_to(cmd.x + tx, cmd.y + ty)
+          when CurveTo
+            translated.curve_to(cmd.x1 + tx, cmd.y1 + ty, cmd.x2 + tx, cmd.y2 + ty, cmd.x3 + tx, cmd.y3 + ty)
+          when ClosePath
+            translated.close_path
+          else
+            raise "Unknown path command type: #{cmd.class}"
+          end
+        end
+        translated
+      end
+
+      # Content equality, mirroring java.awt.geom.Path2D#equals (coordinates must match).
+      def ==(other : Path) : Bool
+        a = [] of Tuple(Symbol, Array(Float64))
+        b = [] of Tuple(Symbol, Array(Float64))
+        each_command { |kind, points| a << {kind, points} }
+        other.each_command { |kind, points| b << {kind, points} }
+        a == b
+      end
+
       # Returns the current point, or nil if no point has been set.
       def current_point : Point2D?
         @current_point
