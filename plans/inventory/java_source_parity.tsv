@@ -1789,11 +1789,11 @@ fontbox/src/main/java/org/apache/fontbox/cff/Type1CharString.java::method::Type1
 fontbox/src/main/java/org/apache/fontbox/cff/Type1CharString.java::method::Type1CharString.getWidth	ported	src/.../type1_char_string.cr	stale inventory; class ported
 fontbox/src/main/java/org/apache/fontbox/cff/Type1CharString.java::method::Type1CharString.handleType1Command	ported	src/.../type1_char_string.cr	stale inventory; class ported
 fontbox/src/main/java/org/apache/fontbox/cff/Type1CharString.java::method::Type1CharString.isSequenceEmpty	ported	src/.../type1_char_string.cr	stale inventory; class ported
-fontbox/src/main/java/org/apache/fontbox/cff/Type1CharString.java::method::Type1CharString.render	ported	src/.../type1_char_string.cr	stale inventory; class ported
+fontbox/src/main/java/org/apache/fontbox/cff/Type1CharString.java::method::Type1CharString.render	ported	src/fontbox/cff/type1_char_string.cr	marks @rendered before sequence processing (Java assigns path before loop) so self-referencing seac terminates
 fontbox/src/main/java/org/apache/fontbox/cff/Type1CharString.java::method::Type1CharString.rlineTo	ported	src/.../type1_char_string.cr	stale inventory; class ported
 fontbox/src/main/java/org/apache/fontbox/cff/Type1CharString.java::method::Type1CharString.rmoveTo	ported	src/.../type1_char_string.cr	stale inventory; class ported
 fontbox/src/main/java/org/apache/fontbox/cff/Type1CharString.java::method::Type1CharString.rrcurveTo	ported	src/.../type1_char_string.cr	stale inventory; class ported
-fontbox/src/main/java/org/apache/fontbox/cff/Type1CharString.java::method::Type1CharString.seac	ported	src/.../type1_char_string.cr	stale inventory; class ported
+fontbox/src/main/java/org/apache/fontbox/cff/Type1CharString.java::method::Type1CharString.seac	ported	src/fontbox/cff/type1_char_string.cr	real port: StandardEncoding base appended + translated accent; Path#== path-equality guard (PDFBOX-5339); 3 characterization specs
 fontbox/src/main/java/org/apache/fontbox/cff/Type1CharString.java::method::Type1CharString.setCurrentPoint	ported	src/.../type1_char_string.cr	stale inventory; class ported
 fontbox/src/main/java/org/apache/fontbox/cff/Type1CharString.java::method::Type1CharString.toString	ported	src/.../type1_char_string.cr	stale inventory; class ported
 fontbox/src/main/java/org/apache/fontbox/cff/Type1CharStringParser.java::class::Type1CharStringParser	ported	src/.../type1_char_string_parser.cr	stale inventory; class ported
@@ -8288,15 +8288,15 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/JPEGFactory.java::
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/JPEGFactory.java::class::JPEGFactory	ported	src/pdfbox/pdmodel/graphics/image/jpeg_factory.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/JPEGFactory.java::const::LOG	partial	-	AWT BufferedImage/ImageIO path, out of scope
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/JPEGFactory.java::method::JPEGFactory.createFromByteArray	ported	src/pdfbox/pdmodel/graphics/image/jpeg_factory.cr	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/JPEGFactory.java::method::JPEGFactory.createFromImage	partial	-	AWT BufferedImage/ImageIO path, out of scope
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/JPEGFactory.java::method::JPEGFactory.createFromImage	ported	src/pdfbox/pdmodel/graphics/image/jpeg_factory.cr	BufferedImage modelled as CrImage; quality overload only (dpi/JFIF density advisory)
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/JPEGFactory.java::method::JPEGFactory.createFromStream	ported	src/pdfbox/pdmodel/graphics/image/jpeg_factory.cr	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/JPEGFactory.java::method::JPEGFactory.createJPEG	partial	-	AWT BufferedImage/ImageIO path, out of scope
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/JPEGFactory.java::method::JPEGFactory.encodeImageToJPEGStream	partial	-	AWT BufferedImage/ImageIO path, out of scope
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/JPEGFactory.java::method::JPEGFactory.getAlphaImage	partial	-	AWT BufferedImage/ImageIO path, out of scope
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/JPEGFactory.java::method::JPEGFactory.getColorImage	partial	-	AWT BufferedImage/ImageIO path, out of scope
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/JPEGFactory.java::method::JPEGFactory.getColorSpaceFromAWT	partial	-	AWT BufferedImage/ImageIO path, out of scope
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/JPEGFactory.java::method::JPEGFactory.getJPEGImageWriter	partial	-	AWT BufferedImage/ImageIO path, out of scope
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/JPEGFactory.java::method::JPEGFactory.getNumComponentsFromImageMetadata	partial	-	AWT BufferedImage/ImageIO path, out of scope
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/JPEGFactory.java::method::JPEGFactory.createJPEG	ported	src/pdfbox/pdmodel/graphics/image/jpeg_factory.cr	folded into create_from_image (composite + SMask)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/JPEGFactory.java::method::JPEGFactory.encodeImageToJPEGStream	ported	src/pdfbox/pdmodel/graphics/image/jpeg_factory.cr	encode_jpeg via CrImage::JPEG; quality fraction -> 1..100
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/JPEGFactory.java::method::JPEGFactory.getAlphaImage	ported	src/pdfbox/pdmodel/graphics/image/jpeg_factory.cr	alpha_gray_image (CrImage::Gray)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/JPEGFactory.java::method::JPEGFactory.getColorImage	ported	src/pdfbox/pdmodel/graphics/image/jpeg_factory.cr	composite_over_white (non-premultiplied over white)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/JPEGFactory.java::method::JPEGFactory.getColorSpaceFromAWT	partial	-	AWT image-type lookup has no Crystal equivalent; color space derived from JPEG SOF components instead
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/JPEGFactory.java::method::JPEGFactory.getJPEGImageWriter	partial	-	ImageIO writer lookup has no Crystal equivalent; CrImage::JPEG writer used
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/JPEGFactory.java::method::JPEGFactory.getNumComponentsFromImageMetadata	partial	-	AWT image metadata lookup; component count derived from JPEG SOF instead
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/JPEGFactory.java::method::JPEGFactory.retrieveDimensions	ported	src/pdfbox/pdmodel/graphics/image/jpeg_factory.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/LosslessFactory.java::class::LosslessFactory	ported	src/.../lossless_factory.cr	stale inventory; class ported
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/LosslessFactory.java::class::PredictorEncoder	missing	-	baseline
@@ -11249,12 +11249,12 @@ tools/src/main/java/org/apache/pdfbox/tools/OverlayPDF.java::method::OverlayPDF.
 tools/src/main/java/org/apache/pdfbox/tools/PDFBox.java::class::PDFBox	missing	-	baseline
 tools/src/main/java/org/apache/pdfbox/tools/PDFBox.java::method::PDFBox.main	missing	-	baseline
 tools/src/main/java/org/apache/pdfbox/tools/PDFBox.java::method::PDFBox.run	missing	-	baseline
-tools/src/main/java/org/apache/pdfbox/tools/PDFMerger.java::class::PDFMerger	missing	-	baseline
-tools/src/main/java/org/apache/pdfbox/tools/PDFMerger.java::method::PDFMerger.call	missing	-	baseline
-tools/src/main/java/org/apache/pdfbox/tools/PDFMerger.java::method::PDFMerger.main	missing	-	baseline
-tools/src/main/java/org/apache/pdfbox/tools/PDFSplit.java::class::PDFSplit	missing	-	baseline
-tools/src/main/java/org/apache/pdfbox/tools/PDFSplit.java::method::PDFSplit.call	missing	-	baseline
-tools/src/main/java/org/apache/pdfbox/tools/PDFSplit.java::method::PDFSplit.main	missing	-	baseline
+tools/src/main/java/org/apache/pdfbox/tools/PDFMerger.java::class::PDFMerger	ported	src/tools/merge.cr	stale inventory; CLI tool verified by real merge_spec + PDFMergerUtility.mergeDocuments
+tools/src/main/java/org/apache/pdfbox/tools/PDFMerger.java::method::PDFMerger.call	ported	src/tools/merge.cr	option parsing (-i/-o/--password), exit 1/4
+tools/src/main/java/org/apache/pdfbox/tools/PDFMerger.java::method::PDFMerger.main	ported	-	no main needed; CLI dispatch in tools/pdfbox.cr
+tools/src/main/java/org/apache/pdfbox/tools/PDFSplit.java::class::PDFSplit	ported	src/tools/split.cr	stale inventory; CLI tool verified by real split_spec
+tools/src/main/java/org/apache/pdfbox/tools/PDFSplit.java::method::PDFSplit.call	ported	src/tools/split.cr	option parsing (-i/--split/--startPage/--endPage/--outputPrefix/--password); default prefix = abs input minus extension; outputs prefix-<n>.pdf; exit 1/4
+tools/src/main/java/org/apache/pdfbox/tools/PDFSplit.java::method::PDFSplit.main	ported	-	no main needed; CLI dispatch in tools/pdfbox.cr
 tools/src/main/java/org/apache/pdfbox/tools/PDFText2HTML.java::class::FontState	missing	-	baseline
 tools/src/main/java/org/apache/pdfbox/tools/PDFText2HTML.java::class::PDFText2HTML	missing	-	baseline
 tools/src/main/java/org/apache/pdfbox/tools/PDFText2HTML.java::const::INITIAL_PDF_TO_HTML_BYTES	missing	-	baseline
@@ -11293,10 +11293,10 @@ tools/src/main/java/org/apache/pdfbox/tools/PDFText2Markdown.java::method::PDFTe
 tools/src/main/java/org/apache/pdfbox/tools/PDFText2Markdown.java::method::PDFText2Markdown.startArticle	missing	-	baseline
 tools/src/main/java/org/apache/pdfbox/tools/PDFText2Markdown.java::method::PDFText2Markdown.writeParagraphEnd	missing	-	baseline
 tools/src/main/java/org/apache/pdfbox/tools/PDFText2Markdown.java::method::PDFText2Markdown.writeString	missing	-	baseline
-tools/src/main/java/org/apache/pdfbox/tools/PDFToImage.java::class::PDFToImage	missing	-	baseline
-tools/src/main/java/org/apache/pdfbox/tools/PDFToImage.java::method::PDFToImage.call	missing	-	baseline
-tools/src/main/java/org/apache/pdfbox/tools/PDFToImage.java::method::PDFToImage.changeCropBox	missing	-	baseline
-tools/src/main/java/org/apache/pdfbox/tools/PDFToImage.java::method::PDFToImage.main	missing	-	baseline
+tools/src/main/java/org/apache/pdfbox/tools/PDFToImage.java::class::PDFToImage	ported	src/pdfbox/tools/pdf_to_image.cr	stale inventory; class ported (real PDF→image conversion)
+tools/src/main/java/org/apache/pdfbox/tools/PDFToImage.java::method::PDFToImage.call	ported	src/pdfbox/tools/pdf_to_image.cr	call/process_document ported (pages, dpi, color, cropbox, quality, time, subsampling, exit codes 1/2/4)
+tools/src/main/java/org/apache/pdfbox/tools/PDFToImage.java::method::PDFToImage.changeCropBox	ported	src/pdfbox/tools/pdf_to_image.cr	private helper folded into change_crop_box
+tools/src/main/java/org/apache/pdfbox/tools/PDFToImage.java::method::PDFToImage.main	ported	-	no main needed; CLI dispatch in tools/pdfbox.cr
 tools/src/main/java/org/apache/pdfbox/tools/PrintPDF.java::class::PrintPDF	missing	-	baseline
 tools/src/main/java/org/apache/pdfbox/tools/PrintPDF.java::enum::Duplex	missing	-	baseline
 tools/src/main/java/org/apache/pdfbox/tools/PrintPDF.java::method::PrintPDF.call	missing	-	baseline
@@ -11344,13 +11344,13 @@ tools/src/main/java/org/apache/pdfbox/tools/WriteDecodedDoc.java::method::WriteD
 tools/src/main/java/org/apache/pdfbox/tools/WriteDecodedDoc.java::method::WriteDecodedDoc.doIt	ported	src/.../write_decoded_doc.cr	stale inventory; class ported
 tools/src/main/java/org/apache/pdfbox/tools/WriteDecodedDoc.java::method::WriteDecodedDoc.main	ported	src/.../write_decoded_doc.cr	stale inventory; class ported
 tools/src/main/java/org/apache/pdfbox/tools/WriteDecodedDoc.java::method::WriteDecodedDoc.processObject	ported	src/.../write_decoded_doc.cr	stale inventory; class ported
-tools/src/main/java/org/apache/pdfbox/tools/imageio/ImageIOUtil.java::class::ImageIOUtil	missing	-	baseline
-tools/src/main/java/org/apache/pdfbox/tools/imageio/ImageIOUtil.java::const::LOG	missing	-	baseline
-tools/src/main/java/org/apache/pdfbox/tools/imageio/ImageIOUtil.java::method::ImageIOUtil.getAsDeflatedBytes	missing	-	baseline
-tools/src/main/java/org/apache/pdfbox/tools/imageio/ImageIOUtil.java::method::ImageIOUtil.getOrCreateChildNode	missing	-	baseline
-tools/src/main/java/org/apache/pdfbox/tools/imageio/ImageIOUtil.java::method::ImageIOUtil.hasICCProfile	missing	-	baseline
-tools/src/main/java/org/apache/pdfbox/tools/imageio/ImageIOUtil.java::method::ImageIOUtil.setDPI	missing	-	baseline
-tools/src/main/java/org/apache/pdfbox/tools/imageio/ImageIOUtil.java::method::ImageIOUtil.writeImage	missing	-	baseline
+tools/src/main/java/org/apache/pdfbox/tools/imageio/ImageIOUtil.java::class::ImageIOUtil	ported	src/tools/imageio/image_io_util.cr	stale inventory; write_image ported
+tools/src/main/java/org/apache/pdfbox/tools/imageio/ImageIOUtil.java::const::LOG	ported	-	no logger needed
+tools/src/main/java/org/apache/pdfbox/tools/imageio/ImageIOUtil.java::method::ImageIOUtil.getAsDeflatedBytes	partial	-	ICC-profile metadata handling, render-compare advisory
+tools/src/main/java/org/apache/pdfbox/tools/imageio/ImageIOUtil.java::method::ImageIOUtil.getOrCreateChildNode	partial	-	ImageIO metadata node helpers, render-compare advisory
+tools/src/main/java/org/apache/pdfbox/tools/imageio/ImageIOUtil.java::method::ImageIOUtil.hasICCProfile	partial	-	AWT ICC color space check, out of scope (Chunk M)
+tools/src/main/java/org/apache/pdfbox/tools/imageio/ImageIOUtil.java::method::ImageIOUtil.setDPI	partial	-	ImageIO metadata DPI not written (CrImage has no DPI metadata), render-compare advisory
+tools/src/main/java/org/apache/pdfbox/tools/imageio/ImageIOUtil.java::method::ImageIOUtil.writeImage	ported	src/tools/imageio/image_io_util.cr	write_image ported: PNG/JPEG/BMP/GIF/ICO/TIFF via filename suffix, default_compression_quality, JPEG quality*100
 tools/src/main/java/org/apache/pdfbox/tools/imageio/JPEGUtil.java::class::JPEGUtil	missing	-	baseline
 tools/src/main/java/org/apache/pdfbox/tools/imageio/JPEGUtil.java::method::JPEGUtil.updateMetadata	missing	-	baseline
 tools/src/main/java/org/apache/pdfbox/tools/imageio/MetaUtil.java::class::MetaUtil	missing	-	baseline
@@ -11943,9 +11943,9 @@ xmpbox/src/main/java/org/apache/xmpbox/schema/XMPRightsManagementSchema.java::me
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPRightsManagementSchema.java::method::XMPRightsManagementSchema.setWebStatementProperty	missing	-	baseline
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPSchema.java::class::XMPSchema	ported	src/xmpbox/schema/xmp_schema.cr	reconciled: class present
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPSchema.java::method::XMPSchema.addBagValue	ported	src/xmpbox/schema/xmp_schema.cr	reconciled: method present
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPSchema.java::method::XMPSchema.addBagValueAsSimple	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPSchema.java::method::XMPSchema.addBagValueAsSimple	ported	src/xmpbox/schema/xmp_schema.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPSchema.java::method::XMPSchema.addQualifiedBagValue	ported	src/xmpbox/schema/xmp_schema.cr	reconciled: method present
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPSchema.java::method::XMPSchema.addSequenceDateValueAsSimple	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPSchema.java::method::XMPSchema.addSequenceDateValueAsSimple	ported	src/xmpbox/schema/xmp_schema.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPSchema.java::method::XMPSchema.addUnqualifiedSequenceDateValue	ported	src/xmpbox/schema/xmp_schema.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPSchema.java::method::XMPSchema.addUnqualifiedSequenceValue	ported	src/xmpbox/schema/xmp_schema.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPSchema.java::method::XMPSchema.getAboutAttribute	ported	src/xmpbox/schema/xmp_schema.cr	reconciled: method present
@@ -11953,13 +11953,13 @@ xmpbox/src/main/java/org/apache/xmpbox/schema/XMPSchema.java::method::XMPSchema.
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPSchema.java::method::XMPSchema.getAbstractProperty	ported	src/xmpbox/schema/xmp_schema.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPSchema.java::method::XMPSchema.getBooleanProperty	ported	src/xmpbox/schema/xmp_schema.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPSchema.java::method::XMPSchema.getBooleanPropertyValue	ported	src/xmpbox/schema/xmp_schema.cr	reconciled: method present
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPSchema.java::method::XMPSchema.getBooleanPropertyValueAsSimple	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPSchema.java::method::XMPSchema.getBooleanPropertyValueAsSimple	ported	src/xmpbox/schema/xmp_schema.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPSchema.java::method::XMPSchema.getDateProperty	ported	src/xmpbox/schema/xmp_schema.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPSchema.java::method::XMPSchema.getDatePropertyValue	ported	src/xmpbox/schema/xmp_schema.cr	reconciled: method present
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPSchema.java::method::XMPSchema.getDatePropertyValueAsSimple	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPSchema.java::method::XMPSchema.getDatePropertyValueAsSimple	ported	src/xmpbox/schema/xmp_schema.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPSchema.java::method::XMPSchema.getIntegerProperty	ported	src/xmpbox/schema/xmp_schema.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPSchema.java::method::XMPSchema.getIntegerPropertyValue	ported	src/xmpbox/schema/xmp_schema.cr	reconciled: method present
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPSchema.java::method::XMPSchema.getIntegerPropertyValueAsSimple	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPSchema.java::method::XMPSchema.getIntegerPropertyValueAsSimple	ported	src/xmpbox/schema/xmp_schema.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPSchema.java::method::XMPSchema.getPropertyAs	missing	-	baseline
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPSchema.java::method::XMPSchema.getUnqualifiedArrayList	ported	src/xmpbox/schema/xmp_schema.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPSchema.java::method::XMPSchema.getUnqualifiedBagValueList	ported	src/xmpbox/schema/xmp_schema.cr	reconciled: method present
@@ -11982,17 +11982,17 @@ xmpbox/src/main/java/org/apache/xmpbox/schema/XMPSchema.java::method::XMPSchema.
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPSchema.java::method::XMPSchema.setAboutAsSimple	ported	src/xmpbox/schema/xmp_schema.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPSchema.java::method::XMPSchema.setBooleanProperty	ported	src/xmpbox/schema/xmp_schema.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPSchema.java::method::XMPSchema.setBooleanPropertyValue	ported	src/xmpbox/schema/xmp_schema.cr	reconciled: method present
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPSchema.java::method::XMPSchema.setBooleanPropertyValueAsSimple	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPSchema.java::method::XMPSchema.setBooleanPropertyValueAsSimple	ported	src/xmpbox/schema/xmp_schema.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPSchema.java::method::XMPSchema.setDateProperty	ported	src/xmpbox/schema/xmp_schema.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPSchema.java::method::XMPSchema.setDatePropertyValue	ported	src/xmpbox/schema/xmp_schema.cr	reconciled: method present
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPSchema.java::method::XMPSchema.setDatePropertyValueAsSimple	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPSchema.java::method::XMPSchema.setDatePropertyValueAsSimple	ported	src/xmpbox/schema/xmp_schema.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPSchema.java::method::XMPSchema.setIntegerProperty	ported	src/xmpbox/schema/xmp_schema.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPSchema.java::method::XMPSchema.setIntegerPropertyValue	ported	src/xmpbox/schema/xmp_schema.cr	reconciled: method present
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPSchema.java::method::XMPSchema.setIntegerPropertyValueAsSimple	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPSchema.java::method::XMPSchema.setIntegerPropertyValueAsSimple	ported	src/xmpbox/schema/xmp_schema.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPSchema.java::method::XMPSchema.setSpecifiedSimpleTypeProperty	ported	src/xmpbox/schema/xmp_schema.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPSchema.java::method::XMPSchema.setTextProperty	ported	src/xmpbox/schema/xmp_schema.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPSchema.java::method::XMPSchema.setTextPropertyValue	ported	src/xmpbox/schema/xmp_schema.cr	reconciled: method present
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPSchema.java::method::XMPSchema.setTextPropertyValueAsSimple	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPSchema.java::method::XMPSchema.setTextPropertyValueAsSimple	ported	src/xmpbox/schema/xmp_schema.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPSchema.java::method::XMPSchema.setUnqualifiedLanguagePropertyValue	ported	src/xmpbox/schema/xmp_schema.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPSchemaFactory.java::class::XMPSchemaFactory	ported	src/xmpbox/type/schema_factory.cr	reconciled: class present
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPSchemaFactory.java::method::XMPSchemaFactory.createXMPSchema	ported	src/xmpbox/type/schema_factory.cr	reconciled: method present

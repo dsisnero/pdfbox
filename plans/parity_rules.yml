@@ -15,6 +15,9 @@ target_language: crystal
 # Break canonical-key ties (e.g. Cos::Stream vs PDStream both -> `stream`) using
 # the owner (package / module) leaf before reporting `ambiguous`.
 match_owner: true
+# Match base/interface members to concrete Crystal implementations under a
+# different owner when the signature arity agrees (basis: member).
+match_inherited: true
 
 # How to normalize *Java* symbols before matching.
 source:
