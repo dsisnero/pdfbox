@@ -1407,27 +1407,27 @@ pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDButtonTest.jav
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDButtonTest.java::const::IN_DIR	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDButtonTest.java::const::NAME_OF_PDF	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDButtonTest.java::const::TARGET_PDF_DIR	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDButtonTest.java::method::PDButtonTest.createCheckBox	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDButtonTest.java::method::PDButtonTest.createPushButton	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDButtonTest.java::method::PDButtonTest.createRadioButton	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDButtonTest.java::method::PDButtonTest.retrieveAcrobatCheckBoxProperties	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDButtonTest.java::method::PDButtonTest.retrieveAcrobatRadioButtonProperties	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDButtonTest.java::method::PDButtonTest.setAbstractedCheckboxGroupInvalidValue	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDButtonTest.java::method::PDButtonTest.setAbstractedCheckboxInvalidValue	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDButtonTest.java::method::PDButtonTest.setAbstractedRadioButtonInvalidValue	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDButtonTest.java::method::PDButtonTest.setCheckboxGroupInvalidValue	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDButtonTest.java::method::PDButtonTest.setCheckboxInvalidValue	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDButtonTest.java::method::PDButtonTest.setRadioButtonInvalidValue	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDButtonTest.java::method::PDButtonTest.setUp	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDButtonTest.java::method::PDButtonTest.setValueForAbstractedAcrobatCheckBox	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDButtonTest.java::method::PDButtonTest.setValueForAbstractedAcrobatRadioButton	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDButtonTest.java::method::PDButtonTest.setValueForAbstractedCheckBoxGroup	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDButtonTest.java::method::PDButtonTest.tearDown	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDButtonTest.java::method::PDButtonTest.testAcrobatCheckBoxGroupProperties	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDButtonTest.java::method::PDButtonTest.testAcrobatCheckBoxProperties	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDButtonTest.java::method::PDButtonTest.testAcrobatRadioButtonProperties	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDButtonTest.java::method::PDButtonTest.testOptionsAndNamesNotNumbers	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDButtonTest.java::method::PDButtonTest.testRadioButtonWithOptions	ported	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDButtonTest.java::method::PDButtonTest.createCheckBox	ported	spec/pdfbox/pdmodel/interactive/form/pd_button_spec.cr	ported: PDButtonTest fixture cases (AcroFormsBasicFields.pdf)
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDButtonTest.java::method::PDButtonTest.createPushButton	ported	spec/pdfbox/pdmodel/interactive/form/pd_button_spec.cr	ported: PDButtonTest fixture cases (AcroFormsBasicFields.pdf)
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDButtonTest.java::method::PDButtonTest.createRadioButton	ported	spec/pdfbox/pdmodel/interactive/form/pd_button_spec.cr	ported: PDButtonTest fixture cases (AcroFormsBasicFields.pdf)
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDButtonTest.java::method::PDButtonTest.retrieveAcrobatCheckBoxProperties	ported	spec/pdfbox/pdmodel/interactive/form/pd_button_spec.cr	ported: PDButtonTest fixture cases (AcroFormsBasicFields.pdf)
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDButtonTest.java::method::PDButtonTest.retrieveAcrobatRadioButtonProperties	ported	spec/pdfbox/pdmodel/interactive/form/pd_button_spec.cr	ported: PDButtonTest fixture cases (AcroFormsBasicFields.pdf)
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDButtonTest.java::method::PDButtonTest.setAbstractedCheckboxGroupInvalidValue	ported	spec/pdfbox/pdmodel/interactive/form/pd_button_spec.cr	ported: PDButtonTest fixture cases (AcroFormsBasicFields.pdf)
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDButtonTest.java::method::PDButtonTest.setAbstractedCheckboxInvalidValue	ported	spec/pdfbox/pdmodel/interactive/form/pd_button_spec.cr	ported: PDButtonTest fixture cases (AcroFormsBasicFields.pdf)
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDButtonTest.java::method::PDButtonTest.setAbstractedRadioButtonInvalidValue	ported	spec/pdfbox/pdmodel/interactive/form/pd_button_spec.cr	ported: PDButtonTest fixture cases (AcroFormsBasicFields.pdf)
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDButtonTest.java::method::PDButtonTest.setCheckboxGroupInvalidValue	ported	spec/pdfbox/pdmodel/interactive/form/pd_button_spec.cr	ported: PDButtonTest fixture cases (AcroFormsBasicFields.pdf)
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDButtonTest.java::method::PDButtonTest.setCheckboxInvalidValue	ported	spec/pdfbox/pdmodel/interactive/form/pd_button_spec.cr	ported: PDButtonTest fixture cases (AcroFormsBasicFields.pdf)
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDButtonTest.java::method::PDButtonTest.setRadioButtonInvalidValue	ported	spec/pdfbox/pdmodel/interactive/form/pd_button_spec.cr	ported: PDButtonTest fixture cases (AcroFormsBasicFields.pdf)
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDButtonTest.java::method::PDButtonTest.setUp	ported	spec/pdfbox/pdmodel/interactive/form/pd_button_spec.cr	ported: PDButtonTest fixture cases (AcroFormsBasicFields.pdf)
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDButtonTest.java::method::PDButtonTest.setValueForAbstractedAcrobatCheckBox	ported	spec/pdfbox/pdmodel/interactive/form/pd_button_spec.cr	ported: PDButtonTest fixture cases (AcroFormsBasicFields.pdf)
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDButtonTest.java::method::PDButtonTest.setValueForAbstractedAcrobatRadioButton	ported	spec/pdfbox/pdmodel/interactive/form/pd_button_spec.cr	ported: PDButtonTest fixture cases (AcroFormsBasicFields.pdf)
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDButtonTest.java::method::PDButtonTest.setValueForAbstractedCheckBoxGroup	ported	spec/pdfbox/pdmodel/interactive/form/pd_button_spec.cr	ported: PDButtonTest fixture cases (AcroFormsBasicFields.pdf)
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDButtonTest.java::method::PDButtonTest.tearDown	ported	spec/pdfbox/pdmodel/interactive/form/pd_button_spec.cr	ported: PDButtonTest fixture cases (AcroFormsBasicFields.pdf)
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDButtonTest.java::method::PDButtonTest.testAcrobatCheckBoxGroupProperties	ported	spec/pdfbox/pdmodel/interactive/form/pd_button_spec.cr	ported: PDButtonTest fixture cases (AcroFormsBasicFields.pdf)
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDButtonTest.java::method::PDButtonTest.testAcrobatCheckBoxProperties	ported	spec/pdfbox/pdmodel/interactive/form/pd_button_spec.cr	ported: PDButtonTest fixture cases (AcroFormsBasicFields.pdf)
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDButtonTest.java::method::PDButtonTest.testAcrobatRadioButtonProperties	ported	spec/pdfbox/pdmodel/interactive/form/pd_button_spec.cr	ported: PDButtonTest fixture cases (AcroFormsBasicFields.pdf)
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDButtonTest.java::method::PDButtonTest.testOptionsAndNamesNotNumbers	partial	-	fixture target/pdfs/PDFBOX-3682.pdf not vendored
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDButtonTest.java::method::PDButtonTest.testRadioButtonWithOptions	partial	-	fixture target/pdfs/PDFBOX-3656.pdf not vendored
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDChoiceTest.java::class::PDChoiceTest	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDChoiceTest.java::method::PDChoiceTest.createComboBox	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDChoiceTest.java::method::PDChoiceTest.createListBox	ported	-	baseline
