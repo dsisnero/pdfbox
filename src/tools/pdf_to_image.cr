@@ -1,4 +1,5 @@
 require "../pdfbox"
+require "./imageio"
 require "option_parser"
 
 module Tools
@@ -9,7 +10,7 @@ module Tools
     @page = -1
     @start_page = 1
     @end_page = Int32::MAX
-    @image_type = "RGB" # RGB, ARGB, GRAY, etc.
+    @image_type = "RGB" # RGB, ARGB, GRAY, BINARY
     @dpi = 0
     @quality = -1.0_f32
     @cropbox : Array(Int32)? = nil
@@ -23,7 +24,7 @@ module Tools
     def call(args : Array(String)) : Int32
       reset
       parser = build_option_parser
-      parser.parse(normalize_args(args))
+      parser.parse(extract_cropbox(normalize_args(args)))
 
       infile = @infile
       unless infile
@@ -62,7 +63,7 @@ module Tools
           @password = value
         end
         parser.on("--format FORMAT", "The image file format (default: jpg)") do |value|
-          @image_format = value.downcase
+          @image_format = value
         end
         parser.on("--prefix PREFIX", "--outputPrefix PREFIX", "The filename prefix for image files") do |value|
           @output_prefix = value
@@ -76,7 +77,7 @@ module Tools
         parser.on("--endPage PAGE", "The last page to extract (inclusive)") do |value|
           @end_page = value.to_i
         end
-        parser.on("--color COLOR", "The color depth (RGB, ARGB, GRAY, etc.) (default: RGB)") do |value|
+        parser.on("--color COLOR", "The color depth (RGB, ARGB, GRAY, BINARY) (default: RGB)") do |value|
           @image_type = value.upcase
         end
         parser.on("--dpi DPI", "--resolution DPI", "The DPI of the output image, default: screen resolution or 96 if unknown") do |value|
@@ -85,9 +86,8 @@ module Tools
         parser.on("--quality QUALITY", "The quality to be used when compressing the image (0 <= quality <= 1)") do |value|
           @quality = value.to_f32
         end
-        parser.on("--cropbox X0 Y0 X1 Y1", "The page area to export") do |_|
-          # This is simplified - actual implementation would parse 4 integers
-          @err.puts("Warning: --cropbox option not yet implemented")
+        parser.on("--cropbox", "The page area to export (X0 Y0 X1 Y1)") do
+          # Consumed by extract_cropbox before parsing.
         end
         parser.on("--time", "Print timing information to stdout") do
           @show_time = true
@@ -111,7 +111,7 @@ module Tools
             --page PAGE               The only page to extract (1-based)
             --startPage PAGE          The first page to start extraction (1-based)
             --endPage PAGE            The last page to extract (inclusive)
-            --color COLOR             The color depth (RGB, ARGB, GRAY, etc.) (default: RGB)
+            --color COLOR             The color depth (RGB, ARGB, GRAY, BINARY) (default: RGB)
             --dpi DPI                 The DPI of the output image, default: screen resolution or 96 if unknown
             --quality QUALITY         The quality to be used when compressing the image (0 <= quality <= 1)
             --cropbox X0 Y0 X1 Y1     The page area to export
@@ -146,48 +146,111 @@ module Tools
       end
     end
 
+    # Java's `-cropbox` option has arity 4. Crystal's OptionParser cannot bind
+    # four values to a single option, so consume the four integers here and
+    # remove the option (and its values) before parsing.
+    private def extract_cropbox(args : Array(String)) : Array(String)
+      result = [] of String
+      i = 0
+      while i < args.size
+        arg = args[i]
+        if arg == "--cropbox"
+          values = args[i + 1, 4]?
+          unless values && values.size == 4
+            raise ArgumentError.new("Invalid value for --cropbox: expected 4 integers")
+          end
+          @cropbox = values.map(&.to_i)
+          i += 5
+        else
+          result << arg
+          i += 1
+        end
+      end
+      result
+    end
+
     private def process_document(infile : String) : Int32
-      # Check if input file exists
       unless File.exists?(infile)
         @err.puts("Input file not found: #{infile}")
         return 1
       end
 
-      # Determine output prefix
-      prefix = @output_prefix
-      unless prefix
-        base = File.basename(infile, File.extname(infile))
-        dir = File.dirname(infile)
-        prefix = File.join(dir, base)
+      abs_input = File.expand_path(infile)
+      output_prefix = @output_prefix || File.join(File.dirname(abs_input), File.basename(abs_input, File.extname(abs_input)))
+
+      image_format = @image_format
+      unless Tools::Imageio::ImageIOUtil.supported_format?(image_format)
+        @err.puts("Error: Invalid image format #{image_format} - supported formats: " +
+                  Tools::Imageio::ImageIOUtil::WRITER_FORMAT_NAMES.join(", "))
+        return 2
       end
 
-      # Determine page range
+      quality = @quality
+      quality = Tools::Imageio::ImageIOUtil.default_compression_quality(image_format) if quality < 0
+
+      dpi = @dpi
+      dpi = 96 if dpi == 0
+
+      document = Pdfbox::Loader.load_pdf(infile, @password)
+
+      if cropbox = @cropbox
+        change_crop_box(document, cropbox[0], cropbox[1], cropbox[2], cropbox[3])
+      end
+
+      start_time = Time.instant
+
       start_page = @page != -1 ? @page : @start_page
       end_page = @page != -1 ? @page : @end_page
+      end_page = Math.min(end_page, document.number_of_pages)
 
-      # Set default quality if not specified
-      quality = @quality
-      if quality < 0
-        quality = @image_format == "png" ? 0.0_f32 : 1.0_f32
+      renderer = Pdfbox::Rendering::PDFRenderer.new(document)
+      renderer.subsampling_allowed = @subsampling
+
+      success = true
+      i = start_page - 1
+      while i < end_page
+        image = renderer.render_image_with_dpi(i, dpi)
+        image = convert_color(image, @image_type)
+        filename = "#{output_prefix}-#{i + 1}.#{image_format}"
+        success = Tools::Imageio::ImageIOUtil.write_image(image, filename, dpi, quality) && success
+        i += 1
       end
 
-      # Set default DPI if not specified
-      dpi = @dpi
-      if dpi == 0
-        # Try to get screen resolution, default to 96
-        dpi = 96
+      duration = Time.instant - start_time
+      count = 1 + end_page - start_page
+      if @show_time
+        @err.puts("Rendered #{count} page#{count == 1 ? "" : "s"} in #{duration.total_milliseconds.round.to_i}ms")
       end
 
-      # TODO: Implement actual PDF to image conversion
-      # For now, just show a warning
-      @err.puts("Warning: PDF to image conversion is not yet implemented.")
-      @err.puts("Would convert PDF #{infile} to #{@image_format.upcase} images")
-      @err.puts("Pages: #{start_page}-#{end_page} (1-based)")
-      @err.puts("Output prefix: #{prefix}")
-      @err.puts("Options: format=#{@image_format}, color=#{@image_type}, dpi=#{dpi}, quality=#{quality}")
-      @err.puts("Additional options: show_time=#{@show_time}, subsampling=#{@subsampling}")
+      unless success
+        @err.puts("Error: no writer found for image format '#{image_format}'")
+        return 1
+      end
 
       0
+    end
+
+    # Port of PDFToImage#changeCropBox: set the same crop box on every page.
+    private def change_crop_box(document : Pdfbox::Pdmodel::Document, a : Int32, b : Int32, c : Int32, d : Int32) : Nil
+      document.get_pages.each do |page|
+        page.crop_box = Pdfbox::Pdmodel::Rectangle.new(a.to_f64, b.to_f64, c.to_f64, d.to_f64)
+      end
+    end
+
+    # Maps the requested color depth to a CrImage raster. RGB and ARGB keep the
+    # rendered RGBA raster; GRAY and BINARY produce an 8-bit grayscale raster.
+    private def convert_color(image : CrImage::RGBA, color_type : String) : CrImage::Image
+      return image unless color_type == "GRAY" || color_type == "BINARY"
+
+      bounds = image.bounds
+      gray = CrImage.gray(bounds.width, bounds.height)
+      binary = color_type == "BINARY"
+      image.each_pixel do |x, y, color|
+        value = color.to_rgba8.luminance
+        value = value >= 128 ? 255_u8 : 0_u8 if binary
+        gray.set_gray(x, y, CrImage::Color::Gray.new(value))
+      end
+      gray
     end
   end
 end

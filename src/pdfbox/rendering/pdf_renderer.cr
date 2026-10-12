@@ -21,9 +21,9 @@ module Pdfbox::Rendering
       page = @document.get_page(page_index)
       raise "Page #{page_index} not found" unless page
 
-      media = page.media_box || Pdfbox::Pdmodel::PageSizes::LETTER
-      width = (media.width * scale).round.to_i32
-      height = (media.height * scale).round.to_i32
+      box = page.crop_box || page.media_box || Pdfbox::Pdmodel::PageSizes::LETTER
+      width = (box.width * scale).round.to_i32
+      height = (box.height * scale).round.to_i32
 
       drawer = PageDrawer.new(page, width, height, scale)
       drawer.render
