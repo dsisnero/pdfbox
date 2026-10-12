@@ -58,6 +58,35 @@ module Pdfbox::Pdmodel::DocumentInterchange::LogicalStructure
       class_map
     end
 
+    # Returns the role map (/RoleMap) as a String => String map.
+    # Java PDStructureTreeRoot#getRoleMap.
+    def role_map : Hash(String, String)
+      result = {} of String => String
+      role_map_dictionary = @dictionary.get_dictionary(Pdfbox::Cos::Name::ROLE_MAP)
+      return result unless role_map_dictionary
+
+      role_map_dictionary.entries.each do |name, base|
+        base = base.object if base.is_a?(Pdfbox::Cos::Object)
+        case base
+        when Pdfbox::Cos::Name
+          result[name.value] = base.value
+        when Pdfbox::Cos::String
+          result[name.value] = base.value
+        end
+      end
+      result
+    end
+
+    # Sets the role map (/RoleMap) as a dictionary of names.
+    # Java PDStructureTreeRoot#setRoleMap.
+    def role_map=(role_map : Hash(String, String)) : Nil
+      role_map_dictionary = Pdfbox::Cos::Dictionary.new
+      role_map.each do |key, value|
+        role_map_dictionary.set_name(key, value)
+      end
+      @dictionary[Pdfbox::Cos::Name::ROLE_MAP] = role_map_dictionary
+    end
+
     # Returns the ID tree (Java PDStructureTreeRoot#getIDTree).
     def id_tree : Pdfbox::Pdmodel::Common::PDStructureElementNameTreeNode?
       id_tree_dict = @dictionary.get_dictionary(Pdfbox::Cos::Name.new("IDTree"))

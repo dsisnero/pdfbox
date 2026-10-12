@@ -172,8 +172,7 @@ module MultipdfSplitterHelpers
 
   def role_map_size(doc : Pdfbox::Pdmodel::Document) : Int32
     root = doc.document_catalog.not_nil!.structure_tree_root.not_nil!
-    role_map = root.cos_object.get_dictionary(Pdfbox::Cos::Name::ROLE_MAP)
-    role_map ? role_map.size : 0
+    root.role_map.size
   end
 
   def id_tree_size(doc : Pdfbox::Pdmodel::Document) : Int32
@@ -1320,8 +1319,7 @@ describe "Pdfbox::Multipdf parity" do
       end
       role_map_size = ->(dst_doc : Pdfbox::Pdmodel::Document) do
         root = dst_doc.document_catalog.not_nil!.structure_tree_root.not_nil!
-        role_map = root.cos_object.get_dictionary(Pdfbox::Cos::Name::ROLE_MAP)
-        role_map ? role_map.size : 0
+        root.role_map.size
       end
 
       parent_tree_size.call(split_result[0]).should eq(6)

@@ -38,6 +38,30 @@ module Pdfbox::Pdmodel::DocumentInterchange::LogicalStructure
       structure_type
     end
 
+    # Java PDStructureElement#getStandardStructureType: applies the containing
+    # structure tree root's /RoleMap mapping to this element's structure type.
+    def standard_structure_type : String?
+      type = structure_type
+      return unless type
+      containing_role_map[type]? || type
+    end
+
+    # Walks the /P chain to the containing structure tree root and returns its
+    # role map (Java getStructureTreeRoot + getRoleMap).
+    private def containing_role_map : Hash(String, String)
+      current = @dictionary
+      100.times do
+        parent_base = current[Pdfbox::Cos::Name.new("P")]?
+        parent_base = parent_base.object if parent_base.is_a?(Pdfbox::Cos::Object)
+        break unless parent_base.is_a?(Pdfbox::Cos::Dictionary)
+        if parent_base.get_name_as_string(Pdfbox::Cos::Name.new("Type")) == PDStructureTreeRoot::TYPE
+          return PDStructureTreeRoot.new(parent_base).role_map
+        end
+        current = parent_base
+      end
+      {} of String => String
+    end
+
     def parent : self?
       value = @dictionary[Pdfbox::Cos::Name.new("P")]
       value = value.object if value.is_a?(Pdfbox::Cos::Object)
