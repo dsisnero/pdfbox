@@ -43,8 +43,10 @@ module Pdfbox::Pdmodel::Graphics::Color
               PDICCBased.new(cos_base)
             when "Indexed"
               PDIndexed.new(cos_base)
-            when "CalGray", "CalRGB"
-              PDDeviceRGB::INSTANCE # Simplified fallback
+            when "CalGray"
+              PDCalGray.new(cos_base)
+            when "CalRGB"
+              PDCalRGB.new(cos_base)
             else
               nil
             end

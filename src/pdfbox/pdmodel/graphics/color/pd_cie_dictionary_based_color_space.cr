@@ -78,10 +78,15 @@ module Pdfbox::Pdmodel::Graphics::Color
       @dictionary[Cos::Name.new("BlackPoint")] = blackpoint.cos_object.as(Cos::Array)
     end
 
+    # Returns true if the whitepoint is the default (1, 1, 1).
+    # Corresponds to isWhitePoint in Apache PDFBox.
+    protected def white_point? : Bool
+      wp_x == 1.0 && wp_y == 1.0 && wp_z == 1.0
+    end
+
     # Convert XYZ to RGB, clamping negative values. Corresponds to
     # convXYZtoRGB in Apache PDFBox.
-    protected def conv_xyz_to_rgb(x : Float64, y : Float64, z : Float64) : Array(Float32)
-      # XYZ must be non-negative
+    protected def conv_xyz_to_rgb(x : Float64, y : Float64, z : Float64) : Array(Float32) # XYZ must be non-negative
       x = 0.0 if x < 0
       y = 0.0 if y < 0
       z = 0.0 if z < 0

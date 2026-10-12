@@ -8009,27 +8009,27 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCIEDictionaryBas
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCIEDictionaryBasedColorSpace.java::method::PDCIEDictionaryBasedColorSpace.fillWhitepointCache	ported	src/pdfbox/pdmodel/graphics/color/pd_cie_dictionary_based_color_space.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCIEDictionaryBasedColorSpace.java::method::PDCIEDictionaryBasedColorSpace.getBlackPoint	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCIEDictionaryBasedColorSpace.java::method::PDCIEDictionaryBasedColorSpace.getWhitepoint	ported	src/pdfbox/pdmodel/graphics/color/pd_cie_dictionary_based_color_space.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCIEDictionaryBasedColorSpace.java::method::PDCIEDictionaryBasedColorSpace.isWhitePoint	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCIEDictionaryBasedColorSpace.java::method::PDCIEDictionaryBasedColorSpace.isWhitePoint	ported	src/pdfbox/pdmodel/graphics/color/pd_cie_dictionary_based_color_space.cr	ported: white_point?
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCIEDictionaryBasedColorSpace.java::method::PDCIEDictionaryBasedColorSpace.setBlackPoint	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCIEDictionaryBasedColorSpace.java::method::PDCIEDictionaryBasedColorSpace.setWhitePoint	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCalGray.java::class::PDCalGray	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCalGray.java::method::PDCalGray.getDefaultDecode	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCalGray.java::method::PDCalGray.getGamma	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCalGray.java::method::PDCalGray.getInitialColor	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCalGray.java::method::PDCalGray.getName	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCalGray.java::method::PDCalGray.getNumberOfComponents	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCalGray.java::method::PDCalGray.setGamma	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCalGray.java::method::PDCalGray.toRGB	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCalRGB.java::class::PDCalRGB	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCalRGB.java::method::PDCalRGB.getDefaultDecode	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCalRGB.java::method::PDCalRGB.getGamma	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCalRGB.java::method::PDCalRGB.getInitialColor	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCalRGB.java::method::PDCalRGB.getMatrix	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCalRGB.java::method::PDCalRGB.getName	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCalRGB.java::method::PDCalRGB.getNumberOfComponents	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCalRGB.java::method::PDCalRGB.setGamma	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCalRGB.java::method::PDCalRGB.setMatrix	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCalRGB.java::method::PDCalRGB.toRGB	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCalGray.java::class::PDCalGray	ported	src/pdfbox/pdmodel/graphics/color/pdcal_gray.cr	ported: PDCalGray
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCalGray.java::method::PDCalGray.getDefaultDecode	partial	-	PDColorSpace interface has no default_decode in Crystal
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCalGray.java::method::PDCalGray.getGamma	ported	src/pdfbox/pdmodel/graphics/color/pdcal_gray.cr	ported: PDCalGray
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCalGray.java::method::PDCalGray.getInitialColor	ported	src/pdfbox/pdmodel/graphics/color/pdcal_gray.cr	ported: PDCalGray
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCalGray.java::method::PDCalGray.getName	ported	src/pdfbox/pdmodel/graphics/color/pdcal_gray.cr	ported: PDCalGray
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCalGray.java::method::PDCalGray.getNumberOfComponents	ported	src/pdfbox/pdmodel/graphics/color/pdcal_gray.cr	ported: PDCalGray
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCalGray.java::method::PDCalGray.setGamma	ported	src/pdfbox/pdmodel/graphics/color/pdcal_gray.cr	ported: PDCalGray
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCalGray.java::method::PDCalGray.toRGB	ported	src/pdfbox/pdmodel/graphics/color/pdcal_gray.cr	ported: PDCalGray
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCalRGB.java::class::PDCalRGB	ported	src/pdfbox/pdmodel/graphics/color/pdcal_rgb.cr	ported: PDCalRGB
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCalRGB.java::method::PDCalRGB.getDefaultDecode	partial	-	PDColorSpace interface has no default_decode in Crystal
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCalRGB.java::method::PDCalRGB.getGamma	ported	src/pdfbox/pdmodel/graphics/color/pdcal_rgb.cr	ported: PDCalRGB
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCalRGB.java::method::PDCalRGB.getInitialColor	ported	src/pdfbox/pdmodel/graphics/color/pdcal_rgb.cr	ported: PDCalRGB
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCalRGB.java::method::PDCalRGB.getMatrix	ported	src/pdfbox/pdmodel/graphics/color/pdcal_rgb.cr	ported: PDCalRGB
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCalRGB.java::method::PDCalRGB.getName	ported	src/pdfbox/pdmodel/graphics/color/pdcal_rgb.cr	ported: PDCalRGB
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCalRGB.java::method::PDCalRGB.getNumberOfComponents	ported	src/pdfbox/pdmodel/graphics/color/pdcal_rgb.cr	ported: PDCalRGB
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCalRGB.java::method::PDCalRGB.setGamma	ported	src/pdfbox/pdmodel/graphics/color/pdcal_rgb.cr	ported: PDCalRGB
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCalRGB.java::method::PDCalRGB.setMatrix	ported	src/pdfbox/pdmodel/graphics/color/pdcal_rgb.cr	ported: PDCalRGB
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCalRGB.java::method::PDCalRGB.toRGB	ported	src/pdfbox/pdmodel/graphics/color/pdcal_rgb.cr	ported: PDCalRGB
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDColor.java::class::PDColor	ported	src/pdfbox/pdmodel/graphics/color/pdcolor.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDColor.java::const::LOG	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDColor.java::method::PDColor.getColorSpace	ported	src/pdfbox/pdmodel/graphics/color/pdcolor.cr	reconciled: method present
