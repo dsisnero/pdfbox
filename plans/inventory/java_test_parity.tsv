@@ -940,15 +940,15 @@ pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/TestPDNameTreeNode.java::c
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/TestPDNameTreeNode.java::method::TestPDNameTreeNode.setUp	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/TestPDNameTreeNode.java::method::TestPDNameTreeNode.testLowerLimit	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/TestPDNameTreeNode.java::method::TestPDNameTreeNode.testUpperLimit	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/TestPDNumberTreeNode.java::class::PDTest	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/TestPDNumberTreeNode.java::class::TestPDNumberTreeNode	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/TestPDNumberTreeNode.java::method::PDTest.equals	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/TestPDNumberTreeNode.java::method::PDTest.getCOSObject	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/TestPDNumberTreeNode.java::method::PDTest.hashCode	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/TestPDNumberTreeNode.java::method::TestPDNumberTreeNode.setUp	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/TestPDNumberTreeNode.java::method::TestPDNumberTreeNode.testGetValue	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/TestPDNumberTreeNode.java::method::TestPDNumberTreeNode.testLowerLimit	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/TestPDNumberTreeNode.java::method::TestPDNumberTreeNode.testUpperLimit	ported	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/TestPDNumberTreeNode.java::class::PDTest	ported	spec/pdfbox/pdmodel/common/pdnumber_tree_node_spec.cr	ported: TestPDNumberTreeNode (previously a vacuous before_each with no examples)
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/TestPDNumberTreeNode.java::class::TestPDNumberTreeNode	ported	spec/pdfbox/pdmodel/common/pdnumber_tree_node_spec.cr	ported: TestPDNumberTreeNode (previously a vacuous before_each with no examples)
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/TestPDNumberTreeNode.java::method::PDTest.equals	ported	spec/pdfbox/pdmodel/common/pdnumber_tree_node_spec.cr	ported: TestPDNumberTreeNode (previously a vacuous before_each with no examples)
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/TestPDNumberTreeNode.java::method::PDTest.getCOSObject	ported	spec/pdfbox/pdmodel/common/pdnumber_tree_node_spec.cr	ported: TestPDNumberTreeNode (previously a vacuous before_each with no examples)
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/TestPDNumberTreeNode.java::method::PDTest.hashCode	ported	spec/pdfbox/pdmodel/common/pdnumber_tree_node_spec.cr	ported: TestPDNumberTreeNode (previously a vacuous before_each with no examples)
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/TestPDNumberTreeNode.java::method::TestPDNumberTreeNode.setUp	ported	spec/pdfbox/pdmodel/common/pdnumber_tree_node_spec.cr	ported: TestPDNumberTreeNode (previously a vacuous before_each with no examples)
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/TestPDNumberTreeNode.java::method::TestPDNumberTreeNode.testGetValue	ported	spec/pdfbox/pdmodel/common/pdnumber_tree_node_spec.cr	ported: TestPDNumberTreeNode (previously a vacuous before_each with no examples)
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/TestPDNumberTreeNode.java::method::TestPDNumberTreeNode.testLowerLimit	ported	spec/pdfbox/pdmodel/common/pdnumber_tree_node_spec.cr	ported: TestPDNumberTreeNode (previously a vacuous before_each with no examples)
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/TestPDNumberTreeNode.java::method::TestPDNumberTreeNode.testUpperLimit	ported	spec/pdfbox/pdmodel/common/pdnumber_tree_node_spec.cr	ported: TestPDNumberTreeNode (previously a vacuous before_each with no examples)
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/function/TestPDFunctionType4.java::class::TestPDFunctionType4	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/function/TestPDFunctionType4.java::method::TestPDFunctionType4.createFunction	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/common/function/TestPDFunctionType4.java::method::TestPDFunctionType4.testFunctionArgumentOrder	ported	-	baseline
