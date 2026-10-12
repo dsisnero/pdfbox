@@ -57,11 +57,13 @@ module Pdfbox::Pdmodel::Graphics::State
           gs.alpha_source = alpha_source_flag
         when "TK"
           gs.text_state.knockout = text_knockout_flag
-        when "SMASK"
-          if mask = soft_mask
+        when "SMask"
+          mask = soft_mask
+          if mask
+            # Soft mask must know the CTM at the time the ExtGState was activated.
             mask.initial_transformation_matrix = gs.current_transformation_matrix.clone
-            gs.soft_mask = mask
           end
+          gs.soft_mask = mask
         when "BM"
           if bm = blend_mode
             gs.blend_mode = bm
@@ -171,10 +173,8 @@ module Pdfbox::Pdmodel::Graphics::State
     end
 
     def soft_mask : PDSoftMask?
-      sm = @dict[Pdfbox::Cos::Name.new("SMask")]
-      sm = sm.object if sm.is_a?(Pdfbox::Cos::Object)
-      return unless sm.is_a?(Pdfbox::Cos::Dictionary)
-      PDSoftMask.new(sm)
+      sm = @dict.get_dictionary_object(Pdfbox::Cos::Name.new("SMask"))
+      sm ? PDSoftMask.create(sm) : nil
     end
 
     def blend_mode : Pdfbox::Pdmodel::Graphics::Blend::BlendMode?

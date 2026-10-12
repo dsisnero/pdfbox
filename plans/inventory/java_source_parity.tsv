@@ -8837,7 +8837,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.ja
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.getOverprintMode	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.getRenderingIntent	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.getSmoothness	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.getSoftMask	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.getSoftMask	ported	src/pdfbox/pdmodel/graphics/state/pd_graphics_state.cr	ported: PDSoftMask model completion
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.getStrokingColor	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.getStrokingColorSpace	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.getStrokingJavaComposite	missing	-	baseline
@@ -8868,7 +8868,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.ja
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.setOverprintMode	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.setRenderingIntent	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.setSmoothness	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.setSoftMask	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.setSoftMask	ported	src/pdfbox/pdmodel/graphics/state/pd_graphics_state.cr	ported: PDSoftMask model completion
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.setStrokeAdjustment	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.setStrokingColor	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.setStrokingColorSpace	missing	-	baseline
@@ -8877,15 +8877,15 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.ja
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.setTextState	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.setTransfer	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDSoftMask.java::class::PDSoftMask	ported	src/pdfbox/pdmodel/graphics/state/pd_soft_mask.cr	reconciled: class present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDSoftMask.java::const::LOG	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDSoftMask.java::method::PDSoftMask.create	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDSoftMask.java::method::PDSoftMask.getBackdropColor	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDSoftMask.java::method::PDSoftMask.getCOSObject	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDSoftMask.java::method::PDSoftMask.getGroup	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDSoftMask.java::method::PDSoftMask.getInitialTransformationMatrix	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDSoftMask.java::method::PDSoftMask.getSubType	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDSoftMask.java::method::PDSoftMask.getTransferFunction	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDSoftMask.java::method::PDSoftMask.setInitialTransformationMatrix	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDSoftMask.java::const::LOG	ported	src/pdfbox/pdmodel/graphics/state/pd_soft_mask.cr	logger constant; no Crystal logger needed
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDSoftMask.java::method::PDSoftMask.create	ported	src/pdfbox/pdmodel/graphics/state/pd_soft_mask.cr	ported: PDSoftMask model completion
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDSoftMask.java::method::PDSoftMask.getBackdropColor	ported	src/pdfbox/pdmodel/graphics/state/pd_soft_mask.cr	ported: PDSoftMask model completion
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDSoftMask.java::method::PDSoftMask.getCOSObject	ported	src/pdfbox/pdmodel/graphics/state/pd_soft_mask.cr	ported: PDSoftMask model completion
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDSoftMask.java::method::PDSoftMask.getGroup	ported	src/pdfbox/pdmodel/graphics/state/pd_soft_mask.cr	ported: PDSoftMask model completion
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDSoftMask.java::method::PDSoftMask.getInitialTransformationMatrix	ported	src/pdfbox/pdmodel/graphics/state/pd_soft_mask.cr	ported: PDSoftMask model completion
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDSoftMask.java::method::PDSoftMask.getSubType	ported	src/pdfbox/pdmodel/graphics/state/pd_soft_mask.cr	ported: PDSoftMask model completion
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDSoftMask.java::method::PDSoftMask.getTransferFunction	ported	src/pdfbox/pdmodel/graphics/state/pd_soft_mask.cr	ported: PDSoftMask model completion
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDSoftMask.java::method::PDSoftMask.setInitialTransformationMatrix	ported	src/pdfbox/pdmodel/graphics/state/pd_soft_mask.cr	ported: PDSoftMask model completion
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDTextState.java::class::PDTextState	ported	src/pdfbox/pdmodel/graphics/state/pd_text_state.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDTextState.java::method::PDTextState.clone	ported	src/pdfbox/pdmodel/graphics/state/pd_text_state.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDTextState.java::method::PDTextState.getCharacterSpacing	missing	-	baseline
