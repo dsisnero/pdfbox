@@ -1,7 +1,8 @@
-module Pdfbox::Pdmodel::Graphics::Pattern
-  class PDTilingPattern
-    include Pdfbox::Pdmodel::Common::COSObjectable
+require "./pdabstract_pattern"
 
+module Pdfbox::Pdmodel::Graphics::Pattern
+  # A tiling pattern. Corresponds to PDTilingPattern in Apache PDFBox.
+  class PDTilingPattern < PDAbstractPattern
     PAINT_COLORED                         = 1
     PAINT_UNCOLORED                       = 2
     TILING_CONSTANT_SPACING               = 1
@@ -14,30 +15,18 @@ module Pdfbox::Pdmodel::Graphics::Pattern
     def initialize
       @stream = Pdfbox::Cos::Stream.new
       @resource_cache = nil
+      super(@stream)
       @stream.set_name(Pdfbox::Cos::Name::TYPE, "Pattern")
       @stream.set_int(Pdfbox::Cos::Name.new("PatternType"), 1)
       self.resources = Pdfbox::Pdmodel::PDResources.new
     end
 
     def initialize(@stream : Pdfbox::Cos::Stream, @resource_cache : Pdfbox::Pdmodel::ResourceCache? = nil)
-    end
-
-    def cos_object : Pdfbox::Cos::Base
-      @stream
+      super(@stream)
     end
 
     def pattern_type : Int32
       @stream.get_int(Pdfbox::Cos::Name.new("PatternType"), 1_i64).to_i32
-    end
-
-    def paint_type : Int32
-      @stream.get_int(Pdfbox::Cos::Name.new("PaintType"), 0_i64).to_i32
-    end
-
-    def paint_type=(value : Int) : Int32
-      int_value = value.to_i32
-      @stream.set_int(Pdfbox::Cos::Name.new("PaintType"), int_value)
-      int_value
     end
 
     def tiling_type : Int32

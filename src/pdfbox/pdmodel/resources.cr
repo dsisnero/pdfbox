@@ -63,10 +63,11 @@ module Pdfbox::Pdmodel
       resource_entry("XObject", name)
     end
 
-    def pattern(name : Pdfbox::Cos::Name) : Graphics::Pattern::PDTilingPattern?
-      resource_entry("Pattern", name).as?(Pdfbox::Cos::Stream).try do |stream|
-        Graphics::Pattern::PDTilingPattern.new(stream, @resource_cache)
-      end
+    def pattern(name : Pdfbox::Cos::Name) : Graphics::Pattern::PDAbstractPattern?
+      entry = resource_entry("Pattern", name)
+      return unless entry
+      dict = entry.as?(Pdfbox::Cos::Dictionary)
+      dict ? Graphics::Pattern::PDAbstractPattern.create(dict, @resource_cache) : nil
     end
 
     def xobject_names : Array(Pdfbox::Cos::Name)
@@ -81,7 +82,7 @@ module Pdfbox::Pdmodel
       add_resource("XObject", form.cos_object, prefix)
     end
 
-    def add(pattern : Graphics::Pattern::PDTilingPattern, prefix : String = "Pattern") : Pdfbox::Cos::Name
+    def add(pattern : Graphics::Pattern::PDAbstractPattern, prefix : String = "Pattern") : Pdfbox::Cos::Name
       add_resource("Pattern", pattern.cos_object, prefix)
     end
 

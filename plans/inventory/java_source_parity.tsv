@@ -8499,41 +8499,41 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/optionalcontent/PDOption
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/optionalcontent/PDOptionalContentProperties.java::method::PDOptionalContentProperties.setGroupEnabled	ported	src/pdfbox/pdmodel/graphics/optional_content/pd_optional_content_properties.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/optionalcontent/PDOptionalContentProperties.java::method::PDOptionalContentProperties.toDictionary	ported	src/pdfbox/pdmodel/graphics/optional_content/pd_optional_content_properties.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/optionalcontent/PDOptionalContentProperties.java::method::PDOptionalContentProperties.valueOf	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDAbstractPattern.java::class::PDAbstractPattern	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDAbstractPattern.java::const::TYPE_SHADING_PATTERN	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDAbstractPattern.java::const::TYPE_TILING_PATTERN	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDAbstractPattern.java::method::PDAbstractPattern.create	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDAbstractPattern.java::method::PDAbstractPattern.getCOSObject	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDAbstractPattern.java::method::PDAbstractPattern.getMatrix	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDAbstractPattern.java::method::PDAbstractPattern.getPatternType	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDAbstractPattern.java::method::PDAbstractPattern.getType	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDAbstractPattern.java::method::PDAbstractPattern.setMatrix	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDAbstractPattern.java::method::PDAbstractPattern.setPaintType	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDAbstractPattern.java::method::PDAbstractPattern.setPatternType	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDShadingPattern.java::class::PDShadingPattern	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDShadingPattern.java::method::PDShadingPattern.getExtendedGraphicsState	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDShadingPattern.java::method::PDShadingPattern.getPatternType	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDShadingPattern.java::method::PDShadingPattern.getShading	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDShadingPattern.java::method::PDShadingPattern.setExtendedGraphicsState	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDShadingPattern.java::method::PDShadingPattern.setShading	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDAbstractPattern.java::class::PDAbstractPattern	ported	src/pdfbox/pdmodel/graphics/pattern/pdabstract_pattern.cr	ported: PDAbstractPattern
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDAbstractPattern.java::const::TYPE_SHADING_PATTERN	ported	src/pdfbox/pdmodel/graphics/pattern/pdabstract_pattern.cr	ported: PDAbstractPattern
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDAbstractPattern.java::const::TYPE_TILING_PATTERN	ported	src/pdfbox/pdmodel/graphics/pattern/pdabstract_pattern.cr	ported: PDAbstractPattern
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDAbstractPattern.java::method::PDAbstractPattern.create	ported	src/pdfbox/pdmodel/graphics/pattern/pdabstract_pattern.cr	ported: PDAbstractPattern
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDAbstractPattern.java::method::PDAbstractPattern.getCOSObject	ported	src/pdfbox/pdmodel/graphics/pattern/pdabstract_pattern.cr	ported: PDAbstractPattern
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDAbstractPattern.java::method::PDAbstractPattern.getMatrix	ported	src/pdfbox/pdmodel/graphics/pattern/pdabstract_pattern.cr	ported: PDAbstractPattern
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDAbstractPattern.java::method::PDAbstractPattern.getPatternType	ported	src/pdfbox/pdmodel/graphics/pattern/pdabstract_pattern.cr	ported: PDAbstractPattern
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDAbstractPattern.java::method::PDAbstractPattern.getType	ported	src/pdfbox/pdmodel/graphics/pattern/pdabstract_pattern.cr	ported: PDAbstractPattern
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDAbstractPattern.java::method::PDAbstractPattern.setMatrix	ported	src/pdfbox/pdmodel/graphics/pattern/pdabstract_pattern.cr	ported: PDAbstractPattern
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDAbstractPattern.java::method::PDAbstractPattern.setPaintType	ported	src/pdfbox/pdmodel/graphics/pattern/pdabstract_pattern.cr	ported: PDAbstractPattern
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDAbstractPattern.java::method::PDAbstractPattern.setPatternType	ported	src/pdfbox/pdmodel/graphics/pattern/pdabstract_pattern.cr	ported: PDAbstractPattern
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDShadingPattern.java::class::PDShadingPattern	ported	src/pdfbox/pdmodel/graphics/pattern/pdshading_pattern.cr	ported: PDShadingPattern
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDShadingPattern.java::method::PDShadingPattern.getExtendedGraphicsState	ported	src/pdfbox/pdmodel/graphics/pattern/pdshading_pattern.cr	ported: PDShadingPattern
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDShadingPattern.java::method::PDShadingPattern.getPatternType	ported	src/pdfbox/pdmodel/graphics/pattern/pdshading_pattern.cr	ported: PDShadingPattern
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDShadingPattern.java::method::PDShadingPattern.getShading	ported	src/pdfbox/pdmodel/graphics/pattern/pdshading_pattern.cr	ported: PDShadingPattern
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDShadingPattern.java::method::PDShadingPattern.setExtendedGraphicsState	ported	src/pdfbox/pdmodel/graphics/pattern/pdshading_pattern.cr	ported: PDShadingPattern
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDShadingPattern.java::method::PDShadingPattern.setShading	ported	src/pdfbox/pdmodel/graphics/pattern/pdshading_pattern.cr	ported: PDShadingPattern
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDTilingPattern.java::class::PDTilingPattern	ported	src/pdfbox/pdmodel/graphics/pattern/pdtiling_pattern.cr	reconciled: class present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDTilingPattern.java::const::PAINT_COLORED	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDTilingPattern.java::const::PAINT_UNCOLORED	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDTilingPattern.java::const::TILING_CONSTANT_SPACING	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDTilingPattern.java::const::TILING_CONSTANT_SPACING_FASTER_TILING	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDTilingPattern.java::const::TILING_NO_DISTORTION	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDTilingPattern.java::method::PDTilingPattern.getBBox	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDTilingPattern.java::const::PAINT_COLORED	ported	src/pdfbox/pdmodel/graphics/pattern/pdtiling_pattern.cr	ported: PDTilingPattern (base or local)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDTilingPattern.java::const::PAINT_UNCOLORED	ported	src/pdfbox/pdmodel/graphics/pattern/pdtiling_pattern.cr	ported: PDTilingPattern (base or local)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDTilingPattern.java::const::TILING_CONSTANT_SPACING	ported	src/pdfbox/pdmodel/graphics/pattern/pdtiling_pattern.cr	ported: PDTilingPattern (base or local)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDTilingPattern.java::const::TILING_CONSTANT_SPACING_FASTER_TILING	ported	src/pdfbox/pdmodel/graphics/pattern/pdtiling_pattern.cr	ported: PDTilingPattern (base or local)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDTilingPattern.java::const::TILING_NO_DISTORTION	ported	src/pdfbox/pdmodel/graphics/pattern/pdtiling_pattern.cr	ported: PDTilingPattern (base or local)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDTilingPattern.java::method::PDTilingPattern.getBBox	ported	src/pdfbox/pdmodel/graphics/pattern/pdtiling_pattern.cr	ported: PDTilingPattern (base or local)
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDTilingPattern.java::method::PDTilingPattern.getContentStream	ported	src/pdfbox/pdmodel/graphics/pattern/pdtiling_pattern.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDTilingPattern.java::method::PDTilingPattern.getContents	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDTilingPattern.java::method::PDTilingPattern.getContentsForRandomAccess	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDTilingPattern.java::method::PDTilingPattern.getPaintType	ported	src/pdfbox/pdmodel/graphics/pattern/pdtiling_pattern.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDTilingPattern.java::method::PDTilingPattern.getContents	ported	src/pdfbox/pdmodel/graphics/pattern/pdtiling_pattern.cr	ported: PDTilingPattern (base or local)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDTilingPattern.java::method::PDTilingPattern.getContentsForRandomAccess	ported	src/pdfbox/pdmodel/graphics/pattern/pdtiling_pattern.cr	ported: PDTilingPattern (base or local)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDTilingPattern.java::method::PDTilingPattern.getPaintType	ported	src/pdfbox/pdmodel/graphics/pattern/pdtiling_pattern.cr	ported: PDTilingPattern (base or local)
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDTilingPattern.java::method::PDTilingPattern.getPatternType	ported	src/pdfbox/pdmodel/graphics/pattern/pdtiling_pattern.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDTilingPattern.java::method::PDTilingPattern.getResources	ported	src/pdfbox/pdmodel/graphics/pattern/pdtiling_pattern.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDTilingPattern.java::method::PDTilingPattern.getTilingType	ported	src/pdfbox/pdmodel/graphics/pattern/pdtiling_pattern.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDTilingPattern.java::method::PDTilingPattern.getXStep	ported	src/pdfbox/pdmodel/graphics/pattern/pdtiling_pattern.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDTilingPattern.java::method::PDTilingPattern.getYStep	ported	src/pdfbox/pdmodel/graphics/pattern/pdtiling_pattern.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDTilingPattern.java::method::PDTilingPattern.setBBox	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDTilingPattern.java::method::PDTilingPattern.setPaintType	ported	src/pdfbox/pdmodel/graphics/pattern/pdtiling_pattern.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDTilingPattern.java::method::PDTilingPattern.setBBox	ported	src/pdfbox/pdmodel/graphics/pattern/pdtiling_pattern.cr	ported: PDTilingPattern (base or local)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDTilingPattern.java::method::PDTilingPattern.setPaintType	ported	src/pdfbox/pdmodel/graphics/pattern/pdtiling_pattern.cr	ported: PDTilingPattern (base or local)
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDTilingPattern.java::method::PDTilingPattern.setResources	ported	src/pdfbox/pdmodel/graphics/pattern/pdtiling_pattern.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDTilingPattern.java::method::PDTilingPattern.setTilingType	ported	src/pdfbox/pdmodel/graphics/pattern/pdtiling_pattern.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDTilingPattern.java::method::PDTilingPattern.setXStep	ported	src/pdfbox/pdmodel/graphics/pattern/pdtiling_pattern.cr	reconciled: method present
