@@ -1387,22 +1387,22 @@ pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroFormGenera
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroFormTest.java::class::PDAcroFormTest	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroFormTest.java::const::IN_DIR	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroFormTest.java::const::OUT_DIR	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroFormTest.java::method::PDAcroFormTest.countWidgets	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroFormTest.java::method::PDAcroFormTest.createAcroFormWithMissingResourceInformation	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroFormTest.java::method::PDAcroFormTest.setUp	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroFormTest.java::method::PDAcroFormTest.tearDown	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroFormTest.java::method::PDAcroFormTest.testAcroFormDefaultFonts	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroFormTest.java::method::PDAcroFormTest.testAcroFormProperties	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroFormTest.java::method::PDAcroFormTest.testAddMissingInformationOnAcroFormAccess	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroFormTest.java::method::PDAcroFormTest.testBadDA	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroFormTest.java::method::PDAcroFormTest.testDontAddMissingInformationOnDocumentLoad	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroFormTest.java::method::PDAcroFormTest.testFieldsEntry	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroFormTest.java::method::PDAcroFormTest.testFlatten	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroFormTest.java::method::PDAcroFormTest.testFlattenSpecificFieldsOnly	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroFormTest.java::method::PDAcroFormTest.testFlattenWidgetNoRef	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroFormTest.java::method::PDAcroFormTest.testIllegalFieldsDefinition	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroFormTest.java::method::PDAcroFormTest.testPDFBox3347	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroFormTest.java::method::PDAcroFormTest.testPDFBox5797	ported	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroFormTest.java::method::PDAcroFormTest.countWidgets	ported	spec/pdfbox/pdmodel/interactive/form/pd_acro_form_test_spec.cr	ported: PDAcroFormTest cases
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroFormTest.java::method::PDAcroFormTest.createAcroFormWithMissingResourceInformation	ported	spec/pdfbox/pdmodel/interactive/form/pd_acro_form_test_spec.cr	ported: PDAcroFormTest cases
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroFormTest.java::method::PDAcroFormTest.setUp	ported	spec/pdfbox/pdmodel/interactive/form/pd_acro_form_test_spec.cr	ported: PDAcroFormTest cases
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroFormTest.java::method::PDAcroFormTest.tearDown	ported	spec/pdfbox/pdmodel/interactive/form/pd_acro_form_test_spec.cr	ported: PDAcroFormTest cases
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroFormTest.java::method::PDAcroFormTest.testAcroFormDefaultFonts	ported	spec/pdfbox/pdmodel/interactive/form/pd_acro_form_test_spec.cr	ported: PDAcroFormTest cases
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroFormTest.java::method::PDAcroFormTest.testAcroFormProperties	ported	spec/pdfbox/pdmodel/interactive/form/pd_acro_form_test_spec.cr	ported: PDAcroFormTest cases
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroFormTest.java::method::PDAcroFormTest.testAddMissingInformationOnAcroFormAccess	ported	spec/pdfbox/pdmodel/interactive/form/pd_acro_form_test_spec.cr	ported: PDAcroFormTest cases
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroFormTest.java::method::PDAcroFormTest.testBadDA	ported	spec/pdfbox/pdmodel/interactive/form/pd_acro_form_test_spec.cr	ported: PDAcroFormTest cases
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroFormTest.java::method::PDAcroFormTest.testDontAddMissingInformationOnDocumentLoad	ported	spec/pdfbox/pdmodel/interactive/form/pd_acro_form_test_spec.cr	ported: PDAcroFormTest cases
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroFormTest.java::method::PDAcroFormTest.testFieldsEntry	ported	spec/pdfbox/pdmodel/interactive/form/pd_acro_form_test_spec.cr	ported: PDAcroFormTest cases
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroFormTest.java::method::PDAcroFormTest.testFlatten	partial	-	render-compare advisory (TestPDFToImage.doTestFile)
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroFormTest.java::method::PDAcroFormTest.testFlattenSpecificFieldsOnly	partial	-	render-compare advisory (TestPDFToImage.doTestFile)
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroFormTest.java::method::PDAcroFormTest.testFlattenWidgetNoRef	partial	-	render-compare advisory (TestPDFToImage.doTestFile)
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroFormTest.java::method::PDAcroFormTest.testIllegalFieldsDefinition	partial	-	fixture fetched from JIRA URL, not vendored
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroFormTest.java::method::PDAcroFormTest.testPDFBox3347	ported	spec/pdfbox/pdmodel/interactive/form/pd_acro_form_test_spec.cr	ported: PDAcroFormTest cases
+pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroFormTest.java::method::PDAcroFormTest.testPDFBox5797	ported	spec/pdfbox/pdmodel/interactive/form/pd_acro_form_test_spec.cr	ported: PDAcroFormTest cases
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDButtonTest.java::class::PDButtonTest	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDButtonTest.java::const::IN_DIR	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDButtonTest.java::const::NAME_OF_PDF	ported	-	baseline

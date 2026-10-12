@@ -181,4 +181,36 @@ describe Pdfbox::Pdmodel::Interactive::Form::PDAcroForm do
       document.close
     end
   end
+
+  it "PDAcroFormTest#testPDFBox5797" do
+    # Sejda generated files have widget /DA entries; setting a value with the
+    # 'Ş' character used to crash.
+    pdf_path = SpecPaths.resolve(
+      "vendor/pdfbox/pdfbox/src/test/resources/org/apache/pdfbox/pdmodel/interactive/annotation/PDFBOX-5797-SO79271803.pdf")
+    ttf_path = SpecPaths.resolve(
+      "vendor/pdfbox/pdfbox/src/main/resources/org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf")
+
+    document = Pdfbox::Pdmodel::Document.load(pdf_path)
+    begin
+      font_doc = Pdfbox::Pdmodel::PDDocument.new(Bytes.new(0))
+      font = ::File.open(ttf_path) do |io|
+        Pdfbox::Pdmodel::Font::PDType0Font.load(font_doc, io, false)
+      end
+
+      acro_form = document.document_catalog.not_nil!.acro_form.not_nil!
+      resources = acro_form.default_resources.not_nil!
+      font_name = resources.add(font).value
+      default_appearance_string = "/#{font_name} 12 Tf 0 g"
+
+      field = acro_form.get_field("Name").not_nil!
+        .as(Pdfbox::Pdmodel::Interactive::Form::PDTextField)
+      field.default_appearance = default_appearance_string
+      field.widgets[0].appearance = nil
+      field.value = "ŞŞ"
+
+      field.value.should eq("ŞŞ")
+    ensure
+      document.close
+    end
+  end
 end
