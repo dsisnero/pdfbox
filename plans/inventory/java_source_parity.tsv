@@ -9734,34 +9734,34 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/COSF
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/ExternalSigningSupport.java::interface::ExternalSigningSupport	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/ExternalSigningSupport.java::method::getContent	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/ExternalSigningSupport.java::method::setSignature	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDPropBuild.java::class::PDPropBuild	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDPropBuild.java::method::PDPropBuild.getApp	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDPropBuild.java::method::PDPropBuild.getCOSObject	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDPropBuild.java::method::PDPropBuild.getFilter	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDPropBuild.java::method::PDPropBuild.getPubSec	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDPropBuild.java::method::PDPropBuild.setPDPropBuildApp	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDPropBuild.java::method::PDPropBuild.setPDPropBuildFilter	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDPropBuild.java::method::PDPropBuild.setPDPropBuildPubSec	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDPropBuildDataDict.java::class::PDPropBuildDataDict	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDPropBuildDataDict.java::method::PDPropBuildDataDict.getCOSObject	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDPropBuildDataDict.java::method::PDPropBuildDataDict.getDate	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDPropBuildDataDict.java::method::PDPropBuildDataDict.getMinimumRevision	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDPropBuildDataDict.java::method::PDPropBuildDataDict.getName	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDPropBuildDataDict.java::method::PDPropBuildDataDict.getNonEFontNoWarn	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDPropBuildDataDict.java::method::PDPropBuildDataDict.getOS	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDPropBuildDataDict.java::method::PDPropBuildDataDict.getPreRelease	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDPropBuildDataDict.java::method::PDPropBuildDataDict.getRevision	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDPropBuildDataDict.java::method::PDPropBuildDataDict.getTrustedMode	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDPropBuildDataDict.java::method::PDPropBuildDataDict.getVersion	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDPropBuildDataDict.java::method::PDPropBuildDataDict.setDate	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDPropBuildDataDict.java::method::PDPropBuildDataDict.setMinimumRevision	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDPropBuildDataDict.java::method::PDPropBuildDataDict.setName	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDPropBuildDataDict.java::method::PDPropBuildDataDict.setNonEFontNoWarn	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDPropBuildDataDict.java::method::PDPropBuildDataDict.setOS	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDPropBuildDataDict.java::method::PDPropBuildDataDict.setPreRelease	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDPropBuildDataDict.java::method::PDPropBuildDataDict.setRevision	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDPropBuildDataDict.java::method::PDPropBuildDataDict.setTrustedMode	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDPropBuildDataDict.java::method::PDPropBuildDataDict.setVersion	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDPropBuild.java::class::PDPropBuild	ported	src/pdfbox/pdmodel/interactive/form/pd_prop_build.cr	ported: PDPropBuild
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDPropBuild.java::method::PDPropBuild.getApp	ported	src/pdfbox/pdmodel/interactive/form/pd_prop_build.cr	ported: PDPropBuild
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDPropBuild.java::method::PDPropBuild.getCOSObject	ported	src/pdfbox/pdmodel/interactive/form/pd_prop_build.cr	ported: PDPropBuild
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDPropBuild.java::method::PDPropBuild.getFilter	ported	src/pdfbox/pdmodel/interactive/form/pd_prop_build.cr	ported: PDPropBuild
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDPropBuild.java::method::PDPropBuild.getPubSec	ported	src/pdfbox/pdmodel/interactive/form/pd_prop_build.cr	ported: PDPropBuild
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDPropBuild.java::method::PDPropBuild.setPDPropBuildApp	ported	src/pdfbox/pdmodel/interactive/form/pd_prop_build.cr	ported: PDPropBuild
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDPropBuild.java::method::PDPropBuild.setPDPropBuildFilter	ported	src/pdfbox/pdmodel/interactive/form/pd_prop_build.cr	ported: PDPropBuild
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDPropBuild.java::method::PDPropBuild.setPDPropBuildPubSec	ported	src/pdfbox/pdmodel/interactive/form/pd_prop_build.cr	ported: PDPropBuild
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDPropBuildDataDict.java::class::PDPropBuildDataDict	ported	src/pdfbox/pdmodel/interactive/form/pd_prop_build_data_dict.cr	ported: PDPropBuildDataDict
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDPropBuildDataDict.java::method::PDPropBuildDataDict.getCOSObject	ported	src/pdfbox/pdmodel/interactive/form/pd_prop_build_data_dict.cr	ported: PDPropBuildDataDict
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDPropBuildDataDict.java::method::PDPropBuildDataDict.getDate	ported	src/pdfbox/pdmodel/interactive/form/pd_prop_build_data_dict.cr	ported: PDPropBuildDataDict
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDPropBuildDataDict.java::method::PDPropBuildDataDict.getMinimumRevision	ported	src/pdfbox/pdmodel/interactive/form/pd_prop_build_data_dict.cr	ported: PDPropBuildDataDict
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDPropBuildDataDict.java::method::PDPropBuildDataDict.getName	ported	src/pdfbox/pdmodel/interactive/form/pd_prop_build_data_dict.cr	ported: PDPropBuildDataDict
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDPropBuildDataDict.java::method::PDPropBuildDataDict.getNonEFontNoWarn	ported	src/pdfbox/pdmodel/interactive/form/pd_prop_build_data_dict.cr	ported: PDPropBuildDataDict
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDPropBuildDataDict.java::method::PDPropBuildDataDict.getOS	ported	src/pdfbox/pdmodel/interactive/form/pd_prop_build_data_dict.cr	ported: PDPropBuildDataDict
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDPropBuildDataDict.java::method::PDPropBuildDataDict.getPreRelease	ported	src/pdfbox/pdmodel/interactive/form/pd_prop_build_data_dict.cr	ported: PDPropBuildDataDict
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDPropBuildDataDict.java::method::PDPropBuildDataDict.getRevision	ported	src/pdfbox/pdmodel/interactive/form/pd_prop_build_data_dict.cr	ported: PDPropBuildDataDict
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDPropBuildDataDict.java::method::PDPropBuildDataDict.getTrustedMode	ported	src/pdfbox/pdmodel/interactive/form/pd_prop_build_data_dict.cr	ported: PDPropBuildDataDict
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDPropBuildDataDict.java::method::PDPropBuildDataDict.getVersion	ported	src/pdfbox/pdmodel/interactive/form/pd_prop_build_data_dict.cr	ported: PDPropBuildDataDict
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDPropBuildDataDict.java::method::PDPropBuildDataDict.setDate	ported	src/pdfbox/pdmodel/interactive/form/pd_prop_build_data_dict.cr	ported: PDPropBuildDataDict
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDPropBuildDataDict.java::method::PDPropBuildDataDict.setMinimumRevision	ported	src/pdfbox/pdmodel/interactive/form/pd_prop_build_data_dict.cr	ported: PDPropBuildDataDict
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDPropBuildDataDict.java::method::PDPropBuildDataDict.setName	ported	src/pdfbox/pdmodel/interactive/form/pd_prop_build_data_dict.cr	ported: PDPropBuildDataDict
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDPropBuildDataDict.java::method::PDPropBuildDataDict.setNonEFontNoWarn	ported	src/pdfbox/pdmodel/interactive/form/pd_prop_build_data_dict.cr	ported: PDPropBuildDataDict
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDPropBuildDataDict.java::method::PDPropBuildDataDict.setOS	ported	src/pdfbox/pdmodel/interactive/form/pd_prop_build_data_dict.cr	ported: PDPropBuildDataDict
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDPropBuildDataDict.java::method::PDPropBuildDataDict.setPreRelease	ported	src/pdfbox/pdmodel/interactive/form/pd_prop_build_data_dict.cr	ported: PDPropBuildDataDict
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDPropBuildDataDict.java::method::PDPropBuildDataDict.setRevision	ported	src/pdfbox/pdmodel/interactive/form/pd_prop_build_data_dict.cr	ported: PDPropBuildDataDict
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDPropBuildDataDict.java::method::PDPropBuildDataDict.setTrustedMode	ported	src/pdfbox/pdmodel/interactive/form/pd_prop_build_data_dict.cr	ported: PDPropBuildDataDict
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDPropBuildDataDict.java::method::PDPropBuildDataDict.setVersion	ported	src/pdfbox/pdmodel/interactive/form/pd_prop_build_data_dict.cr	ported: PDPropBuildDataDict
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::class::PDSeedValue	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::const::FLAG_ADD_REV_INFO	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::const::FLAG_DIGEST_METHOD	missing	-	baseline
@@ -9874,7 +9874,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSi
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::method::PDSignature.getFilter	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::method::PDSignature.getLocation	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::method::PDSignature.getName	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::method::PDSignature.getPropBuild	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::method::PDSignature.getPropBuild	ported	src/pdfbox/pdmodel/interactive/form/pd_signature.cr	ported: PDSignature prop_build
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::method::PDSignature.getReason	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::method::PDSignature.getSignDate	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::method::PDSignature.getSignedContent	missing	-	baseline
@@ -9885,7 +9885,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSi
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::method::PDSignature.setFilter	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::method::PDSignature.setLocation	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::method::PDSignature.setName	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::method::PDSignature.setPropBuild	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::method::PDSignature.setPropBuild	ported	src/pdfbox/pdmodel/interactive/form/pd_signature.cr	ported: PDSignature prop_build
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::method::PDSignature.setReason	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::method::PDSignature.setSignDate	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::method::PDSignature.setSubFilter	missing	-	baseline

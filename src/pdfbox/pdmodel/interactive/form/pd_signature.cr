@@ -1,3 +1,5 @@
+require "./pd_prop_build"
+
 # A digital signature that can be attached to a document.
 #
 # Ported from Apache PDFBox PDSignature (focus: byte range and contents).
@@ -98,6 +100,28 @@ module Pdfbox::Pdmodel::Interactive::Form
 
       hex_text = String.new(data[start, write_len])
       Cos::String.parse_hex(hex_text).bytes
+    end
+
+    # Java PDSignature#getPropBuild.
+    def prop_build : PDPropBuild?
+      dictionary = @dictionary.get_dictionary(Cos::Name.new("Prop_Build"))
+      dictionary ? PDPropBuild.new(dictionary) : nil
+    end
+
+    # Java PDSignature#getPropBuild.
+    def prop_build : PDPropBuild?
+      dictionary = @dictionary.get_dictionary(Cos::Name.new("Prop_Build"))
+      dictionary ? PDPropBuild.new(dictionary) : nil
+    end
+
+    # Java PDSignature#setPropBuild.
+    def prop_build=(prop_build : PDPropBuild?) : Nil
+      key = Cos::Name.new("Prop_Build")
+      if prop_build
+        @dictionary[key] = prop_build.cos_object
+      else
+        @dictionary.delete(key)
+      end
     end
   end
 end
