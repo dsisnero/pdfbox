@@ -142,9 +142,39 @@ module Pdfbox::Pdmodel::Graphics::Image
       int_value
     end
 
+    # Java PDImageXObject#isEmpty: the encoded stream length is 0.
     def empty? : Bool
-      # TODO: Implement based on stream data
-      false
+      stream.try(&.data.size) == 0
+    end
+
+    # Java getMask(): the explicit /Mask stream as a DeviceGray image, or nil.
+    # A /Mask array is a color key mask (see color_key_mask), not an explicit mask.
+    def mask : PDImageXObject?
+      return nil if @dict.get_array(Pdfbox::Cos::Name.new("Mask"))
+      cos_stream = @dict.get_stream(Pdfbox::Cos::Name.new("Mask"))
+      cos_stream ? PDImageXObject.new(@document, cos_stream, cos_stream) : nil
+    end
+
+    # Java getColorKeyMask(): the /Mask array (color key mask), or nil.
+    def color_key_mask : Pdfbox::Cos::Array?
+      @dict.get_array(Pdfbox::Cos::Name.new("Mask"))
+    end
+
+    # Java getSoftMask(): the /SMask stream as a DeviceGray image, or nil.
+    def soft_mask : PDImageXObject?
+      cos_stream = @dict.get_stream(Pdfbox::Cos::Name.new("SMask"))
+      cos_stream ? PDImageXObject.new(@document, cos_stream, cos_stream) : nil
+    end
+
+    # Java getOptionalContent(): the /OC entry as a PDPropertyList, or nil.
+    def optional_content : Pdfbox::Pdmodel::DocumentInterchange::MarkedContent::PDPropertyList?
+      dict = @dict.get_dictionary(Pdfbox::Cos::Name.new("OC"))
+      dict ? Pdfbox::Pdmodel::DocumentInterchange::MarkedContent::PDPropertyList.create(dict) : nil
+    end
+
+    # Java setOptionalContent(PDPropertyList).
+    def optional_content=(oc : Pdfbox::Pdmodel::DocumentInterchange::MarkedContent::PDPropertyList) : Nil
+      @dict[Pdfbox::Cos::Name.new("OC")] = oc.cos_object
     end
 
     def stencil? : Bool

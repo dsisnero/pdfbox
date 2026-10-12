@@ -259,4 +259,91 @@ describe Pdfbox::Pdmodel::Graphics::Image::PDImageXObject do
       end
     end
   end
+
+  describe "mask / soft-mask / optional-content accessors" do
+    # Source of truth:
+    # vendor/pdfbox/pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObject.java
+    # Upstream has no dedicated tests for these accessors; behavior is inferred
+    # from the Java implementation.
+    it "empty? is true for an image with no stream data and false otherwise" do
+      doc = Pdfbox::Pdmodel::Document.create
+
+      empty_stream = Pdfbox::Cos::Stream.new
+      empty_image = Pdfbox::Pdmodel::Graphics::Image::PDImageXObject.new(doc, empty_stream, empty_stream)
+      empty_image.empty?.should be_true
+
+      data_stream = Pdfbox::Cos::Stream.new(data: Bytes[1, 2, 3])
+      data_image = Pdfbox::Pdmodel::Graphics::Image::PDImageXObject.new(doc, data_stream, data_stream)
+      data_image.empty?.should be_false
+    ensure
+      doc.try(&.close)
+    end
+
+    it "color_key_mask returns the /Mask array and mask returns nil for it" do
+      doc = Pdfbox::Pdmodel::Document.create
+      image = Pdfbox::Pdmodel::Graphics::Image::PDImageXObject.new(doc)
+      array = Pdfbox::Cos::Array.new([Pdfbox::Cos::Integer.new(0), Pdfbox::Cos::Integer.new(1)])
+      image.cos_object.as(Pdfbox::Cos::Dictionary)[Pdfbox::Cos::Name.new("Mask")] = array
+
+      image.color_key_mask.should be(array)
+      image.mask.should be_nil
+    ensure
+      doc.try(&.close)
+    end
+
+    it "mask returns the /Mask stream as an image (and color_key_mask is nil)" do
+      doc = Pdfbox::Pdmodel::Document.create
+      image = Pdfbox::Pdmodel::Graphics::Image::PDImageXObject.new(doc)
+      mask_stream = Pdfbox::Cos::Stream.new(data: Bytes[0])
+      image.cos_object.as(Pdfbox::Cos::Dictionary)[Pdfbox::Cos::Name.new("Mask")] = mask_stream
+
+      mask_image = image.mask
+      mask_image.should_not be_nil
+      mask_image.as(Pdfbox::Pdmodel::Graphics::Image::PDImageXObject).cos_object.should be(mask_stream)
+      image.color_key_mask.should be_nil
+    ensure
+      doc.try(&.close)
+    end
+
+    it "mask and color_key_mask are nil when /Mask is absent" do
+      doc = Pdfbox::Pdmodel::Document.create
+      image = Pdfbox::Pdmodel::Graphics::Image::PDImageXObject.new(doc)
+
+      image.mask.should be_nil
+      image.color_key_mask.should be_nil
+    ensure
+      doc.try(&.close)
+    end
+
+    it "soft_mask returns the /SMask stream as an image" do
+      doc = Pdfbox::Pdmodel::Document.create
+      image = Pdfbox::Pdmodel::Graphics::Image::PDImageXObject.new(doc)
+      smask_stream = Pdfbox::Cos::Stream.new(data: Bytes[0])
+      image.cos_object.as(Pdfbox::Cos::Dictionary)[Pdfbox::Cos::Name.new("SMask")] = smask_stream
+
+      soft = image.soft_mask
+      soft.should_not be_nil
+      soft.as(Pdfbox::Pdmodel::Graphics::Image::PDImageXObject).cos_object.should be(smask_stream)
+    ensure
+      doc.try(&.close)
+    end
+
+    it "optional_content dispatches on /Type and round-trips through the setter" do
+      doc = Pdfbox::Pdmodel::Document.create
+      image = Pdfbox::Pdmodel::Graphics::Image::PDImageXObject.new(doc)
+      image.optional_content.should be_nil
+
+      oc_dict = Pdfbox::Cos::Dictionary.new
+      oc_dict[Pdfbox::Cos::Name.new("Type")] = Pdfbox::Cos::Name.new("OCG")
+      image.cos_object.as(Pdfbox::Cos::Dictionary)[Pdfbox::Cos::Name.new("OC")] = oc_dict
+
+      image.optional_content.should be_a(Pdfbox::Pdmodel::Graphics::OptionalContent::PDOptionalContentGroup)
+
+      new_oc = Pdfbox::Pdmodel::DocumentInterchange::MarkedContent::PDPropertyList.new(Pdfbox::Cos::Dictionary.new)
+      image.optional_content = new_oc
+      image.cos_object.as(Pdfbox::Cos::Dictionary)[Pdfbox::Cos::Name.new("OC")].should be(new_oc.cos_object)
+    ensure
+      doc.try(&.close)
+    end
+  end
 end
