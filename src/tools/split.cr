@@ -24,7 +24,8 @@ module Tools
         return 1
       end
 
-      output_prefix = @output_prefix || File.basename(infile, File.extname(infile))
+      abs_input = File.expand_path(infile)
+      output_prefix = @output_prefix || File.join(File.dirname(abs_input), File.basename(abs_input, File.extname(abs_input)))
 
       process_document(infile, output_prefix)
     rescue ex : IO::Error
@@ -133,7 +134,7 @@ module Tools
         extractor = Pdfbox::Multipdf::PageExtractor.new(document, start_page, end_page)
         extracted = extractor.extract
 
-        output_file = "#{output_prefix}-#{start_page}-#{end_page}.pdf"
+        output_file = "#{output_prefix}-1.pdf"
         extracted.save(output_file)
         @out.puts("Created: #{output_file} (pages #{start_page}-#{end_page})")
 
