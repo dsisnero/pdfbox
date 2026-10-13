@@ -3,6 +3,8 @@
 #
 # Source of truth:
 # vendor/pdfbox/pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDSoftMask.java
+require "../form/pdtransparency_group"
+
 module Pdfbox::Pdmodel::Graphics::State
   class PDSoftMask
     include Pdfbox::Pdmodel::Common::COSObjectable
@@ -20,7 +22,7 @@ module Pdfbox::Pdmodel::Graphics::State
 
     @dictionary : Pdfbox::Cos::Dictionary
     @sub_type : Pdfbox::Cos::Name?
-    @group : Pdfbox::Pdmodel::Graphics::Form::PDFormXObject?
+    @group : Pdfbox::Pdmodel::Graphics::Form::PDTransparencyGroup?
     @group_resolved = false
     @backdrop_color : Pdfbox::Cos::Array?
     @backdrop_color_resolved = false
@@ -40,15 +42,13 @@ module Pdfbox::Pdmodel::Graphics::State
     end
 
     # Java getGroup(): builds the group XObject from the /G entry. Java returns
-    # a PDTransparencyGroup (a PDFormXObject); Crystal has no distinct type, so
-    # the form XObject is returned directly. A /G whose /Group /S is not
-    # /Transparency yields nil.
-    def group : Pdfbox::Pdmodel::Graphics::Form::PDFormXObject?
+    # a PDTransparencyGroup; a /G whose /Group /S is not /Transparency yields nil.
+    def group : Pdfbox::Pdmodel::Graphics::Form::PDTransparencyGroup?
       unless @group_resolved
         @group_resolved = true
         cos_group = @dictionary.get_dictionary_object(Pdfbox::Cos::Name.new("G"))
         if cos_group.is_a?(Pdfbox::Cos::Stream) && transparency_group?(cos_group)
-          @group = Pdfbox::Pdmodel::Graphics::Form::PDFormXObject.new(cos_group)
+          @group = Pdfbox::Pdmodel::Graphics::Form::PDTransparencyGroup.new(cos_group)
         end
       end
       @group
