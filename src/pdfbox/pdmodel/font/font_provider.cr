@@ -377,7 +377,6 @@ module Pdfbox::Pdmodel::Font
       @ttf : Fontbox::TTF::TrueTypeFont?
       @checksum : String
       @last_modified : Int64
-      @font_mutex = Thread::Mutex.new
 
       def initialize(
         @path : String,
@@ -409,17 +408,17 @@ module Pdfbox::Pdmodel::Font
       getter checksum : String
       getter last_modified : Int64
 
+      # Java guards this with `synchronized` (a reentrant monitor) purely to avoid
+      # a benign double-load race. A Crystal Thread::Mutex is not reentrant and is
+      # held across fibre-yielding font parsing, which deadlocks when another
+      # fibre resolves the same info; the leaf-level FontCache lock is enough.
       def font : Fontbox::FontBoxFont?
-        @font_mutex.synchronize do
-          cached = @provider.cache.font(self)
-          return cached if cached
+        cached = @provider.cache.font(self)
+        return cached if cached
 
-          loaded = load_font
-          if loaded
-            @provider.cache.add_font(self, loaded)
-          end
-          loaded
-        end
+        loaded = load_font
+        @provider.cache.add_font(self, loaded) if loaded
+        loaded
       end
 
       def true_type_font : Fontbox::TTF::TrueTypeFont?
