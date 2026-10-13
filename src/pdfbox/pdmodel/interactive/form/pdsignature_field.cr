@@ -1,3 +1,5 @@
+require "./pd_seed_value"
+
 # A signature field in an interactive form
 module Pdfbox::Pdmodel::Interactive::Form
   class PDSignatureField < PDTerminalField
@@ -46,6 +48,22 @@ module Pdfbox::Pdmodel::Interactive::Form
       value = @dictionary[Cos::Name.new("V")]?
       value = value.object if value.is_a?(Cos::Object)
       value.as?(Cos::Dictionary).try { |dictionary| PDSignature.new(dictionary) }
+    end
+
+    # Java PDSignatureField#getSeedValue.
+    def seed_value : PDSeedValue?
+      dict = @dictionary.get_dictionary(Cos::Name.new("SV"))
+      dict ? PDSeedValue.new(dict) : nil
+    end
+
+    # Java PDSignatureField#setSeedValue.
+    def seed_value=(value : PDSeedValue?) : Nil
+      key = Cos::Name.new("SV")
+      if value
+        @dictionary[key] = value.cos_object
+      else
+        @dictionary.delete(key)
+      end
     end
 
     private def generate_partial_name : String

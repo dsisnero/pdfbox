@@ -9762,47 +9762,47 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDPr
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDPropBuildDataDict.java::method::PDPropBuildDataDict.setRevision	ported	src/pdfbox/pdmodel/interactive/form/pd_prop_build_data_dict.cr	ported: PDPropBuildDataDict
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDPropBuildDataDict.java::method::PDPropBuildDataDict.setTrustedMode	ported	src/pdfbox/pdmodel/interactive/form/pd_prop_build_data_dict.cr	ported: PDPropBuildDataDict
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDPropBuildDataDict.java::method::PDPropBuildDataDict.setVersion	ported	src/pdfbox/pdmodel/interactive/form/pd_prop_build_data_dict.cr	ported: PDPropBuildDataDict
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::class::PDSeedValue	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::const::FLAG_ADD_REV_INFO	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::const::FLAG_DIGEST_METHOD	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::const::FLAG_FILTER	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::const::FLAG_LEGAL_ATTESTATION	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::const::FLAG_REASON	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::const::FLAG_SUBFILTER	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::const::FLAG_V	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::method::PDSeedValue.getCOSObject	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::method::PDSeedValue.getDigestMethod	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::method::PDSeedValue.getFilter	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::method::PDSeedValue.getLegalAttestation	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::method::PDSeedValue.getMDP	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::method::PDSeedValue.getReasons	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::method::PDSeedValue.getSeedValueCertificate	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::method::PDSeedValue.getSubFilter	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::method::PDSeedValue.getTimeStamp	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::method::PDSeedValue.getV	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::method::PDSeedValue.isAddRevInfoRequired	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::method::PDSeedValue.isDigestMethodRequired	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::method::PDSeedValue.isFilterRequired	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::method::PDSeedValue.isLegalAttestationRequired	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::method::PDSeedValue.isReasonRequired	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::method::PDSeedValue.isSubFilterRequired	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::method::PDSeedValue.isVRequired	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::method::PDSeedValue.setAddRevInfoRequired	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::method::PDSeedValue.setDigestMethod	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::method::PDSeedValue.setDigestMethodRequired	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::method::PDSeedValue.setFilter	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::method::PDSeedValue.setFilterRequired	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::method::PDSeedValue.setLegalAttestation	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::method::PDSeedValue.setLegalAttestationRequired	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::method::PDSeedValue.setMPD	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::method::PDSeedValue.setReasonRequired	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::method::PDSeedValue.setReasons	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::method::PDSeedValue.setSeedValueCertificate	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::method::PDSeedValue.setSubFilter	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::method::PDSeedValue.setSubFilterRequired	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::method::PDSeedValue.setTimeStamp	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::method::PDSeedValue.setV	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::method::PDSeedValue.setVRequired	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::class::PDSeedValue	ported	src/pdfbox/pdmodel/interactive/form/pd_seed_value.cr	ported: PDSeedValue (Certificate accessors pending)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::const::FLAG_ADD_REV_INFO	ported	src/pdfbox/pdmodel/interactive/form/pd_seed_value.cr	ported: PDSeedValue (Certificate accessors pending)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::const::FLAG_DIGEST_METHOD	ported	src/pdfbox/pdmodel/interactive/form/pd_seed_value.cr	ported: PDSeedValue (Certificate accessors pending)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::const::FLAG_FILTER	ported	src/pdfbox/pdmodel/interactive/form/pd_seed_value.cr	ported: PDSeedValue (Certificate accessors pending)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::const::FLAG_LEGAL_ATTESTATION	ported	src/pdfbox/pdmodel/interactive/form/pd_seed_value.cr	ported: PDSeedValue (Certificate accessors pending)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::const::FLAG_REASON	ported	src/pdfbox/pdmodel/interactive/form/pd_seed_value.cr	ported: PDSeedValue (Certificate accessors pending)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::const::FLAG_SUBFILTER	ported	src/pdfbox/pdmodel/interactive/form/pd_seed_value.cr	ported: PDSeedValue (Certificate accessors pending)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::const::FLAG_V	ported	src/pdfbox/pdmodel/interactive/form/pd_seed_value.cr	ported: PDSeedValue (Certificate accessors pending)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::method::PDSeedValue.getCOSObject	ported	src/pdfbox/pdmodel/interactive/form/pd_seed_value.cr	ported: PDSeedValue (Certificate accessors pending)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::method::PDSeedValue.getDigestMethod	ported	src/pdfbox/pdmodel/interactive/form/pd_seed_value.cr	ported: PDSeedValue (Certificate accessors pending)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::method::PDSeedValue.getFilter	ported	src/pdfbox/pdmodel/interactive/form/pd_seed_value.cr	ported: PDSeedValue (Certificate accessors pending)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::method::PDSeedValue.getLegalAttestation	ported	src/pdfbox/pdmodel/interactive/form/pd_seed_value.cr	ported: PDSeedValue (Certificate accessors pending)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::method::PDSeedValue.getMDP	ported	src/pdfbox/pdmodel/interactive/form/pd_seed_value.cr	ported: PDSeedValue (Certificate accessors pending)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::method::PDSeedValue.getReasons	ported	src/pdfbox/pdmodel/interactive/form/pd_seed_value.cr	ported: PDSeedValue (Certificate accessors pending)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::method::PDSeedValue.getSeedValueCertificate	partial	-	PDSeedValueCertificate (/Cert) not ported yet
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::method::PDSeedValue.getSubFilter	ported	src/pdfbox/pdmodel/interactive/form/pd_seed_value.cr	ported: PDSeedValue (Certificate accessors pending)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::method::PDSeedValue.getTimeStamp	ported	src/pdfbox/pdmodel/interactive/form/pd_seed_value.cr	ported: PDSeedValue (Certificate accessors pending)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::method::PDSeedValue.getV	ported	src/pdfbox/pdmodel/interactive/form/pd_seed_value.cr	ported: PDSeedValue (Certificate accessors pending)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::method::PDSeedValue.isAddRevInfoRequired	ported	src/pdfbox/pdmodel/interactive/form/pd_seed_value.cr	ported: PDSeedValue (Certificate accessors pending)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::method::PDSeedValue.isDigestMethodRequired	ported	src/pdfbox/pdmodel/interactive/form/pd_seed_value.cr	ported: PDSeedValue (Certificate accessors pending)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::method::PDSeedValue.isFilterRequired	ported	src/pdfbox/pdmodel/interactive/form/pd_seed_value.cr	ported: PDSeedValue (Certificate accessors pending)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::method::PDSeedValue.isLegalAttestationRequired	ported	src/pdfbox/pdmodel/interactive/form/pd_seed_value.cr	ported: PDSeedValue (Certificate accessors pending)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::method::PDSeedValue.isReasonRequired	ported	src/pdfbox/pdmodel/interactive/form/pd_seed_value.cr	ported: PDSeedValue (Certificate accessors pending)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::method::PDSeedValue.isSubFilterRequired	ported	src/pdfbox/pdmodel/interactive/form/pd_seed_value.cr	ported: PDSeedValue (Certificate accessors pending)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::method::PDSeedValue.isVRequired	ported	src/pdfbox/pdmodel/interactive/form/pd_seed_value.cr	ported: PDSeedValue (Certificate accessors pending)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::method::PDSeedValue.setAddRevInfoRequired	ported	src/pdfbox/pdmodel/interactive/form/pd_seed_value.cr	ported: PDSeedValue (Certificate accessors pending)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::method::PDSeedValue.setDigestMethod	ported	src/pdfbox/pdmodel/interactive/form/pd_seed_value.cr	ported: PDSeedValue (Certificate accessors pending)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::method::PDSeedValue.setDigestMethodRequired	ported	src/pdfbox/pdmodel/interactive/form/pd_seed_value.cr	ported: PDSeedValue (Certificate accessors pending)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::method::PDSeedValue.setFilter	ported	src/pdfbox/pdmodel/interactive/form/pd_seed_value.cr	ported: PDSeedValue (Certificate accessors pending)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::method::PDSeedValue.setFilterRequired	ported	src/pdfbox/pdmodel/interactive/form/pd_seed_value.cr	ported: PDSeedValue (Certificate accessors pending)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::method::PDSeedValue.setLegalAttestation	ported	src/pdfbox/pdmodel/interactive/form/pd_seed_value.cr	ported: PDSeedValue (Certificate accessors pending)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::method::PDSeedValue.setLegalAttestationRequired	ported	src/pdfbox/pdmodel/interactive/form/pd_seed_value.cr	ported: PDSeedValue (Certificate accessors pending)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::method::PDSeedValue.setMPD	ported	src/pdfbox/pdmodel/interactive/form/pd_seed_value.cr	ported: PDSeedValue (Certificate accessors pending)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::method::PDSeedValue.setReasonRequired	ported	src/pdfbox/pdmodel/interactive/form/pd_seed_value.cr	ported: PDSeedValue (Certificate accessors pending)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::method::PDSeedValue.setReasons	ported	src/pdfbox/pdmodel/interactive/form/pd_seed_value.cr	ported: PDSeedValue (Certificate accessors pending)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::method::PDSeedValue.setSeedValueCertificate	partial	-	PDSeedValueCertificate (/Cert) not ported yet
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::method::PDSeedValue.setSubFilter	ported	src/pdfbox/pdmodel/interactive/form/pd_seed_value.cr	ported: PDSeedValue (Certificate accessors pending)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::method::PDSeedValue.setSubFilterRequired	ported	src/pdfbox/pdmodel/interactive/form/pd_seed_value.cr	ported: PDSeedValue (Certificate accessors pending)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::method::PDSeedValue.setTimeStamp	ported	src/pdfbox/pdmodel/interactive/form/pd_seed_value.cr	ported: PDSeedValue (Certificate accessors pending)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::method::PDSeedValue.setV	ported	src/pdfbox/pdmodel/interactive/form/pd_seed_value.cr	ported: PDSeedValue (Certificate accessors pending)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java::method::PDSeedValue.setVRequired	ported	src/pdfbox/pdmodel/interactive/form/pd_seed_value.cr	ported: PDSeedValue (Certificate accessors pending)
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValueCertificate.java::class::PDSeedValueCertificate	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValueCertificate.java::const::FLAG_ISSUER	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValueCertificate.java::const::FLAG_KEY_USAGE	missing	-	baseline
@@ -9847,16 +9847,16 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSe
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValueCertificate.java::method::PDSeedValueCertificate.setURL	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValueCertificate.java::method::PDSeedValueCertificate.setURLRequired	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValueCertificate.java::method::PDSeedValueCertificate.setURLType	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValueMDP.java::class::PDSeedValueMDP	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValueMDP.java::method::PDSeedValueMDP.getCOSObject	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValueMDP.java::method::PDSeedValueMDP.getP	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValueMDP.java::method::PDSeedValueMDP.setP	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValueTimeStamp.java::class::PDSeedValueTimeStamp	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValueTimeStamp.java::method::PDSeedValueTimeStamp.getCOSObject	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValueTimeStamp.java::method::PDSeedValueTimeStamp.getURL	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValueTimeStamp.java::method::PDSeedValueTimeStamp.isTimestampRequired	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValueTimeStamp.java::method::PDSeedValueTimeStamp.setTimestampRequired	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValueTimeStamp.java::method::PDSeedValueTimeStamp.setURL	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValueMDP.java::class::PDSeedValueMDP	ported	src/pdfbox/pdmodel/interactive/form/pd_seed_value_mdp.cr	ported: PDSeedValueMDP
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValueMDP.java::method::PDSeedValueMDP.getCOSObject	ported	src/pdfbox/pdmodel/interactive/form/pd_seed_value_mdp.cr	ported: PDSeedValueMDP
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValueMDP.java::method::PDSeedValueMDP.getP	ported	src/pdfbox/pdmodel/interactive/form/pd_seed_value_mdp.cr	ported: PDSeedValueMDP
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValueMDP.java::method::PDSeedValueMDP.setP	ported	src/pdfbox/pdmodel/interactive/form/pd_seed_value_mdp.cr	ported: PDSeedValueMDP
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValueTimeStamp.java::class::PDSeedValueTimeStamp	ported	src/pdfbox/pdmodel/interactive/form/pd_seed_value_time_stamp.cr	ported: PDSeedValueTimeStamp
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValueTimeStamp.java::method::PDSeedValueTimeStamp.getCOSObject	ported	src/pdfbox/pdmodel/interactive/form/pd_seed_value_time_stamp.cr	ported: PDSeedValueTimeStamp
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValueTimeStamp.java::method::PDSeedValueTimeStamp.getURL	ported	src/pdfbox/pdmodel/interactive/form/pd_seed_value_time_stamp.cr	ported: PDSeedValueTimeStamp
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValueTimeStamp.java::method::PDSeedValueTimeStamp.isTimestampRequired	ported	src/pdfbox/pdmodel/interactive/form/pd_seed_value_time_stamp.cr	ported: PDSeedValueTimeStamp
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValueTimeStamp.java::method::PDSeedValueTimeStamp.setTimestampRequired	ported	src/pdfbox/pdmodel/interactive/form/pd_seed_value_time_stamp.cr	ported: PDSeedValueTimeStamp
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValueTimeStamp.java::method::PDSeedValueTimeStamp.setURL	ported	src/pdfbox/pdmodel/interactive/form/pd_seed_value_time_stamp.cr	ported: PDSeedValueTimeStamp
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::class::PDSignature	ported	src/pdfbox/pdmodel/interactive/form/pd_signature.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::const::FILTER_ADOBE_PPKLITE	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::const::FILTER_CICI_SIGNIT	missing	-	baseline
@@ -10439,12 +10439,12 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDSignatureField
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDSignatureField.java::method::PDSignatureField.constructAppearances	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDSignatureField.java::method::PDSignatureField.generatePartialName	ported	src/pdfbox/pdmodel/interactive/form/pdsignature_field.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDSignatureField.java::method::PDSignatureField.getDefaultValue	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDSignatureField.java::method::PDSignatureField.getSeedValue	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDSignatureField.java::method::PDSignatureField.getSeedValue	ported	src/pdfbox/pdmodel/interactive/form/pdsignature_field.cr	ported: PDSignatureField seed_value
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDSignatureField.java::method::PDSignatureField.getSignature	ported	src/pdfbox/pdmodel/interactive/form/pdsignature_field.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDSignatureField.java::method::PDSignatureField.getValue	ported	src/pdfbox/pdmodel/interactive/form/pdsignature_field.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDSignatureField.java::method::PDSignatureField.getValueAsString	ported	src/pdfbox/pdmodel/interactive/form/pdsignature_field.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDSignatureField.java::method::PDSignatureField.setDefaultValue	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDSignatureField.java::method::PDSignatureField.setSeedValue	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDSignatureField.java::method::PDSignatureField.setSeedValue	ported	src/pdfbox/pdmodel/interactive/form/pdsignature_field.cr	ported: PDSignatureField seed_value
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDSignatureField.java::method::PDSignatureField.setValue	ported	src/pdfbox/pdmodel/interactive/form/pdsignature_field.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDTerminalField.java::class::PDTerminalField	ported	src/pdfbox/pdmodel/interactive/form/fdf_support.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDTerminalField.java::method::PDTerminalField.applyChange	missing	-	baseline
