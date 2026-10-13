@@ -3709,9 +3709,9 @@ pdfbox/src/main/java/org/apache/pdfbox/cos/COSArray.java::method::COSArray.of	mi
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSArray.java::method::COSArray.ofCOSIntegers	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSArray.java::method::COSArray.ofCOSNames	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSArray.java::method::COSArray.ofCOSStrings	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSArray.java::method::COSArray.remove	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSArray.java::method::COSArray.removeAll	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSArray.java::method::COSArray.removeObject	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSArray.java::method::COSArray.remove	ported	src/pdfbox/cos.cr	ported: COSArray
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSArray.java::method::COSArray.removeAll	ported	src/pdfbox/cos.cr	ported: COSArray
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSArray.java::method::COSArray.removeObject	ported	src/pdfbox/cos.cr	ported: COSArray
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSArray.java::method::COSArray.resetObjectKeys	ported	src/pdfbox/cos.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSArray.java::method::COSArray.retainAll	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSArray.java::method::COSArray.set	missing	-	baseline
@@ -6221,8 +6221,8 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstruct
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDParentTreeValue.java::method::PDParentTreeValue.toString	ported	src/pdfbox/pdmodel/common/pdparent_tree_value.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDStructureElement.java::class::PDStructureElement	ported	src/pdfbox/pdmodel/document_interchange/logical_structure/pd_structure_element.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDStructureElement.java::const::TYPE	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDStructureElement.java::method::PDStructureElement.addAttribute	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDStructureElement.java::method::PDStructureElement.addClassName	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDStructureElement.java::method::PDStructureElement.addAttribute	ported	src/pdfbox/pdmodel/document_interchange/logical_structure/pd_structure_element.cr	ported: PDStructureElement
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDStructureElement.java::method::PDStructureElement.addClassName	ported	src/pdfbox/pdmodel/document_interchange/logical_structure/pd_structure_element.cr	ported: PDStructureElement
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDStructureElement.java::method::PDStructureElement.appendKid	ported	src/pdfbox/pdmodel/document_interchange/logical_structure/pd_structure_element.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDStructureElement.java::method::PDStructureElement.attributeChanged	ported	src/pdfbox/pdmodel/document_interchange/logical_structure/pd_structure_element.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDStructureElement.java::method::PDStructureElement.getActualText	ported	src/pdfbox/pdmodel/document_interchange/logical_structure/pd_structure_element.cr	reconciled: method present
@@ -6237,13 +6237,13 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstruct
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDStructureElement.java::method::PDStructureElement.getRevisionNumber	ported	src/pdfbox/pdmodel/document_interchange/logical_structure/pd_structure_element.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDStructureElement.java::method::PDStructureElement.getRoleMap	ported	src/pdfbox/pdmodel/document_interchange/logical_structure/pd_structure_element.cr	ported: containing_role_map walks /P to the root role map
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDStructureElement.java::method::PDStructureElement.getStandardStructureType	ported	src/pdfbox/pdmodel/document_interchange/logical_structure/pd_structure_element.cr	ported: structure tree role map + standard structure type
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDStructureElement.java::method::PDStructureElement.getStructureTreeRoot	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDStructureElement.java::method::PDStructureElement.getStructureTreeRoot	ported	src/pdfbox/pdmodel/document_interchange/logical_structure/pd_structure_element.cr	ported: PDStructureElement
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDStructureElement.java::method::PDStructureElement.getStructureType	ported	src/pdfbox/pdmodel/document_interchange/logical_structure/pd_structure_element.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDStructureElement.java::method::PDStructureElement.getTitle	ported	src/pdfbox/pdmodel/document_interchange/logical_structure/pd_structure_element.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDStructureElement.java::method::PDStructureElement.incrementRevisionNumber	ported	src/pdfbox/pdmodel/document_interchange/logical_structure/pd_structure_element.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDStructureElement.java::method::PDStructureElement.insertBefore	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDStructureElement.java::method::PDStructureElement.removeAttribute	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDStructureElement.java::method::PDStructureElement.removeClassName	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDStructureElement.java::method::PDStructureElement.removeAttribute	ported	src/pdfbox/pdmodel/document_interchange/logical_structure/pd_structure_element.cr	ported: PDStructureElement
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDStructureElement.java::method::PDStructureElement.removeClassName	ported	src/pdfbox/pdmodel/document_interchange/logical_structure/pd_structure_element.cr	ported: PDStructureElement
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDStructureElement.java::method::PDStructureElement.removeKid	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDStructureElement.java::method::PDStructureElement.setActualText	ported	src/pdfbox/pdmodel/document_interchange/logical_structure/pd_structure_element.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDStructureElement.java::method::PDStructureElement.setAlternateDescription	ported	src/pdfbox/pdmodel/document_interchange/logical_structure/pd_structure_element.cr	reconciled: method present

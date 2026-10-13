@@ -3709,9 +3709,9 @@ pdfbox/src/main/java/org/apache/pdfbox/cos/COSArray.java::method::COSArray.of	me
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSArray.java::method::COSArray.ofCOSIntegers	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSArray.java::method::COSArray.ofCOSNames	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSArray.java::method::COSArray.ofCOSStrings	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSArray.java::method::COSArray.remove	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSArray.java::method::COSArray.removeAll	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSArray.java::method::COSArray.removeObject	method	ported	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSArray.java::method::COSArray.remove	method	ported	src/pdfbox/cos.cr	ported: COSArray
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSArray.java::method::COSArray.removeAll	method	ported	src/pdfbox/cos.cr	ported: COSArray
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSArray.java::method::COSArray.removeObject	method	ported	src/pdfbox/cos.cr	ported: COSArray
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSArray.java::method::COSArray.resetObjectKeys	method	ported	src/pdfbox/cos.cr	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSArray.java::method::COSArray.retainAll	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSArray.java::method::COSArray.set	method	partial	src	auto-generated
@@ -6221,8 +6221,8 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstruct
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDParentTreeValue.java::method::PDParentTreeValue.toString	method	ported	src/pdfbox/pdmodel/common/pdparent_tree_value.cr	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDStructureElement.java::class::PDStructureElement	class	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDStructureElement.java::const::TYPE	const	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDStructureElement.java::method::PDStructureElement.addAttribute	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDStructureElement.java::method::PDStructureElement.addClassName	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDStructureElement.java::method::PDStructureElement.addAttribute	method	ported	src/pdfbox/pdmodel/document_interchange/logical_structure/pd_structure_element.cr	ported: PDStructureElement
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDStructureElement.java::method::PDStructureElement.addClassName	method	ported	src/pdfbox/pdmodel/document_interchange/logical_structure/pd_structure_element.cr	ported: PDStructureElement
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDStructureElement.java::method::PDStructureElement.appendKid	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDStructureElement.java::method::PDStructureElement.attributeChanged	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDStructureElement.java::method::PDStructureElement.getActualText	method	ported	src	auto-generated
@@ -6237,13 +6237,13 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstruct
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDStructureElement.java::method::PDStructureElement.getRevisionNumber	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDStructureElement.java::method::PDStructureElement.getRoleMap	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDStructureElement.java::method::PDStructureElement.getStandardStructureType	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDStructureElement.java::method::PDStructureElement.getStructureTreeRoot	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDStructureElement.java::method::PDStructureElement.getStructureTreeRoot	method	ported	src/pdfbox/pdmodel/document_interchange/logical_structure/pd_structure_element.cr	ported: PDStructureElement
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDStructureElement.java::method::PDStructureElement.getStructureType	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDStructureElement.java::method::PDStructureElement.getTitle	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDStructureElement.java::method::PDStructureElement.incrementRevisionNumber	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDStructureElement.java::method::PDStructureElement.insertBefore	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDStructureElement.java::method::PDStructureElement.removeAttribute	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDStructureElement.java::method::PDStructureElement.removeClassName	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDStructureElement.java::method::PDStructureElement.removeAttribute	method	ported	src/pdfbox/pdmodel/document_interchange/logical_structure/pd_structure_element.cr	ported: PDStructureElement
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDStructureElement.java::method::PDStructureElement.removeClassName	method	ported	src/pdfbox/pdmodel/document_interchange/logical_structure/pd_structure_element.cr	ported: PDStructureElement
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDStructureElement.java::method::PDStructureElement.removeKid	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDStructureElement.java::method::PDStructureElement.setActualText	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDStructureElement.java::method::PDStructureElement.setAlternateDescription	method	ported	src	auto-generated

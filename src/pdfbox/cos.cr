@@ -981,8 +981,13 @@ module Pdfbox::Cos
     end
 
     def remove_object(value : Base) : Bool
-      removed = !!@items.delete(value)
-      if !removed && value.is_a?(Dictionary)
+      # Java COSArray.removeObject calls ArrayList.remove(o), which removes only
+      # the first equal occurrence.
+      if index = @items.index { |item| item == value }
+        @items.delete_at(index)
+        return true
+      end
+      if value.is_a?(Dictionary)
         # Java COSArray.removeObject: an indirect COSObject entry pointing to the
         # target dict must also be removed.
         index = @items.index do |entry|
@@ -993,7 +998,7 @@ module Pdfbox::Cos
           return true
         end
       end
-      removed
+      false
     end
 
     def remove_all(values : Enumerable(Base)) : Nil

@@ -49,17 +49,24 @@ module Pdfbox::Pdmodel::DocumentInterchange::LogicalStructure
     # Walks the /P chain to the containing structure tree root and returns its
     # role map (Java getStructureTreeRoot + getRoleMap).
     private def containing_role_map : Hash(String, String)
+      root = structure_tree_root
+      root ? root.role_map : ({} of String => String)
+    end
+
+    # Returns the structure tree root that contains this element, or nil.
+    # Java PDStructureElement#getStructureTreeRoot.
+    def structure_tree_root : PDStructureTreeRoot?
       current = @dictionary
       100.times do
         parent_base = current[Pdfbox::Cos::Name.new("P")]?
         parent_base = parent_base.object if parent_base.is_a?(Pdfbox::Cos::Object)
         break unless parent_base.is_a?(Pdfbox::Cos::Dictionary)
         if parent_base.get_name_as_string(Pdfbox::Cos::Name.new("Type")) == PDStructureTreeRoot::TYPE
-          return PDStructureTreeRoot.new(parent_base).role_map
+          return PDStructureTreeRoot.new(parent_base)
         end
         current = parent_base
       end
-      {} of String => String
+      nil
     end
 
     def parent : self?
@@ -296,6 +303,95 @@ module Pdfbox::Pdmodel::DocumentInterchange::LogicalStructure
         array.add(a) if a
         array.add(Pdfbox::Cos::Integer.get(revision_number.to_i64))
         @dictionary.set_item(key, array)
+      end
+    end
+
+    # Adds an attribute object (Java PDStructureElement#addAttribute).
+    def add_attribute(attribute_object : PDAttributeObject) : Nil
+      key = Pdfbox::Cos::Name.new("A")
+      attribute_object.structure_element = self
+      a = @dictionary.get_dictionary_object(key)
+      array =
+        if a.is_a?(Pdfbox::Cos::Array)
+          a
+        else
+          new_array = Pdfbox::Cos::Array.new
+          if a
+            new_array.add(a)
+            new_array.add(Pdfbox::Cos::Integer.get(0_i64))
+          end
+          new_array
+        end
+      @dictionary.set_item(key, array)
+      array.add(attribute_object.cos_object)
+      array.add(Pdfbox::Cos::Integer.get(revision_number.to_i64))
+    end
+
+    # Removes an attribute object (Java PDStructureElement#removeAttribute).
+    def remove_attribute(attribute_object : PDAttributeObject) : Nil
+      key = Pdfbox::Cos::Name.new("A")
+      a = @dictionary.get_dictionary_object(key)
+      if a.is_a?(Pdfbox::Cos::Array)
+        array = a
+        array.remove_object(attribute_object.cos_object)
+        if array.size == 2 && array.get_int(1) == 0
+          first = array[0]?
+          first = first.object if first.is_a?(Pdfbox::Cos::Object)
+          if first
+            @dictionary.set_item(key, first)
+          else
+            @dictionary.delete(key)
+          end
+        end
+      else
+        if attribute_object.cos_object == a
+          @dictionary.delete(key)
+        end
+      end
+      attribute_object.structure_element = nil
+    end
+
+    # Adds a class name (Java PDStructureElement#addClassName).
+    def add_class_name(class_name : ::String) : Nil
+      key = Pdfbox::Cos::Name.new("C")
+      c = @dictionary.get_dictionary_object(key)
+      array =
+        if c.is_a?(Pdfbox::Cos::Array)
+          c
+        else
+          new_array = Pdfbox::Cos::Array.new
+          if c
+            new_array.add(c)
+            new_array.add(Pdfbox::Cos::Integer.get(0_i64))
+          end
+          new_array
+        end
+      @dictionary.set_item(key, array)
+      array.add(Pdfbox::Cos::Name.new(class_name))
+      array.add(Pdfbox::Cos::Integer.get(revision_number.to_i64))
+    end
+
+    # Removes a class name (Java PDStructureElement#removeClassName).
+    def remove_class_name(class_name : ::String) : Nil
+      key = Pdfbox::Cos::Name.new("C")
+      c = @dictionary.get_dictionary_object(key)
+      name = Pdfbox::Cos::Name.new(class_name)
+      if c.is_a?(Pdfbox::Cos::Array)
+        array = c
+        array.remove_object(name)
+        if array.size == 2 && array.get_int(1) == 0
+          first = array[0]?
+          first = first.object if first.is_a?(Pdfbox::Cos::Object)
+          if first
+            @dictionary.set_item(key, first)
+          else
+            @dictionary.delete(key)
+          end
+        end
+      else
+        if name == c
+          @dictionary.delete(key)
+        end
       end
     end
 
