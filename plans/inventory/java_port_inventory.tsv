@@ -8573,20 +8573,20 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/GouraudShadingCo
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/Line.java::class::Line	class	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/Line.java::method::Line.calcColor	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/Line.java::method::Line.calcLine	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDMeshBasedShadingType.java::class::PDMeshBasedShadingType	class	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDMeshBasedShadingType.java::class::PDMeshBasedShadingType	class	ported	src/pdfbox/pdmodel/graphics/shading/pd_mesh_based_shading_type.cr	ported: shading type model
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDMeshBasedShadingType.java::const::LOG	const	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDMeshBasedShadingType.java::method::PDMeshBasedShadingType.collectPatches	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDMeshBasedShadingType.java::method::PDMeshBasedShadingType.generatePatch	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDMeshBasedShadingType.java::method::PDMeshBasedShadingType.getBounds	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDMeshBasedShadingType.java::method::PDMeshBasedShadingType.readPatch	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::class::PDShading	class	ported	src/pdfbox/pdmodel/graphics/shading.cr + shading/pd_shading_type1.cr + resources.cr	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::const::SHADING_TYPE1	const	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::const::SHADING_TYPE2	const	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::const::SHADING_TYPE3	const	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::const::SHADING_TYPE4	const	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::const::SHADING_TYPE5	const	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::const::SHADING_TYPE6	const	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::const::SHADING_TYPE7	const	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::const::SHADING_TYPE1	const	ported	src/pdfbox/pdmodel/graphics/shading/shading.cr	ported: shading type model
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::const::SHADING_TYPE2	const	ported	src/pdfbox/pdmodel/graphics/shading/shading.cr	ported: shading type model
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::const::SHADING_TYPE3	const	ported	src/pdfbox/pdmodel/graphics/shading/shading.cr	ported: shading type model
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::const::SHADING_TYPE4	const	ported	src/pdfbox/pdmodel/graphics/shading/shading.cr	ported: shading type model
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::const::SHADING_TYPE5	const	ported	src/pdfbox/pdmodel/graphics/shading/shading.cr	ported: shading type model
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::const::SHADING_TYPE6	const	ported	src/pdfbox/pdmodel/graphics/shading/shading.cr	ported: shading type model
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::const::SHADING_TYPE7	const	ported	src/pdfbox/pdmodel/graphics/shading/shading.cr	ported: shading type model
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.create	method	ported	src/pdfbox/pdmodel/graphics/shading.cr + shading/pd_shading_type1.cr + resources.cr	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.evalFunction	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.getAntiAlias	method	missing	-	auto-generated
@@ -8595,7 +8595,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.getBounds	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.getCOSObject	method	ported	src/pdfbox/pdmodel/graphics/shading.cr + shading/pd_shading_type1.cr + resources.cr	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.getColorSpace	method	ported	src/pdfbox/pdmodel/graphics/shading.cr + shading/pd_shading_type1.cr + resources.cr	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.getFunction	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.getFunction	method	ported	src/pdfbox/pdmodel/graphics/shading/shading.cr	ported: shading type model
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.getFunctionsArray	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.getShadingType	method	ported	src/pdfbox/pdmodel/graphics/shading.cr + shading/pd_shading_type1.cr + resources.cr	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.getType	method	missing	-	auto-generated
@@ -8603,66 +8603,66 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.setBBox	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.setBackground	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.setColorSpace	method	ported	src/pdfbox/pdmodel/graphics/shading.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.setFunction	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.setFunction	method	ported	src/pdfbox/pdmodel/graphics/shading/shading.cr	ported: shading type model
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.setShadingType	method	ported	src/pdfbox/pdmodel/graphics/shading.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.toPaint	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShadingType1.java::class::PDShadingType1	class	ported	src/pdfbox/pdmodel/graphics/shading.cr + shading/pd_shading_type1.cr + resources.cr	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShadingType1.java::method::PDShadingType1.getDomain	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShadingType1.java::method::PDShadingType1.getMatrix	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShadingType1.java::method::PDShadingType1.getShadingType	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShadingType1.java::method::PDShadingType1.setDomain	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShadingType1.java::method::PDShadingType1.setMatrix	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShadingType1.java::method::PDShadingType1.getDomain	method	ported	src/pdfbox/pdmodel/graphics/shading/pd_shading_type1.cr	ported: shading type model
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShadingType1.java::method::PDShadingType1.getMatrix	method	ported	src/pdfbox/pdmodel/graphics/shading/pd_shading_type1.cr	ported: shading type model
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShadingType1.java::method::PDShadingType1.getShadingType	method	ported	src/pdfbox/pdmodel/graphics/shading/pd_shading_type1.cr	ported: shading type model
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShadingType1.java::method::PDShadingType1.setDomain	method	ported	src/pdfbox/pdmodel/graphics/shading/pd_shading_type1.cr	ported: shading type model
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShadingType1.java::method::PDShadingType1.setMatrix	method	ported	src/pdfbox/pdmodel/graphics/shading/pd_shading_type1.cr	ported: shading type model
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShadingType1.java::method::PDShadingType1.toPaint	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShadingType2.java::class::PDShadingType2	class	ported	src/pdfbox/pdmodel/graphics/shading.cr + shading/pd_shading_type1.cr + resources.cr	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShadingType2.java::method::PDShadingType2.getCoords	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShadingType2.java::method::PDShadingType2.getDomain	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShadingType2.java::method::PDShadingType2.getExtend	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShadingType2.java::method::PDShadingType2.getShadingType	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShadingType2.java::method::PDShadingType2.setCoords	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShadingType2.java::method::PDShadingType2.setDomain	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShadingType2.java::method::PDShadingType2.setExtend	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShadingType2.java::method::PDShadingType2.getCoords	method	ported	src/pdfbox/pdmodel/graphics/shading/pd_shading_type2.cr	ported: shading type model
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShadingType2.java::method::PDShadingType2.getDomain	method	ported	src/pdfbox/pdmodel/graphics/shading/pd_shading_type2.cr	ported: shading type model
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShadingType2.java::method::PDShadingType2.getExtend	method	ported	src/pdfbox/pdmodel/graphics/shading/pd_shading_type2.cr	ported: shading type model
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShadingType2.java::method::PDShadingType2.getShadingType	method	ported	src/pdfbox/pdmodel/graphics/shading/pd_shading_type2.cr	ported: shading type model
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShadingType2.java::method::PDShadingType2.setCoords	method	ported	src/pdfbox/pdmodel/graphics/shading/pd_shading_type2.cr	ported: shading type model
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShadingType2.java::method::PDShadingType2.setDomain	method	ported	src/pdfbox/pdmodel/graphics/shading/pd_shading_type2.cr	ported: shading type model
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShadingType2.java::method::PDShadingType2.setExtend	method	ported	src/pdfbox/pdmodel/graphics/shading/pd_shading_type2.cr	ported: shading type model
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShadingType2.java::method::PDShadingType2.toPaint	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShadingType3.java::class::PDShadingType3	class	ported	src/pdfbox/pdmodel/graphics/shading.cr + shading/pd_shading_type1.cr + resources.cr	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShadingType3.java::method::PDShadingType3.getShadingType	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShadingType3.java::method::PDShadingType3.getShadingType	method	ported	src/pdfbox/pdmodel/graphics/shading/pd_shading_type3.cr	ported: shading type model
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShadingType3.java::method::PDShadingType3.toPaint	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShadingType4.java::class::PDShadingType4	class	ported	src/pdfbox/pdmodel/graphics/shading.cr + shading/pd_shading_type1.cr + resources.cr	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShadingType4.java::const::LOG	const	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShadingType4.java::method::PDShadingType4.collectTriangles	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShadingType4.java::method::PDShadingType4.getBitsPerFlag	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShadingType4.java::method::PDShadingType4.getShadingType	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShadingType4.java::method::PDShadingType4.setBitsPerFlag	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShadingType4.java::method::PDShadingType4.getBitsPerFlag	method	ported	src/pdfbox/pdmodel/graphics/shading/pd_shading_type4.cr	ported: shading type model
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShadingType4.java::method::PDShadingType4.getShadingType	method	ported	src/pdfbox/pdmodel/graphics/shading/pd_shading_type4.cr	ported: shading type model
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShadingType4.java::method::PDShadingType4.setBitsPerFlag	method	ported	src/pdfbox/pdmodel/graphics/shading/pd_shading_type4.cr	ported: shading type model
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShadingType4.java::method::PDShadingType4.toPaint	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShadingType5.java::class::PDShadingType5	class	ported	src/pdfbox/pdmodel/graphics/shading.cr + shading/pd_shading_type1.cr + resources.cr	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShadingType5.java::method::PDShadingType5.collectTriangles	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShadingType5.java::method::PDShadingType5.createShadedTriangleList	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShadingType5.java::method::PDShadingType5.getShadingType	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShadingType5.java::method::PDShadingType5.getVerticesPerRow	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShadingType5.java::method::PDShadingType5.setVerticesPerRow	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShadingType5.java::method::PDShadingType5.getShadingType	method	ported	src/pdfbox/pdmodel/graphics/shading/pd_shading_type5.cr	ported: shading type model
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShadingType5.java::method::PDShadingType5.getVerticesPerRow	method	ported	src/pdfbox/pdmodel/graphics/shading/pd_shading_type5.cr	ported: shading type model
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShadingType5.java::method::PDShadingType5.setVerticesPerRow	method	ported	src/pdfbox/pdmodel/graphics/shading/pd_shading_type5.cr	ported: shading type model
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShadingType5.java::method::PDShadingType5.toPaint	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShadingType6.java::class::PDShadingType6	class	ported	src/pdfbox/pdmodel/graphics/shading.cr + shading/pd_shading_type1.cr + resources.cr	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShadingType6.java::method::PDShadingType6.generatePatch	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShadingType6.java::method::PDShadingType6.getBounds	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShadingType6.java::method::PDShadingType6.getShadingType	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShadingType6.java::method::PDShadingType6.getShadingType	method	ported	src/pdfbox/pdmodel/graphics/shading/pd_shading_type6.cr	ported: shading type model
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShadingType6.java::method::PDShadingType6.toPaint	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShadingType7.java::class::PDShadingType7	class	ported	src/pdfbox/pdmodel/graphics/shading.cr + shading/pd_shading_type1.cr + resources.cr	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShadingType7.java::method::PDShadingType7.generatePatch	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShadingType7.java::method::PDShadingType7.getBounds	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShadingType7.java::method::PDShadingType7.getShadingType	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShadingType7.java::method::PDShadingType7.getShadingType	method	ported	src/pdfbox/pdmodel/graphics/shading/pd_shading_type7.cr	ported: shading type model
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShadingType7.java::method::PDShadingType7.toPaint	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDTriangleBasedShadingType.java::class::PDTriangleBasedShadingType	class	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDTriangleBasedShadingType.java::class::PDTriangleBasedShadingType	class	ported	src/pdfbox/pdmodel/graphics/shading/pd_triangle_based_shading_type.cr	ported: shading type model
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDTriangleBasedShadingType.java::const::LOG	const	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDTriangleBasedShadingType.java::method::PDTriangleBasedShadingType.collectTriangles	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDTriangleBasedShadingType.java::method::PDTriangleBasedShadingType.getBitsPerComponent	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDTriangleBasedShadingType.java::method::PDTriangleBasedShadingType.getBitsPerCoordinate	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDTriangleBasedShadingType.java::method::PDTriangleBasedShadingType.getBitsPerComponent	method	ported	src/pdfbox/pdmodel/graphics/shading/pd_triangle_based_shading_type.cr	ported: shading type model
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDTriangleBasedShadingType.java::method::PDTriangleBasedShadingType.getBitsPerCoordinate	method	ported	src/pdfbox/pdmodel/graphics/shading/pd_triangle_based_shading_type.cr	ported: shading type model
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDTriangleBasedShadingType.java::method::PDTriangleBasedShadingType.getBounds	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDTriangleBasedShadingType.java::method::PDTriangleBasedShadingType.getDecodeForParameter	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDTriangleBasedShadingType.java::method::PDTriangleBasedShadingType.getDecodeValues	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDTriangleBasedShadingType.java::method::PDTriangleBasedShadingType.getNumberOfColorComponents	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDTriangleBasedShadingType.java::method::PDTriangleBasedShadingType.getDecodeForParameter	method	ported	src/pdfbox/pdmodel/graphics/shading/pd_triangle_based_shading_type.cr	ported: shading type model
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDTriangleBasedShadingType.java::method::PDTriangleBasedShadingType.getDecodeValues	method	ported	src/pdfbox/pdmodel/graphics/shading/pd_triangle_based_shading_type.cr	ported: shading type model
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDTriangleBasedShadingType.java::method::PDTriangleBasedShadingType.getNumberOfColorComponents	method	ported	src/pdfbox/pdmodel/graphics/shading/pd_triangle_based_shading_type.cr	ported: shading type model
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDTriangleBasedShadingType.java::method::PDTriangleBasedShadingType.interpolate	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDTriangleBasedShadingType.java::method::PDTriangleBasedShadingType.readVertex	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDTriangleBasedShadingType.java::method::PDTriangleBasedShadingType.setBitsPerComponent	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDTriangleBasedShadingType.java::method::PDTriangleBasedShadingType.setBitsPerCoordinate	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDTriangleBasedShadingType.java::method::PDTriangleBasedShadingType.setDecodeValues	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDTriangleBasedShadingType.java::method::PDTriangleBasedShadingType.setBitsPerComponent	method	ported	src/pdfbox/pdmodel/graphics/shading/pd_triangle_based_shading_type.cr	ported: shading type model
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDTriangleBasedShadingType.java::method::PDTriangleBasedShadingType.setBitsPerCoordinate	method	ported	src/pdfbox/pdmodel/graphics/shading/pd_triangle_based_shading_type.cr	ported: shading type model
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDTriangleBasedShadingType.java::method::PDTriangleBasedShadingType.setDecodeValues	method	ported	src/pdfbox/pdmodel/graphics/shading/pd_triangle_based_shading_type.cr	ported: shading type model
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/Patch.java::class::Patch	class	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/Patch.java::method::Patch.clonedPoint2DArray	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/Patch.java::method::Patch.edgeEquationValue	method	missing	-	auto-generated
