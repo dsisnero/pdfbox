@@ -1,13 +1,12 @@
 require "./pd_seed_value_mdp"
 require "./pd_seed_value_time_stamp"
+require "./pd_seed_value_certificate"
 
 module Pdfbox::Pdmodel::Interactive::Form
   # A signature seed value dictionary (/SV). Corresponds to PDSeedValue in Apache PDFBox.
   #
   # Source of truth:
   # vendor/pdfbox/pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValue.java
-  #
-  # The /Cert (PDSeedValueCertificate) accessors are not ported yet.
   class PDSeedValue
     FLAG_FILTER            = 1
     FLAG_SUBFILTER         = 1 << 1
@@ -147,6 +146,21 @@ module Pdfbox::Pdmodel::Interactive::Form
 
     def legal_attestation=(legal_attestation : Array(String)) : Nil
       @dictionary[Cos::Name.new("LegalAttestation")] = Cos::Array.of_cos_strings(legal_attestation)
+    end
+
+    # The certificate seed value dictionary (/Cert), or nil.
+    def seed_value_certificate : PDSeedValueCertificate?
+      dict = @dictionary.get_dictionary(Cos::Name.new("Cert"))
+      dict ? PDSeedValueCertificate.new(dict) : nil
+    end
+
+    def seed_value_certificate=(certificate : PDSeedValueCertificate?) : Nil
+      key = Cos::Name.new("Cert")
+      if certificate
+        @dictionary[key] = certificate.cos_object
+      else
+        @dictionary.delete(key)
+      end
     end
 
     # The MDP dictionary (/MDP), or nil.
