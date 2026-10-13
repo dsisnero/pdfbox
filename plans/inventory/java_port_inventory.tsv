@@ -6201,13 +6201,13 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstruct
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDMarkInfo.java::method::PDMarkInfo.setUserProperties	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDMarkInfo.java::method::PDMarkInfo.usesUserProperties	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDMarkedContentReference.java::class::PDMarkedContentReference	class	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDMarkedContentReference.java::const::TYPE	const	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDMarkedContentReference.java::const::TYPE	const	ported	src/pdfbox/pdmodel/document_interchange/logical_structure/pd_marked_content_reference.cr	ported: PDMarkedContentReference
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDMarkedContentReference.java::method::PDMarkedContentReference.getCOSObject	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDMarkedContentReference.java::method::PDMarkedContentReference.getMCID	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDMarkedContentReference.java::method::PDMarkedContentReference.getPage	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDMarkedContentReference.java::method::PDMarkedContentReference.getPage	method	ported	src/pdfbox/pdmodel/document_interchange/logical_structure/pd_marked_content_reference.cr	ported: PDMarkedContentReference
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDMarkedContentReference.java::method::PDMarkedContentReference.setMCID	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDMarkedContentReference.java::method::PDMarkedContentReference.setPage	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDMarkedContentReference.java::method::PDMarkedContentReference.toString	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDMarkedContentReference.java::method::PDMarkedContentReference.setPage	method	ported	src/pdfbox/pdmodel/document_interchange/logical_structure/pd_marked_content_reference.cr	ported: PDMarkedContentReference
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDMarkedContentReference.java::method::PDMarkedContentReference.toString	method	ported	src/pdfbox/pdmodel/document_interchange/logical_structure/pd_marked_content_reference.cr	ported: PDMarkedContentReference
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDObjectReference.java::class::PDObjectReference	class	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDObjectReference.java::const::LOG	const	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDObjectReference.java::const::TYPE	const	missing	-	auto-generated
