@@ -64,6 +64,26 @@ module Pdfbox::Pdmodel::Interactive::Annotation
       value
     end
 
+    # The normal icon form XObject (/I), or nil (Java getNormalIcon).
+    def normal_icon : Graphics::Form::PDFormXObject?
+      form_icon_for("I")
+    end
+
+    # The rollover icon form XObject (/RI), or nil (Java getRolloverIcon).
+    def rollover_icon : Graphics::Form::PDFormXObject?
+      form_icon_for("RI")
+    end
+
+    # The alternate icon form XObject (/IX), or nil (Java getAlternateIcon).
+    def alternate_icon : Graphics::Form::PDFormXObject?
+      form_icon_for("IX")
+    end
+
+    private def form_icon_for(key : String) : Graphics::Form::PDFormXObject?
+      stream = @dictionary.get_stream(Cos::Name.new(key))
+      stream ? Graphics::Form::PDFormXObject.new(stream) : nil
+    end
+
     private def color_for(name : Cos::Name) : Graphics::Color::PDColor?
       color_array = @dictionary.get_array(name)
       return unless color_array
