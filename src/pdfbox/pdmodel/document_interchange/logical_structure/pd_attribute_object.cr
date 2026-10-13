@@ -53,6 +53,23 @@ module Pdfbox::Pdmodel::DocumentInterchange::LogicalStructure
       @structure_element = element
     end
 
+    # Notifies the attached structure element that this attribute changed, if any
+    # (Java PDAttributeObject#notifyChanged).
+    protected def notify_changed : Nil
+      @structure_element.try(&.attribute_changed(self))
+    end
+
+    # Notifies the structure element only when the value actually changed
+    # (Java PDAttributeObject#potentiallyNotifyChanged).
+    protected def potentially_notify_changed(old_base : Cos::Base?, new_base : Cos::Base?) : Nil
+      notify_changed if value_changed?(old_base, new_base)
+    end
+
+    private def value_changed?(old_value : Cos::Base?, new_value : Cos::Base?) : Bool
+      return !new_value.nil? if old_value.nil?
+      old_value != new_value
+    end
+
     # Returns the owner of the attributes (/O).
     def owner : String?
       @dictionary.get_name_as_string(Cos::Name.new("O"))
@@ -80,6 +97,31 @@ module Pdfbox::Pdmodel::DocumentInterchange::LogicalStructure
 
     def initialize(dictionary : Cos::Dictionary)
       super(dictionary)
+    end
+
+    # Returns the attribute names, excluding the owner (/O).
+    # Java PDDefaultAttributeObject#getAttributeNames.
+    def attribute_names : Array(::String)
+      names = [] of ::String
+      cos_object.entries.each_key do |key|
+        next if key.value == "O"
+        names << key.value
+      end
+      names
+    end
+
+    # Returns the value of the named attribute, or nil.
+    # Java PDDefaultAttributeObject#getAttributeValue.
+    def attribute_value(attr_name : ::String) : Cos::Base?
+      cos_object.get_dictionary_object(Cos::Name.new(attr_name))
+    end
+
+    # Sets the named attribute and notifies the structure element on change.
+    # Java PDDefaultAttributeObject#setAttribute.
+    def set_attribute(attr_name : ::String, attr_value : Cos::Base) : Nil
+      old = attribute_value(attr_name)
+      cos_object.set_item(Cos::Name.new(attr_name), attr_value)
+      potentially_notify_changed(old, attr_value)
     end
   end
 
