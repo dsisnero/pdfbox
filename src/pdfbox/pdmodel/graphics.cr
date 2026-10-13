@@ -24,6 +24,7 @@ require "./graphics/color/pdicc_based"
 require "./graphics/color/pdindexed"
 require "./graphics/image"
 require "./graphics/shading"
+require "./graphics/pd_font_setting"
 require "./graphics/state/pd_extended_graphics_state"
 
 module Pdfbox::Pdmodel::Graphics

@@ -190,18 +190,18 @@ module Pdfbox::Pdmodel::Graphics::State
       value
     end
 
-    def font_setting : FontSetting?
-      f = @dict[Pdfbox::Cos::Name.new("Font")]
-      f = f.object if f.is_a?(Pdfbox::Cos::Object)
-      return unless f.is_a?(Pdfbox::Cos::Array) && f.size >= 2
-      font_ref = f[0]
-      font_ref = font_ref.object if font_ref.is_a?(Pdfbox::Cos::Object)
-      size = f[1]
-      size = size.object if size.is_a?(Pdfbox::Cos::Object)
-      return unless font_ref.is_a?(Pdfbox::Cos::Dictionary) && size.is_a?(Pdfbox::Cos::Number)
-      font = Pdfbox::Pdmodel::Font::PDFontFactory.create_font(font_ref)
-      return unless font
-      FontSetting.new(font, size.value.to_f32)
+    def font_setting : Pdfbox::Pdmodel::Graphics::PDFontSetting?
+      font = @dict.get_array(Pdfbox::Cos::Name.new("Font"))
+      font ? Pdfbox::Pdmodel::Graphics::PDFontSetting.new(font) : nil
+    end
+
+    def font_setting=(font_setting : Pdfbox::Pdmodel::Graphics::PDFontSetting?) : Nil
+      key = Pdfbox::Cos::Name.new("Font")
+      if font_setting
+        @dict[key] = font_setting.cos_object
+      else
+        @dict.delete(key)
+      end
     end
 
     private def dict_get_bool(name : String, default : Bool) : Bool
@@ -216,14 +216,6 @@ module Pdfbox::Pdmodel::Graphics::State
       v = v.object if v.is_a?(Pdfbox::Cos::Object)
       return unless v.is_a?(Pdfbox::Cos::Number)
       v.value.to_f32
-    end
-
-    struct FontSetting
-      getter font : Pdfbox::Pdmodel::Font::PDFont
-      getter font_size : Float32
-
-      def initialize(@font : Pdfbox::Pdmodel::Font::PDFont, @font_size : Float32)
-      end
     end
   end
 end

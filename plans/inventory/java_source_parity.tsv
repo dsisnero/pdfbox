@@ -7943,12 +7943,12 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/ZapfDingbatsEncodin
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/ZapfDingbatsEncoding.java::const::ZAPFDINGBATS_ENCODING_TABLE	ported	src/.../zapf_dingbats_encoding.cr	stale inventory; class ported
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/ZapfDingbatsEncoding.java::method::ZapfDingbatsEncoding.getCOSObject	ported	src/.../zapf_dingbats_encoding.cr	stale inventory; class ported
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/ZapfDingbatsEncoding.java::method::ZapfDingbatsEncoding.getEncodingName	ported	src/.../zapf_dingbats_encoding.cr	stale inventory; class ported
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/PDFontSetting.java::class::PDFontSetting	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/PDFontSetting.java::method::PDFontSetting.getCOSObject	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/PDFontSetting.java::method::PDFontSetting.getFont	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/PDFontSetting.java::method::PDFontSetting.getFontSize	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/PDFontSetting.java::method::PDFontSetting.setFont	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/PDFontSetting.java::method::PDFontSetting.setFontSize	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/PDFontSetting.java::class::PDFontSetting	ported	src/pdfbox/pdmodel/graphics/pd_font_setting.cr	ported: PDFontSetting
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/PDFontSetting.java::method::PDFontSetting.getCOSObject	ported	src/pdfbox/pdmodel/graphics/pd_font_setting.cr	ported: PDFontSetting
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/PDFontSetting.java::method::PDFontSetting.getFont	ported	src/pdfbox/pdmodel/graphics/pd_font_setting.cr	ported: PDFontSetting
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/PDFontSetting.java::method::PDFontSetting.getFontSize	ported	src/pdfbox/pdmodel/graphics/pd_font_setting.cr	ported: PDFontSetting
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/PDFontSetting.java::method::PDFontSetting.setFont	ported	src/pdfbox/pdmodel/graphics/pd_font_setting.cr	ported: PDFontSetting
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/PDFontSetting.java::method::PDFontSetting.setFontSize	ported	src/pdfbox/pdmodel/graphics/pd_font_setting.cr	ported: PDFontSetting
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/PDLineDashPattern.java::class::PDLineDashPattern	ported	src/pdfbox/pdmodel/graphics/pd_line_dash_pattern.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/PDLineDashPattern.java::method::PDLineDashPattern.getCOSObject	ported	src/pdfbox/pdmodel/graphics/pd_line_dash_pattern.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/PDLineDashPattern.java::method::PDLineDashPattern.getDashArray	ported	src/pdfbox/pdmodel/graphics/pd_line_dash_pattern.cr	reconciled: method present
