@@ -9725,12 +9725,12 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/annotation/handlers/P
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/annotation/handlers/PDUnderlineAppearanceHandler.java::method::PDUnderlineAppearanceHandler.generateDownAppearance	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/annotation/handlers/PDUnderlineAppearanceHandler.java::method::PDUnderlineAppearanceHandler.generateNormalAppearance	ported	src/pdfbox/pdmodel/interactive/annotation/handlers/pdunderline_appearance_handler.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/annotation/handlers/PDUnderlineAppearanceHandler.java::method::PDUnderlineAppearanceHandler.generateRolloverAppearance	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/COSFilterInputStream.java::class::COSFilterInputStream	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/COSFilterInputStream.java::method::COSFilterInputStream.calculateRanges	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/COSFilterInputStream.java::method::COSFilterInputStream.getRemaining	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/COSFilterInputStream.java::method::COSFilterInputStream.nextRange	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/COSFilterInputStream.java::method::COSFilterInputStream.read	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/COSFilterInputStream.java::method::COSFilterInputStream.toByteArray	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/COSFilterInputStream.java::class::COSFilterInputStream	ported	src/pdfbox/pdmodel/interactive/digitalsignature/cos_filter_input_stream.cr	ported: COSFilterInputStream
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/COSFilterInputStream.java::method::COSFilterInputStream.calculateRanges	ported	src/pdfbox/pdmodel/interactive/digitalsignature/cos_filter_input_stream.cr	ported: COSFilterInputStream
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/COSFilterInputStream.java::method::COSFilterInputStream.getRemaining	ported	src/pdfbox/pdmodel/interactive/digitalsignature/cos_filter_input_stream.cr	ported: COSFilterInputStream
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/COSFilterInputStream.java::method::COSFilterInputStream.nextRange	ported	src/pdfbox/pdmodel/interactive/digitalsignature/cos_filter_input_stream.cr	ported: COSFilterInputStream
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/COSFilterInputStream.java::method::COSFilterInputStream.read	ported	src/pdfbox/pdmodel/interactive/digitalsignature/cos_filter_input_stream.cr	ported: COSFilterInputStream
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/COSFilterInputStream.java::method::COSFilterInputStream.toByteArray	ported	src/pdfbox/pdmodel/interactive/digitalsignature/cos_filter_input_stream.cr	ported: COSFilterInputStream
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/ExternalSigningSupport.java::interface::ExternalSigningSupport	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/ExternalSigningSupport.java::method::getContent	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/ExternalSigningSupport.java::method::setSignature	missing	-	baseline
