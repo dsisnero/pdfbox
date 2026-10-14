@@ -473,6 +473,17 @@ module Pdfbox::Pdmodel::Fdf
       value
     end
 
+    # Java FDFAnnotation#parseFloats applied to a string split on commas and/or
+    # semicolons (used by ink gestures and polygon/polyline vertices). Java
+    # String.split drops trailing empty fields.
+    protected def parse_float_tokens(text : String) : Array(Float64)
+      tokens = text.split(/[,;]/)
+      while (last = tokens.last?) && last.empty?
+        tokens.pop
+      end
+      tokens.map(&.to_f64)
+    end
+
     protected def self.first_element_child(node : XML::Node, name : String) : XML::Node?
       node.children.find { |child| child.element? && child.name == name }
     end
