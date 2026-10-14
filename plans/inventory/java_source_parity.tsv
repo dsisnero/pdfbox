@@ -5852,21 +5852,21 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDS
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.createOutputStream	ported	src/pdfbox/pdmodel/common/pdstream.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.getCOSObject	ported	src/pdfbox/pdmodel/common/pdstream.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.getDecodeParms	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.getDecodedStreamLength	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.getFile	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.getDecodedStreamLength	ported	src/pdfbox/pdmodel/common/pdstream.cr	ported: PDStream
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.getFile	ported	src/pdfbox/pdmodel/common/pdstream.cr	ported: PDStream
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.getFileDecodeParams	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.getFileFilters	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.getFileFilters	ported	src/pdfbox/pdmodel/common/pdstream.cr	ported: PDStream
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.getFilters	ported	src/pdfbox/pdmodel/common/pdstream.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.getLength	ported	src/pdfbox/pdmodel/common/pdstream.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.getMetadata	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.getMetadata	ported	src/pdfbox/pdmodel/common/pdstream.cr	ported: PDStream
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.internalGetDecodeParams	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.setDecodeParms	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.setDecodedStreamLength	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.setFile	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.setDecodedStreamLength	ported	src/pdfbox/pdmodel/common/pdstream.cr	ported: PDStream
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.setFile	ported	src/pdfbox/pdmodel/common/pdstream.cr	ported: PDStream
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.setFileDecodeParams	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.setFileFilters	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.setFileFilters	ported	src/pdfbox/pdmodel/common/pdstream.cr	ported: PDStream
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.setFilters	ported	src/pdfbox/pdmodel/common/pdstream.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.setMetadata	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.setMetadata	ported	src/pdfbox/pdmodel/common/pdstream.cr	ported: PDStream
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.toByteArray	ported	src/pdfbox/pdmodel/common/pdstream.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDTypedDictionaryWrapper.java::class::PDTypedDictionaryWrapper	ported	src/pdfbox/pdmodel/common/pdtyped_dictionary_wrapper.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDTypedDictionaryWrapper.java::method::PDTypedDictionaryWrapper.getType	ported	src/pdfbox/pdmodel/common/pdtyped_dictionary_wrapper.cr	reconciled: method present

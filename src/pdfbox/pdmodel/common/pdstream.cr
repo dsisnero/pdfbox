@@ -108,5 +108,64 @@ module Pdfbox::Pdmodel::Common
       io = create_input_stream
       io.getb_to_end
     end
+
+    # The metadata stream (/Metadata), or nil (Java getMetadata).
+    def metadata : PDMetadata?
+      md = @stream.get_dictionary_object(Cos::Name.new("Metadata"))
+      return nil unless md
+      return PDMetadata.new(md) if md.is_a?(Cos::Stream)
+      raise ArgumentError.new("Expected a COSStream but was a #{md.class}")
+    end
+
+    # Sets the metadata stream (/Metadata); nil removes it (Java setMetadata).
+    def metadata=(meta : PDMetadata?) : Nil
+      key = Cos::Name.new("Metadata")
+      if meta
+        @stream.set_item(key, meta.cos_object)
+      else
+        @stream.delete(key)
+      end
+    end
+
+    # The decoded stream length (/DL). Java getDecodedStreamLength.
+    def decoded_stream_length : Int32
+      @stream.get_int(Cos::Name.new("DL"), 0).to_i32
+    end
+
+    def decoded_stream_length=(decoded_stream_length : Int32) : Nil
+      @stream.set_int(Cos::Name.new("DL"), decoded_stream_length)
+    end
+
+    # The file specification (/F), or nil (Java getFile).
+    def file : Filespecification::PDFileSpecification?
+      Filespecification::PDFileSpecification.create_fs(@stream.get_dictionary_object(Cos::Name.new("F")))
+    end
+
+    # Sets the file specification (/F); nil removes it (Java setFile).
+    def file=(f : Filespecification::PDFileSpecification?) : Nil
+      key = Cos::Name.new("F")
+      if f
+        @stream.set_item(key, f.cos_object)
+      else
+        @stream.delete(key)
+      end
+    end
+
+    # The file filters (/F_Filter) (Java getFileFilters).
+    def file_filters : Array(String)
+      filters_base = @stream.get_dictionary_object(Cos::Name.new("F_Filter"))
+      case filters_base
+      when Cos::Name
+        [filters_base.value]
+      when Cos::Array
+        filters_base.to_cos_name_string_list.compact
+      else
+        [] of String
+      end
+    end
+
+    def file_filters=(filters : Array(String)) : Nil
+      @stream[Cos::Name.new("F_Filter")] = Cos::Array.of_cos_names(filters)
+    end
   end
 end
