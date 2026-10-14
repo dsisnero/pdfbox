@@ -5587,10 +5587,10 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.setUs
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.setViewports	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPageContentStream.java::class::PDPageContentStream	ported	src/pdfbox/pdmodel/page_content_stream.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPageContentStream.java::const::LOG	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPageContentStream.java::enum::AppendMode	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPageContentStream.java::method::PDPageContentStream.appendRawCommands	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPageContentStream.java::method::PDPageContentStream.isOverwrite	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPageContentStream.java::method::PDPageContentStream.isPrepend	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPageContentStream.java::enum::AppendMode	ported	src/pdfbox/pdmodel/page_content_stream.cr	ported: PDPageContentStream
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPageContentStream.java::method::PDPageContentStream.appendRawCommands	ported	src/pdfbox/pdmodel/page_content_stream.cr	ported: PDPageContentStream
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPageContentStream.java::method::PDPageContentStream.isOverwrite	ported	src/pdfbox/pdmodel/page_content_stream.cr	ported: PDPageContentStream
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPageContentStream.java::method::PDPageContentStream.isPrepend	ported	src/pdfbox/pdmodel/page_content_stream.cr	ported: PDPageContentStream
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPageTree.java::class::PDPageTree	ported	src/pdfbox/pdmodel/page_tree.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPageTree.java::class::PageIterator	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPageTree.java::class::SearchContext	missing	-	baseline

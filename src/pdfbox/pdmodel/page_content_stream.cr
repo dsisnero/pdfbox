@@ -441,6 +441,19 @@ module Pdfbox::Pdmodel
       @buffer << name << '\n'
     end
 
+    # Appends raw command bytes/text directly (Java PDPageContentStream#appendRawCommands).
+    def append_raw_commands(commands : String) : Nil
+      @buffer.write(commands.to_slice)
+    end
+
+    def append_raw_commands(commands : Bytes) : Nil
+      @buffer.write(commands)
+    end
+
+    def append_raw_commands(data : Number) : Nil
+      append_raw_commands(data.to_s)
+    end
+
     private def get_current_font : Font::PDFont?
       @current_font
     end

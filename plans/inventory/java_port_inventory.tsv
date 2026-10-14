@@ -5587,10 +5587,10 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.setUs
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.setViewports	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPageContentStream.java::class::PDPageContentStream	class	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPageContentStream.java::const::LOG	const	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPageContentStream.java::enum::AppendMode	enum	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPageContentStream.java::method::PDPageContentStream.appendRawCommands	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPageContentStream.java::method::PDPageContentStream.isOverwrite	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPageContentStream.java::method::PDPageContentStream.isPrepend	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPageContentStream.java::enum::AppendMode	enum	ported	src/pdfbox/pdmodel/page_content_stream.cr	ported: PDPageContentStream
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPageContentStream.java::method::PDPageContentStream.appendRawCommands	method	ported	src/pdfbox/pdmodel/page_content_stream.cr	ported: PDPageContentStream
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPageContentStream.java::method::PDPageContentStream.isOverwrite	method	ported	src/pdfbox/pdmodel/page_content_stream.cr	ported: PDPageContentStream
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPageContentStream.java::method::PDPageContentStream.isPrepend	method	ported	src/pdfbox/pdmodel/page_content_stream.cr	ported: PDPageContentStream
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPageTree.java::class::PDPageTree	class	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPageTree.java::class::PageIterator	class	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPageTree.java::class::SearchContext	class	partial	src	auto-generated
