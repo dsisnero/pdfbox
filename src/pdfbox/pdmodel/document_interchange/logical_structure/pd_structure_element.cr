@@ -156,7 +156,7 @@ module Pdfbox::Pdmodel::DocumentInterchange::LogicalStructure
       expanded_form
     end
 
-    def append_kid(kid : Int32 | Int64 | Int) : Nil
+    def append_kid(kid : Int32 | Int64) : Nil
       mcid = kid.to_i32
       if mcid < 0
         raise ArgumentError.new("MCID should not be negative")
@@ -178,6 +178,70 @@ module Pdfbox::Pdmodel::DocumentInterchange::LogicalStructure
 
     def append_kid(object_reference : PDObjectReference) : Nil
       append_kid_base(object_reference.cos_object)
+    end
+
+    # Appends a structure element kid and reparents it
+    # (Java PDStructureNode#appendKid(PDStructureElement)).
+    def append_kid(structure_element : self) : Nil
+      append_kid_base(structure_element.cos_object)
+      structure_element.parent = self
+    end
+
+    # Inserts a structure element kid before the reference kid
+    # (Java PDStructureNode#insertBefore).
+    def insert_before(new_kid : self, ref_kid : Pdfbox::Cos::Base) : Nil
+      insert_before_base(new_kid.cos_object, ref_kid)
+    end
+
+    def insert_before(marked_content_reference : PDMarkedContentReference, ref_kid : Pdfbox::Cos::Base) : Nil
+      insert_before_base(marked_content_reference.cos_object, ref_kid)
+    end
+
+    def insert_before(object_reference : PDObjectReference, ref_kid : Pdfbox::Cos::Base) : Nil
+      insert_before_base(object_reference.cos_object, ref_kid)
+    end
+
+    def insert_before(marked_content_identifier : Int32, ref_kid : Pdfbox::Cos::Base) : Nil
+      insert_before_base(Pdfbox::Cos::Integer.get(marked_content_identifier.to_i64), ref_kid)
+    end
+
+    # Removes a structure element kid (Java PDStructureNode#removeKid).
+    def remove_kid(structure_element : self) : Bool
+      removed = remove_kid(structure_element.cos_object)
+      structure_element.parent = nil if removed
+      removed
+    end
+
+    def remove_kid(marked_content_reference : PDMarkedContentReference) : Bool
+      remove_kid(marked_content_reference.cos_object)
+    end
+
+    def remove_kid(object_reference : PDObjectReference) : Bool
+      remove_kid(object_reference.cos_object)
+    end
+
+    def remove_kid(marked_content_identifier : Int32) : Bool
+      remove_kid(Pdfbox::Cos::Integer.get(marked_content_identifier.to_i64))
+    end
+
+    def remove_kid(object : Pdfbox::Cos::Base) : Bool
+      k = @dictionary.get_dictionary_object(Pdfbox::Cos::Name.new("K"))
+      return false unless k
+      if k.is_a?(Pdfbox::Cos::Array)
+        removed = k.remove_object(object)
+        if k.size == 1
+          first = k[0]?
+          @dictionary.set_item("K", first) if first
+        end
+        removed
+      else
+        if k == object
+          @dictionary.delete(Pdfbox::Cos::Name.new("K"))
+          true
+        else
+          false
+        end
+      end
     end
 
     def kids : Array(Int32 | PDMarkedContentReference | PDObjectReference | self)
@@ -403,6 +467,24 @@ module Pdfbox::Pdmodel::DocumentInterchange::LogicalStructure
         k.add(object)
       else
         @dictionary.set_item("K", Pdfbox::Cos::Array.new([k, object]))
+      end
+    end
+
+    # Java PDStructureNode#insertBefore(COSBase, Object).
+    private def insert_before_base(new_kid : Pdfbox::Cos::Base, ref_kid : Pdfbox::Cos::Base) : Nil
+      ref_base = ref_kid
+      ref_base = ref_base.object if ref_base.is_a?(Pdfbox::Cos::Object)
+      k = @dictionary.get_dictionary_object(Pdfbox::Cos::Name.new("K"))
+      return unless k
+      if k.is_a?(Pdfbox::Cos::Array)
+        ref_index = k.index_of(ref_base)
+        index = ref_index >= 0 ? ref_index : k.size
+        k.add(index, new_kid)
+      else
+        only_kid = k == ref_base
+        if only_kid
+          @dictionary.set_item("K", Pdfbox::Cos::Array.new([new_kid, ref_base]))
+        end
       end
     end
 
