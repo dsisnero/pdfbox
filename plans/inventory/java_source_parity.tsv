@@ -10436,14 +10436,14 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDRadioButton.ja
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDRadioButton.java::method::PDRadioButton.setRadiosInUnison	ported	src/pdfbox/pdmodel/interactive/form/pdradio_button.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDSignatureField.java::class::PDSignatureField	ported	src/pdfbox/pdmodel/interactive/form/pdsignature_field.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDSignatureField.java::const::LOG	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDSignatureField.java::method::PDSignatureField.constructAppearances	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDSignatureField.java::method::PDSignatureField.constructAppearances	ported	src/pdfbox/pdmodel/interactive/form/pdsignature_field.cr	ported: PDSignatureField
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDSignatureField.java::method::PDSignatureField.generatePartialName	ported	src/pdfbox/pdmodel/interactive/form/pdsignature_field.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDSignatureField.java::method::PDSignatureField.getDefaultValue	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDSignatureField.java::method::PDSignatureField.getDefaultValue	ported	src/pdfbox/pdmodel/interactive/form/pdsignature_field.cr	ported: PDSignatureField
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDSignatureField.java::method::PDSignatureField.getSeedValue	ported	src/pdfbox/pdmodel/interactive/form/pdsignature_field.cr	ported: PDSignatureField seed_value
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDSignatureField.java::method::PDSignatureField.getSignature	ported	src/pdfbox/pdmodel/interactive/form/pdsignature_field.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDSignatureField.java::method::PDSignatureField.getValue	ported	src/pdfbox/pdmodel/interactive/form/pdsignature_field.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDSignatureField.java::method::PDSignatureField.getValueAsString	ported	src/pdfbox/pdmodel/interactive/form/pdsignature_field.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDSignatureField.java::method::PDSignatureField.setDefaultValue	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDSignatureField.java::method::PDSignatureField.setDefaultValue	ported	src/pdfbox/pdmodel/interactive/form/pdsignature_field.cr	ported: PDSignatureField
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDSignatureField.java::method::PDSignatureField.setSeedValue	ported	src/pdfbox/pdmodel/interactive/form/pdsignature_field.cr	ported: PDSignatureField seed_value
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDSignatureField.java::method::PDSignatureField.setValue	ported	src/pdfbox/pdmodel/interactive/form/pdsignature_field.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDTerminalField.java::class::PDTerminalField	ported	src/pdfbox/pdmodel/interactive/form/fdf_support.cr	reconciled: class present

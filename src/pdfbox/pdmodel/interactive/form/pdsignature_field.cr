@@ -66,6 +66,27 @@ module Pdfbox::Pdmodel::Interactive::Form
       end
     end
 
+    # Java PDSignatureField#getDefaultValue.
+    def default_value : PDSignature?
+      value = @dictionary[Cos::Name.new("DV")]?
+      value = value.object if value.is_a?(Cos::Object)
+      value.as?(Cos::Dictionary).try { |dictionary| PDSignature.new(dictionary) }
+    end
+
+    # Java PDSignatureField#setDefaultValue.
+    def default_value=(value : PDSignature) : Nil
+      @dictionary[Cos::Name.new("DV")] = value.cos_object
+    end
+
+    # Java PDSignatureField#constructAppearances: appearance generation for
+    # signatures is not implemented (PDFBOX-3524), so this is a no-op.
+    def construct_appearances : Nil
+    end
+
+    protected def apply_change : Nil
+      construct_appearances
+    end
+
     private def generate_partial_name : String
       field_name = "Signature"
       name_set = Set(String).new

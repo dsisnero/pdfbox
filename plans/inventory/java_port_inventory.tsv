@@ -10436,14 +10436,14 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDRadioButton.ja
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDRadioButton.java::method::PDRadioButton.setRadiosInUnison	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDSignatureField.java::class::PDSignatureField	class	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDSignatureField.java::const::LOG	const	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDSignatureField.java::method::PDSignatureField.constructAppearances	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDSignatureField.java::method::PDSignatureField.constructAppearances	method	ported	src/pdfbox/pdmodel/interactive/form/pdsignature_field.cr	ported: PDSignatureField
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDSignatureField.java::method::PDSignatureField.generatePartialName	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDSignatureField.java::method::PDSignatureField.getDefaultValue	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDSignatureField.java::method::PDSignatureField.getDefaultValue	method	ported	src/pdfbox/pdmodel/interactive/form/pdsignature_field.cr	ported: PDSignatureField
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDSignatureField.java::method::PDSignatureField.getSeedValue	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDSignatureField.java::method::PDSignatureField.getSignature	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDSignatureField.java::method::PDSignatureField.getValue	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDSignatureField.java::method::PDSignatureField.getValueAsString	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDSignatureField.java::method::PDSignatureField.setDefaultValue	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDSignatureField.java::method::PDSignatureField.setDefaultValue	method	ported	src/pdfbox/pdmodel/interactive/form/pdsignature_field.cr	ported: PDSignatureField
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDSignatureField.java::method::PDSignatureField.setSeedValue	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDSignatureField.java::method::PDSignatureField.setValue	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDTerminalField.java::class::PDTerminalField	class	ported	src	auto-generated
