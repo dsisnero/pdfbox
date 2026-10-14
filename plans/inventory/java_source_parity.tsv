@@ -5425,13 +5425,13 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocume
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.getDocumentInformation	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.getEncryption	ported	src/pdfbox/pdmodel/document.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.getFontsToSubset	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.getLastSignatureDictionary	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.getLastSignatureDictionary	ported	src/pdfbox/pdmodel/interactive/form/document_signatures.cr	ported: Document signatures
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.getNumberOfPages	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.getPage	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.getPages	ported	src/pdfbox/pdmodel/document.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.getResourceCache	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.getSignatureDictionaries	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.getSignatureFields	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.getSignatureDictionaries	ported	src/pdfbox/pdmodel/interactive/form/document_signatures.cr	ported: Document signatures
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.getSignatureFields	ported	src/pdfbox/pdmodel/interactive/form/document_signatures.cr	ported: Document signatures
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.getVersion	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.importPage	ported	src/pdfbox/pdmodel.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.isAllSecurityToBeRemoved	ported	src/pdfbox/pdmodel/document.cr	reconciled: method present
