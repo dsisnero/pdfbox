@@ -10456,36 +10456,36 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDTerminalField.
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDTerminalField.java::method::PDTerminalField.importFDF	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDTerminalField.java::method::PDTerminalField.setActions	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDTerminalField.java::method::PDTerminalField.setWidgets	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDTextField.java::class::PDTextField	class	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDTextField.java::const::FLAG_COMB	const	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDTextField.java::const::FLAG_DO_NOT_SCROLL	const	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDTextField.java::const::FLAG_DO_NOT_SPELL_CHECK	const	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDTextField.java::const::FLAG_FILE_SELECT	const	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDTextField.java::const::FLAG_MULTILINE	const	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDTextField.java::const::FLAG_PASSWORD	const	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDTextField.java::const::FLAG_RICH_TEXT	const	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDTextField.java::method::PDTextField.constructAppearances	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDTextField.java::method::PDTextField.doNotScroll	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDTextField.java::method::PDTextField.doNotSpellCheck	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDTextField.java::method::PDTextField.getDefaultValue	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDTextField.java::method::PDTextField.getMaxLen	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDTextField.java::method::PDTextField.getValue	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDTextField.java::method::PDTextField.getValueAsString	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDTextField.java::method::PDTextField.isComb	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDTextField.java::method::PDTextField.isFileSelect	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDTextField.java::method::PDTextField.isMultiline	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDTextField.java::method::PDTextField.isPassword	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDTextField.java::method::PDTextField.isRichText	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDTextField.java::method::PDTextField.setComb	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDTextField.java::method::PDTextField.setDefaultValue	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDTextField.java::method::PDTextField.setDoNotScroll	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDTextField.java::method::PDTextField.setDoNotSpellCheck	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDTextField.java::method::PDTextField.setFileSelect	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDTextField.java::method::PDTextField.setMaxLen	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDTextField.java::method::PDTextField.setMultiline	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDTextField.java::method::PDTextField.setPassword	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDTextField.java::method::PDTextField.setRichText	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDTextField.java::method::PDTextField.setValue	method	ported	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDTextField.java::class::PDTextField	class	ported	src/pdfbox/pdmodel/interactive/form/pdtext_field.cr	ported: PDTextField
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDTextField.java::const::FLAG_COMB	const	ported	src/pdfbox/pdmodel/interactive/form/pdtext_field.cr	ported: PDTextField
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDTextField.java::const::FLAG_DO_NOT_SCROLL	const	ported	src/pdfbox/pdmodel/interactive/form/pdtext_field.cr	ported: PDTextField
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDTextField.java::const::FLAG_DO_NOT_SPELL_CHECK	const	ported	src/pdfbox/pdmodel/interactive/form/pdtext_field.cr	ported: PDTextField
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDTextField.java::const::FLAG_FILE_SELECT	const	ported	src/pdfbox/pdmodel/interactive/form/pdtext_field.cr	ported: PDTextField
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDTextField.java::const::FLAG_MULTILINE	const	ported	src/pdfbox/pdmodel/interactive/form/pdtext_field.cr	ported: PDTextField
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDTextField.java::const::FLAG_PASSWORD	const	ported	src/pdfbox/pdmodel/interactive/form/pdtext_field.cr	ported: PDTextField
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDTextField.java::const::FLAG_RICH_TEXT	const	ported	src/pdfbox/pdmodel/interactive/form/pdtext_field.cr	ported: PDTextField
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDTextField.java::method::PDTextField.constructAppearances	method	ported	src/pdfbox/pdmodel/interactive/form/pdtext_field.cr	ported: PDTextField
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDTextField.java::method::PDTextField.doNotScroll	method	ported	src/pdfbox/pdmodel/interactive/form/pdtext_field.cr	ported: PDTextField
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDTextField.java::method::PDTextField.doNotSpellCheck	method	ported	src/pdfbox/pdmodel/interactive/form/pdtext_field.cr	ported: PDTextField
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDTextField.java::method::PDTextField.getDefaultValue	method	ported	src/pdfbox/pdmodel/interactive/form/pdtext_field.cr	ported: PDTextField
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDTextField.java::method::PDTextField.getMaxLen	method	ported	src/pdfbox/pdmodel/interactive/form/pdtext_field.cr	ported: PDTextField
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDTextField.java::method::PDTextField.getValue	method	ported	src/pdfbox/pdmodel/interactive/form/pdtext_field.cr	ported: PDTextField
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDTextField.java::method::PDTextField.getValueAsString	method	ported	src/pdfbox/pdmodel/interactive/form/pdtext_field.cr	ported: PDTextField
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDTextField.java::method::PDTextField.isComb	method	ported	src/pdfbox/pdmodel/interactive/form/pdtext_field.cr	ported: PDTextField
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDTextField.java::method::PDTextField.isFileSelect	method	ported	src/pdfbox/pdmodel/interactive/form/pdtext_field.cr	ported: PDTextField
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDTextField.java::method::PDTextField.isMultiline	method	ported	src/pdfbox/pdmodel/interactive/form/pdtext_field.cr	ported: PDTextField
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDTextField.java::method::PDTextField.isPassword	method	ported	src/pdfbox/pdmodel/interactive/form/pdtext_field.cr	ported: PDTextField
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDTextField.java::method::PDTextField.isRichText	method	ported	src/pdfbox/pdmodel/interactive/form/pdtext_field.cr	ported: PDTextField
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDTextField.java::method::PDTextField.setComb	method	ported	src/pdfbox/pdmodel/interactive/form/pdtext_field.cr	ported: PDTextField
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDTextField.java::method::PDTextField.setDefaultValue	method	ported	src/pdfbox/pdmodel/interactive/form/pdtext_field.cr	ported: PDTextField
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDTextField.java::method::PDTextField.setDoNotScroll	method	ported	src/pdfbox/pdmodel/interactive/form/pdtext_field.cr	ported: PDTextField
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDTextField.java::method::PDTextField.setDoNotSpellCheck	method	ported	src/pdfbox/pdmodel/interactive/form/pdtext_field.cr	ported: PDTextField
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDTextField.java::method::PDTextField.setFileSelect	method	ported	src/pdfbox/pdmodel/interactive/form/pdtext_field.cr	ported: PDTextField
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDTextField.java::method::PDTextField.setMaxLen	method	ported	src/pdfbox/pdmodel/interactive/form/pdtext_field.cr	ported: PDTextField
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDTextField.java::method::PDTextField.setMultiline	method	ported	src/pdfbox/pdmodel/interactive/form/pdtext_field.cr	ported: PDTextField
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDTextField.java::method::PDTextField.setPassword	method	ported	src/pdfbox/pdmodel/interactive/form/pdtext_field.cr	ported: PDTextField
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDTextField.java::method::PDTextField.setRichText	method	ported	src/pdfbox/pdmodel/interactive/form/pdtext_field.cr	ported: PDTextField
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDTextField.java::method::PDTextField.setValue	method	ported	src/pdfbox/pdmodel/interactive/form/pdtext_field.cr	ported: PDTextField
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDVariableText.java::class::PDVariableText	class	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDVariableText.java::const::QUADDING_CENTERED	const	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDVariableText.java::const::QUADDING_LEFT	const	ported	src	auto-generated

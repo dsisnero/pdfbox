@@ -142,6 +142,16 @@ module Pdfbox::Pdmodel::Interactive::Form
       value
     end
 
+    # Whether the field is a rich text field (Java isRichText).
+    def rich_text? : Bool
+      (field_flags & FLAG_RICH_TEXT) != 0
+    end
+
+    def rich_text=(value : Bool) : Bool
+      @dictionary.set_flag(Cos::Name.new("Ff"), FLAG_RICH_TEXT, value)
+      value
+    end
+
     # Get default value
     def default_value : String?
       value = @dictionary[Cos::Name.new("DV")]
