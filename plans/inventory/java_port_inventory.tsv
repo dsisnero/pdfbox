@@ -5456,11 +5456,11 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::const::LO
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.addOutputIntent	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.findNamedDestinationPage	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getAcroForm	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getActions	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getActions	method	ported	src/pdfbox/pdmodel.cr	ported: PDDocumentCatalog remaining accessors
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getCOSObject	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getDests	method	ported	src/pdfbox/pdmodel.cr	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getDocumentOutline	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getLanguage	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getLanguage	method	ported	src/pdfbox/pdmodel.cr	ported: PDDocumentCatalog remaining accessors
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getMarkInfo	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getMetadata	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getNames	method	ported	src	auto-generated
@@ -5468,30 +5468,30 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::P
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getOpenAction	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getOutputIntents	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getPageLabels	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getPageLayout	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getPageMode	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getPageLayout	method	ported	src/pdfbox/pdmodel.cr	ported: PDDocumentCatalog remaining accessors
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getPageMode	method	ported	src/pdfbox/pdmodel.cr	ported: PDDocumentCatalog remaining accessors
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getPages	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getStructureTreeRoot	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getThreads	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getURI	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getThreads	method	ported	src/pdfbox/pdmodel.cr	ported: PDDocumentCatalog remaining accessors
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getURI	method	ported	src/pdfbox/pdmodel.cr	ported: PDDocumentCatalog remaining accessors
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getVersion	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getViewerPreferences	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setAcroForm	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setActions	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setActions	method	ported	src/pdfbox/pdmodel.cr	ported: PDDocumentCatalog remaining accessors
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setDocumentOutline	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setLanguage	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setLanguage	method	ported	src/pdfbox/pdmodel.cr	ported: PDDocumentCatalog remaining accessors
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setMarkInfo	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setMetadata	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setNames	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setOCProperties	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setOpenAction	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setOutputIntents	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setPageLabels	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setPageLayout	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setPageMode	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setPageLabels	method	ported	src/pdfbox/pdmodel.cr	ported: PDDocumentCatalog remaining accessors
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setPageLayout	method	ported	src/pdfbox/pdmodel.cr	ported: PDDocumentCatalog remaining accessors
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setPageMode	method	ported	src/pdfbox/pdmodel.cr	ported: PDDocumentCatalog remaining accessors
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setStructureTreeRoot	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setThreads	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setURI	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setThreads	method	ported	src/pdfbox/pdmodel.cr	ported: PDDocumentCatalog remaining accessors
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setURI	method	ported	src/pdfbox/pdmodel.cr	ported: PDDocumentCatalog remaining accessors
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setVersion	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setViewerPreferences	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentInformation.java::class::PDDocumentInformation	class	partial	src	auto-generated
@@ -5521,14 +5521,14 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentInformation.java::metho
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentNameDestinationDictionary.java::class::PDDocumentNameDestinationDictionary	class	ported	src/pdfbox/pdmodel.cr	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentNameDestinationDictionary.java::method::PDDocumentNameDestinationDictionary.getCOSObject	method	ported	src/pdfbox/pdmodel.cr	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentNameDestinationDictionary.java::method::PDDocumentNameDestinationDictionary.getDestination	method	ported	src/pdfbox/pdmodel.cr	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentNameDictionary.java::class::PDDocumentNameDictionary	class	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentNameDictionary.java::class::PDDocumentNameDictionary	class	ported	src	DocumentNameDictionary name-tree surface (dests/javascript/embedded files)
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentNameDictionary.java::method::PDDocumentNameDictionary.getCOSObject	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentNameDictionary.java::method::PDDocumentNameDictionary.getDests	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentNameDictionary.java::method::PDDocumentNameDictionary.getDests	method	ported	src	DocumentNameDictionary name-tree surface (dests/javascript/embedded files)
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentNameDictionary.java::method::PDDocumentNameDictionary.getEmbeddedFiles	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentNameDictionary.java::method::PDDocumentNameDictionary.getJavaScript	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentNameDictionary.java::method::PDDocumentNameDictionary.setDests	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentNameDictionary.java::method::PDDocumentNameDictionary.getJavaScript	method	ported	src	DocumentNameDictionary name-tree surface (dests/javascript/embedded files)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentNameDictionary.java::method::PDDocumentNameDictionary.setDests	method	ported	src	DocumentNameDictionary name-tree surface (dests/javascript/embedded files)
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentNameDictionary.java::method::PDDocumentNameDictionary.setEmbeddedFiles	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentNameDictionary.java::method::PDDocumentNameDictionary.setJavascript	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentNameDictionary.java::method::PDDocumentNameDictionary.setJavascript	method	ported	src	DocumentNameDictionary name-tree surface (dests/javascript/embedded files)
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDEmbeddedFilesNameTreeNode.java::class::PDEmbeddedFilesNameTreeNode	class	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDEmbeddedFilesNameTreeNode.java::method::PDEmbeddedFilesNameTreeNode.convertCOSToPD	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDEmbeddedFilesNameTreeNode.java::method::PDEmbeddedFilesNameTreeNode.createChildNode	method	ported	src	auto-generated
@@ -5541,11 +5541,11 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::const::DELIMITER	con
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::const::LOG	const	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.clipToMediaBox	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.equals	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getActions	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getActions	method	ported	src	PDPage bleed/trim/art boxes + page additional actions
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getAnnotations	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getArtBox	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getArtBox	method	ported	src	PDPage bleed/trim/art boxes + page additional actions
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getBBox	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getBleedBox	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getBleedBox	method	ported	src	PDPage bleed/trim/art boxes + page additional actions
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getCOSObject	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getContentStreams	method	ported	src/pdfbox/pdmodel/page.cr	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getContents	method	ported	src	auto-generated
@@ -5562,17 +5562,17 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getRo
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getStructParents	method	ported	src/pdfbox/pdmodel/page.cr	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getThreadBeads	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getTransition	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getTrimBox	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getTrimBox	method	ported	src	PDPage bleed/trim/art boxes + page additional actions
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getUserUnit	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getViewports	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.hasContents	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.hashCode	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.removePageResourceFromCache	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.removeResources	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.setActions	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.setActions	method	ported	src	PDPage bleed/trim/art boxes + page additional actions
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.setAnnotations	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.setArtBox	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.setBleedBox	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.setArtBox	method	ported	src	PDPage bleed/trim/art boxes + page additional actions
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.setBleedBox	method	ported	src	PDPage bleed/trim/art boxes + page additional actions
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.setContents	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.setCropBox	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.setMediaBox	method	ported	src	auto-generated
@@ -5582,7 +5582,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.setRo
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.setStructParents	method	ported	src/pdfbox/pdmodel/page.cr	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.setThreadBeads	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.setTransition	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.setTrimBox	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.setTrimBox	method	ported	src	PDPage bleed/trim/art boxes + page additional actions
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.setUserUnit	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.setViewports	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPageContentStream.java::class::PDPageContentStream	class	partial	src	auto-generated
@@ -7114,9 +7114,9 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationText.java::metho
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationText.java::method::FDFAnnotationText.setIcon	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationText.java::method::FDFAnnotationText.setState	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationText.java::method::FDFAnnotationText.setStateModel	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationTextMarkup.java::class::FDFAnnotationTextMarkup	class	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationTextMarkup.java::method::FDFAnnotationTextMarkup.getCoords	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationTextMarkup.java::method::FDFAnnotationTextMarkup.setCoords	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationTextMarkup.java::class::FDFAnnotationTextMarkup	class	ported	src/pdfbox/pdmodel/fdf/fdf_annotation.cr	ported: FDFAnnotationTextMarkup coords
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationTextMarkup.java::method::FDFAnnotationTextMarkup.getCoords	method	ported	src/pdfbox/pdmodel/fdf/fdf_annotation.cr	ported: FDFAnnotationTextMarkup coords
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationTextMarkup.java::method::FDFAnnotationTextMarkup.setCoords	method	ported	src/pdfbox/pdmodel/fdf/fdf_annotation.cr	ported: FDFAnnotationTextMarkup coords
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationUnderline.java::class::FDFAnnotationUnderline	class	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationUnderline.java::const::SUBTYPE	const	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFCatalog.java::class::FDFCatalog	class	partial	src	auto-generated
@@ -8013,7 +8013,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCIEDictionaryBas
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCIEDictionaryBasedColorSpace.java::method::PDCIEDictionaryBasedColorSpace.setBlackPoint	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCIEDictionaryBasedColorSpace.java::method::PDCIEDictionaryBasedColorSpace.setWhitePoint	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCalGray.java::class::PDCalGray	class	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCalGray.java::method::PDCalGray.getDefaultDecode	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCalGray.java::method::PDCalGray.getDefaultDecode	method	ported	-	PDColorSpace#default_decode abstract + per-subclass overrides
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCalGray.java::method::PDCalGray.getGamma	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCalGray.java::method::PDCalGray.getInitialColor	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCalGray.java::method::PDCalGray.getName	method	missing	-	auto-generated
@@ -8021,7 +8021,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCalGray.java::me
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCalGray.java::method::PDCalGray.setGamma	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCalGray.java::method::PDCalGray.toRGB	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCalRGB.java::class::PDCalRGB	class	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCalRGB.java::method::PDCalRGB.getDefaultDecode	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCalRGB.java::method::PDCalRGB.getDefaultDecode	method	ported	-	PDColorSpace#default_decode abstract + per-subclass overrides
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCalRGB.java::method::PDCalRGB.getGamma	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCalRGB.java::method::PDCalRGB.getInitialColor	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCalRGB.java::method::PDCalRGB.getMatrix	method	missing	-	auto-generated
@@ -8083,7 +8083,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceN.java::co
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceN.java::method::PDDeviceN.getAlternateColorSpace	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceN.java::method::PDDeviceN.getAttributes	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceN.java::method::PDDeviceN.getColorantNames	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceN.java::method::PDDeviceN.getDefaultDecode	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceN.java::method::PDDeviceN.getDefaultDecode	method	ported	-	PDColorSpace#default_decode abstract + per-subclass overrides
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceN.java::method::PDDeviceN.getInitialColor	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceN.java::method::PDDeviceN.getName	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceN.java::method::PDDeviceN.getNumberOfComponents	method	missing	-	auto-generated
@@ -8134,27 +8134,27 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDGamma.java::meth
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDGamma.java::method::PDGamma.setR	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::class::PDICCBased	class	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::const::LOG	const	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.checkArray	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.checkArray	method	ported	src	PDICCBased alternate color space / range / metadata accessors
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.clampColors	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.create	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.create	method	partial	src	array constructor + checkArray present; Java resource-cache overload has no Crystal equivalent
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.ensureDisplayProfile	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.fallbackToAlternateColorSpace	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.getAlternateColorSpace	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.getAlternateColorSpace	method	ported	src	PDICCBased alternate color space / range / metadata accessors
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.getColorSpaceType	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.getDefaultDecode	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.getInitialColor	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.getMetadata	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.getDefaultDecode	method	ported	src	PDColorSpace#default_decode abstract + per-subclass overrides
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.getInitialColor	method	ported	src	PDICCBased alternate color space / range / metadata accessors
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.getMetadata	method	ported	src	PDICCBased alternate color space / range / metadata accessors
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.getName	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.getNumberOfComponents	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.getPDStream	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.getRangeForComponent	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.getRangeForComponent	method	ported	src	PDICCBased alternate color space / range / metadata accessors
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.intToBigEndian	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.isSRGB	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.is_sRGB	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.loadICCProfile	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.setAlternateColorSpaces	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.setMetadata	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.setRangeForComponent	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.setAlternateColorSpaces	method	ported	src	PDICCBased alternate color space / range / metadata accessors
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.setMetadata	method	ported	src	PDICCBased alternate color space / range / metadata accessors
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.setRangeForComponent	method	ported	src	PDICCBased alternate color space / range / metadata accessors
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.toRGB	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.toRGBImage	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.toRawImage	method	partial	src	auto-generated
@@ -8185,7 +8185,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDJPXColorSpace.ja
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDLab.java::class::PDLab	class	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDLab.java::method::PDLab.getARange	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDLab.java::method::PDLab.getBRange	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDLab.java::method::PDLab.getDefaultDecode	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDLab.java::method::PDLab.getDefaultDecode	method	ported	src	PDColorSpace#default_decode abstract + per-subclass overrides
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDLab.java::method::PDLab.getDefaultRangeArray	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDLab.java::method::PDLab.getInitialColor	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDLab.java::method::PDLab.getName	method	ported	src	auto-generated
@@ -8197,10 +8197,10 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDLab.java::method
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDLab.java::method::PDLab.toRGB	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDLab.java::method::PDLab.toRGBImage	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDLab.java::method::PDLab.toRawImage	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDOutputIntent.java::class::PDOutputIntent	class	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDOutputIntent.java::method::PDOutputIntent.configureOutputProfile	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDOutputIntent.java::class::PDOutputIntent	class	ported	src	PDOutputIntent dest output profile (Flate-encoded ICC) via getDestOutputIntent/configureOutputProfile
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDOutputIntent.java::method::PDOutputIntent.configureOutputProfile	method	ported	src	PDOutputIntent dest output profile (Flate-encoded ICC) via getDestOutputIntent/configureOutputProfile
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDOutputIntent.java::method::PDOutputIntent.getCOSObject	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDOutputIntent.java::method::PDOutputIntent.getDestOutputIntent	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDOutputIntent.java::method::PDOutputIntent.getDestOutputIntent	method	ported	src	PDOutputIntent dest output profile (Flate-encoded ICC) via getDestOutputIntent/configureOutputProfile
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDOutputIntent.java::method::PDOutputIntent.getInfo	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDOutputIntent.java::method::PDOutputIntent.getOutputCondition	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDOutputIntent.java::method::PDOutputIntent.getOutputConditionIdentifier	method	ported	src	auto-generated
@@ -8211,7 +8211,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDOutputIntent.jav
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDOutputIntent.java::method::PDOutputIntent.setRegistryName	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDPattern.java::class::PDPattern	class	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDPattern.java::const::EMPTY_PATTERN	const	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDPattern.java::method::PDPattern.getDefaultDecode	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDPattern.java::method::PDPattern.getDefaultDecode	method	ported	src	PDColorSpace#default_decode abstract + per-subclass overrides
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDPattern.java::method::PDPattern.getInitialColor	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDPattern.java::method::PDPattern.getName	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDPattern.java::method::PDPattern.getNumberOfComponents	method	ported	src	auto-generated
@@ -8227,7 +8227,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDSeparation.java:
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDSeparation.java::const::TINT_TRANSFORM	const	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDSeparation.java::method::PDSeparation.getAlternateColorSpace	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDSeparation.java::method::PDSeparation.getColorantName	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDSeparation.java::method::PDSeparation.getDefaultDecode	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDSeparation.java::method::PDSeparation.getDefaultDecode	method	ported	-	PDColorSpace#default_decode abstract + per-subclass overrides
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDSeparation.java::method::PDSeparation.getInitialColor	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDSeparation.java::method::PDSeparation.getName	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDSeparation.java::method::PDSeparation.getNumberOfComponents	method	missing	-	auto-generated
@@ -8588,24 +8588,24 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::const::SHADING_TYPE6	const	ported	src/pdfbox/pdmodel/graphics/shading/shading.cr	ported: shading type model
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::const::SHADING_TYPE7	const	ported	src/pdfbox/pdmodel/graphics/shading/shading.cr	ported: shading type model
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.create	method	ported	src/pdfbox/pdmodel/graphics/shading.cr + shading/pd_shading_type1.cr + resources.cr	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.evalFunction	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.getAntiAlias	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.getBBox	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.getBackground	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.getBounds	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.evalFunction	method	ported	-	PDShading base accessors (type/anti-alias/background/bbox/color space/evalFunction)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.getAntiAlias	method	ported	-	PDShading base accessors (type/anti-alias/background/bbox/color space/evalFunction)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.getBBox	method	ported	-	PDShading base accessors (type/anti-alias/background/bbox/color space/evalFunction)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.getBackground	method	ported	-	PDShading base accessors (type/anti-alias/background/bbox/color space/evalFunction)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.getBounds	method	partial	-	AWT Paint / AffineTransform bounds, out of scope
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.getCOSObject	method	ported	src/pdfbox/pdmodel/graphics/shading.cr + shading/pd_shading_type1.cr + resources.cr	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.getColorSpace	method	ported	src/pdfbox/pdmodel/graphics/shading.cr + shading/pd_shading_type1.cr + resources.cr	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.getFunction	method	ported	src/pdfbox/pdmodel/graphics/shading/shading.cr	ported: shading type model
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.getFunctionsArray	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.getFunctionsArray	method	ported	-	PDShading base accessors (type/anti-alias/background/bbox/color space/evalFunction)
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.getShadingType	method	ported	src/pdfbox/pdmodel/graphics/shading.cr + shading/pd_shading_type1.cr + resources.cr	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.getType	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.setAntiAlias	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.setBBox	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.setBackground	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.setColorSpace	method	ported	src/pdfbox/pdmodel/graphics/shading.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.getType	method	ported	-	PDShading base accessors (type/anti-alias/background/bbox/color space/evalFunction)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.setAntiAlias	method	ported	-	PDShading base accessors (type/anti-alias/background/bbox/color space/evalFunction)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.setBBox	method	ported	-	PDShading base accessors (type/anti-alias/background/bbox/color space/evalFunction)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.setBackground	method	ported	-	PDShading base accessors (type/anti-alias/background/bbox/color space/evalFunction)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.setColorSpace	method	ported	src/pdfbox/pdmodel/graphics/shading.cr	PDShading base accessors (type/anti-alias/background/bbox/color space/evalFunction)
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.setFunction	method	ported	src/pdfbox/pdmodel/graphics/shading/shading.cr	ported: shading type model
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.setShadingType	method	ported	src/pdfbox/pdmodel/graphics/shading.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.toPaint	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.setShadingType	method	ported	src/pdfbox/pdmodel/graphics/shading.cr	PDShading base accessors (type/anti-alias/background/bbox/color space/evalFunction)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.toPaint	method	partial	-	AWT Paint / AffineTransform bounds, out of scope
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShadingType1.java::class::PDShadingType1	class	ported	src/pdfbox/pdmodel/graphics/shading.cr + shading/pd_shading_type1.cr + resources.cr	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShadingType1.java::method::PDShadingType1.getDomain	method	ported	src/pdfbox/pdmodel/graphics/shading/pd_shading_type1.cr	ported: shading type model
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShadingType1.java::method::PDShadingType1.getMatrix	method	ported	src/pdfbox/pdmodel/graphics/shading/pd_shading_type1.cr	ported: shading type model
@@ -8772,7 +8772,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/Vertex.java::cla
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/Vertex.java::method::Vertex.toString	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDExtendedGraphicsState.java::class::PDExtendedGraphicsState	class	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDExtendedGraphicsState.java::method::PDExtendedGraphicsState.copyIntoGraphicsState	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDExtendedGraphicsState.java::method::PDExtendedGraphicsState.defaultIfNull	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDExtendedGraphicsState.java::method::PDExtendedGraphicsState.defaultIfNull	method	ported	src	PDExtendedGraphicsState setters + transfer functions + line_dash_pattern getter fix
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDExtendedGraphicsState.java::method::PDExtendedGraphicsState.getAlphaSourceFlag	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDExtendedGraphicsState.java::method::PDExtendedGraphicsState.getAutomaticStrokeAdjustment	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDExtendedGraphicsState.java::method::PDExtendedGraphicsState.getBlendMode	method	ported	src	auto-generated
@@ -8794,13 +8794,13 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDExtendedGraphics
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDExtendedGraphicsState.java::method::PDExtendedGraphicsState.getStrokingAlphaConstant	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDExtendedGraphicsState.java::method::PDExtendedGraphicsState.getStrokingOverprintControl	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDExtendedGraphicsState.java::method::PDExtendedGraphicsState.getTextKnockoutFlag	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDExtendedGraphicsState.java::method::PDExtendedGraphicsState.getTransfer	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDExtendedGraphicsState.java::method::PDExtendedGraphicsState.getTransfer2	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDExtendedGraphicsState.java::method::PDExtendedGraphicsState.getTransfer	method	ported	src	PDExtendedGraphicsState setters + transfer functions + line_dash_pattern getter fix
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDExtendedGraphicsState.java::method::PDExtendedGraphicsState.getTransfer2	method	ported	src	PDExtendedGraphicsState setters + transfer functions + line_dash_pattern getter fix
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDExtendedGraphicsState.java::method::PDExtendedGraphicsState.setAlphaSourceFlag	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDExtendedGraphicsState.java::method::PDExtendedGraphicsState.setAutomaticStrokeAdjustment	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDExtendedGraphicsState.java::method::PDExtendedGraphicsState.setBlendMode	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDExtendedGraphicsState.java::method::PDExtendedGraphicsState.setFlatnessTolerance	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDExtendedGraphicsState.java::method::PDExtendedGraphicsState.setFloatItem	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDExtendedGraphicsState.java::method::PDExtendedGraphicsState.setFloatItem	method	ported	src	PDExtendedGraphicsState setters + transfer functions + line_dash_pattern getter fix
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDExtendedGraphicsState.java::method::PDExtendedGraphicsState.setFontSetting	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDExtendedGraphicsState.java::method::PDExtendedGraphicsState.setLineCapStyle	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDExtendedGraphicsState.java::method::PDExtendedGraphicsState.setLineDashPattern	method	ported	src	auto-generated
@@ -8815,8 +8815,8 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDExtendedGraphics
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDExtendedGraphicsState.java::method::PDExtendedGraphicsState.setStrokingAlphaConstant	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDExtendedGraphicsState.java::method::PDExtendedGraphicsState.setStrokingOverprintControl	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDExtendedGraphicsState.java::method::PDExtendedGraphicsState.setTextKnockoutFlag	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDExtendedGraphicsState.java::method::PDExtendedGraphicsState.setTransfer	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDExtendedGraphicsState.java::method::PDExtendedGraphicsState.setTransfer2	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDExtendedGraphicsState.java::method::PDExtendedGraphicsState.setTransfer	method	ported	src	PDExtendedGraphicsState setters + transfer functions + line_dash_pattern getter fix
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDExtendedGraphicsState.java::method::PDExtendedGraphicsState.setTransfer2	method	ported	src	PDExtendedGraphicsState setters + transfer functions + line_dash_pattern getter fix
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::class::PDGraphicsState	class	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.clone	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.getAlphaConstant	method	partial	src	auto-generated
@@ -10247,7 +10247,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java:
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.getDefaultResources	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.getDocument	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.getField	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.getFieldIterator	method	ported	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.getFieldIterator	method	ported	src	PDAcroForm refreshAppearances/fieldIterator/cacheFields
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.getFieldTree	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.getFields	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.getNeedAppearances	method	ported	src	auto-generated
@@ -10258,14 +10258,14 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java:
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.hasXFA	method	ported	src/pdfbox/pdmodel/interactive/form/pdacro_form.cr	ported: PDAcroForm XFA/Q
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.importFDF	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.isAppendOnly	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.isCachingFields	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.isCachingFields	method	ported	src	PDAcroForm refreshAppearances/fieldIterator/cacheFields
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.isSignaturesExist	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.isVisibleAnnotation	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.refreshAppearances	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.refreshAppearances	method	ported	src	PDAcroForm refreshAppearances/fieldIterator/cacheFields
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.removeFields	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.resolveTransformationMatrix	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.setAppendOnly	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.setCacheFields	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.setCacheFields	method	ported	src	PDAcroForm refreshAppearances/fieldIterator/cacheFields
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.setCalcOrder	method	ported	src/pdfbox/pdmodel/interactive/form/pdacro_form.cr	ported: PDAcroForm calc order
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.setDefaultAppearance	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.setDefaultResources	method	ported	src	auto-generated

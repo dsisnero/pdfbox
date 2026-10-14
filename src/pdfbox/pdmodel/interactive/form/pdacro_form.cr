@@ -10,6 +10,7 @@ module Pdfbox::Pdmodel::Interactive::Form
     @dictionary : Cos::Dictionary
     @field_cache : Hash(String, PDField)?
     @scripting_handler : ScriptingHandler?
+    @cache_fields = false
 
     def initialize(@document : Pdmodel::Document)
       @dictionary = Cos::Dictionary.new
@@ -155,6 +156,48 @@ module Pdfbox::Pdmodel::Interactive::Form
       flags = @dictionary[Cos::Name.new("SigFlags")]
       return false unless flags.is_a?(Cos::Integer)
       (flags.value & FLAG_APPEND_ONLY) != 0
+    end
+
+    # Set the signatures-exist flag (/SigFlags bit 1). Java setSignaturesExist.
+    def signatures_exist=(value : Bool) : Bool
+      @dictionary.set_flag(Cos::Name.new("SigFlags"), FLAG_SIGNATURES_EXIST, value)
+      value
+    end
+
+    # Set the append-only flag (/SigFlags bit 2). Java setAppendOnly.
+    def append_only=(value : Bool) : Bool
+      @dictionary.set_flag(Cos::Name.new("SigFlags"), FLAG_APPEND_ONLY, value)
+      value
+    end
+
+    # Iterates the field tree. Java PDAcroForm#getFieldIterator.
+    def field_iterator : Iterator(PDField)
+      get_field_tree.each
+    end
+
+    # Toggles field caching. Java PDAcroForm#setCacheFields.
+    def cache_fields=(cache : Bool) : Bool
+      @cache_fields = cache
+      cache
+    end
+
+    # Whether field caching is enabled. Java PDAcroForm#isCachingFields.
+    def caching_fields? : Bool
+      @cache_fields
+    end
+
+    # Regenerates the appearance streams of every terminal field.
+    # Java PDAcroForm#refreshAppearances.
+    def refresh_appearances : Nil
+      refresh_appearances(get_field_tree)
+    end
+
+    # Regenerates the appearance streams of the given fields (terminal fields only).
+    # Java PDAcroForm#refreshAppearances(List).
+    def refresh_appearances(fields : Enumerable(PDField)) : Nil
+      fields.each do |field|
+        field.construct_appearances if field.is_a?(PDTerminalField)
+      end
     end
 
     # Get the default resources

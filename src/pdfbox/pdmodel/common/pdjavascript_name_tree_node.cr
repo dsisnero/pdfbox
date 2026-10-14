@@ -1,5 +1,6 @@
 # This class holds all of the name trees that are available at the document level.
 require "./pdname_tree_node"
+require "../interactive/action/pdaction"
 require "../interactive/action/pdaction_javascript"
 
 module Pdfbox::Pdmodel::Common

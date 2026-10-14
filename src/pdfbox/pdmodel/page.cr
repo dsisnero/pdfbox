@@ -99,6 +99,105 @@ module Pdfbox::Pdmodel
       crop_box
     end
 
+    # The BleedBox, or the CropBox when unset. Java PDPage#getBleedBox.
+    def bleed_box : Rectangle?
+      page_box(Cos::Name.new("BleedBox")) || crop_box
+    end
+
+    # Sets the BleedBox; nil removes it. Java PDPage#setBleedBox.
+    def bleed_box=(rect : Rectangle?) : Rectangle?
+      set_page_box(Cos::Name.new("BleedBox"), rect)
+    end
+
+    # The TrimBox, or the CropBox when unset. Java PDPage#getTrimBox.
+    def trim_box : Rectangle?
+      page_box(Cos::Name.new("TrimBox")) || crop_box
+    end
+
+    # Sets the TrimBox; nil removes it. Java PDPage#setTrimBox.
+    def trim_box=(rect : Rectangle?) : Rectangle?
+      set_page_box(Cos::Name.new("TrimBox"), rect)
+    end
+
+    # The ArtBox, or the CropBox when unset. Java PDPage#getArtBox.
+    def art_box : Rectangle?
+      page_box(Cos::Name.new("ArtBox")) || crop_box
+    end
+
+    # Sets the ArtBox; nil removes it. Java PDPage#setArtBox.
+    def art_box=(rect : Rectangle?) : Rectangle?
+      set_page_box(Cos::Name.new("ArtBox"), rect)
+    end
+
+    # Reads a box array from the page dictionary, clipping it to the media box.
+    private def page_box(name : Cos::Name) : Rectangle?
+      cos_page = @cos_page
+      return unless cos_page
+
+      value = cos_page[name]?
+      return unless value
+      value = value.object if value.is_a?(Cos::Object)
+      return unless value.is_a?(Cos::Array)
+      return unless value.size == 4
+
+      llx = to_float(value[0]?)
+      lly = to_float(value[1]?)
+      urx = to_float(value[2]?)
+      ury = to_float(value[3]?)
+      return unless llx && lly && urx && ury
+
+      clip_to_media_box(Rectangle.new(llx, lly, urx, ury))
+    end
+
+    private def set_page_box(name : Cos::Name, rect : Rectangle?) : Rectangle?
+      cos_page = @cos_page || default_page_dictionary
+      @cos_page = cos_page
+      if rect
+        cos_page[name] = Cos::Array.new([
+          Cos::Float.new(rect.lower_left_x),
+          Cos::Float.new(rect.lower_left_y),
+          Cos::Float.new(rect.upper_right_x),
+          Cos::Float.new(rect.upper_right_y),
+        ])
+      else
+        cos_page.delete(name)
+      end
+      rect
+    end
+
+    # Clips the given box to the bounds of the media box. Java PDPage#clipToMediaBox.
+    private def clip_to_media_box(box : Rectangle) : Rectangle
+      media = media_box
+      return box unless media
+
+      Rectangle.new(
+        Math.max(media.lower_left_x, box.lower_left_x),
+        Math.max(media.lower_left_y, box.lower_left_y),
+        Math.min(media.upper_right_x, box.upper_right_x),
+        Math.min(media.upper_right_y, box.upper_right_y)
+      )
+    end
+
+    # Get the page additional actions. Java PDPage#getActions (creates /AA lazily).
+    def actions : Interactive::Action::PDPageAdditionalActions
+      cos_page = @cos_page || default_page_dictionary
+      @cos_page = cos_page
+      add_actions = cos_page.get_dictionary(Cos::Name.new("AA"))
+      unless add_actions
+        add_actions = Cos::Dictionary.new
+        cos_page[Cos::Name.new("AA")] = add_actions
+      end
+      Interactive::Action::PDPageAdditionalActions.new(add_actions)
+    end
+
+    # Sets the page additional actions. Java PDPage#setActions.
+    def actions=(actions : Interactive::Action::PDPageAdditionalActions) : Interactive::Action::PDPageAdditionalActions
+      cos_page = @cos_page || default_page_dictionary
+      @cos_page = cos_page
+      cos_page[Cos::Name.new("AA")] = actions.cos_object
+      actions
+    end
+
     def matrix : Util::Matrix
       Util::Matrix.new
     end

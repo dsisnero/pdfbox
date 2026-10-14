@@ -23,6 +23,10 @@ module Pdfbox::Pdmodel::Graphics::Color
       3
     end
 
+    def default_decode(bits_per_component : Int32) : Array(Float32)
+      [0.0_f32, 1.0_f32, 0.0_f32, 1.0_f32, 0.0_f32, 1.0_f32]
+    end
+
     # Java toRGB: with a default whitepoint, gamma-correct each component, apply
     # the linear-interpretation matrix, then XYZ-correct; otherwise skip CIE
     # calibration (return the components as-is, PDFBOX-2553).

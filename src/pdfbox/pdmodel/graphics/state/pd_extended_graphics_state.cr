@@ -16,15 +16,13 @@ module Pdfbox::Pdmodel::Graphics::State
         key_name = key.value
         case key_name
         when "LW"
-          v = line_width
-          gs.line_width = v || 1.0_f32
+          gs.line_width = default_if_null(line_width, 1.0_f32)
         when "LC"
           gs.line_cap = line_cap_style
         when "LJ"
           gs.line_join = line_join_style
         when "ML"
-          v = miter_limit
-          gs.miter_limit = v || 10.0_f32
+          gs.miter_limit = default_if_null(miter_limit, 10.0_f32)
         when "D"
           if p = line_dash_pattern
             gs.line_dash_pattern = p
@@ -40,11 +38,9 @@ module Pdfbox::Pdmodel::Graphics::State
         when "op"
           gs.non_stroking_overprint = non_stroking_overprint_control
         when "FL"
-          v = flatness_tolerance
-          gs.flatness = (v || 1.0).to_f64
+          gs.flatness = default_if_null(flatness_tolerance, 1.0_f32).to_f64
         when "SM"
-          v = smoothness_tolerance
-          gs.smoothness = (v || 0.0).to_f64
+          gs.smoothness = default_if_null(smoothness_tolerance, 0.0_f32).to_f64
         when "SA"
           gs.stroke_adjustment = automatic_stroke_adjustment
         when "CA"
@@ -96,13 +92,22 @@ module Pdfbox::Pdmodel::Graphics::State
     end
 
     def line_dash_pattern : PDLineDashPattern?
-      dash = @dict[Pdfbox::Cos::Name.new("D")]
-      dash = dash.object if dash.is_a?(Pdfbox::Cos::Object)
-      return unless dash.is_a?(Pdfbox::Cos::Array) && dash.size >= 2
-      phase_item = dash[dash.size - 1]
+      dash = @dict.get_dictionary_object(Pdfbox::Cos::Name.new("D")).as?(Pdfbox::Cos::Array)
+      return unless dash && dash.size == 2
+
+      dash_array = dash[0]
+      dash_array = dash_array.object if dash_array.is_a?(Pdfbox::Cos::Object)
+      phase_item = dash[1]
       phase_item = phase_item.object if phase_item.is_a?(Pdfbox::Cos::Object)
-      phase = phase_item.is_a?(Pdfbox::Cos::Number) ? phase_item.value.to_i32 : 0
-      PDLineDashPattern.new(dash, phase)
+      return unless dash_array.is_a?(Pdfbox::Cos::Array) && phase_item.is_a?(Pdfbox::Cos::Number)
+
+      PDLineDashPattern.new(dash_array, phase_item.value.to_i32)
+    end
+
+    # Sets the dash pattern (/D). Java PDExtendedGraphicsState#setLineDashPattern.
+    def line_dash_pattern=(dash_pattern : PDLineDashPattern) : PDLineDashPattern
+      @dict[Pdfbox::Cos::Name.new("D")] = dash_pattern.cos_object
+      dash_pattern
     end
 
     def rendering_intent : RenderingIntent?
@@ -124,7 +129,7 @@ module Pdfbox::Pdmodel::Graphics::State
     end
 
     def non_stroking_overprint_control : Bool
-      dict_get_bool("op", false)
+      dict_get_bool("op", stroking_overprint_control)
     end
 
     def flatness_tolerance : Float32?
@@ -136,7 +141,7 @@ module Pdfbox::Pdmodel::Graphics::State
     end
 
     def automatic_stroke_adjustment : Bool
-      dict_get_bool("SA", true)
+      dict_get_bool("SA", false)
     end
 
     def stroking_alpha_constant : Float64?
@@ -199,6 +204,125 @@ module Pdfbox::Pdmodel::Graphics::State
       key = Pdfbox::Cos::Name.new("Font")
       if font_setting
         @dict[key] = font_setting.cos_object
+      else
+        @dict.delete(key)
+      end
+    end
+
+    # --- Setters (Java PDExtendedGraphicsState) ---
+
+    def line_width=(width : Float32?) : Float32?
+      set_float_item("LW", width)
+      width
+    end
+
+    def line_cap_style=(style : Int32) : Int32
+      @dict.set_int(Pdfbox::Cos::Name.new("LC"), style)
+      style
+    end
+
+    def line_join_style=(style : Int32) : Int32
+      @dict.set_int(Pdfbox::Cos::Name.new("LJ"), style)
+      style
+    end
+
+    def miter_limit=(miter_limit : Float32?) : Float32?
+      set_float_item("ML", miter_limit)
+      miter_limit
+    end
+
+    def flatness_tolerance=(flatness : Float32?) : Float32?
+      set_float_item("FL", flatness)
+      flatness
+    end
+
+    def smoothness_tolerance=(smoothness : Float32?) : Float32?
+      set_float_item("SM", smoothness)
+      smoothness
+    end
+
+    def overprint_mode=(mode : Int32?) : Int32?
+      key = Pdfbox::Cos::Name.new("OPM")
+      if mode
+        @dict.set_int(key, mode)
+      else
+        @dict.delete(key)
+      end
+      mode
+    end
+
+    def stroking_overprint_control=(op : Bool) : Bool
+      @dict.set_boolean(Pdfbox::Cos::Name.new("OP"), op)
+      op
+    end
+
+    def non_stroking_overprint_control=(op : Bool) : Bool
+      @dict.set_boolean(Pdfbox::Cos::Name.new("op"), op)
+      op
+    end
+
+    def automatic_stroke_adjustment=(sa : Bool) : Bool
+      @dict.set_boolean(Pdfbox::Cos::Name.new("SA"), sa)
+      sa
+    end
+
+    def text_knockout_flag=(tk : Bool) : Bool
+      @dict.set_boolean(Pdfbox::Cos::Name.new("TK"), tk)
+      tk
+    end
+
+    # Java PDExtendedGraphicsState#setRenderingIntent(String).
+    def rendering_intent=(ri : String) : String
+      @dict.set_name(Pdfbox::Cos::Name.new("RI"), ri)
+      ri
+    end
+
+    # The transfer function (/TR), or nil. Java getTransfer.
+    def transfer : Pdfbox::Cos::Base?
+      value = @dict.get_dictionary_object(Pdfbox::Cos::Name.new("TR"))
+      return nil if value.is_a?(Pdfbox::Cos::Array) && value.size != 4
+      value
+    end
+
+    # Java PDExtendedGraphicsState#setTransfer.
+    def transfer=(value : Pdfbox::Cos::Base?) : Pdfbox::Cos::Base?
+      key = Pdfbox::Cos::Name.new("TR")
+      if value
+        @dict[key] = value
+      else
+        @dict.delete(key)
+      end
+      value
+    end
+
+    # The second transfer function (/TR2), or nil. Java getTransfer2.
+    def transfer2 : Pdfbox::Cos::Base?
+      value = @dict.get_dictionary_object(Pdfbox::Cos::Name.new("TR2"))
+      return nil if value.is_a?(Pdfbox::Cos::Array) && value.size != 4
+      value
+    end
+
+    # Java PDExtendedGraphicsState#setTransfer2.
+    def transfer2=(value : Pdfbox::Cos::Base?) : Pdfbox::Cos::Base?
+      key = Pdfbox::Cos::Name.new("TR2")
+      if value
+        @dict[key] = value
+      else
+        @dict.delete(key)
+      end
+      value
+    end
+
+    # Returns the default when the "standard" value is nil. Java defaultIfNull.
+    private def default_if_null(standard_value : Float32?, default_value : Float32) : Float32
+      standard_value.nil? ? default_value : standard_value
+    end
+
+    # Java PDExtendedGraphicsState#setFloatItem.
+    private def set_float_item(name : String, value : Float32?) : Nil
+      key = Pdfbox::Cos::Name.new(name)
+      if value
+        @dict.set_float(key, value.to_f64)
       else
         @dict.delete(key)
       end

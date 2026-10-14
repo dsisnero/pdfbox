@@ -22,6 +22,13 @@ module Pdfbox::Pdmodel::Graphics::Color
       3
     end
 
+    # Java PDLab#getDefaultDecode: L 0..100 plus the a/b ranges.
+    def default_decode(bits_per_component : Int32) : Array(Float32)
+      a = a_range
+      b = b_range
+      [0.0_f32, 100.0_f32, a.min.to_f32, a.max.to_f32, b.min.to_f32, b.max.to_f32]
+    end
+
     # Returns the valid range for the "a" component, defaulting to -100..100.
     def a_range : Pdfbox::Pdmodel::Common::PDRange
       Pdfbox::Pdmodel::Common::PDRange.new(range_array, 0)

@@ -22,6 +22,10 @@ module Pdfbox::Pdmodel::Graphics::Color
       1
     end
 
+    def default_decode(bits_per_component : Int32) : Array(Float32)
+      [0.0_f32, 1.0_f32]
+    end
+
     # Java toRGB: with a default whitepoint, XYZ-correct the single component
     # with the gamma; otherwise skip CIE calibration (return the value as-is).
     def to_rgb(components : Array(Float32)) : Array(Float32)

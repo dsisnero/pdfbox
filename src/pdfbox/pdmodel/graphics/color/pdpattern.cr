@@ -23,6 +23,11 @@ module Pdfbox::Pdmodel::Graphics::Color
       @underlying_color_space.try(&.number_of_components) || 0
     end
 
+    # Java PDPattern#getDefaultDecode always throws.
+    def default_decode(bits_per_component : Int32) : Array(Float32)
+      raise Cos::UnsupportedOperationError.new("Unsupported operation")
+    end
+
     def to_rgb(components : Array(Float32)) : Array(Float32)
       # Pattern colors cannot be directly converted to RGB
       [0.0_f32, 0.0_f32, 0.0_f32]

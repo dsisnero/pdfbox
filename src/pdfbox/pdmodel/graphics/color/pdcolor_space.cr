@@ -13,6 +13,10 @@ module Pdfbox::Pdmodel::Graphics::Color
     # Returns the color space name (Java PDColorSpace#getName).
     abstract def name : String
 
+    # Returns the default decode array for this color space.
+    # Java PDColorSpace#getDefaultDecode.
+    abstract def default_decode(bits_per_component : Int32) : Array(Float32)
+
     # Returns the initial color for this color space (all zeros).
     def initial_color : PDColor
       components = Array(Float32).new(number_of_components, 0.0_f32)
@@ -37,6 +41,12 @@ module Pdfbox::Pdmodel::Graphics::Color
           first = first.object if first.is_a?(Cos::Object)
           if first.is_a?(Cos::Name)
             case first.value
+            when "DeviceGray"
+              PDDeviceGray::INSTANCE
+            when "DeviceRGB"
+              PDDeviceRGB::INSTANCE
+            when "DeviceCMYK"
+              PDDeviceCMYK::INSTANCE
             when "Lab"
               PDLab.new(cos_base)
             when "ICCBased"

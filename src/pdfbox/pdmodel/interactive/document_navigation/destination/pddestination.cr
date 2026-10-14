@@ -1,3 +1,5 @@
+require "../../../common/pd_destination_or_action"
+
 module Pdfbox::Pdmodel::Interactive::DocumentNavigation::Destination
   abstract class PDDestination
     include Pdfbox::Pdmodel::Common::PDDestinationOrAction

@@ -1,3 +1,5 @@
+require "./pddestination"
+
 module Pdfbox::Pdmodel::Interactive::DocumentNavigation::Destination
   class PDPageDestination < PDDestination
     @array : Cos::Array

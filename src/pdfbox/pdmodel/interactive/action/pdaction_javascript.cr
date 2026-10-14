@@ -1,3 +1,5 @@
+require "./pdaction"
+
 module Pdfbox::Pdmodel::Interactive::Action
   class PDActionJavaScript < PDAction
     SUB_TYPE = "JavaScript"

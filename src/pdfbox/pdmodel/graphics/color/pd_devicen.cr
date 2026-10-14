@@ -69,6 +69,11 @@ module Pdfbox::Pdmodel::Graphics::Color
       colorant_names.size
     end
 
+    # Java PDDeviceN#getDefaultDecode: a 0/1 pair per colorant.
+    def default_decode(bits_per_component : Int32) : Array(Float32)
+      Array(Float32).new(number_of_components * 2) { |i| i.odd? ? 1.0_f32 : 0.0_f32 }
+    end
+
     def initial_color : PDColor
       @initial_color ||= PDColor.new(Array(Float32).new(number_of_components, 1.0_f32), self)
     end

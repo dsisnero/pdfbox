@@ -898,6 +898,130 @@ module Pdfbox::Pdmodel
       version
     end
 
+    # Get the page display mode (Java PDDocumentCatalog#getPageMode). An absent
+    # or invalid /PageMode falls back to USE_NONE (Java logs and defaults).
+    def page_mode : PageMode
+      mode = @cos_dict.get_name_as_string(Cos::Name.new("PageMode"))
+      return PageMode::USE_NONE unless mode
+      PageMode.from_string(mode)
+    rescue ArgumentError
+      Log.debug { "Invalid PageMode used '#{mode}' - setting to PageMode.USE_NONE" }
+      PageMode::USE_NONE
+    end
+
+    # Set the page display mode (Java PDDocumentCatalog#setPageMode).
+    def page_mode=(mode : PageMode) : PageMode
+      @cos_dict.set_name(Cos::Name.new("PageMode"), mode.string_value)
+      mode
+    end
+
+    # Get the page layout (Java PDDocumentCatalog#getPageLayout). An absent, empty
+    # or invalid /PageLayout falls back to SINGLE_PAGE (Java logs and defaults).
+    def page_layout : PageLayout
+      value = @cos_dict.get_name_as_string(Cos::Name.new("PageLayout"))
+      return PageLayout::SINGLE_PAGE if value.nil? || value.empty?
+      PageLayout.from_string(value)
+    rescue ArgumentError
+      Log.warn { "Invalid PageLayout used '#{value}' - returning PageLayout.SINGLE_PAGE" }
+      PageLayout::SINGLE_PAGE
+    end
+
+    # Set the page layout (Java PDDocumentCatalog#setPageLayout).
+    def page_layout=(layout : PageLayout) : PageLayout
+      @cos_dict.set_name(Cos::Name.new("PageLayout"), layout.string_value)
+      layout
+    end
+
+    # Get the document's article threads (Java PDDocumentCatalog#getThreads).
+    # The /Threads array is created lazily, matching Java.
+    def threads : Array(Interactive::Pagenavigation::PDThread)
+      array = @cos_dict.get_array(Cos::Name.new("Threads"))
+      unless array
+        array = Cos::Array.new
+        array.direct = false
+        @cos_dict.set_item(Cos::Name.new("Threads"), array)
+      end
+      array.items.compact_map do |item|
+        value = item.is_a?(Cos::Object) ? item.object : item
+        value.as?(Cos::Dictionary).try { |dict| Interactive::Pagenavigation::PDThread.new(dict) }
+      end
+    end
+
+    # Set the document's article threads (Java PDDocumentCatalog#setThreads).
+    # The array is written indirectly (Java setDirect(false)).
+    def threads=(threads : Array(Interactive::Pagenavigation::PDThread)) : Array(Interactive::Pagenavigation::PDThread)
+      array = Cos::Array.new(threads.map(&.cos_object))
+      array.direct = false
+      @cos_dict.set_item(Cos::Name.new("Threads"), array)
+      threads
+    end
+
+    # Get the document catalog additional actions (Java PDDocumentCatalog#getActions).
+    # The /AA dictionary is created lazily, matching Java.
+    def actions : Interactive::Action::PDDocumentCatalogAdditionalActions
+      dict = @cos_dict.get_dictionary(Cos::Name.new("AA"))
+      unless dict
+        dict = Cos::Dictionary.new
+        @cos_dict.set_item(Cos::Name.new("AA"), dict)
+      end
+      Interactive::Action::PDDocumentCatalogAdditionalActions.new(dict)
+    end
+
+    # Set the document catalog additional actions (Java PDDocumentCatalog#setActions).
+    def actions=(actions : Interactive::Action::PDDocumentCatalogAdditionalActions?) : Interactive::Action::PDDocumentCatalogAdditionalActions?
+      key = Cos::Name.new("AA")
+      if actions
+        @cos_dict.set_item(key, actions.cos_object)
+      else
+        @cos_dict.delete(key)
+      end
+      actions
+    end
+
+    # Get the document-level URI dictionary (Java PDDocumentCatalog#getURI).
+    def uri : Interactive::Action::PDURIDictionary?
+      dict = @cos_dict.get_dictionary(Cos::Name.new("URI"))
+      dict ? Interactive::Action::PDURIDictionary.new(dict) : nil
+    end
+
+    # Set the document-level URI dictionary (Java PDDocumentCatalog#setURI).
+    def uri=(uri : Interactive::Action::PDURIDictionary?) : Interactive::Action::PDURIDictionary?
+      key = Cos::Name.new("URI")
+      if uri
+        @cos_dict.set_item(key, uri.cos_object)
+      else
+        @cos_dict.delete(key)
+      end
+      uri
+    end
+
+    # Get the document language (Java PDDocumentCatalog#getLanguage).
+    def language : String?
+      @cos_dict.get_string(Cos::Name::LANG)
+    end
+
+    # Set the document language; nil clears /Lang (Java PDDocumentCatalog#setLanguage).
+    def language=(language : String?) : String?
+      key = Cos::Name::LANG
+      if language
+        @cos_dict.set_string(key, language)
+      else
+        @cos_dict.delete(key)
+      end
+      language
+    end
+
+    # Set the page labels descriptor; nil clears /PageLabels (Java setPageLabels).
+    def page_labels=(labels : PageLabels?) : PageLabels?
+      key = Cos::Name::PAGE_LABELS
+      if labels
+        @cos_dict.set_item(key, labels.cos_object)
+      else
+        @cos_dict.delete(key)
+      end
+      labels
+    end
+
     # Get document outline (bookmarks)
     def document_outline : DocumentOutline?
       outlines_dict = @cos_dict[Cos::Name.new("Outlines")]
@@ -953,19 +1077,20 @@ module Pdfbox::Pdmodel
 
     # ameba:enable Naming/AccessorMethodName
 
-    # Get document names dictionary
+    # Get document names dictionary. Java PDDocumentCatalog#getNames.
     def names : DocumentNameDictionary?
-      names_dict = @cos_dict[Cos::Name.new("Names")]
-      return unless names_dict
+      names_dict = @cos_dict.get_dictionary(Cos::Name.new("Names"))
+      names_dict ? DocumentNameDictionary.new(names_dict, self) : nil
+    end
 
-      # Handle indirect references
-      if names_dict.is_a?(Cos::Object)
-        names_dict = names_dict.object
+    # Set the document names dictionary. Java PDDocumentCatalog#setNames.
+    def names=(value : DocumentNameDictionary?) : DocumentNameDictionary?
+      if value
+        @cos_dict[Cos::Name.new("Names")] = value.cos_object
+      else
+        @cos_dict.delete(Cos::Name.new("Names"))
       end
-
-      return unless names_dict.is_a?(Cos::Dictionary)
-
-      DocumentNameDictionary.new(names_dict, self)
+      value
     end
 
     # Get the document-level /Dests dictionary. Java PDDocumentCatalog#getDests.
@@ -1241,19 +1366,14 @@ module Pdfbox::Pdmodel
       dictionary[Cos::Name::TYPE] = Cos::Name::OUTPUT_INTENT
       dictionary[Cos::Name::S] = Cos::Name::GTS_PDFA1
 
-      # Create stream with ICC profile data
-      # Note: In Java, this would create a PDStream attached to the document
-      # Since we don't have a PDDocument, we create a standalone Cos::Stream
-      stream_dict = Cos::Dictionary.new
-      stream_dict[Cos::Name::LENGTH] = Cos::Integer.new(color_profile.size)
-      stream_dict[Cos::Name::FILTER] = Cos::Name::FLATE_DECODE
-
-      # Set N parameter to number of components from ICC profile
-      stream_dict[Cos::Name::N] = Cos::Integer.new(icc_profile.num_components)
-
-      # Create stream object with ICC profile data
-      stream = Cos::Stream.new(entries: stream_dict.entries, data: color_profile)
-      dictionary[Cos::Name::DEST_OUTPUT_PROFILE] = stream
+      # Java configureOutputProfile: a Flate-encoded stream carrying the ICC
+      # profile data, plus the /N component count.
+      dest_output_intent = Cos::Stream.new
+      output = dest_output_intent.create_output_stream(Cos::Name::FLATE_DECODE)
+      output.write(color_profile)
+      output.close
+      dest_output_intent.set_int(Cos::Name.new("N"), icc_profile.num_components)
+      dictionary[Cos::Name::DEST_OUTPUT_PROFILE] = dest_output_intent
 
       new(dictionary)
     end
@@ -1264,6 +1384,12 @@ module Pdfbox::Pdmodel
     # Get the underlying COS dictionary
     def cos_object : Cos::Dictionary
       @cos_dict
+    end
+
+    # Get the destination output profile stream (/DestOutputProfile).
+    # Java PDOutputIntent#getDestOutputIntent.
+    def dest_output_intent : Cos::Stream?
+      @cos_dict.get_dictionary_object(Cos::Name::DEST_OUTPUT_PROFILE).as?(Cos::Stream)
     end
 
     # Get info
@@ -1405,6 +1531,11 @@ module Pdfbox::Pdmodel
     def initialize(@cos_dict : Cos::Base, @catalog : DocumentCatalog)
       Log.debug { "initialize: cos_dict type: #{@cos_dict.class}, value: #{@cos_dict.inspect}" }
       @labels = parse_number_tree
+    end
+
+    # The underlying /PageLabels COS object (Java PDPageLabels#getCOSObject).
+    def cos_object : Cos::Base
+      @cos_dict
     end
 
     # Get labels by page indices
@@ -1583,6 +1714,19 @@ module Pdfbox::Pdmodel
     @names_dict : Cos::Dictionary
     @catalog : DocumentCatalog
 
+    # Constructor. Java PDDocumentNameDictionary(PDDocumentCatalog).
+    # Creates the /Names entry in the catalog when it does not exist yet.
+    def initialize(catalog : DocumentCatalog)
+      names = catalog.cos_object.get_dictionary(Cos::Name.new("Names"))
+      unless names
+        names = Cos::Dictionary.new
+        catalog.cos_object[Cos::Name.new("Names")] = names
+      end
+      @names_dict = names
+      @catalog = catalog
+    end
+
+    # Constructor. Java PDDocumentNameDictionary(PDDocumentCatalog, COSDictionary).
     def initialize(@names_dict : Cos::Dictionary, @catalog : DocumentCatalog)
     end
 
@@ -1591,49 +1735,80 @@ module Pdfbox::Pdmodel
       @names_dict
     end
 
-    # Get the destination output intent stream
-    def dest_output_intent : Cos::Stream?
-      value = @cos_dict[Cos::Name::DEST_OUTPUT_PROFILE]
-      value.as?(Cos::Stream)
+    # Get the destination named tree node. Java getDests.
+    #
+    # The document catalog also contains the /Dests entry sometimes, so fall
+    # back to it when the names dictionary does not have one.
+    def dests : Common::PDDestinationNameTreeNode?
+      dic = @names_dict.get_dictionary(Cos::Name.new("Dests"))
+      dic ||= @catalog.cos_object.get_dictionary(Cos::Name.new("Dests"))
+      dic ? Common::PDDestinationNameTreeNode.new(dic) : nil
     end
 
-    # Get embedded files name tree
-    def embedded_files : NameTreeNode(ComplexFileSpecification)?
-      embedded_files_value = @names_dict[Cos::Name.new("EmbeddedFiles")]
-      return unless embedded_files_value
-
-      # Handle indirect references
-      if embedded_files_value.is_a?(Cos::Object)
-        embedded_files_value = embedded_files_value.object
+    # Set the named destinations. Java setDests.
+    #
+    # PDFBox maintains the one in the names dictionary, so the potentially out
+    # of date catalog /Dests reference is cleared.
+    def dests=(node : Common::PDDestinationNameTreeNode?) : Common::PDDestinationNameTreeNode?
+      if node
+        @names_dict[Cos::Name.new("Dests")] = node.cos_object
+      else
+        @names_dict.delete(Cos::Name.new("Dests"))
       end
+      @catalog.cos_object.delete(Cos::Name.new("Dests"))
+      node
+    end
 
-      return unless embedded_files_value.is_a?(Cos::Dictionary)
+    # Get embedded files name tree. Java getEmbeddedFiles.
+    def embedded_files : NameTreeNode(ComplexFileSpecification)?
+      embedded_files_value = @names_dict.get_dictionary(Cos::Name.new("EmbeddedFiles"))
+      return unless embedded_files_value
 
       # Create converter from COS dictionary to ComplexFileSpecification
       converter = ->(cos : Cos::Base) {
-        Log.debug { "embedded_files converter: received #{cos.class}" }
         # cos could be Cos::Object (reference), Cos::Dictionary, or Cos::Null
         dict_to_use = cos
         if dict_to_use.is_a?(Cos::Object)
           obj = dict_to_use.object
-          Log.debug { "embedded_files converter: object points to #{obj.class}" }
           dict_to_use = obj if obj.is_a?(Cos::Dictionary)
         end
 
         # Handle null by creating empty dictionary (PDF may have null entries)
-        if dict_to_use.is_a?(Cos::Null)
-          Log.debug { "embedded_files converter: creating empty dictionary for null entry" }
-          dict_to_use = Cos::Dictionary.new
-        end
+        dict_to_use = Cos::Dictionary.new if dict_to_use.is_a?(Cos::Null)
 
         unless dict_to_use.is_a?(Cos::Dictionary)
-          Log.error { "embedded_files converter: expected Cos::Dictionary for ComplexFileSpecification, got #{dict_to_use.class}" }
           raise Pdfbox::PDFError.new("Expected dictionary for ComplexFileSpecification, got #{dict_to_use.class}")
         end
 
         ComplexFileSpecification.new(dict_to_use)
       }
       NameTreeNode(ComplexFileSpecification).new(converter, embedded_files_value)
+    end
+
+    # Set the named embedded files. Java setEmbeddedFiles.
+    def embedded_files=(node : NameTreeNode(ComplexFileSpecification)?) : NameTreeNode(ComplexFileSpecification)?
+      if node
+        @names_dict[Cos::Name.new("EmbeddedFiles")] = node.cos_object
+      else
+        @names_dict.delete(Cos::Name.new("EmbeddedFiles"))
+      end
+      node
+    end
+
+    # Get the document level JavaScript name tree. Java getJavaScript.
+    def javascript : Common::PDJavascriptNameTreeNode?
+      dic = @names_dict.get_dictionary(Cos::Name.new("JavaScript"))
+      dic ? Common::PDJavascriptNameTreeNode.new(dic) : nil
+    end
+
+    # Set the named JavaScript entries. Java setJavascript.
+    def javascript=(node : Common::PDJavascriptNameTreeNode?) : Common::PDJavascriptNameTreeNode?
+      if node
+        @names_dict[Cos::Name.new("JavaScript")] = node.cos_object
+      else
+        @names_dict.delete(Cos::Name.new("JavaScript"))
+      end
+      node
     end
   end
 

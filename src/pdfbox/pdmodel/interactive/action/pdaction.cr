@@ -1,3 +1,5 @@
+require "../../common/pd_destination_or_action"
+
 module Pdfbox::Pdmodel::Interactive::Action
   class PDAction
     include Pdfbox::Pdmodel::Common::PDDestinationOrAction

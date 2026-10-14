@@ -1,6 +1,9 @@
 # Base class for terminal fields (fields with widgets)
 module Pdfbox::Pdmodel::Interactive::Form
   abstract class PDTerminalField < PDField
+    # Regenerates the field's appearance streams. Java PDTerminalField#constructAppearances.
+    abstract def construct_appearances : Nil
+
     def initialize(form : PDAcroForm, dictionary : Cos::Dictionary, parent : PDNonTerminalField?)
       super(form, dictionary, parent)
     end

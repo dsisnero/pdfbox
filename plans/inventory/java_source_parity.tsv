@@ -5456,42 +5456,42 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::const::LO
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.addOutputIntent	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.findNamedDestinationPage	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getAcroForm	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getActions	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getActions	ported	src/pdfbox/pdmodel.cr	ported: PDDocumentCatalog remaining accessors
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getCOSObject	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getDests	ported	src/pdfbox/pdmodel.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getDocumentOutline	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getLanguage	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getLanguage	ported	src/pdfbox/pdmodel.cr	ported: PDDocumentCatalog remaining accessors
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getMarkInfo	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getMetadata	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getNames	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getNames	ported	src/pdfbox/pdmodel.cr	DocumentNameDictionary name-tree surface (dests/javascript/embedded files)
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getOCProperties	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getOpenAction	ported	src/pdfbox/pdmodel.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getOutputIntents	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getPageLabels	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getPageLayout	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getPageMode	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getPageLayout	ported	src/pdfbox/pdmodel.cr	ported: PDDocumentCatalog remaining accessors
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getPageMode	ported	src/pdfbox/pdmodel.cr	ported: PDDocumentCatalog remaining accessors
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getPages	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getStructureTreeRoot	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getThreads	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getURI	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getThreads	ported	src/pdfbox/pdmodel.cr	ported: PDDocumentCatalog remaining accessors
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getURI	ported	src/pdfbox/pdmodel.cr	ported: PDDocumentCatalog remaining accessors
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getVersion	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getViewerPreferences	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setAcroForm	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setActions	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setActions	ported	src/pdfbox/pdmodel.cr	ported: PDDocumentCatalog remaining accessors
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setDocumentOutline	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setLanguage	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setLanguage	ported	src/pdfbox/pdmodel.cr	ported: PDDocumentCatalog remaining accessors
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setMarkInfo	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setMetadata	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setNames	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setNames	ported	src/pdfbox/pdmodel.cr	DocumentNameDictionary name-tree surface (dests/javascript/embedded files)
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setOCProperties	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setOpenAction	ported	src/pdfbox/pdmodel.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setOutputIntents	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setPageLabels	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setPageLayout	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setPageMode	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setPageLabels	ported	src/pdfbox/pdmodel.cr	ported: PDDocumentCatalog remaining accessors
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setPageLayout	ported	src/pdfbox/pdmodel.cr	ported: PDDocumentCatalog remaining accessors
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setPageMode	ported	src/pdfbox/pdmodel.cr	ported: PDDocumentCatalog remaining accessors
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setStructureTreeRoot	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setThreads	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setURI	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setThreads	ported	src/pdfbox/pdmodel.cr	ported: PDDocumentCatalog remaining accessors
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setURI	ported	src/pdfbox/pdmodel.cr	ported: PDDocumentCatalog remaining accessors
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setVersion	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setViewerPreferences	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentInformation.java::class::PDDocumentInformation	missing	-	baseline
@@ -5521,14 +5521,14 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentInformation.java::metho
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentNameDestinationDictionary.java::class::PDDocumentNameDestinationDictionary	ported	src/pdfbox/pdmodel.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentNameDestinationDictionary.java::method::PDDocumentNameDestinationDictionary.getCOSObject	ported	src/pdfbox/pdmodel.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentNameDestinationDictionary.java::method::PDDocumentNameDestinationDictionary.getDestination	ported	src/pdfbox/pdmodel.cr	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentNameDictionary.java::class::PDDocumentNameDictionary	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentNameDictionary.java::method::PDDocumentNameDictionary.getCOSObject	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentNameDictionary.java::method::PDDocumentNameDictionary.getDests	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentNameDictionary.java::method::PDDocumentNameDictionary.getEmbeddedFiles	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentNameDictionary.java::method::PDDocumentNameDictionary.getJavaScript	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentNameDictionary.java::method::PDDocumentNameDictionary.setDests	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentNameDictionary.java::method::PDDocumentNameDictionary.setEmbeddedFiles	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentNameDictionary.java::method::PDDocumentNameDictionary.setJavascript	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentNameDictionary.java::class::PDDocumentNameDictionary	ported	src/pdfbox/pdmodel.cr	DocumentNameDictionary name-tree surface (dests/javascript/embedded files)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentNameDictionary.java::method::PDDocumentNameDictionary.getCOSObject	ported	src/pdfbox/pdmodel.cr	DocumentNameDictionary name-tree surface (dests/javascript/embedded files)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentNameDictionary.java::method::PDDocumentNameDictionary.getDests	ported	src/pdfbox/pdmodel.cr	DocumentNameDictionary name-tree surface (dests/javascript/embedded files)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentNameDictionary.java::method::PDDocumentNameDictionary.getEmbeddedFiles	ported	src/pdfbox/pdmodel.cr	DocumentNameDictionary name-tree surface (dests/javascript/embedded files)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentNameDictionary.java::method::PDDocumentNameDictionary.getJavaScript	ported	src/pdfbox/pdmodel.cr	DocumentNameDictionary name-tree surface (dests/javascript/embedded files)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentNameDictionary.java::method::PDDocumentNameDictionary.setDests	ported	src/pdfbox/pdmodel.cr	DocumentNameDictionary name-tree surface (dests/javascript/embedded files)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentNameDictionary.java::method::PDDocumentNameDictionary.setEmbeddedFiles	ported	src/pdfbox/pdmodel.cr	DocumentNameDictionary name-tree surface (dests/javascript/embedded files)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentNameDictionary.java::method::PDDocumentNameDictionary.setJavascript	ported	src/pdfbox/pdmodel.cr	DocumentNameDictionary name-tree surface (dests/javascript/embedded files)
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDEmbeddedFilesNameTreeNode.java::class::PDEmbeddedFilesNameTreeNode	ported	src/pdfbox/pdmodel/common/pdembedded_files_name_tree_node.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDEmbeddedFilesNameTreeNode.java::method::PDEmbeddedFilesNameTreeNode.convertCOSToPD	ported	src/pdfbox/pdmodel/common/pdembedded_files_name_tree_node.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDEmbeddedFilesNameTreeNode.java::method::PDEmbeddedFilesNameTreeNode.createChildNode	ported	src/pdfbox/pdmodel/common/pdembedded_files_name_tree_node.cr	reconciled: method present
@@ -5541,11 +5541,11 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::const::DELIMITER	mis
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::const::LOG	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.clipToMediaBox	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.equals	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getActions	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getActions	ported	src/pdfbox/pdmodel/page.cr	PDPage bleed/trim/art boxes + page additional actions
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getAnnotations	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getArtBox	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getArtBox	ported	src/pdfbox/pdmodel/page.cr	PDPage bleed/trim/art boxes + page additional actions
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getBBox	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getBleedBox	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getBleedBox	ported	src/pdfbox/pdmodel/page.cr	PDPage bleed/trim/art boxes + page additional actions
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getCOSObject	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getContentStreams	ported	src/pdfbox/pdmodel/page.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getContents	missing	-	baseline
@@ -5562,17 +5562,17 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getRo
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getStructParents	ported	src/pdfbox/pdmodel/page.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getThreadBeads	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getTransition	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getTrimBox	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getTrimBox	ported	src/pdfbox/pdmodel/page.cr	PDPage bleed/trim/art boxes + page additional actions
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getUserUnit	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getViewports	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.hasContents	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.hashCode	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.removePageResourceFromCache	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.removeResources	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.setActions	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.setActions	ported	src/pdfbox/pdmodel/page.cr	PDPage bleed/trim/art boxes + page additional actions
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.setAnnotations	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.setArtBox	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.setBleedBox	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.setArtBox	ported	src/pdfbox/pdmodel/page.cr	PDPage bleed/trim/art boxes + page additional actions
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.setBleedBox	ported	src/pdfbox/pdmodel/page.cr	PDPage bleed/trim/art boxes + page additional actions
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.setContents	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.setCropBox	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.setMediaBox	missing	-	baseline
@@ -5582,7 +5582,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.setRo
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.setStructParents	ported	src/pdfbox/pdmodel/page.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.setThreadBeads	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.setTransition	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.setTrimBox	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.setTrimBox	ported	src/pdfbox/pdmodel/page.cr	PDPage bleed/trim/art boxes + page additional actions
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.setUserUnit	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.setViewports	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPageContentStream.java::class::PDPageContentStream	ported	src/pdfbox/pdmodel/page_content_stream.cr	reconciled: class present
@@ -7114,9 +7114,9 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationText.java::metho
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationText.java::method::FDFAnnotationText.setIcon	ported	src/pdfbox/pdmodel/fdf/fdf_annotation_subtypes.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationText.java::method::FDFAnnotationText.setState	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationText.java::method::FDFAnnotationText.setStateModel	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationTextMarkup.java::class::FDFAnnotationTextMarkup	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationTextMarkup.java::method::FDFAnnotationTextMarkup.getCoords	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationTextMarkup.java::method::FDFAnnotationTextMarkup.setCoords	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationTextMarkup.java::class::FDFAnnotationTextMarkup	ported	src/pdfbox/pdmodel/fdf/fdf_annotation.cr	ported: FDFAnnotationTextMarkup coords
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationTextMarkup.java::method::FDFAnnotationTextMarkup.getCoords	ported	src/pdfbox/pdmodel/fdf/fdf_annotation.cr	ported: FDFAnnotationTextMarkup coords
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationTextMarkup.java::method::FDFAnnotationTextMarkup.setCoords	ported	src/pdfbox/pdmodel/fdf/fdf_annotation.cr	ported: FDFAnnotationTextMarkup coords
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationUnderline.java::class::FDFAnnotationUnderline	ported	src/pdfbox/pdmodel/fdf/fdf_annotation_subtypes.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationUnderline.java::const::SUBTYPE	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFCatalog.java::class::FDFCatalog	ported	src/pdfbox/pdmodel/fdf.cr	reconciled: class present
@@ -8013,7 +8013,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCIEDictionaryBas
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCIEDictionaryBasedColorSpace.java::method::PDCIEDictionaryBasedColorSpace.setBlackPoint	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCIEDictionaryBasedColorSpace.java::method::PDCIEDictionaryBasedColorSpace.setWhitePoint	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCalGray.java::class::PDCalGray	ported	src/pdfbox/pdmodel/graphics/color/pdcal_gray.cr	ported: PDCalGray
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCalGray.java::method::PDCalGray.getDefaultDecode	partial	-	PDColorSpace interface has no default_decode in Crystal
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCalGray.java::method::PDCalGray.getDefaultDecode	ported	src/pdfbox/pdmodel/graphics/color/pdcal_gray.cr	PDColorSpace#default_decode abstract + per-subclass overrides
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCalGray.java::method::PDCalGray.getGamma	ported	src/pdfbox/pdmodel/graphics/color/pdcal_gray.cr	ported: PDCalGray
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCalGray.java::method::PDCalGray.getInitialColor	ported	src/pdfbox/pdmodel/graphics/color/pdcal_gray.cr	ported: PDCalGray
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCalGray.java::method::PDCalGray.getName	ported	src/pdfbox/pdmodel/graphics/color/pdcal_gray.cr	ported: PDCalGray
@@ -8021,7 +8021,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCalGray.java::me
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCalGray.java::method::PDCalGray.setGamma	ported	src/pdfbox/pdmodel/graphics/color/pdcal_gray.cr	ported: PDCalGray
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCalGray.java::method::PDCalGray.toRGB	ported	src/pdfbox/pdmodel/graphics/color/pdcal_gray.cr	ported: PDCalGray
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCalRGB.java::class::PDCalRGB	ported	src/pdfbox/pdmodel/graphics/color/pdcal_rgb.cr	ported: PDCalRGB
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCalRGB.java::method::PDCalRGB.getDefaultDecode	partial	-	PDColorSpace interface has no default_decode in Crystal
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCalRGB.java::method::PDCalRGB.getDefaultDecode	ported	src/pdfbox/pdmodel/graphics/color/pdcal_rgb.cr	PDColorSpace#default_decode abstract + per-subclass overrides
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCalRGB.java::method::PDCalRGB.getGamma	ported	src/pdfbox/pdmodel/graphics/color/pdcal_rgb.cr	ported: PDCalRGB
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCalRGB.java::method::PDCalRGB.getInitialColor	ported	src/pdfbox/pdmodel/graphics/color/pdcal_rgb.cr	ported: PDCalRGB
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDCalRGB.java::method::PDCalRGB.getMatrix	ported	src/pdfbox/pdmodel/graphics/color/pdcal_rgb.cr	ported: PDCalRGB
@@ -8083,7 +8083,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceN.java::co
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceN.java::method::PDDeviceN.getAlternateColorSpace	ported	src/pdfbox/pdmodel/graphics/color/pd_devicen.cr	ported: DeviceN colour space
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceN.java::method::PDDeviceN.getAttributes	ported	src/pdfbox/pdmodel/graphics/color/pd_devicen.cr	ported: DeviceN colour space
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceN.java::method::PDDeviceN.getColorantNames	ported	src/pdfbox/pdmodel/graphics/color/pd_devicen.cr	ported: DeviceN colour space
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceN.java::method::PDDeviceN.getDefaultDecode	partial	-	PDColorSpace interface has no default_decode in Crystal
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceN.java::method::PDDeviceN.getDefaultDecode	ported	src/pdfbox/pdmodel/graphics/color/pd_devicen.cr	PDColorSpace#default_decode abstract + per-subclass overrides
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceN.java::method::PDDeviceN.getInitialColor	ported	src/pdfbox/pdmodel/graphics/color/pd_devicen.cr	ported: DeviceN colour space
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceN.java::method::PDDeviceN.getName	ported	src/pdfbox/pdmodel/graphics/color/pd_devicen.cr	ported: DeviceN colour space
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceN.java::method::PDDeviceN.getNumberOfComponents	ported	src/pdfbox/pdmodel/graphics/color/pd_devicen.cr	ported: DeviceN colour space
@@ -8134,34 +8134,34 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDGamma.java::meth
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDGamma.java::method::PDGamma.setR	ported	src/pdfbox/pdmodel/graphics/color/pd_gamma.cr	ported: PDGamma r/g/b colour
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::class::PDICCBased	ported	src/pdfbox/pdmodel/graphics/color/pdicc_based.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::const::LOG	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.checkArray	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.clampColors	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.create	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.ensureDisplayProfile	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.fallbackToAlternateColorSpace	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.getAlternateColorSpace	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.getColorSpaceType	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.getDefaultDecode	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.getInitialColor	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.getMetadata	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.checkArray	ported	src/pdfbox/pdmodel/graphics/color/pdicc_based.cr	PDICCBased alternate color space / range / metadata accessors
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.clampColors	partial	-	AWT ICC_ColorSpace / BufferedImage path, out of scope
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.create	partial	src/pdfbox/pdmodel/graphics/color/pdicc_based.cr	array constructor + checkArray present; Java resource-cache overload has no Crystal ResourceCache equivalent
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.ensureDisplayProfile	partial	-	AWT ICC_ColorSpace / BufferedImage path, out of scope
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.fallbackToAlternateColorSpace	partial	-	AWT ICC_ColorSpace / BufferedImage path, out of scope
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.getAlternateColorSpace	ported	src/pdfbox/pdmodel/graphics/color/pdicc_based.cr	PDICCBased alternate color space / range / metadata accessors
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.getColorSpaceType	partial	-	AWT ICC_ColorSpace / BufferedImage path, out of scope
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.getDefaultDecode	ported	src/pdfbox/pdmodel/graphics/color/pdicc_based.cr	PDColorSpace#default_decode abstract + per-subclass overrides
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.getInitialColor	ported	src/pdfbox/pdmodel/graphics/color/pdicc_based.cr	PDICCBased alternate color space / range / metadata accessors
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.getMetadata	ported	src/pdfbox/pdmodel/graphics/color/pdicc_based.cr	PDICCBased alternate color space / range / metadata accessors
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.getName	ported	src/pdfbox/pdmodel/graphics/color/pdicc_based.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.getNumberOfComponents	ported	src/pdfbox/pdmodel/graphics/color/pdicc_based.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.getPDStream	ported	src/pdfbox/pdmodel/graphics/color/pdicc_based.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.getRangeForComponent	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.intToBigEndian	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.isSRGB	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.is_sRGB	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.loadICCProfile	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.setAlternateColorSpaces	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.setMetadata	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.setRangeForComponent	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.getRangeForComponent	ported	src/pdfbox/pdmodel/graphics/color/pdicc_based.cr	PDICCBased alternate color space / range / metadata accessors
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.intToBigEndian	partial	-	AWT ICC_ColorSpace / BufferedImage path, out of scope
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.isSRGB	partial	-	AWT ICC_ColorSpace / BufferedImage path, out of scope
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.is_sRGB	partial	-	AWT ICC_ColorSpace / BufferedImage path, out of scope
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.loadICCProfile	partial	-	AWT ICC_ColorSpace / BufferedImage path, out of scope
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.setAlternateColorSpaces	ported	src/pdfbox/pdmodel/graphics/color/pdicc_based.cr	PDICCBased alternate color space / range / metadata accessors
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.setMetadata	ported	src/pdfbox/pdmodel/graphics/color/pdicc_based.cr	PDICCBased alternate color space / range / metadata accessors
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.setRangeForComponent	ported	src/pdfbox/pdmodel/graphics/color/pdicc_based.cr	PDICCBased alternate color space / range / metadata accessors
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.toRGB	ported	src/pdfbox/pdmodel/graphics/color/pdicc_based.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.toRGBImage	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.toRawImage	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.toRGBImage	partial	-	AWT ICC_ColorSpace / BufferedImage path, out of scope
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.toRawImage	partial	-	AWT ICC_ColorSpace / BufferedImage path, out of scope
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDICCBased.java::method::PDICCBased.toString	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDIndexed.java::class::PDIndexed	ported	src/pdfbox/pdmodel/graphics/color/pdindexed.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDIndexed.java::method::PDIndexed.getBaseColorSpace	ported	src/pdfbox/pdmodel/graphics/color/pdindexed.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDIndexed.java::method::PDIndexed.getDefaultDecode	ported	src/pdfbox/pdmodel/graphics/color/pdindexed.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDIndexed.java::method::PDIndexed.getDefaultDecode	ported	src/pdfbox/pdmodel/graphics/color/pdindexed.cr	PDColorSpace#default_decode abstract + per-subclass overrides
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDIndexed.java::method::PDIndexed.getHival	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDIndexed.java::method::PDIndexed.getInitialColor	ported	src/pdfbox/pdmodel/graphics/color/pdindexed.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDIndexed.java::method::PDIndexed.getName	ported	src/pdfbox/pdmodel/graphics/color/pdindexed.cr	reconciled: method present
@@ -8185,7 +8185,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDJPXColorSpace.ja
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDLab.java::class::PDLab	ported	src/pdfbox/pdmodel/graphics/color/pdlab.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDLab.java::method::PDLab.getARange	ported	src/pdfbox/pdmodel/graphics/color/pdlab.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDLab.java::method::PDLab.getBRange	ported	src/pdfbox/pdmodel/graphics/color/pdlab.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDLab.java::method::PDLab.getDefaultDecode	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDLab.java::method::PDLab.getDefaultDecode	ported	src/pdfbox/pdmodel/graphics/color/pdlab.cr	PDColorSpace#default_decode abstract + per-subclass overrides
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDLab.java::method::PDLab.getDefaultRangeArray	ported	src/pdfbox/pdmodel/graphics/color/pdlab.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDLab.java::method::PDLab.getInitialColor	ported	src/pdfbox/pdmodel/graphics/color/pdlab.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDLab.java::method::PDLab.getName	ported	src/pdfbox/pdmodel/graphics/color/pdlab.cr	reconciled: method present
@@ -8197,21 +8197,21 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDLab.java::method
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDLab.java::method::PDLab.toRGB	ported	src/pdfbox/pdmodel/graphics/color/pdlab.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDLab.java::method::PDLab.toRGBImage	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDLab.java::method::PDLab.toRawImage	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDOutputIntent.java::class::PDOutputIntent	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDOutputIntent.java::method::PDOutputIntent.configureOutputProfile	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDOutputIntent.java::method::PDOutputIntent.getCOSObject	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDOutputIntent.java::method::PDOutputIntent.getDestOutputIntent	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDOutputIntent.java::method::PDOutputIntent.getInfo	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDOutputIntent.java::method::PDOutputIntent.getOutputCondition	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDOutputIntent.java::method::PDOutputIntent.getOutputConditionIdentifier	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDOutputIntent.java::method::PDOutputIntent.getRegistryName	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDOutputIntent.java::method::PDOutputIntent.setInfo	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDOutputIntent.java::method::PDOutputIntent.setOutputCondition	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDOutputIntent.java::method::PDOutputIntent.setOutputConditionIdentifier	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDOutputIntent.java::method::PDOutputIntent.setRegistryName	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDOutputIntent.java::class::PDOutputIntent	ported	src/pdfbox/pdmodel.cr	PDOutputIntent dest output profile (Flate-encoded ICC) via getDestOutputIntent/configureOutputProfile
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDOutputIntent.java::method::PDOutputIntent.configureOutputProfile	ported	src/pdfbox/pdmodel.cr	PDOutputIntent dest output profile (Flate-encoded ICC) via getDestOutputIntent/configureOutputProfile
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDOutputIntent.java::method::PDOutputIntent.getCOSObject	ported	src/pdfbox/pdmodel.cr	PDOutputIntent dest output profile (Flate-encoded ICC) via getDestOutputIntent/configureOutputProfile
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDOutputIntent.java::method::PDOutputIntent.getDestOutputIntent	ported	src/pdfbox/pdmodel.cr	PDOutputIntent dest output profile (Flate-encoded ICC) via getDestOutputIntent/configureOutputProfile
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDOutputIntent.java::method::PDOutputIntent.getInfo	ported	src/pdfbox/pdmodel.cr	PDOutputIntent dest output profile (Flate-encoded ICC) via getDestOutputIntent/configureOutputProfile
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDOutputIntent.java::method::PDOutputIntent.getOutputCondition	ported	src/pdfbox/pdmodel.cr	PDOutputIntent dest output profile (Flate-encoded ICC) via getDestOutputIntent/configureOutputProfile
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDOutputIntent.java::method::PDOutputIntent.getOutputConditionIdentifier	ported	src/pdfbox/pdmodel.cr	PDOutputIntent dest output profile (Flate-encoded ICC) via getDestOutputIntent/configureOutputProfile
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDOutputIntent.java::method::PDOutputIntent.getRegistryName	ported	src/pdfbox/pdmodel.cr	PDOutputIntent dest output profile (Flate-encoded ICC) via getDestOutputIntent/configureOutputProfile
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDOutputIntent.java::method::PDOutputIntent.setInfo	ported	src/pdfbox/pdmodel.cr	PDOutputIntent dest output profile (Flate-encoded ICC) via getDestOutputIntent/configureOutputProfile
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDOutputIntent.java::method::PDOutputIntent.setOutputCondition	ported	src/pdfbox/pdmodel.cr	PDOutputIntent dest output profile (Flate-encoded ICC) via getDestOutputIntent/configureOutputProfile
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDOutputIntent.java::method::PDOutputIntent.setOutputConditionIdentifier	ported	src/pdfbox/pdmodel.cr	PDOutputIntent dest output profile (Flate-encoded ICC) via getDestOutputIntent/configureOutputProfile
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDOutputIntent.java::method::PDOutputIntent.setRegistryName	ported	src/pdfbox/pdmodel.cr	PDOutputIntent dest output profile (Flate-encoded ICC) via getDestOutputIntent/configureOutputProfile
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDPattern.java::class::PDPattern	ported	src/pdfbox/pdmodel/graphics/color/pdpattern.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDPattern.java::const::EMPTY_PATTERN	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDPattern.java::method::PDPattern.getDefaultDecode	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDPattern.java::method::PDPattern.getDefaultDecode	ported	src/pdfbox/pdmodel/graphics/color/pdpattern.cr	PDColorSpace#default_decode abstract + per-subclass overrides
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDPattern.java::method::PDPattern.getInitialColor	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDPattern.java::method::PDPattern.getName	ported	src/pdfbox/pdmodel/graphics/color/pdpattern.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDPattern.java::method::PDPattern.getNumberOfComponents	ported	src/pdfbox/pdmodel/graphics/color/pdpattern.cr	reconciled: method present
@@ -8227,7 +8227,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDSeparation.java:
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDSeparation.java::const::TINT_TRANSFORM	ported	src/pdfbox/pdmodel/graphics/color/pd_separation.cr	ported: PDSeparation
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDSeparation.java::method::PDSeparation.getAlternateColorSpace	ported	src/pdfbox/pdmodel/graphics/color/pd_separation.cr	ported: PDSeparation
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDSeparation.java::method::PDSeparation.getColorantName	ported	src/pdfbox/pdmodel/graphics/color/pd_separation.cr	ported: PDSeparation
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDSeparation.java::method::PDSeparation.getDefaultDecode	partial	-	PDColorSpace interface has no default_decode in Crystal
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDSeparation.java::method::PDSeparation.getDefaultDecode	ported	src/pdfbox/pdmodel/graphics/color/pd_separation.cr	PDColorSpace#default_decode abstract + per-subclass overrides
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDSeparation.java::method::PDSeparation.getInitialColor	ported	src/pdfbox/pdmodel/graphics/color/pd_separation.cr	ported: PDSeparation
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDSeparation.java::method::PDSeparation.getName	ported	src/pdfbox/pdmodel/graphics/color/pd_separation.cr	ported: PDSeparation
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDSeparation.java::method::PDSeparation.getNumberOfComponents	ported	src/pdfbox/pdmodel/graphics/color/pd_separation.cr	ported: PDSeparation
@@ -8588,24 +8588,24 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::const::SHADING_TYPE6	ported	src/pdfbox/pdmodel/graphics/shading/shading.cr	ported: shading type model
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::const::SHADING_TYPE7	ported	src/pdfbox/pdmodel/graphics/shading/shading.cr	ported: shading type model
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.create	ported	src/pdfbox/pdmodel/graphics/shading.cr + shading/pd_shading_type1.cr + resources.cr	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.evalFunction	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.getAntiAlias	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.getBBox	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.getBackground	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.getBounds	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.evalFunction	ported	src/pdfbox/pdmodel/graphics/shading.cr	PDShading base accessors (type/anti-alias/background/bbox/color space/evalFunction)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.getAntiAlias	ported	src/pdfbox/pdmodel/graphics/shading.cr	PDShading base accessors (type/anti-alias/background/bbox/color space/evalFunction)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.getBBox	ported	src/pdfbox/pdmodel/graphics/shading.cr	PDShading base accessors (type/anti-alias/background/bbox/color space/evalFunction)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.getBackground	ported	src/pdfbox/pdmodel/graphics/shading.cr	PDShading base accessors (type/anti-alias/background/bbox/color space/evalFunction)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.getBounds	partial	-	AWT Paint / AffineTransform bounds, out of scope
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.getCOSObject	ported	src/pdfbox/pdmodel/graphics/shading.cr + shading/pd_shading_type1.cr + resources.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.getColorSpace	ported	src/pdfbox/pdmodel/graphics/shading.cr + shading/pd_shading_type1.cr + resources.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.getFunction	ported	src/pdfbox/pdmodel/graphics/shading/shading.cr	ported: shading type model
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.getFunctionsArray	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.getFunctionsArray	ported	src/pdfbox/pdmodel/graphics/shading.cr	PDShading base accessors (type/anti-alias/background/bbox/color space/evalFunction)
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.getShadingType	ported	src/pdfbox/pdmodel/graphics/shading.cr + shading/pd_shading_type1.cr + resources.cr	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.getType	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.setAntiAlias	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.setBBox	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.setBackground	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.setColorSpace	ported	src/pdfbox/pdmodel/graphics/shading.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.getType	ported	src/pdfbox/pdmodel/graphics/shading.cr	PDShading base accessors (type/anti-alias/background/bbox/color space/evalFunction)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.setAntiAlias	ported	src/pdfbox/pdmodel/graphics/shading.cr	PDShading base accessors (type/anti-alias/background/bbox/color space/evalFunction)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.setBBox	ported	src/pdfbox/pdmodel/graphics/shading.cr	PDShading base accessors (type/anti-alias/background/bbox/color space/evalFunction)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.setBackground	ported	src/pdfbox/pdmodel/graphics/shading.cr	PDShading base accessors (type/anti-alias/background/bbox/color space/evalFunction)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.setColorSpace	ported	src/pdfbox/pdmodel/graphics/shading.cr	PDShading base accessors (type/anti-alias/background/bbox/color space/evalFunction)
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.setFunction	ported	src/pdfbox/pdmodel/graphics/shading/shading.cr	ported: shading type model
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.setShadingType	ported	src/pdfbox/pdmodel/graphics/shading.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.toPaint	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.setShadingType	ported	src/pdfbox/pdmodel/graphics/shading.cr	PDShading base accessors (type/anti-alias/background/bbox/color space/evalFunction)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShading.java::method::PDShading.toPaint	partial	-	AWT Paint / AffineTransform bounds, out of scope
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShadingType1.java::class::PDShadingType1	ported	src/pdfbox/pdmodel/graphics/shading.cr + shading/pd_shading_type1.cr + resources.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShadingType1.java::method::PDShadingType1.getDomain	ported	src/pdfbox/pdmodel/graphics/shading/pd_shading_type1.cr	ported: shading type model
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/PDShadingType1.java::method::PDShadingType1.getMatrix	ported	src/pdfbox/pdmodel/graphics/shading/pd_shading_type1.cr	ported: shading type model
@@ -8772,7 +8772,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/Vertex.java::cla
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/shading/Vertex.java::method::Vertex.toString	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDExtendedGraphicsState.java::class::PDExtendedGraphicsState	ported	src/pdfbox/pdmodel/graphics/state/pd_extended_graphics_state.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDExtendedGraphicsState.java::method::PDExtendedGraphicsState.copyIntoGraphicsState	ported	src/pdfbox/pdmodel/graphics/state/pd_extended_graphics_state.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDExtendedGraphicsState.java::method::PDExtendedGraphicsState.defaultIfNull	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDExtendedGraphicsState.java::method::PDExtendedGraphicsState.defaultIfNull	ported	src/pdfbox/pdmodel/graphics/state/pd_extended_graphics_state.cr	PDExtendedGraphicsState setters + transfer functions + line_dash_pattern getter fix
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDExtendedGraphicsState.java::method::PDExtendedGraphicsState.getAlphaSourceFlag	ported	src/pdfbox/pdmodel/graphics/state/pd_extended_graphics_state.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDExtendedGraphicsState.java::method::PDExtendedGraphicsState.getAutomaticStrokeAdjustment	ported	src/pdfbox/pdmodel/graphics/state/pd_extended_graphics_state.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDExtendedGraphicsState.java::method::PDExtendedGraphicsState.getBlendMode	ported	src/pdfbox/pdmodel/graphics/state/pd_extended_graphics_state.cr	reconciled: method present
@@ -8794,13 +8794,13 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDExtendedGraphics
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDExtendedGraphicsState.java::method::PDExtendedGraphicsState.getStrokingAlphaConstant	ported	src/pdfbox/pdmodel/graphics/state/pd_extended_graphics_state.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDExtendedGraphicsState.java::method::PDExtendedGraphicsState.getStrokingOverprintControl	ported	src/pdfbox/pdmodel/graphics/state/pd_extended_graphics_state.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDExtendedGraphicsState.java::method::PDExtendedGraphicsState.getTextKnockoutFlag	ported	src/pdfbox/pdmodel/graphics/state/pd_extended_graphics_state.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDExtendedGraphicsState.java::method::PDExtendedGraphicsState.getTransfer	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDExtendedGraphicsState.java::method::PDExtendedGraphicsState.getTransfer2	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDExtendedGraphicsState.java::method::PDExtendedGraphicsState.getTransfer	ported	src/pdfbox/pdmodel/graphics/state/pd_extended_graphics_state.cr	PDExtendedGraphicsState setters + transfer functions + line_dash_pattern getter fix
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDExtendedGraphicsState.java::method::PDExtendedGraphicsState.getTransfer2	ported	src/pdfbox/pdmodel/graphics/state/pd_extended_graphics_state.cr	PDExtendedGraphicsState setters + transfer functions + line_dash_pattern getter fix
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDExtendedGraphicsState.java::method::PDExtendedGraphicsState.setAlphaSourceFlag	ported	src/pdfbox/pdmodel/graphics/state/pd_extended_graphics_state.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDExtendedGraphicsState.java::method::PDExtendedGraphicsState.setAutomaticStrokeAdjustment	ported	src/pdfbox/pdmodel/graphics/state/pd_extended_graphics_state.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDExtendedGraphicsState.java::method::PDExtendedGraphicsState.setBlendMode	ported	src/pdfbox/pdmodel/graphics/state/pd_extended_graphics_state.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDExtendedGraphicsState.java::method::PDExtendedGraphicsState.setFlatnessTolerance	ported	src/pdfbox/pdmodel/graphics/state/pd_extended_graphics_state.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDExtendedGraphicsState.java::method::PDExtendedGraphicsState.setFloatItem	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDExtendedGraphicsState.java::method::PDExtendedGraphicsState.setFloatItem	ported	src/pdfbox/pdmodel/graphics/state/pd_extended_graphics_state.cr	PDExtendedGraphicsState setters + transfer functions + line_dash_pattern getter fix
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDExtendedGraphicsState.java::method::PDExtendedGraphicsState.setFontSetting	ported	src/pdfbox/pdmodel/graphics/state/pd_extended_graphics_state.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDExtendedGraphicsState.java::method::PDExtendedGraphicsState.setLineCapStyle	ported	src/pdfbox/pdmodel/graphics/state/pd_extended_graphics_state.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDExtendedGraphicsState.java::method::PDExtendedGraphicsState.setLineDashPattern	ported	src/pdfbox/pdmodel/graphics/state/pd_extended_graphics_state.cr	reconciled: method present
@@ -8815,8 +8815,8 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDExtendedGraphics
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDExtendedGraphicsState.java::method::PDExtendedGraphicsState.setStrokingAlphaConstant	ported	src/pdfbox/pdmodel/graphics/state/pd_extended_graphics_state.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDExtendedGraphicsState.java::method::PDExtendedGraphicsState.setStrokingOverprintControl	ported	src/pdfbox/pdmodel/graphics/state/pd_extended_graphics_state.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDExtendedGraphicsState.java::method::PDExtendedGraphicsState.setTextKnockoutFlag	ported	src/pdfbox/pdmodel/graphics/state/pd_extended_graphics_state.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDExtendedGraphicsState.java::method::PDExtendedGraphicsState.setTransfer	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDExtendedGraphicsState.java::method::PDExtendedGraphicsState.setTransfer2	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDExtendedGraphicsState.java::method::PDExtendedGraphicsState.setTransfer	ported	src/pdfbox/pdmodel/graphics/state/pd_extended_graphics_state.cr	PDExtendedGraphicsState setters + transfer functions + line_dash_pattern getter fix
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDExtendedGraphicsState.java::method::PDExtendedGraphicsState.setTransfer2	ported	src/pdfbox/pdmodel/graphics/state/pd_extended_graphics_state.cr	PDExtendedGraphicsState setters + transfer functions + line_dash_pattern getter fix
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::class::PDGraphicsState	ported	src/pdfbox/pdmodel/graphics/state/pd_graphics_state.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.clone	ported	src/pdfbox/pdmodel/graphics/state/pd_graphics_state.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.getAlphaConstant	missing	-	baseline
@@ -10247,7 +10247,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java:
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.getDefaultResources	ported	src/pdfbox/pdmodel/interactive/form/pdacro_form.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.getDocument	ported	src/pdfbox/pdmodel/interactive/form/pdacro_form.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.getField	ported	src/pdfbox/pdmodel/interactive/form/pdacro_form.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.getFieldIterator	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.getFieldIterator	ported	src/pdfbox/pdmodel/interactive/form/pdacro_form.cr	PDAcroForm refreshAppearances/fieldIterator/cacheFields
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.getFieldTree	ported	src/pdfbox/pdmodel/interactive/form/pdacro_form.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.getFields	ported	src/pdfbox/pdmodel/interactive/form/pdacro_form.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.getNeedAppearances	ported	src/pdfbox/pdmodel/interactive/form/pdacro_form.cr	reconciled: method present
@@ -10258,14 +10258,14 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java:
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.hasXFA	ported	src/pdfbox/pdmodel/interactive/form/pdacro_form.cr	ported: PDAcroForm XFA/Q
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.importFDF	ported	src/pdfbox/pdmodel/interactive/form/pdacro_form.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.isAppendOnly	ported	src/pdfbox/pdmodel/interactive/form/pdacro_form.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.isCachingFields	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.isCachingFields	ported	src/pdfbox/pdmodel/interactive/form/pdacro_form.cr	PDAcroForm refreshAppearances/fieldIterator/cacheFields
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.isSignaturesExist	ported	src/pdfbox/pdmodel/interactive/form/pdacro_form.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.isVisibleAnnotation	ported	src/pdfbox/pdmodel/interactive/form/pdacro_form.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.refreshAppearances	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.refreshAppearances	ported	src/pdfbox/pdmodel/interactive/form/pdacro_form.cr	PDAcroForm refreshAppearances/fieldIterator/cacheFields
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.removeFields	ported	src/pdfbox/pdmodel/interactive/form/pdacro_form.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.resolveTransformationMatrix	ported	src/pdfbox/pdmodel/interactive/form/pdacro_form.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.setAppendOnly	ported	src/pdfbox/pdmodel/interactive/form/pdacro_form.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.setCacheFields	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.setCacheFields	ported	src/pdfbox/pdmodel/interactive/form/pdacro_form.cr	PDAcroForm refreshAppearances/fieldIterator/cacheFields
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.setCalcOrder	ported	src/pdfbox/pdmodel/interactive/form/pdacro_form.cr	ported: PDAcroForm calc order
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.setDefaultAppearance	ported	src/pdfbox/pdmodel/interactive/form/pdacro_form.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.setDefaultResources	ported	src/pdfbox/pdmodel/interactive/form/pdacro_form.cr	reconciled: method present
