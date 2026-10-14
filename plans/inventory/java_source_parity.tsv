@@ -9892,16 +9892,16 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSi
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::method::PDSignature.setType	ported	src/pdfbox/pdmodel/interactive/form/pd_signature.cr	ported: PDSignature
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/SignatureInterface.java::interface::SignatureInterface	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/SignatureInterface.java::method::sign	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/SignatureOptions.java::class::SignatureOptions	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/SignatureOptions.java::const::DEFAULT_SIGNATURE_SIZE	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/SignatureOptions.java::method::SignatureOptions.close	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/SignatureOptions.java::method::SignatureOptions.getPage	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/SignatureOptions.java::method::SignatureOptions.getPreferredSignatureSize	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/SignatureOptions.java::method::SignatureOptions.getVisualSignature	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/SignatureOptions.java::method::SignatureOptions.initFromRandomAccessRead	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/SignatureOptions.java::method::SignatureOptions.setPage	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/SignatureOptions.java::method::SignatureOptions.setPreferredSignatureSize	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/SignatureOptions.java::method::SignatureOptions.setVisualSignature	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/SignatureOptions.java::class::SignatureOptions	ported	src/pdfbox/pdmodel/interactive/digitalsignature/signature_options.cr	ported: SignatureOptions
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/SignatureOptions.java::const::DEFAULT_SIGNATURE_SIZE	ported	src/pdfbox/pdmodel/interactive/digitalsignature/signature_options.cr	ported: SignatureOptions
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/SignatureOptions.java::method::SignatureOptions.close	ported	src/pdfbox/pdmodel/interactive/digitalsignature/signature_options.cr	ported: SignatureOptions
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/SignatureOptions.java::method::SignatureOptions.getPage	ported	src/pdfbox/pdmodel/interactive/digitalsignature/signature_options.cr	ported: SignatureOptions
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/SignatureOptions.java::method::SignatureOptions.getPreferredSignatureSize	ported	src/pdfbox/pdmodel/interactive/digitalsignature/signature_options.cr	ported: SignatureOptions
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/SignatureOptions.java::method::SignatureOptions.getVisualSignature	ported	src/pdfbox/pdmodel/interactive/digitalsignature/signature_options.cr	ported: SignatureOptions
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/SignatureOptions.java::method::SignatureOptions.initFromRandomAccessRead	ported	src/pdfbox/pdmodel/interactive/digitalsignature/signature_options.cr	ported: SignatureOptions
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/SignatureOptions.java::method::SignatureOptions.setPage	ported	src/pdfbox/pdmodel/interactive/digitalsignature/signature_options.cr	ported: SignatureOptions
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/SignatureOptions.java::method::SignatureOptions.setPreferredSignatureSize	ported	src/pdfbox/pdmodel/interactive/digitalsignature/signature_options.cr	ported: SignatureOptions
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/SignatureOptions.java::method::SignatureOptions.setVisualSignature	ported	src/pdfbox/pdmodel/interactive/digitalsignature/signature_options.cr	ported: SignatureOptions
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/SigningSupport.java::class::SigningSupport	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/SigningSupport.java::method::SigningSupport.close	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/SigningSupport.java::method::SigningSupport.getContent	missing	-	baseline
