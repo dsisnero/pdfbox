@@ -10422,12 +10422,12 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDNonTerminalFie
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDNonTerminalField.java::method::PDNonTerminalField.setValue	ported	src/pdfbox/pdmodel/interactive/form/pdnon_terminal_field.cr	ported
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDPushButton.java::class::PDPushButton	ported	src/pdfbox/pdmodel/interactive/form/pdpush_button.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDPushButton.java::method::PDPushButton.constructAppearances	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDPushButton.java::method::PDPushButton.getDefaultValue	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDPushButton.java::method::PDPushButton.getExportValues	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDPushButton.java::method::PDPushButton.getOnValues	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDPushButton.java::method::PDPushButton.getDefaultValue	ported	src/pdfbox/pdmodel/interactive/form/pdpush_button.cr	ported: PDPushButton
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDPushButton.java::method::PDPushButton.getExportValues	ported	src/pdfbox/pdmodel/interactive/form/pdpush_button.cr	ported: PDPushButton
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDPushButton.java::method::PDPushButton.getOnValues	ported	src/pdfbox/pdmodel/interactive/form/pdpush_button.cr	ported: PDPushButton
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDPushButton.java::method::PDPushButton.getValue	ported	src/pdfbox/pdmodel/interactive/form/pdpush_button.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDPushButton.java::method::PDPushButton.getValueAsString	ported	src/pdfbox/pdmodel/interactive/form/pdpush_button.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDPushButton.java::method::PDPushButton.setExportValues	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDPushButton.java::method::PDPushButton.setExportValues	ported	src/pdfbox/pdmodel/interactive/form/pdpush_button.cr	ported: PDPushButton
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDRadioButton.java::class::PDRadioButton	ported	src/pdfbox/pdmodel/interactive/form/pdradio_button.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDRadioButton.java::const::FLAG_NO_TOGGLE_TO_OFF	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDRadioButton.java::method::PDRadioButton.getSelectedExportValues	ported	src/pdfbox/pdmodel/interactive/form/pdradio_button.cr	reconciled: method present

@@ -10422,12 +10422,12 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDNonTerminalFie
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDNonTerminalField.java::method::PDNonTerminalField.setValue	method	ported	src/pdfbox/pdmodel/interactive/form/pdnon_terminal_field.cr	ported
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDPushButton.java::class::PDPushButton	class	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDPushButton.java::method::PDPushButton.constructAppearances	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDPushButton.java::method::PDPushButton.getDefaultValue	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDPushButton.java::method::PDPushButton.getExportValues	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDPushButton.java::method::PDPushButton.getOnValues	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDPushButton.java::method::PDPushButton.getDefaultValue	method	ported	src/pdfbox/pdmodel/interactive/form/pdpush_button.cr	ported: PDPushButton
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDPushButton.java::method::PDPushButton.getExportValues	method	ported	src/pdfbox/pdmodel/interactive/form/pdpush_button.cr	ported: PDPushButton
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDPushButton.java::method::PDPushButton.getOnValues	method	ported	src/pdfbox/pdmodel/interactive/form/pdpush_button.cr	ported: PDPushButton
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDPushButton.java::method::PDPushButton.getValue	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDPushButton.java::method::PDPushButton.getValueAsString	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDPushButton.java::method::PDPushButton.setExportValues	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDPushButton.java::method::PDPushButton.setExportValues	method	ported	src/pdfbox/pdmodel/interactive/form/pdpush_button.cr	ported: PDPushButton
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDRadioButton.java::class::PDRadioButton	class	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDRadioButton.java::const::FLAG_NO_TOGGLE_TO_OFF	const	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDRadioButton.java::method::PDRadioButton.getSelectedExportValues	method	ported	src	auto-generated
