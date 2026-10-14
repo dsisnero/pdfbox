@@ -29,6 +29,38 @@ module Pdfbox::Pdmodel::Interactive::Form
       @document
     end
 
+    # Whether the form has an XFA resource (Java hasXFA).
+    def has_xfa? : Bool
+      @dictionary.has_key?(Cos::Name.new("XFA"))
+    end
+
+    # Whether the form is a dynamic XFA form (Java xfaIsDynamic).
+    def xfa_is_dynamic? : Bool
+      has_xfa? && fields.empty?
+    end
+
+    # The XFA resource (/XFA), or nil (Java getXFA).
+    def xfa : PDXFAResource?
+      base = @dictionary.get_dictionary_object(Cos::Name.new("XFA"))
+      base ? PDXFAResource.new(base) : nil
+    end
+
+    # Sets the XFA resource (/XFA; Java setXFA).
+    def xfa=(xfa : PDXFAResource) : PDXFAResource
+      @dictionary[Cos::Name.new("XFA")] = xfa.cos_object
+      xfa
+    end
+
+    # The default quadding for variable text fields (/Q; Java getQ).
+    def q : Int32
+      @dictionary.get_int(Cos::Name.new("Q"), 0).to_i32
+    end
+
+    def q=(q : Int32) : Int32
+      @dictionary.set_int(Cos::Name.new("Q"), q)
+      q
+    end
+
     # Get the scripting handler used to format values.
     def scripting_handler : ScriptingHandler?
       @scripting_handler

@@ -10233,8 +10233,8 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/FieldUtils.java:
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/FieldUtils.java::method::KeyValue.getValue	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/FieldUtils.java::method::KeyValue.toString	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::class::PDAcroForm	class	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::const::FLAG_APPEND_ONLY	const	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::const::FLAG_SIGNATURES_EXIST	const	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::const::FLAG_APPEND_ONLY	const	ported	src/pdfbox/pdmodel/interactive/form/pdacro_form.cr	ported: PDAcroForm XFA/Q
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::const::FLAG_SIGNATURES_EXIST	const	ported	src/pdfbox/pdmodel/interactive/form/pdacro_form.cr	ported: PDAcroForm XFA/Q
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::const::LOG	const	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.buildPagesWidgetsMap	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.createWidgetDictionarySet	method	ported	src	auto-generated
@@ -10251,11 +10251,11 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java:
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.getFieldTree	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.getFields	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.getNeedAppearances	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.getQ	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.getQ	method	ported	src/pdfbox/pdmodel/interactive/form/pdacro_form.cr	ported: PDAcroForm XFA/Q
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.getScriptingHandler	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.getTransformedAppearanceBBox	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.getXFA	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.hasXFA	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.getXFA	method	ported	src/pdfbox/pdmodel/interactive/form/pdacro_form.cr	ported: PDAcroForm XFA/Q
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.hasXFA	method	ported	src/pdfbox/pdmodel/interactive/form/pdacro_form.cr	ported: PDAcroForm XFA/Q
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.importFDF	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.isAppendOnly	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.isCachingFields	method	partial	src	auto-generated
@@ -10271,11 +10271,11 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java:
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.setDefaultResources	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.setFields	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.setNeedAppearances	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.setQ	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.setQ	method	ported	src/pdfbox/pdmodel/interactive/form/pdacro_form.cr	ported: PDAcroForm XFA/Q
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.setScriptingHandler	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.setSignaturesExist	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.setXFA	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.xfaIsDynamic	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.setXFA	method	ported	src/pdfbox/pdmodel/interactive/form/pdacro_form.cr	ported: PDAcroForm XFA/Q
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.xfaIsDynamic	method	ported	src/pdfbox/pdmodel/interactive/form/pdacro_form.cr	ported: PDAcroForm XFA/Q
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDButton.java::class::PDButton	class	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDButton.java::const::FLAG_PUSHBUTTON	const	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDButton.java::const::FLAG_RADIO	const	ported	src	auto-generated

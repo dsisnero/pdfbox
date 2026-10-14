@@ -10233,8 +10233,8 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/FieldUtils.java:
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/FieldUtils.java::method::KeyValue.getValue	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/FieldUtils.java::method::KeyValue.toString	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::class::PDAcroForm	ported	src/pdfbox/pdmodel/interactive/form/pdacro_form.cr	reconciled: class present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::const::FLAG_APPEND_ONLY	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::const::FLAG_SIGNATURES_EXIST	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::const::FLAG_APPEND_ONLY	ported	src/pdfbox/pdmodel/interactive/form/pdacro_form.cr	ported: PDAcroForm XFA/Q
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::const::FLAG_SIGNATURES_EXIST	ported	src/pdfbox/pdmodel/interactive/form/pdacro_form.cr	ported: PDAcroForm XFA/Q
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::const::LOG	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.buildPagesWidgetsMap	ported	src/pdfbox/pdmodel/interactive/form/pdacro_form.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.createWidgetDictionarySet	ported	src/pdfbox/pdmodel/interactive/form/pdacro_form.cr	reconciled: method present
@@ -10251,11 +10251,11 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java:
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.getFieldTree	ported	src/pdfbox/pdmodel/interactive/form/pdacro_form.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.getFields	ported	src/pdfbox/pdmodel/interactive/form/pdacro_form.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.getNeedAppearances	ported	src/pdfbox/pdmodel/interactive/form/pdacro_form.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.getQ	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.getQ	ported	src/pdfbox/pdmodel/interactive/form/pdacro_form.cr	ported: PDAcroForm XFA/Q
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.getScriptingHandler	ported	src/pdfbox/pdmodel/interactive/form/pdacro_form.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.getTransformedAppearanceBBox	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.getXFA	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.hasXFA	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.getXFA	ported	src/pdfbox/pdmodel/interactive/form/pdacro_form.cr	ported: PDAcroForm XFA/Q
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.hasXFA	ported	src/pdfbox/pdmodel/interactive/form/pdacro_form.cr	ported: PDAcroForm XFA/Q
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.importFDF	ported	src/pdfbox/pdmodel/interactive/form/pdacro_form.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.isAppendOnly	ported	src/pdfbox/pdmodel/interactive/form/pdacro_form.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.isCachingFields	missing	-	baseline
@@ -10271,11 +10271,11 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java:
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.setDefaultResources	ported	src/pdfbox/pdmodel/interactive/form/pdacro_form.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.setFields	ported	src/pdfbox/pdmodel/interactive/form/pdacro_form.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.setNeedAppearances	ported	src/pdfbox/pdmodel/interactive/form/pdacro_form.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.setQ	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.setQ	ported	src/pdfbox/pdmodel/interactive/form/pdacro_form.cr	ported: PDAcroForm XFA/Q
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.setScriptingHandler	ported	src/pdfbox/pdmodel/interactive/form/pdacro_form.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.setSignaturesExist	ported	src/pdfbox/pdmodel/interactive/form/pdacro_form.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.setXFA	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.xfaIsDynamic	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.setXFA	ported	src/pdfbox/pdmodel/interactive/form/pdacro_form.cr	ported: PDAcroForm XFA/Q
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.xfaIsDynamic	ported	src/pdfbox/pdmodel/interactive/form/pdacro_form.cr	ported: PDAcroForm XFA/Q
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDButton.java::class::PDButton	ported	src/pdfbox/pdmodel/interactive/form/pdbutton.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDButton.java::const::FLAG_PUSHBUTTON	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDButton.java::const::FLAG_RADIO	missing	-	baseline
