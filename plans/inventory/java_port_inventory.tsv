@@ -8360,7 +8360,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObject.jav
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObject.java::method::PDImageXObject.getImage	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObject.java::method::PDImageXObject.getInterpolate	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObject.java::method::PDImageXObject.getMask	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObject.java::method::PDImageXObject.getMetadata	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObject.java::method::PDImageXObject.getMetadata	method	ported	src/pdfbox/pdmodel/graphics/image/pd_image_xobject.cr	ported: PDImageXObject
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObject.java::method::PDImageXObject.getOpaqueImage	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObject.java::method::PDImageXObject.getOptionalContent	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObject.java::method::PDImageXObject.getRawImage	method	partial	src	auto-generated
@@ -8379,7 +8379,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObject.jav
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObject.java::method::PDImageXObject.setDecode	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObject.java::method::PDImageXObject.setHeight	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObject.java::method::PDImageXObject.setInterpolate	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObject.java::method::PDImageXObject.setMetadata	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObject.java::method::PDImageXObject.setMetadata	method	ported	src/pdfbox/pdmodel/graphics/image/pd_image_xobject.cr	ported: PDImageXObject
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObject.java::method::PDImageXObject.setOptionalContent	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObject.java::method::PDImageXObject.setStencil	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObject.java::method::PDImageXObject.setStructParent	method	ported	src/pdfbox/pdmodel/graphics/image/pd_image_xobject.cr	auto-generated

@@ -8360,7 +8360,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObject.jav
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObject.java::method::PDImageXObject.getImage	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObject.java::method::PDImageXObject.getInterpolate	ported	src/pdfbox/pdmodel/graphics/image/pd_image_xobject.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObject.java::method::PDImageXObject.getMask	ported	src/pdfbox/pdmodel/graphics/image/pd_image_xobject.cr	ported: PDImageXObject mask / optional-content accessors
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObject.java::method::PDImageXObject.getMetadata	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObject.java::method::PDImageXObject.getMetadata	ported	src/pdfbox/pdmodel/graphics/image/pd_image_xobject.cr	ported: PDImageXObject
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObject.java::method::PDImageXObject.getOpaqueImage	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObject.java::method::PDImageXObject.getOptionalContent	ported	src/pdfbox/pdmodel/graphics/image/pd_image_xobject.cr	ported: PDImageXObject mask / optional-content accessors
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObject.java::method::PDImageXObject.getRawImage	missing	-	baseline
@@ -8379,7 +8379,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObject.jav
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObject.java::method::PDImageXObject.setDecode	ported	src/pdfbox/pdmodel/graphics/image/pd_image_xobject.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObject.java::method::PDImageXObject.setHeight	ported	src/pdfbox/pdmodel/graphics/image/pd_image_xobject.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObject.java::method::PDImageXObject.setInterpolate	ported	src/pdfbox/pdmodel/graphics/image/pd_image_xobject.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObject.java::method::PDImageXObject.setMetadata	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObject.java::method::PDImageXObject.setMetadata	ported	src/pdfbox/pdmodel/graphics/image/pd_image_xobject.cr	ported: PDImageXObject
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObject.java::method::PDImageXObject.setOptionalContent	ported	src/pdfbox/pdmodel/graphics/image/pd_image_xobject.cr	ported: PDImageXObject mask / optional-content accessors
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObject.java::method::PDImageXObject.setStencil	ported	src/pdfbox/pdmodel/graphics/image/pd_image_xobject.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObject.java::method::PDImageXObject.setStructParent	ported	src/pdfbox/pdmodel/graphics/image/pd_image_xobject.cr	baseline

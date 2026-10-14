@@ -319,5 +319,25 @@ module Pdfbox::Pdmodel::Graphics::Image
     def stream : Pdfbox::Cos::Stream?
       @stream || (@dict.is_a?(Pdfbox::Cos::Stream) ? @dict.as(Pdfbox::Cos::Stream) : nil)
     end
+
+    # The metadata stream (/Metadata), or nil (Java getMetadata).
+    def metadata : Pdfbox::Pdmodel::Common::PDMetadata?
+      s = stream
+      return nil unless s
+      md = s.get_dictionary_object(Pdfbox::Cos::Name.new("Metadata"))
+      md.is_a?(Pdfbox::Cos::Stream) ? Pdfbox::Pdmodel::Common::PDMetadata.new(md) : nil
+    end
+
+    # Sets the metadata stream (/Metadata); nil removes it (Java setMetadata).
+    def metadata=(meta : Pdfbox::Pdmodel::Common::PDMetadata?) : Nil
+      s = stream
+      return unless s
+      key = Pdfbox::Cos::Name.new("Metadata")
+      if meta
+        s.set_item(key, meta.cos_object)
+      else
+        s.delete(key)
+      end
+    end
   end
 end
