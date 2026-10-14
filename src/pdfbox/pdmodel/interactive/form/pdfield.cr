@@ -29,19 +29,40 @@ module Pdfbox::Pdmodel::Interactive::Form
 
     # Get the partial field name (T entry)
     def partial_name : String?
-      # Java getPartialName uses COSDictionary.getString, which accepts a
-      # COSName as well as a COSString.
-      value = @dictionary.get_dictionary_object(Cos::Name.new("T"))
-      case value
-      when Cos::String then value.value
-      when Cos::Name   then value.value
-      else                  nil
-      end
+      read_string_or_name("T")
     end
 
     # Set the partial field name
     def partial_name=(name : String)
       @dictionary[Cos::Name.new("T")] = Cos::String.new(name)
+    end
+
+    # The alternate field name (/TU), or nil (Java getAlternateFieldName).
+    def alternate_field_name : String?
+      read_string_or_name("TU")
+    end
+
+    def alternate_field_name=(alternate_field_name : String) : Nil
+      @dictionary.set_string(Cos::Name.new("TU"), alternate_field_name)
+    end
+
+    # The mapping name (/TM), or nil (Java getMappingName).
+    def mapping_name : String?
+      read_string_or_name("TM")
+    end
+
+    def mapping_name=(mapping_name : String) : Nil
+      @dictionary.set_string(Cos::Name.new("TM"), mapping_name)
+    end
+
+    # Java COSDictionary.getString: accepts a COSName as well as a COSString.
+    private def read_string_or_name(key : ::String) : String?
+      value = @dictionary.get_dictionary_object(Cos::Name.new(key))
+      case value
+      when Cos::String then value.value
+      when Cos::Name   then value.value
+      else                  nil
+      end
     end
 
     # Get the fully qualified field name

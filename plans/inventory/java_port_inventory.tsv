@@ -10361,13 +10361,13 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDField.java::me
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDField.java::method::PDField.fromDictionary	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDField.java::method::PDField.getAcroForm	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDField.java::method::PDField.getActions	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDField.java::method::PDField.getAlternateFieldName	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDField.java::method::PDField.getAlternateFieldName	method	ported	src/pdfbox/pdmodel/interactive/form/pdfield.cr	ported: PDField
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDField.java::method::PDField.getCOSObject	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDField.java::method::PDField.getFieldFlags	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDField.java::method::PDField.getFieldType	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDField.java::method::PDField.getFullyQualifiedName	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDField.java::method::PDField.getInheritableAttribute	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDField.java::method::PDField.getMappingName	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDField.java::method::PDField.getMappingName	method	ported	src/pdfbox/pdmodel/interactive/form/pdfield.cr	ported: PDField
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDField.java::method::PDField.getParent	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDField.java::method::PDField.getPartialName	method	ported	src/pdfbox/pdmodel/interactive/form/pdfield.cr	ported
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDField.java::method::PDField.getValueAsString	method	ported	src	auto-generated
@@ -10376,9 +10376,9 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDField.java::me
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDField.java::method::PDField.isNoExport	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDField.java::method::PDField.isReadOnly	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDField.java::method::PDField.isRequired	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDField.java::method::PDField.setAlternateFieldName	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDField.java::method::PDField.setAlternateFieldName	method	ported	src/pdfbox/pdmodel/interactive/form/pdfield.cr	ported: PDField
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDField.java::method::PDField.setFieldFlags	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDField.java::method::PDField.setMappingName	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDField.java::method::PDField.setMappingName	method	ported	src/pdfbox/pdmodel/interactive/form/pdfield.cr	ported: PDField
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDField.java::method::PDField.setNoExport	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDField.java::method::PDField.setPartialName	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDField.java::method::PDField.setReadOnly	method	ported	src	auto-generated

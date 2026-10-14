@@ -10361,13 +10361,13 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDField.java::me
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDField.java::method::PDField.fromDictionary	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDField.java::method::PDField.getAcroForm	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDField.java::method::PDField.getActions	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDField.java::method::PDField.getAlternateFieldName	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDField.java::method::PDField.getAlternateFieldName	ported	src/pdfbox/pdmodel/interactive/form/pdfield.cr	ported: PDField
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDField.java::method::PDField.getCOSObject	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDField.java::method::PDField.getFieldFlags	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDField.java::method::PDField.getFieldType	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDField.java::method::PDField.getFullyQualifiedName	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDField.java::method::PDField.getInheritableAttribute	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDField.java::method::PDField.getMappingName	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDField.java::method::PDField.getMappingName	ported	src/pdfbox/pdmodel/interactive/form/pdfield.cr	ported: PDField
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDField.java::method::PDField.getParent	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDField.java::method::PDField.getPartialName	ported	src/pdfbox/pdmodel/interactive/form/pdfield.cr	ported
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDField.java::method::PDField.getValueAsString	missing	-	baseline
@@ -10376,9 +10376,9 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDField.java::me
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDField.java::method::PDField.isNoExport	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDField.java::method::PDField.isReadOnly	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDField.java::method::PDField.isRequired	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDField.java::method::PDField.setAlternateFieldName	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDField.java::method::PDField.setAlternateFieldName	ported	src/pdfbox/pdmodel/interactive/form/pdfield.cr	ported: PDField
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDField.java::method::PDField.setFieldFlags	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDField.java::method::PDField.setMappingName	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDField.java::method::PDField.setMappingName	ported	src/pdfbox/pdmodel/interactive/form/pdfield.cr	ported: PDField
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDField.java::method::PDField.setNoExport	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDField.java::method::PDField.setPartialName	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDField.java::method::PDField.setReadOnly	missing	-	baseline
