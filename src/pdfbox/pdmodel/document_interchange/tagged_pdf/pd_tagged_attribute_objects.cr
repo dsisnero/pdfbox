@@ -429,6 +429,12 @@ module Pdfbox::Pdmodel::DocumentInterchange::TaggedPdf
   class PDTableAttributeObject < PDStandardAttributeObject
     OWNER_TABLE = "Table"
 
+    ROW_SPAN = "RowSpan"
+    COL_SPAN = "ColSpan"
+    HEADERS  = "Headers"
+    SCOPE    = "Scope"
+    SUMMARY  = "Summary"
+
     SCOPE_BOTH   = "Both"
     SCOPE_COLUMN = "Column"
     SCOPE_ROW    = "Row"
@@ -495,6 +501,18 @@ module Pdfbox::Pdmodel::DocumentInterchange::TaggedPdf
   class PDListAttributeObject < PDStandardAttributeObject
     OWNER_LIST = "List"
 
+    LIST_NUMBERING = "ListNumbering"
+
+    LIST_NUMBERING_CIRCLE      = "Circle"
+    LIST_NUMBERING_DECIMAL     = "Decimal"
+    LIST_NUMBERING_DISC        = "Disc"
+    LIST_NUMBERING_LOWER_ALPHA = "LowerAlpha"
+    LIST_NUMBERING_LOWER_ROMAN = "LowerRoman"
+    LIST_NUMBERING_NONE        = "None"
+    LIST_NUMBERING_SQUARE      = "Square"
+    LIST_NUMBERING_UPPER_ALPHA = "UpperAlpha"
+    LIST_NUMBERING_UPPER_ROMAN = "UpperRoman"
+
     def initialize
       super
       self.owner = OWNER_LIST
@@ -502,6 +520,16 @@ module Pdfbox::Pdmodel::DocumentInterchange::TaggedPdf
 
     def initialize(dictionary : Cos::Dictionary)
       super(dictionary)
+    end
+
+    # The list numbering (/ListNumbering), defaulting to "None".
+    # Java PDListAttributeObject#getListNumbering.
+    def list_numbering : String
+      get_name(LIST_NUMBERING, LIST_NUMBERING_NONE)
+    end
+
+    def list_numbering=(list_numbering : String) : Nil
+      set_name(LIST_NUMBERING, list_numbering)
     end
   end
 
@@ -575,6 +603,67 @@ module Pdfbox::Pdmodel::DocumentInterchange::TaggedPdf
 
     def initialize(dictionary : Cos::Dictionary)
       super(dictionary)
+    end
+
+    # The list numbering (/ListNumbering), defaulting to "None".
+    def list_numbering : String
+      get_name(PDListAttributeObject::LIST_NUMBERING, PDListAttributeObject::LIST_NUMBERING_NONE)
+    end
+
+    def list_numbering=(list_numbering : String) : Nil
+      set_name(PDListAttributeObject::LIST_NUMBERING, list_numbering)
+    end
+
+    # The table row span (/RowSpan), defaulting to 1.
+    def row_span : Int32
+      get_integer(PDTableAttributeObject::ROW_SPAN, 1)
+    end
+
+    def row_span=(row_span : Int32) : Nil
+      set_integer(PDTableAttributeObject::ROW_SPAN, row_span)
+    end
+
+    # The table column span (/ColSpan), defaulting to 1.
+    def col_span : Int32
+      get_integer(PDTableAttributeObject::COL_SPAN, 1)
+    end
+
+    def col_span=(col_span : Int32) : Nil
+      set_integer(PDTableAttributeObject::COL_SPAN, col_span)
+    end
+
+    # The table headers (/Headers), or nil (Java getHeaders reads name entries).
+    def headers : Array(String)?
+      array = cos_object.get_array(Cos::Name.new(PDTableAttributeObject::HEADERS))
+      return unless array
+      array.items.compact_map do |item|
+        item = item.object if item.is_a?(Cos::Object)
+        item.as?(Cos::Name).try(&.value)
+      end
+    end
+
+    def headers=(values : Array(String)) : Nil
+      array = Cos::Array.new
+      values.each { |value| array.add(Cos::String.new(value)) }
+      cos_object[Cos::Name.new(PDTableAttributeObject::HEADERS)] = array
+    end
+
+    # The table scope (/Scope), or nil.
+    def scope : String?
+      get_name(PDTableAttributeObject::SCOPE)
+    end
+
+    def scope=(scope : String) : Nil
+      set_name(PDTableAttributeObject::SCOPE, scope)
+    end
+
+    # The table summary (/Summary), or nil.
+    def summary : String?
+      get_string(PDTableAttributeObject::SUMMARY)
+    end
+
+    def summary=(summary : String) : Nil
+      set_string(PDTableAttributeObject::SUMMARY, summary)
     end
   end
 end
