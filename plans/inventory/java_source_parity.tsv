@@ -8250,21 +8250,21 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDTristimulus.java
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDTristimulus.java::method::PDTristimulus.setY	ported	src/pdfbox/pdmodel/graphics/color/pd_tristimulus.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDTristimulus.java::method::PDTristimulus.setZ	ported	src/pdfbox/pdmodel/graphics/color/pd_tristimulus.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/form/PDFormXObject.java::class::PDFormXObject	ported	src/pdfbox/pdmodel/graphics/form/pdform_xobject.cr	reconciled: class present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/form/PDFormXObject.java::method::PDFormXObject.getBBox	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/form/PDFormXObject.java::method::PDFormXObject.getBBox	ported	src/pdfbox/pdmodel/graphics/form/pdform_xobject.cr	ported: PDFormXObject
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/form/PDFormXObject.java::method::PDFormXObject.getContentStream	ported	src/pdfbox/pdmodel/graphics/form/pdform_xobject.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/form/PDFormXObject.java::method::PDFormXObject.getContents	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/form/PDFormXObject.java::method::PDFormXObject.getContents	ported	src/pdfbox/pdmodel/graphics/form/pdform_xobject.cr	ported: PDFormXObject
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/form/PDFormXObject.java::method::PDFormXObject.getContentsForRandomAccess	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/form/PDFormXObject.java::method::PDFormXObject.getFormType	ported	src/pdfbox/pdmodel/graphics/form/pdform_xobject.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/form/PDFormXObject.java::method::PDFormXObject.getGroup	ported	src/pdfbox/pdmodel/graphics/form/pdform_xobject.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/form/PDFormXObject.java::method::PDFormXObject.getMatrix	ported	src/pdfbox/pdmodel/graphics/form/pdform_xobject.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/form/PDFormXObject.java::method::PDFormXObject.getOptionalContent	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/form/PDFormXObject.java::method::PDFormXObject.getOptionalContent	ported	src/pdfbox/pdmodel/graphics/form/pdform_xobject.cr	ported: PDFormXObject
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/form/PDFormXObject.java::method::PDFormXObject.getResources	ported	src/pdfbox/pdmodel/graphics/form/pdform_xobject.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/form/PDFormXObject.java::method::PDFormXObject.getStructParents	ported	src/pdfbox/pdmodel/graphics/form/pdform_xobject.cr	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/form/PDFormXObject.java::method::PDFormXObject.setBBox	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/form/PDFormXObject.java::method::PDFormXObject.setBBox	ported	src/pdfbox/pdmodel/graphics/form/pdform_xobject.cr	ported: PDFormXObject
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/form/PDFormXObject.java::method::PDFormXObject.setFormType	ported	src/pdfbox/pdmodel/graphics/form/pdform_xobject.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/form/PDFormXObject.java::method::PDFormXObject.setGroup	ported	src/pdfbox/pdmodel/graphics/form/pdform_xobject.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/form/PDFormXObject.java::method::PDFormXObject.setMatrix	ported	src/pdfbox/pdmodel/graphics/form/pdform_xobject.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/form/PDFormXObject.java::method::PDFormXObject.setOptionalContent	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/form/PDFormXObject.java::method::PDFormXObject.setOptionalContent	ported	src/pdfbox/pdmodel/graphics/form/pdform_xobject.cr	ported: PDFormXObject
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/form/PDFormXObject.java::method::PDFormXObject.setResources	ported	src/pdfbox/pdmodel/graphics/form/pdform_xobject.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/form/PDFormXObject.java::method::PDFormXObject.setStructParents	ported	src/pdfbox/pdmodel/graphics/form/pdform_xobject.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/form/PDTransparencyGroup.java::class::PDTransparencyGroup	ported	src/pdfbox/pdmodel/graphics/form/pdtransparency_group.cr	ported: PDTransparencyGroup

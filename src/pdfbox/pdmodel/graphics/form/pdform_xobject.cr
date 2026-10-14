@@ -99,5 +99,30 @@ module Pdfbox::Pdmodel::Graphics::Form
       @stream[Pdfbox::Cos::Name.new("Matrix")] = array
       value
     end
+
+    # The optional content group or membership dictionary (/OC), or nil.
+    # Java PDFormXObject#getOptionalContent.
+    def optional_content : Pdfbox::Pdmodel::DocumentInterchange::MarkedContent::PDPropertyList?
+      @stream.get_dictionary(Pdfbox::Cos::Name.new("OC")).try do |dictionary|
+        Pdfbox::Pdmodel::DocumentInterchange::MarkedContent::PDPropertyList.create(dictionary)
+      end
+    end
+
+    # Sets the optional content group or membership dictionary (/OC).
+    # Java PDFormXObject#setOptionalContent.
+    def optional_content=(oc : Pdfbox::Pdmodel::DocumentInterchange::MarkedContent::PDPropertyList?) : Pdfbox::Pdmodel::DocumentInterchange::MarkedContent::PDPropertyList?
+      key = Pdfbox::Cos::Name.new("OC")
+      if oc
+        @stream[key] = oc.cos_object
+      else
+        @stream.delete(key)
+      end
+      oc
+    end
+
+    # Returns the decoded form contents as an IO (Java getContents).
+    def contents : ::IO
+      content_stream.create_input_stream
+    end
   end
 end

@@ -8250,21 +8250,21 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDTristimulus.java
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDTristimulus.java::method::PDTristimulus.setY	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDTristimulus.java::method::PDTristimulus.setZ	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/form/PDFormXObject.java::class::PDFormXObject	class	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/form/PDFormXObject.java::method::PDFormXObject.getBBox	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/form/PDFormXObject.java::method::PDFormXObject.getBBox	method	ported	src/pdfbox/pdmodel/graphics/form/pdform_xobject.cr	ported: PDFormXObject
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/form/PDFormXObject.java::method::PDFormXObject.getContentStream	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/form/PDFormXObject.java::method::PDFormXObject.getContents	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/form/PDFormXObject.java::method::PDFormXObject.getContents	method	ported	src/pdfbox/pdmodel/graphics/form/pdform_xobject.cr	ported: PDFormXObject
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/form/PDFormXObject.java::method::PDFormXObject.getContentsForRandomAccess	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/form/PDFormXObject.java::method::PDFormXObject.getFormType	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/form/PDFormXObject.java::method::PDFormXObject.getGroup	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/form/PDFormXObject.java::method::PDFormXObject.getMatrix	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/form/PDFormXObject.java::method::PDFormXObject.getOptionalContent	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/form/PDFormXObject.java::method::PDFormXObject.getOptionalContent	method	ported	src/pdfbox/pdmodel/graphics/form/pdform_xobject.cr	ported: PDFormXObject
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/form/PDFormXObject.java::method::PDFormXObject.getResources	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/form/PDFormXObject.java::method::PDFormXObject.getStructParents	method	ported	src/pdfbox/pdmodel/graphics/form/pdform_xobject.cr	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/form/PDFormXObject.java::method::PDFormXObject.setBBox	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/form/PDFormXObject.java::method::PDFormXObject.setBBox	method	ported	src/pdfbox/pdmodel/graphics/form/pdform_xobject.cr	ported: PDFormXObject
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/form/PDFormXObject.java::method::PDFormXObject.setFormType	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/form/PDFormXObject.java::method::PDFormXObject.setGroup	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/form/PDFormXObject.java::method::PDFormXObject.setMatrix	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/form/PDFormXObject.java::method::PDFormXObject.setOptionalContent	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/form/PDFormXObject.java::method::PDFormXObject.setOptionalContent	method	ported	src/pdfbox/pdmodel/graphics/form/pdform_xobject.cr	ported: PDFormXObject
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/form/PDFormXObject.java::method::PDFormXObject.setResources	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/form/PDFormXObject.java::method::PDFormXObject.setStructParents	method	ported	src/pdfbox/pdmodel/graphics/form/pdform_xobject.cr	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/form/PDTransparencyGroup.java::class::PDTransparencyGroup	class	missing	-	auto-generated
