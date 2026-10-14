@@ -509,6 +509,19 @@ module Pdfbox::Pdmodel::DocumentInterchange::TaggedPdf
   class PDPrintFieldAttributeObject < PDStandardAttributeObject
     OWNER_PRINT_FIELD = "PrintField"
 
+    ROLE    = "Role"
+    CHECKED = "checked"
+    DESC    = "Desc"
+
+    ROLE_RB = "rb"
+    ROLE_CB = "cb"
+    ROLE_PB = "pb"
+    ROLE_TV = "tv"
+
+    CHECKED_STATE_ON      = "on"
+    CHECKED_STATE_OFF     = "off"
+    CHECKED_STATE_NEUTRAL = "neutral"
+
     def initialize
       super
       self.owner = OWNER_PRINT_FIELD
@@ -516,6 +529,33 @@ module Pdfbox::Pdmodel::DocumentInterchange::TaggedPdf
 
     def initialize(dictionary : Cos::Dictionary)
       super(dictionary)
+    end
+
+    # The role (/Role), or nil (Java getRole).
+    def role : String?
+      get_name(ROLE)
+    end
+
+    def role=(role : String) : Nil
+      set_name(ROLE, role)
+    end
+
+    # The checked state (/checked), defaulting to "off" (Java getCheckedState).
+    def checked_state : String
+      get_name(CHECKED, CHECKED_STATE_OFF)
+    end
+
+    def checked_state=(checked_state : String) : Nil
+      set_name(CHECKED, checked_state)
+    end
+
+    # The alternate name (/Desc), or nil (Java getAlternateName).
+    def alternate_name : String?
+      get_string(DESC)
+    end
+
+    def alternate_name=(alternate_name : String) : Nil
+      set_string(DESC, alternate_name)
     end
   end
 
