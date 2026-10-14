@@ -29,8 +29,14 @@ module Pdfbox::Pdmodel::Interactive::Form
 
     # Get the partial field name (T entry)
     def partial_name : String?
-      value = @dictionary[Cos::Name.new("T")]
-      value.as?(Cos::String).try(&.value)
+      # Java getPartialName uses COSDictionary.getString, which accepts a
+      # COSName as well as a COSString.
+      value = @dictionary.get_dictionary_object(Cos::Name.new("T"))
+      case value
+      when Cos::String then value.value
+      when Cos::Name   then value.value
+      else                  nil
+      end
     end
 
     # Set the partial field name

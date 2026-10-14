@@ -10369,7 +10369,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDField.java::me
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDField.java::method::PDField.getInheritableAttribute	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDField.java::method::PDField.getMappingName	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDField.java::method::PDField.getParent	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDField.java::method::PDField.getPartialName	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDField.java::method::PDField.getPartialName	ported	src/pdfbox/pdmodel/interactive/form/pdfield.cr	ported
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDField.java::method::PDField.getValueAsString	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDField.java::method::PDField.getWidgets	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDField.java::method::PDField.importFDF	ported	src/pdfbox/pdmodel/interactive/form/fdf_support.cr	reconciled: method present
@@ -10409,17 +10409,17 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDListBox.java::
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDNonTerminalField.java::class::PDNonTerminalField	ported	src/pdfbox/pdmodel/interactive/form/fdf_support.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDNonTerminalField.java::const::LOG	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDNonTerminalField.java::method::PDNonTerminalField.exportFDF	ported	src/pdfbox/pdmodel/interactive/form/fdf_support.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDNonTerminalField.java::method::PDNonTerminalField.getChildren	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDNonTerminalField.java::method::PDNonTerminalField.getDefaultValue	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDNonTerminalField.java::method::PDNonTerminalField.getFieldFlags	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDNonTerminalField.java::method::PDNonTerminalField.getFieldType	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDNonTerminalField.java::method::PDNonTerminalField.getValue	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDNonTerminalField.java::method::PDNonTerminalField.getChildren	ported	src/pdfbox/pdmodel/interactive/form/pdnon_terminal_field.cr	ported
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDNonTerminalField.java::method::PDNonTerminalField.getDefaultValue	ported	src/pdfbox/pdmodel/interactive/form/pdnon_terminal_field.cr	ported
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDNonTerminalField.java::method::PDNonTerminalField.getFieldFlags	ported	src/pdfbox/pdmodel/interactive/form/pdnon_terminal_field.cr	ported
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDNonTerminalField.java::method::PDNonTerminalField.getFieldType	ported	src/pdfbox/pdmodel/interactive/form/pdnon_terminal_field.cr	ported
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDNonTerminalField.java::method::PDNonTerminalField.getValue	ported	src/pdfbox/pdmodel/interactive/form/pdnon_terminal_field.cr	ported
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDNonTerminalField.java::method::PDNonTerminalField.getValueAsString	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDNonTerminalField.java::method::PDNonTerminalField.getWidgets	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDNonTerminalField.java::method::PDNonTerminalField.getWidgets	ported	src/pdfbox/pdmodel/interactive/form/pdnon_terminal_field.cr	ported
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDNonTerminalField.java::method::PDNonTerminalField.importFDF	ported	src/pdfbox/pdmodel/interactive/form/fdf_support.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDNonTerminalField.java::method::PDNonTerminalField.setChildren	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDNonTerminalField.java::method::PDNonTerminalField.setDefaultValue	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDNonTerminalField.java::method::PDNonTerminalField.setValue	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDNonTerminalField.java::method::PDNonTerminalField.setChildren	ported	src/pdfbox/pdmodel/interactive/form/pdnon_terminal_field.cr	ported
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDNonTerminalField.java::method::PDNonTerminalField.setDefaultValue	ported	src/pdfbox/pdmodel/interactive/form/pdnon_terminal_field.cr	ported
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDNonTerminalField.java::method::PDNonTerminalField.setValue	ported	src/pdfbox/pdmodel/interactive/form/pdnon_terminal_field.cr	ported
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDPushButton.java::class::PDPushButton	ported	src/pdfbox/pdmodel/interactive/form/pdpush_button.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDPushButton.java::method::PDPushButton.constructAppearances	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDPushButton.java::method::PDPushButton.getDefaultValue	missing	-	baseline
