@@ -15,6 +15,10 @@ module Pdfbox::Pdmodel::Graphics::Color
       1
     end
 
+    def default_decode(_bits_per_component : Int32 = 8) : Array(Float32)
+      [0.0_f32, 1.0_f32]
+    end
+
     def initial_color : PDColor
       @initial_color ||= PDColor.new([0.0_f32], self)
     end

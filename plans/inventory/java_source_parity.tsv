@@ -8067,8 +8067,8 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceColorSpace
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceColorSpace.java::method::PDDeviceColorSpace.getCOSObject	ported	src/pdfbox/pdmodel/graphics/color/pddevice_color_space.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceColorSpace.java::method::PDDeviceColorSpace.toString	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceGray.java::class::PDDeviceGray	ported	src/pdfbox/pdmodel/graphics/color/pddevice_gray.cr	reconciled: class present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceGray.java::const::INSTANCE	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceGray.java::method::PDDeviceGray.getDefaultDecode	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceGray.java::const::INSTANCE	ported	src/pdfbox/pdmodel/graphics/color/pddevice_gray.cr	ported: device color
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceGray.java::method::PDDeviceGray.getDefaultDecode	ported	src/pdfbox/pdmodel/graphics/color/pddevice_gray.cr	ported: device color
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceGray.java::method::PDDeviceGray.getInitialColor	ported	src/pdfbox/pdmodel/graphics/color/pddevice_gray.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceGray.java::method::PDDeviceGray.getName	ported	src/pdfbox/pdmodel/graphics/color/pddevice_gray.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceGray.java::method::PDDeviceGray.getNumberOfComponents	ported	src/pdfbox/pdmodel/graphics/color/pddevice_gray.cr	reconciled: method present
@@ -8115,8 +8115,8 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceNProcess.j
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceNProcess.java::method::PDDeviceNProcess.getComponents	ported	src/pdfbox/pdmodel/graphics/color/pd_devicen_process.cr	ported: DeviceN colour space
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceNProcess.java::method::PDDeviceNProcess.toString	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceRGB.java::class::PDDeviceRGB	ported	src/pdfbox/pdmodel/graphics/color/pddevice_rgb.cr	reconciled: class present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceRGB.java::const::INSTANCE	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceRGB.java::method::PDDeviceRGB.getDefaultDecode	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceRGB.java::const::INSTANCE	ported	src/pdfbox/pdmodel/graphics/color/pddevice_rgb.cr	ported: device color
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceRGB.java::method::PDDeviceRGB.getDefaultDecode	ported	src/pdfbox/pdmodel/graphics/color/pddevice_rgb.cr	ported: device color
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceRGB.java::method::PDDeviceRGB.getInitialColor	ported	src/pdfbox/pdmodel/graphics/color/pddevice_rgb.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceRGB.java::method::PDDeviceRGB.getName	ported	src/pdfbox/pdmodel/graphics/color/pddevice_rgb.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceRGB.java::method::PDDeviceRGB.getNumberOfComponents	ported	src/pdfbox/pdmodel/graphics/color/pddevice_rgb.cr	reconciled: method present

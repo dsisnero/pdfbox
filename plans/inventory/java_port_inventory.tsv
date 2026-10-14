@@ -8067,8 +8067,8 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceColorSpace
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceColorSpace.java::method::PDDeviceColorSpace.getCOSObject	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceColorSpace.java::method::PDDeviceColorSpace.toString	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceGray.java::class::PDDeviceGray	class	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceGray.java::const::INSTANCE	const	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceGray.java::method::PDDeviceGray.getDefaultDecode	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceGray.java::const::INSTANCE	const	ported	src/pdfbox/pdmodel/graphics/color/pddevice_gray.cr	ported: device color
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceGray.java::method::PDDeviceGray.getDefaultDecode	method	ported	src/pdfbox/pdmodel/graphics/color/pddevice_gray.cr	ported: device color
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceGray.java::method::PDDeviceGray.getInitialColor	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceGray.java::method::PDDeviceGray.getName	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceGray.java::method::PDDeviceGray.getNumberOfComponents	method	ported	src	auto-generated
@@ -8115,8 +8115,8 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceNProcess.j
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceNProcess.java::method::PDDeviceNProcess.getComponents	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceNProcess.java::method::PDDeviceNProcess.toString	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceRGB.java::class::PDDeviceRGB	class	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceRGB.java::const::INSTANCE	const	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceRGB.java::method::PDDeviceRGB.getDefaultDecode	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceRGB.java::const::INSTANCE	const	ported	src/pdfbox/pdmodel/graphics/color/pddevice_rgb.cr	ported: device color
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceRGB.java::method::PDDeviceRGB.getDefaultDecode	method	ported	src/pdfbox/pdmodel/graphics/color/pddevice_rgb.cr	ported: device color
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceRGB.java::method::PDDeviceRGB.getInitialColor	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceRGB.java::method::PDDeviceRGB.getName	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDDeviceRGB.java::method::PDDeviceRGB.getNumberOfComponents	method	ported	src	auto-generated
