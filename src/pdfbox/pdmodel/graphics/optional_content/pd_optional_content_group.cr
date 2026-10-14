@@ -29,5 +29,53 @@ module Pdfbox::Pdmodel::Graphics::OptionalContent
       @dict.set_string("Name", name)
       name
     end
+
+    # The state of an optional content group for a given render purpose.
+    # Java PDOptionalContentGroup.RenderState.
+    enum RenderState
+      ON
+      OFF
+
+      # Java RenderState#getName: the COS name for this state.
+      def cos_name : Pdfbox::Cos::Name
+        Pdfbox::Cos::Name.new(to_s)
+      end
+
+      # Java RenderState#valueOf(COSName): maps a state name, nil for nil,
+      # raising for an unknown name (Java Enum.valueOf).
+      def self.value_of(state : ::String?) : RenderState?
+        return nil if state.nil?
+        case state.upcase
+        when "ON"  then RenderState::ON
+        when "OFF" then RenderState::OFF
+        else
+          raise ArgumentError.new("Unknown render state: #{state}")
+        end
+      end
+    end
+
+    # Returns the render state for the given destination (/Usage), or nil.
+    # Java PDOptionalContentGroup#getRenderState(RenderDestination).
+    def render_state(destination : Pdfbox::Rendering::RenderDestination) : RenderState?
+      state = nil.as(::String?)
+      usage = @dict.get_dictionary(Pdfbox::Cos::Name.new("Usage"))
+      if usage
+        case destination
+        in Pdfbox::Rendering::RenderDestination::PRINT
+          print = usage.get_dictionary(Pdfbox::Cos::Name.new("Print"))
+          state = print.try(&.get_name_as_string(Pdfbox::Cos::Name.new("PrintState")))
+        in Pdfbox::Rendering::RenderDestination::VIEW
+          view = usage.get_dictionary(Pdfbox::Cos::Name.new("View"))
+          state = view.try(&.get_name_as_string(Pdfbox::Cos::Name.new("ViewState")))
+        in Pdfbox::Rendering::RenderDestination::EXPORT
+          # no destination-specific state; fall through to the export fallback
+        end
+        if state.nil?
+          export = usage.get_dictionary(Pdfbox::Cos::Name.new("Export"))
+          state = export.try(&.get_name_as_string(Pdfbox::Cos::Name.new("ExportState")))
+        end
+      end
+      state ? RenderState.value_of(state) : nil
+    end
   end
 end

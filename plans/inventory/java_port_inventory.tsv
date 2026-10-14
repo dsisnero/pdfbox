@@ -8471,12 +8471,12 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/SampledImageReader
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/SampledImageReader.java::method::SampledImageReader.getStencilImage	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/SampledImageReader.java::method::SampledImageReader.readRasterFromAny	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/optionalcontent/PDOptionalContentGroup.java::class::PDOptionalContentGroup	class	ported	src/pdfbox/pdmodel/graphics/optional_content/pd_optional_content_group.cr	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/optionalcontent/PDOptionalContentGroup.java::enum::RenderState	enum	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/optionalcontent/PDOptionalContentGroup.java::enum::RenderState	enum	ported	src/pdfbox/pdmodel/graphics/optional_content/pd_optional_content_group.cr	ported: optional content
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/optionalcontent/PDOptionalContentGroup.java::method::PDOptionalContentGroup.getName	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/optionalcontent/PDOptionalContentGroup.java::method::PDOptionalContentGroup.getRenderState	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/optionalcontent/PDOptionalContentGroup.java::method::PDOptionalContentGroup.getRenderState	method	ported	src/pdfbox/pdmodel/graphics/optional_content/pd_optional_content_group.cr	ported: optional content
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/optionalcontent/PDOptionalContentGroup.java::method::PDOptionalContentGroup.setName	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/optionalcontent/PDOptionalContentGroup.java::method::PDOptionalContentGroup.toString	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/optionalcontent/PDOptionalContentGroup.java::method::PDOptionalContentGroup.valueOf	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/optionalcontent/PDOptionalContentGroup.java::method::PDOptionalContentGroup.valueOf	method	ported	src/pdfbox/pdmodel/graphics/optional_content/pd_optional_content_group.cr	ported: optional content
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/optionalcontent/PDOptionalContentMembershipDictionary.java::class::PDOptionalContentMembershipDictionary	class	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/optionalcontent/PDOptionalContentMembershipDictionary.java::method::PDOptionalContentMembershipDictionary.getOCGs	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/optionalcontent/PDOptionalContentMembershipDictionary.java::method::PDOptionalContentMembershipDictionary.getVisibilityPolicy	method	missing	-	auto-generated
@@ -10837,7 +10837,7 @@ pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawerParameters.java::meth
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawerParameters.java::method::PageDrawerParameters.getRenderer	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawerParameters.java::method::PageDrawerParameters.getRenderingHints	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawerParameters.java::method::PageDrawerParameters.isSubsamplingAllowed	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/rendering/RenderDestination.java::enum::RenderDestination	enum	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/rendering/RenderDestination.java::enum::RenderDestination	enum	ported	src/pdfbox/rendering/render_destination.cr	ported: optional content
 pdfbox/src/main/java/org/apache/pdfbox/rendering/SoftMask.java::class::SoftMask	class	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/rendering/SoftMask.java::class::SoftPaintContext	class	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/rendering/SoftMask.java::const::ARGB_COLOR_MODEL	const	missing	-	auto-generated

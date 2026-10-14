@@ -8471,12 +8471,12 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/SampledImageReader
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/SampledImageReader.java::method::SampledImageReader.getStencilImage	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/SampledImageReader.java::method::SampledImageReader.readRasterFromAny	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/optionalcontent/PDOptionalContentGroup.java::class::PDOptionalContentGroup	ported	src/pdfbox/pdmodel/graphics/optional_content/pd_optional_content_group.cr	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/optionalcontent/PDOptionalContentGroup.java::enum::RenderState	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/optionalcontent/PDOptionalContentGroup.java::enum::RenderState	ported	src/pdfbox/pdmodel/graphics/optional_content/pd_optional_content_group.cr	ported: optional content
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/optionalcontent/PDOptionalContentGroup.java::method::PDOptionalContentGroup.getName	ported	src/pdfbox/pdmodel/graphics/optional_content/pd_optional_content_group.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/optionalcontent/PDOptionalContentGroup.java::method::PDOptionalContentGroup.getRenderState	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/optionalcontent/PDOptionalContentGroup.java::method::PDOptionalContentGroup.getRenderState	ported	src/pdfbox/pdmodel/graphics/optional_content/pd_optional_content_group.cr	ported: optional content
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/optionalcontent/PDOptionalContentGroup.java::method::PDOptionalContentGroup.setName	ported	src/pdfbox/pdmodel/graphics/optional_content/pd_optional_content_group.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/optionalcontent/PDOptionalContentGroup.java::method::PDOptionalContentGroup.toString	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/optionalcontent/PDOptionalContentGroup.java::method::PDOptionalContentGroup.valueOf	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/optionalcontent/PDOptionalContentGroup.java::method::PDOptionalContentGroup.valueOf	ported	src/pdfbox/pdmodel/graphics/optional_content/pd_optional_content_group.cr	ported: optional content
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/optionalcontent/PDOptionalContentMembershipDictionary.java::class::PDOptionalContentMembershipDictionary	ported	src/pdfbox/pdmodel/graphics/optional_content/pd_optional_content_membership_dictionary.cr	ported: PDOptionalContentMembershipDictionary + create dispatch
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/optionalcontent/PDOptionalContentMembershipDictionary.java::method::PDOptionalContentMembershipDictionary.getOCGs	ported	src/pdfbox/pdmodel/graphics/optional_content/pd_optional_content_membership_dictionary.cr	ported: PDOptionalContentMembershipDictionary + create dispatch
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/optionalcontent/PDOptionalContentMembershipDictionary.java::method::PDOptionalContentMembershipDictionary.getVisibilityPolicy	ported	src/pdfbox/pdmodel/graphics/optional_content/pd_optional_content_membership_dictionary.cr	ported: PDOptionalContentMembershipDictionary + create dispatch
@@ -10837,7 +10837,7 @@ pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawerParameters.java::meth
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawerParameters.java::method::PageDrawerParameters.getRenderer	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawerParameters.java::method::PageDrawerParameters.getRenderingHints	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawerParameters.java::method::PageDrawerParameters.isSubsamplingAllowed	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/rendering/RenderDestination.java::enum::RenderDestination	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/rendering/RenderDestination.java::enum::RenderDestination	ported	src/pdfbox/rendering/render_destination.cr	ported: optional content
 pdfbox/src/main/java/org/apache/pdfbox/rendering/SoftMask.java::class::SoftMask	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/rendering/SoftMask.java::class::SoftPaintContext	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/rendering/SoftMask.java::const::ARGB_COLOR_MODEL	missing	-	baseline
