@@ -61,6 +61,20 @@ module Pdfbox::Pdmodel::Interactive::Form
       q
     end
 
+    # The calculation order (/CO) array, or nil (Java getCalcOrder).
+    def calc_order : Cos::Array?
+      @dictionary.get_array(Cos::Name.new("CO"))
+    end
+
+    def calc_order=(calc_order : Cos::Array?) : Nil
+      key = Cos::Name.new("CO")
+      if calc_order
+        @dictionary[key] = calc_order
+      else
+        @dictionary.delete(key)
+      end
+    end
+
     # Get the scripting handler used to format values.
     def scripting_handler : ScriptingHandler?
       @scripting_handler
