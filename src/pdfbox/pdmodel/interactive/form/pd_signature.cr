@@ -5,6 +5,16 @@ require "./pd_prop_build"
 # Ported from Apache PDFBox PDSignature (focus: byte range and contents).
 module Pdfbox::Pdmodel::Interactive::Form
   class PDSignature
+    FILTER_ADOBE_PPKLITE  = Cos::Name.new("Adobe.PPKLite")
+    FILTER_ENTRUST_PPKEF  = Cos::Name.new("Entrust.PPKEF")
+    FILTER_CICI_SIGNIT    = Cos::Name.new("CICI.SignIt")
+    FILTER_VERISIGN_PPKVS = Cos::Name.new("VeriSign.PPKVS")
+
+    SUBFILTER_ADBE_X509_RSA_SHA1  = Cos::Name.new("adbe.x509.rsa_sha1")
+    SUBFILTER_ADBE_PKCS7_DETACHED = Cos::Name.new("adbe.pkcs7.detached")
+    SUBFILTER_ADBE_PKCS7_SHA1     = Cos::Name.new("adbe.pkcs7.sha1")
+    SUBFILTER_ETSI_CADES_DETACHED = Cos::Name.new("ETSI.CAdES.detached")
+
     @dictionary : Cos::Dictionary
 
     # Default constructor.
@@ -108,12 +118,6 @@ module Pdfbox::Pdmodel::Interactive::Form
       dictionary ? PDPropBuild.new(dictionary) : nil
     end
 
-    # Java PDSignature#getPropBuild.
-    def prop_build : PDPropBuild?
-      dictionary = @dictionary.get_dictionary(Cos::Name.new("Prop_Build"))
-      dictionary ? PDPropBuild.new(dictionary) : nil
-    end
-
     # Java PDSignature#setPropBuild.
     def prop_build=(prop_build : PDPropBuild?) : Nil
       key = Cos::Name.new("Prop_Build")
@@ -122,6 +126,87 @@ module Pdfbox::Pdmodel::Interactive::Form
       else
         @dictionary.delete(key)
       end
+    end
+
+    # Sets the /Type entry (Java setType).
+    def type=(type : Cos::Name) : Nil
+      @dictionary[Cos::Name::TYPE] = type
+    end
+
+    # The signature filter (/Filter), or nil (Java getFilter).
+    def filter : String?
+      @dictionary.get_name_as_string(Cos::Name::FILTER)
+    end
+
+    def filter=(filter : Cos::Name) : Nil
+      @dictionary[Cos::Name::FILTER] = filter
+    end
+
+    # The signature sub-filter (/SubFilter), or nil (Java getSubFilter).
+    def sub_filter : String?
+      @dictionary.get_name_as_string(Cos::Name.new("SubFilter"))
+    end
+
+    def sub_filter=(sub_filter : Cos::Name) : Nil
+      @dictionary[Cos::Name.new("SubFilter")] = sub_filter
+    end
+
+    def name : String?
+      @dictionary.get_string(Cos::Name::NAME)
+    end
+
+    def name=(name : String) : Nil
+      @dictionary.set_string(Cos::Name::NAME, name)
+    end
+
+    def location : String?
+      @dictionary.get_string(Cos::Name.new("Location"))
+    end
+
+    def location=(location : String) : Nil
+      @dictionary.set_string(Cos::Name.new("Location"), location)
+    end
+
+    def reason : String?
+      @dictionary.get_string(Cos::Name.new("Reason"))
+    end
+
+    def reason=(reason : String) : Nil
+      @dictionary.set_string(Cos::Name.new("Reason"), reason)
+    end
+
+    def contact_info : String?
+      @dictionary.get_string(Cos::Name.new("ContactInfo"))
+    end
+
+    def contact_info=(contact_info : String) : Nil
+      @dictionary.set_string(Cos::Name.new("ContactInfo"), contact_info)
+    end
+
+    # The signing date (/M), or nil (Java getSignDate).
+    def sign_date : Time?
+      @dictionary.get_date(Cos::Name.new("M"))
+    end
+
+    def sign_date=(sign_date : Time) : Nil
+      @dictionary.set_date(Cos::Name.new("M"), sign_date)
+    end
+
+    # Sets the /Contents entry as raw bytes (Java setContents).
+    # ameba:disable Naming/AccessorMethodName
+    def set_contents(bytes : Bytes) : Nil
+      @dictionary[Cos::Name.new("Contents")] = Cos::String.new(bytes, true)
+    end
+
+    # Returns the signed content over the byte range (Java getSignedContent).
+    def signed_content(pdf_file : Bytes) : Bytes
+      Pdfbox::Pdmodel::Interactive::DigitalSignature::COSFilterInputStream
+        .new(pdf_file, byte_range).to_byte_array
+    end
+
+    def signed_content(pdf_file : ::IO) : Bytes
+      Pdfbox::Pdmodel::Interactive::DigitalSignature::COSFilterInputStream
+        .new(pdf_file, byte_range).to_byte_array
     end
   end
 end

@@ -9857,39 +9857,39 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSe
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValueTimeStamp.java::method::PDSeedValueTimeStamp.isTimestampRequired	ported	src/pdfbox/pdmodel/interactive/form/pd_seed_value_time_stamp.cr	ported: PDSeedValueTimeStamp
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValueTimeStamp.java::method::PDSeedValueTimeStamp.setTimestampRequired	ported	src/pdfbox/pdmodel/interactive/form/pd_seed_value_time_stamp.cr	ported: PDSeedValueTimeStamp
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSeedValueTimeStamp.java::method::PDSeedValueTimeStamp.setURL	ported	src/pdfbox/pdmodel/interactive/form/pd_seed_value_time_stamp.cr	ported: PDSeedValueTimeStamp
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::class::PDSignature	ported	src/pdfbox/pdmodel/interactive/form/pd_signature.cr	reconciled: class present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::const::FILTER_ADOBE_PPKLITE	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::const::FILTER_CICI_SIGNIT	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::const::FILTER_ENTRUST_PPKEF	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::const::FILTER_VERISIGN_PPKVS	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::const::SUBFILTER_ADBE_PKCS7_DETACHED	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::const::SUBFILTER_ADBE_PKCS7_SHA1	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::const::SUBFILTER_ADBE_X509_RSA_SHA1	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::const::SUBFILTER_ETSI_CADES_DETACHED	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::method::PDSignature.getByteRange	ported	src/pdfbox/pdmodel/interactive/form/pd_signature.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::method::PDSignature.getCOSObject	ported	src/pdfbox/pdmodel/interactive/form/pd_signature.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::method::PDSignature.getContactInfo	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::method::PDSignature.getContents	ported	src/pdfbox/pdmodel/interactive/form/pd_signature.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::method::PDSignature.getConvertedContents	ported	src/pdfbox/pdmodel/interactive/form/pd_signature.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::method::PDSignature.getFilter	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::method::PDSignature.getLocation	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::method::PDSignature.getName	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::method::PDSignature.getPropBuild	ported	src/pdfbox/pdmodel/interactive/form/pd_signature.cr	ported: PDSignature prop_build
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::method::PDSignature.getReason	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::method::PDSignature.getSignDate	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::method::PDSignature.getSignedContent	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::method::PDSignature.getSubFilter	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::method::PDSignature.setByteRange	ported	src/pdfbox/pdmodel/interactive/form/pd_signature.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::method::PDSignature.setContactInfo	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::method::PDSignature.setContents	ported	src/pdfbox/pdmodel/interactive/form/pd_signature.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::method::PDSignature.setFilter	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::method::PDSignature.setLocation	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::method::PDSignature.setName	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::method::PDSignature.setPropBuild	ported	src/pdfbox/pdmodel/interactive/form/pd_signature.cr	ported: PDSignature prop_build
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::method::PDSignature.setReason	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::method::PDSignature.setSignDate	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::method::PDSignature.setSubFilter	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::method::PDSignature.setType	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::class::PDSignature	ported	src/pdfbox/pdmodel/interactive/form/pd_signature.cr	ported: PDSignature
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::const::FILTER_ADOBE_PPKLITE	ported	src/pdfbox/pdmodel/interactive/form/pd_signature.cr	ported: PDSignature
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::const::FILTER_CICI_SIGNIT	ported	src/pdfbox/pdmodel/interactive/form/pd_signature.cr	ported: PDSignature
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::const::FILTER_ENTRUST_PPKEF	ported	src/pdfbox/pdmodel/interactive/form/pd_signature.cr	ported: PDSignature
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::const::FILTER_VERISIGN_PPKVS	ported	src/pdfbox/pdmodel/interactive/form/pd_signature.cr	ported: PDSignature
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::const::SUBFILTER_ADBE_PKCS7_DETACHED	ported	src/pdfbox/pdmodel/interactive/form/pd_signature.cr	ported: PDSignature
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::const::SUBFILTER_ADBE_PKCS7_SHA1	ported	src/pdfbox/pdmodel/interactive/form/pd_signature.cr	ported: PDSignature
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::const::SUBFILTER_ADBE_X509_RSA_SHA1	ported	src/pdfbox/pdmodel/interactive/form/pd_signature.cr	ported: PDSignature
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::const::SUBFILTER_ETSI_CADES_DETACHED	ported	src/pdfbox/pdmodel/interactive/form/pd_signature.cr	ported: PDSignature
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::method::PDSignature.getByteRange	ported	src/pdfbox/pdmodel/interactive/form/pd_signature.cr	ported: PDSignature
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::method::PDSignature.getCOSObject	ported	src/pdfbox/pdmodel/interactive/form/pd_signature.cr	ported: PDSignature
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::method::PDSignature.getContactInfo	ported	src/pdfbox/pdmodel/interactive/form/pd_signature.cr	ported: PDSignature
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::method::PDSignature.getContents	ported	src/pdfbox/pdmodel/interactive/form/pd_signature.cr	ported: PDSignature
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::method::PDSignature.getConvertedContents	ported	src/pdfbox/pdmodel/interactive/form/pd_signature.cr	ported: PDSignature
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::method::PDSignature.getFilter	ported	src/pdfbox/pdmodel/interactive/form/pd_signature.cr	ported: PDSignature
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::method::PDSignature.getLocation	ported	src/pdfbox/pdmodel/interactive/form/pd_signature.cr	ported: PDSignature
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::method::PDSignature.getName	ported	src/pdfbox/pdmodel/interactive/form/pd_signature.cr	ported: PDSignature
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::method::PDSignature.getPropBuild	ported	src/pdfbox/pdmodel/interactive/form/pd_signature.cr	ported: PDSignature
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::method::PDSignature.getReason	ported	src/pdfbox/pdmodel/interactive/form/pd_signature.cr	ported: PDSignature
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::method::PDSignature.getSignDate	ported	src/pdfbox/pdmodel/interactive/form/pd_signature.cr	ported: PDSignature
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::method::PDSignature.getSignedContent	ported	src/pdfbox/pdmodel/interactive/form/pd_signature.cr	ported: PDSignature
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::method::PDSignature.getSubFilter	ported	src/pdfbox/pdmodel/interactive/form/pd_signature.cr	ported: PDSignature
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::method::PDSignature.setByteRange	ported	src/pdfbox/pdmodel/interactive/form/pd_signature.cr	ported: PDSignature
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::method::PDSignature.setContactInfo	ported	src/pdfbox/pdmodel/interactive/form/pd_signature.cr	ported: PDSignature
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::method::PDSignature.setContents	ported	src/pdfbox/pdmodel/interactive/form/pd_signature.cr	ported: PDSignature
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::method::PDSignature.setFilter	ported	src/pdfbox/pdmodel/interactive/form/pd_signature.cr	ported: PDSignature
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::method::PDSignature.setLocation	ported	src/pdfbox/pdmodel/interactive/form/pd_signature.cr	ported: PDSignature
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::method::PDSignature.setName	ported	src/pdfbox/pdmodel/interactive/form/pd_signature.cr	ported: PDSignature
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::method::PDSignature.setPropBuild	ported	src/pdfbox/pdmodel/interactive/form/pd_signature.cr	ported: PDSignature
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::method::PDSignature.setReason	ported	src/pdfbox/pdmodel/interactive/form/pd_signature.cr	ported: PDSignature
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::method::PDSignature.setSignDate	ported	src/pdfbox/pdmodel/interactive/form/pd_signature.cr	ported: PDSignature
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::method::PDSignature.setSubFilter	ported	src/pdfbox/pdmodel/interactive/form/pd_signature.cr	ported: PDSignature
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDSignature.java::method::PDSignature.setType	ported	src/pdfbox/pdmodel/interactive/form/pd_signature.cr	ported: PDSignature
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/SignatureInterface.java::interface::SignatureInterface	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/SignatureInterface.java::method::sign	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/SignatureOptions.java::class::SignatureOptions	missing	-	baseline
