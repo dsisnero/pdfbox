@@ -6260,7 +6260,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstruct
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDStructureNode.java::class::PDStructureNode	class	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDStructureNode.java::method::PDStructureNode.appendKid	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDStructureNode.java::method::PDStructureNode.appendObjectableKid	method	ported	src/pdfbox/pdmodel/document_interchange/logical_structure/pd_structure_element.cr	ported: PDStructureElement kids
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDStructureNode.java::method::PDStructureNode.create	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDStructureNode.java::method::PDStructureNode.create	method	ported	src/pdfbox/pdmodel/document_interchange/logical_structure/pd_structure_element.cr	ported: PDStructureElement kids
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDStructureNode.java::method::PDStructureNode.createObject	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDStructureNode.java::method::PDStructureNode.createObjectFromDic	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDStructureNode.java::method::PDStructureNode.getCOSObject	method	missing	-	auto-generated
@@ -6270,7 +6270,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstruct
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDStructureNode.java::method::PDStructureNode.insertObjectableBefore	method	ported	src/pdfbox/pdmodel/document_interchange/logical_structure/pd_structure_element.cr	ported: PDStructureElement kids
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDStructureNode.java::method::PDStructureNode.removeKid	method	ported	src/pdfbox/pdmodel/document_interchange/logical_structure/pd_structure_element.cr	ported: PDStructureElement kids
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDStructureNode.java::method::PDStructureNode.removeObjectableKid	method	ported	src/pdfbox/pdmodel/document_interchange/logical_structure/pd_structure_element.cr	ported: PDStructureElement kids
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDStructureNode.java::method::PDStructureNode.setKids	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDStructureNode.java::method::PDStructureNode.setKids	method	ported	src/pdfbox/pdmodel/document_interchange/logical_structure/pd_structure_element.cr	ported: PDStructureElement kids
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDStructureTreeRoot.java::class::PDStructureTreeRoot	class	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDStructureTreeRoot.java::const::LOG	const	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/documentinterchange/logicalstructure/PDStructureTreeRoot.java::const::TYPE	const	missing	-	auto-generated

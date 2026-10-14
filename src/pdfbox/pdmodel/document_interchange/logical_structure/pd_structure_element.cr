@@ -14,6 +14,15 @@ module Pdfbox::Pdmodel::DocumentInterchange::LogicalStructure
     def initialize(@dictionary : Pdfbox::Cos::Dictionary)
     end
 
+    # Java PDStructureNode#create: dispatches on the /Type entry.
+    def self.create(node : Pdfbox::Cos::Dictionary) : PDStructureTreeRoot | PDStructureElement
+      type = node.get_name_as_string(Pdfbox::Cos::Name.new("Type"))
+      return PDStructureTreeRoot.new(node) if type == PDStructureTreeRoot::TYPE
+      return new(node) if type.nil? || type == TYPE
+      raise ArgumentError.new(
+        "Dictionary must not include a Type entry with a value that is neither StructTreeRoot nor StructElem.")
+    end
+
     def cos_object : Pdfbox::Cos::Dictionary
       @dictionary
     end
@@ -185,6 +194,19 @@ module Pdfbox::Pdmodel::DocumentInterchange::LogicalStructure
     def append_kid(structure_element : self) : Nil
       append_kid_base(structure_element.cos_object)
       structure_element.parent = self
+    end
+
+    # Sets the whole kid list (Java PDStructureNode#setKids).
+    def kids=(kids : Array(Int32 | PDMarkedContentReference | PDObjectReference | self)) : Nil
+      array = Pdfbox::Cos::Array.new
+      kids.each do |kid|
+        if kid.is_a?(Int32)
+          array.add(Pdfbox::Cos::Integer.get(kid.to_i64))
+        else
+          array.add(kid.cos_object)
+        end
+      end
+      @dictionary.set_item("K", array)
     end
 
     # Inserts a structure element kid before the reference kid

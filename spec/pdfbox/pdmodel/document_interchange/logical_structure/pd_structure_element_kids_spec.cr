@@ -51,5 +51,35 @@ module Pdfbox::Pdmodel::DocumentInterchange::LogicalStructure
       element.remove_kid(3).should be_true
       element.kids.should eq([5])
     end
+
+    it "creates the appropriate structure node from a dictionary (create)" do
+      root_dict = Pdfbox::Cos::Dictionary.new
+      root_dict.set_name("Type", PDStructureTreeRoot::TYPE)
+      PDStructureElement.create(root_dict).should be_a(PDStructureTreeRoot)
+
+      elem_dict = Pdfbox::Cos::Dictionary.new
+      elem_dict.set_name("Type", PDStructureElement::TYPE)
+      PDStructureElement.create(elem_dict).should be_a(PDStructureElement)
+
+      no_type = Pdfbox::Cos::Dictionary.new
+      PDStructureElement.create(no_type).should be_a(PDStructureElement)
+
+      bad = Pdfbox::Cos::Dictionary.new
+      bad.set_name("Type", "SomethingElse")
+      expect_raises(ArgumentError) { PDStructureElement.create(bad) }
+    end
+
+    it "sets the whole kid list (setKids)" do
+      element = PDStructureElement.new("S", nil)
+      child = PDStructureElement.new("P", nil)
+      mcr = PDMarkedContentReference.new
+      mcr.mcid = 7
+
+      element.kids = [child, mcr, 4]
+      element.kids.size.should eq(3)
+      element.kids[0].as(PDStructureElement).structure_type.should eq("P")
+      element.kids[1].as(PDMarkedContentReference).mcid.should eq(7)
+      element.kids[2].should eq(4)
+    end
   end
 end
