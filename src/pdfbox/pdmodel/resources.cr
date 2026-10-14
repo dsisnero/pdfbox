@@ -78,6 +78,36 @@ module Pdfbox::Pdmodel
       resource_names("Pattern")
     end
 
+    # The color space resource (/ColorSpace), or nil (Java getColorSpace).
+    def color_space(name : Pdfbox::Cos::Name) : Graphics::Color::PDColorSpace?
+      base = resource_entry("ColorSpace", name)
+      base ? Graphics::Color::PDColorSpace.create(base) : nil
+    end
+
+    # Whether a color space with the given name exists (Java hasColorSpace).
+    def has_color_space?(name : Pdfbox::Cos::Name) : Bool
+      !resource_entry("ColorSpace", name).nil?
+    end
+
+    def color_space_names : Array(Pdfbox::Cos::Name)
+      resource_names("ColorSpace")
+    end
+
+    # The property list resource (/Properties), or nil (Java getProperties).
+    def properties(name : Pdfbox::Cos::Name) : DocumentInterchange::MarkedContent::PDPropertyList?
+      base = resource_entry("Properties", name)
+      dict = base.is_a?(Pdfbox::Cos::Object) ? base.object : base
+      dict.is_a?(Pdfbox::Cos::Dictionary) ? DocumentInterchange::MarkedContent::PDPropertyList.create(dict) : nil
+    end
+
+    def properties_names : Array(Pdfbox::Cos::Name)
+      resource_names("Properties")
+    end
+
+    def shading_names : Array(Pdfbox::Cos::Name)
+      resource_names("Shading")
+    end
+
     def add(form : Graphics::Form::PDFormXObject, prefix : String = "Form") : Pdfbox::Cos::Name
       add_resource("XObject", form.cos_object, prefix)
     end
