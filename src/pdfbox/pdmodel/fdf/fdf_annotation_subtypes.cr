@@ -185,7 +185,7 @@ module Pdfbox::Pdmodel::Fdf
     end
   end
 
-  class FDFAnnotationHighlight < FDFAnnotation
+  class FDFAnnotationHighlight < FDFAnnotationTextMarkup
     SUBTYPE = "Highlight"
 
     def initialize
@@ -198,9 +198,8 @@ module Pdfbox::Pdmodel::Fdf
     end
 
     def initialize(element : XML::Node)
-      super()
+      super(element)
       @dictionary.set_name(Cos::Name::SUBTYPE, SUBTYPE)
-      init_from_element(element)
     end
   end
 
@@ -356,7 +355,7 @@ module Pdfbox::Pdmodel::Fdf
     end
   end
 
-  class FDFAnnotationSquiggly < FDFAnnotation
+  class FDFAnnotationSquiggly < FDFAnnotationTextMarkup
     SUBTYPE = "Squiggly"
 
     def initialize
@@ -369,9 +368,8 @@ module Pdfbox::Pdmodel::Fdf
     end
 
     def initialize(element : XML::Node)
-      super()
+      super(element)
       @dictionary.set_name(Cos::Name::SUBTYPE, SUBTYPE)
-      init_from_element(element)
     end
   end
 
@@ -394,7 +392,7 @@ module Pdfbox::Pdmodel::Fdf
     end
   end
 
-  class FDFAnnotationStrikeOut < FDFAnnotation
+  class FDFAnnotationStrikeOut < FDFAnnotationTextMarkup
     SUBTYPE = "StrikeOut"
 
     def initialize
@@ -407,13 +405,12 @@ module Pdfbox::Pdmodel::Fdf
     end
 
     def initialize(element : XML::Node)
-      super()
+      super(element)
       @dictionary.set_name(Cos::Name::SUBTYPE, SUBTYPE)
-      init_from_element(element)
     end
   end
 
-  class FDFAnnotationUnderline < FDFAnnotation
+  class FDFAnnotationUnderline < FDFAnnotationTextMarkup
     SUBTYPE = "Underline"
 
     def initialize
@@ -426,9 +423,8 @@ module Pdfbox::Pdmodel::Fdf
     end
 
     def initialize(element : XML::Node)
-      super()
+      super(element)
       @dictionary.set_name(Cos::Name::SUBTYPE, SUBTYPE)
-      init_from_element(element)
     end
   end
 end

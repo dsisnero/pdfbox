@@ -590,4 +590,51 @@ module Pdfbox::Pdmodel::Fdf
       attrs
     end
   end
+
+  # Base class for FDF annotations with text-markup attributes (Java
+  # FDFAnnotationTextMarkup). Highlight/Squiggly/StrikeOut/Underline share the
+  # /QuadPoints coords surface.
+  abstract class FDFAnnotationTextMarkup < FDFAnnotation
+    protected def initialize
+      super
+    end
+
+    protected def initialize(cos_dict : Cos::Dictionary)
+      super(cos_dict)
+    end
+
+    protected def initialize(element : XML::Node)
+      super()
+      init_from_element(element)
+
+      coords_attr = element["coords"]?
+      if coords_attr.nil? || coords_attr.empty?
+        raise ::IO::Error.new("Error: missing attribute 'coords'")
+      end
+      # Java String.split(",") discards trailing empty fields (the fixture coords
+      # end with a comma).
+      coords_values = coords_attr.split(',')
+      while (last = coords_values.last?) && last.empty?
+        coords_values.pop
+      end
+      if coords_values.size < 8
+        raise ::IO::Error.new("Error: too little numbers in attribute 'coords'")
+      end
+      self.coords = coords_values.map(&.to_f64)
+    end
+
+    # Set the coordinates of individual words or group of words (Java setCoords).
+    # The coordinates for each quadrilateral are given as x1 y1 x2 y2 x3 y3 x4 y4.
+    def coords=(coords : Enumerable(Float64)) : Nil
+      array = Cos::Array.new
+      coords.each { |value| array.add(Cos::Float.new(value)) }
+      @dictionary.set_item(Cos::Name.new("QuadPoints"), array)
+    end
+
+    # Get the coordinates of individual words or group of words (Java getCoords).
+    def coords : Array(Float64)?
+      quad_points = @dictionary.get_array(Cos::Name.new("QuadPoints"))
+      quad_points.try(&.to_float_array)
+    end
+  end
 end
