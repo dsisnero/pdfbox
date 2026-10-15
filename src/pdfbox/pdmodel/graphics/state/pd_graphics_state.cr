@@ -22,6 +22,7 @@ module Pdfbox::Pdmodel::Graphics::State
     property alpha_source : Bool # ameba:disable Naming/QueryBoolMethods
     property text_matrix : Pdfbox::Util::Matrix?
     property text_line_matrix : Pdfbox::Util::Matrix?
+    property transfer : Pdfbox::Cos::Base?
 
     # Device-dependent parameters
     property overprint : Bool              # ameba:disable Naming/QueryBoolMethods
@@ -116,6 +117,7 @@ module Pdfbox::Pdmodel::Graphics::State
       copy.overprint_mode = @overprint_mode
       copy.flatness = @flatness
       copy.smoothness = @smoothness
+      copy.transfer = @transfer
       copy
     end
   end

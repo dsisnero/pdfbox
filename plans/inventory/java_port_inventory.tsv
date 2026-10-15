@@ -8844,7 +8844,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.ja
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.getTextLineMatrix	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.getTextMatrix	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.getTextState	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.getTransfer	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.getTransfer	method	ported	src/pdfbox/pdmodel/graphics/state/pd_graphics_state.cr	ported: PDGraphicsState transfer
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.intersectClippingPath	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.isAlphaSource	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.isNonStrokingOverprint	method	partial	src	auto-generated
@@ -8875,7 +8875,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.ja
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.setTextLineMatrix	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.setTextMatrix	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.setTextState	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.setTransfer	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.setTransfer	method	ported	src/pdfbox/pdmodel/graphics/state/pd_graphics_state.cr	ported: PDGraphicsState transfer
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDSoftMask.java::class::PDSoftMask	class	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDSoftMask.java::const::LOG	const	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDSoftMask.java::method::PDSoftMask.create	method	ported	src	auto-generated

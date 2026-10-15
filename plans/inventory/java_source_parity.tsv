@@ -8844,7 +8844,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.ja
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.getTextLineMatrix	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.getTextMatrix	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.getTextState	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.getTransfer	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.getTransfer	ported	src/pdfbox/pdmodel/graphics/state/pd_graphics_state.cr	ported: PDGraphicsState transfer
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.intersectClippingPath	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.isAlphaSource	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.isNonStrokingOverprint	missing	-	baseline
@@ -8875,7 +8875,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.ja
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.setTextLineMatrix	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.setTextMatrix	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.setTextState	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.setTransfer	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.setTransfer	ported	src/pdfbox/pdmodel/graphics/state/pd_graphics_state.cr	ported: PDGraphicsState transfer
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDSoftMask.java::class::PDSoftMask	ported	src/pdfbox/pdmodel/graphics/state/pd_soft_mask.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDSoftMask.java::const::LOG	ported	src/pdfbox/pdmodel/graphics/state/pd_soft_mask.cr	logger constant; no Crystal logger needed
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDSoftMask.java::method::PDSoftMask.create	ported	src/pdfbox/pdmodel/graphics/state/pd_soft_mask.cr	ported: PDSoftMask model completion
