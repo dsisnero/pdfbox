@@ -271,12 +271,7 @@ class Pdfbox::Pdmodel::Font::Standard14Fonts
   end
 
   private def self.uni_name_of_code_point(code_point : Int32) : String
-    hex = code_point.to_s(16).upcase
-    if hex.size <= 4
-      "uni#{hex.rjust(4, '0')}"
-    else
-      "u#{hex}"
-    end
+    UniUtil.get_uni_name_of_code_point(code_point)
   end
 
   private def self.glyph_path_from_font(font : Fontbox::TTF::TrueTypeFont, glyph_name : String) : Fontbox::Util::Path

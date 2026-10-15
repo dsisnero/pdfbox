@@ -7871,8 +7871,8 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/TrueTypeEmbedder.java::metho
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/TrueTypeEmbedder.java::method::TrueTypeEmbedder.isSubsettingPermitted	ported	src/.../true_type_embedder.cr	stale inventory; class ported
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/TrueTypeEmbedder.java::method::TrueTypeEmbedder.needsSubset	ported	src/.../true_type_embedder.cr	stale inventory; class ported
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/TrueTypeEmbedder.java::method::TrueTypeEmbedder.subset	ported	src/.../true_type_embedder.cr	stale inventory; class ported
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/UniUtil.java::class::UniUtil	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/UniUtil.java::method::UniUtil.getUniNameOfCodePoint	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/UniUtil.java::class::UniUtil	ported	src/pdfbox/pdmodel/font/uni_util.cr	ported: UniUtil
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/UniUtil.java::method::UniUtil.getUniNameOfCodePoint	ported	src/pdfbox/pdmodel/font/uni_util.cr	ported: UniUtil
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/BuiltInEncoding.java::class::BuiltInEncoding	ported	src/.../built_in_encoding.cr	stale inventory; class ported
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/BuiltInEncoding.java::method::BuiltInEncoding.getCOSObject	ported	src/.../built_in_encoding.cr	stale inventory; class ported
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/BuiltInEncoding.java::method::BuiltInEncoding.getEncodingName	ported	src/.../built_in_encoding.cr	stale inventory; class ported

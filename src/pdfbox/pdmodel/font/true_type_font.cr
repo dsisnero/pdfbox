@@ -531,17 +531,7 @@ class Pdfbox::Pdmodel::Font::PDTrueTypeFont < Pdfbox::Pdmodel::Font::PDSimpleFon
   end
 
   private def uni_name_of_code_point(code_point : Int32) : String
-    hex = code_point.to_s(16).upcase
-    case hex.size
-    when 1
-      "uni000#{hex}"
-    when 2
-      "uni00#{hex}"
-    when 3
-      "uni0#{hex}"
-    else
-      "uni#{hex}"
-    end
+    UniUtil.get_uni_name_of_code_point(code_point)
   end
 
   private def gid_to_code : Hash(Int32, Int32)
@@ -725,13 +715,7 @@ class Pdfbox::Pdmodel::Font::PDTrueTypeFont < Pdfbox::Pdmodel::Font::PDSimpleFon
   end
 
   private def uni_name_of_code_point(code_point : Int32) : String
-    hex = code_point.to_s(16).upcase
-    case hex.size
-    when 1 then "uni000#{hex}"
-    when 2 then "uni00#{hex}"
-    when 3 then "uni0#{hex}"
-    else        "uni#{hex}"
-    end
+    UniUtil.get_uni_name_of_code_point(code_point)
   end
 
   protected def code_to_gid(code : Int32) : Int32

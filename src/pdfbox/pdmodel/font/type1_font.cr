@@ -472,7 +472,7 @@ class Pdfbox::Pdmodel::Font::PDType1Font < Pdfbox::Pdmodel::Font::PDSimpleFont
           unicode_str = glyph_list.to_unicode(name)
           if unicode_str && unicode_str.size == 1
             cp = unicode_str[0].ord
-            uni_name = "uni#{cp.to_s(16).upcase.rjust(4, '0')}"
+            uni_name = UniUtil.get_uni_name_of_code_point(cp)
             name_in_font = uni_name if has_glyph?(uni_name)
           end
         end

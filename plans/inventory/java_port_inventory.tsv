@@ -7871,8 +7871,8 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/TrueTypeEmbedder.java::metho
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/TrueTypeEmbedder.java::method::TrueTypeEmbedder.isSubsettingPermitted	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/TrueTypeEmbedder.java::method::TrueTypeEmbedder.needsSubset	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/TrueTypeEmbedder.java::method::TrueTypeEmbedder.subset	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/UniUtil.java::class::UniUtil	class	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/UniUtil.java::method::UniUtil.getUniNameOfCodePoint	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/UniUtil.java::class::UniUtil	class	ported	src/pdfbox/pdmodel/font/uni_util.cr	ported: UniUtil
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/UniUtil.java::method::UniUtil.getUniNameOfCodePoint	method	ported	src/pdfbox/pdmodel/font/uni_util.cr	ported: UniUtil
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/BuiltInEncoding.java::class::BuiltInEncoding	class	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/BuiltInEncoding.java::method::BuiltInEncoding.getCOSObject	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/encoding/BuiltInEncoding.java::method::BuiltInEncoding.getEncodingName	method	ported	src	auto-generated

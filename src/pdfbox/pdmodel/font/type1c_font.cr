@@ -360,13 +360,7 @@ class Pdfbox::Pdmodel::Font::PDType1CFont < Pdfbox::Pdmodel::Font::PDSimpleFont
   end
 
   private def uni_name_of_code_point(code_point : Int32) : String
-    hex = code_point.to_s(16).upcase
-    case hex.size
-    when 1 then "uni000#{hex}"
-    when 2 then "uni00#{hex}"
-    when 3 then "uni0#{hex}"
-    else        "uni#{hex}"
-    end
+    UniUtil.get_uni_name_of_code_point(code_point)
   end
 
   private def non_zero_bounding_box?(bbox : Pdfbox::Pdmodel::Common::PDRectangle) : Bool
