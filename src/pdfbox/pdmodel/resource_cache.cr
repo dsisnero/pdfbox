@@ -6,6 +6,8 @@ module Pdfbox::Pdmodel
     @color_spaces = {} of Cos::Object => Graphics::Color::PDColorSpace
     @ext_gstates = {} of Cos::Object => Graphics::State::PDExtendedGraphicsState
     @properties = {} of Cos::Object => DocumentInterchange::MarkedContent::PDPropertyList
+    @shadings = {} of Cos::Object => Graphics::Shading::PDShading
+    @patterns = {} of Cos::Object => Graphics::Pattern::PDAbstractPattern
     @objects = {} of Cos::Object => Cos::Base
 
     def get_font(indirect : Cos::Object) : Font::PDFont?
@@ -22,6 +24,14 @@ module Pdfbox::Pdmodel
 
     def get_properties(indirect : Cos::Object) : DocumentInterchange::MarkedContent::PDPropertyList?
       @properties[indirect]?
+    end
+
+    def get_shading(indirect : Cos::Object) : Graphics::Shading::PDShading?
+      @shadings[indirect]?
+    end
+
+    def get_pattern(indirect : Cos::Object) : Graphics::Pattern::PDAbstractPattern?
+      @patterns[indirect]?
     end
 
     def put(indirect : Cos::Object, font : Font::PDFont) : Nil
@@ -54,6 +64,22 @@ module Pdfbox::Pdmodel
 
     def remove_properties(indirect : Cos::Object) : DocumentInterchange::MarkedContent::PDPropertyList?
       @properties.delete(indirect)
+    end
+
+    def put(indirect : Cos::Object, shading : Graphics::Shading::PDShading) : Nil
+      @shadings[indirect] = shading
+    end
+
+    def put(indirect : Cos::Object, pattern : Graphics::Pattern::PDAbstractPattern) : Nil
+      @patterns[indirect] = pattern
+    end
+
+    def remove_shading(indirect : Cos::Object) : Graphics::Shading::PDShading?
+      @shadings.delete(indirect)
+    end
+
+    def remove_pattern(indirect : Cos::Object) : Graphics::Pattern::PDAbstractPattern?
+      @patterns.delete(indirect)
     end
   end
 end

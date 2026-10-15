@@ -5312,17 +5312,17 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/DefaultResourceCache.java::class:
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/DefaultResourceCache.java::method::DefaultResourceCache.getColorSpace	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/DefaultResourceCache.java::method::DefaultResourceCache.getExtGState	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/DefaultResourceCache.java::method::DefaultResourceCache.getFont	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/DefaultResourceCache.java::method::DefaultResourceCache.getPattern	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/DefaultResourceCache.java::method::DefaultResourceCache.getPattern	ported	src/pdfbox/pdmodel/resource_cache.cr	ported: ResourceCache shading/pattern
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/DefaultResourceCache.java::method::DefaultResourceCache.getProperties	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/DefaultResourceCache.java::method::DefaultResourceCache.getShading	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/DefaultResourceCache.java::method::DefaultResourceCache.getShading	ported	src/pdfbox/pdmodel/resource_cache.cr	ported: ResourceCache shading/pattern
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/DefaultResourceCache.java::method::DefaultResourceCache.getXObject	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/DefaultResourceCache.java::method::DefaultResourceCache.put	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/DefaultResourceCache.java::method::DefaultResourceCache.put	ported	src/pdfbox/pdmodel/resource_cache.cr	ported: ResourceCache shading/pattern
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/DefaultResourceCache.java::method::DefaultResourceCache.removeColorSpace	ported	src/pdfbox/pdmodel/resource_cache.cr	reconciled: chiasmus owner match
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/DefaultResourceCache.java::method::DefaultResourceCache.removeExtState	ported	src/pdfbox/pdmodel/resource_cache.cr	reconciled: chiasmus owner match
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/DefaultResourceCache.java::method::DefaultResourceCache.removeFont	ported	src/pdfbox/pdmodel/resource_cache.cr	reconciled: chiasmus owner match
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/DefaultResourceCache.java::method::DefaultResourceCache.removePattern	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/DefaultResourceCache.java::method::DefaultResourceCache.removePattern	ported	src/pdfbox/pdmodel/resource_cache.cr	ported: ResourceCache shading/pattern
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/DefaultResourceCache.java::method::DefaultResourceCache.removeProperties	ported	src/pdfbox/pdmodel/resource_cache.cr	reconciled: chiasmus owner match
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/DefaultResourceCache.java::method::DefaultResourceCache.removeShading	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/DefaultResourceCache.java::method::DefaultResourceCache.removeShading	ported	src/pdfbox/pdmodel/resource_cache.cr	ported: ResourceCache shading/pattern
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/DefaultResourceCache.java::method::DefaultResourceCache.removeXObject	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/DefaultResourceCacheCreateImpl.java::class::DefaultResourceCacheCreateImpl	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/DefaultResourceCacheCreateImpl.java::method::DefaultResourceCacheCreateImpl.create	missing	-	baseline
