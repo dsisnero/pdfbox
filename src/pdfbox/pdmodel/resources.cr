@@ -141,6 +141,45 @@ module Pdfbox::Pdmodel
       state
     end
 
+    # Adds a color space to the resources (name prefix "cs"). Java PDResources#add(PDColorSpace).
+    def add(color_space : Graphics::Color::PDColorSpace) : Pdfbox::Cos::Name
+      add_resource("ColorSpace", color_space.cos_object, "cs")
+    end
+
+    # Adds an extended graphics state (name prefix "gs"). Java PDResources#add(PDExtendedGraphicsState).
+    def add(state : Graphics::State::PDExtendedGraphicsState) : Pdfbox::Cos::Name
+      add_resource("ExtGState", state.cos_object, "gs")
+    end
+
+    # Adds an image XObject (name prefix "Im"). Java PDResources#add(PDImageXObject).
+    def add(image : Graphics::Image::PDImageXObject) : Pdfbox::Cos::Name
+      add_resource("XObject", image.cos_object, "Im")
+    end
+
+    # Sets the color space resource with the given name (Java put(COSName, PDColorSpace)).
+    def put(name : Pdfbox::Cos::Name, color_space : Graphics::Color::PDColorSpace) : Pdfbox::Cos::Name
+      subdictionary("ColorSpace")[name] = color_space.cos_object
+      name
+    end
+
+    # Sets the shading resource with the given name (Java put(COSName, PDShading)).
+    def put(name : Pdfbox::Cos::Name, shading : Graphics::Shading::PDShading) : Pdfbox::Cos::Name
+      subdictionary("Shading")[name] = shading.cos_object
+      name
+    end
+
+    # Sets the pattern resource with the given name (Java put(COSName, PDAbstractPattern)).
+    def put(name : Pdfbox::Cos::Name, pattern : Graphics::Pattern::PDAbstractPattern) : Pdfbox::Cos::Name
+      subdictionary("Pattern")[name] = pattern.cos_object
+      name
+    end
+
+    # Sets the property list resource with the given name (Java put(COSName, PDPropertyList)).
+    def put(name : Pdfbox::Cos::Name, properties : DocumentInterchange::MarkedContent::PDPropertyList) : Pdfbox::Cos::Name
+      subdictionary("Properties")[name] = properties.cos_object
+      name
+    end
+
     private def resource_entry(group_name : String, name : Pdfbox::Cos::Name) : Pdfbox::Cos::Base?
       dictionary = @dict[Pdfbox::Cos::Name.new(group_name)]?
       return unless dictionary
@@ -163,14 +202,24 @@ module Pdfbox::Pdmodel
 
     private def add_resource(group_name : String, resource : Pdfbox::Cos::Base, prefix : String) : Pdfbox::Cos::Name
       dictionary = subdictionary(group_name)
-      index = 1
-      while dictionary.has_key?(Pdfbox::Cos::Name.new("#{prefix}#{index}"))
-        index += 1
+
+      # Return the existing key when the same COS object is already present
+      # (Java add(): containsValue + the PDFBOX-4509 indirect-object case).
+      dictionary.entries.each do |key, value|
+        existing = value.is_a?(Pdfbox::Cos::Object) ? value.object : value
+        return key if existing == resource
       end
 
-      name = Pdfbox::Cos::Name.new("#{prefix}#{index}")
-      dictionary[name] = resource
-      name
+      # Next name starts at (key count + 1), incrementing until free (Java createKey).
+      n = dictionary.entries.size
+      loop do
+        n += 1
+        name = Pdfbox::Cos::Name.new("#{prefix}#{n}")
+        unless dictionary.has_key?(name)
+          dictionary[name] = resource
+          return name
+        end
+      end
     end
 
     private def subdictionary(group_name : String) : Pdfbox::Cos::Dictionary
