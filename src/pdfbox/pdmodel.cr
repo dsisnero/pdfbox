@@ -2673,14 +2673,21 @@ module Pdfbox::Pdmodel
       set_string(Cos::Name.new("ModDate"), date)
     end
 
-    # Get the trapped value
+    # Get the trapped value (Java getTrapped reads the name).
     def trapped : String?
-      string(Cos::Name.new("Trapped"))
+      @info_dict.get_name_as_string(Cos::Name.new("Trapped"))
     end
 
-    # Set the trapped value
+    # Set the trapped value; Java validates True/False/Unknown and writes a name.
     def trapped=(trapped : String?) : Nil
-      set_string(Cos::Name.new("Trapped"), trapped)
+      if trapped
+        unless trapped == "True" || trapped == "False" || trapped == "Unknown"
+          raise ArgumentError.new("Valid values for trapped are 'True', 'False', or 'Unknown'")
+        end
+        @info_dict.set_name(Cos::Name.new("Trapped"), trapped)
+      else
+        @info_dict.delete(Cos::Name.new("Trapped"))
+      end
     end
 
     def metadata_keys : Array(String)
@@ -2689,6 +2696,11 @@ module Pdfbox::Pdmodel
 
     def custom_metadata_value(field_name : String) : String?
       string(Cos::Name.new(field_name))
+    end
+
+    # Set a custom metadata field value (Java setCustomMetadataValue).
+    def set_custom_metadata_value(field_name : String, field_value : String) : Nil
+      @info_dict.set_string(field_name, field_value)
     end
 
     private def string(name : Cos::Name) : String?

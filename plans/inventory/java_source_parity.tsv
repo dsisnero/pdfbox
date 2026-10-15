@@ -5499,25 +5499,25 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentInformation.java::metho
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentInformation.java::method::PDDocumentInformation.getCOSObject	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentInformation.java::method::PDDocumentInformation.getCreationDate	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentInformation.java::method::PDDocumentInformation.getCreator	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentInformation.java::method::PDDocumentInformation.getCustomMetadataValue	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentInformation.java::method::PDDocumentInformation.getCustomMetadataValue	ported	src/pdfbox/pdmodel.cr	ported: PDDocumentInformation trapped/custom metadata
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentInformation.java::method::PDDocumentInformation.getKeywords	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentInformation.java::method::PDDocumentInformation.getMetadataKeys	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentInformation.java::method::PDDocumentInformation.getMetadataKeys	ported	src/pdfbox/pdmodel.cr	ported: PDDocumentInformation trapped/custom metadata
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentInformation.java::method::PDDocumentInformation.getModificationDate	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentInformation.java::method::PDDocumentInformation.getProducer	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentInformation.java::method::PDDocumentInformation.getPropertyStringValue	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentInformation.java::method::PDDocumentInformation.getPropertyStringValue	ported	src/pdfbox/pdmodel.cr	ported: PDDocumentInformation trapped/custom metadata
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentInformation.java::method::PDDocumentInformation.getSubject	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentInformation.java::method::PDDocumentInformation.getTitle	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentInformation.java::method::PDDocumentInformation.getTrapped	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentInformation.java::method::PDDocumentInformation.getTrapped	ported	src/pdfbox/pdmodel.cr	ported: PDDocumentInformation trapped/custom metadata
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentInformation.java::method::PDDocumentInformation.setAuthor	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentInformation.java::method::PDDocumentInformation.setCreationDate	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentInformation.java::method::PDDocumentInformation.setCreator	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentInformation.java::method::PDDocumentInformation.setCustomMetadataValue	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentInformation.java::method::PDDocumentInformation.setCustomMetadataValue	ported	src/pdfbox/pdmodel.cr	ported: PDDocumentInformation trapped/custom metadata
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentInformation.java::method::PDDocumentInformation.setKeywords	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentInformation.java::method::PDDocumentInformation.setModificationDate	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentInformation.java::method::PDDocumentInformation.setProducer	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentInformation.java::method::PDDocumentInformation.setSubject	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentInformation.java::method::PDDocumentInformation.setTitle	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentInformation.java::method::PDDocumentInformation.setTrapped	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentInformation.java::method::PDDocumentInformation.setTrapped	ported	src/pdfbox/pdmodel.cr	ported: PDDocumentInformation trapped/custom metadata
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentNameDestinationDictionary.java::class::PDDocumentNameDestinationDictionary	ported	src/pdfbox/pdmodel.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentNameDestinationDictionary.java::method::PDDocumentNameDestinationDictionary.getCOSObject	ported	src/pdfbox/pdmodel.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentNameDestinationDictionary.java::method::PDDocumentNameDestinationDictionary.getDestination	ported	src/pdfbox/pdmodel.cr	baseline

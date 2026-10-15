@@ -5499,25 +5499,25 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentInformation.java::metho
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentInformation.java::method::PDDocumentInformation.getCOSObject	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentInformation.java::method::PDDocumentInformation.getCreationDate	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentInformation.java::method::PDDocumentInformation.getCreator	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentInformation.java::method::PDDocumentInformation.getCustomMetadataValue	method	ported	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentInformation.java::method::PDDocumentInformation.getCustomMetadataValue	method	ported	src/pdfbox/pdmodel.cr	ported: PDDocumentInformation trapped/custom metadata
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentInformation.java::method::PDDocumentInformation.getKeywords	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentInformation.java::method::PDDocumentInformation.getMetadataKeys	method	ported	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentInformation.java::method::PDDocumentInformation.getMetadataKeys	method	ported	src/pdfbox/pdmodel.cr	ported: PDDocumentInformation trapped/custom metadata
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentInformation.java::method::PDDocumentInformation.getModificationDate	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentInformation.java::method::PDDocumentInformation.getProducer	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentInformation.java::method::PDDocumentInformation.getPropertyStringValue	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentInformation.java::method::PDDocumentInformation.getPropertyStringValue	method	ported	src/pdfbox/pdmodel.cr	ported: PDDocumentInformation trapped/custom metadata
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentInformation.java::method::PDDocumentInformation.getSubject	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentInformation.java::method::PDDocumentInformation.getTitle	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentInformation.java::method::PDDocumentInformation.getTrapped	method	ported	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentInformation.java::method::PDDocumentInformation.getTrapped	method	ported	src/pdfbox/pdmodel.cr	ported: PDDocumentInformation trapped/custom metadata
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentInformation.java::method::PDDocumentInformation.setAuthor	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentInformation.java::method::PDDocumentInformation.setCreationDate	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentInformation.java::method::PDDocumentInformation.setCreator	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentInformation.java::method::PDDocumentInformation.setCustomMetadataValue	method	ported	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentInformation.java::method::PDDocumentInformation.setCustomMetadataValue	method	ported	src/pdfbox/pdmodel.cr	ported: PDDocumentInformation trapped/custom metadata
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentInformation.java::method::PDDocumentInformation.setKeywords	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentInformation.java::method::PDDocumentInformation.setModificationDate	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentInformation.java::method::PDDocumentInformation.setProducer	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentInformation.java::method::PDDocumentInformation.setSubject	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentInformation.java::method::PDDocumentInformation.setTitle	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentInformation.java::method::PDDocumentInformation.setTrapped	method	ported	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentInformation.java::method::PDDocumentInformation.setTrapped	method	ported	src/pdfbox/pdmodel.cr	ported: PDDocumentInformation trapped/custom metadata
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentNameDestinationDictionary.java::class::PDDocumentNameDestinationDictionary	class	ported	src/pdfbox/pdmodel.cr	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentNameDestinationDictionary.java::method::PDDocumentNameDestinationDictionary.getCOSObject	method	ported	src/pdfbox/pdmodel.cr	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentNameDestinationDictionary.java::method::PDDocumentNameDestinationDictionary.getDestination	method	ported	src/pdfbox/pdmodel.cr	auto-generated
