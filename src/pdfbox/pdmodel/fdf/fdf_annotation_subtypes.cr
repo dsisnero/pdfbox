@@ -18,10 +18,45 @@ module Pdfbox::Pdmodel::Fdf
       super()
       @dictionary.set_name(Cos::Name::SUBTYPE, SUBTYPE)
       init_from_element(element)
+
+      if icon = self.class.attr_value(element, "icon")
+        self.icon = icon
+      end
+      if state = self.class.attr_value(element, "state")
+        if state_model = self.class.attr_value(element, "statemodel")
+          self.state = state
+          self.state_model = state_model
+        end
+      end
     end
 
-    def icon : String?
-      @dictionary.get_name_as_string(Cos::Name.new("Name"))
+    # Icon name (Java getIcon defaults to PDAnnotationText.NAME_NOTE = "Note").
+    def icon : String
+      @dictionary.get_name_as_string(Cos::Name.new("Name")) || Interactive::Annotation::PDAnnotationText::NAME_NOTE
+    end
+
+    def icon=(icon : String) : String
+      @dictionary.set_name(Cos::Name.new("Name"), icon)
+      icon
+    end
+
+    # Annotation state / state model (Java getState/getStateModel).
+    def state : String?
+      @dictionary.get_string(Cos::Name.new("State"))
+    end
+
+    def state=(state : String?) : String?
+      set_string_entry(Cos::Name.new("State"), state)
+      state
+    end
+
+    def state_model : String?
+      @dictionary.get_string(Cos::Name.new("StateModel"))
+    end
+
+    def state_model=(state_model : String?) : String?
+      set_string_entry(Cos::Name.new("StateModel"), state_model)
+      state_model
     end
   end
 

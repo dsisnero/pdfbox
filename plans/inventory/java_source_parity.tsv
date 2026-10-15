@@ -7108,12 +7108,12 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationStrikeOut.java::
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationStrikeOut.java::const::SUBTYPE	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationText.java::class::FDFAnnotationText	ported	src/pdfbox/pdmodel/fdf/fdf_annotation_subtypes.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationText.java::const::SUBTYPE	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationText.java::method::FDFAnnotationText.getIcon	ported	src/pdfbox/pdmodel/fdf/fdf_annotation_subtypes.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationText.java::method::FDFAnnotationText.getState	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationText.java::method::FDFAnnotationText.getStateModel	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationText.java::method::FDFAnnotationText.setIcon	ported	src/pdfbox/pdmodel/fdf/fdf_annotation_subtypes.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationText.java::method::FDFAnnotationText.setState	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationText.java::method::FDFAnnotationText.setStateModel	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationText.java::method::FDFAnnotationText.getIcon	ported	src/pdfbox/pdmodel/fdf/fdf_annotation_subtypes.cr	ported: FDFAnnotationText icon/state/state_model
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationText.java::method::FDFAnnotationText.getState	ported	src/pdfbox/pdmodel/fdf/fdf_annotation_subtypes.cr	ported: FDFAnnotationText icon/state/state_model
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationText.java::method::FDFAnnotationText.getStateModel	ported	src/pdfbox/pdmodel/fdf/fdf_annotation_subtypes.cr	ported: FDFAnnotationText icon/state/state_model
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationText.java::method::FDFAnnotationText.setIcon	ported	src/pdfbox/pdmodel/fdf/fdf_annotation_subtypes.cr	ported: FDFAnnotationText icon/state/state_model
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationText.java::method::FDFAnnotationText.setState	ported	src/pdfbox/pdmodel/fdf/fdf_annotation_subtypes.cr	ported: FDFAnnotationText icon/state/state_model
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationText.java::method::FDFAnnotationText.setStateModel	ported	src/pdfbox/pdmodel/fdf/fdf_annotation_subtypes.cr	ported: FDFAnnotationText icon/state/state_model
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationTextMarkup.java::class::FDFAnnotationTextMarkup	ported	src/pdfbox/pdmodel/fdf/fdf_annotation.cr	ported: FDFAnnotationTextMarkup coords
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationTextMarkup.java::method::FDFAnnotationTextMarkup.getCoords	ported	src/pdfbox/pdmodel/fdf/fdf_annotation.cr	ported: FDFAnnotationTextMarkup coords
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationTextMarkup.java::method::FDFAnnotationTextMarkup.setCoords	ported	src/pdfbox/pdmodel/fdf/fdf_annotation.cr	ported: FDFAnnotationTextMarkup coords
