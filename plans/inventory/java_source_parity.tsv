@@ -5636,7 +5636,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDResources.java::method::PDResou
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDResources.java::method::PDResources.getResourceCache	ported	src/pdfbox/pdmodel/resources.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDResources.java::method::PDResources.getShading	ported	src/pdfbox/pdmodel/graphics/shading.cr + shading/pd_shading_type1.cr + resources.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDResources.java::method::PDResources.getShadingNames	ported	src/pdfbox/pdmodel/resources.cr	ported: PDResources
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDResources.java::method::PDResources.getXObject	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDResources.java::method::PDResources.getXObject	ported	src/pdfbox/pdmodel/resources.cr	ported: PDXObject/PDPostScriptXObject
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDResources.java::method::PDResources.getXObjectNames	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDResources.java::method::PDResources.hasColorSpace	ported	src/pdfbox/pdmodel/resources.cr	ported: PDResources
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDResources.java::method::PDResources.isAllowedCache	missing	-	baseline
@@ -7954,9 +7954,9 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/PDLineDashPattern.java::
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/PDLineDashPattern.java::method::PDLineDashPattern.getDashArray	ported	src/pdfbox/pdmodel/graphics/pd_line_dash_pattern.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/PDLineDashPattern.java::method::PDLineDashPattern.getPhase	ported	src/pdfbox/pdmodel/graphics/pd_line_dash_pattern.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/PDLineDashPattern.java::method::PDLineDashPattern.toString	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/PDPostScriptXObject.java::class::PDPostScriptXObject	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/PDXObject.java::class::PDXObject	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/PDXObject.java::method::PDXObject.createXObject	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/PDPostScriptXObject.java::class::PDPostScriptXObject	ported	src/pdfbox/pdmodel/graphics/pd_post_script_x_object.cr	ported: PDXObject/PDPostScriptXObject
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/PDXObject.java::class::PDXObject	ported	src/pdfbox/pdmodel/graphics/pd_post_script_x_object.cr	ported: PDXObject/PDPostScriptXObject
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/PDXObject.java::method::PDXObject.createXObject	ported	src/pdfbox/pdmodel/resources.cr	ported: PDXObject/PDPostScriptXObject
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/PDXObject.java::method::PDXObject.getCOSObject	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/PDXObject.java::method::PDXObject.getStream	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/blend/BlendComposite.java::class::BlendComposite	missing	-	baseline

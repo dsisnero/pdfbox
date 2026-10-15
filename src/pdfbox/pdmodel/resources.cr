@@ -63,6 +63,36 @@ module Pdfbox::Pdmodel
       resource_entry("XObject", name)
     end
 
+    # Returns the typed XObject for the given name, dispatching on its
+    # /Subtype (Java PDResources#getXObject / PDXObject#createXObject). Raises
+    # for an invalid subtype.
+    def get_xobject(name : Pdfbox::Cos::Name) : Graphics::XObject?
+      base = xobject(name)
+      return unless base
+      stream = base.as?(Pdfbox::Cos::Stream)
+      return unless stream
+      create_xobject(stream)
+    end
+
+    private def create_xobject(stream : Pdfbox::Cos::Stream) : Graphics::XObject
+      subtype = stream.get_name_as_string(Pdfbox::Cos::Name::SUBTYPE)
+      case subtype
+      when "Image"
+        Graphics::Image::PDImageXObject.new(nil, stream, stream)
+      when "Form"
+        group = stream.get_dictionary(Pdfbox::Cos::Name.new("Group"))
+        if group && group.get_name_as_string(Pdfbox::Cos::Name.new("S")) == "Transparency"
+          Graphics::Form::PDTransparencyGroup.new(stream, @resource_cache)
+        else
+          Graphics::Form::PDFormXObject.new(stream, @resource_cache)
+        end
+      when "PS"
+        Graphics::PDPostScriptXObject.new(stream)
+      else
+        raise ::IO::Error.new("Invalid XObject Subtype: #{subtype}")
+      end
+    end
+
     # Tells whether the XObject resource with the given name is an image.
     # Java PDResources#isImageXObject.
     def image_x_object?(name : Pdfbox::Cos::Name) : Bool

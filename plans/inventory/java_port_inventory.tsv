@@ -5636,7 +5636,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDResources.java::method::PDResou
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDResources.java::method::PDResources.getResourceCache	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDResources.java::method::PDResources.getShading	method	ported	src/pdfbox/pdmodel/graphics/shading.cr + shading/pd_shading_type1.cr + resources.cr	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDResources.java::method::PDResources.getShadingNames	method	ported	src/pdfbox/pdmodel/resources.cr	ported: PDResources
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDResources.java::method::PDResources.getXObject	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDResources.java::method::PDResources.getXObject	method	ported	src/pdfbox/pdmodel/resources.cr	ported: PDXObject/PDPostScriptXObject
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDResources.java::method::PDResources.getXObjectNames	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDResources.java::method::PDResources.hasColorSpace	method	ported	src/pdfbox/pdmodel/resources.cr	ported: PDResources
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDResources.java::method::PDResources.isAllowedCache	method	partial	src	auto-generated
@@ -7954,9 +7954,9 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/PDLineDashPattern.java::
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/PDLineDashPattern.java::method::PDLineDashPattern.getDashArray	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/PDLineDashPattern.java::method::PDLineDashPattern.getPhase	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/PDLineDashPattern.java::method::PDLineDashPattern.toString	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/PDPostScriptXObject.java::class::PDPostScriptXObject	class	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/PDXObject.java::class::PDXObject	class	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/PDXObject.java::method::PDXObject.createXObject	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/PDPostScriptXObject.java::class::PDPostScriptXObject	class	ported	src/pdfbox/pdmodel/graphics/pd_post_script_x_object.cr	ported: PDXObject/PDPostScriptXObject
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/PDXObject.java::class::PDXObject	class	ported	src/pdfbox/pdmodel/graphics/pd_post_script_x_object.cr	ported: PDXObject/PDPostScriptXObject
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/PDXObject.java::method::PDXObject.createXObject	method	ported	src/pdfbox/pdmodel/resources.cr	ported: PDXObject/PDPostScriptXObject
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/PDXObject.java::method::PDXObject.getCOSObject	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/PDXObject.java::method::PDXObject.getStream	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/blend/BlendComposite.java::class::BlendComposite	class	missing	-	auto-generated
