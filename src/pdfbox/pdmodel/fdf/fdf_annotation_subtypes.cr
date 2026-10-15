@@ -472,6 +472,29 @@ module Pdfbox::Pdmodel::Fdf
       super()
       @dictionary.set_name(Cos::Name::SUBTYPE, SUBTYPE)
       init_from_element(element)
+      init_action(element)
+    end
+
+    # The link action (/A) as a URI action, set from the XFDF
+    # OnActivation/Action/URI element (Java FDFAnnotationLink).
+    def action : Interactive::Action::PDActionURI?
+      dict = @dictionary.get_dictionary(Cos::Name.new("A"))
+      dict ? Interactive::Action::PDActionURI.new(dict) : nil
+    end
+
+    private def init_action(element : XML::Node) : Nil
+      on_activation = self.class.first_element_child(element, "OnActivation")
+      return unless on_activation
+      action_node = self.class.first_element_child(on_activation, "Action")
+      return unless action_node
+      uri_node = self.class.first_element_child(action_node, "URI")
+      return unless uri_node
+
+      if name = uri_node["Name"]?
+        action_uri = Interactive::Action::PDActionURI.new
+        action_uri.uri = name
+        @dictionary.set_item(Cos::Name.new("A"), action_uri.cos_object)
+      end
     end
   end
 
