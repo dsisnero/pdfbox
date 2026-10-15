@@ -5851,19 +5851,19 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::const::LOG	
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.createInputStream	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.createOutputStream	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.getCOSObject	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.getDecodeParms	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.getDecodeParms	method	ported	src/pdfbox/pdmodel/common/pdstream.cr	ported: PDStream decode params
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.getDecodedStreamLength	method	ported	src/pdfbox/pdmodel/common/pdstream.cr	ported: PDStream
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.getFile	method	ported	src/pdfbox/pdmodel/common/pdstream.cr	ported: PDStream
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.getFileDecodeParams	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.getFileDecodeParams	method	ported	src/pdfbox/pdmodel/common/pdstream.cr	ported: PDStream decode params
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.getFileFilters	method	ported	src/pdfbox/pdmodel/common/pdstream.cr	ported: PDStream
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.getFilters	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.getLength	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.getMetadata	method	ported	src/pdfbox/pdmodel/common/pdstream.cr	ported: PDStream
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.internalGetDecodeParams	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.setDecodeParms	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.internalGetDecodeParams	method	ported	src/pdfbox/pdmodel/common/pdstream.cr	ported: PDStream decode params
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.setDecodeParms	method	ported	src/pdfbox/pdmodel/common/pdstream.cr	ported: PDStream decode params
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.setDecodedStreamLength	method	ported	src/pdfbox/pdmodel/common/pdstream.cr	ported: PDStream
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.setFile	method	ported	src/pdfbox/pdmodel/common/pdstream.cr	ported: PDStream
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.setFileDecodeParams	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.setFileDecodeParams	method	ported	src/pdfbox/pdmodel/common/pdstream.cr	ported: PDStream decode params
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.setFileFilters	method	ported	src/pdfbox/pdmodel/common/pdstream.cr	ported: PDStream
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.setFilters	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.setMetadata	method	ported	src/pdfbox/pdmodel/common/pdstream.cr	ported: PDStream

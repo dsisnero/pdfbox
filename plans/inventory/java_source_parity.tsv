@@ -5851,19 +5851,19 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::const::LOG	
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.createInputStream	ported	src/pdfbox/cos.cr + pdstream.cr + pd_image_xobject.cr	stop-filter createInputStream implemented
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.createOutputStream	ported	src/pdfbox/pdmodel/common/pdstream.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.getCOSObject	ported	src/pdfbox/pdmodel/common/pdstream.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.getDecodeParms	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.getDecodeParms	ported	src/pdfbox/pdmodel/common/pdstream.cr	ported: PDStream decode params
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.getDecodedStreamLength	ported	src/pdfbox/pdmodel/common/pdstream.cr	ported: PDStream
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.getFile	ported	src/pdfbox/pdmodel/common/pdstream.cr	ported: PDStream
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.getFileDecodeParams	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.getFileDecodeParams	ported	src/pdfbox/pdmodel/common/pdstream.cr	ported: PDStream decode params
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.getFileFilters	ported	src/pdfbox/pdmodel/common/pdstream.cr	ported: PDStream
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.getFilters	ported	src/pdfbox/pdmodel/common/pdstream.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.getLength	ported	src/pdfbox/pdmodel/common/pdstream.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.getMetadata	ported	src/pdfbox/pdmodel/common/pdstream.cr	ported: PDStream
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.internalGetDecodeParams	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.setDecodeParms	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.internalGetDecodeParams	ported	src/pdfbox/pdmodel/common/pdstream.cr	ported: PDStream decode params
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.setDecodeParms	ported	src/pdfbox/pdmodel/common/pdstream.cr	ported: PDStream decode params
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.setDecodedStreamLength	ported	src/pdfbox/pdmodel/common/pdstream.cr	ported: PDStream
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.setFile	ported	src/pdfbox/pdmodel/common/pdstream.cr	ported: PDStream
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.setFileDecodeParams	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.setFileDecodeParams	ported	src/pdfbox/pdmodel/common/pdstream.cr	ported: PDStream decode params
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.setFileFilters	ported	src/pdfbox/pdmodel/common/pdstream.cr	ported: PDStream
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.setFilters	ported	src/pdfbox/pdmodel/common/pdstream.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/PDStream.java::method::PDStream.setMetadata	ported	src/pdfbox/pdmodel/common/pdstream.cr	ported: PDStream

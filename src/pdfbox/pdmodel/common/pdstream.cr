@@ -167,5 +167,59 @@ module Pdfbox::Pdmodel::Common
     def file_filters=(filters : Array(String)) : Nil
       @stream[Cos::Name.new("F_Filter")] = Cos::Array.of_cos_names(filters)
     end
+
+    # The decode parameters (/DecodeParms, falling back to /DP).
+    # Java PDStream#getDecodeParms.
+    def decode_parms : Array(COSDictionaryMap(Bool | Int64 | Float64 | String))?
+      internal_get_decode_params(Cos::Name.new("DecodeParms"), Cos::Name.new("DP"))
+    end
+
+    # The file decode parameters (/FDecodeParms). Java PDStream#getFileDecodeParams.
+    def file_decode_params : Array(COSDictionaryMap(Bool | Int64 | Float64 | String))?
+      internal_get_decode_params(Cos::Name.new("FDecodeParms"), nil)
+    end
+
+    # Sets the decode parameters (/DecodeParms). Java PDStream#setDecodeParms.
+    def decode_parms=(parms : Enumerable(COSDictionaryMap(Bool | Int64 | Float64 | String))?) : Nil
+      set_decode_params(Cos::Name.new("DecodeParms"), parms)
+    end
+
+    # Sets the file decode parameters (/FDecodeParms). Java PDStream#setFileDecodeParams.
+    def file_decode_params=(parms : Enumerable(COSDictionaryMap(Bool | Int64 | Float64 | String))?) : Nil
+      set_decode_params(Cos::Name.new("FDecodeParms"), parms)
+    end
+
+    # Java PDStream#internalGetDecodeParams: a dictionary becomes a one-element
+    # list of maps; an array becomes a list of maps (non-dictionary entries skipped).
+    private def internal_get_decode_params(name1 : Cos::Name, name2 : Cos::Name?) : Array(COSDictionaryMap(Bool | Int64 | Float64 | String))?
+      value = @stream.get_dictionary_object(name1)
+      value = @stream.get_dictionary_object(name2) if value.nil? && name2
+
+      case value
+      when Cos::Dictionary
+        map = COSDictionaryMap.convert_basic_types_to_map(value)
+        map ? [map] : nil
+      when Cos::Array
+        result = [] of COSDictionaryMap(Bool | Int64 | Float64 | String)
+        value.items.each do |entry|
+          entry = entry.object if entry.is_a?(Cos::Object)
+          next unless entry.is_a?(Cos::Dictionary)
+          if map = COSDictionaryMap.convert_basic_types_to_map(entry)
+            result << map
+          end
+        end
+        result
+      end
+    end
+
+    private def set_decode_params(key : Cos::Name, parms : Enumerable(COSDictionaryMap(Bool | Int64 | Float64 | String))?) : Nil
+      if parms
+        array = Cos::Array.new
+        parms.each { |map| array.add(map.to_dictionary) }
+        @stream.set_item(key, array)
+      else
+        @stream.delete(key)
+      end
+    end
   end
 end
