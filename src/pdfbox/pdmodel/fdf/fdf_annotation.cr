@@ -379,14 +379,18 @@ module Pdfbox::Pdmodel::Fdf
     end
 
     def rich_contents : String?
-      value = @dictionary[Cos::Name.new("RC")]?
+      get_string_or_stream(@dictionary[Cos::Name.new("RC")]?)
+    end
+
+    # Java FDFAnnotation#getStringOrStream: decode a value that may be a text
+    # string or a text stream, dereferencing indirect objects.
+    protected def get_string_or_stream(base : Cos::Base?) : String
+      value = base
+      value = value.object if value.is_a?(Cos::Object)
       case value
-      when Cos::String
-        value.value
-      when Cos::Stream
-        value.create_input_stream.gets_to_end
-      else
-        ""
+      when Cos::String then value.value
+      when Cos::Stream then value.to_text_string
+      else                  ""
       end
     end
 

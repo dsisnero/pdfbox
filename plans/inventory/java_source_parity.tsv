@@ -6956,7 +6956,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotation.java::method::F
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotation.java::method::FDFAnnotation.getPage	ported	src/pdfbox/pdmodel/fdf/fdf_annotation.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotation.java::method::FDFAnnotation.getRectangle	ported	src/pdfbox/pdmodel/fdf/fdf_annotation.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotation.java::method::FDFAnnotation.getRichContents	ported	src/pdfbox/pdmodel/fdf/fdf_annotation.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotation.java::method::FDFAnnotation.getStringOrStream	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotation.java::method::FDFAnnotation.getStringOrStream	ported	src/pdfbox/pdmodel/fdf/fdf_annotation.cr	ported: FDFAnnotation getStringOrStream
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotation.java::method::FDFAnnotation.getSubject	ported	src/pdfbox/pdmodel/fdf/fdf_annotation.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotation.java::method::FDFAnnotation.getTitle	ported	src/pdfbox/pdmodel/fdf/fdf_annotation.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotation.java::method::FDFAnnotation.isHidden	ported	src/pdfbox/pdmodel/fdf/fdf_annotation.cr	reconciled: method present
