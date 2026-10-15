@@ -8270,7 +8270,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/form/PDFormXObject.java:
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/form/PDTransparencyGroup.java::class::PDTransparencyGroup	class	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/form/PDTransparencyGroupAttributes.java::class::PDTransparencyGroupAttributes	class	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/form/PDTransparencyGroupAttributes.java::method::PDTransparencyGroupAttributes.getCOSObject	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/form/PDTransparencyGroupAttributes.java::method::PDTransparencyGroupAttributes.getColorSpace	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/form/PDTransparencyGroupAttributes.java::method::PDTransparencyGroupAttributes.getColorSpace	method	ported	src/pdfbox/pdmodel/graphics/form/pdtransparency_group_attributes.cr	ported: PDTransparencyGroupAttributes getColorSpace
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/form/PDTransparencyGroupAttributes.java::method::PDTransparencyGroupAttributes.isIsolated	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/form/PDTransparencyGroupAttributes.java::method::PDTransparencyGroupAttributes.isKnockout	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/CCITTFactory.java::class::CCITTFactory	class	partial	src	auto-generated

@@ -16,12 +16,22 @@ module Pdfbox::Pdmodel::Graphics::Form
       @dictionary
     end
 
+    # The group color space (/CS), or nil when it isn't defined.
+    # Java PDTransparencyGroupAttributes#getColorSpace.
+    def color_space : Pdfbox::Pdmodel::Graphics::Color::PDColorSpace?
+      return unless @dictionary.has_key?(Pdfbox::Cos::Name.new("CS"))
+      base = @dictionary.get_dictionary_object(Pdfbox::Cos::Name.new("CS"))
+      base ? Pdfbox::Pdmodel::Graphics::Color::PDColorSpace.create(base) : nil
+    end
+
     def isolated? : Bool
-      @dictionary.get_bool(Pdfbox::Cos::Name.new("I"), false)
+      @dictionary.get_dictionary_object(Pdfbox::Cos::Name.new("I"))
+        .as?(Pdfbox::Cos::Boolean).try(&.value) || false
     end
 
     def knockout? : Bool
-      @dictionary.get_bool(Pdfbox::Cos::Name.new("K"), false)
+      @dictionary.get_dictionary_object(Pdfbox::Cos::Name.new("K"))
+        .as?(Pdfbox::Cos::Boolean).try(&.value) || false
     end
   end
 end
