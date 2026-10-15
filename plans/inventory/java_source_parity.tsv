@@ -5424,7 +5424,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocume
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.getDocumentId	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.getDocumentInformation	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.getEncryption	ported	src/pdfbox/pdmodel/document.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.getFontsToSubset	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.getFontsToSubset	ported	src/pdfbox/pdmodel.cr	ported: PDDocument getFontsToSubset
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.getLastSignatureDictionary	ported	src/pdfbox/pdmodel/interactive/form/document_signatures.cr	ported: Document signatures
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.getNumberOfPages	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.getPage	missing	-	baseline

@@ -179,6 +179,15 @@ module Pdfbox::Pdmodel
       @fonts_for_save << font
     end
 
+    # The fonts registered for subsetting on save (Java PDDocument#getFontsToSubset).
+    def fonts_to_subset : Array(Font::PDFont)
+      @fonts_for_save
+    end
+
+    def get_fonts_to_subset : Array(Font::PDFont) # ameba:disable Naming/AccessorMethodName
+      @fonts_for_save
+    end
+
     # Append a page that was already resolved from the page tree during parsing.
     # This avoids recursive hydration while the parser is constructing the document.
     def add_parsed_page(page : Page) : Page
