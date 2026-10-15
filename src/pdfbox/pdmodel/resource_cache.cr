@@ -82,4 +82,34 @@ module Pdfbox::Pdmodel
       @patterns.delete(indirect)
     end
   end
+
+  # Java ResourceCacheCreateFunction (functional interface): creates a resource cache.
+  abstract class ResourceCacheCreateFunction
+    abstract def create : ResourceCache?
+  end
+
+  # Java DefaultResourceCacheCreateImpl: a fresh default resource cache.
+  class DefaultResourceCacheCreateImpl < ResourceCacheCreateFunction
+    def create : ResourceCache?
+      ResourceCache.new
+    end
+  end
+
+  # Java ResourceCacheFactory: provides the function used to create resource caches.
+  # Setting the function to nil disables caching.
+  module ResourceCacheFactory
+    @@resource_cache_create_function : ResourceCacheCreateFunction? = DefaultResourceCacheCreateImpl.new
+
+    def self.resource_cache_create_function : ResourceCacheCreateFunction?
+      @@resource_cache_create_function
+    end
+
+    def self.resource_cache_create_function=(function : ResourceCacheCreateFunction?) : ResourceCacheCreateFunction?
+      @@resource_cache_create_function = function
+    end
+
+    def self.create_resource_cache : ResourceCache?
+      @@resource_cache_create_function.try(&.create)
+    end
+  end
 end

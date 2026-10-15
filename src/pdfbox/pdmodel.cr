@@ -36,7 +36,7 @@ module Pdfbox::Pdmodel
     @all_security_to_be_removed : Bool = false
     @fonts_for_save = [] of Font::PDFont
     @source_bytes : Bytes? = nil
-    @resource_cache : ResourceCache? = ResourceCache.new
+    @resource_cache : ResourceCache? = ResourceCacheFactory.create_resource_cache
 
     def initialize(cos_document : Cos::Dictionary? = nil, version : String = "1.4", trailer : Cos::Dictionary? = nil)
       @version = version

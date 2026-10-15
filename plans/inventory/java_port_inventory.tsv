@@ -5324,8 +5324,8 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/DefaultResourceCache.java::method
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/DefaultResourceCache.java::method::DefaultResourceCache.removeProperties	method	ported	src/pdfbox/pdmodel/resource_cache.cr	reconciled: chiasmus owner match
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/DefaultResourceCache.java::method::DefaultResourceCache.removeShading	method	ported	src/pdfbox/pdmodel/resource_cache.cr	ported: ResourceCache shading/pattern
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/DefaultResourceCache.java::method::DefaultResourceCache.removeXObject	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/DefaultResourceCacheCreateImpl.java::class::DefaultResourceCacheCreateImpl	class	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/DefaultResourceCacheCreateImpl.java::method::DefaultResourceCacheCreateImpl.create	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/DefaultResourceCacheCreateImpl.java::class::DefaultResourceCacheCreateImpl	class	ported	src/pdfbox/pdmodel/resource_cache.cr	ported: ResourceCacheFactory
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/DefaultResourceCacheCreateImpl.java::method::DefaultResourceCacheCreateImpl.create	method	ported	src/pdfbox/pdmodel/resource_cache.cr	ported: ResourceCacheFactory
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/MissingResourceException.java::class::MissingResourceException	class	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::class::PDAbstractContentStream	class	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::const::LOG	const	missing	-	auto-generated
@@ -5667,12 +5667,12 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/ResourceCache.java::method::remov
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/ResourceCache.java::method::removeProperties	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/ResourceCache.java::method::removeShading	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/ResourceCache.java::method::removeXObject	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/ResourceCacheCreateFunction.java::interface::ResourceCacheCreateFunction	interface	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/ResourceCacheCreateFunction.java::method::create	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/ResourceCacheFactory.java::class::ResourceCacheFactory	class	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/ResourceCacheFactory.java::method::ResourceCacheFactory.createResourceCache	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/ResourceCacheFactory.java::method::ResourceCacheFactory.getResourceCacheCreateFunction	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/ResourceCacheFactory.java::method::ResourceCacheFactory.setResourceCacheCreateFunction	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/ResourceCacheCreateFunction.java::interface::ResourceCacheCreateFunction	interface	ported	src/pdfbox/pdmodel/resource_cache.cr	ported: ResourceCacheFactory
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/ResourceCacheCreateFunction.java::method::create	method	ported	src/pdfbox/pdmodel/resource_cache.cr	ported: ResourceCacheFactory
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/ResourceCacheFactory.java::class::ResourceCacheFactory	class	ported	src/pdfbox/pdmodel/resource_cache.cr	ported: ResourceCacheFactory
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/ResourceCacheFactory.java::method::ResourceCacheFactory.createResourceCache	method	ported	src/pdfbox/pdmodel/resource_cache.cr	ported: ResourceCacheFactory
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/ResourceCacheFactory.java::method::ResourceCacheFactory.getResourceCacheCreateFunction	method	ported	src/pdfbox/pdmodel/resource_cache.cr	ported: ResourceCacheFactory
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/ResourceCacheFactory.java::method::ResourceCacheFactory.setResourceCacheCreateFunction	method	ported	src/pdfbox/pdmodel/resource_cache.cr	ported: ResourceCacheFactory
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/COSArrayList.java::class::COSArrayList	class	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/COSArrayList.java::method::COSArrayList.add	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/common/COSArrayList.java::method::COSArrayList.addAll	method	ported	src	auto-generated
