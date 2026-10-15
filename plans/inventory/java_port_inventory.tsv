@@ -8350,7 +8350,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObject.jav
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObject.java::method::PDImageXObject.createFromFileByExtension	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObject.java::method::PDImageXObject.createInputStream	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObject.java::method::PDImageXObject.createRawStream	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObject.java::method::PDImageXObject.createThumbnail	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObject.java::method::PDImageXObject.createThumbnail	method	ported	src/pdfbox/pdmodel/graphics/image/pd_image_xobject.cr	ported: PDImageXObject.createThumbnail
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObject.java::method::PDImageXObject.extractMatte	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObject.java::method::PDImageXObject.getBitsPerComponent	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObject.java::method::PDImageXObject.getColorKeyMask	method	partial	src	auto-generated

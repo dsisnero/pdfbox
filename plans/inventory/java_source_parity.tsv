@@ -8350,7 +8350,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObject.jav
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObject.java::method::PDImageXObject.createFromFileByExtension	ported	src/pdfbox/pdmodel/graphics/image/pd_image_xobject.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObject.java::method::PDImageXObject.createInputStream	ported	src/pdfbox/cos.cr + pdstream.cr + pd_image_xobject.cr	stop-filter createInputStream implemented
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObject.java::method::PDImageXObject.createRawStream	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObject.java::method::PDImageXObject.createThumbnail	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObject.java::method::PDImageXObject.createThumbnail	ported	src/pdfbox/pdmodel/graphics/image/pd_image_xobject.cr	ported: PDImageXObject.createThumbnail
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObject.java::method::PDImageXObject.extractMatte	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObject.java::method::PDImageXObject.getBitsPerComponent	ported	src/pdfbox/pdmodel/graphics/image/pd_image_xobject.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/PDImageXObject.java::method::PDImageXObject.getColorKeyMask	ported	src/pdfbox/pdmodel/graphics/image/pd_image_xobject.cr	ported: PDImageXObject mask / optional-content accessors

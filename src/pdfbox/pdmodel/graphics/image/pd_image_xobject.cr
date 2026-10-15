@@ -4,8 +4,14 @@ require "./pd_image"
 module Pdfbox::Pdmodel::Graphics::Image
   class PDImageXObject < PDImage
     @dict : Pdfbox::Cos::Dictionary
-    @document : Pdfbox::Pdmodel::Document
+    @document : Pdfbox::Pdmodel::Document?
     @stream : Pdfbox::Cos::Stream?
+
+    # Wraps a thumbnail stream as an image XObject without a document.
+    # Java: PDImageXObject.createThumbnail(COSStream).
+    def self.create_thumbnail(cos_stream : Pdfbox::Cos::Stream) : PDImageXObject
+      new(nil, cos_stream, cos_stream)
+    end
 
     # Creates a PDImageXObject from an image file.
     # Java: PDImageXObject.createFromFile(imagePath, doc)
@@ -112,7 +118,7 @@ module Pdfbox::Pdmodel::Graphics::Image
       new(document, stream, stream)
     end
 
-    def initialize(document : Pdfbox::Pdmodel::Document, dict : Pdfbox::Cos::Dictionary? = nil, stream : Pdfbox::Cos::Stream? = nil)
+    def initialize(document : Pdfbox::Pdmodel::Document?, dict : Pdfbox::Cos::Dictionary? = nil, stream : Pdfbox::Cos::Stream? = nil)
       @document = document
       @dict = dict || Pdfbox::Cos::Dictionary.new
       @stream = stream
