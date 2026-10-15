@@ -36,6 +36,7 @@ module Pdfbox::Pdmodel
     @all_security_to_be_removed : Bool = false
     @fonts_for_save = [] of Font::PDFont
     @source_bytes : Bytes? = nil
+    @resource_cache : ResourceCache? = ResourceCache.new
 
     def initialize(cos_document : Cos::Dictionary? = nil, version : String = "1.4", trailer : Cos::Dictionary? = nil)
       @version = version
@@ -542,6 +543,24 @@ module Pdfbox::Pdmodel
     end
 
     # ameba:enable Naming/AccessorMethodName
+
+    # The document-wide resource cache (Java PDDocument#getResourceCache).
+    def resource_cache : ResourceCache?
+      @resource_cache
+    end
+
+    # Set the resource cache (Java PDDocument#setResourceCache); nil is allowed.
+    def resource_cache=(resource_cache : ResourceCache?) : ResourceCache?
+      @resource_cache = resource_cache
+    end
+
+    def get_resource_cache : ResourceCache? # ameba:disable Naming/AccessorMethodName
+      @resource_cache
+    end
+
+    def set_resource_cache(resource_cache : ResourceCache?) : Nil # ameba:disable Naming/AccessorMethodName
+      @resource_cache = resource_cache
+    end
 
     # Close the document and release resources
     def close : Nil
