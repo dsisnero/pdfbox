@@ -10905,10 +10905,10 @@ pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTex
 pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.endMarkedContentSequence	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.endPage	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.fillBeadRectangles	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.getAddMoreFormatting	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.getAddMoreFormatting	method	ported	src/pdfbox/text/pdf_text_stripper.cr	ported: PDFTextStripper formatting options
 pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.getArticleEnd	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.getArticleStart	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.getAverageCharTolerance	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.getAverageCharTolerance	method	ported	src/pdfbox/text/pdf_text_stripper.cr	ported: PDFTextStripper formatting options
 pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.getCharactersByArticle	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.getCurrentPageNo	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.getDropThreshold	method	ported	src	auto-generated
@@ -10925,12 +10925,12 @@ pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTex
 pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.getParagraphStart	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.getSeparateByBeads	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.getSortByPosition	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.getSpacingTolerance	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.getSpacingTolerance	method	ported	src/pdfbox/text/pdf_text_stripper.cr	ported: PDFTextStripper formatting options
 pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.getStartBookmark	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.getStartPage	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.getSuppressDuplicateOverlappingText	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.getText	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.getWordSeparator	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.getWordSeparator	method	ported	src/pdfbox/text/pdf_text_stripper.cr	ported: PDFTextStripper formatting options
 pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.handleDirection	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.handleLineSeparation	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.hasFontOrSizeChanged	method	ported	src	auto-generated
@@ -10948,10 +10948,10 @@ pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTex
 pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.processTextPosition	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.removeContainedSpaces	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.resetEngine	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.setAddMoreFormatting	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.setAddMoreFormatting	method	ported	src/pdfbox/text/pdf_text_stripper.cr	ported: PDFTextStripper formatting options
 pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.setArticleEnd	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.setArticleStart	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.setAverageCharTolerance	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.setAverageCharTolerance	method	ported	src/pdfbox/text/pdf_text_stripper.cr	ported: PDFTextStripper formatting options
 pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.setDropThreshold	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.setEndBookmark	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.setEndPage	method	ported	src	auto-generated
@@ -10965,11 +10965,11 @@ pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTex
 pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.setParagraphStart	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.setShouldSeparateByBeads	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.setSortByPosition	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.setSpacingTolerance	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.setSpacingTolerance	method	ported	src/pdfbox/text/pdf_text_stripper.cr	ported: PDFTextStripper formatting options
 pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.setStartBookmark	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.setStartPage	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.setSuppressDuplicateOverlappingText	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.setWordSeparator	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.setWordSeparator	method	ported	src/pdfbox/text/pdf_text_stripper.cr	ported: PDFTextStripper formatting options
 pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.startArticle	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.startDocument	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.startPage	method	ported	src	auto-generated

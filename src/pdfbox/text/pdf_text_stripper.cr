@@ -505,6 +505,42 @@ module Pdfbox::Text
       @sort_by_position
     end
 
+    # Java PDFTextStripper#getSpacingTolerance/setSpacingTolerance.
+    def spacing_tolerance : Float32
+      @spacing_tolerance
+    end
+
+    def spacing_tolerance=(value : Float32) : Float32
+      @spacing_tolerance = value
+    end
+
+    # Java PDFTextStripper#getAverageCharTolerance/setAverageCharTolerance.
+    def average_char_tolerance : Float32
+      @average_char_tolerance
+    end
+
+    def average_char_tolerance=(value : Float32) : Float32
+      @average_char_tolerance = value
+    end
+
+    # Java PDFTextStripper#getWordSeparator/setWordSeparator.
+    def word_separator : String
+      @word_separator
+    end
+
+    def word_separator=(value : String) : String
+      @word_separator = value
+    end
+
+    # Java PDFTextStripper#getAddMoreFormatting/setAddMoreFormatting.
+    def add_more_formatting? : Bool
+      @add_more_formatting
+    end
+
+    def add_more_formatting=(value : Bool) : Bool
+      @add_more_formatting = value
+    end
+
     private def suppress_duplicate_overlapping_text?(text : TextPosition) : Bool
       return false unless @suppress_duplicate_overlapping_text
 

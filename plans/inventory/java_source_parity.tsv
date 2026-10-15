@@ -10905,10 +10905,10 @@ pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTex
 pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.endMarkedContentSequence	ported	src/pdfbox/text/pdf_text_stripper.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.endPage	ported	src/pdfbox/text/pdf_text_stripper.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.fillBeadRectangles	ported	src/pdfbox/text/pdf_text_stripper.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.getAddMoreFormatting	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.getAddMoreFormatting	ported	src/pdfbox/text/pdf_text_stripper.cr	ported: PDFTextStripper formatting options
 pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.getArticleEnd	ported	src/pdfbox/text/pdf_text_stripper.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.getArticleStart	ported	src/pdfbox/text/pdf_text_stripper.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.getAverageCharTolerance	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.getAverageCharTolerance	ported	src/pdfbox/text/pdf_text_stripper.cr	ported: PDFTextStripper formatting options
 pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.getCharactersByArticle	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.getCurrentPageNo	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.getDropThreshold	ported	src/pdfbox/text/pdf_text_stripper.cr	reconciled: method present
@@ -10925,12 +10925,12 @@ pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTex
 pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.getParagraphStart	ported	src/pdfbox/text/pdf_text_stripper.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.getSeparateByBeads	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.getSortByPosition	ported	src/pdfbox/text/pdf_text_stripper.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.getSpacingTolerance	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.getSpacingTolerance	ported	src/pdfbox/text/pdf_text_stripper.cr	ported: PDFTextStripper formatting options
 pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.getStartBookmark	ported	src/pdfbox/text/pdf_text_stripper.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.getStartPage	ported	src/pdfbox/text/pdf_text_stripper.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.getSuppressDuplicateOverlappingText	ported	src/pdfbox/text/pdf_text_stripper.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.getText	ported	src/pdfbox/text/pdf_text_stripper.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.getWordSeparator	ported	src/pdfbox/text/pdf_text_stripper.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.getWordSeparator	ported	src/pdfbox/text/pdf_text_stripper.cr	ported: PDFTextStripper formatting options
 pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.handleDirection	ported	src/pdfbox/text/pdf_text_stripper.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.handleLineSeparation	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.hasFontOrSizeChanged	ported	src/pdfbox/text/pdf_text_stripper.cr	reconciled: method present
@@ -10948,10 +10948,10 @@ pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTex
 pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.processTextPosition	ported	src/pdfbox/text/pdf_text_stripper.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.removeContainedSpaces	ported	src/pdfbox/text/pdf_text_stripper.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.resetEngine	ported	src/pdfbox/text/pdf_text_stripper.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.setAddMoreFormatting	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.setAddMoreFormatting	ported	src/pdfbox/text/pdf_text_stripper.cr	ported: PDFTextStripper formatting options
 pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.setArticleEnd	ported	src/pdfbox/text/pdf_text_stripper.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.setArticleStart	ported	src/pdfbox/text/pdf_text_stripper.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.setAverageCharTolerance	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.setAverageCharTolerance	ported	src/pdfbox/text/pdf_text_stripper.cr	ported: PDFTextStripper formatting options
 pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.setDropThreshold	ported	src/pdfbox/text/pdf_text_stripper.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.setEndBookmark	ported	src/pdfbox/text/pdf_text_stripper.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.setEndPage	ported	src/pdfbox/text/pdf_text_stripper.cr	reconciled: method present
@@ -10965,11 +10965,11 @@ pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTex
 pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.setParagraphStart	ported	src/pdfbox/text/pdf_text_stripper.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.setShouldSeparateByBeads	ported	src/pdfbox/text/pdf_text_stripper.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.setSortByPosition	ported	src/pdfbox/text/pdf_text_stripper.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.setSpacingTolerance	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.setSpacingTolerance	ported	src/pdfbox/text/pdf_text_stripper.cr	ported: PDFTextStripper formatting options
 pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.setStartBookmark	ported	src/pdfbox/text/pdf_text_stripper.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.setStartPage	ported	src/pdfbox/text/pdf_text_stripper.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.setSuppressDuplicateOverlappingText	ported	src/pdfbox/text/pdf_text_stripper.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.setWordSeparator	ported	src/pdfbox/text/pdf_text_stripper.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.setWordSeparator	ported	src/pdfbox/text/pdf_text_stripper.cr	ported: PDFTextStripper formatting options
 pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.startArticle	ported	src/pdfbox/text/pdf_text_stripper.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.startDocument	ported	src/pdfbox/text/pdf_text_stripper.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/text/PDFTextStripper.java::method::PDFTextStripper.startPage	ported	src/pdfbox/text/pdf_text_stripper.cr	reconciled: method present
