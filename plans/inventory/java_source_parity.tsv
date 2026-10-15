@@ -5563,8 +5563,8 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getSt
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getThreadBeads	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getTransition	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getTrimBox	ported	src/pdfbox/pdmodel/page.cr	PDPage bleed/trim/art boxes + page additional actions
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getUserUnit	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getViewports	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getUserUnit	ported	src/pdfbox/pdmodel/page.cr	ported: PDPage user unit + viewports
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getViewports	ported	src/pdfbox/pdmodel/page.cr	ported: PDPage user unit + viewports
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.hasContents	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.hashCode	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.removePageResourceFromCache	missing	-	baseline
@@ -5583,8 +5583,8 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.setSt
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.setThreadBeads	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.setTransition	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.setTrimBox	ported	src/pdfbox/pdmodel/page.cr	PDPage bleed/trim/art boxes + page additional actions
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.setUserUnit	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.setViewports	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.setUserUnit	ported	src/pdfbox/pdmodel/page.cr	ported: PDPage user unit + viewports
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.setViewports	ported	src/pdfbox/pdmodel/page.cr	ported: PDPage user unit + viewports
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPageContentStream.java::class::PDPageContentStream	ported	src/pdfbox/pdmodel/page_content_stream.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPageContentStream.java::const::LOG	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPageContentStream.java::enum::AppendMode	ported	src/pdfbox/pdmodel/page_content_stream.cr	ported: PDPageContentStream

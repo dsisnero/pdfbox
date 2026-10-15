@@ -474,6 +474,55 @@ module Pdfbox::Pdmodel
       meta_obj ? Pdmodel::Common::PDMetadata.new(meta_obj) : nil
     end
 
+    # Get the user unit (Java PDPage#getUserUnit). Non-positive values fall back
+    # to 1.0.
+    def user_unit : Float32
+      cos_page = @cos_page
+      return 1.0_f32 unless cos_page
+      value = cos_page.get_float(Cos::Name.new("UserUnit"), 1.0_f64).to_f32
+      value > 0 ? value : 1.0_f32
+    end
+
+    # Set the user unit (Java PDPage#setUserUnit); must be positive.
+    def user_unit=(user_unit : Float32) : Float32
+      raise ArgumentError.new("User unit must be positive") if user_unit <= 0
+
+      cos_page = @cos_page || default_page_dictionary
+      @cos_page = cos_page
+      cos_page.set_float(Cos::Name.new("UserUnit"), user_unit.to_f64)
+      user_unit
+    end
+
+    # Get the viewports (/VP); nil when absent (Java PDPage#getViewports).
+    def viewports : Array(Interactive::Measurement::PDViewportDictionary)?
+      cos_page = @cos_page
+      return unless cos_page
+
+      array = cos_page.get_array(Cos::Name.new("VP"))
+      return unless array
+
+      array.items.compact_map do |item|
+        item = item.object if item.is_a?(Cos::Object)
+        item.as?(Cos::Dictionary).try { |dict| Interactive::Measurement::PDViewportDictionary.new(dict) }
+      end
+    end
+
+    # Set the viewports (/VP); nil removes the entry (Java PDPage#setViewports).
+    def viewports=(viewports : Array(Interactive::Measurement::PDViewportDictionary)?) : Array(Interactive::Measurement::PDViewportDictionary)?
+      cos_page = @cos_page || default_page_dictionary
+      @cos_page = cos_page
+
+      key = Cos::Name.new("VP")
+      if viewports
+        array = Cos::Array.new
+        viewports.each { |viewport| array.add(viewport.cos_object) }
+        cos_page.set_item(key, array)
+      else
+        cos_page.delete(key)
+      end
+      viewports
+    end
+
     def thread_beads : Array(Interactive::Pagenavigation::PDThreadBead)
       cos_page = @cos_page
       return [] of Interactive::Pagenavigation::PDThreadBead unless cos_page
