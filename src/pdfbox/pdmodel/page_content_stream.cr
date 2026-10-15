@@ -98,6 +98,67 @@ module Pdfbox::Pdmodel
       write_operator(END_MARKED_CONTENT)
     end
 
+    # Set a marked content point (MP). Java PDAbstractContentStream#setMarkedContentPoint.
+    def set_marked_content_point(tag : Cos::Name) : Nil # ameba:disable Naming/AccessorMethodName
+      @buffer << '/' << tag.value << ' ' << MARKED_CONTENT_POINT << '\n'
+    end
+
+    # Set a marked content point referencing a property list (DP).
+    # Java PDAbstractContentStream#setMarkedContentPointWithProperties.
+    def set_marked_content_point_with_properties(tag : Cos::Name, property_list : DocumentInterchange::MarkedContent::PDPropertyList) : Nil
+      resource_name = add_property_list_to_resources(property_list)
+      @buffer << '/' << tag.value << " /" << resource_name << ' ' << MARKED_CONTENT_POINT_WITH_PROPS << '\n'
+    end
+
+    # Write a comment line; newlines are rejected (Java PDAbstractContentStream#addComment).
+    def add_comment(comment : String) : Nil
+      if comment.includes?('\n') || comment.includes?('\r')
+        raise ArgumentError.new("comment should not include a newline")
+      end
+      @buffer << '%' << comment << '\n'
+    end
+
+    # Set the character spacing (Tc). Java PDAbstractContentStream#setCharacterSpacing.
+    def set_character_spacing(spacing : Number) : Nil # ameba:disable Naming/AccessorMethodName
+      write_operands(spacing)
+      write_operator(SET_CHAR_SPACING)
+    end
+
+    # Set the word spacing (Tw). Java PDAbstractContentStream#setWordSpacing.
+    def set_word_spacing(spacing : Number) : Nil # ameba:disable Naming/AccessorMethodName
+      write_operands(spacing)
+      write_operator(SET_WORD_SPACING)
+    end
+
+    # Set the leading (TL). Java PDAbstractContentStream#setLeading.
+    def set_leading(leading : Number) : Nil # ameba:disable Naming/AccessorMethodName
+      write_operands(leading)
+      write_operator(SET_TEXT_LEADING)
+    end
+
+    # Set the horizontal scaling (Tz). Java PDAbstractContentStream#setHorizontalScaling.
+    def set_horizontal_scaling(scale : Number) : Nil # ameba:disable Naming/AccessorMethodName
+      write_operands(scale)
+      write_operator(SET_TEXT_HORIZONTAL_SCALING)
+    end
+
+    # Set the text rise (Ts). Java PDAbstractContentStream#setTextRise.
+    def set_text_rise(rise : Number) : Nil # ameba:disable Naming/AccessorMethodName
+      write_operands(rise)
+      write_operator(SET_TEXT_RISE)
+    end
+
+    # Set the text rendering mode (Tr). Java PDAbstractContentStream#setRenderingMode.
+    def set_rendering_mode(rendering_mode : Graphics::State::RenderingMode) : Nil # ameba:disable Naming/AccessorMethodName
+      write_operands(rendering_mode.int_value)
+      write_operator(SET_TEXT_RENDERINGMODE)
+    end
+
+    # Move to the next line (T*). Java PDAbstractContentStream#newLine.
+    def new_line : Nil
+      write_operator(NEXT_LINE)
+    end
+
     def set_font(font : Font::PDFont, font_size : Number) : Nil
       add_font_to_resources(font)
       @document.register_font_for_save(font)
