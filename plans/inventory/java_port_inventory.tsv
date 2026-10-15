@@ -6941,12 +6941,12 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotation.java::const::FL
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotation.java::const::FLAG_READ_ONLY	const	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotation.java::const::FLAG_TOGGLE_NO_VIEW	const	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotation.java::const::LOG	const	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotation.java::method::FDFAnnotation.create	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotation.java::method::FDFAnnotation.createRectangleFromAttributes	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotation.java::method::FDFAnnotation.create	method	ported	src/pdfbox/pdmodel/fdf/fdf_annotation.cr	ported: FDFAnnotation base helpers
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotation.java::method::FDFAnnotation.createRectangleFromAttributes	method	ported	src/pdfbox/pdmodel/fdf/fdf_annotation.cr	ported: FDFAnnotation base helpers
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotation.java::method::FDFAnnotation.getBorderEffect	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotation.java::method::FDFAnnotation.getBorderStyle	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotation.java::method::FDFAnnotation.getCOSObject	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotation.java::method::FDFAnnotation.getColor	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotation.java::method::FDFAnnotation.getColor	method	ported	src/pdfbox/pdmodel/fdf/fdf_annotation.cr	ported: FDFAnnotation base helpers
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotation.java::method::FDFAnnotation.getContents	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotation.java::method::FDFAnnotation.getCreationDate	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotation.java::method::FDFAnnotation.getDate	method	ported	src	auto-generated
@@ -6969,8 +6969,8 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotation.java::method::F
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotation.java::method::FDFAnnotation.isPrinted	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotation.java::method::FDFAnnotation.isReadOnly	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotation.java::method::FDFAnnotation.isToggleNoView	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotation.java::method::FDFAnnotation.parseFloats	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotation.java::method::FDFAnnotation.parseRectangleAttributes	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotation.java::method::FDFAnnotation.parseFloats	method	ported	src/pdfbox/pdmodel/fdf/fdf_annotation.cr	ported: FDFAnnotation base helpers
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotation.java::method::FDFAnnotation.parseRectangleAttributes	method	ported	src/pdfbox/pdmodel/fdf/fdf_annotation.cr	ported: FDFAnnotation base helpers
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotation.java::method::FDFAnnotation.richContentsToString	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotation.java::method::FDFAnnotation.setBorderEffect	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotation.java::method::FDFAnnotation.setBorderStyle	method	ported	src	auto-generated

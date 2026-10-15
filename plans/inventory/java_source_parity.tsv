@@ -6941,12 +6941,12 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotation.java::const::FL
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotation.java::const::FLAG_READ_ONLY	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotation.java::const::FLAG_TOGGLE_NO_VIEW	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotation.java::const::LOG	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotation.java::method::FDFAnnotation.create	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotation.java::method::FDFAnnotation.createRectangleFromAttributes	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotation.java::method::FDFAnnotation.create	ported	src/pdfbox/pdmodel/fdf/fdf_annotation.cr	ported: FDFAnnotation base helpers
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotation.java::method::FDFAnnotation.createRectangleFromAttributes	ported	src/pdfbox/pdmodel/fdf/fdf_annotation.cr	ported: FDFAnnotation base helpers
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotation.java::method::FDFAnnotation.getBorderEffect	ported	src/pdfbox/pdmodel/fdf/fdf_annotation.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotation.java::method::FDFAnnotation.getBorderStyle	ported	src/pdfbox/pdmodel/fdf/fdf_annotation.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotation.java::method::FDFAnnotation.getCOSObject	ported	src/pdfbox/pdmodel/fdf/fdf_annotation.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotation.java::method::FDFAnnotation.getColor	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotation.java::method::FDFAnnotation.getColor	ported	src/pdfbox/pdmodel/fdf/fdf_annotation.cr	ported: FDFAnnotation base helpers
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotation.java::method::FDFAnnotation.getContents	ported	src/pdfbox/pdmodel/fdf/fdf_annotation.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotation.java::method::FDFAnnotation.getCreationDate	ported	src/pdfbox/pdmodel/fdf/fdf_annotation.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotation.java::method::FDFAnnotation.getDate	ported	src/pdfbox/pdmodel/fdf/fdf_annotation.cr	reconciled: method present
@@ -6969,8 +6969,8 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotation.java::method::F
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotation.java::method::FDFAnnotation.isPrinted	ported	src/pdfbox/pdmodel/fdf/fdf_annotation.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotation.java::method::FDFAnnotation.isReadOnly	ported	src/pdfbox/pdmodel/fdf/fdf_annotation.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotation.java::method::FDFAnnotation.isToggleNoView	ported	src/pdfbox/pdmodel/fdf/fdf_annotation.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotation.java::method::FDFAnnotation.parseFloats	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotation.java::method::FDFAnnotation.parseRectangleAttributes	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotation.java::method::FDFAnnotation.parseFloats	ported	src/pdfbox/pdmodel/fdf/fdf_annotation.cr	ported: FDFAnnotation base helpers
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotation.java::method::FDFAnnotation.parseRectangleAttributes	ported	src/pdfbox/pdmodel/fdf/fdf_annotation.cr	ported: FDFAnnotation base helpers
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotation.java::method::FDFAnnotation.richContentsToString	ported	src/pdfbox/pdmodel/fdf/fdf_annotation.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotation.java::method::FDFAnnotation.setBorderEffect	ported	src/pdfbox/pdmodel/fdf/fdf_annotation.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotation.java::method::FDFAnnotation.setBorderStyle	ported	src/pdfbox/pdmodel/fdf/fdf_annotation.cr	reconciled: method present

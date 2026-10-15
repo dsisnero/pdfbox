@@ -448,17 +448,18 @@ module Pdfbox::Pdmodel::Fdf
       values.size >= 3 ? values[0, 3] : nil
     end
 
+    # Java FDFAnnotation#createRectangleFromAttributes: the four numbers are
+    # lowerLeftX, lowerLeftY, upperRightX, upperRightY (not x/y/width/height).
     protected def parse_rectangle(rect : String, error_message : String) : Common::PDRectangle
       rect_values = rect.split(',')
-      if rect_values.size != 4
-        raise ::IO::Error.new(error_message)
-      end
-      Common::PDRectangle.new(
-        rect_values[0].to_f32,
-        rect_values[1].to_f32,
-        rect_values[2].to_f32,
-        rect_values[3].to_f32
-      )
+      raise ::IO::Error.new(error_message) if rect_values.size != 4
+
+      rectangle = Common::PDRectangle.new
+      rectangle.lower_left_x = rect_values[0].to_f32
+      rectangle.lower_left_y = rect_values[1].to_f32
+      rectangle.upper_right_x = rect_values[2].to_f32
+      rectangle.upper_right_y = rect_values[3].to_f32
+      rectangle
     end
 
     private def flag_set?(flag : Int32) : Bool
