@@ -522,6 +522,30 @@ module Pdfbox::Pdmodel::Fdf
       end
     end
 
+    # Fringe rectangle (/RD) — Java FDFAnnotationCaret/Circle/Square/FreeText.
+    def fringe : Common::PDRectangle?
+      @dictionary.get_array(Cos::Name.new("RD")).try { |array| Common::PDRectangle.new(array) }
+    end
+
+    def fringe=(fringe : Common::PDRectangle?) : Nil
+      key = Cos::Name.new("RD")
+      if fringe
+        @dictionary.set_item(key, fringe.cos_object)
+      else
+        @dictionary.delete(key)
+      end
+    end
+
+    # XFDF fringe attribute -> /RD (Java initFringe).
+    protected def init_fringe(element : XML::Node) : Nil
+      fringe = self.class.attr_value(element, "fringe")
+      return unless fringe
+      values = parse_rectangle_attributes(fringe, "Error: wrong amount of numbers in attribute 'fringe'")
+      array = Cos::Array.new
+      values.each { |value| array.add(Cos::Float.new(value)) }
+      self.fringe = Common::PDRectangle.new(array)
+    end
+
     private def ending_style_at(index : Int32) : String
       none = Interactive::Annotation::PDAnnotationLine::LE_NONE
       array = @dictionary.get_array(Cos::Name.new("LE"))

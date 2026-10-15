@@ -7005,11 +7005,11 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationCaret.java::meth
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationCaret.java::method::FDFAnnotationCaret.setSymbol	method	ported	src/pdfbox/pdmodel/fdf/fdf_annotation_subtypes.cr	ported: FDFAnnotationCaret fringe/symbol
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationCircle.java::class::FDFAnnotationCircle	class	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationCircle.java::const::SUBTYPE	const	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationCircle.java::method::FDFAnnotationCircle.getFringe	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationCircle.java::method::FDFAnnotationCircle.getInteriorColor	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationCircle.java::method::FDFAnnotationCircle.initFringe	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationCircle.java::method::FDFAnnotationCircle.setFringe	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationCircle.java::method::FDFAnnotationCircle.setInteriorColor	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationCircle.java::method::FDFAnnotationCircle.getFringe	method	ported	src/pdfbox/pdmodel/fdf/fdf_annotation.cr	ported: FDFAnnotation circle/square interior color + fringe
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationCircle.java::method::FDFAnnotationCircle.getInteriorColor	method	ported	src/pdfbox/pdmodel/fdf/fdf_annotation.cr	ported: FDFAnnotation circle/square interior color + fringe
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationCircle.java::method::FDFAnnotationCircle.initFringe	method	ported	src/pdfbox/pdmodel/fdf/fdf_annotation.cr	ported: FDFAnnotation circle/square interior color + fringe
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationCircle.java::method::FDFAnnotationCircle.setFringe	method	ported	src/pdfbox/pdmodel/fdf/fdf_annotation.cr	ported: FDFAnnotation circle/square interior color + fringe
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationCircle.java::method::FDFAnnotationCircle.setInteriorColor	method	ported	src/pdfbox/pdmodel/fdf/fdf_annotation.cr	ported: FDFAnnotation circle/square interior color + fringe
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationFileAttachment.java::class::FDFAnnotationFileAttachment	class	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationFileAttachment.java::const::SUBTYPE	const	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationFreeText.java::class::FDFAnnotationFreeText	class	partial	src	auto-generated
@@ -7018,16 +7018,16 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationFreeText.java::c
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationFreeText.java::method::FDFAnnotationFreeText.getCallout	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationFreeText.java::method::FDFAnnotationFreeText.getDefaultAppearance	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationFreeText.java::method::FDFAnnotationFreeText.getDefaultStyle	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationFreeText.java::method::FDFAnnotationFreeText.getFringe	method	ported	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationFreeText.java::method::FDFAnnotationFreeText.getFringe	method	ported	src/pdfbox/pdmodel/fdf/fdf_annotation.cr	ported: FDFAnnotation circle/square interior color + fringe
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationFreeText.java::method::FDFAnnotationFreeText.getJustification	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationFreeText.java::method::FDFAnnotationFreeText.getLineEndingStyle	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationFreeText.java::method::FDFAnnotationFreeText.getRotation	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationFreeText.java::method::FDFAnnotationFreeText.initCallout	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationFreeText.java::method::FDFAnnotationFreeText.initFringe	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationFreeText.java::method::FDFAnnotationFreeText.initFringe	method	ported	src/pdfbox/pdmodel/fdf/fdf_annotation.cr	ported: FDFAnnotation circle/square interior color + fringe
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationFreeText.java::method::FDFAnnotationFreeText.setCallout	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationFreeText.java::method::FDFAnnotationFreeText.setDefaultAppearance	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationFreeText.java::method::FDFAnnotationFreeText.setDefaultStyle	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationFreeText.java::method::FDFAnnotationFreeText.setFringe	method	ported	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationFreeText.java::method::FDFAnnotationFreeText.setFringe	method	ported	src/pdfbox/pdmodel/fdf/fdf_annotation.cr	ported: FDFAnnotation circle/square interior color + fringe
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationFreeText.java::method::FDFAnnotationFreeText.setJustification	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationFreeText.java::method::FDFAnnotationFreeText.setLineEndingStyle	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationFreeText.java::method::FDFAnnotationFreeText.setRotation	method	ported	src	auto-generated
@@ -7090,11 +7090,11 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationSound.java::clas
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationSound.java::const::SUBTYPE	const	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationSquare.java::class::FDFAnnotationSquare	class	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationSquare.java::const::SUBTYPE	const	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationSquare.java::method::FDFAnnotationSquare.getFringe	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationSquare.java::method::FDFAnnotationSquare.getInteriorColor	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationSquare.java::method::FDFAnnotationSquare.initFringe	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationSquare.java::method::FDFAnnotationSquare.setFringe	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationSquare.java::method::FDFAnnotationSquare.setInteriorColor	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationSquare.java::method::FDFAnnotationSquare.getFringe	method	ported	src/pdfbox/pdmodel/fdf/fdf_annotation.cr	ported: FDFAnnotation circle/square interior color + fringe
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationSquare.java::method::FDFAnnotationSquare.getInteriorColor	method	ported	src/pdfbox/pdmodel/fdf/fdf_annotation.cr	ported: FDFAnnotation circle/square interior color + fringe
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationSquare.java::method::FDFAnnotationSquare.initFringe	method	ported	src/pdfbox/pdmodel/fdf/fdf_annotation.cr	ported: FDFAnnotation circle/square interior color + fringe
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationSquare.java::method::FDFAnnotationSquare.setFringe	method	ported	src/pdfbox/pdmodel/fdf/fdf_annotation.cr	ported: FDFAnnotation circle/square interior color + fringe
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationSquare.java::method::FDFAnnotationSquare.setInteriorColor	method	ported	src/pdfbox/pdmodel/fdf/fdf_annotation.cr	ported: FDFAnnotation circle/square interior color + fringe
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationSquiggly.java::class::FDFAnnotationSquiggly	class	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationSquiggly.java::const::SUBTYPE	const	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationStamp.java::class::FDFAnnotationStamp	class	partial	src	auto-generated

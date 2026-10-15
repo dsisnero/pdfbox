@@ -48,20 +48,6 @@ module Pdfbox::Pdmodel::Fdf
       end
     end
 
-    # Set/get the fringe rectangle (/RD) (Java setFringe/getFringe).
-    def fringe=(fringe : Common::PDRectangle?) : Nil
-      key = Cos::Name.new("RD")
-      if fringe
-        @dictionary.set_item(key, fringe.cos_object)
-      else
-        @dictionary.delete(key)
-      end
-    end
-
-    def fringe : Common::PDRectangle?
-      @dictionary.get_array(Cos::Name.new("RD")).try { |array| Common::PDRectangle.new(array) }
-    end
-
     # Set/get the caret symbol (/Sy): Java maps "paragraph" to "P", anything
     # else to "None".
     def symbol=(symbol : String) : String
@@ -72,15 +58,6 @@ module Pdfbox::Pdmodel::Fdf
 
     def symbol : String?
       @dictionary.get_string(Cos::Name.new("Sy"))
-    end
-
-    private def init_fringe(element : XML::Node) : Nil
-      fringe = self.class.attr_value(element, "fringe")
-      return unless fringe
-      values = parse_rectangle_attributes(fringe, "Error: wrong amount of numbers in attribute 'fringe'")
-      array = Cos::Array.new
-      values.each { |value| array.add(Cos::Float.new(value)) }
-      self.fringe = Common::PDRectangle.new(array)
     end
   end
 
@@ -117,9 +94,7 @@ module Pdfbox::Pdmodel::Fdf
       if rotation = FDFAnnotation.attr_value(element, "rotation")
         self.rotation = rotation.to_i
       end
-      if fringe = FDFAnnotation.attr_value(element, "fringe")
-        self.fringe = parse_rectangle(fringe, "Error: wrong amount of numbers in attribute 'fringe'")
-      end
+      init_fringe(element)
       if line_ending = FDFAnnotation.attr_value(element, "head")
         self.line_ending_style = line_ending
       end
@@ -173,16 +148,6 @@ module Pdfbox::Pdmodel::Fdf
 
     def rotation=(value : Int32) : Int32
       @dictionary.set_int(Cos::Name.new("Rotate"), value)
-      value
-    end
-
-    def fringe : Common::PDRectangle?
-      array = @dictionary.get_array(Cos::Name.new("RD"))
-      array ? Common::PDRectangle.new(array) : nil
-    end
-
-    def fringe=(value : Common::PDRectangle) : Common::PDRectangle
-      @dictionary[Cos::Name.new("RD")] = value.cos_object
       value
     end
 
@@ -491,6 +456,8 @@ module Pdfbox::Pdmodel::Fdf
       super()
       @dictionary.set_name(Cos::Name::SUBTYPE, SUBTYPE)
       init_from_element(element)
+      apply_interior_color(element)
+      init_fringe(element)
     end
   end
 
@@ -510,6 +477,8 @@ module Pdfbox::Pdmodel::Fdf
       super()
       @dictionary.set_name(Cos::Name::SUBTYPE, SUBTYPE)
       init_from_element(element)
+      apply_interior_color(element)
+      init_fringe(element)
     end
   end
 
