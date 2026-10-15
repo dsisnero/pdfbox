@@ -204,6 +204,12 @@ module Pdfbox::Pdmodel::Fdf
       end
       @dictionary.set_int(Cos::Name.new("Q"), quadding)
     end
+
+    # Java FDFAnnotationFreeText#getJustification returns the quadding int as a
+    # string ("" + annot.getInt(COSName.Q, 0)).
+    def justification : String
+      @dictionary.get_int(Cos::Name.new("Q"), 0_i64).to_s
+    end
   end
 
   class FDFAnnotationFileAttachment < FDFAnnotation
