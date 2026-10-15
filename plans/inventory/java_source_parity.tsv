@@ -6998,11 +6998,11 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotation.java::method::F
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotation.java::method::FDFAnnotation.setToggleNoView	ported	src/pdfbox/pdmodel/fdf/fdf_annotation.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationCaret.java::class::FDFAnnotationCaret	ported	src/pdfbox/pdmodel/fdf/fdf_annotation_subtypes.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationCaret.java::const::SUBTYPE	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationCaret.java::method::FDFAnnotationCaret.getFringe	ported	src/pdfbox/pdmodel/fdf/fdf_annotation_subtypes.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationCaret.java::method::FDFAnnotationCaret.getSymbol	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationCaret.java::method::FDFAnnotationCaret.initFringe	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationCaret.java::method::FDFAnnotationCaret.setFringe	ported	src/pdfbox/pdmodel/fdf/fdf_annotation_subtypes.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationCaret.java::method::FDFAnnotationCaret.setSymbol	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationCaret.java::method::FDFAnnotationCaret.getFringe	ported	src/pdfbox/pdmodel/fdf/fdf_annotation_subtypes.cr	ported: FDFAnnotationCaret fringe/symbol
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationCaret.java::method::FDFAnnotationCaret.getSymbol	ported	src/pdfbox/pdmodel/fdf/fdf_annotation_subtypes.cr	ported: FDFAnnotationCaret fringe/symbol
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationCaret.java::method::FDFAnnotationCaret.initFringe	ported	src/pdfbox/pdmodel/fdf/fdf_annotation_subtypes.cr	ported: FDFAnnotationCaret fringe/symbol
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationCaret.java::method::FDFAnnotationCaret.setFringe	ported	src/pdfbox/pdmodel/fdf/fdf_annotation_subtypes.cr	ported: FDFAnnotationCaret fringe/symbol
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationCaret.java::method::FDFAnnotationCaret.setSymbol	ported	src/pdfbox/pdmodel/fdf/fdf_annotation_subtypes.cr	ported: FDFAnnotationCaret fringe/symbol
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationCircle.java::class::FDFAnnotationCircle	ported	src/pdfbox/pdmodel/fdf/fdf_annotation_subtypes.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationCircle.java::const::SUBTYPE	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationCircle.java::method::FDFAnnotationCircle.getFringe	ported	src/pdfbox/pdmodel/fdf/fdf_annotation_subtypes.cr	reconciled: method present

@@ -41,6 +41,46 @@ module Pdfbox::Pdmodel::Fdf
       super()
       @dictionary.set_name(Cos::Name::SUBTYPE, SUBTYPE)
       init_from_element(element)
+      init_fringe(element)
+
+      if symbol = self.class.attr_value(element, "symbol")
+        self.symbol = symbol
+      end
+    end
+
+    # Set/get the fringe rectangle (/RD) (Java setFringe/getFringe).
+    def fringe=(fringe : Common::PDRectangle?) : Nil
+      key = Cos::Name.new("RD")
+      if fringe
+        @dictionary.set_item(key, fringe.cos_object)
+      else
+        @dictionary.delete(key)
+      end
+    end
+
+    def fringe : Common::PDRectangle?
+      @dictionary.get_array(Cos::Name.new("RD")).try { |array| Common::PDRectangle.new(array) }
+    end
+
+    # Set/get the caret symbol (/Sy): Java maps "paragraph" to "P", anything
+    # else to "None".
+    def symbol=(symbol : String) : String
+      new_symbol = symbol == "paragraph" ? "P" : "None"
+      @dictionary.set_string(Cos::Name.new("Sy"), new_symbol)
+      new_symbol
+    end
+
+    def symbol : String?
+      @dictionary.get_string(Cos::Name.new("Sy"))
+    end
+
+    private def init_fringe(element : XML::Node) : Nil
+      fringe = self.class.attr_value(element, "fringe")
+      return unless fringe
+      values = parse_rectangle_attributes(fringe, "Error: wrong amount of numbers in attribute 'fringe'")
+      array = Cos::Array.new
+      values.each { |value| array.add(Cos::Float.new(value)) }
+      self.fringe = Common::PDRectangle.new(array)
     end
   end
 
