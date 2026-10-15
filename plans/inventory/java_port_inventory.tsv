@@ -6715,10 +6715,10 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/AccessPermission.java:
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/AccessPermission.java::method::AccessPermission.setReadOnly	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/DecryptionMaterial.java::class::DecryptionMaterial	class	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/InvalidPasswordException.java::class::InvalidPasswordException	class	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/MessageDigests.java::class::MessageDigests	class	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/MessageDigests.java::method::MessageDigests.getMD5	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/MessageDigests.java::method::MessageDigests.getSHA1	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/MessageDigests.java::method::MessageDigests.getSHA256	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/MessageDigests.java::class::MessageDigests	class	ported	src/pdfbox/pdmodel/encryption.cr	ported: MessageDigests
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/MessageDigests.java::method::MessageDigests.getMD5	method	ported	src/pdfbox/pdmodel/encryption.cr	ported: MessageDigests
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/MessageDigests.java::method::MessageDigests.getSHA1	method	ported	src/pdfbox/pdmodel/encryption.cr	ported: MessageDigests
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/MessageDigests.java::method::MessageDigests.getSHA256	method	ported	src/pdfbox/pdmodel/encryption.cr	ported: MessageDigests
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/PDCryptFilterDictionary.java::class::PDCryptFilterDictionary	class	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/PDCryptFilterDictionary.java::method::PDCryptFilterDictionary.getCOSObject	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/PDCryptFilterDictionary.java::method::PDCryptFilterDictionary.getCryptFilterMethod	method	ported	src	auto-generated

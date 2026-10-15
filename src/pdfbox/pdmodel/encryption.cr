@@ -14,6 +14,21 @@ module Pdfbox::Pdmodel::Encryption
     end
   end
 
+  # Utility class for creating message digest instances (Java MessageDigests).
+  module MessageDigests
+    def self.get_md5 : Digest::MD5 # ameba:disable Naming/AccessorMethodName
+      Digest::MD5.new
+    end
+
+    def self.get_sha1 : Digest::SHA1 # ameba:disable Naming/AccessorMethodName
+      Digest::SHA1.new
+    end
+
+    def self.get_sha256 : Digest::SHA256 # ameba:disable Naming/AccessorMethodName
+      Digest::SHA256.new
+    end
+  end
+
   # SASLPrep string preparation as per RFC 4013.
   # Ported from Apache PDFBox SaslPrep.java.
   module SaslPrep

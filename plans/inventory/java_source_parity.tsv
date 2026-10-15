@@ -6715,10 +6715,10 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/AccessPermission.java:
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/AccessPermission.java::method::AccessPermission.setReadOnly	ported	src/pdfbox/pdmodel/encryption.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/DecryptionMaterial.java::class::DecryptionMaterial	ported	src/pdfbox/pdmodel/encryption.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/InvalidPasswordException.java::class::InvalidPasswordException	ported	src/pdfbox/pdmodel/encryption.cr	stale inventory; class ported
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/MessageDigests.java::class::MessageDigests	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/MessageDigests.java::method::MessageDigests.getMD5	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/MessageDigests.java::method::MessageDigests.getSHA1	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/MessageDigests.java::method::MessageDigests.getSHA256	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/MessageDigests.java::class::MessageDigests	ported	src/pdfbox/pdmodel/encryption.cr	ported: MessageDigests
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/MessageDigests.java::method::MessageDigests.getMD5	ported	src/pdfbox/pdmodel/encryption.cr	ported: MessageDigests
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/MessageDigests.java::method::MessageDigests.getSHA1	ported	src/pdfbox/pdmodel/encryption.cr	ported: MessageDigests
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/MessageDigests.java::method::MessageDigests.getSHA256	ported	src/pdfbox/pdmodel/encryption.cr	ported: MessageDigests
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/PDCryptFilterDictionary.java::class::PDCryptFilterDictionary	ported	src/pdfbox/pdmodel/encryption.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/PDCryptFilterDictionary.java::method::PDCryptFilterDictionary.getCOSObject	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/PDCryptFilterDictionary.java::method::PDCryptFilterDictionary.getCryptFilterMethod	ported	src/pdfbox/pdmodel/encryption.cr	reconciled: method present
