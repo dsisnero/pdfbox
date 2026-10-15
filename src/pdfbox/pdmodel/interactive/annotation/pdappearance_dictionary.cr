@@ -71,6 +71,24 @@ module Pdfbox::Pdmodel::Interactive::Annotation
       @stream.set_int(Cos::Name.new("FormType"), int_value)
       int_value
     end
+
+    # The transparency group attributes (/Group), or nil.
+    # Java PDAppearanceStream#getGroup.
+    def group : Graphics::Form::PDTransparencyGroupAttributes?
+      dict = @stream.get_dictionary(Cos::Name.new("Group"))
+      dict ? Graphics::Form::PDTransparencyGroupAttributes.new(dict) : nil
+    end
+
+    # Java PDAppearanceStream#setGroup; nil removes the entry.
+    def group=(group : Graphics::Form::PDTransparencyGroupAttributes?) : Graphics::Form::PDTransparencyGroupAttributes?
+      key = Cos::Name.new("Group")
+      if group
+        @stream.set_item(key, group.cos_object)
+      else
+        @stream.delete(key)
+      end
+      group
+    end
   end
 
   class PDAppearanceEntry
