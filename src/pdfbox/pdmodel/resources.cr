@@ -63,6 +63,18 @@ module Pdfbox::Pdmodel
       resource_entry("XObject", name)
     end
 
+    # Tells whether the XObject resource with the given name is an image.
+    # Java PDResources#isImageXObject.
+    def image_x_object?(name : Pdfbox::Cos::Name) : Bool
+      stream = xobject(name).as?(Pdfbox::Cos::Stream)
+      return false unless stream
+      stream.get_name_as_string(Pdfbox::Cos::Name::SUBTYPE) == "Image"
+    end
+
+    def is_image_xobject(name : Pdfbox::Cos::Name) : Bool # ameba:disable Naming/PredicateName
+      image_x_object?(name)
+    end
+
     def pattern(name : Pdfbox::Cos::Name) : Graphics::Pattern::PDAbstractPattern?
       entry = resource_entry("Pattern", name)
       return unless entry

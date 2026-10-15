@@ -5640,7 +5640,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDResources.java::method::PDResou
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDResources.java::method::PDResources.getXObjectNames	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDResources.java::method::PDResources.hasColorSpace	ported	src/pdfbox/pdmodel/resources.cr	ported: PDResources
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDResources.java::method::PDResources.isAllowedCache	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDResources.java::method::PDResources.isImageXObject	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDResources.java::method::PDResources.isImageXObject	ported	src/pdfbox/pdmodel/resources.cr	ported: PDResources isImageXObject
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDResources.java::method::PDResources.put	ported	src/pdfbox/pdmodel/resources.cr	ported: PDResources add/put overloads
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDStructureElementNameTreeNode.java::class::PDStructureElementNameTreeNode	ported	src/pdfbox/pdmodel/common/pdstructure_element_name_tree_node.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDStructureElementNameTreeNode.java::method::PDStructureElementNameTreeNode.convertCOSToPD	ported	src/pdfbox/pdmodel/common/pdstructure_element_name_tree_node.cr	reconciled: method present
