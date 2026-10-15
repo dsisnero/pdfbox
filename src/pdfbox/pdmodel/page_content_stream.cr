@@ -21,6 +21,8 @@ module Pdfbox::Pdmodel
     @current_font : Font::PDFont?
     @in_text_mode = false
     @gsub_workers = {} of Font::PDType0Font => Fontbox::TTF::Gsub::GsubWorker
+    @stroking_color_space_stack = [] of Graphics::Color::PDColorSpace
+    @non_stroking_color_space_stack = [] of Graphics::Color::PDColorSpace
 
     def initialize(@document : Document, @page : Page)
       @append_mode = AppendMode::OVERWRITE
@@ -225,6 +227,7 @@ module Pdfbox::Pdmodel
       validate_color_component(gray, "g")
       write_operands(gray)
       write_operator(NON_STROKING_GRAY)
+      set_non_stroking_color_space_stack(Graphics::Color::PDDeviceGray::INSTANCE)
     end
 
     def non_stroking_color(r : Number, g : Number, b : Number) : Nil
@@ -233,6 +236,7 @@ module Pdfbox::Pdmodel
       validate_color_component(b, "b")
       write_operands(r, g, b)
       write_operator(NON_STROKING_RGB)
+      set_non_stroking_color_space_stack(Graphics::Color::PDDeviceRGB::INSTANCE)
     end
 
     def non_stroking_color(c : Number, m : Number, y : Number, k : Number) : Nil
@@ -242,12 +246,14 @@ module Pdfbox::Pdmodel
       validate_color_component(k, "k")
       write_operands(c, m, y, k)
       write_operator(NON_STROKING_CMYK)
+      set_non_stroking_color_space_stack(Graphics::Color::PDDeviceCMYK::INSTANCE)
     end
 
     def stroking_color(gray : Number) : Nil
       validate_color_component(gray, "g")
       write_operands(gray)
       write_operator(STROKING_COLOR_GRAY)
+      set_stroking_color_space_stack(Graphics::Color::PDDeviceGray::INSTANCE)
     end
 
     def stroking_color(r : Number, g : Number, b : Number) : Nil
@@ -256,6 +262,7 @@ module Pdfbox::Pdmodel
       validate_color_component(b, "b")
       write_operands(r, g, b)
       write_operator(STROKING_COLOR_RGB)
+      set_stroking_color_space_stack(Graphics::Color::PDDeviceRGB::INSTANCE)
     end
 
     def stroking_color(c : Number, m : Number, y : Number, k : Number) : Nil
@@ -265,6 +272,57 @@ module Pdfbox::Pdmodel
       validate_color_component(k, "k")
       write_operands(c, m, y, k)
       write_operator(STROKING_COLOR_CMYK)
+      set_stroking_color_space_stack(Graphics::Color::PDDeviceCMYK::INSTANCE)
+    end
+
+    # Sets the stroking color and, if necessary, its color space.
+    # Java PDAbstractContentStream#setStrokingColor(PDColor).
+    def stroking_color(color : Graphics::Color::PDColor) : Nil
+      color_space = color.color_space
+      return unless color_space
+
+      if @stroking_color_space_stack.empty? || @stroking_color_space_stack.last != color_space
+        write_name_operand(color_space_name(color_space))
+        write_operator(STROKING_COLORSPACE)
+        set_stroking_color_space_stack(color_space)
+      end
+      color.components.each { |value| write_operands(value) }
+      if color_space.is_a?(Graphics::Color::PDPattern)
+        color.pattern_name.try { |name| write_name_operand(name) }
+      end
+      if color_space.is_a?(Graphics::Color::PDPattern) ||
+         color_space.is_a?(Graphics::Color::PDSeparation) ||
+         color_space.is_a?(Graphics::Color::PDDeviceN) ||
+         color_space.is_a?(Graphics::Color::PDICCBased)
+        write_operator(STROKING_COLOR_N)
+      else
+        write_operator(STROKING_COLOR)
+      end
+    end
+
+    # Sets the non-stroking color and, if necessary, its color space.
+    # Java PDAbstractContentStream#setNonStrokingColor(PDColor).
+    def non_stroking_color(color : Graphics::Color::PDColor) : Nil
+      color_space = color.color_space
+      return unless color_space
+
+      if @non_stroking_color_space_stack.empty? || @non_stroking_color_space_stack.last != color_space
+        write_name_operand(color_space_name(color_space))
+        write_operator(NON_STROKING_COLORSPACE)
+        set_non_stroking_color_space_stack(color_space)
+      end
+      color.components.each { |value| write_operands(value) }
+      if color_space.is_a?(Graphics::Color::PDPattern)
+        color.pattern_name.try { |name| write_name_operand(name) }
+      end
+      if color_space.is_a?(Graphics::Color::PDPattern) ||
+         color_space.is_a?(Graphics::Color::PDSeparation) ||
+         color_space.is_a?(Graphics::Color::PDDeviceN) ||
+         color_space.is_a?(Graphics::Color::PDICCBased)
+        write_operator(NON_STROKING_COLOR_N)
+      else
+        write_operator(NON_STROKING_COLOR)
+      end
     end
 
     def draw_image(image : Graphics::Image::PDImageXObject, x : Number, y : Number, width : Number, height : Number) : Nil
@@ -464,11 +522,15 @@ module Pdfbox::Pdmodel
 
     def save_graphics_state : Nil
       raise_if_in_text_mode("saveGraphicsState is not allowed within a text block.")
+      @stroking_color_space_stack << @stroking_color_space_stack.last unless @stroking_color_space_stack.empty?
+      @non_stroking_color_space_stack << @non_stroking_color_space_stack.last unless @non_stroking_color_space_stack.empty?
       write_operator(SAVE)
     end
 
     def restore_graphics_state : Nil
       raise_if_in_text_mode("restoreGraphicsState is not allowed within a text block.")
+      @stroking_color_space_stack.pop unless @stroking_color_space_stack.empty?
+      @non_stroking_color_space_stack.pop unless @non_stroking_color_space_stack.empty?
       write_operator(RESTORE)
     end
 
@@ -525,6 +587,50 @@ module Pdfbox::Pdmodel
 
     private def write_operator(name : String) : Nil
       @buffer << name << '\n'
+    end
+
+    # Writes a COSName operand (e.g. a color space name) as "/Name ".
+    private def write_name_operand(name : Cos::Name) : Nil
+      @buffer << '/' << name.value << ' '
+    end
+
+    # Java PDAbstractContentStream#setStrokingColorSpaceStack.
+    private def set_stroking_color_space_stack(space : Graphics::Color::PDColorSpace) : Nil
+      if @stroking_color_space_stack.empty?
+        @stroking_color_space_stack << space
+      else
+        @stroking_color_space_stack.pop
+        @stroking_color_space_stack << space
+      end
+    end
+
+    # Java PDAbstractContentStream#setNonStrokingColorSpaceStack.
+    private def set_non_stroking_color_space_stack(space : Graphics::Color::PDColorSpace) : Nil
+      if @non_stroking_color_space_stack.empty?
+        @non_stroking_color_space_stack << space
+      else
+        @non_stroking_color_space_stack.pop
+        @non_stroking_color_space_stack << space
+      end
+    end
+
+    # Java PDAbstractContentStream#getName(PDColorSpace): device color spaces
+    # use their name, others are added to the page resources.
+    private def color_space_name(color_space : Graphics::Color::PDColorSpace) : Cos::Name
+      if color_space.is_a?(Graphics::Color::PDDeviceGray) ||
+         color_space.is_a?(Graphics::Color::PDDeviceRGB) ||
+         color_space.is_a?(Graphics::Color::PDDeviceCMYK)
+        Cos::Name.new(color_space.name)
+      else
+        Cos::Name.new(add_color_space_to_resources(color_space))
+      end
+    end
+
+    private def add_color_space_to_resources(color_space : Graphics::Color::PDColorSpace) : String
+      color_spaces = ensure_resource_subdictionary("ColorSpace")
+      resource_name = "cs#{color_spaces.size + 1}"
+      color_spaces[Cos::Name.new(resource_name)] = color_space.cos_object
+      resource_name
     end
 
     # Appends raw command bytes/text directly (Java PDPageContentStream#appendRawCommands).

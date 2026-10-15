@@ -5353,7 +5353,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::met
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.fillAndStroke	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.fillAndStrokeEvenOdd	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.fillEvenOdd	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.getName	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.getName	method	ported	src/pdfbox/pdmodel/page_content_stream.cr	ported: PDPageContentStream PDColor setters
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.isOutside255Interval	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.isOutsideOneInterval	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.lineTo	method	ported	src/pdfbox/pdmodel/page_content_stream.cr	auto-generated
@@ -5375,11 +5375,11 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::met
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.setMarkedContentPointWithProperties	method	ported	src/pdfbox/pdmodel/page_content_stream.cr	ported: PDPageContentStream text state + MC points + comment
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.setMaximumFractionDigits	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.setMiterLimit	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.setNonStrokingColor	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.setNonStrokingColorSpaceStack	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.setNonStrokingColor	method	ported	src/pdfbox/pdmodel/page_content_stream.cr	ported: PDPageContentStream PDColor setters
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.setNonStrokingColorSpaceStack	method	ported	src/pdfbox/pdmodel/page_content_stream.cr	ported: PDPageContentStream PDColor setters
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.setRenderingMode	method	ported	src/pdfbox/pdmodel/page_content_stream.cr	ported: PDPageContentStream text state + MC points + comment
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.setStrokingColor	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.setStrokingColorSpaceStack	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.setStrokingColor	method	ported	src/pdfbox/pdmodel/page_content_stream.cr	ported: PDPageContentStream PDColor setters
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.setStrokingColorSpaceStack	method	ported	src/pdfbox/pdmodel/page_content_stream.cr	ported: PDPageContentStream PDColor setters
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.setTextMatrix	method	ported	src/pdfbox/pdmodel/page_content_stream.cr	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.setTextRise	method	ported	src/pdfbox/pdmodel/page_content_stream.cr	ported: PDPageContentStream text state + MC points + comment
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.setWordSpacing	method	ported	src/pdfbox/pdmodel/page_content_stream.cr	ported: PDPageContentStream text state + MC points + comment
