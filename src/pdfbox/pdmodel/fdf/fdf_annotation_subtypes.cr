@@ -281,8 +281,32 @@ module Pdfbox::Pdmodel::Fdf
       end
       self.line = parse_rectangle_attributes("#{start_coords},#{end_coords}",
         "Error: wrong amount of line coordinates")
+
+      if leader_length = self.class.attr_value(element, "leaderLength")
+        self.leader_length = leader_length.to_f64
+      end
+      if leader_extend = self.class.attr_value(element, "leaderExtend")
+        self.leader_extend = leader_extend.to_f64
+      end
+      if leader_offset = self.class.attr_value(element, "leaderOffset")
+        self.leader_offset = leader_offset.to_f64
+      end
+
       apply_ending_styles(element)
       apply_interior_color(element)
+
+      if element["caption"]? == "yes"
+        self.caption = true
+        if caption_h = self.class.attr_value(element, "caption-offset-h")
+          self.caption_horizontal_offset = caption_h.to_f64
+        end
+        if caption_v = self.class.attr_value(element, "caption-offset-v")
+          self.caption_vertical_offset = caption_v.to_f64
+        end
+        if caption_style = self.class.attr_value(element, "caption-style")
+          self.caption_style = caption_style
+        end
+      end
     end
 
     # Set/get the start and end coordinates of the line (Java setLine/getLine).
@@ -294,6 +318,101 @@ module Pdfbox::Pdmodel::Fdf
 
     def line : Array(Float64)?
       @dictionary.get_array(Cos::Name.new("L")).try(&.to_float_array)
+    end
+
+    # Whether the contents are shown as a caption (Java getCaption/setCaption).
+    def caption? : Bool
+      @dictionary.get_dictionary_object(Cos::Name.new("Cap")).as?(Cos::Boolean).try(&.value) || false
+    end
+
+    def caption=(caption : Bool) : Bool
+      @dictionary.set_boolean(Cos::Name.new("Cap"), caption)
+      caption
+    end
+
+    # Leader line length / extension / offset (Java get/setLeaderLength/Extend/Offset).
+    def leader_length : Float64
+      @dictionary.get_float(Cos::Name.new("LL"), 0.0_f64)
+    end
+
+    def leader_length=(value : Float64) : Float64
+      @dictionary.set_float(Cos::Name.new("LL"), value)
+      value
+    end
+
+    def leader_extend : Float64
+      @dictionary.get_float(Cos::Name.new("LLE"), 0.0_f64)
+    end
+
+    def leader_extend=(value : Float64) : Float64
+      @dictionary.set_float(Cos::Name.new("LLE"), value)
+      value
+    end
+
+    def leader_offset : Float64
+      @dictionary.get_float(Cos::Name.new("LLO"), 0.0_f64)
+    end
+
+    def leader_offset=(value : Float64) : Float64
+      @dictionary.set_float(Cos::Name.new("LLO"), value)
+      value
+    end
+
+    # Caption positioning ("Inline"/"Top") (Java get/setCaptionStyle).
+    def caption_style : String?
+      @dictionary.get_string(Cos::Name.new("CP"))
+    end
+
+    def caption_style=(value : String?) : String?
+      key = Cos::Name.new("CP")
+      if value
+        @dictionary.set_string(key, value)
+      else
+        @dictionary.delete(key)
+      end
+      value
+    end
+
+    # Caption horizontal offset (/CO[0]) (Java get/setCaptionHorizontalOffset).
+    def caption_horizontal_offset : Float64
+      array = @dictionary.get_array(Cos::Name.new("CO"))
+      return 0.0_f64 unless array
+      array.to_float_array[0]? || 0.0_f64
+    end
+
+    def caption_horizontal_offset=(offset : Float64) : Float64
+      key = Cos::Name.new("CO")
+      array = @dictionary.get_array(key)
+      if array
+        array[0] = Cos::Float.new(offset)
+      else
+        array = Cos::Array.new
+        array.add(Cos::Float.new(offset))
+        array.add(Cos::Float.new(0.0))
+        @dictionary.set_item(key, array)
+      end
+      offset
+    end
+
+    # Caption vertical offset (/CO[1]) (Java get/setCaptionVerticalOffset).
+    def caption_vertical_offset : Float64
+      array = @dictionary.get_array(Cos::Name.new("CO"))
+      return 0.0_f64 unless array
+      array.to_float_array[1]? || 0.0_f64
+    end
+
+    def caption_vertical_offset=(offset : Float64) : Float64
+      key = Cos::Name.new("CO")
+      array = @dictionary.get_array(key)
+      if array
+        array[1] = Cos::Float.new(offset)
+      else
+        array = Cos::Array.new
+        array.add(Cos::Float.new(0.0))
+        array.add(Cos::Float.new(offset))
+        @dictionary.set_item(key, array)
+      end
+      offset
     end
   end
 
