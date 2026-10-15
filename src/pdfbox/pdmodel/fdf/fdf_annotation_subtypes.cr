@@ -270,6 +270,30 @@ module Pdfbox::Pdmodel::Fdf
       super()
       @dictionary.set_name(Cos::Name::SUBTYPE, SUBTYPE)
       init_from_element(element)
+
+      start_coords = self.class.attr_value(element, "start")
+      if start_coords.nil?
+        raise ::IO::Error.new("Error: missing attribute 'start'")
+      end
+      end_coords = self.class.attr_value(element, "end")
+      if end_coords.nil?
+        raise ::IO::Error.new("Error: missing attribute 'end'")
+      end
+      self.line = parse_rectangle_attributes("#{start_coords},#{end_coords}",
+        "Error: wrong amount of line coordinates")
+      apply_ending_styles(element)
+      apply_interior_color(element)
+    end
+
+    # Set/get the start and end coordinates of the line (Java setLine/getLine).
+    def line=(line : Enumerable(Float64)) : Nil
+      array = Cos::Array.new
+      line.each { |value| array.add(Cos::Float.new(value)) }
+      @dictionary.set_item(Cos::Name.new("L"), array)
+    end
+
+    def line : Array(Float64)?
+      @dictionary.get_array(Cos::Name.new("L")).try(&.to_float_array)
     end
   end
 
@@ -347,6 +371,7 @@ module Pdfbox::Pdmodel::Fdf
       @dictionary.set_name(Cos::Name::SUBTYPE, SUBTYPE)
       init_from_element(element)
       init_vertices(element)
+      apply_interior_color(element)
     end
 
     # Set the coordinates of the vertices (Java setVertices).
@@ -388,6 +413,8 @@ module Pdfbox::Pdmodel::Fdf
       @dictionary.set_name(Cos::Name::SUBTYPE, SUBTYPE)
       init_from_element(element)
       init_vertices(element)
+      apply_ending_styles(element)
+      apply_interior_color(element)
     end
 
     # Set the coordinates of the vertices (Java setVertices).

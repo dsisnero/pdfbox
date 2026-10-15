@@ -7044,47 +7044,47 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationLine.java::metho
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationLine.java::method::FDFAnnotationLine.getCaptionHorizontalOffset	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationLine.java::method::FDFAnnotationLine.getCaptionStyle	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationLine.java::method::FDFAnnotationLine.getCaptionVerticalOffset	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationLine.java::method::FDFAnnotationLine.getEndPointEndingStyle	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationLine.java::method::FDFAnnotationLine.getInteriorColor	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationLine.java::method::FDFAnnotationLine.getEndPointEndingStyle	ported	src/pdfbox/pdmodel/fdf/fdf_annotation.cr	ported: FDF line/polygon/polyline styling
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationLine.java::method::FDFAnnotationLine.getInteriorColor	ported	src/pdfbox/pdmodel/fdf/fdf_annotation.cr	ported: FDF line/polygon/polyline styling
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationLine.java::method::FDFAnnotationLine.getLeaderExtend	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationLine.java::method::FDFAnnotationLine.getLeaderLength	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationLine.java::method::FDFAnnotationLine.getLeaderOffset	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationLine.java::method::FDFAnnotationLine.getLine	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationLine.java::method::FDFAnnotationLine.getStartPointEndingStyle	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationLine.java::method::FDFAnnotationLine.getLine	ported	src/pdfbox/pdmodel/fdf/fdf_annotation_subtypes.cr	ported: FDF line/polygon/polyline styling
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationLine.java::method::FDFAnnotationLine.getStartPointEndingStyle	ported	src/pdfbox/pdmodel/fdf/fdf_annotation.cr	ported: FDF line/polygon/polyline styling
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationLine.java::method::FDFAnnotationLine.setCaption	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationLine.java::method::FDFAnnotationLine.setCaptionHorizontalOffset	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationLine.java::method::FDFAnnotationLine.setCaptionStyle	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationLine.java::method::FDFAnnotationLine.setCaptionVerticalOffset	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationLine.java::method::FDFAnnotationLine.setEndPointEndingStyle	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationLine.java::method::FDFAnnotationLine.setInteriorColor	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationLine.java::method::FDFAnnotationLine.setEndPointEndingStyle	ported	src/pdfbox/pdmodel/fdf/fdf_annotation.cr	ported: FDF line/polygon/polyline styling
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationLine.java::method::FDFAnnotationLine.setInteriorColor	ported	src/pdfbox/pdmodel/fdf/fdf_annotation.cr	ported: FDF line/polygon/polyline styling
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationLine.java::method::FDFAnnotationLine.setLeaderExtend	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationLine.java::method::FDFAnnotationLine.setLeaderLength	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationLine.java::method::FDFAnnotationLine.setLeaderOffset	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationLine.java::method::FDFAnnotationLine.setLine	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationLine.java::method::FDFAnnotationLine.setStartPointEndingStyle	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationLine.java::method::FDFAnnotationLine.setLine	ported	src/pdfbox/pdmodel/fdf/fdf_annotation_subtypes.cr	ported: FDF line/polygon/polyline styling
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationLine.java::method::FDFAnnotationLine.setStartPointEndingStyle	ported	src/pdfbox/pdmodel/fdf/fdf_annotation.cr	ported: FDF line/polygon/polyline styling
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationLink.java::class::FDFAnnotationLink	ported	src/pdfbox/pdmodel/fdf/fdf_annotation_subtypes.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationLink.java::const::LOG	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationLink.java::const::SUBTYPE	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationPolygon.java::class::FDFAnnotationPolygon	ported	src/pdfbox/pdmodel/fdf/fdf_annotation_subtypes.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationPolygon.java::const::LOG	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationPolygon.java::const::SUBTYPE	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationPolygon.java::method::FDFAnnotationPolygon.getInteriorColor	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationPolygon.java::method::FDFAnnotationPolygon.getInteriorColor	ported	src/pdfbox/pdmodel/fdf/fdf_annotation.cr	ported: FDF line/polygon/polyline styling
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationPolygon.java::method::FDFAnnotationPolygon.getVertices	ported	src/pdfbox/pdmodel/fdf/fdf_annotation_subtypes.cr	ported: FDF ink/polygon/polyline geometry
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationPolygon.java::method::FDFAnnotationPolygon.initVertices	ported	src/pdfbox/pdmodel/fdf/fdf_annotation_subtypes.cr	ported: FDF ink/polygon/polyline geometry
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationPolygon.java::method::FDFAnnotationPolygon.setInteriorColor	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationPolygon.java::method::FDFAnnotationPolygon.setInteriorColor	ported	src/pdfbox/pdmodel/fdf/fdf_annotation.cr	ported: FDF line/polygon/polyline styling
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationPolygon.java::method::FDFAnnotationPolygon.setVertices	ported	src/pdfbox/pdmodel/fdf/fdf_annotation_subtypes.cr	ported: FDF ink/polygon/polyline geometry
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationPolyline.java::class::FDFAnnotationPolyline	ported	src/pdfbox/pdmodel/fdf/fdf_annotation_subtypes.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationPolyline.java::const::LOG	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationPolyline.java::const::SUBTYPE	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationPolyline.java::method::FDFAnnotationPolyline.getEndPointEndingStyle	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationPolyline.java::method::FDFAnnotationPolyline.getInteriorColor	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationPolyline.java::method::FDFAnnotationPolyline.getStartPointEndingStyle	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationPolyline.java::method::FDFAnnotationPolyline.getEndPointEndingStyle	ported	src/pdfbox/pdmodel/fdf/fdf_annotation.cr	ported: FDF line/polygon/polyline styling
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationPolyline.java::method::FDFAnnotationPolyline.getInteriorColor	ported	src/pdfbox/pdmodel/fdf/fdf_annotation.cr	ported: FDF line/polygon/polyline styling
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationPolyline.java::method::FDFAnnotationPolyline.getStartPointEndingStyle	ported	src/pdfbox/pdmodel/fdf/fdf_annotation.cr	ported: FDF line/polygon/polyline styling
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationPolyline.java::method::FDFAnnotationPolyline.getVertices	ported	src/pdfbox/pdmodel/fdf/fdf_annotation_subtypes.cr	ported: FDF ink/polygon/polyline geometry
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationPolyline.java::method::FDFAnnotationPolyline.initStyles	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationPolyline.java::method::FDFAnnotationPolyline.initVertices	ported	src/pdfbox/pdmodel/fdf/fdf_annotation_subtypes.cr	ported: FDF ink/polygon/polyline geometry
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationPolyline.java::method::FDFAnnotationPolyline.setEndPointEndingStyle	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationPolyline.java::method::FDFAnnotationPolyline.setInteriorColor	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationPolyline.java::method::FDFAnnotationPolyline.setStartPointEndingStyle	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationPolyline.java::method::FDFAnnotationPolyline.setEndPointEndingStyle	ported	src/pdfbox/pdmodel/fdf/fdf_annotation.cr	ported: FDF line/polygon/polyline styling
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationPolyline.java::method::FDFAnnotationPolyline.setInteriorColor	ported	src/pdfbox/pdmodel/fdf/fdf_annotation.cr	ported: FDF line/polygon/polyline styling
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationPolyline.java::method::FDFAnnotationPolyline.setStartPointEndingStyle	ported	src/pdfbox/pdmodel/fdf/fdf_annotation.cr	ported: FDF line/polygon/polyline styling
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationPolyline.java::method::FDFAnnotationPolyline.setVertices	ported	src/pdfbox/pdmodel/fdf/fdf_annotation_subtypes.cr	ported: FDF ink/polygon/polyline geometry
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationSound.java::class::FDFAnnotationSound	ported	src/pdfbox/pdmodel/fdf/fdf_annotation_subtypes.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationSound.java::const::SUBTYPE	missing	-	baseline

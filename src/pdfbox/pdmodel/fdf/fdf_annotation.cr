@@ -484,6 +484,100 @@ module Pdfbox::Pdmodel::Fdf
       tokens.map(&.to_f64)
     end
 
+    # Java FDFAnnotation#parseRectangleAttributes: split on ',' and require 4 numbers.
+    protected def parse_rectangle_attributes(rect : String, error_message : String) : Array(Float64)
+      values = rect.split(',')
+      raise ::IO::Error.new(error_message) if values.size != 4
+      values.map(&.to_f64)
+    end
+
+    # Line ending styles (/LE) — Java FDFAnnotationLine / FDFAnnotationPolyline.
+    def start_point_ending_style : String
+      ending_style_at(0)
+    end
+
+    def start_point_ending_style=(style : String?) : String
+      set_ending_style(0, style || Interactive::Annotation::PDAnnotationLine::LE_NONE)
+    end
+
+    def end_point_ending_style : String
+      ending_style_at(1)
+    end
+
+    def end_point_ending_style=(style : String?) : String
+      set_ending_style(1, style || Interactive::Annotation::PDAnnotationLine::LE_NONE)
+    end
+
+    # Interior color (/IC) as RGB floats — Java getInteriorColor/setInteriorColor.
+    def interior_color : Array(Float32)?
+      color_rgb_for(Cos::Name.new("IC"))
+    end
+
+    def interior_color=(rgb : Enumerable(Float32)?) : Nil
+      key = Cos::Name.new("IC")
+      if rgb
+        set_color_rgb_for(key, rgb)
+      else
+        @dictionary.delete(key)
+      end
+    end
+
+    private def ending_style_at(index : Int32) : String
+      none = Interactive::Annotation::PDAnnotationLine::LE_NONE
+      array = @dictionary.get_array(Cos::Name.new("LE"))
+      return none unless array && array.size >= 2
+      array.get_name(index, none) || none
+    end
+
+    private def set_ending_style(index : Int32, value : String) : String
+      none = Interactive::Annotation::PDAnnotationLine::LE_NONE
+      array = @dictionary.get_array(Cos::Name.new("LE")) || Cos::Array.new
+      array.grow_to_size(2, Cos::Name.new(none))
+      array.set_name(index, value)
+      @dictionary.set_item(Cos::Name.new("LE"), array)
+      value
+    end
+
+    protected def color_rgb_for(key : Cos::Name) : Array(Float32)?
+      array = @dictionary.get_array(key)
+      return unless array
+      values = array.to_float_array.map(&.to_f32)
+      values.size >= 3 ? values[0, 3] : nil
+    end
+
+    protected def set_color_rgb_for(key : Cos::Name, rgb : Enumerable(Float32)) : Nil
+      array = Cos::Array.new
+      rgb.each { |value| array.add(Cos::Float.new(value.to_f64)) }
+      @dictionary.set_item(key, array)
+    end
+
+    protected def self.rgb_floats_from_hex(hex : String) : Array(Float32)
+      value = hex.to_i(16)
+      [
+        ((value >> 16) & 0xFF).to_f32 / 255.0_f32,
+        ((value >> 8) & 0xFF).to_f32 / 255.0_f32,
+        (value & 0xFF).to_f32 / 255.0_f32,
+      ]
+    end
+
+    # XFDF head/tail attributes -> /LE (Java initStyles).
+    protected def apply_ending_styles(element : XML::Node) : Nil
+      if head = self.class.attr_value(element, "head")
+        self.start_point_ending_style = head
+      end
+      if tail = self.class.attr_value(element, "tail")
+        self.end_point_ending_style = tail
+      end
+    end
+
+    # XFDF interior-color="#RRGGBB" -> /IC (Java initStyles).
+    protected def apply_interior_color(element : XML::Node) : Nil
+      color = element["interior-color"]?
+      if color && color.size == 7 && color.starts_with?('#')
+        self.interior_color = self.class.rgb_floats_from_hex(color[1, 6])
+      end
+    end
+
     protected def self.first_element_child(node : XML::Node, name : String) : XML::Node?
       node.children.find { |child| child.element? && child.name == name }
     end
