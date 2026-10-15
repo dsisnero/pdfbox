@@ -6789,11 +6789,11 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/PublicKeyDecryptionMat
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/PublicKeyDecryptionMaterial.java::method::PublicKeyDecryptionMaterial.getPrivateKey	ported	src/pdfbox/pdmodel/encryption.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/PublicKeyProtectionPolicy.java::class::PublicKeyProtectionPolicy	ported	src/pdfbox/pdmodel/encryption.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/PublicKeyProtectionPolicy.java::method::PublicKeyProtectionPolicy.addRecipient	ported	src/pdfbox/pdmodel/encryption.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/PublicKeyProtectionPolicy.java::method::PublicKeyProtectionPolicy.getDecryptionCertificate	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/PublicKeyProtectionPolicy.java::method::PublicKeyProtectionPolicy.getDecryptionCertificate	ported	src/pdfbox/pdmodel/encryption.cr	ported: PublicKeyProtectionPolicy recipients/cert
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/PublicKeyProtectionPolicy.java::method::PublicKeyProtectionPolicy.getNumberOfRecipients	ported	src/pdfbox/pdmodel/encryption.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/PublicKeyProtectionPolicy.java::method::PublicKeyProtectionPolicy.getRecipientsIterator	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/PublicKeyProtectionPolicy.java::method::PublicKeyProtectionPolicy.removeRecipient	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/PublicKeyProtectionPolicy.java::method::PublicKeyProtectionPolicy.setDecryptionCertificate	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/PublicKeyProtectionPolicy.java::method::PublicKeyProtectionPolicy.getRecipientsIterator	ported	src/pdfbox/pdmodel/encryption.cr	ported: PublicKeyProtectionPolicy recipients/cert
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/PublicKeyProtectionPolicy.java::method::PublicKeyProtectionPolicy.removeRecipient	ported	src/pdfbox/pdmodel/encryption.cr	ported: PublicKeyProtectionPolicy recipients/cert
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/PublicKeyProtectionPolicy.java::method::PublicKeyProtectionPolicy.setDecryptionCertificate	ported	src/pdfbox/pdmodel/encryption.cr	ported: PublicKeyProtectionPolicy recipients/cert
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/PublicKeyRecipient.java::class::PublicKeyRecipient	ported	src/pdfbox/pdmodel/encryption.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/PublicKeyRecipient.java::method::PublicKeyRecipient.getPermission	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/PublicKeyRecipient.java::method::PublicKeyRecipient.getX509	missing	-	baseline

@@ -382,6 +382,7 @@ module Pdfbox::Pdmodel::Encryption
     property encryption_key_length : Int32 = 128
     property? encrypt_metadata : Bool = true
     property recipients = [] of PublicKeyRecipient
+    property decryption_certificate : OpenSSL::X509::Certificate?
 
     def number_of_recipients : Int32
       @recipients.size
@@ -389,6 +390,22 @@ module Pdfbox::Pdmodel::Encryption
 
     def add_recipient(recipient : PublicKeyRecipient) : Nil
       @recipients << recipient
+    end
+
+    # Java PublicKeyProtectionPolicy#removeRecipient: removes by identity (the
+    # List.remove semantics, since PublicKeyRecipient has no equals).
+    def remove_recipient(recipient : PublicKeyRecipient) : Bool
+      if index = @recipients.index(&.same?(recipient))
+        @recipients.delete_at(index)
+        true
+      else
+        false
+      end
+    end
+
+    # Java PublicKeyProtectionPolicy#getRecipientsIterator.
+    def recipients_iterator : Iterator(PublicKeyRecipient)
+      @recipients.each
     end
   end
 

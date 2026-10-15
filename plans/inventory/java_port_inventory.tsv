@@ -6789,11 +6789,11 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/PublicKeyDecryptionMat
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/PublicKeyDecryptionMaterial.java::method::PublicKeyDecryptionMaterial.getPrivateKey	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/PublicKeyProtectionPolicy.java::class::PublicKeyProtectionPolicy	class	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/PublicKeyProtectionPolicy.java::method::PublicKeyProtectionPolicy.addRecipient	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/PublicKeyProtectionPolicy.java::method::PublicKeyProtectionPolicy.getDecryptionCertificate	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/PublicKeyProtectionPolicy.java::method::PublicKeyProtectionPolicy.getDecryptionCertificate	method	ported	src/pdfbox/pdmodel/encryption.cr	ported: PublicKeyProtectionPolicy recipients/cert
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/PublicKeyProtectionPolicy.java::method::PublicKeyProtectionPolicy.getNumberOfRecipients	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/PublicKeyProtectionPolicy.java::method::PublicKeyProtectionPolicy.getRecipientsIterator	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/PublicKeyProtectionPolicy.java::method::PublicKeyProtectionPolicy.removeRecipient	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/PublicKeyProtectionPolicy.java::method::PublicKeyProtectionPolicy.setDecryptionCertificate	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/PublicKeyProtectionPolicy.java::method::PublicKeyProtectionPolicy.getRecipientsIterator	method	ported	src/pdfbox/pdmodel/encryption.cr	ported: PublicKeyProtectionPolicy recipients/cert
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/PublicKeyProtectionPolicy.java::method::PublicKeyProtectionPolicy.removeRecipient	method	ported	src/pdfbox/pdmodel/encryption.cr	ported: PublicKeyProtectionPolicy recipients/cert
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/PublicKeyProtectionPolicy.java::method::PublicKeyProtectionPolicy.setDecryptionCertificate	method	ported	src/pdfbox/pdmodel/encryption.cr	ported: PublicKeyProtectionPolicy recipients/cert
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/PublicKeyRecipient.java::class::PublicKeyRecipient	class	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/PublicKeyRecipient.java::method::PublicKeyRecipient.getPermission	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/PublicKeyRecipient.java::method::PublicKeyRecipient.getX509	method	partial	src	auto-generated
