@@ -5385,8 +5385,8 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::met
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.setWordSpacing	ported	src/pdfbox/pdmodel/page_content_stream.cr	ported: PDPageContentStream text state + MC points + comment
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.shadingFill	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.showText	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.showTextInternal	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.showTextWithPositioning	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.showTextInternal	ported	src/pdfbox/pdmodel/page_content_stream.cr	ported: PDPageContentStream showTextWithPositioning
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.showTextWithPositioning	ported	src/pdfbox/pdmodel/page_content_stream.cr	ported: PDPageContentStream showTextWithPositioning
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.stroke	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.transform	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.write	missing	-	baseline

@@ -5385,8 +5385,8 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::met
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.setWordSpacing	method	ported	src/pdfbox/pdmodel/page_content_stream.cr	ported: PDPageContentStream text state + MC points + comment
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.shadingFill	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.showText	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.showTextInternal	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.showTextWithPositioning	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.showTextInternal	method	ported	src/pdfbox/pdmodel/page_content_stream.cr	ported: PDPageContentStream showTextWithPositioning
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.showTextWithPositioning	method	ported	src/pdfbox/pdmodel/page_content_stream.cr	ported: PDPageContentStream showTextWithPositioning
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.stroke	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.transform	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.write	method	missing	-	auto-generated

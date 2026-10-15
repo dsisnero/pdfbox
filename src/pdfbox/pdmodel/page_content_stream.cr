@@ -179,6 +179,31 @@ module Pdfbox::Pdmodel
     end
 
     def show_text(text : String) : Nil
+      show_text_internal(text)
+      @buffer << ' ' << SHOW_TEXT << '\n'
+    end
+
+    # Shows text with interspersed positioning (TJ). Java
+    # PDAbstractContentStream#showTextWithPositioning: the array consists of
+    # String and Float elements only.
+    def show_text_with_positioning(items : Enumerable) : Nil
+      @buffer << '['
+      items.each do |item|
+        case item
+        when String
+          show_text_internal(item)
+        when Float32, Float64
+          write_operands(item)
+        else
+          raise ArgumentError.new("Argument must consist of array of Float and String types")
+        end
+      end
+      @buffer << "] " << SHOW_TEXT_ADJUSTED << '\n'
+    end
+
+    # Writes the encoded glyph string "(...)" without a trailing operator.
+    # Java PDAbstractContentStream#showTextInternal.
+    private def show_text_internal(text : String) : Nil
       font = get_current_font
       @buffer << '('
       if font
@@ -193,7 +218,7 @@ module Pdfbox::Pdmodel
       else
         write_pdf_literal_string(text.to_slice)
       end
-      @buffer << ") " << SHOW_TEXT << '\n'
+      @buffer << ')'
     end
 
     def non_stroking_color(gray : Number) : Nil
