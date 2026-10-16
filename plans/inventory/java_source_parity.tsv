@@ -5552,7 +5552,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getCo
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getContentsForRandomAccess	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getContentsForStreamParsing	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getCropBox	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getIndirectResourceObjects	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getIndirectResourceObjects	ported	src/pdfbox/pdmodel/page.cr	ported: PDPage removePageResourceFromCache
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getMatrix	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getMediaBox	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getMetadata	missing	-	baseline
@@ -5567,8 +5567,8 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getUs
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getViewports	ported	src/pdfbox/pdmodel/page.cr	ported: PDPage user unit + viewports
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.hasContents	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.hashCode	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.removePageResourceFromCache	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.removeResources	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.removePageResourceFromCache	ported	src/pdfbox/pdmodel/page.cr	ported: PDPage removePageResourceFromCache
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.removeResources	ported	src/pdfbox/pdmodel/page.cr	ported: PDPage removePageResourceFromCache
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.setActions	ported	src/pdfbox/pdmodel/page.cr	PDPage bleed/trim/art boxes + page additional actions
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.setAnnotations	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.setArtBox	ported	src/pdfbox/pdmodel/page.cr	PDPage bleed/trim/art boxes + page additional actions

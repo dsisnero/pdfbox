@@ -10,6 +10,7 @@ module Pdfbox::Pdmodel
   # PDF page class
   class Page
     @cos_page : Cos::Dictionary?
+    property resource_cache : ResourceCache?
 
     def initialize(cos_page : Cos::Dictionary? = nil)
       @cos_page = cos_page || default_page_dictionary
@@ -441,6 +442,42 @@ module Pdfbox::Pdmodel
     def set_transition(transition : Interactive::Pagenavigation::PDTransition, duration : Int | Float) : Nil
       self.transition = transition
       (@cos_page || default_page_dictionary).set_float(Cos::Name.new("Dur"), duration.to_f64)
+    end
+
+    # Removes the page's resources (and nested form resources) from the cache.
+    # Java PDPage#removePageResourceFromCache.
+    def remove_page_resource_from_cache : Nil
+      cache = @resource_cache
+      return unless cache
+      cos_page = @cos_page
+      return unless cos_page
+
+      remove_resources_from_cache(cache, cos_page.get_dictionary(Cos::Name.new("Resources")))
+    end
+
+    private def remove_resources_from_cache(cache : ResourceCache, resources : Cos::Dictionary?) : Nil
+      return unless resources
+
+      indirect_objects(resources, "ColorSpace").each { |ref| cache.remove_color_space(ref) }
+      indirect_objects(resources, "ExtGState").each { |ref| cache.remove_ext_state(ref) }
+      indirect_objects(resources, "Font").each { |ref| cache.remove_font(ref) }
+      indirect_objects(resources, "Pattern").each { |ref| cache.remove_pattern(ref) }
+      indirect_objects(resources, "Properties").each { |ref| cache.remove_properties(ref) }
+      indirect_objects(resources, "Shading").each { |ref| cache.remove_shading(ref) }
+      indirect_objects(resources, "XObject").each do |ref|
+        removed = cache.remove_xobject(ref)
+        next unless removed.is_a?(Graphics::Form::PDFormXObject)
+        stream = removed.cos_object.as?(Cos::Stream)
+        remove_resources_from_cache(cache, stream.try(&.get_dictionary(Cos::Name.new("Resources"))))
+      end
+    end
+
+    private def indirect_objects(resources : Cos::Dictionary, kind : String) : Array(Cos::Object)
+      dict = resources.get_dictionary(Cos::Name.new(kind))
+      return [] of Cos::Object unless dict
+      dict.entries.values.compact_map do |value|
+        value.as?(Cos::Object)
+      end
     end
 
     private def default_page_dictionary : Cos::Dictionary
