@@ -6851,21 +6851,21 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/SecurityHandler.java::
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/SecurityHandler.java::method::SecurityHandler.encryptStream	ported	src/pdfbox/pdmodel/encryption.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/SecurityHandler.java::method::SecurityHandler.encryptString	ported	src/pdfbox/pdmodel/encryption.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/SecurityHandler.java::method::SecurityHandler.getCurrentAccessPermission	ported	src/pdfbox/pdmodel/encryption.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/SecurityHandler.java::method::SecurityHandler.getEncryptionKey	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/SecurityHandler.java::method::SecurityHandler.getEncryptionKey	ported	src/pdfbox/pdmodel/encryption.cr	ported: SecurityHandler isAES/encryptionKey
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/SecurityHandler.java::method::SecurityHandler.getKeyLength	ported	src/pdfbox/pdmodel/encryption.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/SecurityHandler.java::method::SecurityHandler.getProtectionPolicy	ported	src/pdfbox/pdmodel/encryption.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/SecurityHandler.java::method::SecurityHandler.getSecureRandom	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/SecurityHandler.java::method::SecurityHandler.hasProtectionPolicy	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/SecurityHandler.java::method::SecurityHandler.isAES	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/SecurityHandler.java::method::SecurityHandler.isAES	ported	src/pdfbox/pdmodel/encryption.cr	ported: SecurityHandler isAES/encryptionKey
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/SecurityHandler.java::method::SecurityHandler.isDecryptMetadata	ported	src/pdfbox/pdmodel/encryption.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/SecurityHandler.java::method::SecurityHandler.prepareAESInitializationVector	ported	src/pdfbox/pdmodel/encryption.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/SecurityHandler.java::method::SecurityHandler.prepareDocumentForEncryption	ported	src/pdfbox/pdmodel/encryption.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/SecurityHandler.java::method::SecurityHandler.prepareForDecryption	ported	src/pdfbox/pdmodel/encryption.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/SecurityHandler.java::method::SecurityHandler.setAES	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/SecurityHandler.java::method::SecurityHandler.setAES	ported	src/pdfbox/pdmodel/encryption.cr	ported: SecurityHandler isAES/encryptionKey
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/SecurityHandler.java::method::SecurityHandler.setCurrentAccessPermission	ported	src/pdfbox/pdmodel/encryption.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/SecurityHandler.java::method::SecurityHandler.setCustomSecureRandom	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/SecurityHandler.java::method::SecurityHandler.setDecryptMetadata	ported	src/pdfbox/pdmodel/encryption.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/SecurityHandler.java::method::SecurityHandler.setEncryptionKey	ported	src/pdfbox/pdmodel/encryption.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/SecurityHandler.java::method::SecurityHandler.setEncryptionKey	ported	src/pdfbox/pdmodel/encryption.cr	ported: SecurityHandler isAES/encryptionKey
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/SecurityHandler.java::method::SecurityHandler.setKeyLength	ported	src/pdfbox/pdmodel/encryption.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/SecurityHandler.java::method::SecurityHandler.setProtectionPolicy	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/SecurityHandler.java::method::SecurityHandler.setStreamFilterName	ported	src/pdfbox/pdmodel/encryption.cr	reconciled: method present

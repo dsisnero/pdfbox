@@ -498,6 +498,24 @@ module Pdfbox::Pdmodel::Encryption
       get_key_length_bits
     end
 
+    # Whether AES encryption is in use (Java SecurityHandler#isAES/setAES).
+    def aes? : Bool
+      @use_aes
+    end
+
+    def aes=(value : Bool) : Bool
+      @use_aes = value
+    end
+
+    # The encryption key (Java SecurityHandler#getEncryptionKey/setEncryptionKey).
+    def encryption_key : Bytes?
+      @encryption_key
+    end
+
+    def encryption_key=(key : Bytes?) : Bytes?
+      @encryption_key = key
+    end
+
     protected def compute_version_number : Int32
       key_length = get_key_length_bits
       if key_length == 40

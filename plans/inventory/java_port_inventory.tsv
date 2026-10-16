@@ -6851,21 +6851,21 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/SecurityHandler.java::
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/SecurityHandler.java::method::SecurityHandler.encryptStream	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/SecurityHandler.java::method::SecurityHandler.encryptString	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/SecurityHandler.java::method::SecurityHandler.getCurrentAccessPermission	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/SecurityHandler.java::method::SecurityHandler.getEncryptionKey	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/SecurityHandler.java::method::SecurityHandler.getEncryptionKey	method	ported	src/pdfbox/pdmodel/encryption.cr	ported: SecurityHandler isAES/encryptionKey
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/SecurityHandler.java::method::SecurityHandler.getKeyLength	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/SecurityHandler.java::method::SecurityHandler.getProtectionPolicy	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/SecurityHandler.java::method::SecurityHandler.getSecureRandom	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/SecurityHandler.java::method::SecurityHandler.hasProtectionPolicy	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/SecurityHandler.java::method::SecurityHandler.isAES	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/SecurityHandler.java::method::SecurityHandler.isAES	method	ported	src/pdfbox/pdmodel/encryption.cr	ported: SecurityHandler isAES/encryptionKey
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/SecurityHandler.java::method::SecurityHandler.isDecryptMetadata	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/SecurityHandler.java::method::SecurityHandler.prepareAESInitializationVector	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/SecurityHandler.java::method::SecurityHandler.prepareDocumentForEncryption	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/SecurityHandler.java::method::SecurityHandler.prepareForDecryption	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/SecurityHandler.java::method::SecurityHandler.setAES	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/SecurityHandler.java::method::SecurityHandler.setAES	method	ported	src/pdfbox/pdmodel/encryption.cr	ported: SecurityHandler isAES/encryptionKey
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/SecurityHandler.java::method::SecurityHandler.setCurrentAccessPermission	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/SecurityHandler.java::method::SecurityHandler.setCustomSecureRandom	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/SecurityHandler.java::method::SecurityHandler.setDecryptMetadata	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/SecurityHandler.java::method::SecurityHandler.setEncryptionKey	method	ported	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/SecurityHandler.java::method::SecurityHandler.setEncryptionKey	method	ported	src/pdfbox/pdmodel/encryption.cr	ported: SecurityHandler isAES/encryptionKey
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/SecurityHandler.java::method::SecurityHandler.setKeyLength	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/SecurityHandler.java::method::SecurityHandler.setProtectionPolicy	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/encryption/SecurityHandler.java::method::SecurityHandler.setStreamFilterName	method	ported	src	auto-generated
