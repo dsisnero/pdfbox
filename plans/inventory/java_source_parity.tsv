@@ -4588,7 +4588,7 @@ pdfbox/src/main/java/org/apache/pdfbox/cos/UnmodifiableCOSDictionary.java::metho
 pdfbox/src/main/java/org/apache/pdfbox/filter/ASCII85Filter.java::class::ASCII85Filter	ported	src/.../filter/ascii85_filter.cr	stale inventory; class ported
 pdfbox/src/main/java/org/apache/pdfbox/filter/ASCII85Filter.java::method::ASCII85Filter.decode	ported	src/.../filter/ascii85_filter.cr	stale inventory; class ported
 pdfbox/src/main/java/org/apache/pdfbox/filter/ASCII85Filter.java::method::ASCII85Filter.encode	ported	src/.../filter/ascii85_filter.cr	stale inventory; class ported
-pdfbox/src/main/java/org/apache/pdfbox/filter/ASCII85InputStream.java::class::ASCII85InputStream	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/filter/ASCII85InputStream.java::class::ASCII85InputStream	ported	src/pdfbox/filter/ascii85_filter.cr	ported: ASCII85 streams
 pdfbox/src/main/java/org/apache/pdfbox/filter/ASCII85InputStream.java::const::NEWLINE	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/filter/ASCII85InputStream.java::const::OFFSET	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/filter/ASCII85InputStream.java::const::PADDING_U	missing	-	baseline
@@ -4596,25 +4596,25 @@ pdfbox/src/main/java/org/apache/pdfbox/filter/ASCII85InputStream.java::const::RE
 pdfbox/src/main/java/org/apache/pdfbox/filter/ASCII85InputStream.java::const::SPACE	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/filter/ASCII85InputStream.java::const::TERMINATOR	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/filter/ASCII85InputStream.java::const::Z	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/filter/ASCII85InputStream.java::method::ASCII85InputStream.available	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/filter/ASCII85InputStream.java::method::ASCII85InputStream.close	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/filter/ASCII85InputStream.java::method::ASCII85InputStream.mark	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/filter/ASCII85InputStream.java::method::ASCII85InputStream.markSupported	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/filter/ASCII85InputStream.java::method::ASCII85InputStream.read	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/filter/ASCII85InputStream.java::method::ASCII85InputStream.reset	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/filter/ASCII85InputStream.java::method::ASCII85InputStream.skip	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/filter/ASCII85OutputStream.java::class::ASCII85OutputStream	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/filter/ASCII85InputStream.java::method::ASCII85InputStream.available	partial	src/pdfbox/filter/ascii85_filter.cr	partial: Java InputStream API method, no Crystal IO equivalent (class ported)
+pdfbox/src/main/java/org/apache/pdfbox/filter/ASCII85InputStream.java::method::ASCII85InputStream.close	ported	src/pdfbox/filter/ascii85_filter.cr	ported: ASCII85 streams
+pdfbox/src/main/java/org/apache/pdfbox/filter/ASCII85InputStream.java::method::ASCII85InputStream.mark	partial	src/pdfbox/filter/ascii85_filter.cr	partial: Java InputStream API method, no Crystal IO equivalent (class ported)
+pdfbox/src/main/java/org/apache/pdfbox/filter/ASCII85InputStream.java::method::ASCII85InputStream.markSupported	partial	src/pdfbox/filter/ascii85_filter.cr	partial: Java InputStream API method, no Crystal IO equivalent (class ported)
+pdfbox/src/main/java/org/apache/pdfbox/filter/ASCII85InputStream.java::method::ASCII85InputStream.read	ported	src/pdfbox/filter/ascii85_filter.cr	ported: ASCII85 streams
+pdfbox/src/main/java/org/apache/pdfbox/filter/ASCII85InputStream.java::method::ASCII85InputStream.reset	partial	src/pdfbox/filter/ascii85_filter.cr	partial: Java InputStream API method, no Crystal IO equivalent (class ported)
+pdfbox/src/main/java/org/apache/pdfbox/filter/ASCII85InputStream.java::method::ASCII85InputStream.skip	ported	src/pdfbox/filter/ascii85_filter.cr	ported: ASCII85 streams
+pdfbox/src/main/java/org/apache/pdfbox/filter/ASCII85OutputStream.java::class::ASCII85OutputStream	ported	src/pdfbox/filter/ascii85_filter.cr	ported: ASCII85 streams
 pdfbox/src/main/java/org/apache/pdfbox/filter/ASCII85OutputStream.java::const::NEWLINE	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/filter/ASCII85OutputStream.java::const::OFFSET	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/filter/ASCII85OutputStream.java::const::Z	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/filter/ASCII85OutputStream.java::method::ASCII85OutputStream.close	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/filter/ASCII85OutputStream.java::method::ASCII85OutputStream.flush	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/filter/ASCII85OutputStream.java::method::ASCII85OutputStream.getLineLength	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/filter/ASCII85OutputStream.java::method::ASCII85OutputStream.getTerminator	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/filter/ASCII85OutputStream.java::method::ASCII85OutputStream.setLineLength	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/filter/ASCII85OutputStream.java::method::ASCII85OutputStream.setTerminator	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/filter/ASCII85OutputStream.java::method::ASCII85OutputStream.transformASCII85	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/filter/ASCII85OutputStream.java::method::ASCII85OutputStream.write	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/filter/ASCII85OutputStream.java::method::ASCII85OutputStream.close	ported	src/pdfbox/filter/ascii85_filter.cr	ported: ASCII85 streams
+pdfbox/src/main/java/org/apache/pdfbox/filter/ASCII85OutputStream.java::method::ASCII85OutputStream.flush	ported	src/pdfbox/filter/ascii85_filter.cr	ported: ASCII85 streams
+pdfbox/src/main/java/org/apache/pdfbox/filter/ASCII85OutputStream.java::method::ASCII85OutputStream.getLineLength	ported	src/pdfbox/filter/ascii85_filter.cr	ported: ASCII85 streams
+pdfbox/src/main/java/org/apache/pdfbox/filter/ASCII85OutputStream.java::method::ASCII85OutputStream.getTerminator	ported	src/pdfbox/filter/ascii85_filter.cr	ported: ASCII85 streams
+pdfbox/src/main/java/org/apache/pdfbox/filter/ASCII85OutputStream.java::method::ASCII85OutputStream.setLineLength	ported	src/pdfbox/filter/ascii85_filter.cr	ported: ASCII85 streams
+pdfbox/src/main/java/org/apache/pdfbox/filter/ASCII85OutputStream.java::method::ASCII85OutputStream.setTerminator	ported	src/pdfbox/filter/ascii85_filter.cr	ported: ASCII85 streams
+pdfbox/src/main/java/org/apache/pdfbox/filter/ASCII85OutputStream.java::method::ASCII85OutputStream.transformASCII85	ported	src/pdfbox/filter/ascii85_filter.cr	ported: ASCII85 streams
+pdfbox/src/main/java/org/apache/pdfbox/filter/ASCII85OutputStream.java::method::ASCII85OutputStream.write	ported	src/pdfbox/filter/ascii85_filter.cr	ported: ASCII85 streams
 pdfbox/src/main/java/org/apache/pdfbox/filter/ASCIIHexFilter.java::class::ASCIIHexFilter	ported	src/pdfbox/filter/ascii_hex_filter.cr	stale inventory; class ported
 pdfbox/src/main/java/org/apache/pdfbox/filter/ASCIIHexFilter.java::const::LOG	ported	src/pdfbox/filter/ascii_hex_filter.cr	stale inventory; class ported
 pdfbox/src/main/java/org/apache/pdfbox/filter/ASCIIHexFilter.java::const::REVERSE_HEX	ported	src/pdfbox/filter/ascii_hex_filter.cr	stale inventory; class ported
