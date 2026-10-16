@@ -503,6 +503,36 @@ module Xmpbox
       def history : Array(String)?
         unqualified_sequence_value_list(HISTORY)
       end
+
+      def derived_from_property : Type::ResourceRefType?
+        prop = abstract_property(DERIVED_FROM)
+        if prop
+          if prop.is_a?(Type::ResourceRefType)
+            return prop
+          end
+          raise Type::BadFieldValueException.new("Property asked is not a ResourceRef Property")
+        end
+        nil
+      end
+
+      def derived_from_property=(tt : Type::ResourceRefType) : Nil
+        add_property(tt)
+      end
+
+      def managed_from_property : Type::ResourceRefType?
+        prop = abstract_property(MANAGED_FROM)
+        if prop
+          if prop.is_a?(Type::ResourceRefType)
+            return prop
+          end
+          raise Type::BadFieldValueException.new("Property asked is not a ResourceRef Property")
+        end
+        nil
+      end
+
+      def managed_from_property=(tt : Type::ResourceRefType) : Nil
+        add_property(tt)
+      end
     end
 
     # XMP Rights Management: http://ns.adobe.com/xap/1.0/rights/
@@ -796,6 +826,8 @@ module Xmpbox
       SUPPLEMENTAL_CATEGORIES = "SupplementalCategories"
       TEXT_LAYERS             = "TextLayers"
 
+      @seq_layer : Type::ArrayProperty?
+
       def self.structured_type_info
         {namespace: "http://ns.adobe.com/photoshop/1.0/", prefered_prefix: "photoshop"}
       end
@@ -959,6 +991,43 @@ module Xmpbox
 
       def ancestor_id : String?
         unqualified_text_property_value(ANCESTOR_ID)
+      end
+
+      def add_text_layers(layer_name : String, layer_text : String) : Nil
+        if @seq_layer.nil?
+          @seq_layer = create_array_property(TEXT_LAYERS, Type::Cardinality::Seq)
+          add_property(@seq_layer.as(Type::ArrayProperty))
+        end
+        layer = Type::LayerType.new(metadata)
+        layer.layer_name = layer_name
+        layer.layer_text = layer_text
+        @seq_layer.as(Type::ArrayProperty).container.add_property(layer)
+      end
+
+      def text_layers : Array(Type::LayerType)?
+        tmp = unqualified_array_list(TEXT_LAYERS)
+        return nil unless tmp
+        layers = [] of Type::LayerType
+        tmp.each do |field|
+          if field.is_a?(Type::LayerType)
+            layers << field
+          else
+            raise Type::BadFieldValueException.new("Layer expected and #{field.class.name} found.")
+          end
+        end
+        layers
+      end
+
+      def add_document_ancestors(text : String) : Nil
+        add_qualified_bag_value(DOCUMENT_ANCESTORS, text)
+      end
+
+      def document_ancestors_property : Type::ArrayProperty?
+        array_property(DOCUMENT_ANCESTORS)
+      end
+
+      def document_ancestors : Array(String)?
+        unqualified_bag_value_list(DOCUMENT_ANCESTORS)
       end
     end
 

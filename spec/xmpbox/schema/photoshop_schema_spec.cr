@@ -68,6 +68,27 @@ module Xmpbox
         schema.ancestor_id.should eq("xmp.did:1234")
       end
 
+      it "adds text layers (Seq of LayerType) and document ancestors (Bag)" do
+        meta = XMPMetadata.create_xmp_metadata
+        schema = PhotoshopSchema.new(meta)
+
+        schema.add_text_layers("Name1", "Text1")
+        schema.add_text_layers("Name2", "Text2")
+        schema.add_document_ancestors("adobe:docid:photoshop:1")
+        schema.add_document_ancestors("adobe:docid:photoshop:2")
+
+        layers = schema.text_layers
+        layers.should_not be_nil
+        layers.not_nil!.size.should eq(2)
+        layers.not_nil![0].layer_name.should eq("Name1")
+        layers.not_nil![0].layer_text.should eq("Text1")
+        layers.not_nil![1].layer_name.should eq("Name2")
+        layers.not_nil![1].layer_text.should eq("Text2")
+
+        schema.document_ancestors.should eq(["adobe:docid:photoshop:1", "adobe:docid:photoshop:2"])
+        schema.document_ancestors_property.not_nil!.property_name.should eq("DocumentAncestors")
+      end
+
       it "returns nil for unset properties" do
         meta = XMPMetadata.create_xmp_metadata
         schema = PhotoshopSchema.new(meta)
@@ -78,6 +99,9 @@ module Xmpbox
         schema.color_mode.should be_nil
         schema.urgency.should be_nil
         schema.date_created.should be_nil
+        schema.text_layers.should be_nil
+        schema.document_ancestors.should be_nil
+        schema.document_ancestors_property.should be_nil
       end
     end
   end

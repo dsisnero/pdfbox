@@ -11652,8 +11652,8 @@ xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::const::SUPPL
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::const::TEXT_LAYERS	missing	-	baseline
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::const::TRANSMISSION_REFERENCE	missing	-	baseline
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::const::URGENCY	missing	-	baseline
-xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.addDocumentAncestors	missing	-	baseline
-xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.addTextLayers	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.addDocumentAncestors	ported	src/xmpbox/schema/schema_classes.cr	ported: Photoshop/MediaManagement resource accessors
+xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.addTextLayers	ported	src/xmpbox/schema/schema_classes.cr	ported: Photoshop/MediaManagement resource accessors
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getAncestorID	ported	src/xmpbox/schema/schema_classes.cr	ported: PhotoshopSchema text/URI props
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getAncestorIDProperty	missing	-	baseline
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getAuthorsPosition	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
@@ -11672,8 +11672,8 @@ xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::Phot
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getCreditProperty	missing	-	baseline
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getDateCreated	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getDateCreatedProperty	missing	-	baseline
-xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getDocumentAncestors	missing	-	baseline
-xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getDocumentAncestorsProperty	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getDocumentAncestors	ported	src/xmpbox/schema/schema_classes.cr	ported: Photoshop/MediaManagement resource accessors
+xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getDocumentAncestorsProperty	ported	src/xmpbox/schema/schema_classes.cr	ported: Photoshop/MediaManagement resource accessors
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getHeadline	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getHeadlineProperty	missing	-	baseline
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getHistory	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
@@ -11688,7 +11688,7 @@ xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::Phot
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getStateProperty	missing	-	baseline
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getSupplementalCategories	ported	src/xmpbox/schema/schema_classes.cr	ported: PhotoshopSchema text/URI props
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getSupplementalCategoriesProperty	missing	-	baseline
-xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getTextLayers	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getTextLayers	ported	src/xmpbox/schema/schema_classes.cr	ported: Photoshop/MediaManagement resource accessors
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getTransmissionReference	ported	src/xmpbox/schema/schema_classes.cr	ported: PhotoshopSchema text/URI props
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getTransmissionReferenceProperty	missing	-	baseline
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getUrgency	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
@@ -11851,7 +11851,7 @@ xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::con
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.addHistory	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.addIngredients	missing	-	baseline
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.addVersions	missing	-	baseline
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.getDerivedFromProperty	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.getDerivedFromProperty	ported	src/xmpbox/schema/schema_classes.cr	ported: Photoshop/MediaManagement resource accessors
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.getDocumentID	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.getDocumentIDProperty	missing	-	baseline
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.getHistoryProperty	missing	-	baseline
@@ -11865,7 +11865,7 @@ xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::met
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.getManageToProperty	missing	-	baseline
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.getManageUI	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.getManageUIProperty	missing	-	baseline
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.getManagedFromProperty	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.getManagedFromProperty	ported	src/xmpbox/schema/schema_classes.cr	ported: Photoshop/MediaManagement resource accessors
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.getManager	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.getManagerProperty	missing	-	baseline
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.getManagerVariant	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPMediaManagementSchema managerVariant/lastURL/saveID
@@ -11882,7 +11882,7 @@ xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::met
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.getVersionIDProperty	missing	-	baseline
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.getVersions	missing	-	baseline
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.getVersionsProperty	missing	-	baseline
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.setDerivedFromProperty	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.setDerivedFromProperty	ported	src/xmpbox/schema/schema_classes.cr	ported: Photoshop/MediaManagement resource accessors
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.setDocumentID	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.setDocumentIDProperty	missing	-	baseline
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.setInstanceID	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
@@ -11893,7 +11893,7 @@ xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::met
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.setManageToProperty	missing	-	baseline
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.setManageUI	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.setManageUIProperty	missing	-	baseline
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.setManagedFromProperty	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.setManagedFromProperty	ported	src/xmpbox/schema/schema_classes.cr	ported: Photoshop/MediaManagement resource accessors
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.setManager	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.setManagerProperty	missing	-	baseline
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.setManagerVariant	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPMediaManagementSchema managerVariant/lastURL/saveID

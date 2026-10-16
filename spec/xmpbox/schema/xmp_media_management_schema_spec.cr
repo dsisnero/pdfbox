@@ -53,6 +53,24 @@ module Xmpbox
         schema.save_id.should eq(7)
       end
 
+      it "sets and gets the DerivedFrom and ManagedFrom resource references" do
+        meta = XMPMetadata.create_xmp_metadata
+        schema = XMPMediaManagementSchema.new(meta)
+
+        derived = Xmpbox::Type::ResourceRefType.new(meta)
+        derived.document_id = "xmp.did:derived"
+        derived.property_name = XMPMediaManagementSchema::DERIVED_FROM
+        schema.derived_from_property = derived
+
+        managed = Xmpbox::Type::ResourceRefType.new(meta)
+        managed.document_id = "xmp.did:managed"
+        managed.property_name = XMPMediaManagementSchema::MANAGED_FROM
+        schema.managed_from_property = managed
+
+        schema.derived_from_property.not_nil!.document_id.should eq("xmp.did:derived")
+        schema.managed_from_property.not_nil!.document_id.should eq("xmp.did:managed")
+      end
+
       it "returns nil for unset properties" do
         meta = XMPMetadata.create_xmp_metadata
         schema = XMPMediaManagementSchema.new(meta)
@@ -61,6 +79,8 @@ module Xmpbox
         schema.manager.should be_nil
         schema.instance_id.should be_nil
         schema.version_id.should be_nil
+        schema.derived_from_property.should be_nil
+        schema.managed_from_property.should be_nil
       end
     end
   end

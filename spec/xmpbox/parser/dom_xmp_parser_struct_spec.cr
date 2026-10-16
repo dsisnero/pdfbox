@@ -56,10 +56,9 @@ module Xmpbox
         xmpmm.not_nil!.rendition_class.should eq("proof:pdf")
         xmpmm.not_nil!.document_id.should eq("adobe:docid:indd:db084a4d-dbb2-11dc-ac34-beb3cc4028ec")
 
-        derived = xmpmm.not_nil!.abstract_property("DerivedFrom")
+        derived = xmpmm.not_nil!.derived_from_property
         derived.should_not be_nil
-        derived.should be_a(Type::ResourceRefType)
-        derived.as(Type::ResourceRefType).document_id.should eq("adobe:docid:indd:fa7c6589-9f4a-11dc-9641-af983df728d7")
+        derived.not_nil!.document_id.should eq("adobe:docid:indd:fa7c6589-9f4a-11dc-9641-af983df728d7")
       end
 
       it "testPageTextSchema2 parses dimensions with attribute w/h and element unit" do
@@ -233,18 +232,29 @@ module Xmpbox
 
         photoshop = xmp.photoshop_schema
         photoshop.should_not be_nil
-        text_layers = photoshop.not_nil!.abstract_property("TextLayers").as(Type::ArrayProperty)
-        text_layers.all_properties.size.should eq(2)
-        layer0 = text_layers.all_properties[0].as(Type::LayerType)
+        text_layers = photoshop.not_nil!.text_layers
+        text_layers.should_not be_nil
+        text_layers.not_nil!.size.should eq(2)
+        layer0 = text_layers.not_nil![0]
         layer0.layer_name.should eq("Name1")
         layer0.layer_text.should eq("Text1")
-        layer1 = text_layers.all_properties[1].as(Type::LayerType)
+        layer1 = text_layers.not_nil![1]
         layer1.layer_name.should eq("Name2")
         layer1.layer_text.should eq("Text2")
+        photoshop.not_nil!.history.should eq("2012-05-03T09:34:50-04:00\tFile i1222b.jpg opened\n")
 
-        ancestors = photoshop.not_nil!.abstract_property("DocumentAncestors").as(Type::ArrayProperty)
-        ancestors.all_properties.size.should eq(3)
-        ancestors.all_properties[0].as(Type::TextType).string_value.should eq("adobe:docid:photoshop:11d3ec5a-c131-11d8-9274-ec65c7d7e0c6")
+        ancestors_property = photoshop.not_nil!.document_ancestors_property
+        ancestors_property.should_not be_nil
+        ancestors = ancestors_property.not_nil!.all_properties
+        ancestors.size.should eq(3)
+        ancestors[0].as(Type::TextType).string_value.should eq("adobe:docid:photoshop:11d3ec5a-c131-11d8-9274-ec65c7d7e0c6")
+        ancestors[1].as(Type::TextType).string_value.should eq("adobe:docid:photoshop:aadc7027-309c-11d8-9596-9cf45d2f630b")
+        ancestors[2].as(Type::TextType).string_value.should eq("adobe:docid:photoshop:c7961c59-6e0f-11d8-87b7-d67539df12d8")
+        photoshop.not_nil!.document_ancestors.should eq([
+          "adobe:docid:photoshop:11d3ec5a-c131-11d8-9274-ec65c7d7e0c6",
+          "adobe:docid:photoshop:aadc7027-309c-11d8-9596-9cf45d2f630b",
+          "adobe:docid:photoshop:c7961c59-6e0f-11d8-87b7-d67539df12d8",
+        ])
       end
 
       it "PDFBOX-5292 parses an inline extension schema with a Text property" do
