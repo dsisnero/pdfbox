@@ -453,6 +453,38 @@ module Xmpbox
       def comments=(v : String)
         add_simple_property(COMMENTS, v)
       end
+
+      def event : String?
+        property_value_as_string(EVENT)
+      end
+
+      def event=(v : String) : Nil
+        add_simple_property(EVENT, v)
+      end
+
+      def modifier : String?
+        property_value_as_string(MODIFIER)
+      end
+
+      def modifier=(v : String) : Nil
+        add_simple_property(MODIFIER, v)
+      end
+
+      def version : String?
+        property_value_as_string(VERSION)
+      end
+
+      def version=(v : String) : Nil
+        add_simple_property(VERSION, v)
+      end
+
+      def modify_date : Time?
+        date_property_as_calendar(MODIFY_DATE)
+      end
+
+      def modify_date=(date : Time) : Nil
+        add_simple_property(MODIFY_DATE, date)
+      end
     end
 
     class ColorantType < AbstractStructuredType

@@ -12354,15 +12354,15 @@ xmpbox/src/main/java/org/apache/xmpbox/type/VersionType.java::const::MODIFIER	co
 xmpbox/src/main/java/org/apache/xmpbox/type/VersionType.java::const::MODIFY_DATE	const	missing	-	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/type/VersionType.java::const::VERSION	const	missing	-	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/type/VersionType.java::method::VersionType.getComments	method	ported	src	auto-generated
-xmpbox/src/main/java/org/apache/xmpbox/type/VersionType.java::method::VersionType.getEvent	method	partial	src	auto-generated
-xmpbox/src/main/java/org/apache/xmpbox/type/VersionType.java::method::VersionType.getModifier	method	partial	src	auto-generated
-xmpbox/src/main/java/org/apache/xmpbox/type/VersionType.java::method::VersionType.getModifyDate	method	partial	src	auto-generated
-xmpbox/src/main/java/org/apache/xmpbox/type/VersionType.java::method::VersionType.getVersion	method	partial	src	auto-generated
+xmpbox/src/main/java/org/apache/xmpbox/type/VersionType.java::method::VersionType.getEvent	method	ported	src/xmpbox/type/structured_types.cr	ported: VersionType accessors
+xmpbox/src/main/java/org/apache/xmpbox/type/VersionType.java::method::VersionType.getModifier	method	ported	src/xmpbox/type/structured_types.cr	ported: VersionType accessors
+xmpbox/src/main/java/org/apache/xmpbox/type/VersionType.java::method::VersionType.getModifyDate	method	ported	src/xmpbox/type/structured_types.cr	ported: VersionType accessors
+xmpbox/src/main/java/org/apache/xmpbox/type/VersionType.java::method::VersionType.getVersion	method	ported	src/xmpbox/type/structured_types.cr	ported: VersionType accessors
 xmpbox/src/main/java/org/apache/xmpbox/type/VersionType.java::method::VersionType.setComments	method	ported	src	auto-generated
-xmpbox/src/main/java/org/apache/xmpbox/type/VersionType.java::method::VersionType.setEvent	method	partial	src	auto-generated
-xmpbox/src/main/java/org/apache/xmpbox/type/VersionType.java::method::VersionType.setModifier	method	partial	src	auto-generated
-xmpbox/src/main/java/org/apache/xmpbox/type/VersionType.java::method::VersionType.setModifyDate	method	partial	src	auto-generated
-xmpbox/src/main/java/org/apache/xmpbox/type/VersionType.java::method::VersionType.setVersion	method	partial	src	auto-generated
+xmpbox/src/main/java/org/apache/xmpbox/type/VersionType.java::method::VersionType.setEvent	method	ported	src/xmpbox/type/structured_types.cr	ported: VersionType accessors
+xmpbox/src/main/java/org/apache/xmpbox/type/VersionType.java::method::VersionType.setModifier	method	ported	src/xmpbox/type/structured_types.cr	ported: VersionType accessors
+xmpbox/src/main/java/org/apache/xmpbox/type/VersionType.java::method::VersionType.setModifyDate	method	ported	src/xmpbox/type/structured_types.cr	ported: VersionType accessors
+xmpbox/src/main/java/org/apache/xmpbox/type/VersionType.java::method::VersionType.setVersion	method	ported	src/xmpbox/type/structured_types.cr	ported: VersionType accessors
 xmpbox/src/main/java/org/apache/xmpbox/type/XPathType.java::class::XPathType	class	partial	src	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/xml/DomHelper.java::class::DomHelper	class	partial	src	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/xml/DomHelper.java::method::DomHelper.getElementChildren	method	ported	src	auto-generated

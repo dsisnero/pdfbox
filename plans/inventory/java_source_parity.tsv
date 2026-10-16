@@ -12354,15 +12354,15 @@ xmpbox/src/main/java/org/apache/xmpbox/type/VersionType.java::const::MODIFIER	mi
 xmpbox/src/main/java/org/apache/xmpbox/type/VersionType.java::const::MODIFY_DATE	missing	-	baseline
 xmpbox/src/main/java/org/apache/xmpbox/type/VersionType.java::const::VERSION	missing	-	baseline
 xmpbox/src/main/java/org/apache/xmpbox/type/VersionType.java::method::VersionType.getComments	ported	src/xmpbox/type/structured_types.cr	reconciled: method present
-xmpbox/src/main/java/org/apache/xmpbox/type/VersionType.java::method::VersionType.getEvent	missing	-	baseline
-xmpbox/src/main/java/org/apache/xmpbox/type/VersionType.java::method::VersionType.getModifier	missing	-	baseline
-xmpbox/src/main/java/org/apache/xmpbox/type/VersionType.java::method::VersionType.getModifyDate	missing	-	baseline
-xmpbox/src/main/java/org/apache/xmpbox/type/VersionType.java::method::VersionType.getVersion	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/type/VersionType.java::method::VersionType.getEvent	ported	src/xmpbox/type/structured_types.cr	ported: VersionType accessors
+xmpbox/src/main/java/org/apache/xmpbox/type/VersionType.java::method::VersionType.getModifier	ported	src/xmpbox/type/structured_types.cr	ported: VersionType accessors
+xmpbox/src/main/java/org/apache/xmpbox/type/VersionType.java::method::VersionType.getModifyDate	ported	src/xmpbox/type/structured_types.cr	ported: VersionType accessors
+xmpbox/src/main/java/org/apache/xmpbox/type/VersionType.java::method::VersionType.getVersion	ported	src/xmpbox/type/structured_types.cr	ported: VersionType accessors
 xmpbox/src/main/java/org/apache/xmpbox/type/VersionType.java::method::VersionType.setComments	ported	src/xmpbox/type/structured_types.cr	reconciled: method present
-xmpbox/src/main/java/org/apache/xmpbox/type/VersionType.java::method::VersionType.setEvent	missing	-	baseline
-xmpbox/src/main/java/org/apache/xmpbox/type/VersionType.java::method::VersionType.setModifier	missing	-	baseline
-xmpbox/src/main/java/org/apache/xmpbox/type/VersionType.java::method::VersionType.setModifyDate	missing	-	baseline
-xmpbox/src/main/java/org/apache/xmpbox/type/VersionType.java::method::VersionType.setVersion	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/type/VersionType.java::method::VersionType.setEvent	ported	src/xmpbox/type/structured_types.cr	ported: VersionType accessors
+xmpbox/src/main/java/org/apache/xmpbox/type/VersionType.java::method::VersionType.setModifier	ported	src/xmpbox/type/structured_types.cr	ported: VersionType accessors
+xmpbox/src/main/java/org/apache/xmpbox/type/VersionType.java::method::VersionType.setModifyDate	ported	src/xmpbox/type/structured_types.cr	ported: VersionType accessors
+xmpbox/src/main/java/org/apache/xmpbox/type/VersionType.java::method::VersionType.setVersion	ported	src/xmpbox/type/structured_types.cr	ported: VersionType accessors
 xmpbox/src/main/java/org/apache/xmpbox/type/XPathType.java::class::XPathType	ported	src/xmpbox/type/simple_derived_types.cr	reconciled: class present
 xmpbox/src/main/java/org/apache/xmpbox/xml/DomHelper.java::class::DomHelper	ported	src/.../dom_helper.cr	stale inventory; class ported
 xmpbox/src/main/java/org/apache/xmpbox/xml/DomHelper.java::method::DomHelper.getElementChildren	ported	src/.../dom_helper.cr	stale inventory; class ported
