@@ -11787,48 +11787,48 @@ xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBa
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.addIdentifier	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.addThumbnails	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPBasicSchema thumbnails
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getAdvisory	missing	-	baseline
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getAdvisoryProperty	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getAdvisoryProperty	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPBasicSchema property getters/setters
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getBaseURL	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getBaseURLProperty	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getBaseURLProperty	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPBasicSchema property getters/setters
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getCreateDate	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getCreateDateProperty	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getCreateDateProperty	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPBasicSchema property getters/setters
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getCreatorTool	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getCreatorToolProperty	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getCreatorToolProperty	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPBasicSchema property getters/setters
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getIdentifiers	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getIdentifiersProperty	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getIdentifiersProperty	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPBasicSchema property getters/setters
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getLabel	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getLabelProperty	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getLabelProperty	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPBasicSchema property getters/setters
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getMetadataDate	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getMetadataDateProperty	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getMetadataDateProperty	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPBasicSchema property getters/setters
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getModifierDate	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPBasicSchema modifierDate/removes
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getModifierDateProperty	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getModifierDateProperty	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPBasicSchema property getters/setters
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getModifyDate	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getModifyDateProperty	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getModifyDateProperty	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPBasicSchema property getters/setters
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getNickname	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getNicknameProperty	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getNicknameProperty	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPBasicSchema property getters/setters
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getRating	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getRatingProperty	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getRatingProperty	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPBasicSchema property getters/setters
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getThumbnailsProperty	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPBasicSchema thumbnails
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.removeAdvisory	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPBasicSchema modifierDate/removes
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.removeIdentifier	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPBasicSchema modifierDate/removes
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.setBaseURL	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.setBaseURLProperty	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.setBaseURLProperty	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPBasicSchema property getters/setters
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.setCreateDate	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.setCreateDateProperty	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.setCreateDateProperty	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPBasicSchema property getters/setters
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.setCreatorTool	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.setCreatorToolProperty	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.setCreatorToolProperty	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPBasicSchema property getters/setters
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.setLabel	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.setLabelProperty	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.setLabelProperty	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPBasicSchema property getters/setters
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.setMetadataDate	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.setMetadataDateProperty	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.setMetadataDateProperty	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPBasicSchema property getters/setters
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.setModifierDate	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPBasicSchema modifierDate/removes
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.setModifierDateProperty	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.setModifierDateProperty	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPBasicSchema property getters/setters
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.setModifyDate	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.setModifyDateProperty	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.setModifyDateProperty	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPBasicSchema property getters/setters
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.setNickname	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.setNicknameProperty	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.setNicknameProperty	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPBasicSchema property getters/setters
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.setRating	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.setRatingProperty	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.setRatingProperty	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPBasicSchema property getters/setters
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::class::XMPMediaManagementSchema	ported	src/xmpbox/schema/schema_classes.cr	reconciled: class present
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::const::DERIVED_FROM	missing	-	baseline
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::const::DOCUMENTID	missing	-	baseline

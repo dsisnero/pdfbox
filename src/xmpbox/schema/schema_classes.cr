@@ -445,6 +445,86 @@ module Xmpbox
         end
         thumbs
       end
+
+      def advisory_property : Type::ArrayProperty?
+        array_property(ADVISORY)
+      end
+
+      def base_url_property : Type::TextType?
+        unqualified_text_property(BASE_URL)
+      end
+
+      def create_date_property : Type::DateType?
+        date_property(CREATE_DATE)
+      end
+
+      def creator_tool_property : Type::TextType?
+        unqualified_text_property(CREATOR_TOOL)
+      end
+
+      def identifiers_property : Type::ArrayProperty?
+        array_property(IDENTIFIER)
+      end
+
+      def label_property : Type::TextType?
+        unqualified_text_property(LABEL)
+      end
+
+      def metadata_date_property : Type::DateType?
+        date_property(METADATA_DATE)
+      end
+
+      def modify_date_property : Type::DateType?
+        date_property(MODIFY_DATE)
+      end
+
+      def modifier_date_property : Type::DateType?
+        date_property(MODIFIER_DATE)
+      end
+
+      def nickname_property : Type::TextType?
+        unqualified_text_property(NICKNAME)
+      end
+
+      def rating_property : Type::IntegerType?
+        integer_property(RATING)
+      end
+
+      def set_base_url_property(url : Type::URLType) : Nil # ameba:disable Naming/AccessorMethodName
+        add_property(url)
+      end
+
+      def set_create_date_property(date : Type::DateType) : Nil # ameba:disable Naming/AccessorMethodName
+        add_property(date)
+      end
+
+      def set_creator_tool_property(creator_tool : Type::AgentNameType) : Nil # ameba:disable Naming/AccessorMethodName
+        add_property(creator_tool)
+      end
+
+      def set_label_property(text : Type::TextType) : Nil # ameba:disable Naming/AccessorMethodName
+        add_property(text)
+      end
+
+      def set_metadata_date_property(date : Type::DateType) : Nil # ameba:disable Naming/AccessorMethodName
+        add_property(date)
+      end
+
+      def set_modify_date_property(date : Type::DateType) : Nil # ameba:disable Naming/AccessorMethodName
+        add_property(date)
+      end
+
+      def set_modifier_date_property(date : Type::DateType) : Nil # ameba:disable Naming/AccessorMethodName
+        add_property(date)
+      end
+
+      def set_nickname_property(text : Type::TextType) : Nil # ameba:disable Naming/AccessorMethodName
+        add_property(text)
+      end
+
+      def set_rating_property(rate : Type::IntegerType) : Nil # ameba:disable Naming/AccessorMethodName
+        add_property(rate)
+      end
     end
 
     # XMP Media Management: http://ns.adobe.com/xap/1.0/mm/

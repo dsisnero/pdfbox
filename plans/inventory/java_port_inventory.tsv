@@ -11787,48 +11787,48 @@ xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBa
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.addIdentifier	method	ported	src	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.addThumbnails	method	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPBasicSchema thumbnails
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getAdvisory	method	partial	src	auto-generated
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getAdvisoryProperty	method	partial	src	auto-generated
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getAdvisoryProperty	method	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPBasicSchema property getters/setters
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getBaseURL	method	ported	src	auto-generated
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getBaseURLProperty	method	partial	src	auto-generated
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getBaseURLProperty	method	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPBasicSchema property getters/setters
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getCreateDate	method	ported	src	auto-generated
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getCreateDateProperty	method	partial	src	auto-generated
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getCreateDateProperty	method	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPBasicSchema property getters/setters
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getCreatorTool	method	ported	src	auto-generated
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getCreatorToolProperty	method	partial	src	auto-generated
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getCreatorToolProperty	method	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPBasicSchema property getters/setters
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getIdentifiers	method	ported	src	auto-generated
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getIdentifiersProperty	method	partial	src	auto-generated
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getIdentifiersProperty	method	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPBasicSchema property getters/setters
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getLabel	method	ported	src	auto-generated
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getLabelProperty	method	partial	src	auto-generated
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getLabelProperty	method	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPBasicSchema property getters/setters
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getMetadataDate	method	ported	src	auto-generated
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getMetadataDateProperty	method	partial	src	auto-generated
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getMetadataDateProperty	method	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPBasicSchema property getters/setters
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getModifierDate	method	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPBasicSchema modifierDate/removes
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getModifierDateProperty	method	partial	src	auto-generated
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getModifierDateProperty	method	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPBasicSchema property getters/setters
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getModifyDate	method	ported	src	auto-generated
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getModifyDateProperty	method	partial	src	auto-generated
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getModifyDateProperty	method	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPBasicSchema property getters/setters
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getNickname	method	ported	src	auto-generated
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getNicknameProperty	method	partial	src	auto-generated
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getNicknameProperty	method	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPBasicSchema property getters/setters
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getRating	method	ported	src	auto-generated
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getRatingProperty	method	partial	src	auto-generated
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getRatingProperty	method	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPBasicSchema property getters/setters
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getThumbnailsProperty	method	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPBasicSchema thumbnails
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.removeAdvisory	method	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPBasicSchema modifierDate/removes
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.removeIdentifier	method	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPBasicSchema modifierDate/removes
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.setBaseURL	method	ported	src	auto-generated
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.setBaseURLProperty	method	partial	src	auto-generated
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.setBaseURLProperty	method	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPBasicSchema property getters/setters
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.setCreateDate	method	ported	src	auto-generated
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.setCreateDateProperty	method	partial	src	auto-generated
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.setCreateDateProperty	method	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPBasicSchema property getters/setters
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.setCreatorTool	method	ported	src	auto-generated
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.setCreatorToolProperty	method	partial	src	auto-generated
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.setCreatorToolProperty	method	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPBasicSchema property getters/setters
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.setLabel	method	ported	src	auto-generated
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.setLabelProperty	method	partial	src	auto-generated
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.setLabelProperty	method	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPBasicSchema property getters/setters
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.setMetadataDate	method	ported	src	auto-generated
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.setMetadataDateProperty	method	partial	src	auto-generated
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.setMetadataDateProperty	method	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPBasicSchema property getters/setters
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.setModifierDate	method	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPBasicSchema modifierDate/removes
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.setModifierDateProperty	method	partial	src	auto-generated
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.setModifierDateProperty	method	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPBasicSchema property getters/setters
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.setModifyDate	method	ported	src	auto-generated
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.setModifyDateProperty	method	partial	src	auto-generated
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.setModifyDateProperty	method	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPBasicSchema property getters/setters
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.setNickname	method	ported	src	auto-generated
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.setNicknameProperty	method	partial	src	auto-generated
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.setNicknameProperty	method	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPBasicSchema property getters/setters
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.setRating	method	ported	src	auto-generated
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.setRatingProperty	method	partial	src	auto-generated
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.setRatingProperty	method	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPBasicSchema property getters/setters
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::class::XMPMediaManagementSchema	class	partial	src	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::const::DERIVED_FROM	const	missing	-	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::const::DOCUMENTID	const	missing	-	auto-generated
