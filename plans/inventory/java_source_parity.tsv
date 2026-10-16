@@ -5398,7 +5398,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::met
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAppearanceContentStream.java::class::PDAppearanceContentStream	ported	src/pdfbox/pdmodel/pdappearance_content_stream.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAppearanceContentStream.java::method::PDAppearanceContentStream.drawShape	ported	src/pdfbox/pdmodel/pdappearance_content_stream.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAppearanceContentStream.java::method::PDAppearanceContentStream.setBorderLine	ported	src/pdfbox/pdmodel/pdappearance_content_stream.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAppearanceContentStream.java::method::PDAppearanceContentStream.setLineWidthOnDemand	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAppearanceContentStream.java::method::PDAppearanceContentStream.setLineWidthOnDemand	ported	src/pdfbox/pdmodel/pdappearance_content_stream.cr	ported: PDAppearanceContentStream setLineWidthOnDemand
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAppearanceContentStream.java::method::PDAppearanceContentStream.setNonStrokingColor	ported	src/pdfbox/pdmodel/pdappearance_content_stream.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAppearanceContentStream.java::method::PDAppearanceContentStream.setNonStrokingColorOnDemand	ported	src/pdfbox/pdmodel/pdappearance_content_stream.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAppearanceContentStream.java::method::PDAppearanceContentStream.setStrokingColor	ported	src/pdfbox/pdmodel/pdappearance_content_stream.cr	reconciled: method present

@@ -11,6 +11,7 @@ module Pdfbox::Pdmodel
     @font_name : String?
     @in_text_mode = false
     @closed = false
+    @last_line_width = 0.0_f32
 
     def initialize(@stream : Interactive::Annotation::PDAppearanceStream)
       @buffer = ::IO::Memory.new
@@ -47,6 +48,16 @@ module Pdfbox::Pdmodel
     def line_width(width : Number) : Nil
       write_operands(width)
       write_operator(SET_LINE_WIDTH)
+    end
+
+    # Sets the line width only when it differs from the previously set width by
+    # more than 0.001. Java PDAppearanceContentStream#setLineWidthOnDemand.
+    def set_line_width_on_demand(line_width : Number) : Nil # ameba:disable Naming/AccessorMethodName
+      requested = line_width.to_f32
+      if (@last_line_width - requested).abs > 0.001_f32
+        self.line_width(line_width)
+        @last_line_width = requested
+      end
     end
 
     def line_cap_style(style : Int) : Nil

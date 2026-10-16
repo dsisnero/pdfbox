@@ -5398,7 +5398,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::met
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAppearanceContentStream.java::class::PDAppearanceContentStream	class	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAppearanceContentStream.java::method::PDAppearanceContentStream.drawShape	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAppearanceContentStream.java::method::PDAppearanceContentStream.setBorderLine	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAppearanceContentStream.java::method::PDAppearanceContentStream.setLineWidthOnDemand	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAppearanceContentStream.java::method::PDAppearanceContentStream.setLineWidthOnDemand	method	ported	src/pdfbox/pdmodel/pdappearance_content_stream.cr	ported: PDAppearanceContentStream setLineWidthOnDemand
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAppearanceContentStream.java::method::PDAppearanceContentStream.setNonStrokingColor	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAppearanceContentStream.java::method::PDAppearanceContentStream.setNonStrokingColorOnDemand	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAppearanceContentStream.java::method::PDAppearanceContentStream.setStrokingColor	method	ported	src	auto-generated
