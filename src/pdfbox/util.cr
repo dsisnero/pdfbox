@@ -309,6 +309,11 @@ module Pdfbox::Util
       Matrix.new(cos, sin, -sin, cos, x, y)
     end
 
+    # Creates a scaling matrix. Java Matrix#getScaleInstance.
+    def self.get_scale_instance(x : Float32, y : Float32) : Matrix
+      Matrix.new(x, 0.0_f32, 0.0_f32, y, 0.0_f32, 0.0_f32)
+    end
+
     # Create an identity matrix
     def self.identity : Matrix
       Matrix.new
@@ -375,6 +380,11 @@ module Pdfbox::Util
       check_float_values(@single)
     end
 
+    # Concatenates a rotation by the given angle (radians). Java Matrix#rotate.
+    def rotate(theta : Float64) : Nil
+      concatenate(Matrix.get_rotate_instance(theta, 0.0_f32, 0.0_f32))
+    end
+
     def multiply(other : Matrix) : Matrix
       Matrix.new(check_float_values(multiply_arrays(@single, other.@single)))
     end
@@ -401,6 +411,14 @@ module Pdfbox::Util
 
     def shear_y : Float32
       @single[1]
+    end
+
+    def shear_x : Float32
+      @single[3]
+    end
+
+    def scale_x : Float32
+      @single[0]
     end
 
     def scale_y : Float32

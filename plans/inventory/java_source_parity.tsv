@@ -11105,12 +11105,12 @@ pdfbox/src/main/java/org/apache/pdfbox/util/Matrix.java::method::Matrix.createAf
 pdfbox/src/main/java/org/apache/pdfbox/util/Matrix.java::method::Matrix.createMatrix	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/util/Matrix.java::method::Matrix.equals	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/util/Matrix.java::method::Matrix.getRotateInstance	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/util/Matrix.java::method::Matrix.getScaleInstance	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/util/Matrix.java::method::Matrix.getScaleX	ported	src/pdfbox/pdmodel/font/pdfont.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/util/Matrix.java::method::Matrix.getScaleInstance	ported	src/pdfbox/util.cr	ported: Matrix scale/shear/rotate
+pdfbox/src/main/java/org/apache/pdfbox/util/Matrix.java::method::Matrix.getScaleX	ported	src/pdfbox/util.cr	ported: Matrix scale/shear/rotate
 pdfbox/src/main/java/org/apache/pdfbox/util/Matrix.java::method::Matrix.getScaleY	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/util/Matrix.java::method::Matrix.getScalingFactorX	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/util/Matrix.java::method::Matrix.getScalingFactorY	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/util/Matrix.java::method::Matrix.getShearX	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/util/Matrix.java::method::Matrix.getShearX	ported	src/pdfbox/util.cr	ported: Matrix scale/shear/rotate
 pdfbox/src/main/java/org/apache/pdfbox/util/Matrix.java::method::Matrix.getShearY	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/util/Matrix.java::method::Matrix.getTranslateInstance	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/util/Matrix.java::method::Matrix.getTranslateX	missing	-	baseline
@@ -11120,7 +11120,7 @@ pdfbox/src/main/java/org/apache/pdfbox/util/Matrix.java::method::Matrix.getValue
 pdfbox/src/main/java/org/apache/pdfbox/util/Matrix.java::method::Matrix.hashCode	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/util/Matrix.java::method::Matrix.multiply	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/util/Matrix.java::method::Matrix.multiplyArrays	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/util/Matrix.java::method::Matrix.rotate	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/util/Matrix.java::method::Matrix.rotate	ported	src/pdfbox/util.cr	ported: Matrix scale/shear/rotate
 pdfbox/src/main/java/org/apache/pdfbox/util/Matrix.java::method::Matrix.scale	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/util/Matrix.java::method::Matrix.setValue	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/util/Matrix.java::method::Matrix.toCOSArray	missing	-	baseline

@@ -11105,12 +11105,12 @@ pdfbox/src/main/java/org/apache/pdfbox/util/Matrix.java::method::Matrix.createAf
 pdfbox/src/main/java/org/apache/pdfbox/util/Matrix.java::method::Matrix.createMatrix	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/util/Matrix.java::method::Matrix.equals	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/util/Matrix.java::method::Matrix.getRotateInstance	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/util/Matrix.java::method::Matrix.getScaleInstance	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/util/Matrix.java::method::Matrix.getScaleX	method	ported	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/util/Matrix.java::method::Matrix.getScaleInstance	method	ported	src/pdfbox/util.cr	ported: Matrix scale/shear/rotate
+pdfbox/src/main/java/org/apache/pdfbox/util/Matrix.java::method::Matrix.getScaleX	method	ported	src/pdfbox/util.cr	ported: Matrix scale/shear/rotate
 pdfbox/src/main/java/org/apache/pdfbox/util/Matrix.java::method::Matrix.getScaleY	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/util/Matrix.java::method::Matrix.getScalingFactorX	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/util/Matrix.java::method::Matrix.getScalingFactorY	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/util/Matrix.java::method::Matrix.getShearX	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/util/Matrix.java::method::Matrix.getShearX	method	ported	src/pdfbox/util.cr	ported: Matrix scale/shear/rotate
 pdfbox/src/main/java/org/apache/pdfbox/util/Matrix.java::method::Matrix.getShearY	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/util/Matrix.java::method::Matrix.getTranslateInstance	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/util/Matrix.java::method::Matrix.getTranslateX	method	ported	src	auto-generated
@@ -11120,7 +11120,7 @@ pdfbox/src/main/java/org/apache/pdfbox/util/Matrix.java::method::Matrix.getValue
 pdfbox/src/main/java/org/apache/pdfbox/util/Matrix.java::method::Matrix.hashCode	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/util/Matrix.java::method::Matrix.multiply	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/util/Matrix.java::method::Matrix.multiplyArrays	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/util/Matrix.java::method::Matrix.rotate	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/util/Matrix.java::method::Matrix.rotate	method	ported	src/pdfbox/util.cr	ported: Matrix scale/shear/rotate
 pdfbox/src/main/java/org/apache/pdfbox/util/Matrix.java::method::Matrix.scale	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/util/Matrix.java::method::Matrix.setValue	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/util/Matrix.java::method::Matrix.toCOSArray	method	ported	src	auto-generated
