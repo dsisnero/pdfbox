@@ -11654,13 +11654,13 @@ xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::const::TRANS
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::const::URGENCY	const	missing	-	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.addDocumentAncestors	method	partial	src	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.addTextLayers	method	partial	src	auto-generated
-xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getAncestorID	method	partial	src	auto-generated
+xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getAncestorID	method	ported	src/xmpbox/schema/schema_classes.cr	ported: PhotoshopSchema text/URI props
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getAncestorIDProperty	method	partial	src	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getAuthorsPosition	method	ported	src	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getAuthorsPositionProperty	method	partial	src	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getCaptionWriter	method	ported	src	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getCaptionWriterProperty	method	partial	src	auto-generated
-xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getCategory	method	partial	src	auto-generated
+xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getCategory	method	ported	src/xmpbox/schema/schema_classes.cr	ported: PhotoshopSchema text/URI props
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getCategoryProperty	method	partial	src	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getCity	method	ported	src	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getCityProperty	method	partial	src	auto-generated
@@ -11686,20 +11686,20 @@ xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::Phot
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getSourceProperty	method	partial	src	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getState	method	ported	src	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getStateProperty	method	partial	src	auto-generated
-xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getSupplementalCategories	method	partial	src	auto-generated
+xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getSupplementalCategories	method	ported	src/xmpbox/schema/schema_classes.cr	ported: PhotoshopSchema text/URI props
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getSupplementalCategoriesProperty	method	partial	src	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getTextLayers	method	partial	src	auto-generated
-xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getTransmissionReference	method	partial	src	auto-generated
+xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getTransmissionReference	method	ported	src/xmpbox/schema/schema_classes.cr	ported: PhotoshopSchema text/URI props
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getTransmissionReferenceProperty	method	partial	src	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getUrgency	method	ported	src	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getUrgencyProperty	method	partial	src	auto-generated
-xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.setAncestorID	method	partial	src	auto-generated
+xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.setAncestorID	method	ported	src/xmpbox/schema/schema_classes.cr	ported: PhotoshopSchema text/URI props
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.setAncestorIDProperty	method	partial	src	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.setAuthorsPosition	method	ported	src	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.setAuthorsPositionProperty	method	partial	src	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.setCaptionWriter	method	ported	src	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.setCaptionWriterProperty	method	partial	src	auto-generated
-xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.setCategory	method	partial	src	auto-generated
+xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.setCategory	method	ported	src/xmpbox/schema/schema_classes.cr	ported: PhotoshopSchema text/URI props
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.setCategoryProperty	method	partial	src	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.setCity	method	ported	src	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.setCityProperty	method	partial	src	auto-generated
@@ -11723,9 +11723,9 @@ xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::Phot
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.setSourceProperty	method	partial	src	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.setState	method	ported	src	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.setStateProperty	method	partial	src	auto-generated
-xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.setSupplementalCategories	method	partial	src	auto-generated
+xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.setSupplementalCategories	method	ported	src/xmpbox/schema/schema_classes.cr	ported: PhotoshopSchema text/URI props
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.setSupplementalCategoriesProperty	method	partial	src	auto-generated
-xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.setTransmissionReference	method	partial	src	auto-generated
+xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.setTransmissionReference	method	ported	src/xmpbox/schema/schema_classes.cr	ported: PhotoshopSchema text/URI props
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.setTransmissionReferenceProperty	method	partial	src	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.setUrgency	method	ported	src	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.setUrgencyProperty	method	partial	src	auto-generated

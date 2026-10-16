@@ -11654,13 +11654,13 @@ xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::const::TRANS
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::const::URGENCY	missing	-	baseline
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.addDocumentAncestors	missing	-	baseline
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.addTextLayers	missing	-	baseline
-xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getAncestorID	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getAncestorID	ported	src/xmpbox/schema/schema_classes.cr	ported: PhotoshopSchema text/URI props
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getAncestorIDProperty	missing	-	baseline
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getAuthorsPosition	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getAuthorsPositionProperty	missing	-	baseline
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getCaptionWriter	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getCaptionWriterProperty	missing	-	baseline
-xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getCategory	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getCategory	ported	src/xmpbox/schema/schema_classes.cr	ported: PhotoshopSchema text/URI props
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getCategoryProperty	missing	-	baseline
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getCity	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getCityProperty	missing	-	baseline
@@ -11686,20 +11686,20 @@ xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::Phot
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getSourceProperty	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getState	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getStateProperty	missing	-	baseline
-xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getSupplementalCategories	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getSupplementalCategories	ported	src/xmpbox/schema/schema_classes.cr	ported: PhotoshopSchema text/URI props
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getSupplementalCategoriesProperty	missing	-	baseline
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getTextLayers	missing	-	baseline
-xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getTransmissionReference	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getTransmissionReference	ported	src/xmpbox/schema/schema_classes.cr	ported: PhotoshopSchema text/URI props
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getTransmissionReferenceProperty	missing	-	baseline
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getUrgency	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getUrgencyProperty	missing	-	baseline
-xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.setAncestorID	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.setAncestorID	ported	src/xmpbox/schema/schema_classes.cr	ported: PhotoshopSchema text/URI props
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.setAncestorIDProperty	missing	-	baseline
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.setAuthorsPosition	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.setAuthorsPositionProperty	missing	-	baseline
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.setCaptionWriter	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.setCaptionWriterProperty	missing	-	baseline
-xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.setCategory	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.setCategory	ported	src/xmpbox/schema/schema_classes.cr	ported: PhotoshopSchema text/URI props
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.setCategoryProperty	missing	-	baseline
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.setCity	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.setCityProperty	missing	-	baseline
@@ -11723,9 +11723,9 @@ xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::Phot
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.setSourceProperty	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.setState	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.setStateProperty	missing	-	baseline
-xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.setSupplementalCategories	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.setSupplementalCategories	ported	src/xmpbox/schema/schema_classes.cr	ported: PhotoshopSchema text/URI props
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.setSupplementalCategoriesProperty	missing	-	baseline
-xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.setTransmissionReference	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.setTransmissionReference	ported	src/xmpbox/schema/schema_classes.cr	ported: PhotoshopSchema text/URI props
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.setTransmissionReferenceProperty	missing	-	baseline
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.setUrgency	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.setUrgencyProperty	missing	-	baseline

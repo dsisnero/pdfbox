@@ -53,6 +53,21 @@ module Xmpbox
         schema.date_created.not_nil!.to_unix.should eq(now.to_unix)
       end
 
+      it "sets and gets category, supplemental categories, transmission reference and ancestor id" do
+        meta = XMPMetadata.create_xmp_metadata
+        schema = PhotoshopSchema.new(meta)
+
+        schema.category = "Cat"
+        schema.supplemental_categories = "Sub"
+        schema.transmission_reference = "Ref"
+        schema.ancestor_id = "xmp.did:1234"
+
+        schema.category.should eq("Cat")
+        schema.supplemental_categories.should eq("Sub")
+        schema.transmission_reference.should eq("Ref")
+        schema.ancestor_id.should eq("xmp.did:1234")
+      end
+
       it "returns nil for unset properties" do
         meta = XMPMetadata.create_xmp_metadata
         schema = PhotoshopSchema.new(meta)

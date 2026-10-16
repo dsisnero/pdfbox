@@ -792,6 +792,38 @@ module Xmpbox
       def date_created : Time?
         date_property_value(DATE_CREATED)
       end
+
+      def category=(value : String) : Nil
+        set_text_property_value(CATEGORY, value)
+      end
+
+      def category : String?
+        unqualified_text_property_value(CATEGORY)
+      end
+
+      def supplemental_categories=(value : String) : Nil
+        set_text_property_value(SUPPLEMENTAL_CATEGORIES, value)
+      end
+
+      def supplemental_categories : String?
+        unqualified_text_property_value(SUPPLEMENTAL_CATEGORIES)
+      end
+
+      def transmission_reference=(value : String) : Nil
+        set_text_property_value(TRANSMISSION_REFERENCE, value)
+      end
+
+      def transmission_reference : String?
+        unqualified_text_property_value(TRANSMISSION_REFERENCE)
+      end
+
+      def ancestor_id=(value : String) : Nil
+        set_text_property_value(ANCESTOR_ID, value)
+      end
+
+      def ancestor_id : String?
+        unqualified_text_property_value(ANCESTOR_ID)
+      end
     end
 
     # EXIF: http://ns.adobe.com/exif/1.0/
