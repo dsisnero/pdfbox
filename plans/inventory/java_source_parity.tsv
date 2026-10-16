@@ -4527,9 +4527,9 @@ pdfbox/src/main/java/org/apache/pdfbox/cos/COSStream.java::method::COSStream.cre
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSStream.java::method::COSStream.createRawInputStream	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSStream.java::method::COSStream.createRawOutputStream	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSStream.java::method::COSStream.createView	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSStream.java::method::COSStream.getFilterList	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSStream.java::method::COSStream.getFilters	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSStream.java::method::COSStream.getLength	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSStream.java::method::COSStream.getFilterList	ported	src/pdfbox/cos.cr	ported: COSStream filters/filter_list/length
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSStream.java::method::COSStream.getFilters	ported	src/pdfbox/cos.cr	ported: COSStream filters/filter_list/length
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSStream.java::method::COSStream.getLength	ported	src/pdfbox/cos.cr	ported: COSStream filters/filter_list/length
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSStream.java::method::COSStream.getStreamCache	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSStream.java::method::COSStream.hasData	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSStream.java::method::COSStream.toTextString	ported	src/pdfbox/cos.cr	decodes stream data as PDF text string

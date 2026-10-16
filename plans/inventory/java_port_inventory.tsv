@@ -4527,9 +4527,9 @@ pdfbox/src/main/java/org/apache/pdfbox/cos/COSStream.java::method::COSStream.cre
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSStream.java::method::COSStream.createRawInputStream	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSStream.java::method::COSStream.createRawOutputStream	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSStream.java::method::COSStream.createView	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSStream.java::method::COSStream.getFilterList	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSStream.java::method::COSStream.getFilters	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSStream.java::method::COSStream.getLength	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSStream.java::method::COSStream.getFilterList	method	ported	src/pdfbox/cos.cr	ported: COSStream filters/filter_list/length
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSStream.java::method::COSStream.getFilters	method	ported	src/pdfbox/cos.cr	ported: COSStream filters/filter_list/length
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSStream.java::method::COSStream.getLength	method	ported	src/pdfbox/cos.cr	ported: COSStream filters/filter_list/length
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSStream.java::method::COSStream.getStreamCache	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSStream.java::method::COSStream.hasData	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSStream.java::method::COSStream.toTextString	method	ported	src/pdfbox/cos.cr	auto-generated

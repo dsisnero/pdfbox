@@ -1528,6 +1528,35 @@ module Pdfbox::Cos
       has_data
     end
 
+    # The filters to apply to the stream data: nil, a COSName, or a COSArray of
+    # COSNames. Java COSStream#getFilters.
+    def filters : Base?
+      get_dictionary_object(Name::FILTER)
+    end
+
+    # The resolved Filter objects for this stream. Java COSStream#getFilterList.
+    def filter_list : ::Array(Pdfbox::Filter::Filter)
+      current = filters
+      case current
+      when Name
+        [Pdfbox::Filter::FilterFactory::INSTANCE.filter(current)]
+      when Array
+        current.items.map do |base|
+          unless base.is_a?(Name)
+            raise ::IO::Error.new("Forbidden type in filter array: #{base.class.name}")
+          end
+          Pdfbox::Filter::FilterFactory::INSTANCE.filter(base)
+        end
+      else
+        [] of Pdfbox::Filter::Filter
+      end
+    end
+
+    # The length of the encoded stream (/Length). Java COSStream#getLength.
+    def length : Int64
+      get_int(Name::LENGTH, 0_i64)
+    end
+
     def create_raw_input_stream : ::IO
       ::IO::Memory.new(@data)
     end
