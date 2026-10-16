@@ -139,6 +139,86 @@ module Xmpbox
       def creators : Array(String)?
         unqualified_sequence_value_list(CREATOR)
       end
+
+      def remove_contributor(contributor : String) : Nil
+        remove_unqualified_bag_value(CONTRIBUTOR, contributor)
+      end
+
+      def remove_creator(creator : String) : Nil
+        remove_unqualified_sequence_value(CREATOR, creator)
+      end
+
+      def add_subject(subject : String) : Nil
+        add_unqualified_bag_value(SUBJECT, subject)
+      end
+
+      def subjects : Array(String)?
+        unqualified_bag_value_list(SUBJECT)
+      end
+
+      def remove_subject(subject : String) : Nil
+        remove_unqualified_bag_value(SUBJECT, subject)
+      end
+
+      def add_type(type : String) : Nil
+        add_unqualified_bag_value(TYPE, type)
+      end
+
+      def types : Array(String)?
+        unqualified_bag_value_list(TYPE)
+      end
+
+      def remove_type(type : String) : Nil
+        remove_unqualified_bag_value(TYPE, type)
+      end
+
+      def add_relation(relation : String) : Nil
+        add_unqualified_bag_value(RELATION, relation)
+      end
+
+      def relations : Array(String)?
+        unqualified_bag_value_list(RELATION)
+      end
+
+      def remove_relation(relation : String) : Nil
+        remove_unqualified_bag_value(RELATION, relation)
+      end
+
+      def add_language(language : String) : Nil
+        add_unqualified_bag_value(LANGUAGE, language)
+      end
+
+      def languages : Array(String)?
+        unqualified_bag_value_list(LANGUAGE)
+      end
+
+      def remove_language(language : String) : Nil
+        remove_unqualified_bag_value(LANGUAGE, language)
+      end
+
+      def add_publisher(publisher : String) : Nil
+        add_unqualified_bag_value(PUBLISHER, publisher)
+      end
+
+      def publishers : Array(String)?
+        unqualified_bag_value_list(PUBLISHER)
+      end
+
+      def remove_publisher(publisher : String) : Nil
+        remove_unqualified_bag_value(PUBLISHER, publisher)
+      end
+
+      def add_date(date : Time) : Nil
+        add_unqualified_sequence_date_value(DATE, date)
+      end
+
+      def dates : Array(Time)?
+        unqualified_sequence_date_value_list(DATE)
+      end
+
+      def remove_date(date : Time) : Nil
+        remove_unqualified_sequence_date_value(DATE, date)
+      end
     end
 
     # XMP Basic: http://ns.adobe.com/xap/1.0/

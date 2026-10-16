@@ -65,6 +65,41 @@ module Xmpbox
         schema.creators.should eq(["Alice", "Bob"])
       end
 
+      it "adds, lists and removes bag/seq array properties" do
+        meta = XMPMetadata.create_xmp_metadata
+        schema = DublinCoreSchema.new(meta)
+
+        schema.add_subject("s1")
+        schema.add_subject("s2")
+        schema.subjects.should eq(["s1", "s2"])
+        schema.remove_subject("s1")
+        schema.subjects.should eq(["s2"])
+
+        schema.add_type("t1")
+        schema.types.should eq(["t1"])
+        schema.remove_type("t1")
+        schema.types.should eq([] of String)
+
+        schema.add_relation("r1")
+        schema.relations.should eq(["r1"])
+
+        schema.add_language("en")
+        schema.languages.should eq(["en"])
+
+        schema.add_publisher("p1")
+        schema.publishers.should eq(["p1"])
+
+        now = Time.utc(2023, 6, 1, 12, 0, 0)
+        schema.add_date(now)
+        schema.dates.not_nil!.size.should eq(1)
+        schema.dates.not_nil![0].to_unix.should eq(now.to_unix)
+        schema.remove_date(now)
+        schema.dates.should eq([] of Time)
+
+        schema.remove_contributor("Alice")
+        schema.remove_creator("Alice")
+      end
+
       it "returns nil for unset properties" do
         meta = XMPMetadata.create_xmp_metadata
         schema = DublinCoreSchema.new(meta)
