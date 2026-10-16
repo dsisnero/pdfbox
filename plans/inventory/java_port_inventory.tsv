@@ -7756,7 +7756,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1Font.java::class::PDT
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1Font.java::const::ALT_NAMES	const	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1Font.java::const::LOG	const	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1Font.java::const::PFB_START_MARKER	const	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1Font.java::method::PDType1Font.codeToName	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1Font.java::method::PDType1Font.codeToName	method	ported	src/pdfbox/pdmodel/font/type1_font.cr	ported: PDType1Font codeToName
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1Font.java::method::PDType1Font.encode	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1Font.java::method::PDType1Font.findBinaryOffsetAfterExec	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1Font.java::method::PDType1Font.generateBoundingBox	method	partial	src	auto-generated
@@ -7767,10 +7767,10 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1Font.java::method::PD
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1Font.java::method::PDType1Font.getFontMatrix	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1Font.java::method::PDType1Font.getHeight	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1Font.java::method::PDType1Font.getName	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1Font.java::method::PDType1Font.getNameInFont	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1Font.java::method::PDType1Font.getNameInFont	method	ported	src/pdfbox/pdmodel/font/type1_font.cr	ported: PDType1Font getNameInFont
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1Font.java::method::PDType1Font.getNormalizedPath	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1Font.java::method::PDType1Font.getPath	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1Font.java::method::PDType1Font.getType1Font	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1Font.java::method::PDType1Font.getType1Font	method	ported	src/pdfbox/pdmodel/font/type1_font.cr	ported: PDType1Font getType1Font
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1Font.java::method::PDType1Font.getWidthFromFont	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1Font.java::method::PDType1Font.hasGlyph	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1Font.java::method::PDType1Font.isDamaged	method	partial	src	auto-generated

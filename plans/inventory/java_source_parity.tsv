@@ -7756,7 +7756,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1Font.java::class::PDT
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1Font.java::const::ALT_NAMES	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1Font.java::const::LOG	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1Font.java::const::PFB_START_MARKER	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1Font.java::method::PDType1Font.codeToName	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1Font.java::method::PDType1Font.codeToName	ported	src/pdfbox/pdmodel/font/type1_font.cr	ported: PDType1Font codeToName
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1Font.java::method::PDType1Font.encode	ported	src/pdfbox/pdmodel/font/type1_font.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1Font.java::method::PDType1Font.findBinaryOffsetAfterExec	ported	src/pdfbox/pdmodel/font/type1_font.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1Font.java::method::PDType1Font.generateBoundingBox	missing	-	baseline
@@ -7767,10 +7767,10 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1Font.java::method::PD
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1Font.java::method::PDType1Font.getFontMatrix	ported	src/pdfbox/pdmodel/font/type1_font.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1Font.java::method::PDType1Font.getHeight	ported	src/pdfbox/pdmodel/font/type1_font.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1Font.java::method::PDType1Font.getName	ported	src/pdfbox/pdmodel/font/type1_font.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1Font.java::method::PDType1Font.getNameInFont	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1Font.java::method::PDType1Font.getNameInFont	ported	src/pdfbox/pdmodel/font/type1_font.cr	ported: PDType1Font getNameInFont
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1Font.java::method::PDType1Font.getNormalizedPath	ported	src/pdfbox/pdmodel/font/type1_font.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1Font.java::method::PDType1Font.getPath	ported	src/pdfbox/pdmodel/font/type1_font.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1Font.java::method::PDType1Font.getType1Font	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1Font.java::method::PDType1Font.getType1Font	ported	src/pdfbox/pdmodel/font/type1_font.cr	ported: PDType1Font getType1Font
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1Font.java::method::PDType1Font.getWidthFromFont	ported	src/pdfbox/pdmodel/font/type1_font.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1Font.java::method::PDType1Font.hasGlyph	ported	src/pdfbox/pdmodel/font/type1_font.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1Font.java::method::PDType1Font.isDamaged	ported	src/pdfbox/pdmodel/font/type1_font.cr	reconciled: method present

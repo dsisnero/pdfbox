@@ -317,6 +317,12 @@ class Pdfbox::Pdmodel::Font::PDType1Font < Pdfbox::Pdmodel::Font::PDSimpleFont
     @generic_font
   end
 
+  # Returns the embedded or substituted Type 1 font, or nil if there is none.
+  # Java PDType1Font#getType1Font.
+  def get_type1_font # ameba:disable Naming/AccessorMethodName
+    @type1font
+  end
+
   # PDFont abstract method implementations
 
   def name : String
@@ -460,23 +466,8 @@ class Pdfbox::Pdmodel::Font::PDType1Font < Pdfbox::Pdmodel::Font::PDSimpleFont
         )
       end
 
-      # Port of Java getNameInFont: find the actual font name for this glyph
-      name_in_font = name
-      unless embedded? || has_glyph?(name)
-        # Try ALT_NAMES
-        alt = ALT_NAMES[name]?
-        if alt && alt != ".notdef" && has_glyph?(alt)
-          name_in_font = alt
-        else
-          # Try "uniXXXX" name from Unicode codepoint
-          unicode_str = glyph_list.to_unicode(name)
-          if unicode_str && unicode_str.size == 1
-            cp = unicode_str[0].ord
-            uni_name = UniUtil.get_uni_name_of_code_point(cp)
-            name_in_font = uni_name if has_glyph?(uni_name)
-          end
-        end
-      end
+      # Port of Java getNameInFont: find the actual font name for this glyph.
+      name_in_font = name_in_font(name)
 
       if name_in_font == ".notdef" || !has_glyph?(name_in_font)
         raise ArgumentError.new(
@@ -507,6 +498,48 @@ class Pdfbox::Pdmodel::Font::PDType1Font < Pdfbox::Pdmodel::Font::PDSimpleFont
     # Simple fonts use 1-byte codes
     byte = input.read_byte
     byte ? byte.to_i32 : -1
+  end
+
+  # Java PDType1Font#codeToName: the glyph name for a code, mapped to the name
+  # in the underlying font.
+  def code_to_name(code : Int32) : String
+    enc = @encoding
+    name = enc ? enc.get_name(code) : ".notdef"
+    name_in_font(name)
+  end
+
+  # Java PDType1Font#getNameInFont: maps a PostScript glyph name to the name in
+  # the underlying font, e.g. when using a TTF substitute "W" might become
+  # "uni0057".
+  private def name_in_font(name : String) : String
+    if embedded? || has_glyph?(name)
+      return name
+    end
+
+    # try alternative name
+    alt_name = ALT_NAMES[name]?
+    if alt_name && name != ".notdef" && has_glyph?(alt_name)
+      return alt_name
+    end
+
+    # try unicode name
+    unicodes = glyph_list.to_unicode(name)
+    if unicodes && unicodes.size == 1
+      uni_name = UniUtil.get_uni_name_of_code_point(unicodes[0].ord)
+      return uni_name if has_glyph?(uni_name)
+      # PDFBOX-4017: no postscript table on Windows 10, and the low uni00NN
+      # names are not found in Symbol font. Using the PDF code plus 0xF000
+      # while disregarding the encoding from the PDF works for SymbolMT.
+      if @generic_font.try(&.name) == "SymbolMT"
+        symbol_code = Pdfbox::Pdmodel::Font::Encoding::SymbolEncoding::INSTANCE.get_code(name)
+        if symbol_code != -1
+          uni_name = UniUtil.get_uni_name_of_code_point(symbol_code + 0xF000)
+          return uni_name if has_glyph?(uni_name)
+        end
+      end
+    end
+
+    ".notdef"
   end
 
   # PDVectorFont interface implementation
