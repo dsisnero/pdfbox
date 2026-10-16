@@ -2520,7 +2520,7 @@ module Fontbox::TTF
     # Obtain kerning adjustment for glyph pair {l, r}.
     def kerning(l : Int32, r : Int32) : Int32
       return 0 if @pairs.nil?
-      @pairs.not_nil!.kerning(l, r) # ameba:disable Lint/NotNil
+      @pairs.not_nil!.get_kerning(l, r) # ameba:disable Lint/NotNil
     end
 
     # Obtain kerning adjustments for a glyph sequence.
@@ -2567,7 +2567,7 @@ module Fontbox::TTF
     end
 
     private def read_subtable0_format0(data : TTFDataStream) : Nil
-      pair_data = KerningPairs.new
+      pair_data = PairData0Format0.new
       pair_data.read(data)
       @pairs = pair_data
     end
@@ -2591,15 +2591,16 @@ module Fontbox::TTF
 
     private module PairData
       abstract def read(data : TTFDataStream) : Nil
-      abstract def kerning(l : Int32, r : Int32) : Int32
+      abstract def get_kerning(l : Int32, r : Int32) : Int32
     end
 
-    # Compatibility class name used by older call sites/tests.
-    private class KerningPairs
+    # Port of the nested PairData0Format0 in Apache PDFBox KerningSubtable.
+    # (Java declares it private; it is exposed here so it can be characterized.)
+    class PairData0Format0
       include PairData
 
       @search_range : Int32 = 0
-      @pairs = [] of Tuple(Int32, Int32, Int32)
+      @pairs = [] of Array(Int32)
 
       def read(data : TTFDataStream) : Nil
         num_pairs = data.read_unsigned_short.to_i32
@@ -2610,25 +2611,34 @@ module Fontbox::TTF
           left = data.read_unsigned_short.to_i32
           right = data.read_unsigned_short.to_i32
           value = data.read_signed_short.to_i32
-          {left, right, value}
+          [left, right, value]
         end
       end
 
-      def kerning(l : Int32, r : Int32) : Int32
+      def get_kerning(l : Int32, r : Int32) : Int32
+        key = [l, r, 0]
         low = 0
         high = @pairs.size - 1
         while low <= high
           mid = (low + high) // 2
-          left, right, value = @pairs[mid]
-          if left == l && right == r
-            return value
-          elsif (left < l) || (left == l && right < r)
+          cmp = compare(@pairs[mid], key)
+          if cmp == 0
+            return @pairs[mid][2]
+          elsif cmp < 0
             low = mid + 1
           else
             high = mid - 1
           end
         end
         0
+      end
+
+      # Compares pairs by left glyph id, then right glyph id (Java
+      # Comparator<int[]> semantics).
+      def compare(p1 : Array(Int32), p2 : Array(Int32)) : Int32
+        cmp1 = p1[0] <=> p2[0]
+        return cmp1 unless cmp1 == 0
+        p1[1] <=> p2[1]
       end
     end
   end

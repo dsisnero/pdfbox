@@ -2254,7 +2254,7 @@ fontbox/src/main/java/org/apache/fontbox/ttf/IndexToLocationTable.java::method::
 fontbox/src/main/java/org/apache/fontbox/ttf/IndexToLocationTable.java::method::IndexToLocationTable.read	ported	src/fontbox/ttf/ttf_tables.cr	reconciled: method present
 fontbox/src/main/java/org/apache/fontbox/ttf/IndexToLocationTable.java::method::IndexToLocationTable.setOffsets	ported	src/fontbox/ttf/ttf_tables.cr	reconciled: method present
 fontbox/src/main/java/org/apache/fontbox/ttf/KerningSubtable.java::class::KerningSubtable	ported	src/fontbox/ttf/ttf_tables.cr	reconciled: class present
-fontbox/src/main/java/org/apache/fontbox/ttf/KerningSubtable.java::class::PairData0Format0	missing	-	baseline
+fontbox/src/main/java/org/apache/fontbox/ttf/KerningSubtable.java::class::PairData0Format0	ported	src/fontbox/ttf/ttf_tables.cr	ported: KerningSubtable PairData0Format0
 fontbox/src/main/java/org/apache/fontbox/ttf/KerningSubtable.java::const::COVERAGE_CROSS_STREAM	missing	-	baseline
 fontbox/src/main/java/org/apache/fontbox/ttf/KerningSubtable.java::const::COVERAGE_CROSS_STREAM_SHIFT	missing	-	baseline
 fontbox/src/main/java/org/apache/fontbox/ttf/KerningSubtable.java::const::COVERAGE_FORMAT	missing	-	baseline
@@ -2264,7 +2264,7 @@ fontbox/src/main/java/org/apache/fontbox/ttf/KerningSubtable.java::const::COVERA
 fontbox/src/main/java/org/apache/fontbox/ttf/KerningSubtable.java::const::COVERAGE_MINIMUMS	missing	-	baseline
 fontbox/src/main/java/org/apache/fontbox/ttf/KerningSubtable.java::const::COVERAGE_MINIMUMS_SHIFT	missing	-	baseline
 fontbox/src/main/java/org/apache/fontbox/ttf/KerningSubtable.java::const::LOG	missing	-	baseline
-fontbox/src/main/java/org/apache/fontbox/ttf/KerningSubtable.java::interface::PairData	missing	-	baseline
+fontbox/src/main/java/org/apache/fontbox/ttf/KerningSubtable.java::interface::PairData	ported	src/fontbox/ttf/ttf_tables.cr	ported: KerningSubtable PairData0Format0
 fontbox/src/main/java/org/apache/fontbox/ttf/KerningSubtable.java::method::KerningSubtable.getBits	ported	src/fontbox/ttf/ttf_tables.cr	reconciled: method present
 fontbox/src/main/java/org/apache/fontbox/ttf/KerningSubtable.java::method::KerningSubtable.getKerning	ported	src/fontbox/ttf/ttf_tables.cr	reconciled: method present
 fontbox/src/main/java/org/apache/fontbox/ttf/KerningSubtable.java::method::KerningSubtable.isBitsSet	ported	src/fontbox/ttf/ttf_tables.cr	reconciled: method present
@@ -2274,9 +2274,9 @@ fontbox/src/main/java/org/apache/fontbox/ttf/KerningSubtable.java::method::Kerni
 fontbox/src/main/java/org/apache/fontbox/ttf/KerningSubtable.java::method::KerningSubtable.readSubtable0Format0	ported	src/fontbox/ttf/ttf_tables.cr	reconciled: method present
 fontbox/src/main/java/org/apache/fontbox/ttf/KerningSubtable.java::method::KerningSubtable.readSubtable0Format2	ported	src/fontbox/ttf/ttf_tables.cr	reconciled: method present
 fontbox/src/main/java/org/apache/fontbox/ttf/KerningSubtable.java::method::KerningSubtable.readSubtable1	ported	src/fontbox/ttf/ttf_tables.cr	reconciled: method present
-fontbox/src/main/java/org/apache/fontbox/ttf/KerningSubtable.java::method::PairData0Format0.compare	missing	-	baseline
-fontbox/src/main/java/org/apache/fontbox/ttf/KerningSubtable.java::method::PairData0Format0.getKerning	missing	-	baseline
-fontbox/src/main/java/org/apache/fontbox/ttf/KerningSubtable.java::method::PairData0Format0.read	missing	-	baseline
+fontbox/src/main/java/org/apache/fontbox/ttf/KerningSubtable.java::method::PairData0Format0.compare	ported	src/fontbox/ttf/ttf_tables.cr	ported: KerningSubtable PairData0Format0
+fontbox/src/main/java/org/apache/fontbox/ttf/KerningSubtable.java::method::PairData0Format0.getKerning	ported	src/fontbox/ttf/ttf_tables.cr	ported: KerningSubtable PairData0Format0
+fontbox/src/main/java/org/apache/fontbox/ttf/KerningSubtable.java::method::PairData0Format0.read	ported	src/fontbox/ttf/ttf_tables.cr	ported: KerningSubtable PairData0Format0
 fontbox/src/main/java/org/apache/fontbox/ttf/KerningTable.java::class::KerningTable	ported	src/fontbox/ttf/ttf_tables.cr	reconciled: class present
 fontbox/src/main/java/org/apache/fontbox/ttf/KerningTable.java::const::LOG	missing	-	baseline
 fontbox/src/main/java/org/apache/fontbox/ttf/KerningTable.java::const::TAG	missing	-	baseline

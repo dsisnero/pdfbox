@@ -2254,7 +2254,7 @@ fontbox/src/main/java/org/apache/fontbox/ttf/IndexToLocationTable.java::method::
 fontbox/src/main/java/org/apache/fontbox/ttf/IndexToLocationTable.java::method::IndexToLocationTable.read	method	ported	src	auto-generated
 fontbox/src/main/java/org/apache/fontbox/ttf/IndexToLocationTable.java::method::IndexToLocationTable.setOffsets	method	ported	src	auto-generated
 fontbox/src/main/java/org/apache/fontbox/ttf/KerningSubtable.java::class::KerningSubtable	class	partial	src	auto-generated
-fontbox/src/main/java/org/apache/fontbox/ttf/KerningSubtable.java::class::PairData0Format0	class	missing	-	auto-generated
+fontbox/src/main/java/org/apache/fontbox/ttf/KerningSubtable.java::class::PairData0Format0	class	ported	src/fontbox/ttf/ttf_tables.cr	ported: KerningSubtable PairData0Format0
 fontbox/src/main/java/org/apache/fontbox/ttf/KerningSubtable.java::const::COVERAGE_CROSS_STREAM	const	missing	-	auto-generated
 fontbox/src/main/java/org/apache/fontbox/ttf/KerningSubtable.java::const::COVERAGE_CROSS_STREAM_SHIFT	const	missing	-	auto-generated
 fontbox/src/main/java/org/apache/fontbox/ttf/KerningSubtable.java::const::COVERAGE_FORMAT	const	missing	-	auto-generated
@@ -2264,7 +2264,7 @@ fontbox/src/main/java/org/apache/fontbox/ttf/KerningSubtable.java::const::COVERA
 fontbox/src/main/java/org/apache/fontbox/ttf/KerningSubtable.java::const::COVERAGE_MINIMUMS	const	missing	-	auto-generated
 fontbox/src/main/java/org/apache/fontbox/ttf/KerningSubtable.java::const::COVERAGE_MINIMUMS_SHIFT	const	missing	-	auto-generated
 fontbox/src/main/java/org/apache/fontbox/ttf/KerningSubtable.java::const::LOG	const	missing	-	auto-generated
-fontbox/src/main/java/org/apache/fontbox/ttf/KerningSubtable.java::interface::PairData	interface	missing	-	auto-generated
+fontbox/src/main/java/org/apache/fontbox/ttf/KerningSubtable.java::interface::PairData	interface	ported	src/fontbox/ttf/ttf_tables.cr	ported: KerningSubtable PairData0Format0
 fontbox/src/main/java/org/apache/fontbox/ttf/KerningSubtable.java::method::KerningSubtable.getBits	method	ported	src	auto-generated
 fontbox/src/main/java/org/apache/fontbox/ttf/KerningSubtable.java::method::KerningSubtable.getKerning	method	ported	src	auto-generated
 fontbox/src/main/java/org/apache/fontbox/ttf/KerningSubtable.java::method::KerningSubtable.isBitsSet	method	ported	src	auto-generated
@@ -2274,9 +2274,9 @@ fontbox/src/main/java/org/apache/fontbox/ttf/KerningSubtable.java::method::Kerni
 fontbox/src/main/java/org/apache/fontbox/ttf/KerningSubtable.java::method::KerningSubtable.readSubtable0Format0	method	ported	src	auto-generated
 fontbox/src/main/java/org/apache/fontbox/ttf/KerningSubtable.java::method::KerningSubtable.readSubtable0Format2	method	ported	src	auto-generated
 fontbox/src/main/java/org/apache/fontbox/ttf/KerningSubtable.java::method::KerningSubtable.readSubtable1	method	ported	src	auto-generated
-fontbox/src/main/java/org/apache/fontbox/ttf/KerningSubtable.java::method::PairData0Format0.compare	method	missing	-	auto-generated
-fontbox/src/main/java/org/apache/fontbox/ttf/KerningSubtable.java::method::PairData0Format0.getKerning	method	missing	-	auto-generated
-fontbox/src/main/java/org/apache/fontbox/ttf/KerningSubtable.java::method::PairData0Format0.read	method	missing	-	auto-generated
+fontbox/src/main/java/org/apache/fontbox/ttf/KerningSubtable.java::method::PairData0Format0.compare	method	ported	src/fontbox/ttf/ttf_tables.cr	ported: KerningSubtable PairData0Format0
+fontbox/src/main/java/org/apache/fontbox/ttf/KerningSubtable.java::method::PairData0Format0.getKerning	method	ported	src/fontbox/ttf/ttf_tables.cr	ported: KerningSubtable PairData0Format0
+fontbox/src/main/java/org/apache/fontbox/ttf/KerningSubtable.java::method::PairData0Format0.read	method	ported	src/fontbox/ttf/ttf_tables.cr	ported: KerningSubtable PairData0Format0
 fontbox/src/main/java/org/apache/fontbox/ttf/KerningTable.java::class::KerningTable	class	partial	src	auto-generated
 fontbox/src/main/java/org/apache/fontbox/ttf/KerningTable.java::const::LOG	const	missing	-	auto-generated
 fontbox/src/main/java/org/apache/fontbox/ttf/KerningTable.java::const::TAG	const	missing	-	auto-generated
