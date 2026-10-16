@@ -11849,14 +11849,14 @@ xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::con
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::const::VERSIONID	const	missing	-	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::const::VERSIONS	const	missing	-	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.addHistory	method	ported	src	auto-generated
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.addIngredients	method	partial	src	auto-generated
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.addVersions	method	partial	src	auto-generated
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.addIngredients	method	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPMediaManagementSchema versions/ingredients/historyProperty
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.addVersions	method	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPMediaManagementSchema versions/ingredients/historyProperty
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.getDerivedFromProperty	method	ported	src/xmpbox/schema/schema_classes.cr	ported: Photoshop/MediaManagement resource accessors
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.getDocumentID	method	ported	src	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.getDocumentIDProperty	method	partial	src	auto-generated
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.getHistoryProperty	method	partial	src	auto-generated
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.getIngredients	method	partial	src	auto-generated
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.getIngredientsProperty	method	partial	src	auto-generated
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.getHistoryProperty	method	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPMediaManagementSchema versions/ingredients/historyProperty
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.getIngredients	method	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPMediaManagementSchema versions/ingredients/historyProperty
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.getIngredientsProperty	method	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPMediaManagementSchema versions/ingredients/historyProperty
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.getInstanceID	method	ported	src	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.getInstanceIDProperty	method	partial	src	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.getLastURL	method	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPMediaManagementSchema managerVariant/lastURL/saveID
@@ -11880,8 +11880,8 @@ xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::met
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.getSaveIDProperty	method	partial	src	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.getVersionID	method	ported	src	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.getVersionIDProperty	method	partial	src	auto-generated
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.getVersions	method	partial	src	auto-generated
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.getVersionsProperty	method	partial	src	auto-generated
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.getVersions	method	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPMediaManagementSchema versions/ingredients/historyProperty
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.getVersionsProperty	method	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPMediaManagementSchema versions/ingredients/historyProperty
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.setDerivedFromProperty	method	ported	src/xmpbox/schema/schema_classes.cr	ported: Photoshop/MediaManagement resource accessors
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.setDocumentID	method	ported	src	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.setDocumentIDProperty	method	partial	src	auto-generated

@@ -40,6 +40,32 @@ module Xmpbox
         schema.history.should eq(["action 1", "action 2", "action 3"])
       end
 
+      it "adds and lists versions and ingredients, and exposes their properties" do
+        meta = XMPMetadata.create_xmp_metadata
+        schema = XMPMediaManagementSchema.new(meta)
+
+        schema.add_versions("1.0")
+        schema.add_versions("1.1")
+        schema.versions.should eq(["1.0", "1.1"])
+        schema.versions_property.not_nil!.property_name.should eq("Versions")
+
+        schema.add_ingredients("ing1")
+        schema.add_ingredients("ing2")
+        schema.ingredients.should eq(["ing1", "ing2"])
+        schema.ingredients_property.not_nil!.property_name.should eq("Ingredients")
+      end
+
+      it "exposes the history array property" do
+        meta = XMPMetadata.create_xmp_metadata
+        schema = XMPMediaManagementSchema.new(meta)
+
+        schema.add_history("action 1")
+        history_property = schema.history_property
+        history_property.should_not be_nil
+        history_property.not_nil!.property_name.should eq("History")
+        history_property.not_nil!.all_properties.size.should eq(1)
+      end
+
       it "sets and gets manager variant, last URL and save ID" do
         meta = XMPMetadata.create_xmp_metadata
         schema = XMPMediaManagementSchema.new(meta)
@@ -81,6 +107,11 @@ module Xmpbox
         schema.version_id.should be_nil
         schema.derived_from_property.should be_nil
         schema.managed_from_property.should be_nil
+        schema.versions.should be_nil
+        schema.versions_property.should be_nil
+        schema.ingredients.should be_nil
+        schema.ingredients_property.should be_nil
+        schema.history_property.should be_nil
       end
     end
   end

@@ -370,6 +370,7 @@ module Xmpbox
       MANAGED_FROM         = "ManagedFrom"
       MANAGER_VARIANT      = "ManagerVariant"
       VERSIONS             = "Versions"
+      INGREDIENTS          = "Ingredients"
       LAST_URL             = "LastURL"
       RENDITION_OF         = "RenditionOf"
       SAVE_ID              = "SaveID"
@@ -394,6 +395,7 @@ module Xmpbox
           MANAGED_FROM         => Type::PropertyTypeDesc.new(type: Type::Types::ResourceRef),
           MANAGER_VARIANT      => Type::PropertyTypeDesc.new(type: Type::Types::Text),
           VERSIONS             => Type::PropertyTypeDesc.new(type: Type::Types::Version, card: Type::Cardinality::Seq),
+          INGREDIENTS          => Type::PropertyTypeDesc.new(type: Type::Types::Text, card: Type::Cardinality::Bag),
           LAST_URL             => Type::PropertyTypeDesc.new(type: Type::Types::URL),
           RENDITION_OF         => Type::PropertyTypeDesc.new(type: Type::Types::ResourceRef),
           SAVE_ID              => Type::PropertyTypeDesc.new(type: Type::Types::Integer),
@@ -502,6 +504,34 @@ module Xmpbox
 
       def history : Array(String)?
         unqualified_sequence_value_list(HISTORY)
+      end
+
+      def history_property : Type::ArrayProperty?
+        array_property(HISTORY)
+      end
+
+      def add_versions(value : String) : Nil
+        add_qualified_bag_value(VERSIONS, value)
+      end
+
+      def versions_property : Type::ArrayProperty?
+        array_property(VERSIONS)
+      end
+
+      def versions : Array(String)?
+        unqualified_bag_value_list(VERSIONS)
+      end
+
+      def add_ingredients(value : String) : Nil
+        add_qualified_bag_value(INGREDIENTS, value)
+      end
+
+      def ingredients_property : Type::ArrayProperty?
+        array_property(INGREDIENTS)
+      end
+
+      def ingredients : Array(String)?
+        unqualified_bag_value_list(INGREDIENTS)
       end
 
       def derived_from_property : Type::ResourceRefType?

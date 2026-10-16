@@ -11849,14 +11849,14 @@ xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::con
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::const::VERSIONID	missing	-	baseline
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::const::VERSIONS	missing	-	baseline
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.addHistory	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.addIngredients	missing	-	baseline
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.addVersions	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.addIngredients	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPMediaManagementSchema versions/ingredients/historyProperty
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.addVersions	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPMediaManagementSchema versions/ingredients/historyProperty
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.getDerivedFromProperty	ported	src/xmpbox/schema/schema_classes.cr	ported: Photoshop/MediaManagement resource accessors
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.getDocumentID	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.getDocumentIDProperty	missing	-	baseline
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.getHistoryProperty	missing	-	baseline
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.getIngredients	missing	-	baseline
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.getIngredientsProperty	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.getHistoryProperty	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPMediaManagementSchema versions/ingredients/historyProperty
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.getIngredients	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPMediaManagementSchema versions/ingredients/historyProperty
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.getIngredientsProperty	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPMediaManagementSchema versions/ingredients/historyProperty
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.getInstanceID	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.getInstanceIDProperty	missing	-	baseline
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.getLastURL	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPMediaManagementSchema managerVariant/lastURL/saveID
@@ -11880,8 +11880,8 @@ xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::met
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.getSaveIDProperty	missing	-	baseline
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.getVersionID	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.getVersionIDProperty	missing	-	baseline
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.getVersions	missing	-	baseline
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.getVersionsProperty	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.getVersions	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPMediaManagementSchema versions/ingredients/historyProperty
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.getVersionsProperty	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPMediaManagementSchema versions/ingredients/historyProperty
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.setDerivedFromProperty	ported	src/xmpbox/schema/schema_classes.cr	ported: Photoshop/MediaManagement resource accessors
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.setDocumentID	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.setDocumentIDProperty	missing	-	baseline
