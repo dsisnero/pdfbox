@@ -3757,13 +3757,13 @@ pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictio
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.containsKey	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.containsValue	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.entrySet	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.forEach	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.forEach	ported	src/pdfbox/cos.cr	ported: COSDictionary typed getters
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.getBoolean	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.getCOSArray	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.getCOSDictionary	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.getCOSName	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.getCOSArray	ported	src/pdfbox/cos.cr	ported: COSDictionary typed getters
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.getCOSDictionary	ported	src/pdfbox/cos.cr	ported: COSDictionary typed getters
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.getCOSName	ported	src/pdfbox/cos.cr	ported: COSDictionary typed getters
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.getCOSObject	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.getCOSStream	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.getCOSStream	ported	src/pdfbox/cos.cr	ported: COSDictionary typed getters
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.getDate	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.getDictionaryObject	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.getDictionaryString	missing	-	baseline
@@ -3774,7 +3774,7 @@ pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictio
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.getFloat	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.getInt	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.getItem	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.getKeyForValue	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.getKeyForValue	ported	src/pdfbox/cos.cr	ported: COSDictionary typed getters
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.getLong	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.getNameAsString	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.getObjectFromPath	ported	src/pdfbox/cos.cr	ported: COSDictionary getObjectFromPath

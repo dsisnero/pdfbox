@@ -1285,6 +1285,39 @@ module Pdfbox::Cos
       dict.as?(Dictionary) if dict
     end
 
+    # The value of the given key if it is a COSArray, otherwise nil.
+    # Java COSDictionary#getCOSArray.
+    def get_cos_array(key : Name) : Array?
+      get_dictionary_object(key).as?(Array)
+    end
+
+    # The value of the given key if it is a COSName, otherwise nil.
+    # Java COSDictionary#getCOSName.
+    def get_cos_name(key : Name) : Name?
+      get_dictionary_object(key).as?(Name)
+    end
+
+    # The value of the given key if it is a COSStream, otherwise nil.
+    # Java COSDictionary#getCOSStream.
+    def get_cos_stream(key : Name) : Stream?
+      get_dictionary_object(key).as?(Stream)
+    end
+
+    # The name of the first entry whose value equals the given value, else nil.
+    # Java COSDictionary#getKeyForValue.
+    def get_key_for_value(value : Base) : Name?
+      @entries.each do |name, base|
+        return name if base == value
+      end
+      nil
+    end
+
+    # Iterates over the name/value entries in insertion order.
+    # Java COSDictionary#forEach(BiConsumer).
+    def each(& : (Name, Base) ->) : Nil
+      @entries.each { |name, base| yield name, base }
+    end
+
     # Returns the nested value addressed by an object path, resolving dictionary
     # keys with get_dictionary_object and array indexes (which may be written as
     # "0" or "\[0\]") with get_object. Java COSDictionary#getObjectFromPath.

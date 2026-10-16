@@ -3757,13 +3757,13 @@ pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictio
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.containsKey	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.containsValue	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.entrySet	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.forEach	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.forEach	method	ported	src/pdfbox/cos.cr	ported: COSDictionary typed getters
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.getBoolean	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.getCOSArray	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.getCOSDictionary	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.getCOSName	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.getCOSArray	method	ported	src/pdfbox/cos.cr	ported: COSDictionary typed getters
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.getCOSDictionary	method	ported	src/pdfbox/cos.cr	ported: COSDictionary typed getters
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.getCOSName	method	ported	src/pdfbox/cos.cr	ported: COSDictionary typed getters
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.getCOSObject	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.getCOSStream	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.getCOSStream	method	ported	src/pdfbox/cos.cr	ported: COSDictionary typed getters
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.getDate	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.getDictionaryObject	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.getDictionaryString	method	partial	src	auto-generated
@@ -3774,7 +3774,7 @@ pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictio
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.getFloat	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.getInt	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.getItem	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.getKeyForValue	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.getKeyForValue	method	ported	src/pdfbox/cos.cr	ported: COSDictionary typed getters
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.getLong	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.getNameAsString	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.getObjectFromPath	method	ported	src/pdfbox/cos.cr	ported: COSDictionary getObjectFromPath
