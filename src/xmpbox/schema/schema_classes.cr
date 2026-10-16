@@ -576,7 +576,7 @@ module Xmpbox
       end
 
       def last_url=(value : String) : Nil
-        set_text_property_value(LAST_URL, value)
+        set_specified_simple_type_property(Type::Types::URL, LAST_URL, value)
       end
 
       def last_url : String?
@@ -655,6 +655,61 @@ module Xmpbox
 
       def managed_from_property=(tt : Type::ResourceRefType) : Nil
         add_property(tt)
+      end
+
+      def document_id_property : Type::TextType?
+        unqualified_text_property(DOCUMENT_ID)
+      end
+
+      def instance_id_property : Type::TextType?
+        unqualified_text_property(INSTANCE_ID)
+      end
+
+      def manager_property : Type::TextType?
+        unqualified_text_property(MANAGER)
+      end
+
+      def manage_to_property : Type::TextType?
+        unqualified_text_property(MANAGE_TO)
+      end
+
+      def manage_ui_property : Type::TextType?
+        unqualified_text_property(MANAGE_UI)
+      end
+
+      def original_document_id_property : Type::TextType?
+        unqualified_text_property(ORIGINAL_DOCUMENT_ID)
+      end
+
+      def rendition_class_property : Type::TextType?
+        unqualified_text_property(RENDITION_CLASS)
+      end
+
+      def rendition_params_property : Type::TextType?
+        unqualified_text_property(RENDITION_PARAMS)
+      end
+
+      def version_id_property : Type::TextType?
+        unqualified_text_property(VERSION_ID)
+      end
+
+      def manager_variant_property : Type::TextType?
+        unqualified_text_property(MANAGER_VARIANT)
+      end
+
+      def last_url_property : Type::URLType?
+        prop = abstract_property(LAST_URL)
+        if prop
+          if prop.is_a?(Type::URLType)
+            return prop
+          end
+          raise Type::BadFieldValueException.new("Property asked is not a URL Property")
+        end
+        nil
+      end
+
+      def save_id_property : Type::IntegerType?
+        integer_property(SAVE_ID)
       end
     end
 

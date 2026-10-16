@@ -97,6 +97,38 @@ module Xmpbox
         schema.managed_from_property.not_nil!.document_id.should eq("xmp.did:managed")
       end
 
+      it "exposes the property getters" do
+        meta = XMPMetadata.create_xmp_metadata
+        schema = XMPMediaManagementSchema.new(meta)
+
+        schema.document_id = "uuid:doc"
+        schema.instance_id = "uuid:inst"
+        schema.manager = "Raoul"
+        schema.manage_to = "uuid:36"
+        schema.manage_ui = "uuid:3635"
+        schema.original_document_id = "uuid:142"
+        schema.rendition_class = "proof:pdf"
+        schema.rendition_params = "params"
+        schema.version_id = "14"
+        schema.manager_variant = "variant"
+        schema.last_url = "http://example.com/"
+        schema.save_id = 7
+
+        schema.document_id_property.not_nil!.property_name.should eq("DocumentID")
+        schema.instance_id_property.not_nil!.property_name.should eq("InstanceID")
+        schema.manager_property.not_nil!.property_name.should eq("Manager")
+        schema.manage_to_property.not_nil!.property_name.should eq("ManageTo")
+        schema.manage_ui_property.not_nil!.property_name.should eq("ManageUI")
+        schema.original_document_id_property.not_nil!.property_name.should eq("OriginalDocumentID")
+        schema.rendition_class_property.not_nil!.property_name.should eq("RenditionClass")
+        schema.rendition_params_property.not_nil!.property_name.should eq("RenditionParams")
+        schema.version_id_property.not_nil!.property_name.should eq("VersionID")
+        schema.manager_variant_property.not_nil!.property_name.should eq("ManagerVariant")
+        schema.last_url_property.not_nil!.property_name.should eq("LastURL")
+        schema.last_url_property.not_nil!.should be_a(Xmpbox::Type::URLType)
+        schema.save_id_property.not_nil!.property_name.should eq("SaveID")
+      end
+
       it "returns nil for unset properties" do
         meta = XMPMetadata.create_xmp_metadata
         schema = XMPMediaManagementSchema.new(meta)
