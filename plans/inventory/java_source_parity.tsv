@@ -4681,16 +4681,16 @@ pdfbox/src/main/java/org/apache/pdfbox/filter/CryptFilter.java::class::CryptFilt
 pdfbox/src/main/java/org/apache/pdfbox/filter/CryptFilter.java::method::CryptFilter.decode	ported	src/pdfbox/filter/crypt_filter.cr	stale inventory; class ported
 pdfbox/src/main/java/org/apache/pdfbox/filter/CryptFilter.java::method::CryptFilter.encode	ported	src/pdfbox/filter/crypt_filter.cr	stale inventory; class ported
 pdfbox/src/main/java/org/apache/pdfbox/filter/DCTFilter.java::class::DCTFilter	ported	src/pdfbox/filter/dct_filter.cr	stale inventory; class ported (CrImage-based)
-pdfbox/src/main/java/org/apache/pdfbox/filter/DCTFilter.java::const::ADOBE	ported	src/pdfbox/filter/dct_filter.cr	stale inventory; class ported (CrImage-based)
+pdfbox/src/main/java/org/apache/pdfbox/filter/DCTFilter.java::const::ADOBE	ported	src/pdfbox/filter/dct_filter.cr	ported: DCTFilter clamp / getAdobeTransformByBruteForce
 pdfbox/src/main/java/org/apache/pdfbox/filter/DCTFilter.java::const::LOG	ported	src/pdfbox/filter/dct_filter.cr	stale inventory; class ported (CrImage-based)
-pdfbox/src/main/java/org/apache/pdfbox/filter/DCTFilter.java::const::POS_TRANSFORM	ported	src/pdfbox/filter/dct_filter.cr	stale inventory; class ported (CrImage-based)
-pdfbox/src/main/java/org/apache/pdfbox/filter/DCTFilter.java::method::DCTFilter.clamp	partial	-	YCCK→CMYK / BGR→RGB / Adobe-transform handled by CrImage JPEG reader (limited for 4-channel)
+pdfbox/src/main/java/org/apache/pdfbox/filter/DCTFilter.java::const::POS_TRANSFORM	ported	src/pdfbox/filter/dct_filter.cr	ported: DCTFilter clamp / getAdobeTransformByBruteForce
+pdfbox/src/main/java/org/apache/pdfbox/filter/DCTFilter.java::method::DCTFilter.clamp	ported	src/pdfbox/filter/dct_filter.cr	ported: DCTFilter clamp / getAdobeTransformByBruteForce
 pdfbox/src/main/java/org/apache/pdfbox/filter/DCTFilter.java::method::DCTFilter.decode	ported	src/pdfbox/filter/dct_filter.cr	decode via CrImage; encode raises UnsupportedOperationError (Java parity)
 pdfbox/src/main/java/org/apache/pdfbox/filter/DCTFilter.java::method::DCTFilter.encode	ported	src/pdfbox/filter/dct_filter.cr	decode via CrImage; encode raises UnsupportedOperationError (Java parity)
 pdfbox/src/main/java/org/apache/pdfbox/filter/DCTFilter.java::method::DCTFilter.fromBGRtoRGB	partial	-	YCCK→CMYK / BGR→RGB / Adobe-transform handled by CrImage JPEG reader (limited for 4-channel)
 pdfbox/src/main/java/org/apache/pdfbox/filter/DCTFilter.java::method::DCTFilter.fromYCCKtoCMYK	partial	-	YCCK→CMYK / BGR→RGB / Adobe-transform handled by CrImage JPEG reader (limited for 4-channel)
 pdfbox/src/main/java/org/apache/pdfbox/filter/DCTFilter.java::method::DCTFilter.getAdobeTransform	partial	-	YCCK→CMYK / BGR→RGB / Adobe-transform handled by CrImage JPEG reader (limited for 4-channel)
-pdfbox/src/main/java/org/apache/pdfbox/filter/DCTFilter.java::method::DCTFilter.getAdobeTransformByBruteForce	partial	-	YCCK→CMYK / BGR→RGB / Adobe-transform handled by CrImage JPEG reader (limited for 4-channel)
+pdfbox/src/main/java/org/apache/pdfbox/filter/DCTFilter.java::method::DCTFilter.getAdobeTransformByBruteForce	ported	src/pdfbox/filter/dct_filter.cr	ported: DCTFilter clamp / getAdobeTransformByBruteForce
 pdfbox/src/main/java/org/apache/pdfbox/filter/DCTFilter.java::method::DCTFilter.getNumChannels	partial	-	YCCK→CMYK / BGR→RGB / Adobe-transform handled by CrImage JPEG reader (limited for 4-channel)
 pdfbox/src/main/java/org/apache/pdfbox/filter/DCTFilter.java::method::DCTFilter.readImageRaster	partial	-	YCCK→CMYK / BGR→RGB / Adobe-transform handled by CrImage JPEG reader (limited for 4-channel)
 pdfbox/src/main/java/org/apache/pdfbox/filter/DecodeOptions.java::class::DecodeOptions	ported	src/pdfbox/filter/decode_options.cr	stale inventory; class ported

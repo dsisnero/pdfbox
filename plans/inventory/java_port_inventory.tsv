@@ -4681,16 +4681,16 @@ pdfbox/src/main/java/org/apache/pdfbox/filter/CryptFilter.java::class::CryptFilt
 pdfbox/src/main/java/org/apache/pdfbox/filter/CryptFilter.java::method::CryptFilter.decode	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/filter/CryptFilter.java::method::CryptFilter.encode	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/filter/DCTFilter.java::class::DCTFilter	class	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/filter/DCTFilter.java::const::ADOBE	const	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/filter/DCTFilter.java::const::ADOBE	const	ported	src/pdfbox/filter/dct_filter.cr	ported: DCTFilter clamp / getAdobeTransformByBruteForce
 pdfbox/src/main/java/org/apache/pdfbox/filter/DCTFilter.java::const::LOG	const	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/filter/DCTFilter.java::const::POS_TRANSFORM	const	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/filter/DCTFilter.java::method::DCTFilter.clamp	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/filter/DCTFilter.java::const::POS_TRANSFORM	const	ported	src/pdfbox/filter/dct_filter.cr	ported: DCTFilter clamp / getAdobeTransformByBruteForce
+pdfbox/src/main/java/org/apache/pdfbox/filter/DCTFilter.java::method::DCTFilter.clamp	method	ported	src/pdfbox/filter/dct_filter.cr	ported: DCTFilter clamp / getAdobeTransformByBruteForce
 pdfbox/src/main/java/org/apache/pdfbox/filter/DCTFilter.java::method::DCTFilter.decode	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/filter/DCTFilter.java::method::DCTFilter.encode	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/filter/DCTFilter.java::method::DCTFilter.fromBGRtoRGB	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/filter/DCTFilter.java::method::DCTFilter.fromYCCKtoCMYK	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/filter/DCTFilter.java::method::DCTFilter.getAdobeTransform	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/filter/DCTFilter.java::method::DCTFilter.getAdobeTransformByBruteForce	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/filter/DCTFilter.java::method::DCTFilter.getAdobeTransformByBruteForce	method	ported	src/pdfbox/filter/dct_filter.cr	ported: DCTFilter clamp / getAdobeTransformByBruteForce
 pdfbox/src/main/java/org/apache/pdfbox/filter/DCTFilter.java::method::DCTFilter.getNumChannels	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/filter/DCTFilter.java::method::DCTFilter.readImageRaster	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/filter/DecodeOptions.java::class::DecodeOptions	class	partial	src	auto-generated
