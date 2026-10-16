@@ -8524,8 +8524,8 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDTilingPattern.
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDTilingPattern.java::const::TILING_NO_DISTORTION	const	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDTilingPattern.java::method::PDTilingPattern.getBBox	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDTilingPattern.java::method::PDTilingPattern.getContentStream	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDTilingPattern.java::method::PDTilingPattern.getContents	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDTilingPattern.java::method::PDTilingPattern.getContentsForRandomAccess	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDTilingPattern.java::method::PDTilingPattern.getContents	method	ported	src/pdfbox/pdmodel/graphics/pattern/pdtiling_pattern.cr	ported: PDTilingPattern contents
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDTilingPattern.java::method::PDTilingPattern.getContentsForRandomAccess	method	ported	src/pdfbox/pdmodel/graphics/pattern/pdtiling_pattern.cr	ported: PDTilingPattern contents
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDTilingPattern.java::method::PDTilingPattern.getPaintType	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDTilingPattern.java::method::PDTilingPattern.getPatternType	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDTilingPattern.java::method::PDTilingPattern.getResources	method	ported	src	auto-generated

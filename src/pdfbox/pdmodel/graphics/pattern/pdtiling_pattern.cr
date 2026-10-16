@@ -63,6 +63,17 @@ module Pdfbox::Pdmodel::Graphics::Pattern
       Pdfbox::Pdmodel::Common::PDStream.new(@stream)
     end
 
+    # The decoded pattern contents as an IO. Java PDTilingPattern#getContents.
+    def contents : ::IO
+      content_stream.create_input_stream
+    end
+
+    # The decoded pattern contents as a random access read.
+    # Java PDTilingPattern#getContentsForRandomAccess.
+    def contents_for_random_access : Pdfbox::IO::RandomAccessRead
+      @stream.create_view
+    end
+
     def resources : Pdfbox::Pdmodel::PDResources?
       @stream.get_dictionary(Pdfbox::Cos::Name.new("Resources")).try do |dictionary|
         Pdfbox::Pdmodel::PDResources.new(dictionary, @resource_cache)
