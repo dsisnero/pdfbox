@@ -24,9 +24,6 @@ class Pdfbox::Pdmodel::Font::PDType0Font < Pdfbox::Pdmodel::Font::PDFont
   Log = ::Log.for(self)
   Cos = Pdfbox::Cos
 
-  class PDCIDFontType2Embedder
-  end
-
   # Instance variables
   @descendant_font : PDCIDFont?
   @no_unicode = Set(Int32).new
@@ -36,7 +33,6 @@ class Pdfbox::Pdmodel::Font::PDType0Font < Pdfbox::Pdmodel::Font::PDFont
   @c_map_ucs2 : Fontbox::CMap::CMap?
   @is_cmap_predefined : Bool = false
   @is_descendant_cjk : Bool = false
-  @embedder : PDCIDFontType2Embedder?
   @ttf : Fontbox::TTF::TrueTypeFont?
   @embed_subset : Bool = false
   @subset_code_points = Set(Int32).new
