@@ -10221,17 +10221,17 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/AppearanceGenera
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/AppearanceGeneratorHelper.java::method::AppearanceGeneratorHelper.shallComb	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/AppearanceGeneratorHelper.java::method::AppearanceGeneratorHelper.validateAndEnsureAcroFormResources	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/AppearanceGeneratorHelper.java::method::AppearanceGeneratorHelper.writeToStream	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/FieldUtils.java::class::FieldUtils	class	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/FieldUtils.java::class::KeyValue	class	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/FieldUtils.java::class::FieldUtils	class	ported	src/pdfbox/pdmodel/interactive/form/field_utils.cr	ported: FieldUtils
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/FieldUtils.java::class::KeyValue	class	ported	src/pdfbox/pdmodel/interactive/form/field_utils.cr	ported: FieldUtils
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/FieldUtils.java::const::BY_KEY_COMPARATOR	const	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/FieldUtils.java::const::BY_VALUE_COMPARATOR	const	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/FieldUtils.java::method::FieldUtils.getPairableItems	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/FieldUtils.java::method::FieldUtils.sortByKey	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/FieldUtils.java::method::FieldUtils.sortByValue	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/FieldUtils.java::method::FieldUtils.toKeyValueList	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/FieldUtils.java::method::KeyValue.getKey	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/FieldUtils.java::method::KeyValue.getValue	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/FieldUtils.java::method::KeyValue.toString	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/FieldUtils.java::method::FieldUtils.getPairableItems	method	ported	src/pdfbox/pdmodel/interactive/form/field_utils.cr	ported: FieldUtils
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/FieldUtils.java::method::FieldUtils.sortByKey	method	ported	src/pdfbox/pdmodel/interactive/form/field_utils.cr	ported: FieldUtils
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/FieldUtils.java::method::FieldUtils.sortByValue	method	ported	src/pdfbox/pdmodel/interactive/form/field_utils.cr	ported: FieldUtils
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/FieldUtils.java::method::FieldUtils.toKeyValueList	method	ported	src/pdfbox/pdmodel/interactive/form/field_utils.cr	ported: FieldUtils
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/FieldUtils.java::method::KeyValue.getKey	method	ported	src/pdfbox/pdmodel/interactive/form/field_utils.cr	ported: FieldUtils
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/FieldUtils.java::method::KeyValue.getValue	method	ported	src/pdfbox/pdmodel/interactive/form/field_utils.cr	ported: FieldUtils
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/FieldUtils.java::method::KeyValue.toString	method	ported	src/pdfbox/pdmodel/interactive/form/field_utils.cr	ported: FieldUtils
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::class::PDAcroForm	class	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::const::FLAG_APPEND_ONLY	const	ported	src/pdfbox/pdmodel/interactive/form/pdacro_form.cr	ported: PDAcroForm XFA/Q
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::const::FLAG_SIGNATURES_EXIST	const	ported	src/pdfbox/pdmodel/interactive/form/pdacro_form.cr	ported: PDAcroForm XFA/Q
