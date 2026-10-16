@@ -3166,8 +3166,8 @@ io/src/main/java/org/apache/pdfbox/io/RandomAccessInputStream.java::method::Rand
 io/src/main/java/org/apache/pdfbox/io/RandomAccessInputStream.java::method::RandomAccessInputStream.read	ported	src/pdfbox/io.cr	reconciled: method present
 io/src/main/java/org/apache/pdfbox/io/RandomAccessInputStream.java::method::RandomAccessInputStream.restorePosition	ported	src/pdfbox/io.cr	reconciled: method present
 io/src/main/java/org/apache/pdfbox/io/RandomAccessInputStream.java::method::RandomAccessInputStream.skip	ported	src/pdfbox/io.cr	reconciled: method present
-io/src/main/java/org/apache/pdfbox/io/RandomAccessOutputStream.java::class::RandomAccessOutputStream	missing	-	baseline
-io/src/main/java/org/apache/pdfbox/io/RandomAccessOutputStream.java::method::RandomAccessOutputStream.write	missing	-	baseline
+io/src/main/java/org/apache/pdfbox/io/RandomAccessOutputStream.java::class::RandomAccessOutputStream	ported	src/pdfbox/io.cr	ported: RandomAccess write/stream cache
+io/src/main/java/org/apache/pdfbox/io/RandomAccessOutputStream.java::method::RandomAccessOutputStream.write	ported	src/pdfbox/io.cr	ported: RandomAccess write/stream cache
 io/src/main/java/org/apache/pdfbox/io/RandomAccessRead.java::interface::RandomAccessRead	ported	src/pdfbox/io.cr	reconciled: class present
 io/src/main/java/org/apache/pdfbox/io/RandomAccessRead.java::method::available	missing	-	baseline
 io/src/main/java/org/apache/pdfbox/io/RandomAccessRead.java::method::createView	missing	-	baseline
@@ -3238,16 +3238,16 @@ io/src/main/java/org/apache/pdfbox/io/RandomAccessReadView.java::method::RandomA
 io/src/main/java/org/apache/pdfbox/io/RandomAccessReadWriteBuffer.java::class::RandomAccessReadWriteBuffer	ported	src/pdfbox/io.cr	reconciled: class present
 io/src/main/java/org/apache/pdfbox/io/RandomAccessReadWriteBuffer.java::method::RandomAccessReadWriteBuffer.clear	ported	src/pdfbox/io.cr	reconciled: method present
 io/src/main/java/org/apache/pdfbox/io/RandomAccessReadWriteBuffer.java::method::RandomAccessReadWriteBuffer.write	ported	src/pdfbox/io.cr	reconciled: method present
-io/src/main/java/org/apache/pdfbox/io/RandomAccessStreamCache.java::interface::RandomAccessStreamCache	missing	-	baseline
-io/src/main/java/org/apache/pdfbox/io/RandomAccessStreamCache.java::interface::StreamCacheCreateFunction	missing	-	baseline
-io/src/main/java/org/apache/pdfbox/io/RandomAccessStreamCache.java::method::create	missing	-	baseline
-io/src/main/java/org/apache/pdfbox/io/RandomAccessStreamCache.java::method::createBuffer	missing	-	baseline
-io/src/main/java/org/apache/pdfbox/io/RandomAccessStreamCacheImpl.java::class::RandomAccessStreamCacheImpl	missing	-	baseline
-io/src/main/java/org/apache/pdfbox/io/RandomAccessStreamCacheImpl.java::method::RandomAccessStreamCacheImpl.close	missing	-	baseline
-io/src/main/java/org/apache/pdfbox/io/RandomAccessStreamCacheImpl.java::method::RandomAccessStreamCacheImpl.createBuffer	missing	-	baseline
-io/src/main/java/org/apache/pdfbox/io/RandomAccessWrite.java::interface::RandomAccessWrite	missing	-	baseline
-io/src/main/java/org/apache/pdfbox/io/RandomAccessWrite.java::method::clear	missing	-	baseline
-io/src/main/java/org/apache/pdfbox/io/RandomAccessWrite.java::method::write	missing	-	baseline
+io/src/main/java/org/apache/pdfbox/io/RandomAccessStreamCache.java::interface::RandomAccessStreamCache	ported	src/pdfbox/io.cr	ported: RandomAccess write/stream cache
+io/src/main/java/org/apache/pdfbox/io/RandomAccessStreamCache.java::interface::StreamCacheCreateFunction	ported	src/pdfbox/io.cr	ported: RandomAccess write/stream cache
+io/src/main/java/org/apache/pdfbox/io/RandomAccessStreamCache.java::method::create	ported	src/pdfbox/io.cr	ported: RandomAccess write/stream cache
+io/src/main/java/org/apache/pdfbox/io/RandomAccessStreamCache.java::method::createBuffer	ported	src/pdfbox/io.cr	ported: RandomAccess write/stream cache
+io/src/main/java/org/apache/pdfbox/io/RandomAccessStreamCacheImpl.java::class::RandomAccessStreamCacheImpl	ported	src/pdfbox/io.cr	ported: RandomAccess write/stream cache
+io/src/main/java/org/apache/pdfbox/io/RandomAccessStreamCacheImpl.java::method::RandomAccessStreamCacheImpl.close	ported	src/pdfbox/io.cr	ported: RandomAccess write/stream cache
+io/src/main/java/org/apache/pdfbox/io/RandomAccessStreamCacheImpl.java::method::RandomAccessStreamCacheImpl.createBuffer	ported	src/pdfbox/io.cr	ported: RandomAccess write/stream cache
+io/src/main/java/org/apache/pdfbox/io/RandomAccessWrite.java::interface::RandomAccessWrite	ported	src/pdfbox/io.cr	ported: RandomAccess write/stream cache
+io/src/main/java/org/apache/pdfbox/io/RandomAccessWrite.java::method::clear	ported	src/pdfbox/io.cr	ported: RandomAccess write/stream cache
+io/src/main/java/org/apache/pdfbox/io/RandomAccessWrite.java::method::write	ported	src/pdfbox/io.cr	ported: RandomAccess write/stream cache
 io/src/main/java/org/apache/pdfbox/io/ScratchFile.java::class::ScratchFile	ported	src/pdfbox/io.cr	baseline
 io/src/main/java/org/apache/pdfbox/io/ScratchFile.java::const::ENLARGE_PAGE_COUNT	missing	-	baseline
 io/src/main/java/org/apache/pdfbox/io/ScratchFile.java::const::INIT_UNRESTRICTED_MAINMEM_PAGECOUNT	missing	-	baseline

@@ -3,6 +3,15 @@
 # This module contains I/O utilities for PDF processing,
 # corresponding to the io module in Apache PDFBox.
 module Pdfbox::IO
+  # An interface allowing random access write operations.
+  # Port of org.apache.pdfbox.io.RandomAccessWrite.
+  module RandomAccessWrite
+    abstract def write(value : Int32) : Nil
+    abstract def write(bytes : Bytes) : Nil
+    abstract def write(bytes : Bytes, offset : Int32, length : Int32) : Nil
+    abstract def clear : Nil
+  end
+
   # I/O utility functions
   module Utils
     # Copy data from one IO to another
@@ -593,6 +602,8 @@ module Pdfbox::IO
 
   # Random-access in-memory read/write buffer compatible with PDFBox API.
   class RandomAccessReadWriteBuffer < RandomAccessRead
+    include RandomAccessWrite
+
     @io : ::IO::Memory
     @defined_chunk_size : Int32
 
@@ -1009,6 +1020,51 @@ module Pdfbox::IO
       return if closed?
       @storage.close rescue nil
       @closed = true
+    end
+  end
+
+  # An OutputStream which writes to a RandomAccessWrite.
+  # Port of org.apache.pdfbox.io.RandomAccessOutputStream.
+  class RandomAccessOutputStream < ::IO
+    def initialize(@writer : RandomAccessWrite)
+    end
+
+    def read(slice : Bytes) : Int32
+      raise ::IO::Error.new("RandomAccessOutputStream is write-only")
+    end
+
+    def write(slice : Bytes) : Nil
+      @writer.write(slice)
+    end
+
+    def write_byte(byte : UInt8) : Nil
+      @writer.write(byte.to_i32)
+    end
+  end
+
+  # An interface describing a StreamCache to be used when creating/writing
+  # streams of a PDF. Port of org.apache.pdfbox.io.RandomAccessStreamCache.
+  module RandomAccessStreamCache
+    # Creates an instance of a RandomAccessStreamCache.
+    alias StreamCacheCreateFunction = -> RandomAccessStreamCache
+
+    # Creates an instance of a buffer. The caller should close the buffer after
+    # usage, otherwise the buffer is closed once the owning stream cache closes.
+    abstract def create_buffer : RandomAccessReadWriteBuffer
+
+    abstract def close : Nil
+  end
+
+  # A default implementation of RandomAccessStreamCache using a memory backed
+  # RandomAccessReadWriteBuffer. Port of RandomAccessStreamCacheImpl.
+  class RandomAccessStreamCacheImpl
+    include RandomAccessStreamCache
+
+    def create_buffer : RandomAccessReadWriteBuffer
+      RandomAccessReadWriteBuffer.new
+    end
+
+    def close : Nil
     end
   end
 end

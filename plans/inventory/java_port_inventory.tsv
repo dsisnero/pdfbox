@@ -3166,8 +3166,8 @@ io/src/main/java/org/apache/pdfbox/io/RandomAccessInputStream.java::method::Rand
 io/src/main/java/org/apache/pdfbox/io/RandomAccessInputStream.java::method::RandomAccessInputStream.read	method	ported	src	auto-generated
 io/src/main/java/org/apache/pdfbox/io/RandomAccessInputStream.java::method::RandomAccessInputStream.restorePosition	method	ported	src	auto-generated
 io/src/main/java/org/apache/pdfbox/io/RandomAccessInputStream.java::method::RandomAccessInputStream.skip	method	ported	src	auto-generated
-io/src/main/java/org/apache/pdfbox/io/RandomAccessOutputStream.java::class::RandomAccessOutputStream	class	missing	-	auto-generated
-io/src/main/java/org/apache/pdfbox/io/RandomAccessOutputStream.java::method::RandomAccessOutputStream.write	method	missing	-	auto-generated
+io/src/main/java/org/apache/pdfbox/io/RandomAccessOutputStream.java::class::RandomAccessOutputStream	class	ported	src/pdfbox/io.cr	ported: RandomAccess write/stream cache
+io/src/main/java/org/apache/pdfbox/io/RandomAccessOutputStream.java::method::RandomAccessOutputStream.write	method	ported	src/pdfbox/io.cr	ported: RandomAccess write/stream cache
 io/src/main/java/org/apache/pdfbox/io/RandomAccessRead.java::interface::RandomAccessRead	interface	ported	src/pdfbox/io.cr	reconciled: class present
 io/src/main/java/org/apache/pdfbox/io/RandomAccessRead.java::method::available	method	missing	-	auto-generated
 io/src/main/java/org/apache/pdfbox/io/RandomAccessRead.java::method::createView	method	missing	-	auto-generated
@@ -3238,16 +3238,16 @@ io/src/main/java/org/apache/pdfbox/io/RandomAccessReadView.java::method::RandomA
 io/src/main/java/org/apache/pdfbox/io/RandomAccessReadWriteBuffer.java::class::RandomAccessReadWriteBuffer	class	partial	src	auto-generated
 io/src/main/java/org/apache/pdfbox/io/RandomAccessReadWriteBuffer.java::method::RandomAccessReadWriteBuffer.clear	method	ported	src	auto-generated
 io/src/main/java/org/apache/pdfbox/io/RandomAccessReadWriteBuffer.java::method::RandomAccessReadWriteBuffer.write	method	ported	src	auto-generated
-io/src/main/java/org/apache/pdfbox/io/RandomAccessStreamCache.java::interface::RandomAccessStreamCache	interface	missing	-	auto-generated
-io/src/main/java/org/apache/pdfbox/io/RandomAccessStreamCache.java::interface::StreamCacheCreateFunction	interface	missing	-	auto-generated
-io/src/main/java/org/apache/pdfbox/io/RandomAccessStreamCache.java::method::create	method	missing	-	auto-generated
-io/src/main/java/org/apache/pdfbox/io/RandomAccessStreamCache.java::method::createBuffer	method	missing	-	auto-generated
-io/src/main/java/org/apache/pdfbox/io/RandomAccessStreamCacheImpl.java::class::RandomAccessStreamCacheImpl	class	missing	-	auto-generated
-io/src/main/java/org/apache/pdfbox/io/RandomAccessStreamCacheImpl.java::method::RandomAccessStreamCacheImpl.close	method	missing	-	auto-generated
-io/src/main/java/org/apache/pdfbox/io/RandomAccessStreamCacheImpl.java::method::RandomAccessStreamCacheImpl.createBuffer	method	missing	-	auto-generated
-io/src/main/java/org/apache/pdfbox/io/RandomAccessWrite.java::interface::RandomAccessWrite	interface	missing	-	auto-generated
-io/src/main/java/org/apache/pdfbox/io/RandomAccessWrite.java::method::clear	method	missing	-	auto-generated
-io/src/main/java/org/apache/pdfbox/io/RandomAccessWrite.java::method::write	method	missing	-	auto-generated
+io/src/main/java/org/apache/pdfbox/io/RandomAccessStreamCache.java::interface::RandomAccessStreamCache	interface	ported	src/pdfbox/io.cr	ported: RandomAccess write/stream cache
+io/src/main/java/org/apache/pdfbox/io/RandomAccessStreamCache.java::interface::StreamCacheCreateFunction	interface	ported	src/pdfbox/io.cr	ported: RandomAccess write/stream cache
+io/src/main/java/org/apache/pdfbox/io/RandomAccessStreamCache.java::method::create	method	ported	src/pdfbox/io.cr	ported: RandomAccess write/stream cache
+io/src/main/java/org/apache/pdfbox/io/RandomAccessStreamCache.java::method::createBuffer	method	ported	src/pdfbox/io.cr	ported: RandomAccess write/stream cache
+io/src/main/java/org/apache/pdfbox/io/RandomAccessStreamCacheImpl.java::class::RandomAccessStreamCacheImpl	class	ported	src/pdfbox/io.cr	ported: RandomAccess write/stream cache
+io/src/main/java/org/apache/pdfbox/io/RandomAccessStreamCacheImpl.java::method::RandomAccessStreamCacheImpl.close	method	ported	src/pdfbox/io.cr	ported: RandomAccess write/stream cache
+io/src/main/java/org/apache/pdfbox/io/RandomAccessStreamCacheImpl.java::method::RandomAccessStreamCacheImpl.createBuffer	method	ported	src/pdfbox/io.cr	ported: RandomAccess write/stream cache
+io/src/main/java/org/apache/pdfbox/io/RandomAccessWrite.java::interface::RandomAccessWrite	interface	ported	src/pdfbox/io.cr	ported: RandomAccess write/stream cache
+io/src/main/java/org/apache/pdfbox/io/RandomAccessWrite.java::method::clear	method	ported	src/pdfbox/io.cr	ported: RandomAccess write/stream cache
+io/src/main/java/org/apache/pdfbox/io/RandomAccessWrite.java::method::write	method	ported	src/pdfbox/io.cr	ported: RandomAccess write/stream cache
 io/src/main/java/org/apache/pdfbox/io/ScratchFile.java::class::ScratchFile	class	ported	src/pdfbox/io.cr	auto-generated
 io/src/main/java/org/apache/pdfbox/io/ScratchFile.java::const::ENLARGE_PAGE_COUNT	const	missing	-	auto-generated
 io/src/main/java/org/apache/pdfbox/io/ScratchFile.java::const::INIT_UNRESTRICTED_MAINMEM_PAGECOUNT	const	missing	-	auto-generated
