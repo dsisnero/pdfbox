@@ -56,6 +56,25 @@ module Xmpbox
         schema.advisories.should eq(["xpath1", "xpath2"])
       end
 
+      it "sets the modifier date and removes identifiers and advisories" do
+        meta = XMPMetadata.create_xmp_metadata
+        schema = XMPBasicSchema.new(meta)
+
+        now = Time.utc(2024, 1, 15, 10, 30, 0)
+        schema.modifier_date = now
+        schema.modifier_date.not_nil!.to_unix.should eq(now.to_unix)
+
+        schema.add_identifier("id1")
+        schema.add_identifier("id2")
+        schema.remove_identifier("id1")
+        schema.identifiers.should eq(["id2"])
+
+        schema.add_advisory("xpath1")
+        schema.add_advisory("xpath2")
+        schema.remove_advisory("xpath1")
+        schema.advisories.should eq(["xpath2"])
+      end
+
       it "returns nil for unset properties" do
         meta = XMPMetadata.create_xmp_metadata
         schema = XMPBasicSchema.new(meta)

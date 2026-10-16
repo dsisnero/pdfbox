@@ -289,6 +289,14 @@ module Xmpbox
         date_property_value(MODIFY_DATE)
       end
 
+      def modifier_date=(date : Time) : Nil
+        set_date_property_value(MODIFIER_DATE, date)
+      end
+
+      def modifier_date : Time?
+        date_property_value(MODIFIER_DATE)
+      end
+
       def creator_tool=(tool : String) : Nil
         set_text_property_value(CREATOR_TOOL, tool)
       end
@@ -335,6 +343,14 @@ module Xmpbox
 
       def advisories : Array(String)?
         unqualified_bag_value_list(ADVISORY)
+      end
+
+      def remove_advisory(advisory : String) : Nil
+        remove_unqualified_bag_value(ADVISORY, advisory)
+      end
+
+      def remove_identifier(identifier : String) : Nil
+        remove_unqualified_bag_value(IDENTIFIER, identifier)
       end
     end
 

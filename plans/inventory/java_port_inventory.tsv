@@ -11800,7 +11800,7 @@ xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBa
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getLabelProperty	method	partial	src	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getMetadataDate	method	ported	src	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getMetadataDateProperty	method	partial	src	auto-generated
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getModifierDate	method	partial	src	auto-generated
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getModifierDate	method	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPBasicSchema modifierDate/removes
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getModifierDateProperty	method	partial	src	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getModifyDate	method	ported	src	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getModifyDateProperty	method	partial	src	auto-generated
@@ -11809,8 +11809,8 @@ xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBa
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getRating	method	ported	src	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getRatingProperty	method	partial	src	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getThumbnailsProperty	method	partial	src	auto-generated
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.removeAdvisory	method	partial	src	auto-generated
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.removeIdentifier	method	partial	src	auto-generated
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.removeAdvisory	method	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPBasicSchema modifierDate/removes
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.removeIdentifier	method	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPBasicSchema modifierDate/removes
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.setBaseURL	method	ported	src	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.setBaseURLProperty	method	partial	src	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.setCreateDate	method	ported	src	auto-generated
@@ -11821,7 +11821,7 @@ xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBa
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.setLabelProperty	method	partial	src	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.setMetadataDate	method	ported	src	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.setMetadataDateProperty	method	partial	src	auto-generated
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.setModifierDate	method	partial	src	auto-generated
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.setModifierDate	method	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPBasicSchema modifierDate/removes
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.setModifierDateProperty	method	partial	src	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.setModifyDate	method	ported	src	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.setModifyDateProperty	method	partial	src	auto-generated

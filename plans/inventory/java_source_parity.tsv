@@ -11800,7 +11800,7 @@ xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBa
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getLabelProperty	missing	-	baseline
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getMetadataDate	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getMetadataDateProperty	missing	-	baseline
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getModifierDate	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getModifierDate	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPBasicSchema modifierDate/removes
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getModifierDateProperty	missing	-	baseline
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getModifyDate	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getModifyDateProperty	missing	-	baseline
@@ -11809,8 +11809,8 @@ xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBa
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getRating	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getRatingProperty	missing	-	baseline
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getThumbnailsProperty	missing	-	baseline
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.removeAdvisory	missing	-	baseline
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.removeIdentifier	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.removeAdvisory	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPBasicSchema modifierDate/removes
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.removeIdentifier	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPBasicSchema modifierDate/removes
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.setBaseURL	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.setBaseURLProperty	missing	-	baseline
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.setCreateDate	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
@@ -11821,7 +11821,7 @@ xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBa
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.setLabelProperty	missing	-	baseline
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.setMetadataDate	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.setMetadataDateProperty	missing	-	baseline
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.setModifierDate	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.setModifierDate	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPBasicSchema modifierDate/removes
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.setModifierDateProperty	missing	-	baseline
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.setModifyDate	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.setModifyDateProperty	missing	-	baseline
