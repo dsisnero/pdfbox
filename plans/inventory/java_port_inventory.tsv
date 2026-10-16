@@ -11755,17 +11755,17 @@ xmpbox/src/main/java/org/apache/xmpbox/schema/TiffSchema.java::const::YCB_CR_COE
 xmpbox/src/main/java/org/apache/xmpbox/schema/TiffSchema.java::const::YCB_CR_POSITIONING	const	missing	-	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/schema/TiffSchema.java::const::YCB_CR_SUB_SAMPLING	const	missing	-	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/schema/TiffSchema.java::const::YRESOLUTION	const	missing	-	auto-generated
-xmpbox/src/main/java/org/apache/xmpbox/schema/TiffSchema.java::method::TiffSchema.addCopyright	method	partial	src	auto-generated
-xmpbox/src/main/java/org/apache/xmpbox/schema/TiffSchema.java::method::TiffSchema.addImageDescription	method	partial	src	auto-generated
-xmpbox/src/main/java/org/apache/xmpbox/schema/TiffSchema.java::method::TiffSchema.getArtist	method	partial	src	auto-generated
-xmpbox/src/main/java/org/apache/xmpbox/schema/TiffSchema.java::method::TiffSchema.getArtistProperty	method	partial	src	auto-generated
-xmpbox/src/main/java/org/apache/xmpbox/schema/TiffSchema.java::method::TiffSchema.getCopyright	method	partial	src	auto-generated
-xmpbox/src/main/java/org/apache/xmpbox/schema/TiffSchema.java::method::TiffSchema.getCopyrightLanguages	method	partial	src	auto-generated
-xmpbox/src/main/java/org/apache/xmpbox/schema/TiffSchema.java::method::TiffSchema.getCopyrightProperty	method	partial	src	auto-generated
-xmpbox/src/main/java/org/apache/xmpbox/schema/TiffSchema.java::method::TiffSchema.getImageDescription	method	partial	src	auto-generated
-xmpbox/src/main/java/org/apache/xmpbox/schema/TiffSchema.java::method::TiffSchema.getImageDescriptionLanguages	method	partial	src	auto-generated
-xmpbox/src/main/java/org/apache/xmpbox/schema/TiffSchema.java::method::TiffSchema.getImageDescriptionProperty	method	partial	src	auto-generated
-xmpbox/src/main/java/org/apache/xmpbox/schema/TiffSchema.java::method::TiffSchema.setArtist	method	partial	src	auto-generated
+xmpbox/src/main/java/org/apache/xmpbox/schema/TiffSchema.java::method::TiffSchema.addCopyright	method	ported	src/xmpbox/schema/schema_classes.cr	ported: TiffSchema accessors
+xmpbox/src/main/java/org/apache/xmpbox/schema/TiffSchema.java::method::TiffSchema.addImageDescription	method	ported	src/xmpbox/schema/schema_classes.cr	ported: TiffSchema accessors
+xmpbox/src/main/java/org/apache/xmpbox/schema/TiffSchema.java::method::TiffSchema.getArtist	method	ported	src/xmpbox/schema/schema_classes.cr	ported: TiffSchema accessors
+xmpbox/src/main/java/org/apache/xmpbox/schema/TiffSchema.java::method::TiffSchema.getArtistProperty	method	ported	src/xmpbox/schema/schema_classes.cr	ported: TiffSchema accessors
+xmpbox/src/main/java/org/apache/xmpbox/schema/TiffSchema.java::method::TiffSchema.getCopyright	method	ported	src/xmpbox/schema/schema_classes.cr	ported: TiffSchema accessors
+xmpbox/src/main/java/org/apache/xmpbox/schema/TiffSchema.java::method::TiffSchema.getCopyrightLanguages	method	ported	src/xmpbox/schema/schema_classes.cr	ported: TiffSchema accessors
+xmpbox/src/main/java/org/apache/xmpbox/schema/TiffSchema.java::method::TiffSchema.getCopyrightProperty	method	ported	src/xmpbox/schema/schema_classes.cr	ported: TiffSchema accessors
+xmpbox/src/main/java/org/apache/xmpbox/schema/TiffSchema.java::method::TiffSchema.getImageDescription	method	ported	src/xmpbox/schema/schema_classes.cr	ported: TiffSchema accessors
+xmpbox/src/main/java/org/apache/xmpbox/schema/TiffSchema.java::method::TiffSchema.getImageDescriptionLanguages	method	ported	src/xmpbox/schema/schema_classes.cr	ported: TiffSchema accessors
+xmpbox/src/main/java/org/apache/xmpbox/schema/TiffSchema.java::method::TiffSchema.getImageDescriptionProperty	method	ported	src/xmpbox/schema/schema_classes.cr	ported: TiffSchema accessors
+xmpbox/src/main/java/org/apache/xmpbox/schema/TiffSchema.java::method::TiffSchema.setArtist	method	ported	src/xmpbox/schema/schema_classes.cr	ported: TiffSchema accessors
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicJobTicketSchema.java::class::XMPBasicJobTicketSchema	class	partial	src	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicJobTicketSchema.java::const::JOB_REF	const	missing	-	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicJobTicketSchema.java::method::XMPBasicJobTicketSchema.addJob	method	ported	src	auto-generated

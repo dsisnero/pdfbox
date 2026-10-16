@@ -11755,17 +11755,17 @@ xmpbox/src/main/java/org/apache/xmpbox/schema/TiffSchema.java::const::YCB_CR_COE
 xmpbox/src/main/java/org/apache/xmpbox/schema/TiffSchema.java::const::YCB_CR_POSITIONING	missing	-	baseline
 xmpbox/src/main/java/org/apache/xmpbox/schema/TiffSchema.java::const::YCB_CR_SUB_SAMPLING	missing	-	baseline
 xmpbox/src/main/java/org/apache/xmpbox/schema/TiffSchema.java::const::YRESOLUTION	missing	-	baseline
-xmpbox/src/main/java/org/apache/xmpbox/schema/TiffSchema.java::method::TiffSchema.addCopyright	missing	-	baseline
-xmpbox/src/main/java/org/apache/xmpbox/schema/TiffSchema.java::method::TiffSchema.addImageDescription	missing	-	baseline
-xmpbox/src/main/java/org/apache/xmpbox/schema/TiffSchema.java::method::TiffSchema.getArtist	missing	-	baseline
-xmpbox/src/main/java/org/apache/xmpbox/schema/TiffSchema.java::method::TiffSchema.getArtistProperty	missing	-	baseline
-xmpbox/src/main/java/org/apache/xmpbox/schema/TiffSchema.java::method::TiffSchema.getCopyright	missing	-	baseline
-xmpbox/src/main/java/org/apache/xmpbox/schema/TiffSchema.java::method::TiffSchema.getCopyrightLanguages	missing	-	baseline
-xmpbox/src/main/java/org/apache/xmpbox/schema/TiffSchema.java::method::TiffSchema.getCopyrightProperty	missing	-	baseline
-xmpbox/src/main/java/org/apache/xmpbox/schema/TiffSchema.java::method::TiffSchema.getImageDescription	missing	-	baseline
-xmpbox/src/main/java/org/apache/xmpbox/schema/TiffSchema.java::method::TiffSchema.getImageDescriptionLanguages	missing	-	baseline
-xmpbox/src/main/java/org/apache/xmpbox/schema/TiffSchema.java::method::TiffSchema.getImageDescriptionProperty	missing	-	baseline
-xmpbox/src/main/java/org/apache/xmpbox/schema/TiffSchema.java::method::TiffSchema.setArtist	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/TiffSchema.java::method::TiffSchema.addCopyright	ported	src/xmpbox/schema/schema_classes.cr	ported: TiffSchema accessors
+xmpbox/src/main/java/org/apache/xmpbox/schema/TiffSchema.java::method::TiffSchema.addImageDescription	ported	src/xmpbox/schema/schema_classes.cr	ported: TiffSchema accessors
+xmpbox/src/main/java/org/apache/xmpbox/schema/TiffSchema.java::method::TiffSchema.getArtist	ported	src/xmpbox/schema/schema_classes.cr	ported: TiffSchema accessors
+xmpbox/src/main/java/org/apache/xmpbox/schema/TiffSchema.java::method::TiffSchema.getArtistProperty	ported	src/xmpbox/schema/schema_classes.cr	ported: TiffSchema accessors
+xmpbox/src/main/java/org/apache/xmpbox/schema/TiffSchema.java::method::TiffSchema.getCopyright	ported	src/xmpbox/schema/schema_classes.cr	ported: TiffSchema accessors
+xmpbox/src/main/java/org/apache/xmpbox/schema/TiffSchema.java::method::TiffSchema.getCopyrightLanguages	ported	src/xmpbox/schema/schema_classes.cr	ported: TiffSchema accessors
+xmpbox/src/main/java/org/apache/xmpbox/schema/TiffSchema.java::method::TiffSchema.getCopyrightProperty	ported	src/xmpbox/schema/schema_classes.cr	ported: TiffSchema accessors
+xmpbox/src/main/java/org/apache/xmpbox/schema/TiffSchema.java::method::TiffSchema.getImageDescription	ported	src/xmpbox/schema/schema_classes.cr	ported: TiffSchema accessors
+xmpbox/src/main/java/org/apache/xmpbox/schema/TiffSchema.java::method::TiffSchema.getImageDescriptionLanguages	ported	src/xmpbox/schema/schema_classes.cr	ported: TiffSchema accessors
+xmpbox/src/main/java/org/apache/xmpbox/schema/TiffSchema.java::method::TiffSchema.getImageDescriptionProperty	ported	src/xmpbox/schema/schema_classes.cr	ported: TiffSchema accessors
+xmpbox/src/main/java/org/apache/xmpbox/schema/TiffSchema.java::method::TiffSchema.setArtist	ported	src/xmpbox/schema/schema_classes.cr	ported: TiffSchema accessors
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicJobTicketSchema.java::class::XMPBasicJobTicketSchema	ported	src/xmpbox/schema/schema_classes.cr	reconciled: class present
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicJobTicketSchema.java::const::JOB_REF	missing	-	baseline
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicJobTicketSchema.java::method::XMPBasicJobTicketSchema.addJob	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present

@@ -1194,6 +1194,66 @@ module Xmpbox
           MODEL                      => Type::PropertyTypeDesc.new(type: Type::Types::ProperName),
         }
       end
+
+      def artist_property : Type::ProperNameType?
+        prop = abstract_property(ARTIST)
+        if prop
+          if prop.is_a?(Type::ProperNameType)
+            return prop
+          end
+          raise Type::BadFieldValueException.new("Property asked is not a ProperName Property")
+        end
+        nil
+      end
+
+      def artist : String?
+        prop = artist_property
+        prop.try(&.string_value)
+      end
+
+      def artist=(text : String) : Nil
+        set_specified_simple_type_property(Type::Types::ProperName, ARTIST, text)
+      end
+
+      def image_description_property : Type::ArrayProperty?
+        array_property(IMAGE_DESCRIPTION)
+      end
+
+      def image_description_languages : Array(String)?
+        unqualified_language_property_languages_value(IMAGE_DESCRIPTION)
+      end
+
+      def image_description(lang : String?) : String?
+        unqualified_language_property_value(IMAGE_DESCRIPTION, lang)
+      end
+
+      def image_description : String?
+        image_description(nil)
+      end
+
+      def add_image_description(lang : String?, value : String) : Nil
+        set_unqualified_language_property_value(IMAGE_DESCRIPTION, lang, value)
+      end
+
+      def copyright_property : Type::ArrayProperty?
+        array_property(COPYRIGHT)
+      end
+
+      def copyright_languages : Array(String)?
+        unqualified_language_property_languages_value(COPYRIGHT)
+      end
+
+      def copyright(lang : String?) : String?
+        unqualified_language_property_value(COPYRIGHT, lang)
+      end
+
+      def copyright : String?
+        copyright(nil)
+      end
+
+      def add_copyright(lang : String?, value : String) : Nil
+        set_unqualified_language_property_value(COPYRIGHT, lang, value)
+      end
     end
 
     # XMP Basic Job Ticket: http://ns.adobe.com/xap/1.0/bj/
