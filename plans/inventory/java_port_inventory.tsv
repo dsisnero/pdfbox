@@ -2537,11 +2537,11 @@ fontbox/src/main/java/org/apache/fontbox/ttf/RandomAccessReadDataStream.java::me
 fontbox/src/main/java/org/apache/fontbox/ttf/RandomAccessReadDataStream.java::method::RandomAccessReadDataStream.readInt	method	ported	src	auto-generated
 fontbox/src/main/java/org/apache/fontbox/ttf/RandomAccessReadDataStream.java::method::RandomAccessReadDataStream.readLong	method	ported	src	auto-generated
 fontbox/src/main/java/org/apache/fontbox/ttf/RandomAccessReadDataStream.java::method::RandomAccessReadDataStream.seek	method	ported	src	auto-generated
-fontbox/src/main/java/org/apache/fontbox/ttf/RandomAccessReadUnbufferedDataStream.java::class::RandomAccessReadNonClosingInputStream	class	missing	-	auto-generated
+fontbox/src/main/java/org/apache/fontbox/ttf/RandomAccessReadUnbufferedDataStream.java::class::RandomAccessReadNonClosingInputStream	class	ported	src/fontbox/ttf/random_access_read_unbuffered_data_stream.cr	ported: RandomAccessReadNonClosingInputStream
 fontbox/src/main/java/org/apache/fontbox/ttf/RandomAccessReadUnbufferedDataStream.java::class::RandomAccessReadUnbufferedDataStream	class	partial	src	auto-generated
-fontbox/src/main/java/org/apache/fontbox/ttf/RandomAccessReadUnbufferedDataStream.java::method::RandomAccessReadNonClosingInputStream.close	method	missing	-	auto-generated
-fontbox/src/main/java/org/apache/fontbox/ttf/RandomAccessReadUnbufferedDataStream.java::method::RandomAccessReadNonClosingInputStream.read	method	missing	-	auto-generated
-fontbox/src/main/java/org/apache/fontbox/ttf/RandomAccessReadUnbufferedDataStream.java::method::RandomAccessReadNonClosingInputStream.skip	method	missing	-	auto-generated
+fontbox/src/main/java/org/apache/fontbox/ttf/RandomAccessReadUnbufferedDataStream.java::method::RandomAccessReadNonClosingInputStream.close	method	ported	src/fontbox/ttf/random_access_read_unbuffered_data_stream.cr	ported: RandomAccessReadNonClosingInputStream
+fontbox/src/main/java/org/apache/fontbox/ttf/RandomAccessReadUnbufferedDataStream.java::method::RandomAccessReadNonClosingInputStream.read	method	ported	src/fontbox/ttf/random_access_read_unbuffered_data_stream.cr	ported: RandomAccessReadNonClosingInputStream
+fontbox/src/main/java/org/apache/fontbox/ttf/RandomAccessReadUnbufferedDataStream.java::method::RandomAccessReadNonClosingInputStream.skip	method	ported	src/fontbox/ttf/random_access_read_unbuffered_data_stream.cr	ported: RandomAccessReadNonClosingInputStream
 fontbox/src/main/java/org/apache/fontbox/ttf/RandomAccessReadUnbufferedDataStream.java::method::RandomAccessReadUnbufferedDataStream.close	method	ported	src	auto-generated
 fontbox/src/main/java/org/apache/fontbox/ttf/RandomAccessReadUnbufferedDataStream.java::method::RandomAccessReadUnbufferedDataStream.createSubView	method	ported	src	auto-generated
 fontbox/src/main/java/org/apache/fontbox/ttf/RandomAccessReadUnbufferedDataStream.java::method::RandomAccessReadUnbufferedDataStream.getCurrentPosition	method	ported	src	auto-generated

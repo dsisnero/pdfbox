@@ -27,5 +27,32 @@ module Fontbox::TTF
       original.gets_to_end.should eq("0123456789")
       data_stream.close
     end
+
+    it "test_original_data_is_a_non_closing_stream" do
+      random_access_read = Pdfbox::IO::RandomAccessReadBuffer.new("0123456789".to_slice)
+      data_stream = RandomAccessReadUnbufferedDataStream.new(random_access_read)
+      original = data_stream.original_data
+
+      original.should be_a(RandomAccessReadUnbufferedDataStream::RandomAccessReadNonClosingInputStream)
+      original.gets_to_end.should eq("0123456789")
+      original.close
+
+      # closing the stream must not close the underlying RandomAccessRead
+      random_access_read.closed?.should be_false
+      random_access_read.seek(0)
+      random_access_read.read_all.should eq("0123456789".to_slice)
+
+      data_stream.close
+    end
+
+    it "test_non_closing_stream_skip" do
+      random_access_read = Pdfbox::IO::RandomAccessReadBuffer.new("0123456789".to_slice)
+      data_stream = RandomAccessReadUnbufferedDataStream.new(random_access_read)
+      original = data_stream.original_data
+
+      original.skip(3)
+      original.gets_to_end.should eq("3456789")
+      data_stream.close
+    end
   end
 end

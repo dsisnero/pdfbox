@@ -69,8 +69,7 @@ module Fontbox::TTF
 
     # Lifetime of returned IO is bound by `this` lifetime, it won't close underlying `RandomAccessRead`.
     def original_data : IO
-      view = @random_access_read.create_view(0, @length)
-      IO::Memory.new(view.read_all)
+      RandomAccessReadNonClosingInputStream.new(@random_access_read.create_view(0, @length))
     end
 
     def original_data_size : Int64
@@ -79,6 +78,33 @@ module Fontbox::TTF
 
     def create_sub_view(length : Int64) : Pdfbox::IO::RandomAccessRead?
       @random_access_read.create_view(current_position, length)
+    end
+
+    # An InputStream over a RandomAccessRead whose close does not close the
+    # underlying read. Port of the nested RandomAccessReadNonClosingInputStream.
+    class RandomAccessReadNonClosingInputStream < ::IO
+      @random_access_read : Pdfbox::IO::RandomAccessRead
+
+      def initialize(@random_access_read : Pdfbox::IO::RandomAccessRead)
+      end
+
+      def read(slice : Bytes) : Int32
+        @random_access_read.read(slice)
+      end
+
+      def write(slice : Bytes) : Nil
+        raise ::IO::Error.new("RandomAccessReadNonClosingInputStream is read-only")
+      end
+
+      def skip(bytes_count : Int) : Nil
+        @random_access_read.seek(@random_access_read.position + bytes_count)
+      end
+
+      def close : Nil
+        # WARNING: closing this stream must not close the underlying
+        # RandomAccessRead (it may be a RandomAccessReadMemoryMappedFile shared
+        # with the owning view).
+      end
     end
   end
 end
