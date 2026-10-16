@@ -5182,17 +5182,17 @@ pdfbox/src/main/java/org/apache/pdfbox/pdfparser/xref/XReferenceEntry.java::meth
 pdfbox/src/main/java/org/apache/pdfbox/pdfparser/xref/XReferenceEntry.java::method::getType	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdfparser/xref/XReferenceType.java::enum::XReferenceType	enum	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdfparser/xref/XReferenceType.java::method::getNumericValue	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSStandardOutputStream.java::class::COSStandardOutputStream	class	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSStandardOutputStream.java::class::COSStandardOutputStream	class	ported	src/pdfbox/pdfwriter.cr	ported: COSStandardOutputStream
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSStandardOutputStream.java::const::CRLF	const	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSStandardOutputStream.java::const::EOL	const	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSStandardOutputStream.java::const::LF	const	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSStandardOutputStream.java::method::COSStandardOutputStream.getPos	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSStandardOutputStream.java::method::COSStandardOutputStream.isOnNewLine	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSStandardOutputStream.java::method::COSStandardOutputStream.setOnNewLine	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSStandardOutputStream.java::method::COSStandardOutputStream.write	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSStandardOutputStream.java::method::COSStandardOutputStream.writeCRLF	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSStandardOutputStream.java::method::COSStandardOutputStream.writeEOL	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSStandardOutputStream.java::method::COSStandardOutputStream.writeLF	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSStandardOutputStream.java::method::COSStandardOutputStream.getPos	method	ported	src/pdfbox/pdfwriter.cr	ported: COSStandardOutputStream
+pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSStandardOutputStream.java::method::COSStandardOutputStream.isOnNewLine	method	ported	src/pdfbox/pdfwriter.cr	ported: COSStandardOutputStream
+pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSStandardOutputStream.java::method::COSStandardOutputStream.setOnNewLine	method	ported	src/pdfbox/pdfwriter.cr	ported: COSStandardOutputStream
+pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSStandardOutputStream.java::method::COSStandardOutputStream.write	method	ported	src/pdfbox/pdfwriter.cr	ported: COSStandardOutputStream
+pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSStandardOutputStream.java::method::COSStandardOutputStream.writeCRLF	method	ported	src/pdfbox/pdfwriter.cr	ported: COSStandardOutputStream
+pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSStandardOutputStream.java::method::COSStandardOutputStream.writeEOL	method	ported	src/pdfbox/pdfwriter.cr	ported: COSStandardOutputStream
+pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSStandardOutputStream.java::method::COSStandardOutputStream.writeLF	method	ported	src/pdfbox/pdfwriter.cr	ported: COSStandardOutputStream
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::class::COSWriter	class	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::const::ARRAY_CLOSE	const	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::const::ARRAY_OPEN	const	partial	src	auto-generated

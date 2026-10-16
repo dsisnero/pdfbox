@@ -5182,17 +5182,17 @@ pdfbox/src/main/java/org/apache/pdfbox/pdfparser/xref/XReferenceEntry.java::meth
 pdfbox/src/main/java/org/apache/pdfbox/pdfparser/xref/XReferenceEntry.java::method::getType	ported	src/pdfbox/pdf_parser/xref/*.cr	stale inventory; xref model fully ported (was missing)
 pdfbox/src/main/java/org/apache/pdfbox/pdfparser/xref/XReferenceType.java::enum::XReferenceType	ported	spec/pdfbox/pdf_parser/xref/xreference_spec.cr	stale inventory; xref model fully ported (was missing)
 pdfbox/src/main/java/org/apache/pdfbox/pdfparser/xref/XReferenceType.java::method::getNumericValue	ported	src/pdfbox/pdf_parser/xref/*.cr	stale inventory; xref model fully ported (was missing)
-pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSStandardOutputStream.java::class::COSStandardOutputStream	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSStandardOutputStream.java::class::COSStandardOutputStream	ported	src/pdfbox/pdfwriter.cr	ported: COSStandardOutputStream
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSStandardOutputStream.java::const::CRLF	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSStandardOutputStream.java::const::EOL	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSStandardOutputStream.java::const::LF	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSStandardOutputStream.java::method::COSStandardOutputStream.getPos	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSStandardOutputStream.java::method::COSStandardOutputStream.isOnNewLine	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSStandardOutputStream.java::method::COSStandardOutputStream.setOnNewLine	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSStandardOutputStream.java::method::COSStandardOutputStream.write	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSStandardOutputStream.java::method::COSStandardOutputStream.writeCRLF	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSStandardOutputStream.java::method::COSStandardOutputStream.writeEOL	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSStandardOutputStream.java::method::COSStandardOutputStream.writeLF	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSStandardOutputStream.java::method::COSStandardOutputStream.getPos	ported	src/pdfbox/pdfwriter.cr	ported: COSStandardOutputStream
+pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSStandardOutputStream.java::method::COSStandardOutputStream.isOnNewLine	ported	src/pdfbox/pdfwriter.cr	ported: COSStandardOutputStream
+pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSStandardOutputStream.java::method::COSStandardOutputStream.setOnNewLine	ported	src/pdfbox/pdfwriter.cr	ported: COSStandardOutputStream
+pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSStandardOutputStream.java::method::COSStandardOutputStream.write	ported	src/pdfbox/pdfwriter.cr	ported: COSStandardOutputStream
+pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSStandardOutputStream.java::method::COSStandardOutputStream.writeCRLF	ported	src/pdfbox/pdfwriter.cr	ported: COSStandardOutputStream
+pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSStandardOutputStream.java::method::COSStandardOutputStream.writeEOL	ported	src/pdfbox/pdfwriter.cr	ported: COSStandardOutputStream
+pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSStandardOutputStream.java::method::COSStandardOutputStream.writeLF	ported	src/pdfbox/pdfwriter.cr	ported: COSStandardOutputStream
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::class::COSWriter	ported	src/pdfbox/pdfwriter.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::const::ARRAY_CLOSE	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::const::ARRAY_OPEN	missing	-	baseline

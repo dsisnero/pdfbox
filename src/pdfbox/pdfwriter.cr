@@ -19,6 +19,80 @@ module Pdfbox::Pdfwriter
   # Raised when encryption fails
   class EncryptionError < WriteError; end
 
+  # Simple output stream with some minor features for generating "pretty" PDF
+  # files. Port of org.apache.pdfbox.pdfwriter.COSStandardOutputStream.
+  class COSStandardOutputStream < ::IO
+    # To be used when a 2-byte sequence is enforced.
+    CRLF = Bytes[0x0D, 0x0A]
+    # Line feed character.
+    LF = Bytes[0x0A]
+    # Standard line separator.
+    EOL = Bytes[0x0A]
+
+    @out : ::IO
+    @position : Int64
+    @on_new_line : Bool
+
+    def initialize(@out : ::IO, @position : Int64 = 0_i64)
+      @on_new_line = false
+    end
+
+    # The current position in the stream.
+    def position : Int64
+      @position
+    end
+
+    # Whether we are on a newline.
+    def on_new_line? : Bool
+      @on_new_line
+    end
+
+    # Set the newline flag.
+    def on_new_line=(new_on_new_line : Bool) : Bool
+      @on_new_line = new_on_new_line
+    end
+
+    def read(slice : Bytes) : Int32
+      raise ::IO::Error.new("COSStandardOutputStream is write-only")
+    end
+
+    def write(slice : Bytes) : Nil
+      @on_new_line = false
+      @out.write(slice)
+      @position += slice.size
+    end
+
+    def write(slice : Bytes, offset : Int32, length : Int32) : Nil
+      @on_new_line = false
+      @out.write(slice[offset, length])
+      @position += length
+    end
+
+    def write_byte(byte : UInt8) : Nil
+      @on_new_line = false
+      @out.write_byte(byte)
+      @position += 1
+    end
+
+    # Writes a CRLF to the stream.
+    def write_crlf : Nil
+      write(CRLF)
+    end
+
+    # Writes an EOL to the stream, unless already on a newline.
+    def write_eol : Nil
+      unless on_new_line?
+        write(EOL)
+        @on_new_line = true
+      end
+    end
+
+    # Writes a LF to the stream.
+    def write_lf : Nil
+      write(LF)
+    end
+  end
+
   # Main PDF writer class
   # Port of Apache PDFBox COSWriter, simplified: writes all indirect COS objects
   # reachable from the document catalog via BFS, then xref + trailer.
