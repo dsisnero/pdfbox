@@ -1270,6 +1270,16 @@ module Pdfbox::Pdmodel
       meta_obj ? Pdmodel::Common::PDMetadata.new(meta_obj) : nil
     end
 
+    # Set the document metadata stream (Java PDDocumentCatalog#setMetadata; nil clears).
+    def metadata=(meta : Pdmodel::Common::PDMetadata?) : Pdmodel::Common::PDMetadata?
+      if meta
+        @cos_dict.set_item(Cos::Name.new("Metadata"), meta.cos_object)
+      else
+        @cos_dict.remove_item(Cos::Name.new("Metadata"))
+      end
+      meta
+    end
+
     # Get output intents
     def output_intents : Array(OutputIntent)
       output_intents_value = @cos_dict[Cos::Name.new("OutputIntents")]

@@ -805,10 +805,52 @@ module Pdfbox::Multipdf
       JOIN_FIELDS_MODE
     end
 
+    # Java PDFMergerUtility.DocumentMergeMode.
+    enum DocumentMergeMode
+      OPTIMIZE_RESOURCES_MODE
+      PDFBOX_LEGACY_MODE
+    end
+
     @sources = [] of Pdmodel::Document
     @destination_file_name : String?
     @destination_stream : ::IO?
     @acro_form_merge_mode : AcroFormMergeMode = AcroFormMergeMode::PDFBOX_LEGACY_MODE
+    @document_merge_mode : DocumentMergeMode = DocumentMergeMode::OPTIMIZE_RESOURCES_MODE
+    @destination_document_information : Pdmodel::DocumentInformation?
+    @destination_metadata : Pdmodel::Common::PDMetadata?
+    @ignore_acro_form_errors = false
+
+    def document_merge_mode : DocumentMergeMode
+      @document_merge_mode
+    end
+
+    def document_merge_mode=(value : DocumentMergeMode) : DocumentMergeMode
+      @document_merge_mode = value
+    end
+
+    def destination_document_information : Pdmodel::DocumentInformation?
+      @destination_document_information
+    end
+
+    def destination_document_information=(value : Pdmodel::DocumentInformation?) : Pdmodel::DocumentInformation?
+      @destination_document_information = value
+    end
+
+    def destination_metadata : Pdmodel::Common::PDMetadata?
+      @destination_metadata
+    end
+
+    def destination_metadata=(value : Pdmodel::Common::PDMetadata?) : Pdmodel::Common::PDMetadata?
+      @destination_metadata = value
+    end
+
+    def ignore_acro_form_errors? : Bool
+      @ignore_acro_form_errors
+    end
+
+    def ignore_acro_form_errors=(value : Bool) : Bool
+      @ignore_acro_form_errors = value
+    end
 
     def destination_file_name : String?
       @destination_file_name
@@ -843,6 +885,11 @@ module Pdfbox::Multipdf
       @sources << document
     end
 
+    # Register multiple source documents (Java PDFMergerUtility#addSources).
+    def add_sources(sources : Enumerable(Pdmodel::Document)) : Nil
+      sources.each { |source| @sources << source }
+    end
+
     # Merge all sources into the destination file (Java PDFMergerUtility#mergeDocuments).
     def merge_documents(destination_file : String? = nil) : Nil
       out_path = @destination_file_name || destination_file
@@ -851,6 +898,15 @@ module Pdfbox::Multipdf
 
       destination = Pdmodel::Document.create
       @sources.each { |source| append_document(destination, source) }
+
+      # Java mergeDocuments applies the configured destination info/metadata.
+      if info = @destination_document_information
+        destination.set_document_information(info)
+      end
+      if meta = @destination_metadata
+        destination.document_catalog.try(&.metadata = meta)
+      end
+
       if out_stream
         destination.save(out_stream)
       elsif out_path

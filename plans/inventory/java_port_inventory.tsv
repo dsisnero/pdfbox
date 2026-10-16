@@ -4858,19 +4858,19 @@ pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::enum::Doc
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.acroFormJoinFieldsMode	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.acroFormLegacyMode	method	ported	src/pdfbox/multipdf.cr	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.addSource	method	ported	src/pdfbox/multipdf.cr	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.addSources	method	ported	src/pdfbox/multipdf.cr	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.addSources	method	ported	src/pdfbox/multipdf.cr	ported: PDFMergerUtility merge-mode/info/metadata/ignore
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.appendDocument	method	ported	src/pdfbox/multipdf.cr	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.getAcroFormMergeMode	method	ported	src/pdfbox/multipdf.cr	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.getDestinationDocumentInformation	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.getDestinationDocumentInformation	method	ported	src/pdfbox/multipdf.cr	ported: PDFMergerUtility merge-mode/info/metadata/ignore
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.getDestinationFileName	method	ported	src/pdfbox/multipdf.cr	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.getDestinationMetadata	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.getDestinationMetadata	method	ported	src/pdfbox/multipdf.cr	ported: PDFMergerUtility merge-mode/info/metadata/ignore
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.getDestinationStream	method	ported	src/pdfbox/multipdf.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.getDocumentMergeMode	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.getDocumentMergeMode	method	ported	src/pdfbox/multipdf.cr	ported: PDFMergerUtility merge-mode/info/metadata/ignore
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.getIDTreeAsMap	method	ported	src/pdfbox/multipdf.cr	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.getNumberTreeAsMap	method	ported	src/pdfbox/multipdf.cr	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.hasOnlyDocumentsOrParts	method	ported	src/pdfbox/multipdf.cr	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.isDynamicXfa	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.isIgnoreAcroFormErrors	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.isIgnoreAcroFormErrors	method	ported	src/pdfbox/multipdf.cr	ported: PDFMergerUtility merge-mode/info/metadata/ignore
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.legacyMergeDocuments	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.mergeAcroForm	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.mergeDocuments	method	ported	src/pdfbox/multipdf.cr	auto-generated
@@ -4885,12 +4885,12 @@ pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::P
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.mergeViewerPreferences	method	ported	src/pdfbox/multipdf.cr	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.optimizedMergeDocuments	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.setAcroFormMergeMode	method	ported	src/pdfbox/multipdf.cr	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.setDestinationDocumentInformation	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.setDestinationDocumentInformation	method	ported	src/pdfbox/multipdf.cr	ported: PDFMergerUtility merge-mode/info/metadata/ignore
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.setDestinationFileName	method	ported	src/pdfbox/multipdf.cr	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.setDestinationMetadata	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.setDestinationMetadata	method	ported	src/pdfbox/multipdf.cr	ported: PDFMergerUtility merge-mode/info/metadata/ignore
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.setDestinationStream	method	ported	src/pdfbox/multipdf.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.setDocumentMergeMode	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.setIgnoreAcroFormErrors	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.setDocumentMergeMode	method	ported	src/pdfbox/multipdf.cr	ported: PDFMergerUtility merge-mode/info/metadata/ignore
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.setIgnoreAcroFormErrors	method	ported	src/pdfbox/multipdf.cr	ported: PDFMergerUtility merge-mode/info/metadata/ignore
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.updatePageReferences	method	ported	src/pdfbox/multipdf.cr	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.updateParentEntry	method	ported	src/pdfbox/multipdf.cr	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.updateStructParentEntries	method	ported	src/pdfbox/multipdf.cr	auto-generated
@@ -5481,7 +5481,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::P
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setDocumentOutline	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setLanguage	method	ported	src/pdfbox/pdmodel.cr	ported: PDDocumentCatalog remaining accessors
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setMarkInfo	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setMetadata	method	ported	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setMetadata	method	ported	src/pdfbox/pdmodel.cr	ported: PDDocumentCatalog setMetadata
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setNames	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setOCProperties	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setOpenAction	method	ported	src	auto-generated

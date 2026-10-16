@@ -4858,19 +4858,19 @@ pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::enum::Doc
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.acroFormJoinFieldsMode	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.acroFormLegacyMode	ported	src/pdfbox/multipdf.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.addSource	ported	src/pdfbox/multipdf.cr	baseline
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.addSources	ported	src/pdfbox/multipdf.cr	baseline
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.addSources	ported	src/pdfbox/multipdf.cr	ported: PDFMergerUtility merge-mode/info/metadata/ignore
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.appendDocument	ported	src/pdfbox/multipdf.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.getAcroFormMergeMode	ported	src/pdfbox/multipdf.cr	baseline
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.getDestinationDocumentInformation	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.getDestinationDocumentInformation	ported	src/pdfbox/multipdf.cr	ported: PDFMergerUtility merge-mode/info/metadata/ignore
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.getDestinationFileName	ported	src/pdfbox/multipdf.cr	baseline
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.getDestinationMetadata	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.getDestinationMetadata	ported	src/pdfbox/multipdf.cr	ported: PDFMergerUtility merge-mode/info/metadata/ignore
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.getDestinationStream	ported	src/pdfbox/multipdf.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.getDocumentMergeMode	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.getDocumentMergeMode	ported	src/pdfbox/multipdf.cr	ported: PDFMergerUtility merge-mode/info/metadata/ignore
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.getIDTreeAsMap	ported	src/pdfbox/multipdf.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.getNumberTreeAsMap	ported	src/pdfbox/multipdf.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.hasOnlyDocumentsOrParts	ported	src/pdfbox/multipdf.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.isDynamicXfa	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.isIgnoreAcroFormErrors	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.isIgnoreAcroFormErrors	ported	src/pdfbox/multipdf.cr	ported: PDFMergerUtility merge-mode/info/metadata/ignore
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.legacyMergeDocuments	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.mergeAcroForm	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.mergeDocuments	ported	src/pdfbox/multipdf.cr	baseline
@@ -4885,12 +4885,12 @@ pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::P
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.mergeViewerPreferences	ported	src/pdfbox/multipdf.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.optimizedMergeDocuments	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.setAcroFormMergeMode	ported	src/pdfbox/multipdf.cr	baseline
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.setDestinationDocumentInformation	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.setDestinationDocumentInformation	ported	src/pdfbox/multipdf.cr	ported: PDFMergerUtility merge-mode/info/metadata/ignore
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.setDestinationFileName	ported	src/pdfbox/multipdf.cr	baseline
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.setDestinationMetadata	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.setDestinationMetadata	ported	src/pdfbox/multipdf.cr	ported: PDFMergerUtility merge-mode/info/metadata/ignore
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.setDestinationStream	ported	src/pdfbox/multipdf.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.setDocumentMergeMode	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.setIgnoreAcroFormErrors	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.setDocumentMergeMode	ported	src/pdfbox/multipdf.cr	ported: PDFMergerUtility merge-mode/info/metadata/ignore
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.setIgnoreAcroFormErrors	ported	src/pdfbox/multipdf.cr	ported: PDFMergerUtility merge-mode/info/metadata/ignore
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.updatePageReferences	ported	src/pdfbox/multipdf.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.updateParentEntry	ported	src/pdfbox/multipdf.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFMergerUtility.java::method::PDFMergerUtility.updateStructParentEntries	ported	src/pdfbox/multipdf.cr	baseline
@@ -5481,7 +5481,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::P
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setDocumentOutline	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setLanguage	ported	src/pdfbox/pdmodel.cr	ported: PDDocumentCatalog remaining accessors
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setMarkInfo	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setMetadata	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setMetadata	ported	src/pdfbox/pdmodel.cr	ported: PDDocumentCatalog setMetadata
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setNames	ported	src/pdfbox/pdmodel.cr	DocumentNameDictionary name-tree surface (dests/javascript/embedded files)
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setOCProperties	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setOpenAction	ported	src/pdfbox/pdmodel.cr	baseline
