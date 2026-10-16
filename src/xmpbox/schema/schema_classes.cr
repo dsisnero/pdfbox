@@ -236,6 +236,8 @@ module Xmpbox
       MODIFIER_DATE = "ModifierDate"
       THUMBNAILS    = "Thumbnails"
 
+      @alt_thumbs : Type::ArrayProperty?
+
       def self.structured_type_info
         {namespace: "http://ns.adobe.com/xap/1.0/", prefered_prefix: "xmp"}
       end
@@ -351,6 +353,33 @@ module Xmpbox
 
       def remove_identifier(identifier : String) : Nil
         remove_unqualified_bag_value(IDENTIFIER, identifier)
+      end
+
+      def add_thumbnails(height : Int32, width : Int32, format : String, img : String) : Nil
+        if @alt_thumbs.nil?
+          @alt_thumbs = create_array_property(THUMBNAILS, Type::Cardinality::Alt)
+          add_property(@alt_thumbs.as(Type::ArrayProperty))
+        end
+        thumb = Type::ThumbnailType.new(metadata)
+        thumb.height = height
+        thumb.width = width
+        thumb.format = format
+        thumb.image = img
+        @alt_thumbs.as(Type::ArrayProperty).container.add_property(thumb)
+      end
+
+      def thumbnails_property : Array(Type::ThumbnailType)?
+        tmp = unqualified_array_list(THUMBNAILS)
+        return nil unless tmp
+        thumbs = [] of Type::ThumbnailType
+        tmp.each do |field|
+          if field.is_a?(Type::ThumbnailType)
+            thumbs << field
+          else
+            raise Type::BadFieldValueException.new("Thumbnail expected and #{field.class.name} found.")
+          end
+        end
+        thumbs
       end
     end
 

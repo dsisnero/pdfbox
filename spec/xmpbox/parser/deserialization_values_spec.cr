@@ -82,14 +82,19 @@ module Xmpbox
         basic.not_nil!.modify_date.should_not be_nil
         basic.not_nil!.metadata_date.should_not be_nil
 
-        thumbs = basic.not_nil!.abstract_property("Thumbnails")
-        thumbs.should be_a(Xmpbox::Type::ArrayProperty)
-        thumbs.as(Xmpbox::Type::ArrayProperty).all_properties.size.should eq(2)
-        t0 = thumbs.as(Xmpbox::Type::ArrayProperty).all_properties[0].as(Xmpbox::Type::ThumbnailType)
+        thumbs = basic.not_nil!.thumbnails_property
+        thumbs.should_not be_nil
+        thumbs.not_nil!.size.should eq(2)
+        t0 = thumbs.not_nil![0]
         t0.height.should eq(162)
         t0.width.should eq(216)
         t0.format.should eq("JPEG")
         t0.image.should eq("/9j/4AAQSkZJRgABAgEASABIAAD")
+        t1 = thumbs.not_nil![1]
+        t1.height.should eq(162)
+        t1.width.should eq(216)
+        t1.format.should eq("JPEG")
+        t1.image.should eq("/9j/4AAQSkZJRgABAgEASABIAAD")
 
         acme = xmp.schema("http://www.acme.com/ns/email/1/")
         acme.should_not be_nil

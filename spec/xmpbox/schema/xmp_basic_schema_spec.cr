@@ -75,6 +75,23 @@ module Xmpbox
         schema.advisories.should eq(["xpath2"])
       end
 
+      it "adds and lists thumbnails (Alt of ThumbnailType)" do
+        meta = XMPMetadata.create_xmp_metadata
+        schema = XMPBasicSchema.new(meta)
+
+        schema.add_thumbnails(162, 216, "JPEG", "/9j/4AAQ")
+        schema.add_thumbnails(80, 100, "PNG", "iVBORw0")
+
+        thumbs = schema.thumbnails_property
+        thumbs.should_not be_nil
+        thumbs.not_nil!.size.should eq(2)
+        thumbs.not_nil![0].height.should eq(162)
+        thumbs.not_nil![0].width.should eq(216)
+        thumbs.not_nil![0].format.should eq("JPEG")
+        thumbs.not_nil![0].image.should eq("/9j/4AAQ")
+        thumbs.not_nil![1].height.should eq(80)
+      end
+
       it "returns nil for unset properties" do
         meta = XMPMetadata.create_xmp_metadata
         schema = XMPBasicSchema.new(meta)
@@ -85,6 +102,7 @@ module Xmpbox
         schema.nickname.should be_nil
         schema.create_date.should be_nil
         schema.rating.should be_nil
+        schema.thumbnails_property.should be_nil
       end
     end
   end

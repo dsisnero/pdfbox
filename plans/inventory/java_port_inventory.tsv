@@ -11785,7 +11785,7 @@ xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::const::RATING
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::const::THUMBNAILS	const	missing	-	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.addAdvisory	method	ported	src	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.addIdentifier	method	ported	src	auto-generated
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.addThumbnails	method	partial	src	auto-generated
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.addThumbnails	method	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPBasicSchema thumbnails
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getAdvisory	method	partial	src	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getAdvisoryProperty	method	partial	src	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getBaseURL	method	ported	src	auto-generated
@@ -11808,7 +11808,7 @@ xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBa
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getNicknameProperty	method	partial	src	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getRating	method	ported	src	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getRatingProperty	method	partial	src	auto-generated
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getThumbnailsProperty	method	partial	src	auto-generated
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getThumbnailsProperty	method	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPBasicSchema thumbnails
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.removeAdvisory	method	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPBasicSchema modifierDate/removes
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.removeIdentifier	method	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPBasicSchema modifierDate/removes
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.setBaseURL	method	ported	src	auto-generated

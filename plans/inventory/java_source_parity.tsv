@@ -11785,7 +11785,7 @@ xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::const::RATING
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::const::THUMBNAILS	missing	-	baseline
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.addAdvisory	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.addIdentifier	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.addThumbnails	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.addThumbnails	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPBasicSchema thumbnails
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getAdvisory	missing	-	baseline
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getAdvisoryProperty	missing	-	baseline
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getBaseURL	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
@@ -11808,7 +11808,7 @@ xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBa
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getNicknameProperty	missing	-	baseline
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getRating	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getRatingProperty	missing	-	baseline
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getThumbnailsProperty	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.getThumbnailsProperty	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPBasicSchema thumbnails
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.removeAdvisory	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPBasicSchema modifierDate/removes
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.removeIdentifier	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPBasicSchema modifierDate/removes
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPBasicSchema.java::method::XMPBasicSchema.setBaseURL	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
