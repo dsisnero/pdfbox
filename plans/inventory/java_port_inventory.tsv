@@ -4821,24 +4821,24 @@ pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.ge
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.loadPDF	method	ported	src/pdfbox/multipdf.cr	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.loadPDFs	method	ported	src/pdfbox/multipdf.cr	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.overlay	method	ported	src/pdfbox/multipdf.cr	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.overlayDocuments	method	ported	src/pdfbox/multipdf.cr	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.overlayDocuments	method	ported	src/pdfbox/multipdf.cr	ported: Overlay overlayDocuments/PDF setters
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.overlayPage	method	ported	src/pdfbox/multipdf.cr	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.processPages	method	ported	src/pdfbox/multipdf.cr	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.setAdjustRotation	method	ported	src/pdfbox/multipdf.cr	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.setAllPagesOverlayFile	method	ported	src/pdfbox/multipdf.cr	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.setAllPagesOverlayPDF	method	ported	src/pdfbox/multipdf.cr	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.setAllPagesOverlayPDF	method	ported	src/pdfbox/multipdf.cr	ported: Overlay overlayDocuments/PDF setters
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.setDefaultOverlayFile	method	ported	src/pdfbox/multipdf.cr	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.setDefaultOverlayPDF	method	ported	src/pdfbox/multipdf.cr	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.setEvenPageOverlayFile	method	ported	src/pdfbox/multipdf.cr	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.setEvenPageOverlayPDF	method	ported	src/pdfbox/multipdf.cr	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.setEvenPageOverlayPDF	method	ported	src/pdfbox/multipdf.cr	ported: Overlay overlayDocuments/PDF setters
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.setFirstPageOverlayFile	method	ported	src/pdfbox/multipdf.cr	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.setFirstPageOverlayPDF	method	ported	src/pdfbox/multipdf.cr	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.setFirstPageOverlayPDF	method	ported	src/pdfbox/multipdf.cr	ported: Overlay overlayDocuments/PDF setters
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.setInputFile	method	ported	src/pdfbox/multipdf.cr	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.setInputPDF	method	ported	src/pdfbox/multipdf.cr	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.setLastPageOverlayFile	method	ported	src/pdfbox/multipdf.cr	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.setLastPageOverlayPDF	method	ported	src/pdfbox/multipdf.cr	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.setLastPageOverlayPDF	method	ported	src/pdfbox/multipdf.cr	ported: Overlay overlayDocuments/PDF setters
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.setOddPageOverlayFile	method	ported	src/pdfbox/multipdf.cr	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.setOddPageOverlayPDF	method	ported	src/pdfbox/multipdf.cr	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.setOddPageOverlayPDF	method	ported	src/pdfbox/multipdf.cr	ported: Overlay overlayDocuments/PDF setters
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.setOverlayPosition	method	ported	src/pdfbox/multipdf.cr	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFCloneUtility.java::class::PDFCloneUtility	class	ported	src/pdfbox/multipdf.cr	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFCloneUtility.java::const::LOG	const	missing	-	auto-generated

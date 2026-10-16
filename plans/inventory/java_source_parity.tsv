@@ -4821,24 +4821,24 @@ pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.ge
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.loadPDF	ported	src/pdfbox/multipdf.cr	ported
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.loadPDFs	ported	src/pdfbox/multipdf.cr	ported
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.overlay	ported	src/pdfbox/multipdf.cr	ported
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.overlayDocuments	ported	src/pdfbox/multipdf.cr	ported
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.overlayDocuments	ported	src/pdfbox/multipdf.cr	ported: Overlay overlayDocuments/PDF setters
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.overlayPage	ported	src/pdfbox/multipdf.cr	ported
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.processPages	ported	src/pdfbox/multipdf.cr	ported
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.setAdjustRotation	ported	src/pdfbox/multipdf.cr	ported
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.setAllPagesOverlayFile	ported	src/pdfbox/multipdf.cr	ported
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.setAllPagesOverlayPDF	ported	src/pdfbox/multipdf.cr	ported
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.setAllPagesOverlayPDF	ported	src/pdfbox/multipdf.cr	ported: Overlay overlayDocuments/PDF setters
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.setDefaultOverlayFile	ported	src/pdfbox/multipdf.cr	ported
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.setDefaultOverlayPDF	ported	src/pdfbox/multipdf.cr	ported
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.setEvenPageOverlayFile	ported	src/pdfbox/multipdf.cr	ported
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.setEvenPageOverlayPDF	ported	src/pdfbox/multipdf.cr	ported
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.setEvenPageOverlayPDF	ported	src/pdfbox/multipdf.cr	ported: Overlay overlayDocuments/PDF setters
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.setFirstPageOverlayFile	ported	src/pdfbox/multipdf.cr	ported
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.setFirstPageOverlayPDF	ported	src/pdfbox/multipdf.cr	ported
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.setFirstPageOverlayPDF	ported	src/pdfbox/multipdf.cr	ported: Overlay overlayDocuments/PDF setters
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.setInputFile	ported	src/pdfbox/multipdf.cr	ported
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.setInputPDF	ported	src/pdfbox/multipdf.cr	ported
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.setLastPageOverlayFile	ported	src/pdfbox/multipdf.cr	ported
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.setLastPageOverlayPDF	ported	src/pdfbox/multipdf.cr	ported
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.setLastPageOverlayPDF	ported	src/pdfbox/multipdf.cr	ported: Overlay overlayDocuments/PDF setters
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.setOddPageOverlayFile	ported	src/pdfbox/multipdf.cr	ported
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.setOddPageOverlayPDF	ported	src/pdfbox/multipdf.cr	ported
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.setOddPageOverlayPDF	ported	src/pdfbox/multipdf.cr	ported: Overlay overlayDocuments/PDF setters
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.setOverlayPosition	ported	src/pdfbox/multipdf.cr	ported
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFCloneUtility.java::class::PDFCloneUtility	ported	src/pdfbox/multipdf.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/PDFCloneUtility.java::const::LOG	missing	-	baseline

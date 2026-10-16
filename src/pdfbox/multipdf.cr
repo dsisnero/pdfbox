@@ -69,6 +69,38 @@ module Pdfbox::Multipdf
       @default_overlay_page = create_layout_page_from_document(document)
     end
 
+    # Java: setFirstPageOverlayPDF(PDDocument)
+    def first_page_overlay_pdf=(document : Pdmodel::Document) : Nil
+      @first_page_overlay_document = document
+      @first_page_overlay_page = create_layout_page_from_document(document)
+    end
+
+    # Java: setLastPageOverlayPDF(PDDocument)
+    def last_page_overlay_pdf=(document : Pdmodel::Document) : Nil
+      @last_page_overlay_document = document
+      @last_page_overlay_page = create_layout_page_from_document(document)
+    end
+
+    # Java: setOddPageOverlayPDF(PDDocument)
+    def odd_page_overlay_pdf=(document : Pdmodel::Document) : Nil
+      @odd_page_overlay_document = document
+      @odd_page_overlay_page = create_layout_page_from_document(document)
+    end
+
+    # Java: setEvenPageOverlayPDF(PDDocument)
+    def even_page_overlay_pdf=(document : Pdmodel::Document) : Nil
+      @even_page_overlay_document = document
+      @even_page_overlay_page = create_layout_page_from_document(document)
+    end
+
+    # Java: setAllPagesOverlayPDF(PDDocument)
+    def all_pages_overlay_pdf=(document : Pdmodel::Document) : Nil
+      @all_pages_overlay_document = document
+      @specific_page_overlay_layout_page_map = create_page_overlay_layout_page_map(document)
+      @use_all_overlay_pages = true
+      @number_of_overlay_pages = @specific_page_overlay_layout_page_map.size
+    end
+
     def first_page_overlay_file=(filename : String) : Nil
       @first_page_overlay_document = load_pdf(filename)
       if doc = @first_page_overlay_document
@@ -120,6 +152,22 @@ module Pdfbox::Multipdf
           @open_documents << doc
         end
         @specific_page_overlay_layout_page_map[page_num] = layout_page
+      end
+
+      input_doc = @input_pdf_document
+      raise ::IO::Error.new("Input document not set") unless input_doc
+
+      process_pages(input_doc)
+      input_doc
+    end
+
+    # Java: overlayDocuments(Map<Integer, PDDocument>). Adds the given overlay
+    # documents to specific (1-based) pages of the input document and returns it.
+    def overlay_documents(specific_page_overlay_document_map : Hash(Int32, Pdmodel::Document)) : Pdmodel::Document
+      load_pdfs
+
+      specific_page_overlay_document_map.each do |page_num, doc|
+        @specific_page_overlay_layout_page_map[page_num] = create_layout_page_from_document(doc)
       end
 
       input_doc = @input_pdf_document
