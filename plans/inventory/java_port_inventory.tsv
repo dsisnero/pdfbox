@@ -7343,7 +7343,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/FontMapper.java::interface::
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/FontMapper.java::method::getCIDFont	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/FontMapper.java::method::getFontBoxFont	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/FontMapper.java::method::getTrueTypeFont	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/FontMapperImpl.java::class::DefaultFontProvider	class	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/FontMapperImpl.java::class::DefaultFontProvider	class	ported	src/pdfbox/pdmodel/font/font_mapper.cr	ported: default font provider/mapper holders
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/FontMapperImpl.java::class::FontMapperImpl	class	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/FontMapperImpl.java::class::FontMatch	class	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/FontMapperImpl.java::const::INSTANCE	const	missing	-	auto-generated
@@ -7368,7 +7368,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/FontMapperImpl.java::method:
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/FontMapperImpl.java::method::FontMapperImpl.probablyBarcodeFont	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/FontMapperImpl.java::method::FontMapperImpl.setProvider	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/FontMapperImpl.java::method::FontMatch.compareTo	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/FontMappers.java::class::DefaultFontMapper	class	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/FontMappers.java::class::DefaultFontMapper	class	ported	src/pdfbox/pdmodel/font/font_mapper.cr	ported: default font provider/mapper holders
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/FontMappers.java::class::FontMappers	class	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/FontMappers.java::const::INSTANCE	const	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/FontMappers.java::method::FontMappers.instance	method	ported	src	auto-generated

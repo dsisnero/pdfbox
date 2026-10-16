@@ -7343,7 +7343,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/FontMapper.java::interface::
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/FontMapper.java::method::getCIDFont	ported	src/.../font_mapper.cr	stale inventory; class ported
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/FontMapper.java::method::getFontBoxFont	ported	src/.../font_mapper.cr	stale inventory; class ported
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/FontMapper.java::method::getTrueTypeFont	ported	src/.../font_mapper.cr	stale inventory; class ported
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/FontMapperImpl.java::class::DefaultFontProvider	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/FontMapperImpl.java::class::DefaultFontProvider	ported	src/pdfbox/pdmodel/font/font_mapper.cr	ported: default font provider/mapper holders
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/FontMapperImpl.java::class::FontMapperImpl	ported	src/pdfbox/pdmodel/font/font_mapper.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/FontMapperImpl.java::class::FontMatch	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/FontMapperImpl.java::const::INSTANCE	missing	-	baseline
@@ -7368,7 +7368,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/FontMapperImpl.java::method:
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/FontMapperImpl.java::method::FontMapperImpl.probablyBarcodeFont	ported	src/pdfbox/pdmodel/font/font_mapper.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/FontMapperImpl.java::method::FontMapperImpl.setProvider	ported	src/pdfbox/pdmodel/font/font_mapper.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/FontMapperImpl.java::method::FontMatch.compareTo	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/FontMappers.java::class::DefaultFontMapper	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/FontMappers.java::class::DefaultFontMapper	ported	src/pdfbox/pdmodel/font/font_mapper.cr	ported: default font provider/mapper holders
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/FontMappers.java::class::FontMappers	ported	src/pdfbox/pdmodel/font/font_mapper.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/FontMappers.java::const::INSTANCE	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/FontMappers.java::method::FontMappers.instance	missing	-	baseline

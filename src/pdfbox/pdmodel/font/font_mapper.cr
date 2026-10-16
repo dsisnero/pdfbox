@@ -96,7 +96,20 @@ module Pdfbox::Pdmodel::Font
     @substitutes = Hash(String, Array(String)).new
     @provider : FontProvider?
     @font_info_by_name : Hash(String, FontInfo)?
-    @font_cache : FontCache
+
+    # Shared font cache (Java FontMapperImpl's static fontCache).
+    FONT_CACHE = FontCache.new
+
+    # Holder for the lazily-created default font provider.
+    # Java: FontMapperImpl.DefaultFontProvider
+    # (INSTANCE = new FileSystemFontProvider(fontCache)).
+    class DefaultFontProvider
+      @@instance : FontProvider? = nil
+
+      def self.instance : FontProvider
+        @@instance ||= FileSystemFontProvider.new(FONT_CACHE)
+      end
+    end
 
     private struct FontMatch
       include Comparable(FontMatch)
@@ -113,8 +126,6 @@ module Pdfbox::Pdmodel::Font
     end
 
     def initialize
-      @font_cache = FontCache.new
-
       Standard14Fonts::SUBSTITUTES.each do |match, replacements|
         @substitutes[normalize_lookup_key(match)] = replacements.dup
       end
@@ -136,14 +147,14 @@ module Pdfbox::Pdmodel::Font
     end
 
     def font_cache : FontCache
-      @font_cache
+      FONT_CACHE
     end
 
     def provider : FontProvider
       current = @provider
       return current if current
 
-      fresh = FileSystemFontProvider.new(@font_cache)
+      fresh = DefaultFontProvider.instance
       self.provider = fresh
       fresh
     end
@@ -546,10 +557,20 @@ module Pdfbox::Pdmodel::Font
   end
 
   class FontMappers
-    @@instance : FontMapperImpl?
+    @@instance : FontMapperImpl? = nil
+
+    # Holder for the lazily-created default mapper.
+    # Java: FontMappers.DefaultFontMapper (INSTANCE = new FontMapperImpl()).
+    class DefaultFontMapper
+      @@instance : FontMapperImpl? = nil
+
+      def self.instance : FontMapperImpl
+        @@instance ||= FontMapperImpl.new
+      end
+    end
 
     def self.instance : FontMapperImpl
-      @@instance ||= FontMapperImpl.new
+      @@instance ||= DefaultFontMapper.instance
     end
 
     def self.set(font_mapper : FontMapperImpl) : FontMapperImpl
