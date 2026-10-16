@@ -14,6 +14,7 @@
 # limitations under the License.
 
 require "./text/text_position"
+require "./text/text_position_comparator"
 require "./text/pdf_text_stripper"
 require "./text/pdf_text_stripper_by_area"
 require "./text/pdf_marked_content_extractor"

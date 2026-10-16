@@ -11050,8 +11050,8 @@ pdfbox/src/main/java/org/apache/pdfbox/text/TextPosition.java::method::TextPosit
 pdfbox/src/main/java/org/apache/pdfbox/text/TextPosition.java::method::TextPosition.mergeDiacritic	ported	src/.../text_position.cr	stale inventory; class ported
 pdfbox/src/main/java/org/apache/pdfbox/text/TextPosition.java::method::TextPosition.setUnicode	ported	src/.../text_position.cr	stale inventory; class ported
 pdfbox/src/main/java/org/apache/pdfbox/text/TextPosition.java::method::TextPosition.toString	ported	src/.../text_position.cr	stale inventory; class ported
-pdfbox/src/main/java/org/apache/pdfbox/text/TextPositionComparator.java::class::TextPositionComparator	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/text/TextPositionComparator.java::method::TextPositionComparator.compare	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/text/TextPositionComparator.java::class::TextPositionComparator	ported	src/pdfbox/text/text_position_comparator.cr	ported: TextPositionComparator
+pdfbox/src/main/java/org/apache/pdfbox/text/TextPositionComparator.java::method::TextPositionComparator.compare	ported	src/pdfbox/text/text_position_comparator.cr	ported: TextPositionComparator
 pdfbox/src/main/java/org/apache/pdfbox/util/DateConverter.java::class::DateConverter	ported	src/.../date_converter.cr	stale inventory; class ported
 pdfbox/src/main/java/org/apache/pdfbox/util/DateConverter.java::const::ALPHA_START_FORMATS	ported	src/.../date_converter.cr	stale inventory; class ported
 pdfbox/src/main/java/org/apache/pdfbox/util/DateConverter.java::const::DAY	ported	src/.../date_converter.cr	stale inventory; class ported

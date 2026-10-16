@@ -11050,8 +11050,8 @@ pdfbox/src/main/java/org/apache/pdfbox/text/TextPosition.java::method::TextPosit
 pdfbox/src/main/java/org/apache/pdfbox/text/TextPosition.java::method::TextPosition.mergeDiacritic	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/text/TextPosition.java::method::TextPosition.setUnicode	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/text/TextPosition.java::method::TextPosition.toString	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/text/TextPositionComparator.java::class::TextPositionComparator	class	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/text/TextPositionComparator.java::method::TextPositionComparator.compare	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/text/TextPositionComparator.java::class::TextPositionComparator	class	ported	src/pdfbox/text/text_position_comparator.cr	ported: TextPositionComparator
+pdfbox/src/main/java/org/apache/pdfbox/text/TextPositionComparator.java::method::TextPositionComparator.compare	method	ported	src/pdfbox/text/text_position_comparator.cr	ported: TextPositionComparator
 pdfbox/src/main/java/org/apache/pdfbox/util/DateConverter.java::class::DateConverter	class	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/util/DateConverter.java::const::ALPHA_START_FORMATS	const	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/util/DateConverter.java::const::DAY	const	missing	-	auto-generated

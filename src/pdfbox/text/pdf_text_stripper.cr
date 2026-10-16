@@ -17,6 +17,7 @@ require "../pdmodel"
 require "../pdmodel/document"
 require "../pdmodel/font"
 require "./text_position"
+require "./text_position_comparator"
 require "../contentstream/legacy_pdf_stream_engine"
 require "bidi"
 
@@ -32,6 +33,7 @@ module Pdfbox::Text
     MAX_HEIGHT_FOR_LINE_RESET_VALUE           = -1.0_f32
     MIN_Y_TOP_FOR_LINE_RESET_VALUE            = Float32::MAX
     LAST_WORD_SPACING_RESET_VALUE             = -1.0_f32
+    TEXT_POSITION_COMPARATOR                  = TextPositionComparator.new
 
     @output : ::IO?
     @document : Pdfbox::Pdmodel::Document?
@@ -721,41 +723,8 @@ module Pdfbox::Text
       merged
     end
 
-    # Matches Java Float.compare: NaN == NaN is 0
-    private def float_compare(left : Float32, right : Float32) : Int32
-      return 0 if left == right
-      return 0 if left.nan? && right.nan?
-      return 1 if left.nan?
-      return -1 if right.nan?
-
-      if left < right
-        -1
-      else
-        1
-      end
-    end
-
     private def compare_text_positions(left : TextPosition, right : TextPosition) : Int32
-      cmp = float_compare(left.dir, right.dir)
-      return cmp if cmp != 0
-
-      left_x = left.x_dir_adj
-      right_x = right.x_dir_adj
-      left_y_bottom = left.y_dir_adj
-      right_y_bottom = right.y_dir_adj
-      left_y_top = left_y_bottom - left.height_dir
-      right_y_top = right_y_bottom - right.height_dir
-      y_difference = (left_y_bottom - right_y_bottom).abs
-
-      if y_difference < 0.1_f32 ||
-         (right_y_bottom >= left_y_top && right_y_bottom <= left_y_bottom) ||
-         (left_y_bottom >= right_y_top && left_y_bottom <= right_y_bottom)
-        float_compare(left_x, right_x)
-      elsif left_y_bottom < right_y_bottom
-        -1
-      else
-        1
-      end
+      TEXT_POSITION_COMPARATOR.compare(left, right)
     end
 
     private def remove_contained_spaces(text_positions : Array(TextPosition)) : Nil
