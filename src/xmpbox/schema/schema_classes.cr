@@ -1153,8 +1153,16 @@ module Xmpbox
         unqualified_text_property_value(TRANSMISSION_REFERENCE)
       end
 
+      def source=(value : String) : Nil
+        set_text_property_value(SOURCE, value)
+      end
+
+      def source : String?
+        unqualified_text_property_value(SOURCE)
+      end
+
       def ancestor_id=(value : String) : Nil
-        set_text_property_value(ANCESTOR_ID, value)
+        set_specified_simple_type_property(Type::Types::URI, ANCESTOR_ID, value)
       end
 
       def ancestor_id : String?
@@ -1196,6 +1204,85 @@ module Xmpbox
 
       def document_ancestors : Array(String)?
         unqualified_bag_value_list(DOCUMENT_ANCESTORS)
+      end
+
+      def authors_position_property : Type::TextType?
+        unqualified_text_property(AUTHORS_POSITION)
+      end
+
+      def caption_writer_property : Type::TextType?
+        unqualified_text_property(CAPTION_WRITER)
+      end
+
+      def category_property : Type::TextType?
+        unqualified_text_property(CATEGORY)
+      end
+
+      def city_property : Type::TextType?
+        unqualified_text_property(CITY)
+      end
+
+      def color_mode_property : Type::IntegerType?
+        integer_property(COLOR_MODE)
+      end
+
+      def country_property : Type::TextType?
+        unqualified_text_property(COUNTRY)
+      end
+
+      def credit_property : Type::TextType?
+        unqualified_text_property(CREDIT)
+      end
+
+      def date_created_property : Type::DateType?
+        date_property(DATE_CREATED)
+      end
+
+      def headline_property : Type::TextType?
+        unqualified_text_property(HEADLINE)
+      end
+
+      def history_property : Type::TextType?
+        unqualified_text_property(HISTORY)
+      end
+
+      def icc_profile_property : Type::TextType?
+        unqualified_text_property(ICC_PROFILE)
+      end
+
+      def instructions_property : Type::TextType?
+        unqualified_text_property(INSTRUCTIONS)
+      end
+
+      def source_property : Type::TextType?
+        unqualified_text_property(SOURCE)
+      end
+
+      def state_property : Type::TextType?
+        unqualified_text_property(STATE)
+      end
+
+      def supplemental_categories_property : Type::TextType?
+        unqualified_text_property(SUPPLEMENTAL_CATEGORIES)
+      end
+
+      def transmission_reference_property : Type::TextType?
+        unqualified_text_property(TRANSMISSION_REFERENCE)
+      end
+
+      def urgency_property : Type::IntegerType?
+        integer_property(URGENCY)
+      end
+
+      def ancestor_id_property : Type::URIType?
+        prop = abstract_property(ANCESTOR_ID)
+        if prop
+          if prop.is_a?(Type::URIType)
+            return prop
+          end
+          raise Type::BadFieldValueException.new("Property asked is not a URI Property")
+        end
+        nil
       end
     end
 

@@ -11655,44 +11655,44 @@ xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::const::URGEN
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.addDocumentAncestors	ported	src/xmpbox/schema/schema_classes.cr	ported: Photoshop/MediaManagement resource accessors
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.addTextLayers	ported	src/xmpbox/schema/schema_classes.cr	ported: Photoshop/MediaManagement resource accessors
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getAncestorID	ported	src/xmpbox/schema/schema_classes.cr	ported: PhotoshopSchema text/URI props
-xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getAncestorIDProperty	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getAncestorIDProperty	ported	src/xmpbox/schema/schema_classes.cr	ported: PhotoshopSchema property getters
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getAuthorsPosition	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
-xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getAuthorsPositionProperty	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getAuthorsPositionProperty	ported	src/xmpbox/schema/schema_classes.cr	ported: PhotoshopSchema property getters
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getCaptionWriter	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
-xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getCaptionWriterProperty	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getCaptionWriterProperty	ported	src/xmpbox/schema/schema_classes.cr	ported: PhotoshopSchema property getters
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getCategory	ported	src/xmpbox/schema/schema_classes.cr	ported: PhotoshopSchema text/URI props
-xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getCategoryProperty	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getCategoryProperty	ported	src/xmpbox/schema/schema_classes.cr	ported: PhotoshopSchema property getters
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getCity	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
-xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getCityProperty	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getCityProperty	ported	src/xmpbox/schema/schema_classes.cr	ported: PhotoshopSchema property getters
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getColorMode	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
-xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getColorModeProperty	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getColorModeProperty	ported	src/xmpbox/schema/schema_classes.cr	ported: PhotoshopSchema property getters
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getCountry	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
-xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getCountryProperty	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getCountryProperty	ported	src/xmpbox/schema/schema_classes.cr	ported: PhotoshopSchema property getters
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getCredit	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
-xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getCreditProperty	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getCreditProperty	ported	src/xmpbox/schema/schema_classes.cr	ported: PhotoshopSchema property getters
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getDateCreated	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
-xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getDateCreatedProperty	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getDateCreatedProperty	ported	src/xmpbox/schema/schema_classes.cr	ported: PhotoshopSchema property getters
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getDocumentAncestors	ported	src/xmpbox/schema/schema_classes.cr	ported: Photoshop/MediaManagement resource accessors
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getDocumentAncestorsProperty	ported	src/xmpbox/schema/schema_classes.cr	ported: Photoshop/MediaManagement resource accessors
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getHeadline	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
-xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getHeadlineProperty	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getHeadlineProperty	ported	src/xmpbox/schema/schema_classes.cr	ported: PhotoshopSchema property getters
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getHistory	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
-xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getHistoryProperty	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getHistoryProperty	ported	src/xmpbox/schema/schema_classes.cr	ported: PhotoshopSchema property getters
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getICCProfile	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
-xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getICCProfileProperty	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getICCProfileProperty	ported	src/xmpbox/schema/schema_classes.cr	ported: PhotoshopSchema property getters
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getInstructions	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
-xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getInstructionsProperty	missing	-	baseline
-xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getSource	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
-xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getSourceProperty	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
+xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getInstructionsProperty	ported	src/xmpbox/schema/schema_classes.cr	ported: PhotoshopSchema property getters
+xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getSource	ported	src/xmpbox/schema/schema_classes.cr	ported: PhotoshopSchema property getters
+xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getSourceProperty	ported	src/xmpbox/schema/schema_classes.cr	ported: PhotoshopSchema property getters
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getState	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
-xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getStateProperty	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getStateProperty	ported	src/xmpbox/schema/schema_classes.cr	ported: PhotoshopSchema property getters
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getSupplementalCategories	ported	src/xmpbox/schema/schema_classes.cr	ported: PhotoshopSchema text/URI props
-xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getSupplementalCategoriesProperty	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getSupplementalCategoriesProperty	ported	src/xmpbox/schema/schema_classes.cr	ported: PhotoshopSchema property getters
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getTextLayers	ported	src/xmpbox/schema/schema_classes.cr	ported: Photoshop/MediaManagement resource accessors
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getTransmissionReference	ported	src/xmpbox/schema/schema_classes.cr	ported: PhotoshopSchema text/URI props
-xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getTransmissionReferenceProperty	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getTransmissionReferenceProperty	ported	src/xmpbox/schema/schema_classes.cr	ported: PhotoshopSchema property getters
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getUrgency	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
-xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getUrgencyProperty	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.getUrgencyProperty	ported	src/xmpbox/schema/schema_classes.cr	ported: PhotoshopSchema property getters
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.setAncestorID	ported	src/xmpbox/schema/schema_classes.cr	ported: PhotoshopSchema text/URI props
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.setAncestorIDProperty	missing	-	baseline
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.setAuthorsPosition	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
@@ -11719,7 +11719,7 @@ xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::Phot
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.setICCProfileProperty	missing	-	baseline
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.setInstructions	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.setInstructionsProperty	missing	-	baseline
-xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.setSource	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
+xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.setSource	ported	src/xmpbox/schema/schema_classes.cr	ported: PhotoshopSchema property getters
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.setSourceProperty	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.setState	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::method::PhotoshopSchema.setStateProperty	missing	-	baseline

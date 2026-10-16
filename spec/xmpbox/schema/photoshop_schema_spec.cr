@@ -89,6 +89,50 @@ module Xmpbox
         schema.document_ancestors_property.not_nil!.property_name.should eq("DocumentAncestors")
       end
 
+      it "exposes the property getters" do
+        meta = XMPMetadata.create_xmp_metadata
+        schema = PhotoshopSchema.new(meta)
+
+        schema.authors_position = "Author"
+        schema.caption_writer = "Writer"
+        schema.category = "Cat"
+        schema.city = "Paris"
+        schema.color_mode = 3
+        schema.country = "France"
+        schema.credit = "Credit"
+        schema.date_created = Time.utc(2023, 6, 1, 12, 0, 0)
+        schema.headline = "Headline"
+        schema.history = "History"
+        schema.icc_profile = "sRGB"
+        schema.instructions = "Instructions"
+        schema.source = "Source"
+        schema.state = "IDF"
+        schema.supplemental_categories = "Sub"
+        schema.transmission_reference = "Ref"
+        schema.urgency = 5
+        schema.ancestor_id = "xmp.did:1234"
+
+        schema.authors_position_property.not_nil!.property_name.should eq("AuthorsPosition")
+        schema.caption_writer_property.not_nil!.property_name.should eq("CaptionWriter")
+        schema.category_property.not_nil!.property_name.should eq("Category")
+        schema.city_property.not_nil!.property_name.should eq("City")
+        schema.color_mode_property.not_nil!.property_name.should eq("ColorMode")
+        schema.country_property.not_nil!.property_name.should eq("Country")
+        schema.credit_property.not_nil!.property_name.should eq("Credit")
+        schema.date_created_property.not_nil!.property_name.should eq("DateCreated")
+        schema.headline_property.not_nil!.property_name.should eq("Headline")
+        schema.history_property.not_nil!.property_name.should eq("History")
+        schema.icc_profile_property.not_nil!.property_name.should eq("ICCProfile")
+        schema.instructions_property.not_nil!.property_name.should eq("Instructions")
+        schema.source_property.not_nil!.property_name.should eq("Source")
+        schema.state_property.not_nil!.property_name.should eq("State")
+        schema.supplemental_categories_property.not_nil!.property_name.should eq("SupplementalCategories")
+        schema.transmission_reference_property.not_nil!.property_name.should eq("TransmissionReference")
+        schema.urgency_property.not_nil!.property_name.should eq("Urgency")
+        schema.ancestor_id_property.not_nil!.property_name.should eq("AncestorID")
+        schema.ancestor_id_property.not_nil!.should be_a(Xmpbox::Type::URIType)
+      end
+
       it "returns nil for unset properties" do
         meta = XMPMetadata.create_xmp_metadata
         schema = PhotoshopSchema.new(meta)
