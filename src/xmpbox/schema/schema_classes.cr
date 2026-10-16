@@ -735,6 +735,30 @@ module Xmpbox
       def remove_owner(owner : String) : Nil
         remove_unqualified_bag_value(OWNER, owner)
       end
+
+      def certificate_property : Type::TextType?
+        unqualified_text_property(CERTIFICATE)
+      end
+
+      def web_statement_property : Type::TextType?
+        unqualified_text_property(WEB_STATEMENT)
+      end
+
+      def marked_property : Type::BooleanType?
+        boolean_property(MARKED)
+      end
+
+      def set_marked_property(marked : Type::BooleanType) : Nil # ameba:disable Naming/AccessorMethodName
+        add_property(marked)
+      end
+
+      def owners_property : Type::ArrayProperty?
+        array_property(OWNER)
+      end
+
+      def usage_terms_property : Type::ArrayProperty?
+        array_property(USAGE_TERMS)
+      end
     end
 
     # Adobe PDF: http://ns.adobe.com/pdf/1.3/

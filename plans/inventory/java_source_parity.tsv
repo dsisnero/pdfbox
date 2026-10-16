@@ -11923,21 +11923,21 @@ xmpbox/src/main/java/org/apache/xmpbox/schema/XMPRightsManagementSchema.java::co
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPRightsManagementSchema.java::method::XMPRightsManagementSchema.addOwner	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPRightsManagementSchema.java::method::XMPRightsManagementSchema.addUsageTerms	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPRightsManagementSchema usageTerms/removeOwner
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPRightsManagementSchema.java::method::XMPRightsManagementSchema.getCertificate	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPRightsManagementSchema.java::method::XMPRightsManagementSchema.getCertificateProperty	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPRightsManagementSchema.java::method::XMPRightsManagementSchema.getCertificateProperty	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPRightsManagementSchema property getters
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPRightsManagementSchema.java::method::XMPRightsManagementSchema.getMarked	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPRightsManagementSchema.java::method::XMPRightsManagementSchema.getMarkedProperty	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPRightsManagementSchema.java::method::XMPRightsManagementSchema.getMarkedProperty	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPRightsManagementSchema property getters
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPRightsManagementSchema.java::method::XMPRightsManagementSchema.getOwners	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPRightsManagementSchema.java::method::XMPRightsManagementSchema.getOwnersProperty	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPRightsManagementSchema.java::method::XMPRightsManagementSchema.getOwnersProperty	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPRightsManagementSchema property getters
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPRightsManagementSchema.java::method::XMPRightsManagementSchema.getUsageTerms	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPRightsManagementSchema usageTerms/removeOwner
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPRightsManagementSchema.java::method::XMPRightsManagementSchema.getUsageTermsLanguages	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPRightsManagementSchema usageTerms/removeOwner
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPRightsManagementSchema.java::method::XMPRightsManagementSchema.getUsageTermsProperty	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPRightsManagementSchema.java::method::XMPRightsManagementSchema.getUsageTermsProperty	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPRightsManagementSchema property getters
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPRightsManagementSchema.java::method::XMPRightsManagementSchema.getWebStatement	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPRightsManagementSchema.java::method::XMPRightsManagementSchema.getWebStatementProperty	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPRightsManagementSchema.java::method::XMPRightsManagementSchema.getWebStatementProperty	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPRightsManagementSchema property getters
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPRightsManagementSchema.java::method::XMPRightsManagementSchema.removeOwner	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPRightsManagementSchema usageTerms/removeOwner
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPRightsManagementSchema.java::method::XMPRightsManagementSchema.setCertificate	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPRightsManagementSchema.java::method::XMPRightsManagementSchema.setCertificateProperty	missing	-	baseline
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPRightsManagementSchema.java::method::XMPRightsManagementSchema.setMarked	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPRightsManagementSchema.java::method::XMPRightsManagementSchema.setMarkedProperty	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPRightsManagementSchema.java::method::XMPRightsManagementSchema.setMarkedProperty	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPRightsManagementSchema property getters
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPRightsManagementSchema.java::method::XMPRightsManagementSchema.setUsageTerms	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPRightsManagementSchema.java::method::XMPRightsManagementSchema.setWebStatement	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPRightsManagementSchema.java::method::XMPRightsManagementSchema.setWebStatementProperty	missing	-	baseline

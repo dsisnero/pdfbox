@@ -62,6 +62,24 @@ module Xmpbox
         schema.owners.should eq(["Bob"])
       end
 
+      it "exposes the certificate/web-statement/marked/owners/usage-terms properties" do
+        meta = XMPMetadata.create_xmp_metadata
+        schema = XMPRightsManagementSchema.new(meta)
+
+        schema.certificate = "http://cert"
+        schema.web_statement = "http://page"
+        schema.set_marked_property(meta.type_mapping.create_boolean(nil, schema.prefix, "Marked", true))
+        schema.add_owner("Alice")
+        schema.add_usage_terms(nil, "All rights reserved")
+
+        schema.certificate_property.not_nil!.property_name.should eq("Certificate")
+        schema.web_statement_property.not_nil!.property_name.should eq("WebStatement")
+        schema.marked_property.not_nil!.property_name.should eq("Marked")
+        schema.marked_property.not_nil!.value.should be_true
+        schema.owners_property.not_nil!.property_name.should eq("Owner")
+        schema.usage_terms_property.not_nil!.property_name.should eq("UsageTerms")
+      end
+
       it "returns nil for unset properties" do
         meta = XMPMetadata.create_xmp_metadata
         schema = XMPRightsManagementSchema.new(meta)
@@ -70,6 +88,11 @@ module Xmpbox
         schema.web_statement.should be_nil
         schema.marked.should be_nil
         schema.usage_terms.should be_nil
+        schema.certificate_property.should be_nil
+        schema.web_statement_property.should be_nil
+        schema.marked_property.should be_nil
+        schema.owners_property.should be_nil
+        schema.usage_terms_property.should be_nil
       end
     end
   end
