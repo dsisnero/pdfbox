@@ -869,6 +869,11 @@ module Pdfbox::Cos
       new(values.map { |value| Integer.get(value.to_i64) })
     end
 
+    # Builds a COSArray of COSFloats from the given values (Java COSArray#of(float...)).
+    def self.of(floats : Enumerable(::Float)) : self
+      new(floats.map { |value| Float.new(value.to_f64) })
+    end
+
     def items : ::Array(Base)
       @items
     end
@@ -971,6 +976,30 @@ module Pdfbox::Cos
     def index_of(value : Base) : Int32
       index = @items.index(value)
       index ? index.to_i32 : -1
+    end
+
+    # Identity-based search (Java COSArray#indexOfObject), as opposed to
+    # index_of which compares by equality.
+    def index_of_object(value : Base) : Int32
+      @items.each_with_index do |item, index|
+        return index.to_i32 if item.same?(value)
+      end
+      -1
+    end
+
+    # Replaces each element with the given float value, requiring the array to
+    # already have the same length (Java COSArray#setFloatArray).
+    def set_float_array(values : Enumerable(::Float)) : Nil # ameba:disable Naming/AccessorMethodName
+      unless size == values.size
+        raise ArgumentError.new("Array size does not match")
+      end
+      values.each_with_index do |value, index|
+        self[index] = Float.new(value.to_f64)
+      end
+    end
+
+    def empty? : Bool
+      @items.empty?
     end
 
     def clear : Nil

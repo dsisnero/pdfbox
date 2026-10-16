@@ -3701,11 +3701,11 @@ pdfbox/src/main/java/org/apache/pdfbox/cos/COSArray.java::method::COSArray.getSt
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSArray.java::method::COSArray.getUpdateState	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSArray.java::method::COSArray.growToSize	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSArray.java::method::COSArray.indexOf	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSArray.java::method::COSArray.indexOfObject	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSArray.java::method::COSArray.isEmpty	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSArray.java::method::COSArray.indexOfObject	ported	src/pdfbox/cos.cr	ported: COSArray of/indexOfObject/isEmpty/setFloatArray
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSArray.java::method::COSArray.isEmpty	ported	src/pdfbox/cos.cr	ported: COSArray of/indexOfObject/isEmpty/setFloatArray
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSArray.java::method::COSArray.iterator	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSArray.java::method::COSArray.maybeWrap	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSArray.java::method::COSArray.of	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSArray.java::method::COSArray.of	ported	src/pdfbox/cos.cr	ported: COSArray of/indexOfObject/isEmpty/setFloatArray
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSArray.java::method::COSArray.ofCOSIntegers	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSArray.java::method::COSArray.ofCOSNames	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSArray.java::method::COSArray.ofCOSStrings	missing	-	baseline
@@ -3715,7 +3715,7 @@ pdfbox/src/main/java/org/apache/pdfbox/cos/COSArray.java::method::COSArray.remov
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSArray.java::method::COSArray.resetObjectKeys	ported	src/pdfbox/cos.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSArray.java::method::COSArray.retainAll	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSArray.java::method::COSArray.set	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSArray.java::method::COSArray.setFloatArray	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSArray.java::method::COSArray.setFloatArray	ported	src/pdfbox/cos.cr	ported: COSArray of/indexOfObject/isEmpty/setFloatArray
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSArray.java::method::COSArray.setInt	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSArray.java::method::COSArray.setName	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSArray.java::method::COSArray.setString	missing	-	baseline

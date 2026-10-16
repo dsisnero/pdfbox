@@ -3701,11 +3701,11 @@ pdfbox/src/main/java/org/apache/pdfbox/cos/COSArray.java::method::COSArray.getSt
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSArray.java::method::COSArray.getUpdateState	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSArray.java::method::COSArray.growToSize	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSArray.java::method::COSArray.indexOf	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSArray.java::method::COSArray.indexOfObject	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSArray.java::method::COSArray.isEmpty	method	ported	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSArray.java::method::COSArray.indexOfObject	method	ported	src/pdfbox/cos.cr	ported: COSArray of/indexOfObject/isEmpty/setFloatArray
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSArray.java::method::COSArray.isEmpty	method	ported	src/pdfbox/cos.cr	ported: COSArray of/indexOfObject/isEmpty/setFloatArray
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSArray.java::method::COSArray.iterator	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSArray.java::method::COSArray.maybeWrap	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSArray.java::method::COSArray.of	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSArray.java::method::COSArray.of	method	ported	src/pdfbox/cos.cr	ported: COSArray of/indexOfObject/isEmpty/setFloatArray
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSArray.java::method::COSArray.ofCOSIntegers	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSArray.java::method::COSArray.ofCOSNames	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSArray.java::method::COSArray.ofCOSStrings	method	ported	src	auto-generated
@@ -3715,7 +3715,7 @@ pdfbox/src/main/java/org/apache/pdfbox/cos/COSArray.java::method::COSArray.remov
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSArray.java::method::COSArray.resetObjectKeys	method	ported	src/pdfbox/cos.cr	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSArray.java::method::COSArray.retainAll	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSArray.java::method::COSArray.set	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSArray.java::method::COSArray.setFloatArray	method	ported	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSArray.java::method::COSArray.setFloatArray	method	ported	src/pdfbox/cos.cr	ported: COSArray of/indexOfObject/isEmpty/setFloatArray
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSArray.java::method::COSArray.setInt	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSArray.java::method::COSArray.setName	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSArray.java::method::COSArray.setString	method	ported	src	auto-generated
