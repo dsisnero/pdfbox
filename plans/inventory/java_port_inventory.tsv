@@ -8490,7 +8490,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/optionalcontent/PDOption
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/optionalcontent/PDOptionalContentProperties.java::method::PDOptionalContentProperties.getD	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/optionalcontent/PDOptionalContentProperties.java::method::PDOptionalContentProperties.getGroup	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/optionalcontent/PDOptionalContentProperties.java::method::PDOptionalContentProperties.getGroupNames	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/optionalcontent/PDOptionalContentProperties.java::method::PDOptionalContentProperties.getName	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/optionalcontent/PDOptionalContentProperties.java::method::PDOptionalContentProperties.getName	method	ported	src/pdfbox/pdmodel/graphics/optional_content/pd_optional_content_properties.cr	ported: BaseState getName/valueOf
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/optionalcontent/PDOptionalContentProperties.java::method::PDOptionalContentProperties.getOCGs	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/optionalcontent/PDOptionalContentProperties.java::method::PDOptionalContentProperties.getOptionalContentGroups	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/optionalcontent/PDOptionalContentProperties.java::method::PDOptionalContentProperties.hasGroup	method	ported	src	auto-generated
@@ -8498,7 +8498,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/optionalcontent/PDOption
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/optionalcontent/PDOptionalContentProperties.java::method::PDOptionalContentProperties.setBaseState	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/optionalcontent/PDOptionalContentProperties.java::method::PDOptionalContentProperties.setGroupEnabled	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/optionalcontent/PDOptionalContentProperties.java::method::PDOptionalContentProperties.toDictionary	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/optionalcontent/PDOptionalContentProperties.java::method::PDOptionalContentProperties.valueOf	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/optionalcontent/PDOptionalContentProperties.java::method::PDOptionalContentProperties.valueOf	method	ported	src/pdfbox/pdmodel/graphics/optional_content/pd_optional_content_properties.cr	ported: BaseState getName/valueOf
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDAbstractPattern.java::class::PDAbstractPattern	class	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDAbstractPattern.java::const::TYPE_SHADING_PATTERN	const	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/pattern/PDAbstractPattern.java::const::TYPE_TILING_PATTERN	const	missing	-	auto-generated

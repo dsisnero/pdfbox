@@ -4,6 +4,25 @@ module Pdfbox::Pdmodel::Graphics::OptionalContent
       On
       Off
       Unchanged
+
+      # The PDF name for this state (ON / OFF / UNCHANGED).
+      # Java PDOptionalContentProperties.BaseState#getName.
+      def name : Pdfbox::Cos::Name
+        Pdfbox::Cos::Name.new(to_s.upcase)
+      end
+
+      # Parses a base state from a /BaseState name; a nil name yields ON.
+      # Java PDOptionalContentProperties.BaseState#valueOf(COSName).
+      def self.value_of(state : Pdfbox::Cos::Name?) : BaseState
+        return On if state.nil?
+        case state.value
+        when "ON"        then On
+        when "OFF"       then Off
+        when "UNCHANGED" then Unchanged
+        else
+          raise ArgumentError.new("Unknown base state: #{state.value}")
+        end
+      end
     end
 
     @dict : Pdfbox::Cos::Dictionary
