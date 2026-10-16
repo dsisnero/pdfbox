@@ -28,6 +28,7 @@ shards update
 | [docs/coding-guidelines.md](docs/coding-guidelines.md) | Porting rules and Crystal-specific coding expectations |
 | [docs/testing.md](docs/testing.md) | Test-first parity workflow and quality gates |
 | [docs/pr-workflow.md](docs/pr-workflow.md) | Commit, push, and review expectations |
+| [docs/resuming.md](docs/resuming.md) | How a new session resumes work |
 
 ## Core Principles
 
@@ -38,24 +39,83 @@ shards update
 - Keep the repo shippable: run format, ameba, and specs before committing.
 - Spec-dependent fixtures belong under `spec/` — `spec/fixtures` for standalone fixtures, or `spec/resources/<module>/` mirroring the Java `src/test/resources` layout for vendor-parity fixtures.
 - Use `./temp` only for ad-hoc scripts and throwaway artifacts; it is cleaned periodically, so never put spec dependencies there.
+- Keep parity tracking current: `plans/parity.md` and `plans/inventory/`.
+- Port upstream tests as first-class work; never weaken assertions or fixtures.
 
 ## Workflow
 
-- Follow `plans/parity.md` to pick what to work on next.
-- Work on one phase to completion before stopping: close every unchecked item in that phase.
+- Pick one **feature** at a time (one Java class or a small cluster), complete it, commit it.
 - Before committing, clean the quality gates: `crystal tool format --check src spec`, `ameba src spec`, and `crystal spec`.
-- Update `plans/parity.md` (check off completed items) and the inventory, then commit with a detailed description of what was implemented.
+- Update `plans/parity.md` and the inventory ledgers, then commit with a detailed description of what was implemented.
 
-## Commit Convention
+## Tracking Work
 
-Use focused, imperative commit messages that describe the behavior change, for example:
+Work is tracked in the tree (no external tracker), in five places:
 
-```text
-Port COSDocumentCompressionTest#testAlteredDoc with Flate stream parity
-```
+| Where | What it records |
+| --- | --- |
+| [`plans/parity.md`](plans/parity.md) | Human-readable roadmap (Phases 1–13, Work Chunks A–AW) **plus the running changelog of recent features**. |
+| [`plans/inventory/java_source_parity.tsv`](plans/inventory/java_source_parity.tsv) | Per **Java source symbol** ledger. Columns: `source_api_id`, `status`, `crystal_refs`, `notes`. |
+| [`plans/inventory/java_port_inventory.tsv`](plans/inventory/java_port_inventory.tsv) | Per **ported symbol** ledger. Columns: `source_id`, `kind`, `status`, `crystal_refs`, `notes`. |
+| [`plans/inventory/java_test_parity.tsv`](plans/inventory/java_test_parity.tsv) | Per **Java test** ledger. Columns: `source_test_id`, `status`, `crystal_refs`, `notes`. |
+| [`plans/active/*.md`](plans/active/) | One plan per branch-sized feature cluster (the older, coarse-grained workflow). |
 
-## Project Conventions
+**The changelog** is the source of truth for "what did we just do". It lives in `plans/parity.md` in two places, both **newest-first**:
 
-- Run `ameba --fix src spec` before the final lint/spec pass when code changes.
-- Prefer vendor fixtures and Java tests over synthetic replacements when porting parity behavior.
-- Keep temporary scripts under `./temp`; never rely on them as spec dependencies since the directory is cleaned periodically.
+- the top bullet under `### Current Active Work` (near the bottom), and
+- the start of the `| Fixed since last update |` cell in the Overview table (near the top).
+
+Each bullet states the feature, the accessors/behaviour added, the spec file, and the example-count delta (e.g. `2,572→2,573 examples, 0 failures`).
+
+**Ledger rows.** Ids look like `<java/path>::method::<Class>.<method>`, `::class::`, `::const::`, or `::interface::`. `status` is `ported`, `partial`, or `missing`. When a feature lands, flip its rows to `ported`, set `crystal_refs` to the Crystal file(s), and set `notes` to a short marker (e.g. `ported: <feature>`).
+
+> **The `missing` status is noisy.** The classifier only looks for `def`; it misses `property`, `getter`, `setter`, and members with a different owner. Before treating a row as a real gap, confirm the Crystal source truly lacks the behaviour. Likewise, prefer a trailing `# ameba:disable <Rule>` comment over renaming a Java-compatible method.
+
+
+## Session continuity (read this first)
+
+`plans/parity.md` is the single source of truth for where we are. At the start
+of every session:
+
+1. Read `plans/parity.md` and use its **Where we are** block to find the
+   current focus and the next phase. Do not re-derive state from git history.
+2. Skim `git log --oneline -10` and `git status` to confirm the working tree.
+3. Run the gates (below) before making changes to confirm a clean baseline.
+
+### Keeping parity.md resumable
+
+- `plans/parity.md` starts with a **Where we are** block: `Current focus`,
+  `Next up`, and the list of work chunks with status. Keep it accurate after
+  every feature.
+- Work chunks are feature-sized (roughly one branch/commit). The per-symbol
+  state lives in `plans/inventory/java_port_inventory.tsv`, not in this plan.
+- If `plans/parity.md` grows too large, split it into `plans/parity/<module>.md`
+  files, link each from `plans/parity.md`, and in `plans/parity.md` mark each
+  split file as complete/in-progress and name the file we are currently
+  working in plus the next file/phase to start.
+
+### Definition of done for every feature (required)
+
+A feature is complete only when all of the following are true, and all of it
+must be committed as **one** atomic commit before starting the next feature:
+
+1. the API surface is implemented;
+2. upstream tests (or equivalent characterization specs) exist and pass;
+3. gates pass: `crystal tool format --check src spec`, `ameba src spec`,
+   `crystal spec`;
+4. parity inventory rows for the feature are updated
+   (`plans/inventory/java_port_inventory.tsv` and
+   `plans/inventory/java_source_parity.tsv`);
+5. `plans/parity.md` status is updated and the **Where we are** block refreshed
+   (current focus + next up);
+6. any intentional divergence is documented (in `plans/parity.md` and/or the
+   commit message).
+
+### Commit message
+
+Start with a one-line imperatively-worded subject (e.g. `Add …`, `Complete …`,
+`Fix …`; the older bulk-port commits use a `port:` prefix). Then bullets for
+what changed, then the upstream revision (`apache/pdfbox 4.0.0-SNAPSHOT`, see
+`vendor/pdfbox/`). Include new/changed files, divergences, and the gate results
+so a new session can resume from the commit alone.
+
