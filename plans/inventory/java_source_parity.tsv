@@ -7482,9 +7482,9 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDFont.java::method::PDFont.
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDFont.java::method::PDFont.getStandard14AFM	ported	src/pdfbox/pdmodel/font/pdfont.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDFont.java::method::PDFont.getStandard14Width	ported	src/pdfbox/pdmodel/font/pdfont.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDFont.java::method::PDFont.getStringWidth	ported	src/pdfbox/pdmodel/font/pdfont.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDFont.java::method::PDFont.getSubType	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDFont.java::method::PDFont.getSubType	ported	src/pdfbox/pdmodel/font/pdfont.cr	ported: PDFont getType/getSubType
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDFont.java::method::PDFont.getToUnicodeCMap	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDFont.java::method::PDFont.getType	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDFont.java::method::PDFont.getType	ported	src/pdfbox/pdmodel/font/pdfont.cr	ported: PDFont getType/getSubType
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDFont.java::method::PDFont.getWidth	ported	src/pdfbox/pdmodel/font/pdfont.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDFont.java::method::PDFont.getWidths	ported	src/pdfbox/pdmodel/font/pdfont.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDFont.java::method::PDFont.hashCode	missing	-	baseline

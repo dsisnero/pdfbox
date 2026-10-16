@@ -7482,9 +7482,9 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDFont.java::method::PDFont.
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDFont.java::method::PDFont.getStandard14AFM	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDFont.java::method::PDFont.getStandard14Width	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDFont.java::method::PDFont.getStringWidth	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDFont.java::method::PDFont.getSubType	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDFont.java::method::PDFont.getSubType	method	ported	src/pdfbox/pdmodel/font/pdfont.cr	ported: PDFont getType/getSubType
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDFont.java::method::PDFont.getToUnicodeCMap	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDFont.java::method::PDFont.getType	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDFont.java::method::PDFont.getType	method	ported	src/pdfbox/pdmodel/font/pdfont.cr	ported: PDFont getType/getSubType
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDFont.java::method::PDFont.getWidth	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDFont.java::method::PDFont.getWidths	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDFont.java::method::PDFont.hashCode	method	partial	src	auto-generated

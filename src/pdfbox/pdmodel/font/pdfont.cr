@@ -200,6 +200,16 @@ abstract class Pdfbox::Pdmodel::Font::PDFont
     @dict
   end
 
+  # The /Type entry (always "Font"). Java PDFont#getType.
+  def type : String?
+    @dict.get_name_as_string(Pdfbox::Cos::Name::TYPE)
+  end
+
+  # The /Subtype entry (font subtype). Java PDFont#getSubType.
+  def sub_type : String?
+    @dict.get_name_as_string(Pdfbox::Cos::Name::SUBTYPE)
+  end
+
   # Java PDFont.equals: two fonts are equal if they wrap the same COS dictionary.
   def ==(other : self) : Bool
     cos_object == other.cos_object
