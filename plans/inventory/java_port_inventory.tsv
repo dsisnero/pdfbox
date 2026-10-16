@@ -10740,8 +10740,8 @@ pdfbox/src/main/java/org/apache/pdfbox/rendering/PDFRenderer.java::class::PDFRen
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PDFRenderer.java::method::PDFRenderer.createDefaultRenderingHints	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PDFRenderer.java::method::PDFRenderer.createPageDrawer	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PDFRenderer.java::method::PDFRenderer.getAnnotationsFilter	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/rendering/PDFRenderer.java::method::PDFRenderer.getDefaultDestination	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/rendering/PDFRenderer.java::method::PDFRenderer.getImageDownscalingOptimizationThreshold	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/rendering/PDFRenderer.java::method::PDFRenderer.getDefaultDestination	method	ported	src/pdfbox/rendering/pdf_renderer.cr	ported: PDFRenderer destination/threshold
+pdfbox/src/main/java/org/apache/pdfbox/rendering/PDFRenderer.java::method::PDFRenderer.getImageDownscalingOptimizationThreshold	method	ported	src/pdfbox/rendering/pdf_renderer.cr	ported: PDFRenderer destination/threshold
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PDFRenderer.java::method::PDFRenderer.getPageImage	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PDFRenderer.java::method::PDFRenderer.getRenderingHints	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PDFRenderer.java::method::PDFRenderer.hasBlendMode	method	partial	src	auto-generated
@@ -10752,8 +10752,8 @@ pdfbox/src/main/java/org/apache/pdfbox/rendering/PDFRenderer.java::method::PDFRe
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PDFRenderer.java::method::PDFRenderer.renderImageWithDPI	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PDFRenderer.java::method::PDFRenderer.renderPageToGraphics	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PDFRenderer.java::method::PDFRenderer.setAnnotationsFilter	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/rendering/PDFRenderer.java::method::PDFRenderer.setDefaultDestination	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/rendering/PDFRenderer.java::method::PDFRenderer.setImageDownscalingOptimizationThreshold	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/rendering/PDFRenderer.java::method::PDFRenderer.setDefaultDestination	method	ported	src/pdfbox/rendering/pdf_renderer.cr	ported: PDFRenderer destination/threshold
+pdfbox/src/main/java/org/apache/pdfbox/rendering/PDFRenderer.java::method::PDFRenderer.setImageDownscalingOptimizationThreshold	method	ported	src/pdfbox/rendering/pdf_renderer.cr	ported: PDFRenderer destination/threshold
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PDFRenderer.java::method::PDFRenderer.setRenderingHints	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PDFRenderer.java::method::PDFRenderer.setSubsamplingAllowed	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PDFRenderer.java::method::PDFRenderer.transform	method	partial	src	auto-generated

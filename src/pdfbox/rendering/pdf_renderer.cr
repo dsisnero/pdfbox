@@ -9,7 +9,30 @@ module Pdfbox::Rendering
     getter document : Pdfbox::Pdmodel::Document
     property? subsampling_allowed : Bool = false
 
+    @default_destination : RenderDestination? = nil
+    @image_downscaling_optimization_threshold = 0.5_f32
+
     def initialize(@document : Pdfbox::Pdmodel::Document)
+    end
+
+    # The default render destination, nil until set (Java getDefaultDestination,
+    # which defaults to null; the effective default is chosen per render call).
+    def default_destination : RenderDestination?
+      @default_destination
+    end
+
+    def default_destination=(value : RenderDestination?) : RenderDestination?
+      @default_destination = value
+    end
+
+    # The image downscaling optimization threshold (Java
+    # getImageDownscalingOptimizationThreshold, default 0.5).
+    def image_downscaling_optimization_threshold : Float32
+      @image_downscaling_optimization_threshold
+    end
+
+    def image_downscaling_optimization_threshold=(value : Float32) : Float32
+      @image_downscaling_optimization_threshold = value
     end
 
     def render_image(page_index : Int32) : CrImage::RGBA
