@@ -11599,9 +11599,9 @@ xmpbox/src/main/java/org/apache/xmpbox/schema/ExifSchema.java::const::SUBJECT_DI
 xmpbox/src/main/java/org/apache/xmpbox/schema/ExifSchema.java::const::SUBJECT_LOCATION	const	missing	-	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/schema/ExifSchema.java::const::USER_COMMENT	const	missing	-	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/schema/ExifSchema.java::const::WHITE_BALANCE	const	missing	-	auto-generated
-xmpbox/src/main/java/org/apache/xmpbox/schema/ExifSchema.java::method::ExifSchema.getUserComment	method	partial	src	auto-generated
-xmpbox/src/main/java/org/apache/xmpbox/schema/ExifSchema.java::method::ExifSchema.getUserCommentLanguages	method	partial	src	auto-generated
-xmpbox/src/main/java/org/apache/xmpbox/schema/ExifSchema.java::method::ExifSchema.getUserCommentProperty	method	partial	src	auto-generated
+xmpbox/src/main/java/org/apache/xmpbox/schema/ExifSchema.java::method::ExifSchema.getUserComment	method	ported	src/xmpbox/schema/schema_classes.cr	ported: ExifSchema userComment
+xmpbox/src/main/java/org/apache/xmpbox/schema/ExifSchema.java::method::ExifSchema.getUserCommentLanguages	method	ported	src/xmpbox/schema/schema_classes.cr	ported: ExifSchema userComment
+xmpbox/src/main/java/org/apache/xmpbox/schema/ExifSchema.java::method::ExifSchema.getUserCommentProperty	method	ported	src/xmpbox/schema/schema_classes.cr	ported: ExifSchema userComment
 xmpbox/src/main/java/org/apache/xmpbox/schema/PDFAExtensionSchema.java::class::PDFAExtensionSchema	class	partial	src	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/schema/PDFAExtensionSchema.java::const::SCHEMAS	const	missing	-	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/schema/PDFAExtensionSchema.java::method::PDFAExtensionSchema.getSchemasProperty	method	ported	src	auto-generated

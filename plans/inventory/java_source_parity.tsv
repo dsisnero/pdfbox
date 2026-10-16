@@ -11599,9 +11599,9 @@ xmpbox/src/main/java/org/apache/xmpbox/schema/ExifSchema.java::const::SUBJECT_DI
 xmpbox/src/main/java/org/apache/xmpbox/schema/ExifSchema.java::const::SUBJECT_LOCATION	missing	-	baseline
 xmpbox/src/main/java/org/apache/xmpbox/schema/ExifSchema.java::const::USER_COMMENT	missing	-	baseline
 xmpbox/src/main/java/org/apache/xmpbox/schema/ExifSchema.java::const::WHITE_BALANCE	missing	-	baseline
-xmpbox/src/main/java/org/apache/xmpbox/schema/ExifSchema.java::method::ExifSchema.getUserComment	missing	-	baseline
-xmpbox/src/main/java/org/apache/xmpbox/schema/ExifSchema.java::method::ExifSchema.getUserCommentLanguages	missing	-	baseline
-xmpbox/src/main/java/org/apache/xmpbox/schema/ExifSchema.java::method::ExifSchema.getUserCommentProperty	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/ExifSchema.java::method::ExifSchema.getUserComment	ported	src/xmpbox/schema/schema_classes.cr	ported: ExifSchema userComment
+xmpbox/src/main/java/org/apache/xmpbox/schema/ExifSchema.java::method::ExifSchema.getUserCommentLanguages	ported	src/xmpbox/schema/schema_classes.cr	ported: ExifSchema userComment
+xmpbox/src/main/java/org/apache/xmpbox/schema/ExifSchema.java::method::ExifSchema.getUserCommentProperty	ported	src/xmpbox/schema/schema_classes.cr	ported: ExifSchema userComment
 xmpbox/src/main/java/org/apache/xmpbox/schema/PDFAExtensionSchema.java::class::PDFAExtensionSchema	ported	src/xmpbox/schema/schema_classes.cr	reconciled: class present
 xmpbox/src/main/java/org/apache/xmpbox/schema/PDFAExtensionSchema.java::const::SCHEMAS	missing	-	baseline
 xmpbox/src/main/java/org/apache/xmpbox/schema/PDFAExtensionSchema.java::method::PDFAExtensionSchema.getSchemasProperty	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present

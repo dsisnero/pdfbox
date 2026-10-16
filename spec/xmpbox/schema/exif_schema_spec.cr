@@ -35,6 +35,29 @@ module Xmpbox
         serialized.should_not be_nil
         serialized.includes?("OECF").should be_true
       end
+
+      it "reads the UserComment language alternative" do
+        meta = XMPMetadata.create_xmp_metadata
+        schema = ExifSchema.new(meta)
+
+        schema.set_unqualified_language_property_value("UserComment", nil, "A comment")
+        schema.set_unqualified_language_property_value("UserComment", "fr", "Un commentaire")
+
+        schema.user_comment.should eq("A comment")
+        schema.user_comment("fr").should eq("Un commentaire")
+        schema.user_comment_languages.not_nil!.should contain("x-default")
+        schema.user_comment_languages.not_nil!.should contain("fr")
+        schema.user_comment_property.not_nil!.property_name.should eq("UserComment")
+      end
+
+      it "returns nil for an unset UserComment" do
+        meta = XMPMetadata.create_xmp_metadata
+        schema = ExifSchema.new(meta)
+
+        schema.user_comment.should be_nil
+        schema.user_comment_property.should be_nil
+        schema.user_comment_languages.should be_nil
+      end
     end
   end
 end

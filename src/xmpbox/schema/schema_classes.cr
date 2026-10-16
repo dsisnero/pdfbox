@@ -1323,6 +1323,22 @@ module Xmpbox
           DEVICE_SETTING_DESCRIPTION  => Type::PropertyTypeDesc.new(type: Type::Types::DeviceSettings),
         }
       end
+
+      def user_comment_property : Type::ArrayProperty?
+        array_property(USER_COMMENT)
+      end
+
+      def user_comment_languages : Array(String)?
+        unqualified_language_property_languages_value(USER_COMMENT)
+      end
+
+      def user_comment(lang : String?) : String?
+        unqualified_language_property_value(USER_COMMENT, lang)
+      end
+
+      def user_comment : String?
+        user_comment(nil)
+      end
     end
 
     # TIFF: http://ns.adobe.com/tiff/1.0/
