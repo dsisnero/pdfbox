@@ -3093,27 +3093,27 @@ fontbox/src/main/java/org/apache/fontbox/util/BoundingBox.java::method::Bounding
 fontbox/src/main/java/org/apache/fontbox/util/BoundingBox.java::method::BoundingBox.setUpperRightX	method	partial	src	auto-generated
 fontbox/src/main/java/org/apache/fontbox/util/BoundingBox.java::method::BoundingBox.setUpperRightY	method	partial	src	auto-generated
 fontbox/src/main/java/org/apache/fontbox/util/BoundingBox.java::method::BoundingBox.toString	method	partial	src	auto-generated
-fontbox/src/main/java/org/apache/fontbox/util/autodetect/FontDirFinder.java::interface::FontDirFinder	interface	missing	-	auto-generated
-fontbox/src/main/java/org/apache/fontbox/util/autodetect/FontDirFinder.java::method::find	method	missing	-	auto-generated
-fontbox/src/main/java/org/apache/fontbox/util/autodetect/FontFileFinder.java::class::FontFileFinder	class	missing	-	auto-generated
+fontbox/src/main/java/org/apache/fontbox/util/autodetect/FontDirFinder.java::interface::FontDirFinder	interface	ported	src/fontbox/util/autodetect.cr	ported: font autodetect
+fontbox/src/main/java/org/apache/fontbox/util/autodetect/FontDirFinder.java::method::find	method	ported	src/fontbox/util/autodetect.cr	ported: font autodetect
+fontbox/src/main/java/org/apache/fontbox/util/autodetect/FontFileFinder.java::class::FontFileFinder	class	ported	src/fontbox/util/autodetect.cr	ported: font autodetect
 fontbox/src/main/java/org/apache/fontbox/util/autodetect/FontFileFinder.java::const::LOG	const	missing	-	auto-generated
-fontbox/src/main/java/org/apache/fontbox/util/autodetect/FontFileFinder.java::method::FontFileFinder.checkFontfile	method	missing	-	auto-generated
-fontbox/src/main/java/org/apache/fontbox/util/autodetect/FontFileFinder.java::method::FontFileFinder.determineDirFinder	method	missing	-	auto-generated
-fontbox/src/main/java/org/apache/fontbox/util/autodetect/FontFileFinder.java::method::FontFileFinder.find	method	missing	-	auto-generated
-fontbox/src/main/java/org/apache/fontbox/util/autodetect/FontFileFinder.java::method::FontFileFinder.walk	method	missing	-	auto-generated
-fontbox/src/main/java/org/apache/fontbox/util/autodetect/MacFontDirFinder.java::class::MacFontDirFinder	class	missing	-	auto-generated
-fontbox/src/main/java/org/apache/fontbox/util/autodetect/MacFontDirFinder.java::method::MacFontDirFinder.getSearchableDirectories	method	missing	-	auto-generated
-fontbox/src/main/java/org/apache/fontbox/util/autodetect/NativeFontDirFinder.java::class::NativeFontDirFinder	class	missing	-	auto-generated
+fontbox/src/main/java/org/apache/fontbox/util/autodetect/FontFileFinder.java::method::FontFileFinder.checkFontfile	method	ported	src/fontbox/util/autodetect.cr	ported: font autodetect
+fontbox/src/main/java/org/apache/fontbox/util/autodetect/FontFileFinder.java::method::FontFileFinder.determineDirFinder	method	ported	src/fontbox/util/autodetect.cr	ported: font autodetect
+fontbox/src/main/java/org/apache/fontbox/util/autodetect/FontFileFinder.java::method::FontFileFinder.find	method	ported	src/fontbox/util/autodetect.cr	ported: font autodetect
+fontbox/src/main/java/org/apache/fontbox/util/autodetect/FontFileFinder.java::method::FontFileFinder.walk	method	ported	src/fontbox/util/autodetect.cr	ported: font autodetect
+fontbox/src/main/java/org/apache/fontbox/util/autodetect/MacFontDirFinder.java::class::MacFontDirFinder	class	ported	src/fontbox/util/autodetect.cr	ported: font autodetect
+fontbox/src/main/java/org/apache/fontbox/util/autodetect/MacFontDirFinder.java::method::MacFontDirFinder.getSearchableDirectories	method	ported	src/fontbox/util/autodetect.cr	ported: font autodetect
+fontbox/src/main/java/org/apache/fontbox/util/autodetect/NativeFontDirFinder.java::class::NativeFontDirFinder	class	ported	src/fontbox/util/autodetect.cr	ported: font autodetect
 fontbox/src/main/java/org/apache/fontbox/util/autodetect/NativeFontDirFinder.java::const::LOG	const	missing	-	auto-generated
-fontbox/src/main/java/org/apache/fontbox/util/autodetect/NativeFontDirFinder.java::method::NativeFontDirFinder.find	method	missing	-	auto-generated
-fontbox/src/main/java/org/apache/fontbox/util/autodetect/NativeFontDirFinder.java::method::NativeFontDirFinder.getSearchableDirectories	method	missing	-	auto-generated
-fontbox/src/main/java/org/apache/fontbox/util/autodetect/OS400FontDirFinder.java::class::OS400FontDirFinder	class	missing	-	auto-generated
-fontbox/src/main/java/org/apache/fontbox/util/autodetect/OS400FontDirFinder.java::method::OS400FontDirFinder.getSearchableDirectories	method	missing	-	auto-generated
-fontbox/src/main/java/org/apache/fontbox/util/autodetect/UnixFontDirFinder.java::class::UnixFontDirFinder	class	missing	-	auto-generated
-fontbox/src/main/java/org/apache/fontbox/util/autodetect/UnixFontDirFinder.java::method::UnixFontDirFinder.getSearchableDirectories	method	missing	-	auto-generated
-fontbox/src/main/java/org/apache/fontbox/util/autodetect/WindowsFontDirFinder.java::class::WindowsFontDirFinder	class	missing	-	auto-generated
+fontbox/src/main/java/org/apache/fontbox/util/autodetect/NativeFontDirFinder.java::method::NativeFontDirFinder.find	method	ported	src/fontbox/util/autodetect.cr	ported: font autodetect
+fontbox/src/main/java/org/apache/fontbox/util/autodetect/NativeFontDirFinder.java::method::NativeFontDirFinder.getSearchableDirectories	method	ported	src/fontbox/util/autodetect.cr	ported: font autodetect
+fontbox/src/main/java/org/apache/fontbox/util/autodetect/OS400FontDirFinder.java::class::OS400FontDirFinder	class	ported	src/fontbox/util/autodetect.cr	ported: font autodetect
+fontbox/src/main/java/org/apache/fontbox/util/autodetect/OS400FontDirFinder.java::method::OS400FontDirFinder.getSearchableDirectories	method	ported	src/fontbox/util/autodetect.cr	ported: font autodetect
+fontbox/src/main/java/org/apache/fontbox/util/autodetect/UnixFontDirFinder.java::class::UnixFontDirFinder	class	ported	src/fontbox/util/autodetect.cr	ported: font autodetect
+fontbox/src/main/java/org/apache/fontbox/util/autodetect/UnixFontDirFinder.java::method::UnixFontDirFinder.getSearchableDirectories	method	ported	src/fontbox/util/autodetect.cr	ported: font autodetect
+fontbox/src/main/java/org/apache/fontbox/util/autodetect/WindowsFontDirFinder.java::class::WindowsFontDirFinder	class	ported	src/fontbox/util/autodetect.cr	ported: font autodetect
 fontbox/src/main/java/org/apache/fontbox/util/autodetect/WindowsFontDirFinder.java::const::LOG	const	missing	-	auto-generated
-fontbox/src/main/java/org/apache/fontbox/util/autodetect/WindowsFontDirFinder.java::method::WindowsFontDirFinder.find	method	missing	-	auto-generated
+fontbox/src/main/java/org/apache/fontbox/util/autodetect/WindowsFontDirFinder.java::method::WindowsFontDirFinder.find	method	ported	src/fontbox/util/autodetect.cr	ported: font autodetect
 io/src/main/java/org/apache/pdfbox/io/IOUtils.java::class::IOUtils	class	ported	src/pdfbox/io.cr	auto-generated
 io/src/main/java/org/apache/pdfbox/io/IOUtils.java::const::LOG	const	missing	-	auto-generated
 io/src/main/java/org/apache/pdfbox/io/IOUtils.java::const::UNMAPPER	const	missing	-	auto-generated

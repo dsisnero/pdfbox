@@ -3093,27 +3093,27 @@ fontbox/src/main/java/org/apache/fontbox/util/BoundingBox.java::method::Bounding
 fontbox/src/main/java/org/apache/fontbox/util/BoundingBox.java::method::BoundingBox.setUpperRightX	ported	src/.../bounding_box.cr	stale inventory; class ported
 fontbox/src/main/java/org/apache/fontbox/util/BoundingBox.java::method::BoundingBox.setUpperRightY	ported	src/.../bounding_box.cr	stale inventory; class ported
 fontbox/src/main/java/org/apache/fontbox/util/BoundingBox.java::method::BoundingBox.toString	ported	src/.../bounding_box.cr	stale inventory; class ported
-fontbox/src/main/java/org/apache/fontbox/util/autodetect/FontDirFinder.java::interface::FontDirFinder	missing	-	baseline
-fontbox/src/main/java/org/apache/fontbox/util/autodetect/FontDirFinder.java::method::find	missing	-	baseline
-fontbox/src/main/java/org/apache/fontbox/util/autodetect/FontFileFinder.java::class::FontFileFinder	missing	-	baseline
+fontbox/src/main/java/org/apache/fontbox/util/autodetect/FontDirFinder.java::interface::FontDirFinder	ported	src/fontbox/util/autodetect.cr	ported: font autodetect
+fontbox/src/main/java/org/apache/fontbox/util/autodetect/FontDirFinder.java::method::find	ported	src/fontbox/util/autodetect.cr	ported: font autodetect
+fontbox/src/main/java/org/apache/fontbox/util/autodetect/FontFileFinder.java::class::FontFileFinder	ported	src/fontbox/util/autodetect.cr	ported: font autodetect
 fontbox/src/main/java/org/apache/fontbox/util/autodetect/FontFileFinder.java::const::LOG	missing	-	baseline
-fontbox/src/main/java/org/apache/fontbox/util/autodetect/FontFileFinder.java::method::FontFileFinder.checkFontfile	missing	-	baseline
-fontbox/src/main/java/org/apache/fontbox/util/autodetect/FontFileFinder.java::method::FontFileFinder.determineDirFinder	missing	-	baseline
-fontbox/src/main/java/org/apache/fontbox/util/autodetect/FontFileFinder.java::method::FontFileFinder.find	missing	-	baseline
-fontbox/src/main/java/org/apache/fontbox/util/autodetect/FontFileFinder.java::method::FontFileFinder.walk	missing	-	baseline
-fontbox/src/main/java/org/apache/fontbox/util/autodetect/MacFontDirFinder.java::class::MacFontDirFinder	missing	-	baseline
-fontbox/src/main/java/org/apache/fontbox/util/autodetect/MacFontDirFinder.java::method::MacFontDirFinder.getSearchableDirectories	missing	-	baseline
-fontbox/src/main/java/org/apache/fontbox/util/autodetect/NativeFontDirFinder.java::class::NativeFontDirFinder	missing	-	baseline
+fontbox/src/main/java/org/apache/fontbox/util/autodetect/FontFileFinder.java::method::FontFileFinder.checkFontfile	ported	src/fontbox/util/autodetect.cr	ported: font autodetect
+fontbox/src/main/java/org/apache/fontbox/util/autodetect/FontFileFinder.java::method::FontFileFinder.determineDirFinder	ported	src/fontbox/util/autodetect.cr	ported: font autodetect
+fontbox/src/main/java/org/apache/fontbox/util/autodetect/FontFileFinder.java::method::FontFileFinder.find	ported	src/fontbox/util/autodetect.cr	ported: font autodetect
+fontbox/src/main/java/org/apache/fontbox/util/autodetect/FontFileFinder.java::method::FontFileFinder.walk	ported	src/fontbox/util/autodetect.cr	ported: font autodetect
+fontbox/src/main/java/org/apache/fontbox/util/autodetect/MacFontDirFinder.java::class::MacFontDirFinder	ported	src/fontbox/util/autodetect.cr	ported: font autodetect
+fontbox/src/main/java/org/apache/fontbox/util/autodetect/MacFontDirFinder.java::method::MacFontDirFinder.getSearchableDirectories	ported	src/fontbox/util/autodetect.cr	ported: font autodetect
+fontbox/src/main/java/org/apache/fontbox/util/autodetect/NativeFontDirFinder.java::class::NativeFontDirFinder	ported	src/fontbox/util/autodetect.cr	ported: font autodetect
 fontbox/src/main/java/org/apache/fontbox/util/autodetect/NativeFontDirFinder.java::const::LOG	missing	-	baseline
-fontbox/src/main/java/org/apache/fontbox/util/autodetect/NativeFontDirFinder.java::method::NativeFontDirFinder.find	missing	-	baseline
-fontbox/src/main/java/org/apache/fontbox/util/autodetect/NativeFontDirFinder.java::method::NativeFontDirFinder.getSearchableDirectories	missing	-	baseline
-fontbox/src/main/java/org/apache/fontbox/util/autodetect/OS400FontDirFinder.java::class::OS400FontDirFinder	missing	-	baseline
-fontbox/src/main/java/org/apache/fontbox/util/autodetect/OS400FontDirFinder.java::method::OS400FontDirFinder.getSearchableDirectories	missing	-	baseline
-fontbox/src/main/java/org/apache/fontbox/util/autodetect/UnixFontDirFinder.java::class::UnixFontDirFinder	missing	-	baseline
-fontbox/src/main/java/org/apache/fontbox/util/autodetect/UnixFontDirFinder.java::method::UnixFontDirFinder.getSearchableDirectories	missing	-	baseline
-fontbox/src/main/java/org/apache/fontbox/util/autodetect/WindowsFontDirFinder.java::class::WindowsFontDirFinder	missing	-	baseline
+fontbox/src/main/java/org/apache/fontbox/util/autodetect/NativeFontDirFinder.java::method::NativeFontDirFinder.find	ported	src/fontbox/util/autodetect.cr	ported: font autodetect
+fontbox/src/main/java/org/apache/fontbox/util/autodetect/NativeFontDirFinder.java::method::NativeFontDirFinder.getSearchableDirectories	ported	src/fontbox/util/autodetect.cr	ported: font autodetect
+fontbox/src/main/java/org/apache/fontbox/util/autodetect/OS400FontDirFinder.java::class::OS400FontDirFinder	ported	src/fontbox/util/autodetect.cr	ported: font autodetect
+fontbox/src/main/java/org/apache/fontbox/util/autodetect/OS400FontDirFinder.java::method::OS400FontDirFinder.getSearchableDirectories	ported	src/fontbox/util/autodetect.cr	ported: font autodetect
+fontbox/src/main/java/org/apache/fontbox/util/autodetect/UnixFontDirFinder.java::class::UnixFontDirFinder	ported	src/fontbox/util/autodetect.cr	ported: font autodetect
+fontbox/src/main/java/org/apache/fontbox/util/autodetect/UnixFontDirFinder.java::method::UnixFontDirFinder.getSearchableDirectories	ported	src/fontbox/util/autodetect.cr	ported: font autodetect
+fontbox/src/main/java/org/apache/fontbox/util/autodetect/WindowsFontDirFinder.java::class::WindowsFontDirFinder	ported	src/fontbox/util/autodetect.cr	ported: font autodetect
 fontbox/src/main/java/org/apache/fontbox/util/autodetect/WindowsFontDirFinder.java::const::LOG	missing	-	baseline
-fontbox/src/main/java/org/apache/fontbox/util/autodetect/WindowsFontDirFinder.java::method::WindowsFontDirFinder.find	missing	-	baseline
+fontbox/src/main/java/org/apache/fontbox/util/autodetect/WindowsFontDirFinder.java::method::WindowsFontDirFinder.find	ported	src/fontbox/util/autodetect.cr	ported: font autodetect
 io/src/main/java/org/apache/pdfbox/io/IOUtils.java::class::IOUtils	ported	src/pdfbox/io.cr	baseline
 io/src/main/java/org/apache/pdfbox/io/IOUtils.java::const::LOG	missing	-	baseline
 io/src/main/java/org/apache/pdfbox/io/IOUtils.java::const::UNMAPPER	missing	-	baseline
