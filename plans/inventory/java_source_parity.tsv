@@ -11859,7 +11859,7 @@ xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::met
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.getIngredientsProperty	missing	-	baseline
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.getInstanceID	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.getInstanceIDProperty	missing	-	baseline
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.getLastURL	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.getLastURL	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPMediaManagementSchema managerVariant/lastURL/saveID
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.getLastURLProperty	missing	-	baseline
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.getManageTo	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.getManageToProperty	missing	-	baseline
@@ -11868,7 +11868,7 @@ xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::met
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.getManagedFromProperty	missing	-	baseline
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.getManager	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.getManagerProperty	missing	-	baseline
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.getManagerVariant	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.getManagerVariant	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPMediaManagementSchema managerVariant/lastURL/saveID
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.getManagerVariantProperty	missing	-	baseline
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.getOriginalDocumentID	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.getOriginalDocumentIDProperty	missing	-	baseline
@@ -11876,7 +11876,7 @@ xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::met
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.getRenditionClassProperty	missing	-	baseline
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.getRenditionParams	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.getRenditionParamsProperty	missing	-	baseline
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.getSaveID	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.getSaveID	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPMediaManagementSchema managerVariant/lastURL/saveID
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.getSaveIDProperty	missing	-	baseline
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.getVersionID	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.getVersionIDProperty	missing	-	baseline
@@ -11887,7 +11887,7 @@ xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::met
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.setDocumentIDProperty	missing	-	baseline
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.setInstanceID	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.setInstanceIDProperty	missing	-	baseline
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.setLastURL	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.setLastURL	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPMediaManagementSchema managerVariant/lastURL/saveID
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.setLastURLProperty	missing	-	baseline
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.setManageTo	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.setManageToProperty	missing	-	baseline
@@ -11896,7 +11896,7 @@ xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::met
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.setManagedFromProperty	missing	-	baseline
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.setManager	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.setManagerProperty	missing	-	baseline
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.setManagerVariant	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.setManagerVariant	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPMediaManagementSchema managerVariant/lastURL/saveID
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.setManagerVariantProperty	missing	-	baseline
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.setOriginalDocumentID	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.setOriginalDocumentIDProperty	missing	-	baseline
@@ -11905,7 +11905,7 @@ xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::met
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.setRenditionParams	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.setRenditionParamsProperty	missing	-	baseline
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.setSaveIDProperty	missing	-	baseline
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.setSaveId	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.setSaveId	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPMediaManagementSchema managerVariant/lastURL/saveID
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.setVersionID	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPMediaManagementSchema.java::method::XMPMediaManagementSchema.setVersionIDProperty	missing	-	baseline
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPPageTextSchema.java::class::XMPPageTextSchema	ported	src/xmpbox/schema/schema_classes.cr	reconciled: class present

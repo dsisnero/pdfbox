@@ -456,6 +456,30 @@ module Xmpbox
         unqualified_text_property_value(VERSION_ID)
       end
 
+      def manager_variant=(value : String) : Nil
+        set_text_property_value(MANAGER_VARIANT, value)
+      end
+
+      def manager_variant : String?
+        unqualified_text_property_value(MANAGER_VARIANT)
+      end
+
+      def last_url=(value : String) : Nil
+        set_text_property_value(LAST_URL, value)
+      end
+
+      def last_url : String?
+        unqualified_text_property_value(LAST_URL)
+      end
+
+      def save_id=(value : Int32) : Nil
+        set_integer_property_value(SAVE_ID, value)
+      end
+
+      def save_id : Int32?
+        integer_property_value(SAVE_ID)
+      end
+
       def add_history(history : String) : Nil
         add_unqualified_sequence_value(HISTORY, history)
       end

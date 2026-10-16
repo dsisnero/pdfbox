@@ -40,6 +40,19 @@ module Xmpbox
         schema.history.should eq(["action 1", "action 2", "action 3"])
       end
 
+      it "sets and gets manager variant, last URL and save ID" do
+        meta = XMPMetadata.create_xmp_metadata
+        schema = XMPMediaManagementSchema.new(meta)
+
+        schema.manager_variant = "variant"
+        schema.last_url = "http://example.com/"
+        schema.save_id = 7
+
+        schema.manager_variant.should eq("variant")
+        schema.last_url.should eq("http://example.com/")
+        schema.save_id.should eq(7)
+      end
+
       it "returns nil for unset properties" do
         meta = XMPMetadata.create_xmp_metadata
         schema = XMPMediaManagementSchema.new(meta)
