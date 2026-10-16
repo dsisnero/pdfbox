@@ -28,67 +28,8 @@ module Fontbox::CFF
     private TAG_TTCF    = "ttcf"
     private TAG_TTFONLY = "\u0000\u0001\u0000\u0000"
 
-    private OPERATORS = Hash(Int32, String).new.tap do |hash|
-      # Top DICT
-      hash[0] = "version"
-      hash[1] = "Notice"
-      hash[2] = "FullName"
-      hash[3] = "FamilyName"
-      hash[4] = "Weight"
-      hash[5] = "FontBBox"
-      hash[13] = "UniqueID"
-      hash[14] = "XUID"
-      hash[15] = "charset"
-      hash[16] = "Encoding"
-      hash[17] = "CharStrings"
-      hash[18] = "Private"
-      # 2-byte operators: key = (b1 << 8) + b0 where b0 = 12
-      hash[(0 << 8) + 12] = "Copyright"
-      hash[(1 << 8) + 12] = "isFixedPitch"
-      hash[(2 << 8) + 12] = "ItalicAngle"
-      hash[(3 << 8) + 12] = "UnderlinePosition"
-      hash[(4 << 8) + 12] = "UnderlineThickness"
-      hash[(5 << 8) + 12] = "PaintType"
-      hash[(6 << 8) + 12] = "CharstringType"
-      hash[(7 << 8) + 12] = "FontMatrix"
-      hash[(8 << 8) + 12] = "StrokeWidth"
-      hash[(9 << 8) + 12] = "BlueScale"
-      hash[(10 << 8) + 12] = "BlueShift"
-      hash[(11 << 8) + 12] = "BlueFuzz"
-      hash[(12 << 8) + 12] = "StemSnapH"
-      hash[(13 << 8) + 12] = "StemSnapV"
-      hash[(14 << 8) + 12] = "ForceBold"
-      hash[(15 << 8) + 12] = "LanguageGroup"
-      hash[(16 << 8) + 12] = "ExpansionFactor"
-      hash[(17 << 8) + 12] = "initialRandomSeed"
-      hash[(20 << 8) + 12] = "SyntheticBase"
-      hash[(21 << 8) + 12] = "PostScript"
-      hash[(22 << 8) + 12] = "BaseFontName"
-      hash[(23 << 8) + 12] = "BaseFontBlend"
-      hash[(30 << 8) + 12] = "ROS"
-      hash[(31 << 8) + 12] = "CIDFontVersion"
-      hash[(32 << 8) + 12] = "CIDFontRevision"
-      hash[(33 << 8) + 12] = "CIDFontType"
-      hash[(34 << 8) + 12] = "CIDCount"
-      hash[(35 << 8) + 12] = "UIDBase"
-      hash[(36 << 8) + 12] = "FDArray"
-      hash[(37 << 8) + 12] = "FDSelect"
-      hash[(38 << 8) + 12] = "FontName"
-      # Private DICT single-byte operators
-      hash[6] = "BlueValues"
-      hash[7] = "OtherBlues"
-      hash[8] = "FamilyBlues"
-      hash[9] = "FamilyOtherBlues"
-      hash[10] = "StdHW"
-      hash[11] = "StdVW"
-      hash[19] = "Subrs"
-      hash[20] = "defaultWidthX"
-      hash[21] = "nominalWidthX"
-    end
-
     private def operator_name(b0 : Int32, b1 : Int32 = 0) : String?
-      key = b1 == 0 ? b0 : (b1 << 8) + b0
-      OPERATORS[key]?
+      CFFOperator.get_operator(b0, b1)
     end
 
     @string_index : Array(String)?

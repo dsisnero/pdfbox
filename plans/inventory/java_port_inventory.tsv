@@ -1594,10 +1594,10 @@ fontbox/src/main/java/org/apache/fontbox/cff/CFFISOAdobeCharset.java::const::CHA
 fontbox/src/main/java/org/apache/fontbox/cff/CFFISOAdobeCharset.java::const::CHAR_NAME	const	missing	-	auto-generated
 fontbox/src/main/java/org/apache/fontbox/cff/CFFISOAdobeCharset.java::const::INSTANCE	const	missing	-	auto-generated
 fontbox/src/main/java/org/apache/fontbox/cff/CFFISOAdobeCharset.java::method::CFFISOAdobeCharset.getInstance	method	missing	-	auto-generated
-fontbox/src/main/java/org/apache/fontbox/cff/CFFOperator.java::class::CFFOperator	class	missing	-	auto-generated
-fontbox/src/main/java/org/apache/fontbox/cff/CFFOperator.java::method::CFFOperator.calculateKey	method	missing	-	auto-generated
-fontbox/src/main/java/org/apache/fontbox/cff/CFFOperator.java::method::CFFOperator.getOperator	method	missing	-	auto-generated
-fontbox/src/main/java/org/apache/fontbox/cff/CFFOperator.java::method::CFFOperator.register	method	missing	-	auto-generated
+fontbox/src/main/java/org/apache/fontbox/cff/CFFOperator.java::class::CFFOperator	class	ported	src/fontbox/cff/cff_operator.cr	ported: CFFOperator
+fontbox/src/main/java/org/apache/fontbox/cff/CFFOperator.java::method::CFFOperator.calculateKey	method	ported	src/fontbox/cff/cff_operator.cr	ported: CFFOperator
+fontbox/src/main/java/org/apache/fontbox/cff/CFFOperator.java::method::CFFOperator.getOperator	method	ported	src/fontbox/cff/cff_operator.cr	ported: CFFOperator
+fontbox/src/main/java/org/apache/fontbox/cff/CFFOperator.java::method::CFFOperator.register	method	ported	src/fontbox/cff/cff_operator.cr	ported: CFFOperator
 fontbox/src/main/java/org/apache/fontbox/cff/CFFParser.java::class::CFFBuiltInEncoding	class	partial	src	auto-generated
 fontbox/src/main/java/org/apache/fontbox/cff/CFFParser.java::class::CFFBytesource	class	missing	-	auto-generated
 fontbox/src/main/java/org/apache/fontbox/cff/CFFParser.java::class::CFFParser	class	partial	src	auto-generated

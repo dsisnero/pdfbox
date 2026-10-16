@@ -1594,10 +1594,10 @@ fontbox/src/main/java/org/apache/fontbox/cff/CFFISOAdobeCharset.java::const::CHA
 fontbox/src/main/java/org/apache/fontbox/cff/CFFISOAdobeCharset.java::const::CHAR_NAME	missing	-	baseline
 fontbox/src/main/java/org/apache/fontbox/cff/CFFISOAdobeCharset.java::const::INSTANCE	missing	-	baseline
 fontbox/src/main/java/org/apache/fontbox/cff/CFFISOAdobeCharset.java::method::CFFISOAdobeCharset.getInstance	missing	-	baseline
-fontbox/src/main/java/org/apache/fontbox/cff/CFFOperator.java::class::CFFOperator	missing	-	baseline
-fontbox/src/main/java/org/apache/fontbox/cff/CFFOperator.java::method::CFFOperator.calculateKey	missing	-	baseline
-fontbox/src/main/java/org/apache/fontbox/cff/CFFOperator.java::method::CFFOperator.getOperator	missing	-	baseline
-fontbox/src/main/java/org/apache/fontbox/cff/CFFOperator.java::method::CFFOperator.register	missing	-	baseline
+fontbox/src/main/java/org/apache/fontbox/cff/CFFOperator.java::class::CFFOperator	ported	src/fontbox/cff/cff_operator.cr	ported: CFFOperator
+fontbox/src/main/java/org/apache/fontbox/cff/CFFOperator.java::method::CFFOperator.calculateKey	ported	src/fontbox/cff/cff_operator.cr	ported: CFFOperator
+fontbox/src/main/java/org/apache/fontbox/cff/CFFOperator.java::method::CFFOperator.getOperator	ported	src/fontbox/cff/cff_operator.cr	ported: CFFOperator
+fontbox/src/main/java/org/apache/fontbox/cff/CFFOperator.java::method::CFFOperator.register	ported	src/fontbox/cff/cff_operator.cr	ported: CFFOperator
 fontbox/src/main/java/org/apache/fontbox/cff/CFFParser.java::class::CFFBuiltInEncoding	missing	-	baseline
 fontbox/src/main/java/org/apache/fontbox/cff/CFFParser.java::class::CFFBytesource	missing	-	baseline
 fontbox/src/main/java/org/apache/fontbox/cff/CFFParser.java::class::CFFParser	ported	src/fontbox/cff/cff_parser.cr	reconciled: class present
