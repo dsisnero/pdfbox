@@ -3777,7 +3777,7 @@ pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictio
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.getKeyForValue	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.getLong	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.getNameAsString	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.getObjectFromPath	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.getObjectFromPath	method	ported	src/pdfbox/cos.cr	ported: COSDictionary getObjectFromPath
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.getString	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.getUpdateState	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.getValues	method	partial	src	auto-generated

@@ -1090,6 +1090,8 @@ module Pdfbox::Cos
 
   # Dictionary (key-value pairs) of COS objects
   class Dictionary < Base
+    PATH_SEPARATOR = "/"
+
     @entries = {} of Name => Base
 
     def initialize(@entries : ::Hash(Name, Base) = {} of Name => Base)
@@ -1280,6 +1282,30 @@ module Pdfbox::Cos
     def get_dictionary(key : Name) : Dictionary?
       dict = get_dictionary_object(key)
       dict.as?(Dictionary) if dict
+    end
+
+    # Returns the nested value addressed by an object path, resolving dictionary
+    # keys with get_dictionary_object and array indexes (which may be written as
+    # "0" or "\[0\]") with get_object. Java COSDictionary#getObjectFromPath.
+    def get_object_from_path(obj_path : ::String) : Base?
+      path = obj_path.split(PATH_SEPARATOR)
+      # Java String.split drops trailing empty strings
+      while !path.empty? && path.last.empty?
+        path.pop
+      end
+
+      result : Base? = self
+      path.each do |path_string|
+        case current = result
+        when Array
+          idx = path_string.gsub("\\[", "").gsub("\\]", "").to_i
+          item = current.get(idx)
+          result = item.is_a?(Object) ? item.object : item
+        when Dictionary
+          result = current.get_dictionary_object(Name.new(path_string))
+        end
+      end
+      result
     end
 
     # Get a string value, returning default if not present or not a string

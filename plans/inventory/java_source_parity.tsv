@@ -3777,7 +3777,7 @@ pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictio
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.getKeyForValue	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.getLong	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.getNameAsString	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.getObjectFromPath	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.getObjectFromPath	ported	src/pdfbox/cos.cr	ported: COSDictionary getObjectFromPath
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.getString	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.getUpdateState	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.getValues	missing	-	baseline
