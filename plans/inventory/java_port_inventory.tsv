@@ -7122,10 +7122,10 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationUnderline.java::
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFCatalog.java::class::FDFCatalog	class	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFCatalog.java::method::FDFCatalog.getCOSObject	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFCatalog.java::method::FDFCatalog.getFDF	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFCatalog.java::method::FDFCatalog.getSignature	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFCatalog.java::method::FDFCatalog.getSignature	method	ported	src/pdfbox/pdmodel/fdf.cr	ported: FDFCatalog signature
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFCatalog.java::method::FDFCatalog.getVersion	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFCatalog.java::method::FDFCatalog.setFDF	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFCatalog.java::method::FDFCatalog.setSignature	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFCatalog.java::method::FDFCatalog.setSignature	method	ported	src/pdfbox/pdmodel/fdf.cr	ported: FDFCatalog signature
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFCatalog.java::method::FDFCatalog.setVersion	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFCatalog.java::method::FDFCatalog.writeXML	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFDictionary.java::class::FDFDictionary	class	partial	src	auto-generated

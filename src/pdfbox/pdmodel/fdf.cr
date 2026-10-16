@@ -549,6 +549,17 @@ module Pdfbox::Pdmodel::Fdf
     def write_xfdf(io : ::IO) : Nil
       @fdf.write_xfdf(io)
     end
+
+    # The signature associated with this catalog, or nil (Java FDFCatalog#getSignature).
+    def signature : Pdfbox::Pdmodel::Interactive::Form::PDSignature?
+      sig = @cos_object.get_dictionary(Pdfbox::Cos::Name::SIG)
+      sig ? Pdfbox::Pdmodel::Interactive::Form::PDSignature.new(sig) : nil
+    end
+
+    # Sets the signature associated with this catalog (Java FDFCatalog#setSignature).
+    def signature=(sig : Pdfbox::Pdmodel::Interactive::Form::PDSignature) : Nil
+      @cos_object.set_item(Pdfbox::Cos::Name::SIG, sig.cos_object)
+    end
   end
 
   class FDFDocument

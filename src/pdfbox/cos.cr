@@ -789,6 +789,7 @@ module Pdfbox::Cos
     ANNOTS               = new("Annots")
     ANNOT                = new("Annot")
     LINK                 = new("Link")
+    SIG                  = new("Sig")
     B                    = new("B")
     STRUCT_PARENTS       = new("StructParents")
     STRUCT_PARENT        = new("StructParent")

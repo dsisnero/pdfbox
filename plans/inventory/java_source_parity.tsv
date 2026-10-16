@@ -7122,10 +7122,10 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFAnnotationUnderline.java::
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFCatalog.java::class::FDFCatalog	ported	src/pdfbox/pdmodel/fdf.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFCatalog.java::method::FDFCatalog.getCOSObject	ported	src/pdfbox/pdmodel/fdf.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFCatalog.java::method::FDFCatalog.getFDF	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFCatalog.java::method::FDFCatalog.getSignature	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFCatalog.java::method::FDFCatalog.getSignature	ported	src/pdfbox/pdmodel/fdf.cr	ported: FDFCatalog signature
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFCatalog.java::method::FDFCatalog.getVersion	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFCatalog.java::method::FDFCatalog.setFDF	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFCatalog.java::method::FDFCatalog.setSignature	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFCatalog.java::method::FDFCatalog.setSignature	ported	src/pdfbox/pdmodel/fdf.cr	ported: FDFCatalog signature
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFCatalog.java::method::FDFCatalog.setVersion	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFCatalog.java::method::FDFCatalog.writeXML	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFDictionary.java::class::FDFDictionary	ported	src/pdfbox/pdmodel/fdf.cr	reconciled: class present
