@@ -12130,7 +12130,7 @@ xmpbox/src/main/java/org/apache/xmpbox/type/FontType.java::const::FONT_FILE_NAME
 xmpbox/src/main/java/org/apache/xmpbox/type/FontType.java::const::FONT_NAME	missing	-	baseline
 xmpbox/src/main/java/org/apache/xmpbox/type/FontType.java::const::FONT_TYPE	missing	-	baseline
 xmpbox/src/main/java/org/apache/xmpbox/type/FontType.java::const::VERSION_STRING	missing	-	baseline
-xmpbox/src/main/java/org/apache/xmpbox/type/GPSCoordinateType.java::class::GPSCoordinateType	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/type/GPSCoordinateType.java::class::GPSCoordinateType	ported	src/xmpbox/type/simple_derived_types.cr	ported: GPSCoordinateType
 xmpbox/src/main/java/org/apache/xmpbox/type/GUIDType.java::class::GUIDType	ported	src/xmpbox/type/simple_derived_types.cr	reconciled: class present
 xmpbox/src/main/java/org/apache/xmpbox/type/IntegerType.java::class::IntegerType	ported	src/.../integer_type.cr	stale inventory; class ported
 xmpbox/src/main/java/org/apache/xmpbox/type/IntegerType.java::method::IntegerType.getStringValue	ported	src/.../integer_type.cr	stale inventory; class ported

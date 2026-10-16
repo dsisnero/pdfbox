@@ -35,5 +35,8 @@ module Xmpbox
 
     class RationalType < TextType
     end
+
+    class GPSCoordinateType < TextType
+    end
   end
 end

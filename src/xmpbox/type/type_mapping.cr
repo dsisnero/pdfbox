@@ -49,7 +49,7 @@ module Xmpbox
         Types::LangAlt        => TextType,
         Types::RenditionClass => RenditionClassType,
         Types::Rational       => RationalType,
-        Types::GPSCoordinate  => TextType,
+        Types::GPSCoordinate  => GPSCoordinateType,
       } of Types => AbstractSimpleProperty.class
 
       def initialize(@metadata : XMPMetadata)

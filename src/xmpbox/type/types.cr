@@ -78,7 +78,7 @@ module Xmpbox
         when Boolean        then "BooleanType"
         when Integer        then "IntegerType"
         when Real           then "RealType"
-        when GPSCoordinate  then "TextType"
+        when GPSCoordinate  then "GPSCoordinateType"
         when ProperName     then "ProperNameType"
         when Locale         then "LocaleType"
         when AgentName      then "AgentNameType"

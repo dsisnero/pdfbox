@@ -12130,7 +12130,7 @@ xmpbox/src/main/java/org/apache/xmpbox/type/FontType.java::const::FONT_FILE_NAME
 xmpbox/src/main/java/org/apache/xmpbox/type/FontType.java::const::FONT_NAME	const	missing	-	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/type/FontType.java::const::FONT_TYPE	const	missing	-	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/type/FontType.java::const::VERSION_STRING	const	missing	-	auto-generated
-xmpbox/src/main/java/org/apache/xmpbox/type/GPSCoordinateType.java::class::GPSCoordinateType	class	missing	-	auto-generated
+xmpbox/src/main/java/org/apache/xmpbox/type/GPSCoordinateType.java::class::GPSCoordinateType	class	ported	src/xmpbox/type/simple_derived_types.cr	ported: GPSCoordinateType
 xmpbox/src/main/java/org/apache/xmpbox/type/GUIDType.java::class::GUIDType	class	partial	src	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/type/IntegerType.java::class::IntegerType	class	partial	src	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/type/IntegerType.java::method::IntegerType.getStringValue	method	ported	src	auto-generated
