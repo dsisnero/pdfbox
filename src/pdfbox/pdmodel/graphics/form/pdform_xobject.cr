@@ -124,5 +124,11 @@ module Pdfbox::Pdmodel::Graphics::Form
     def contents : ::IO
       content_stream.create_input_stream
     end
+
+    # Returns the decoded form contents as a random access read.
+    # Java PDFormXObject#getContentsForRandomAccess.
+    def contents_for_random_access : Pdfbox::IO::RandomAccessRead
+      @stream.create_view
+    end
   end
 end

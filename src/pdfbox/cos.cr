@@ -1573,6 +1573,13 @@ module Pdfbox::Cos
       ::IO::Memory.new(decode_filters_with_stop(@data, self[Name::FILTER], stop_filters))
     end
 
+    # Returns a random access view over the decoded stream data.
+    # Java COSStream#createView.
+    def create_view : Pdfbox::IO::RandomAccessRead
+      return Pdfbox::IO::RandomAccessReadBuffer.new(Bytes.empty) unless has_data
+      Pdfbox::IO::RandomAccessReadBuffer.new(create_input_stream.gets_to_end.to_slice)
+    end
+
     # Decodes the stream data as a PDF text string (UTF-16BE/PDFDocEncoding),
     # returning "" when the stream cannot be read. Java COSStream#toTextString.
     def to_text_string : ::String

@@ -4526,7 +4526,7 @@ pdfbox/src/main/java/org/apache/pdfbox/cos/COSStream.java::method::COSStream.cre
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSStream.java::method::COSStream.createOutputStream	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSStream.java::method::COSStream.createRawInputStream	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSStream.java::method::COSStream.createRawOutputStream	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSStream.java::method::COSStream.createView	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSStream.java::method::COSStream.createView	method	ported	src/pdfbox/cos.cr	ported: COSStream createView
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSStream.java::method::COSStream.getFilterList	method	ported	src/pdfbox/cos.cr	ported: COSStream filters/filter_list/length
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSStream.java::method::COSStream.getFilters	method	ported	src/pdfbox/cos.cr	ported: COSStream filters/filter_list/length
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSStream.java::method::COSStream.getLength	method	ported	src/pdfbox/cos.cr	ported: COSStream filters/filter_list/length
@@ -8253,7 +8253,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/form/PDFormXObject.java:
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/form/PDFormXObject.java::method::PDFormXObject.getBBox	method	ported	src/pdfbox/pdmodel/graphics/form/pdform_xobject.cr	ported: PDFormXObject
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/form/PDFormXObject.java::method::PDFormXObject.getContentStream	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/form/PDFormXObject.java::method::PDFormXObject.getContents	method	ported	src/pdfbox/pdmodel/graphics/form/pdform_xobject.cr	ported: PDFormXObject
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/form/PDFormXObject.java::method::PDFormXObject.getContentsForRandomAccess	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/form/PDFormXObject.java::method::PDFormXObject.getContentsForRandomAccess	method	ported	src/pdfbox/pdmodel/graphics/form/pdform_xobject.cr	ported: PDFormXObject getContentsForRandomAccess
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/form/PDFormXObject.java::method::PDFormXObject.getFormType	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/form/PDFormXObject.java::method::PDFormXObject.getGroup	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/form/PDFormXObject.java::method::PDFormXObject.getMatrix	method	ported	src	auto-generated
