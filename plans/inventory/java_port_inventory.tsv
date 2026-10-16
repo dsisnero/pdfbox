@@ -11039,11 +11039,11 @@ pdfbox/src/main/java/org/apache/pdfbox/text/TextPosition.java::method::TextPosit
 pdfbox/src/main/java/org/apache/pdfbox/text/TextPosition.java::method::TextPosition.getX	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/text/TextPosition.java::method::TextPosition.getXDirAdj	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/text/TextPosition.java::method::TextPosition.getXRot	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/text/TextPosition.java::method::TextPosition.getXScale	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/text/TextPosition.java::method::TextPosition.getXScale	method	ported	src/pdfbox/text/text_position.cr	ported: TextPosition xScale/yScale
 pdfbox/src/main/java/org/apache/pdfbox/text/TextPosition.java::method::TextPosition.getY	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/text/TextPosition.java::method::TextPosition.getYDirAdj	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/text/TextPosition.java::method::TextPosition.getYLowerLeftRot	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/text/TextPosition.java::method::TextPosition.getYScale	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/text/TextPosition.java::method::TextPosition.getYScale	method	ported	src/pdfbox/text/text_position.cr	ported: TextPosition xScale/yScale
 pdfbox/src/main/java/org/apache/pdfbox/text/TextPosition.java::method::TextPosition.hashCode	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/text/TextPosition.java::method::TextPosition.insertDiacritic	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/text/TextPosition.java::method::TextPosition.isDiacritic	method	ported	src	auto-generated

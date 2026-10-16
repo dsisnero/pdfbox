@@ -11039,11 +11039,11 @@ pdfbox/src/main/java/org/apache/pdfbox/text/TextPosition.java::method::TextPosit
 pdfbox/src/main/java/org/apache/pdfbox/text/TextPosition.java::method::TextPosition.getX	ported	src/.../text_position.cr	stale inventory; class ported
 pdfbox/src/main/java/org/apache/pdfbox/text/TextPosition.java::method::TextPosition.getXDirAdj	ported	src/.../text_position.cr	stale inventory; class ported
 pdfbox/src/main/java/org/apache/pdfbox/text/TextPosition.java::method::TextPosition.getXRot	ported	src/.../text_position.cr	stale inventory; class ported
-pdfbox/src/main/java/org/apache/pdfbox/text/TextPosition.java::method::TextPosition.getXScale	ported	src/.../text_position.cr	stale inventory; class ported
+pdfbox/src/main/java/org/apache/pdfbox/text/TextPosition.java::method::TextPosition.getXScale	ported	src/pdfbox/text/text_position.cr	ported: TextPosition xScale/yScale
 pdfbox/src/main/java/org/apache/pdfbox/text/TextPosition.java::method::TextPosition.getY	ported	src/.../text_position.cr	stale inventory; class ported
 pdfbox/src/main/java/org/apache/pdfbox/text/TextPosition.java::method::TextPosition.getYDirAdj	ported	src/.../text_position.cr	stale inventory; class ported
 pdfbox/src/main/java/org/apache/pdfbox/text/TextPosition.java::method::TextPosition.getYLowerLeftRot	ported	src/.../text_position.cr	stale inventory; class ported
-pdfbox/src/main/java/org/apache/pdfbox/text/TextPosition.java::method::TextPosition.getYScale	ported	src/.../text_position.cr	stale inventory; class ported
+pdfbox/src/main/java/org/apache/pdfbox/text/TextPosition.java::method::TextPosition.getYScale	ported	src/pdfbox/text/text_position.cr	ported: TextPosition xScale/yScale
 pdfbox/src/main/java/org/apache/pdfbox/text/TextPosition.java::method::TextPosition.hashCode	ported	src/.../text_position.cr	stale inventory; class ported
 pdfbox/src/main/java/org/apache/pdfbox/text/TextPosition.java::method::TextPosition.insertDiacritic	ported	src/.../text_position.cr	stale inventory; class ported
 pdfbox/src/main/java/org/apache/pdfbox/text/TextPosition.java::method::TextPosition.isDiacritic	ported	src/.../text_position.cr	stale inventory; class ported

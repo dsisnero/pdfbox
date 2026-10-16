@@ -186,6 +186,16 @@ module Pdfbox::Text
       @max_height
     end
 
+    # The X scaling factor from the text matrix. Java TextPosition#getXScale.
+    def x_scale : Float32
+      text_matrix.scaling_factor_x
+    end
+
+    # The Y scaling factor from the text matrix. Java TextPosition#getYScale.
+    def y_scale : Float32
+      text_matrix.scaling_factor_y
+    end
+
     def contains(other : TextPosition) : Bool
       this_x_start = x_dir_adj
       this_width = width_dir_adj
