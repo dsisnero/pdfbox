@@ -219,6 +219,70 @@ module Xmpbox
       def remove_date(date : Time) : Nil
         remove_unqualified_sequence_date_value(DATE, date)
       end
+
+      def title_languages : Array(String)?
+        unqualified_language_property_languages_value(TITLE)
+      end
+
+      def title_property : Type::ArrayProperty?
+        array_property(TITLE)
+      end
+
+      def description_property : Type::ArrayProperty?
+        array_property(DESCRIPTION)
+      end
+
+      def contributors_property : Type::ArrayProperty?
+        array_property(CONTRIBUTOR)
+      end
+
+      def creators_property : Type::ArrayProperty?
+        array_property(CREATOR)
+      end
+
+      def dates_property : Type::ArrayProperty?
+        array_property(DATE)
+      end
+
+      def languages_property : Type::ArrayProperty?
+        array_property(LANGUAGE)
+      end
+
+      def publishers_property : Type::ArrayProperty?
+        array_property(PUBLISHER)
+      end
+
+      def relations_property : Type::ArrayProperty?
+        array_property(RELATION)
+      end
+
+      def subjects_property : Type::ArrayProperty?
+        array_property(SUBJECT)
+      end
+
+      def types_property : Type::ArrayProperty?
+        array_property(TYPE)
+      end
+
+      def rights_property : Type::ArrayProperty?
+        array_property(RIGHTS)
+      end
+
+      def rights_languages : Array(String)?
+        unqualified_language_property_languages_value(RIGHTS)
+      end
+
+      def rights(lang : String?) : String?
+        unqualified_language_property_value(RIGHTS, lang)
+      end
+
+      def rights : String?
+        rights(nil)
+      end
+
+      def add_rights(lang : String?, value : String) : Nil
+        set_unqualified_language_property_value(RIGHTS, lang, value)
+      end
     end
 
     # XMP Basic: http://ns.adobe.com/xap/1.0/

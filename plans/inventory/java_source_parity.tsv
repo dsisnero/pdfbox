@@ -11464,43 +11464,43 @@ xmpbox/src/main/java/org/apache/xmpbox/schema/DublinCoreSchema.java::method::Dub
 xmpbox/src/main/java/org/apache/xmpbox/schema/DublinCoreSchema.java::method::DublinCoreSchema.addLanguage	ported	src/xmpbox/schema/schema_classes.cr	ported: DublinCoreSchema bag/seq arrays
 xmpbox/src/main/java/org/apache/xmpbox/schema/DublinCoreSchema.java::method::DublinCoreSchema.addPublisher	ported	src/xmpbox/schema/schema_classes.cr	ported: DublinCoreSchema bag/seq arrays
 xmpbox/src/main/java/org/apache/xmpbox/schema/DublinCoreSchema.java::method::DublinCoreSchema.addRelation	ported	src/xmpbox/schema/schema_classes.cr	ported: DublinCoreSchema bag/seq arrays
-xmpbox/src/main/java/org/apache/xmpbox/schema/DublinCoreSchema.java::method::DublinCoreSchema.addRights	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/DublinCoreSchema.java::method::DublinCoreSchema.addRights	ported	src/xmpbox/schema/schema_classes.cr	ported: DublinCoreSchema rights/titleLanguages/array properties
 xmpbox/src/main/java/org/apache/xmpbox/schema/DublinCoreSchema.java::method::DublinCoreSchema.addSubject	ported	src/xmpbox/schema/schema_classes.cr	ported: DublinCoreSchema bag/seq arrays
 xmpbox/src/main/java/org/apache/xmpbox/schema/DublinCoreSchema.java::method::DublinCoreSchema.addTitle	missing	-	baseline
 xmpbox/src/main/java/org/apache/xmpbox/schema/DublinCoreSchema.java::method::DublinCoreSchema.addType	ported	src/xmpbox/schema/schema_classes.cr	ported: DublinCoreSchema bag/seq arrays
 xmpbox/src/main/java/org/apache/xmpbox/schema/DublinCoreSchema.java::method::DublinCoreSchema.getContributors	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
-xmpbox/src/main/java/org/apache/xmpbox/schema/DublinCoreSchema.java::method::DublinCoreSchema.getContributorsProperty	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/DublinCoreSchema.java::method::DublinCoreSchema.getContributorsProperty	ported	src/xmpbox/schema/schema_classes.cr	ported: DublinCoreSchema rights/titleLanguages/array properties
 xmpbox/src/main/java/org/apache/xmpbox/schema/DublinCoreSchema.java::method::DublinCoreSchema.getCoverage	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/DublinCoreSchema.java::method::DublinCoreSchema.getCoverageProperty	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/DublinCoreSchema.java::method::DublinCoreSchema.getCreators	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
-xmpbox/src/main/java/org/apache/xmpbox/schema/DublinCoreSchema.java::method::DublinCoreSchema.getCreatorsProperty	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/DublinCoreSchema.java::method::DublinCoreSchema.getCreatorsProperty	ported	src/xmpbox/schema/schema_classes.cr	ported: DublinCoreSchema rights/titleLanguages/array properties
 xmpbox/src/main/java/org/apache/xmpbox/schema/DublinCoreSchema.java::method::DublinCoreSchema.getDates	ported	src/xmpbox/schema/schema_classes.cr	ported: DublinCoreSchema bag/seq arrays
-xmpbox/src/main/java/org/apache/xmpbox/schema/DublinCoreSchema.java::method::DublinCoreSchema.getDatesProperty	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/DublinCoreSchema.java::method::DublinCoreSchema.getDatesProperty	ported	src/xmpbox/schema/schema_classes.cr	ported: DublinCoreSchema rights/titleLanguages/array properties
 xmpbox/src/main/java/org/apache/xmpbox/schema/DublinCoreSchema.java::method::DublinCoreSchema.getDescription	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/DublinCoreSchema.java::method::DublinCoreSchema.getDescriptionLanguages	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
-xmpbox/src/main/java/org/apache/xmpbox/schema/DublinCoreSchema.java::method::DublinCoreSchema.getDescriptionProperty	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/DublinCoreSchema.java::method::DublinCoreSchema.getDescriptionProperty	ported	src/xmpbox/schema/schema_classes.cr	ported: DublinCoreSchema rights/titleLanguages/array properties
 xmpbox/src/main/java/org/apache/xmpbox/schema/DublinCoreSchema.java::method::DublinCoreSchema.getFormat	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/DublinCoreSchema.java::method::DublinCoreSchema.getFormatProperty	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/DublinCoreSchema.java::method::DublinCoreSchema.getIdentifier	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/DublinCoreSchema.java::method::DublinCoreSchema.getIdentifierProperty	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/DublinCoreSchema.java::method::DublinCoreSchema.getLanguages	ported	src/xmpbox/schema/schema_classes.cr	ported: DublinCoreSchema bag/seq arrays
-xmpbox/src/main/java/org/apache/xmpbox/schema/DublinCoreSchema.java::method::DublinCoreSchema.getLanguagesProperty	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/DublinCoreSchema.java::method::DublinCoreSchema.getLanguagesProperty	ported	src/xmpbox/schema/schema_classes.cr	ported: DublinCoreSchema rights/titleLanguages/array properties
 xmpbox/src/main/java/org/apache/xmpbox/schema/DublinCoreSchema.java::method::DublinCoreSchema.getPublishers	ported	src/xmpbox/schema/schema_classes.cr	ported: DublinCoreSchema bag/seq arrays
-xmpbox/src/main/java/org/apache/xmpbox/schema/DublinCoreSchema.java::method::DublinCoreSchema.getPublishersProperty	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/DublinCoreSchema.java::method::DublinCoreSchema.getPublishersProperty	ported	src/xmpbox/schema/schema_classes.cr	ported: DublinCoreSchema rights/titleLanguages/array properties
 xmpbox/src/main/java/org/apache/xmpbox/schema/DublinCoreSchema.java::method::DublinCoreSchema.getRelations	ported	src/xmpbox/schema/schema_classes.cr	ported: DublinCoreSchema bag/seq arrays
-xmpbox/src/main/java/org/apache/xmpbox/schema/DublinCoreSchema.java::method::DublinCoreSchema.getRelationsProperty	missing	-	baseline
-xmpbox/src/main/java/org/apache/xmpbox/schema/DublinCoreSchema.java::method::DublinCoreSchema.getRights	missing	-	baseline
-xmpbox/src/main/java/org/apache/xmpbox/schema/DublinCoreSchema.java::method::DublinCoreSchema.getRightsLanguages	missing	-	baseline
-xmpbox/src/main/java/org/apache/xmpbox/schema/DublinCoreSchema.java::method::DublinCoreSchema.getRightsProperty	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/DublinCoreSchema.java::method::DublinCoreSchema.getRelationsProperty	ported	src/xmpbox/schema/schema_classes.cr	ported: DublinCoreSchema rights/titleLanguages/array properties
+xmpbox/src/main/java/org/apache/xmpbox/schema/DublinCoreSchema.java::method::DublinCoreSchema.getRights	ported	src/xmpbox/schema/schema_classes.cr	ported: DublinCoreSchema rights/titleLanguages/array properties
+xmpbox/src/main/java/org/apache/xmpbox/schema/DublinCoreSchema.java::method::DublinCoreSchema.getRightsLanguages	ported	src/xmpbox/schema/schema_classes.cr	ported: DublinCoreSchema rights/titleLanguages/array properties
+xmpbox/src/main/java/org/apache/xmpbox/schema/DublinCoreSchema.java::method::DublinCoreSchema.getRightsProperty	ported	src/xmpbox/schema/schema_classes.cr	ported: DublinCoreSchema rights/titleLanguages/array properties
 xmpbox/src/main/java/org/apache/xmpbox/schema/DublinCoreSchema.java::method::DublinCoreSchema.getSource	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/DublinCoreSchema.java::method::DublinCoreSchema.getSourceProperty	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/DublinCoreSchema.java::method::DublinCoreSchema.getSubjects	ported	src/xmpbox/schema/schema_classes.cr	ported: DublinCoreSchema bag/seq arrays
-xmpbox/src/main/java/org/apache/xmpbox/schema/DublinCoreSchema.java::method::DublinCoreSchema.getSubjectsProperty	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/DublinCoreSchema.java::method::DublinCoreSchema.getSubjectsProperty	ported	src/xmpbox/schema/schema_classes.cr	ported: DublinCoreSchema rights/titleLanguages/array properties
 xmpbox/src/main/java/org/apache/xmpbox/schema/DublinCoreSchema.java::method::DublinCoreSchema.getTitle	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
-xmpbox/src/main/java/org/apache/xmpbox/schema/DublinCoreSchema.java::method::DublinCoreSchema.getTitleLanguages	missing	-	baseline
-xmpbox/src/main/java/org/apache/xmpbox/schema/DublinCoreSchema.java::method::DublinCoreSchema.getTitleProperty	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/DublinCoreSchema.java::method::DublinCoreSchema.getTitleLanguages	ported	src/xmpbox/schema/schema_classes.cr	ported: DublinCoreSchema rights/titleLanguages/array properties
+xmpbox/src/main/java/org/apache/xmpbox/schema/DublinCoreSchema.java::method::DublinCoreSchema.getTitleProperty	ported	src/xmpbox/schema/schema_classes.cr	ported: DublinCoreSchema rights/titleLanguages/array properties
 xmpbox/src/main/java/org/apache/xmpbox/schema/DublinCoreSchema.java::method::DublinCoreSchema.getTypes	ported	src/xmpbox/schema/schema_classes.cr	ported: DublinCoreSchema bag/seq arrays
-xmpbox/src/main/java/org/apache/xmpbox/schema/DublinCoreSchema.java::method::DublinCoreSchema.getTypesProperty	missing	-	baseline
+xmpbox/src/main/java/org/apache/xmpbox/schema/DublinCoreSchema.java::method::DublinCoreSchema.getTypesProperty	ported	src/xmpbox/schema/schema_classes.cr	ported: DublinCoreSchema rights/titleLanguages/array properties
 xmpbox/src/main/java/org/apache/xmpbox/schema/DublinCoreSchema.java::method::DublinCoreSchema.removeContributor	ported	src/xmpbox/schema/schema_classes.cr	ported: DublinCoreSchema bag/seq arrays
 xmpbox/src/main/java/org/apache/xmpbox/schema/DublinCoreSchema.java::method::DublinCoreSchema.removeCreator	ported	src/xmpbox/schema/schema_classes.cr	ported: DublinCoreSchema bag/seq arrays
 xmpbox/src/main/java/org/apache/xmpbox/schema/DublinCoreSchema.java::method::DublinCoreSchema.removeDate	ported	src/xmpbox/schema/schema_classes.cr	ported: DublinCoreSchema bag/seq arrays
