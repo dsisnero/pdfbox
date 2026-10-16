@@ -44,6 +44,24 @@ module Xmpbox
         schema.usage_terms.should eq("All rights reserved")
       end
 
+      it "adds usage terms by language and removes owners" do
+        meta = XMPMetadata.create_xmp_metadata
+        schema = XMPRightsManagementSchema.new(meta)
+
+        schema.add_usage_terms("en", "English terms")
+        schema.add_usage_terms("fr", "Conditions en francais")
+
+        schema.usage_terms("en").should eq("English terms")
+        schema.usage_terms("fr").should eq("Conditions en francais")
+        schema.usage_terms_languages.not_nil!.should contain("en")
+        schema.usage_terms_languages.not_nil!.should contain("fr")
+
+        schema.add_owner("Alice")
+        schema.add_owner("Bob")
+        schema.remove_owner("Alice")
+        schema.owners.should eq(["Bob"])
+      end
+
       it "returns nil for unset properties" do
         meta = XMPMetadata.create_xmp_metadata
         schema = XMPRightsManagementSchema.new(meta)

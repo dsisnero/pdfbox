@@ -11921,19 +11921,19 @@ xmpbox/src/main/java/org/apache/xmpbox/schema/XMPRightsManagementSchema.java::co
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPRightsManagementSchema.java::const::USAGETERMS	const	missing	-	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPRightsManagementSchema.java::const::WEBSTATEMENT	const	missing	-	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPRightsManagementSchema.java::method::XMPRightsManagementSchema.addOwner	method	ported	src	auto-generated
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPRightsManagementSchema.java::method::XMPRightsManagementSchema.addUsageTerms	method	partial	src	auto-generated
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPRightsManagementSchema.java::method::XMPRightsManagementSchema.addUsageTerms	method	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPRightsManagementSchema usageTerms/removeOwner
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPRightsManagementSchema.java::method::XMPRightsManagementSchema.getCertificate	method	ported	src	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPRightsManagementSchema.java::method::XMPRightsManagementSchema.getCertificateProperty	method	partial	src	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPRightsManagementSchema.java::method::XMPRightsManagementSchema.getMarked	method	ported	src	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPRightsManagementSchema.java::method::XMPRightsManagementSchema.getMarkedProperty	method	partial	src	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPRightsManagementSchema.java::method::XMPRightsManagementSchema.getOwners	method	ported	src	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPRightsManagementSchema.java::method::XMPRightsManagementSchema.getOwnersProperty	method	partial	src	auto-generated
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPRightsManagementSchema.java::method::XMPRightsManagementSchema.getUsageTerms	method	ported	src	auto-generated
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPRightsManagementSchema.java::method::XMPRightsManagementSchema.getUsageTermsLanguages	method	partial	src	auto-generated
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPRightsManagementSchema.java::method::XMPRightsManagementSchema.getUsageTerms	method	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPRightsManagementSchema usageTerms/removeOwner
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPRightsManagementSchema.java::method::XMPRightsManagementSchema.getUsageTermsLanguages	method	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPRightsManagementSchema usageTerms/removeOwner
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPRightsManagementSchema.java::method::XMPRightsManagementSchema.getUsageTermsProperty	method	partial	src	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPRightsManagementSchema.java::method::XMPRightsManagementSchema.getWebStatement	method	ported	src	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPRightsManagementSchema.java::method::XMPRightsManagementSchema.getWebStatementProperty	method	partial	src	auto-generated
-xmpbox/src/main/java/org/apache/xmpbox/schema/XMPRightsManagementSchema.java::method::XMPRightsManagementSchema.removeOwner	method	partial	src	auto-generated
+xmpbox/src/main/java/org/apache/xmpbox/schema/XMPRightsManagementSchema.java::method::XMPRightsManagementSchema.removeOwner	method	ported	src/xmpbox/schema/schema_classes.cr	ported: XMPRightsManagementSchema usageTerms/removeOwner
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPRightsManagementSchema.java::method::XMPRightsManagementSchema.setCertificate	method	ported	src	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPRightsManagementSchema.java::method::XMPRightsManagementSchema.setCertificateProperty	method	partial	src	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/schema/XMPRightsManagementSchema.java::method::XMPRightsManagementSchema.setMarked	method	ported	src	auto-generated

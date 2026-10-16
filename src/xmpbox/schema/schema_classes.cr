@@ -560,11 +560,27 @@ module Xmpbox
       end
 
       def usage_terms=(value : String) : Nil
-        set_unqualified_language_property_value(USAGE_TERMS, nil, value)
+        add_usage_terms(nil, value)
       end
 
       def usage_terms : String?
-        unqualified_language_property_value(USAGE_TERMS, nil)
+        usage_terms(nil)
+      end
+
+      def add_usage_terms(lang : String?, value : String) : Nil
+        set_unqualified_language_property_value(USAGE_TERMS, lang, value)
+      end
+
+      def usage_terms(lang : String?) : String?
+        unqualified_language_property_value(USAGE_TERMS, lang)
+      end
+
+      def usage_terms_languages : Array(String)?
+        unqualified_language_property_languages_value(USAGE_TERMS)
+      end
+
+      def remove_owner(owner : String) : Nil
+        remove_unqualified_bag_value(OWNER, owner)
       end
     end
 
