@@ -3799,38 +3799,38 @@ pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictio
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.setString	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.size	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.toString	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::class::COSDocument	class	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::class::COSDocument	class	ported	src/pdfbox/cos.cr	ported: COSDocument accessors
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::const::LOG	const	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.accept	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.addXRefTable	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.close	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.createCOSStream	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.getDocumentID	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.getDocumentState	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.getEncryptionDictionary	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.getHighestXRefObjectNumber	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.getLinearizedDictionary	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.getObjectFromPool	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.getObjectsByType	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.getStartXref	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.getStreamCache	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.getTrailer	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.getVersion	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.getXrefTable	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.hasHybridXRef	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.isClosed	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.isDecrypted	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.isEncrypted	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.isXRefStream	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.setDecrypted	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.setDocumentID	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.setEncryptionDictionary	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.setHasHybridXRef	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.setHighestXRefObjectNumber	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.setIsXRefStream	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.setStartXref	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.setTrailer	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.setVersion	method	ported	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.accept	method	partial	src/pdfbox/cos.cr	partial: visitor (ICOSVisitor) not ported
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.addXRefTable	method	ported	src/pdfbox/cos.cr	ported: COSDocument accessors
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.close	method	ported	src/pdfbox/cos.cr	ported: COSDocument accessors
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.createCOSStream	method	ported	src/pdfbox/cos.cr	ported: COSDocument accessors
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.getDocumentID	method	ported	src/pdfbox/cos.cr	ported: COSDocument accessors
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.getDocumentState	method	partial	src/pdfbox/cos.cr	partial: COSDocumentState not ported
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.getEncryptionDictionary	method	ported	src/pdfbox/cos.cr	ported: COSDocument accessors
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.getHighestXRefObjectNumber	method	ported	src/pdfbox/cos.cr	ported: COSDocument accessors
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.getLinearizedDictionary	method	ported	src/pdfbox/cos.cr	ported: COSDocument accessors
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.getObjectFromPool	method	ported	src/pdfbox/cos.cr	ported: COSDocument accessors
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.getObjectsByType	method	ported	src/pdfbox/cos.cr	ported: COSDocument accessors
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.getStartXref	method	ported	src/pdfbox/cos.cr	ported: COSDocument accessors
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.getStreamCache	method	ported	src/pdfbox/cos.cr	ported: COSDocument accessors
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.getTrailer	method	ported	src/pdfbox/cos.cr	ported: COSDocument accessors
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.getVersion	method	ported	src/pdfbox/cos.cr	ported: COSDocument accessors
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.getXrefTable	method	ported	src/pdfbox/cos.cr	ported: COSDocument accessors
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.hasHybridXRef	method	ported	src/pdfbox/cos.cr	ported: COSDocument accessors
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.isClosed	method	ported	src/pdfbox/cos.cr	ported: COSDocument accessors
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.isDecrypted	method	ported	src/pdfbox/cos.cr	ported: COSDocument accessors
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.isEncrypted	method	ported	src/pdfbox/cos.cr	ported: COSDocument accessors
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.isXRefStream	method	ported	src/pdfbox/cos.cr	ported: COSDocument accessors
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.setDecrypted	method	ported	src/pdfbox/cos.cr	ported: COSDocument accessors
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.setDocumentID	method	ported	src/pdfbox/cos.cr	ported: COSDocument accessors
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.setEncryptionDictionary	method	ported	src/pdfbox/cos.cr	ported: COSDocument accessors
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.setHasHybridXRef	method	ported	src/pdfbox/cos.cr	ported: COSDocument accessors
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.setHighestXRefObjectNumber	method	ported	src/pdfbox/cos.cr	ported: COSDocument accessors
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.setIsXRefStream	method	ported	src/pdfbox/cos.cr	ported: COSDocument accessors
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.setStartXref	method	ported	src/pdfbox/cos.cr	ported: COSDocument accessors
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.setTrailer	method	ported	src/pdfbox/cos.cr	ported: COSDocument accessors
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.setVersion	method	ported	src/pdfbox/cos.cr	ported: COSDocument accessors
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocumentState.java::class::COSDocumentState	class	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocumentState.java::method::COSDocumentState.isAcceptingUpdates	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocumentState.java::method::COSDocumentState.setParsing	method	ported	src	auto-generated

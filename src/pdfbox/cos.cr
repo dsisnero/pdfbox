@@ -782,6 +782,7 @@ module Pdfbox::Cos
     K                    = new("K")
     PG                   = new("Pg")
     ID                   = new("ID")
+    ENCRYPT              = new("Encrypt")
     OBJ                  = new("Obj")
     MCR                  = new("MCR")
     OBJR                 = new("OBJR")
@@ -1860,9 +1861,155 @@ module Pdfbox::Cos
     @xref_table = {} of ObjectKey? => Int64
     @object_pool = {} of ObjectKey => Object
     @streams = [] of Stream
+    @version = 0.0_f32
+    @start_xref = 0_i64
+    @is_xref_stream = false
+    @has_hybrid_xref = false
+    @is_decrypted = false
+    @highest_xref_object_number = 0_i64
+    @trailer : Dictionary? = nil
+    @stream_cache : Pdfbox::IO::RandomAccessStreamCache = Pdfbox::IO::RandomAccessStreamCacheImpl.new
+    @closed = false
 
     def write_pdf(io : ::IO) : Nil
       io << "%COSDocument"
+    end
+
+    # The header version. Java COSDocument#getVersion / #setVersion.
+    def version : Float32
+      @version
+    end
+
+    def version=(value : Float32) : Float32
+      @version = value
+    end
+
+    # The startxref position. Java getStartXref / setStartXref.
+    def start_xref : Int64
+      @start_xref
+    end
+
+    def start_xref=(value : Int64) : Int64
+      @start_xref = value
+    end
+
+    # Whether the trailer is an xref stream. Java isXRefStream / setIsXRefStream.
+    def is_xref_stream? : Bool # ameba:disable Naming/PredicateName
+      @is_xref_stream
+    end
+
+    def is_xref_stream=(value : Bool) : Bool
+      @is_xref_stream = value
+    end
+
+    # Whether the document has hybrid cross references. Java hasHybridXRef.
+    def has_hybrid_xref? : Bool
+      @has_hybrid_xref
+    end
+
+    def has_hybrid_xref=(value : Bool) : Bool
+      @has_hybrid_xref = value
+    end
+
+    # Whether an encrypted document has already been decrypted. Java isDecrypted.
+    def decrypted? : Bool
+      @is_decrypted
+    end
+
+    # Signals that the document is decrypted completely. Java setDecrypted().
+    def set_decrypted : Nil
+      @is_decrypted = true
+    end
+
+    # The trailer dictionary. Java getTrailer / setTrailer.
+    def trailer : Dictionary?
+      @trailer
+    end
+
+    def trailer=(new_trailer : Dictionary) : Dictionary
+      @trailer = new_trailer
+    end
+
+    # Whether the document is encrypted (the trailer has an /Encrypt entry).
+    def encrypted? : Bool
+      current = @trailer
+      !current.nil? && !current.get_dictionary_object(Name::ENCRYPT).nil?
+    end
+
+    # The encryption dictionary from the trailer. Java getEncryptionDictionary.
+    def encryption_dictionary : Dictionary?
+      @trailer.try(&.get_dictionary(Name::ENCRYPT))
+    end
+
+    # Sets the encryption dictionary on the trailer. Java setEncryptionDictionary.
+    def encryption_dictionary=(enc_dictionary : Dictionary?) : Dictionary?
+      current = (@trailer ||= Dictionary.new)
+      if enc_dictionary
+        current.set_item(Name::ENCRYPT, enc_dictionary)
+      else
+        current.remove_item(Name::ENCRYPT)
+      end
+      enc_dictionary
+    end
+
+    # The document id (trailer /ID). Java getDocumentID / setDocumentID.
+    def document_id : Array?
+      @trailer.try(&.get_dictionary_object(Name::ID)).as?(Array)
+    end
+
+    def document_id=(id : Array) : Array
+      current = (@trailer ||= Dictionary.new)
+      current.set_item(Name::ID, id)
+      id
+    end
+
+    # The object number of the highest XRef stream. Java getHighestXRefObjectNumber.
+    def highest_xref_object_number : Int64
+      @highest_xref_object_number
+    end
+
+    def highest_xref_object_number=(value : Int64) : Int64
+      @highest_xref_object_number = value
+    end
+
+    # Returns a pooled object, creating a proxy if it has not been parsed yet.
+    # Java COSDocument#getObjectFromPool.
+    def object_from_pool(key : ObjectKey?) : Object?
+      return unless key
+
+      existing = @object_pool[key]?
+      return existing if existing
+
+      proxy = Object.new(key.number, key.generation)
+      @object_pool[key] = proxy
+      proxy
+    end
+
+    # The xrefTable mapping ObjectKeys to byte offsets. Java getXrefTable.
+    def xref_table : ::Hash(ObjectKey?, Int64)
+      @xref_table
+    end
+
+    # The stream cache backing this document. Java getStreamCache / setStreamCache.
+    def stream_cache : Pdfbox::IO::RandomAccessStreamCache
+      @stream_cache
+    end
+
+    def stream_cache=(cache : Pdfbox::IO::RandomAccessStreamCache) : Pdfbox::IO::RandomAccessStreamCache
+      @stream_cache = cache
+    end
+
+    # Whether the document has been closed. Java isClosed.
+    def closed? : Bool
+      @closed
+    end
+
+    # Closes the document and its stream cache. Java COSDocument#close.
+    def close : Nil
+      return if @closed
+
+      @closed = true
+      @stream_cache.close
     end
 
     def add_xref_table(values : Hash(ObjectKey?, Int64)) : Nil

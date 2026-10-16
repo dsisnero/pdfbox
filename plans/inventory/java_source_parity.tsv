@@ -3799,38 +3799,38 @@ pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictio
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.setString	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.size	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.toString	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::class::COSDocument	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::class::COSDocument	ported	src/pdfbox/cos.cr	ported: COSDocument accessors
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::const::LOG	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.accept	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.addXRefTable	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.close	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.createCOSStream	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.getDocumentID	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.getDocumentState	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.getEncryptionDictionary	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.getHighestXRefObjectNumber	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.getLinearizedDictionary	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.getObjectFromPool	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.getObjectsByType	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.getStartXref	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.getStreamCache	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.getTrailer	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.getVersion	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.getXrefTable	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.hasHybridXRef	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.isClosed	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.isDecrypted	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.isEncrypted	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.isXRefStream	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.setDecrypted	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.setDocumentID	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.setEncryptionDictionary	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.setHasHybridXRef	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.setHighestXRefObjectNumber	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.setIsXRefStream	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.setStartXref	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.setTrailer	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.setVersion	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.accept	partial	src/pdfbox/cos.cr	partial: visitor (ICOSVisitor) not ported
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.addXRefTable	ported	src/pdfbox/cos.cr	ported: COSDocument accessors
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.close	ported	src/pdfbox/cos.cr	ported: COSDocument accessors
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.createCOSStream	ported	src/pdfbox/cos.cr	ported: COSDocument accessors
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.getDocumentID	ported	src/pdfbox/cos.cr	ported: COSDocument accessors
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.getDocumentState	partial	src/pdfbox/cos.cr	partial: COSDocumentState not ported
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.getEncryptionDictionary	ported	src/pdfbox/cos.cr	ported: COSDocument accessors
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.getHighestXRefObjectNumber	ported	src/pdfbox/cos.cr	ported: COSDocument accessors
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.getLinearizedDictionary	ported	src/pdfbox/cos.cr	ported: COSDocument accessors
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.getObjectFromPool	ported	src/pdfbox/cos.cr	ported: COSDocument accessors
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.getObjectsByType	ported	src/pdfbox/cos.cr	ported: COSDocument accessors
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.getStartXref	ported	src/pdfbox/cos.cr	ported: COSDocument accessors
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.getStreamCache	ported	src/pdfbox/cos.cr	ported: COSDocument accessors
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.getTrailer	ported	src/pdfbox/cos.cr	ported: COSDocument accessors
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.getVersion	ported	src/pdfbox/cos.cr	ported: COSDocument accessors
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.getXrefTable	ported	src/pdfbox/cos.cr	ported: COSDocument accessors
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.hasHybridXRef	ported	src/pdfbox/cos.cr	ported: COSDocument accessors
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.isClosed	ported	src/pdfbox/cos.cr	ported: COSDocument accessors
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.isDecrypted	ported	src/pdfbox/cos.cr	ported: COSDocument accessors
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.isEncrypted	ported	src/pdfbox/cos.cr	ported: COSDocument accessors
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.isXRefStream	ported	src/pdfbox/cos.cr	ported: COSDocument accessors
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.setDecrypted	ported	src/pdfbox/cos.cr	ported: COSDocument accessors
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.setDocumentID	ported	src/pdfbox/cos.cr	ported: COSDocument accessors
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.setEncryptionDictionary	ported	src/pdfbox/cos.cr	ported: COSDocument accessors
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.setHasHybridXRef	ported	src/pdfbox/cos.cr	ported: COSDocument accessors
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.setHighestXRefObjectNumber	ported	src/pdfbox/cos.cr	ported: COSDocument accessors
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.setIsXRefStream	ported	src/pdfbox/cos.cr	ported: COSDocument accessors
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.setStartXref	ported	src/pdfbox/cos.cr	ported: COSDocument accessors
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.setTrailer	ported	src/pdfbox/cos.cr	ported: COSDocument accessors
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.setVersion	ported	src/pdfbox/cos.cr	ported: COSDocument accessors
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocumentState.java::class::COSDocumentState	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocumentState.java::method::COSDocumentState.isAcceptingUpdates	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocumentState.java::method::COSDocumentState.setParsing	missing	-	baseline
