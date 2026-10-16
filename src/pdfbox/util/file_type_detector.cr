@@ -1,3 +1,5 @@
+require "./byte_trie"
+
 module Pdfbox::Util
   # Enumeration of supported image file formats.
   # Port of Apache PDFBox FileType.
@@ -22,56 +24,46 @@ module Pdfbox::Util
   end
 
   # Examines the file's first bytes and estimates the file's type.
-  # Port of Apache PDFBox FileTypeDetector (magic-byte signatures).
+  # Port of Apache PDFBox FileTypeDetector (magic-byte signatures stored in a
+  # ByteTrie, most specific match wins).
   module FileTypeDetector
     extend self
 
-    # Each entry is a (signature prefix, file type) pair. Signatures are matched
-    # against the leading bytes of the input, longest prefix wins.
-    private SIGNATURES = [
-      {[0xFF_u8, 0xD8_u8], FileType::Jpeg},
-      {[0x49_u8, 0x49_u8, 0x2A_u8, 0x00_u8], FileType::Tiff}, # "II" little endian
-      {[0x4D_u8, 0x4D_u8, 0x00_u8, 0x2A_u8], FileType::Tiff}, # "MM" big endian
-      {[0x38_u8, 0x42_u8, 0x50_u8, 0x53_u8], FileType::Psd},  # "8BPS"
-      {[0x89_u8, 0x50_u8, 0x4E_u8, 0x47_u8, 0x0D_u8, 0x0A_u8, 0x1A_u8, 0x0A_u8,
-        0x00_u8, 0x00_u8, 0x00_u8, 0x0D_u8, 0x49_u8, 0x48_u8, 0x44_u8, 0x52_u8], FileType::Png},
-      {[0x42_u8, 0x4D_u8], FileType::Bmp},                                     # "BM"
-      {[0x47_u8, 0x49_u8, 0x46_u8, 0x38_u8, 0x37_u8, 0x61_u8], FileType::Gif}, # "GIF87a"
-      {[0x47_u8, 0x49_u8, 0x46_u8, 0x38_u8, 0x39_u8, 0x61_u8], FileType::Gif}, # "GIF89a"
-      {[0x00_u8, 0x00_u8, 0x01_u8, 0x00_u8], FileType::Ico},
-      {[0x0A_u8, 0x00_u8, 0x01_u8], FileType::Pcx},
-      {[0x0A_u8, 0x02_u8, 0x01_u8], FileType::Pcx},
-      {[0x0A_u8, 0x03_u8, 0x01_u8], FileType::Pcx},
-      {[0x0A_u8, 0x05_u8, 0x01_u8], FileType::Pcx},
-      {[0x52_u8, 0x49_u8, 0x46_u8, 0x46_u8], FileType::Riff}, # "RIFF"
-      {[0x49_u8, 0x49_u8, 0x1A_u8, 0x00_u8, 0x00_u8, 0x00_u8,
-        0x48_u8, 0x45_u8, 0x41_u8, 0x50_u8, 0x43_u8, 0x43_u8, 0x44_u8, 0x52_u8], FileType::Crw},
-      {[0x49_u8, 0x49_u8, 0x2A_u8, 0x00_u8, 0x10_u8, 0x00_u8, 0x00_u8, 0x00_u8, 0x43_u8, 0x52_u8], FileType::Cr2},
-      {[0x4D_u8, 0x4D_u8, 0x00_u8, 0x2A_u8, 0x00_u8, 0x00_u8, 0x00_u8, 0x80_u8, 0x00_u8], FileType::Nef},
-      {[0x49_u8, 0x49_u8, 0x52_u8, 0x4F_u8, 0x08_u8, 0x00_u8], FileType::Orf},
-      {[0x49_u8, 0x49_u8, 0x52_u8, 0x53_u8, 0x08_u8, 0x00_u8], FileType::Orf},
-      {[0x46_u8, 0x55_u8, 0x4A_u8, 0x49_u8, 0x46_u8, 0x49_u8, 0x4C_u8, 0x4D_u8, 0x43_u8, 0x43_u8,
-        0x44_u8, 0x2D_u8, 0x52_u8, 0x41_u8, 0x57_u8], FileType::Raf}, # "FUJIFILMCCD-RAW"
-      {[0x49_u8, 0x49_u8, 0x55_u8, 0x00_u8], FileType::Rw2},
-    ] of Tuple(Array(UInt8), FileType)
+    private ROOT = begin
+      trie = ByteTrie(FileType).new
+      trie.set_default_value(FileType::Unknown)
+
+      # https://en.wikipedia.org/wiki/List_of_file_signatures
+      trie.add_path(FileType::Jpeg, Bytes[0xFF, 0xD8])
+      trie.add_path(FileType::Tiff, "II".to_slice, Bytes[0x2A, 0x00])
+      trie.add_path(FileType::Tiff, "MM".to_slice, Bytes[0x00, 0x2A])
+      trie.add_path(FileType::Psd, "8BPS".to_slice)
+      trie.add_path(FileType::Png, Bytes[0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A,
+        0x00, 0x00, 0x00, 0x0D, 0x49, 0x48, 0x44, 0x52])
+      # TODO technically there are other very rare magic numbers for OS/2 BMP files...
+      trie.add_path(FileType::Bmp, "BM".to_slice)
+      trie.add_path(FileType::Gif, "GIF87a".to_slice)
+      trie.add_path(FileType::Gif, "GIF89a".to_slice)
+      trie.add_path(FileType::Ico, Bytes[0x00, 0x00, 0x01, 0x00])
+      # multiple PCX versions, explicitly listed
+      trie.add_path(FileType::Pcx, Bytes[0x0A, 0x00, 0x01])
+      trie.add_path(FileType::Pcx, Bytes[0x0A, 0x02, 0x01])
+      trie.add_path(FileType::Pcx, Bytes[0x0A, 0x03, 0x01])
+      trie.add_path(FileType::Pcx, Bytes[0x0A, 0x05, 0x01])
+      trie.add_path(FileType::Riff, "RIFF".to_slice)
+      trie.add_path(FileType::Crw, "II".to_slice, Bytes[0x1A, 0x00, 0x00, 0x00], "HEAPCCDR".to_slice)
+      trie.add_path(FileType::Cr2, "II".to_slice, Bytes[0x2A, 0x00, 0x10, 0x00, 0x00, 0x00, 0x43, 0x52])
+      trie.add_path(FileType::Nef, "MM".to_slice, Bytes[0x00, 0x2A, 0x00, 0x00, 0x00, 0x80, 0x00])
+      trie.add_path(FileType::Orf, "IIRO".to_slice, Bytes[0x08, 0x00])
+      trie.add_path(FileType::Orf, "IIRS".to_slice, Bytes[0x08, 0x00])
+      trie.add_path(FileType::Raf, "FUJIFILMCCD-RAW".to_slice)
+      trie.add_path(FileType::Rw2, "II".to_slice, Bytes[0x55, 0x00])
+      trie
+    end
 
     # Estimates the file type from the leading bytes.
     def detect_file_type(bytes : Bytes) : FileType
-      matches = SIGNATURES.select do |signature, _type|
-        prefix_matches?(signature, bytes)
-      end
-      return FileType::Unknown if matches.empty?
-
-      longest = matches.max_by { |signature, _type| signature.size }
-      longest[1]
-    end
-
-    private def prefix_matches?(signature : Array(UInt8), bytes : Bytes) : Bool
-      return false if bytes.size < signature.size
-      signature.each_with_index do |byte, index|
-        return false unless bytes[index] == byte
-      end
-      true
+      ROOT.find(bytes) || FileType::Unknown
     end
   end
 end

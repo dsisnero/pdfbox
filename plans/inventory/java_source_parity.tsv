@@ -11151,14 +11151,14 @@ pdfbox/src/main/java/org/apache/pdfbox/util/Version.java::method::Version.getVer
 pdfbox/src/main/java/org/apache/pdfbox/util/XMLUtil.java::class::XMLUtil	ported	src/pdfbox/util/xml_util.cr	stale inventory; class ported
 pdfbox/src/main/java/org/apache/pdfbox/util/XMLUtil.java::method::XMLUtil.getNodeValue	ported	src/pdfbox/util/xml_util.cr	stale inventory; class ported
 pdfbox/src/main/java/org/apache/pdfbox/util/XMLUtil.java::method::XMLUtil.parse	ported	src/pdfbox/util/xml_util.cr	stale inventory; class ported
-pdfbox/src/main/java/org/apache/pdfbox/util/filetypedetector/ByteTrie.java::class::ByteTrie	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/util/filetypedetector/ByteTrie.java::class::ByteTrieNode	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/util/filetypedetector/ByteTrie.java::method::ByteTrie.addPath	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/util/filetypedetector/ByteTrie.java::method::ByteTrie.find	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/util/filetypedetector/ByteTrie.java::method::ByteTrie.getMaxDepth	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/util/filetypedetector/ByteTrie.java::method::ByteTrie.setDefaultValue	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/util/filetypedetector/ByteTrie.java::method::ByteTrieNode.getValue	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/util/filetypedetector/ByteTrie.java::method::ByteTrieNode.setValue	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/util/filetypedetector/ByteTrie.java::class::ByteTrie	ported	src/pdfbox/util/byte_trie.cr	ported: ByteTrie
+pdfbox/src/main/java/org/apache/pdfbox/util/filetypedetector/ByteTrie.java::class::ByteTrieNode	ported	src/pdfbox/util/byte_trie.cr	ported: ByteTrie
+pdfbox/src/main/java/org/apache/pdfbox/util/filetypedetector/ByteTrie.java::method::ByteTrie.addPath	ported	src/pdfbox/util/byte_trie.cr	ported: ByteTrie
+pdfbox/src/main/java/org/apache/pdfbox/util/filetypedetector/ByteTrie.java::method::ByteTrie.find	ported	src/pdfbox/util/byte_trie.cr	ported: ByteTrie
+pdfbox/src/main/java/org/apache/pdfbox/util/filetypedetector/ByteTrie.java::method::ByteTrie.getMaxDepth	ported	src/pdfbox/util/byte_trie.cr	ported: ByteTrie
+pdfbox/src/main/java/org/apache/pdfbox/util/filetypedetector/ByteTrie.java::method::ByteTrie.setDefaultValue	ported	src/pdfbox/util/byte_trie.cr	ported: ByteTrie
+pdfbox/src/main/java/org/apache/pdfbox/util/filetypedetector/ByteTrie.java::method::ByteTrieNode.getValue	ported	src/pdfbox/util/byte_trie.cr	ported: ByteTrie
+pdfbox/src/main/java/org/apache/pdfbox/util/filetypedetector/ByteTrie.java::method::ByteTrieNode.setValue	ported	src/pdfbox/util/byte_trie.cr	ported: ByteTrie
 pdfbox/src/main/java/org/apache/pdfbox/util/filetypedetector/FileType.java::enum::FileType	ported	src/pdfbox/util/file_type_detector.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/util/filetypedetector/FileTypeDetector.java::class::FileTypeDetector	ported	src/pdfbox/util/file_type_detector.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/util/filetypedetector/FileTypeDetector.java::method::FileTypeDetector.detectFileType	ported	src/pdfbox/util/file_type_detector.cr	baseline

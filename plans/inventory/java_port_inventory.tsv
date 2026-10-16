@@ -11151,14 +11151,14 @@ pdfbox/src/main/java/org/apache/pdfbox/util/Version.java::method::Version.getVer
 pdfbox/src/main/java/org/apache/pdfbox/util/XMLUtil.java::class::XMLUtil	class	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/util/XMLUtil.java::method::XMLUtil.getNodeValue	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/util/XMLUtil.java::method::XMLUtil.parse	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/util/filetypedetector/ByteTrie.java::class::ByteTrie	class	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/util/filetypedetector/ByteTrie.java::class::ByteTrieNode	class	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/util/filetypedetector/ByteTrie.java::method::ByteTrie.addPath	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/util/filetypedetector/ByteTrie.java::method::ByteTrie.find	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/util/filetypedetector/ByteTrie.java::method::ByteTrie.getMaxDepth	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/util/filetypedetector/ByteTrie.java::method::ByteTrie.setDefaultValue	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/util/filetypedetector/ByteTrie.java::method::ByteTrieNode.getValue	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/util/filetypedetector/ByteTrie.java::method::ByteTrieNode.setValue	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/util/filetypedetector/ByteTrie.java::class::ByteTrie	class	ported	src/pdfbox/util/byte_trie.cr	ported: ByteTrie
+pdfbox/src/main/java/org/apache/pdfbox/util/filetypedetector/ByteTrie.java::class::ByteTrieNode	class	ported	src/pdfbox/util/byte_trie.cr	ported: ByteTrie
+pdfbox/src/main/java/org/apache/pdfbox/util/filetypedetector/ByteTrie.java::method::ByteTrie.addPath	method	ported	src/pdfbox/util/byte_trie.cr	ported: ByteTrie
+pdfbox/src/main/java/org/apache/pdfbox/util/filetypedetector/ByteTrie.java::method::ByteTrie.find	method	ported	src/pdfbox/util/byte_trie.cr	ported: ByteTrie
+pdfbox/src/main/java/org/apache/pdfbox/util/filetypedetector/ByteTrie.java::method::ByteTrie.getMaxDepth	method	ported	src/pdfbox/util/byte_trie.cr	ported: ByteTrie
+pdfbox/src/main/java/org/apache/pdfbox/util/filetypedetector/ByteTrie.java::method::ByteTrie.setDefaultValue	method	ported	src/pdfbox/util/byte_trie.cr	ported: ByteTrie
+pdfbox/src/main/java/org/apache/pdfbox/util/filetypedetector/ByteTrie.java::method::ByteTrieNode.getValue	method	ported	src/pdfbox/util/byte_trie.cr	ported: ByteTrie
+pdfbox/src/main/java/org/apache/pdfbox/util/filetypedetector/ByteTrie.java::method::ByteTrieNode.setValue	method	ported	src/pdfbox/util/byte_trie.cr	ported: ByteTrie
 pdfbox/src/main/java/org/apache/pdfbox/util/filetypedetector/FileType.java::enum::FileType	enum	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/util/filetypedetector/FileTypeDetector.java::class::FileTypeDetector	class	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/util/filetypedetector/FileTypeDetector.java::method::FileTypeDetector.detectFileType	method	ported	src	auto-generated
