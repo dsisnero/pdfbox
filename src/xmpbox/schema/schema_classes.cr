@@ -905,6 +905,27 @@ module Xmpbox
       def rev : Int32?
         integer_property_value(REV)
       end
+
+      def set_part_property(part : Type::IntegerType) : Nil # ameba:disable Naming/AccessorMethodName
+        add_property(part)
+      end
+
+      def set_amd_property(amd : Type::TextType) : Nil # ameba:disable Naming/AccessorMethodName
+        add_property(amd)
+      end
+
+      def set_conformance_property(conf : Type::TextType) : Nil # ameba:disable Naming/AccessorMethodName
+        value = conf.string_value
+        unless VALID_CONFORMANCE.includes?(value)
+          raise Type::BadFieldValueException.new(
+            "The value '#{value}' isn't a valid PDF/A conformance level (must be A, B, U, e or f)")
+        end
+        add_property(conf)
+      end
+
+      def set_rev_property(rev : Type::IntegerType) : Nil # ameba:disable Naming/AccessorMethodName
+        add_property(rev)
+      end
     end
 
     # PDF/A Extension: http://www.aiim.org/pdfa/ns/extension/

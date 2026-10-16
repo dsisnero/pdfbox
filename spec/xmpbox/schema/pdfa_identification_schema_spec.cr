@@ -78,6 +78,36 @@ module Xmpbox
         schema.rev.should eq(2020)
       end
 
+      it "sets part/amd/conformance/rev via their property setters" do
+        meta = XMPMetadata.create_xmp_metadata
+        schema = PDFAIdentificationSchema.new(meta)
+        tm = meta.type_mapping
+
+        schema.set_part_property(tm.create_integer(nil, schema.prefix, "part", 2))
+        schema.set_amd_property(tm.create_text(nil, schema.prefix, "amd", "2005"))
+        schema.set_conformance_property(tm.create_text(nil, schema.prefix, "conformance", "A"))
+        schema.set_rev_property(tm.create_integer(nil, schema.prefix, "rev", 2020))
+
+        schema.part.should eq(2)
+        schema.amendment.should eq("2005")
+        schema.conformance.should eq("A")
+        schema.rev.should eq(2020)
+        schema.part_property.not_nil!.string_value.should eq("2")
+        schema.amd_property.not_nil!.string_value.should eq("2005")
+        schema.conformance_property.not_nil!.string_value.should eq("A")
+        schema.rev_property.not_nil!.string_value.should eq("2020")
+      end
+
+      it "rejects an invalid conformance property" do
+        meta = XMPMetadata.create_xmp_metadata
+        schema = PDFAIdentificationSchema.new(meta)
+        conf = meta.type_mapping.create_text(nil, schema.prefix, "conformance", "X")
+
+        expect_raises(Type::BadFieldValueException) do
+          schema.set_conformance_property(conf)
+        end
+      end
+
       it "returns nil for unset properties" do
         meta = XMPMetadata.create_xmp_metadata
         schema = PDFAIdentificationSchema.new(meta)

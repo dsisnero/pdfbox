@@ -11620,15 +11620,15 @@ xmpbox/src/main/java/org/apache/xmpbox/schema/PDFAIdentificationSchema.java::met
 xmpbox/src/main/java/org/apache/xmpbox/schema/PDFAIdentificationSchema.java::method::PDFAIdentificationSchema.getRev	method	ported	src	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/schema/PDFAIdentificationSchema.java::method::PDFAIdentificationSchema.getRevProperty	method	ported	src	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/schema/PDFAIdentificationSchema.java::method::PDFAIdentificationSchema.setAmd	method	ported	src	auto-generated
-xmpbox/src/main/java/org/apache/xmpbox/schema/PDFAIdentificationSchema.java::method::PDFAIdentificationSchema.setAmdProperty	method	ported	src	auto-generated
+xmpbox/src/main/java/org/apache/xmpbox/schema/PDFAIdentificationSchema.java::method::PDFAIdentificationSchema.setAmdProperty	method	ported	src/xmpbox/schema/schema_classes.cr	ported: PDFAIdentificationSchema property setters
 xmpbox/src/main/java/org/apache/xmpbox/schema/PDFAIdentificationSchema.java::method::PDFAIdentificationSchema.setConformance	method	ported	src	auto-generated
-xmpbox/src/main/java/org/apache/xmpbox/schema/PDFAIdentificationSchema.java::method::PDFAIdentificationSchema.setConformanceProperty	method	ported	src	auto-generated
+xmpbox/src/main/java/org/apache/xmpbox/schema/PDFAIdentificationSchema.java::method::PDFAIdentificationSchema.setConformanceProperty	method	ported	src/xmpbox/schema/schema_classes.cr	ported: PDFAIdentificationSchema property setters
 xmpbox/src/main/java/org/apache/xmpbox/schema/PDFAIdentificationSchema.java::method::PDFAIdentificationSchema.setPart	method	ported	src	auto-generated
-xmpbox/src/main/java/org/apache/xmpbox/schema/PDFAIdentificationSchema.java::method::PDFAIdentificationSchema.setPartProperty	method	ported	src	auto-generated
+xmpbox/src/main/java/org/apache/xmpbox/schema/PDFAIdentificationSchema.java::method::PDFAIdentificationSchema.setPartProperty	method	ported	src/xmpbox/schema/schema_classes.cr	ported: PDFAIdentificationSchema property setters
 xmpbox/src/main/java/org/apache/xmpbox/schema/PDFAIdentificationSchema.java::method::PDFAIdentificationSchema.setPartValueWithInt	method	ported	src	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/schema/PDFAIdentificationSchema.java::method::PDFAIdentificationSchema.setPartValueWithString	method	ported	src	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/schema/PDFAIdentificationSchema.java::method::PDFAIdentificationSchema.setRev	method	ported	src	auto-generated
-xmpbox/src/main/java/org/apache/xmpbox/schema/PDFAIdentificationSchema.java::method::PDFAIdentificationSchema.setRevProperty	method	ported	src	auto-generated
+xmpbox/src/main/java/org/apache/xmpbox/schema/PDFAIdentificationSchema.java::method::PDFAIdentificationSchema.setRevProperty	method	ported	src/xmpbox/schema/schema_classes.cr	ported: PDFAIdentificationSchema property setters
 xmpbox/src/main/java/org/apache/xmpbox/schema/PDFAIdentificationSchema.java::method::PDFAIdentificationSchema.setRevValueWithInt	method	ported	src	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/schema/PDFAIdentificationSchema.java::method::PDFAIdentificationSchema.setRevValueWithString	method	ported	src	auto-generated
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::class::PhotoshopSchema	class	partial	src	auto-generated

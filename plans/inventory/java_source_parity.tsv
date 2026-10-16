@@ -11620,15 +11620,15 @@ xmpbox/src/main/java/org/apache/xmpbox/schema/PDFAIdentificationSchema.java::met
 xmpbox/src/main/java/org/apache/xmpbox/schema/PDFAIdentificationSchema.java::method::PDFAIdentificationSchema.getRev	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/PDFAIdentificationSchema.java::method::PDFAIdentificationSchema.getRevProperty	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/PDFAIdentificationSchema.java::method::PDFAIdentificationSchema.setAmd	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
-xmpbox/src/main/java/org/apache/xmpbox/schema/PDFAIdentificationSchema.java::method::PDFAIdentificationSchema.setAmdProperty	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
+xmpbox/src/main/java/org/apache/xmpbox/schema/PDFAIdentificationSchema.java::method::PDFAIdentificationSchema.setAmdProperty	ported	src/xmpbox/schema/schema_classes.cr	ported: PDFAIdentificationSchema property setters
 xmpbox/src/main/java/org/apache/xmpbox/schema/PDFAIdentificationSchema.java::method::PDFAIdentificationSchema.setConformance	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
-xmpbox/src/main/java/org/apache/xmpbox/schema/PDFAIdentificationSchema.java::method::PDFAIdentificationSchema.setConformanceProperty	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
+xmpbox/src/main/java/org/apache/xmpbox/schema/PDFAIdentificationSchema.java::method::PDFAIdentificationSchema.setConformanceProperty	ported	src/xmpbox/schema/schema_classes.cr	ported: PDFAIdentificationSchema property setters
 xmpbox/src/main/java/org/apache/xmpbox/schema/PDFAIdentificationSchema.java::method::PDFAIdentificationSchema.setPart	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
-xmpbox/src/main/java/org/apache/xmpbox/schema/PDFAIdentificationSchema.java::method::PDFAIdentificationSchema.setPartProperty	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
+xmpbox/src/main/java/org/apache/xmpbox/schema/PDFAIdentificationSchema.java::method::PDFAIdentificationSchema.setPartProperty	ported	src/xmpbox/schema/schema_classes.cr	ported: PDFAIdentificationSchema property setters
 xmpbox/src/main/java/org/apache/xmpbox/schema/PDFAIdentificationSchema.java::method::PDFAIdentificationSchema.setPartValueWithInt	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/PDFAIdentificationSchema.java::method::PDFAIdentificationSchema.setPartValueWithString	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/PDFAIdentificationSchema.java::method::PDFAIdentificationSchema.setRev	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
-xmpbox/src/main/java/org/apache/xmpbox/schema/PDFAIdentificationSchema.java::method::PDFAIdentificationSchema.setRevProperty	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
+xmpbox/src/main/java/org/apache/xmpbox/schema/PDFAIdentificationSchema.java::method::PDFAIdentificationSchema.setRevProperty	ported	src/xmpbox/schema/schema_classes.cr	ported: PDFAIdentificationSchema property setters
 xmpbox/src/main/java/org/apache/xmpbox/schema/PDFAIdentificationSchema.java::method::PDFAIdentificationSchema.setRevValueWithInt	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/PDFAIdentificationSchema.java::method::PDFAIdentificationSchema.setRevValueWithString	ported	src/xmpbox/schema/schema_classes.cr	reconciled: method present
 xmpbox/src/main/java/org/apache/xmpbox/schema/PhotoshopSchema.java::class::PhotoshopSchema	ported	src/xmpbox/schema/schema_classes.cr	reconciled: class present
