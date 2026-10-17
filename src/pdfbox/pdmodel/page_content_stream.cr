@@ -335,6 +335,12 @@ module Pdfbox::Pdmodel
       write_operator(RESTORE)
     end
 
+    # Draws an image XObject at the given coordinates using the image's own size.
+    # Java PDAbstractContentStream#drawImage(PDImageXObject, float, float).
+    def draw_image(image : Graphics::Image::PDImageXObject, x : Number, y : Number) : Nil
+      draw_image(image, x, y, image.width, image.height)
+    end
+
     def draw_image(image : Graphics::Image::PDImageXObject, matrix : Pdfbox::Util::Matrix) : Nil
       raise_if_in_text_mode("drawImage is not allowed within a text block.")
       write_operator(SAVE)
@@ -385,6 +391,12 @@ module Pdfbox::Pdmodel
       @buffer << '\n'
       write_operator(END_INLINE_IMAGE)
       write_operator(RESTORE)
+    end
+
+    # Draws an inline image at the given coordinates using the image's own size.
+    # Java PDAbstractContentStream#drawImage(PDInlineImage, float, float).
+    def draw_image(image : Graphics::Image::PDInlineImage, x : Number, y : Number) : Nil
+      draw_image(image, x, y, image.width, image.height)
     end
 
     def add_rect(x : Number, y : Number, width : Number, height : Number) : Nil

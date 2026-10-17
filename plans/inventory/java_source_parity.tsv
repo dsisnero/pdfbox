@@ -5345,7 +5345,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::met
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.curveTo1	ported	src/pdfbox/pdmodel/page_content_stream.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.curveTo2	ported	src/pdfbox/pdmodel/page_content_stream.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.drawForm	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.drawImage	ported	src/pdfbox/pdmodel/page_content_stream.cr	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.drawImage	ported	src/pdfbox/pdmodel/page_content_stream.cr	ported: all overloads (PDImageXObject/PDInlineImage x native-size/matrix)
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.encodeForGsub	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.endMarkedContent	ported	src/pdfbox/pdmodel/page_content_stream.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.endText	missing	-	baseline
