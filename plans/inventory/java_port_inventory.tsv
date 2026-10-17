@@ -1523,55 +1523,55 @@ fontbox/src/main/java/org/apache/fontbox/cff/CFFCIDFont.java::method::CFFCIDFont
 fontbox/src/main/java/org/apache/fontbox/cff/CFFCIDFont.java::method::CFFCIDFont.setRegistry	method	ported	src	auto-generated
 fontbox/src/main/java/org/apache/fontbox/cff/CFFCIDFont.java::method::CFFCIDFont.setSupplement	method	ported	src	auto-generated
 fontbox/src/main/java/org/apache/fontbox/cff/CFFCIDFont.java::method::PrivateType1CharStringReader.getType1CharString	method	ported	src	auto-generated
-fontbox/src/main/java/org/apache/fontbox/cff/CFFCharset.java::interface::CFFCharset	interface	missing	-	auto-generated
-fontbox/src/main/java/org/apache/fontbox/cff/CFFCharset.java::method::addCID	method	missing	-	auto-generated
-fontbox/src/main/java/org/apache/fontbox/cff/CFFCharset.java::method::addSID	method	missing	-	auto-generated
-fontbox/src/main/java/org/apache/fontbox/cff/CFFCharset.java::method::getCIDForGID	method	missing	-	auto-generated
-fontbox/src/main/java/org/apache/fontbox/cff/CFFCharset.java::method::getGIDForCID	method	missing	-	auto-generated
-fontbox/src/main/java/org/apache/fontbox/cff/CFFCharset.java::method::getGIDForSID	method	missing	-	auto-generated
-fontbox/src/main/java/org/apache/fontbox/cff/CFFCharset.java::method::getNameForGID	method	missing	-	auto-generated
-fontbox/src/main/java/org/apache/fontbox/cff/CFFCharset.java::method::getSID	method	missing	-	auto-generated
-fontbox/src/main/java/org/apache/fontbox/cff/CFFCharset.java::method::getSIDForGID	method	missing	-	auto-generated
-fontbox/src/main/java/org/apache/fontbox/cff/CFFCharset.java::method::isCIDFont	method	missing	-	auto-generated
-fontbox/src/main/java/org/apache/fontbox/cff/CFFCharsetCID.java::class::CFFCharsetCID	class	missing	-	auto-generated
+fontbox/src/main/java/org/apache/fontbox/cff/CFFCharset.java::interface::CFFCharset	interface	ported	src/fontbox/cff/charset.cr	ported as Charset
+fontbox/src/main/java/org/apache/fontbox/cff/CFFCharset.java::method::addCID	method	ported	src/fontbox/cff/charset.cr	ported: Charset#add_cid
+fontbox/src/main/java/org/apache/fontbox/cff/CFFCharset.java::method::addSID	method	ported	src/fontbox/cff/charset.cr	ported: Charset#add_sid
+fontbox/src/main/java/org/apache/fontbox/cff/CFFCharset.java::method::getCIDForGID	method	ported	src/fontbox/cff/charset.cr	ported: Charset#cid_for_gid
+fontbox/src/main/java/org/apache/fontbox/cff/CFFCharset.java::method::getGIDForCID	method	ported	src/fontbox/cff/charset.cr	ported: Charset#gid_for_cid
+fontbox/src/main/java/org/apache/fontbox/cff/CFFCharset.java::method::getGIDForSID	method	ported	src/fontbox/cff/charset.cr	ported: Charset#gid_for_sid
+fontbox/src/main/java/org/apache/fontbox/cff/CFFCharset.java::method::getNameForGID	method	ported	src/fontbox/cff/charset.cr	ported: Charset#name_for_gid
+fontbox/src/main/java/org/apache/fontbox/cff/CFFCharset.java::method::getSID	method	ported	src/fontbox/cff/charset.cr	ported: Charset#sid
+fontbox/src/main/java/org/apache/fontbox/cff/CFFCharset.java::method::getSIDForGID	method	ported	src/fontbox/cff/charset.cr	ported: Charset#sid_for_gid
+fontbox/src/main/java/org/apache/fontbox/cff/CFFCharset.java::method::isCIDFont	method	ported	src/fontbox/cff/charset.cr	ported: Charset#cid_font?
+fontbox/src/main/java/org/apache/fontbox/cff/CFFCharsetCID.java::class::CFFCharsetCID	class	ported	src/fontbox/cff/charset.cr	ported as CharsetCID
 fontbox/src/main/java/org/apache/fontbox/cff/CFFCharsetCID.java::const::EXCEPTION_MESSAGE	const	missing	-	auto-generated
-fontbox/src/main/java/org/apache/fontbox/cff/CFFCharsetCID.java::method::CFFCharsetCID.addCID	method	missing	-	auto-generated
-fontbox/src/main/java/org/apache/fontbox/cff/CFFCharsetCID.java::method::CFFCharsetCID.addSID	method	missing	-	auto-generated
-fontbox/src/main/java/org/apache/fontbox/cff/CFFCharsetCID.java::method::CFFCharsetCID.getCIDForGID	method	missing	-	auto-generated
-fontbox/src/main/java/org/apache/fontbox/cff/CFFCharsetCID.java::method::CFFCharsetCID.getGIDForCID	method	missing	-	auto-generated
-fontbox/src/main/java/org/apache/fontbox/cff/CFFCharsetCID.java::method::CFFCharsetCID.getGIDForSID	method	missing	-	auto-generated
-fontbox/src/main/java/org/apache/fontbox/cff/CFFCharsetCID.java::method::CFFCharsetCID.getNameForGID	method	missing	-	auto-generated
-fontbox/src/main/java/org/apache/fontbox/cff/CFFCharsetCID.java::method::CFFCharsetCID.getSID	method	missing	-	auto-generated
-fontbox/src/main/java/org/apache/fontbox/cff/CFFCharsetCID.java::method::CFFCharsetCID.getSIDForGID	method	missing	-	auto-generated
-fontbox/src/main/java/org/apache/fontbox/cff/CFFCharsetCID.java::method::CFFCharsetCID.isCIDFont	method	missing	-	auto-generated
-fontbox/src/main/java/org/apache/fontbox/cff/CFFCharsetType1.java::class::CFFCharsetType1	class	missing	-	auto-generated
+fontbox/src/main/java/org/apache/fontbox/cff/CFFCharsetCID.java::method::CFFCharsetCID.addCID	method	ported	src/fontbox/cff/charset.cr	ported: CharsetCID#add_cid
+fontbox/src/main/java/org/apache/fontbox/cff/CFFCharsetCID.java::method::CFFCharsetCID.addSID	method	ported	src/fontbox/cff/charset.cr	ported: CharsetCID#add_sid
+fontbox/src/main/java/org/apache/fontbox/cff/CFFCharsetCID.java::method::CFFCharsetCID.getCIDForGID	method	ported	src/fontbox/cff/charset.cr	ported: CharsetCID#cid_for_gid
+fontbox/src/main/java/org/apache/fontbox/cff/CFFCharsetCID.java::method::CFFCharsetCID.getGIDForCID	method	ported	src/fontbox/cff/charset.cr	ported: CharsetCID#gid_for_cid
+fontbox/src/main/java/org/apache/fontbox/cff/CFFCharsetCID.java::method::CFFCharsetCID.getGIDForSID	method	ported	src/fontbox/cff/charset.cr	ported: CharsetCID#gid_for_sid
+fontbox/src/main/java/org/apache/fontbox/cff/CFFCharsetCID.java::method::CFFCharsetCID.getNameForGID	method	ported	src/fontbox/cff/charset.cr	ported: CharsetCID#name_for_gid
+fontbox/src/main/java/org/apache/fontbox/cff/CFFCharsetCID.java::method::CFFCharsetCID.getSID	method	ported	src/fontbox/cff/charset.cr	ported: CharsetCID#sid
+fontbox/src/main/java/org/apache/fontbox/cff/CFFCharsetCID.java::method::CFFCharsetCID.getSIDForGID	method	ported	src/fontbox/cff/charset.cr	ported: CharsetCID#sid_for_gid
+fontbox/src/main/java/org/apache/fontbox/cff/CFFCharsetCID.java::method::CFFCharsetCID.isCIDFont	method	ported	src/fontbox/cff/charset.cr	ported: CharsetCID#cid_font?
+fontbox/src/main/java/org/apache/fontbox/cff/CFFCharsetType1.java::class::CFFCharsetType1	class	ported	src/fontbox/cff/charset.cr	ported as CharsetType1
 fontbox/src/main/java/org/apache/fontbox/cff/CFFCharsetType1.java::const::EXCEPTION_MESSAGE	const	missing	-	auto-generated
-fontbox/src/main/java/org/apache/fontbox/cff/CFFCharsetType1.java::method::CFFCharsetType1.addCID	method	missing	-	auto-generated
-fontbox/src/main/java/org/apache/fontbox/cff/CFFCharsetType1.java::method::CFFCharsetType1.addSID	method	missing	-	auto-generated
-fontbox/src/main/java/org/apache/fontbox/cff/CFFCharsetType1.java::method::CFFCharsetType1.getCIDForGID	method	missing	-	auto-generated
-fontbox/src/main/java/org/apache/fontbox/cff/CFFCharsetType1.java::method::CFFCharsetType1.getGIDForCID	method	missing	-	auto-generated
-fontbox/src/main/java/org/apache/fontbox/cff/CFFCharsetType1.java::method::CFFCharsetType1.getGIDForSID	method	missing	-	auto-generated
-fontbox/src/main/java/org/apache/fontbox/cff/CFFCharsetType1.java::method::CFFCharsetType1.getNameForGID	method	missing	-	auto-generated
-fontbox/src/main/java/org/apache/fontbox/cff/CFFCharsetType1.java::method::CFFCharsetType1.getSID	method	missing	-	auto-generated
-fontbox/src/main/java/org/apache/fontbox/cff/CFFCharsetType1.java::method::CFFCharsetType1.getSIDForGID	method	missing	-	auto-generated
-fontbox/src/main/java/org/apache/fontbox/cff/CFFCharsetType1.java::method::CFFCharsetType1.isCIDFont	method	missing	-	auto-generated
+fontbox/src/main/java/org/apache/fontbox/cff/CFFCharsetType1.java::method::CFFCharsetType1.addCID	method	ported	src/fontbox/cff/charset.cr	ported: CharsetType1#add_cid
+fontbox/src/main/java/org/apache/fontbox/cff/CFFCharsetType1.java::method::CFFCharsetType1.addSID	method	ported	src/fontbox/cff/charset.cr	ported: CharsetType1#add_sid
+fontbox/src/main/java/org/apache/fontbox/cff/CFFCharsetType1.java::method::CFFCharsetType1.getCIDForGID	method	ported	src/fontbox/cff/charset.cr	ported: CharsetType1#cid_for_gid
+fontbox/src/main/java/org/apache/fontbox/cff/CFFCharsetType1.java::method::CFFCharsetType1.getGIDForCID	method	ported	src/fontbox/cff/charset.cr	ported: CharsetType1#gid_for_cid
+fontbox/src/main/java/org/apache/fontbox/cff/CFFCharsetType1.java::method::CFFCharsetType1.getGIDForSID	method	ported	src/fontbox/cff/charset.cr	ported: CharsetType1#gid_for_sid
+fontbox/src/main/java/org/apache/fontbox/cff/CFFCharsetType1.java::method::CFFCharsetType1.getNameForGID	method	ported	src/fontbox/cff/charset.cr	ported: CharsetType1#name_for_gid
+fontbox/src/main/java/org/apache/fontbox/cff/CFFCharsetType1.java::method::CFFCharsetType1.getSID	method	ported	src/fontbox/cff/charset.cr	ported: CharsetType1#sid
+fontbox/src/main/java/org/apache/fontbox/cff/CFFCharsetType1.java::method::CFFCharsetType1.getSIDForGID	method	ported	src/fontbox/cff/charset.cr	ported: CharsetType1#sid_for_gid
+fontbox/src/main/java/org/apache/fontbox/cff/CFFCharsetType1.java::method::CFFCharsetType1.isCIDFont	method	ported	src/fontbox/cff/charset.cr	ported: CharsetType1#cid_font?
 fontbox/src/main/java/org/apache/fontbox/cff/CFFEncoding.java::class::CFFEncoding	class	partial	src	auto-generated
 fontbox/src/main/java/org/apache/fontbox/cff/CFFEncoding.java::method::CFFEncoding.add	method	ported	src	auto-generated
-fontbox/src/main/java/org/apache/fontbox/cff/CFFExpertCharset.java::class::CFFExpertCharset	class	missing	-	auto-generated
+fontbox/src/main/java/org/apache/fontbox/cff/CFFExpertCharset.java::class::CFFExpertCharset	class	ported	src/fontbox/cff/charset.cr	ported as ExpertCharset
 fontbox/src/main/java/org/apache/fontbox/cff/CFFExpertCharset.java::const::CHAR_CODE	const	missing	-	auto-generated
 fontbox/src/main/java/org/apache/fontbox/cff/CFFExpertCharset.java::const::CHAR_NAME	const	missing	-	auto-generated
 fontbox/src/main/java/org/apache/fontbox/cff/CFFExpertCharset.java::const::INSTANCE	const	missing	-	auto-generated
-fontbox/src/main/java/org/apache/fontbox/cff/CFFExpertCharset.java::method::CFFExpertCharset.getInstance	method	missing	-	auto-generated
-fontbox/src/main/java/org/apache/fontbox/cff/CFFExpertEncoding.java::class::CFFExpertEncoding	class	missing	-	auto-generated
+fontbox/src/main/java/org/apache/fontbox/cff/CFFExpertCharset.java::method::CFFExpertCharset.getInstance	method	ported	src/fontbox/cff/charset.cr	ported: ExpertCharset.instance
+fontbox/src/main/java/org/apache/fontbox/cff/CFFExpertEncoding.java::class::CFFExpertEncoding	class	ported	src/fontbox/cff/cff_expert_encoding.cr	ported as ExpertEncoding
 fontbox/src/main/java/org/apache/fontbox/cff/CFFExpertEncoding.java::const::CHAR_CODE	const	missing	-	auto-generated
 fontbox/src/main/java/org/apache/fontbox/cff/CFFExpertEncoding.java::const::CHAR_SID	const	missing	-	auto-generated
 fontbox/src/main/java/org/apache/fontbox/cff/CFFExpertEncoding.java::const::INSTANCE	const	missing	-	auto-generated
-fontbox/src/main/java/org/apache/fontbox/cff/CFFExpertEncoding.java::method::CFFExpertEncoding.getInstance	method	missing	-	auto-generated
-fontbox/src/main/java/org/apache/fontbox/cff/CFFExpertSubsetCharset.java::class::CFFExpertSubsetCharset	class	missing	-	auto-generated
+fontbox/src/main/java/org/apache/fontbox/cff/CFFExpertEncoding.java::method::CFFExpertEncoding.getInstance	method	ported	src/fontbox/cff/cff_expert_encoding.cr	ported: ExpertEncoding.instance
+fontbox/src/main/java/org/apache/fontbox/cff/CFFExpertSubsetCharset.java::class::CFFExpertSubsetCharset	class	ported	src/fontbox/cff/charset.cr	ported as ExpertSubsetCharset
 fontbox/src/main/java/org/apache/fontbox/cff/CFFExpertSubsetCharset.java::const::CHAR_CODE	const	missing	-	auto-generated
 fontbox/src/main/java/org/apache/fontbox/cff/CFFExpertSubsetCharset.java::const::CHAR_NAME	const	missing	-	auto-generated
 fontbox/src/main/java/org/apache/fontbox/cff/CFFExpertSubsetCharset.java::const::INSTANCE	const	missing	-	auto-generated
-fontbox/src/main/java/org/apache/fontbox/cff/CFFExpertSubsetCharset.java::method::CFFExpertSubsetCharset.getInstance	method	missing	-	auto-generated
+fontbox/src/main/java/org/apache/fontbox/cff/CFFExpertSubsetCharset.java::method::CFFExpertSubsetCharset.getInstance	method	ported	src/fontbox/cff/charset.cr	ported: ExpertSubsetCharset.instance
 fontbox/src/main/java/org/apache/fontbox/cff/CFFFont.java::class::CFFFont	class	partial	src	auto-generated
 fontbox/src/main/java/org/apache/fontbox/cff/CFFFont.java::method::CFFFont.addValueToTopDict	method	ported	src	auto-generated
 fontbox/src/main/java/org/apache/fontbox/cff/CFFFont.java::method::CFFFont.getCharStringBytes	method	ported	src/fontbox/cff/cff_font.cr	ported: CFFFont.char_strings getter
@@ -1589,11 +1589,11 @@ fontbox/src/main/java/org/apache/fontbox/cff/CFFFont.java::method::CFFFont.setDa
 fontbox/src/main/java/org/apache/fontbox/cff/CFFFont.java::method::CFFFont.setGlobalSubrIndex	method	ported	src	auto-generated
 fontbox/src/main/java/org/apache/fontbox/cff/CFFFont.java::method::CFFFont.setName	method	ported	src	auto-generated
 fontbox/src/main/java/org/apache/fontbox/cff/CFFFont.java::method::CFFFont.toString	method	ported	src/fontbox/cff/cff_font.cr	ported: CFFFont#to_s
-fontbox/src/main/java/org/apache/fontbox/cff/CFFISOAdobeCharset.java::class::CFFISOAdobeCharset	class	missing	-	auto-generated
+fontbox/src/main/java/org/apache/fontbox/cff/CFFISOAdobeCharset.java::class::CFFISOAdobeCharset	class	ported	src/fontbox/cff/charset.cr	ported as ISOAdobeCharset
 fontbox/src/main/java/org/apache/fontbox/cff/CFFISOAdobeCharset.java::const::CHAR_CODE	const	missing	-	auto-generated
 fontbox/src/main/java/org/apache/fontbox/cff/CFFISOAdobeCharset.java::const::CHAR_NAME	const	missing	-	auto-generated
 fontbox/src/main/java/org/apache/fontbox/cff/CFFISOAdobeCharset.java::const::INSTANCE	const	missing	-	auto-generated
-fontbox/src/main/java/org/apache/fontbox/cff/CFFISOAdobeCharset.java::method::CFFISOAdobeCharset.getInstance	method	missing	-	auto-generated
+fontbox/src/main/java/org/apache/fontbox/cff/CFFISOAdobeCharset.java::method::CFFISOAdobeCharset.getInstance	method	ported	src/fontbox/cff/charset.cr	ported: ISOAdobeCharset.instance
 fontbox/src/main/java/org/apache/fontbox/cff/CFFOperator.java::class::CFFOperator	class	ported	src/fontbox/cff/cff_operator.cr	ported: CFFOperator
 fontbox/src/main/java/org/apache/fontbox/cff/CFFOperator.java::method::CFFOperator.calculateKey	method	ported	src/fontbox/cff/cff_operator.cr	ported: CFFOperator
 fontbox/src/main/java/org/apache/fontbox/cff/CFFOperator.java::method::CFFOperator.getOperator	method	ported	src/fontbox/cff/cff_operator.cr	ported: CFFOperator
@@ -1697,14 +1697,14 @@ fontbox/src/main/java/org/apache/fontbox/cff/CFFParser.java::method::RangeMappin
 fontbox/src/main/java/org/apache/fontbox/cff/CFFParser.java::method::RangeMapping.mapValue	method	ported	src	auto-generated
 fontbox/src/main/java/org/apache/fontbox/cff/CFFParser.java::method::RangeMapping.toString	method	partial	src	auto-generated
 fontbox/src/main/java/org/apache/fontbox/cff/CFFParser.java::method::Supplement.toString	method	partial	src	auto-generated
-fontbox/src/main/java/org/apache/fontbox/cff/CFFStandardEncoding.java::class::CFFStandardEncoding	class	missing	-	auto-generated
+fontbox/src/main/java/org/apache/fontbox/cff/CFFStandardEncoding.java::class::CFFStandardEncoding	class	ported	src/fontbox/cff/cff_standard_encoding.cr	ported as StandardEncoding
 fontbox/src/main/java/org/apache/fontbox/cff/CFFStandardEncoding.java::const::CHAR_CODE	const	missing	-	auto-generated
 fontbox/src/main/java/org/apache/fontbox/cff/CFFStandardEncoding.java::const::CHAR_SID	const	missing	-	auto-generated
 fontbox/src/main/java/org/apache/fontbox/cff/CFFStandardEncoding.java::const::INSTANCE	const	missing	-	auto-generated
-fontbox/src/main/java/org/apache/fontbox/cff/CFFStandardEncoding.java::method::CFFStandardEncoding.getInstance	method	missing	-	auto-generated
-fontbox/src/main/java/org/apache/fontbox/cff/CFFStandardString.java::class::CFFStandardString	class	missing	-	auto-generated
+fontbox/src/main/java/org/apache/fontbox/cff/CFFStandardEncoding.java::method::CFFStandardEncoding.getInstance	method	ported	src/fontbox/cff/cff_standard_encoding.cr	ported: StandardEncoding.instance
+fontbox/src/main/java/org/apache/fontbox/cff/CFFStandardString.java::class::CFFStandardString	class	ported	src/fontbox/cff/standard_string.cr	ported as StandardString
 fontbox/src/main/java/org/apache/fontbox/cff/CFFStandardString.java::const::SID2STR	const	missing	-	auto-generated
-fontbox/src/main/java/org/apache/fontbox/cff/CFFStandardString.java::method::CFFStandardString.getName	method	missing	-	auto-generated
+fontbox/src/main/java/org/apache/fontbox/cff/CFFStandardString.java::method::CFFStandardString.getName	method	ported	src/fontbox/cff/standard_string.cr	ported: StandardString.name
 fontbox/src/main/java/org/apache/fontbox/cff/CFFType1Font.java::class::CFFType1Font	class	partial	src	auto-generated
 fontbox/src/main/java/org/apache/fontbox/cff/CFFType1Font.java::class::PrivateType1CharStringReader	class	partial	src	auto-generated
 fontbox/src/main/java/org/apache/fontbox/cff/CFFType1Font.java::method::CFFType1Font.addToPrivateDict	method	ported	src	auto-generated
