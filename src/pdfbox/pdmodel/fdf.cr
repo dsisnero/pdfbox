@@ -515,6 +515,40 @@ module Pdfbox::Pdmodel::Fdf
       @cos_object
     end
 
+    # The /Differences stream, or nil (Java FDFDictionary#getDifferences).
+    def differences : Pdfbox::Cos::Stream?
+      @cos_object.get_cos_stream(Pdfbox::Cos::Name.new("Differences"))
+    end
+
+    # Sets (or clears, with nil) the /Differences stream
+    # (Java FDFDictionary#setDifferences).
+    def differences=(diff : Pdfbox::Cos::Stream?) : Pdfbox::Cos::Stream?
+      if diff
+        @cos_object.set_item(Pdfbox::Cos::Name.new("Differences"), diff)
+      else
+        @cos_object.remove_item(Pdfbox::Cos::Name.new("Differences"))
+      end
+      diff
+    end
+
+    # The /EmbeddedFDFs file specifications, or nil (Java
+    # FDFDictionary#getEmbeddedFDFs).
+    def embedded_fdfs : Array(Pdfbox::Pdmodel::Common::Filespecification::PDFileSpecification)?
+      array = @cos_object.get_cos_array(Pdfbox::Cos::Name.new("EmbeddedFDFs"))
+      return nil unless array
+      array.items.compact_map do |item|
+        Pdfbox::Pdmodel::Common::Filespecification::PDFileSpecification.create_fs(item)
+      end
+    end
+
+    # Sets the /EmbeddedFDFs file specifications (Java
+    # FDFDictionary#setEmbeddedFDFs).
+    def embedded_fdfs=(files : Enumerable(Pdfbox::Pdmodel::Common::Filespecification::PDFileSpecification)) : Nil
+      array = Pdfbox::Cos::Array.new
+      files.each { |file_spec| array.add(file_spec.cos_object) }
+      @cos_object.set_item(Pdfbox::Cos::Name.new("EmbeddedFDFs"), array)
+    end
+
     def write_xfdf(io : ::IO) : Nil
       if current_file = @file
         io << %(<f href=") << FDFField.escape_xml(current_file) << %(" />\n)

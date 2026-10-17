@@ -7132,24 +7132,24 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFDictionary.java::class::FD
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFDictionary.java::const::LOG	const	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFDictionary.java::method::FDFDictionary.getAnnotations	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFDictionary.java::method::FDFDictionary.getCOSObject	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFDictionary.java::method::FDFDictionary.getDifferences	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFDictionary.java::method::FDFDictionary.getEmbeddedFDFs	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFDictionary.java::method::FDFDictionary.getDifferences	method	ported	src/pdfbox/pdmodel/fdf.cr	ported: FDFDictionary differences/embedded_fdfs/javascript
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFDictionary.java::method::FDFDictionary.getEmbeddedFDFs	method	ported	src/pdfbox/pdmodel/fdf.cr	ported: FDFDictionary differences/embedded_fdfs/javascript
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFDictionary.java::method::FDFDictionary.getEncoding	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFDictionary.java::method::FDFDictionary.getFields	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFDictionary.java::method::FDFDictionary.getFile	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFDictionary.java::method::FDFDictionary.getID	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFDictionary.java::method::FDFDictionary.getJavaScript	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFDictionary.java::method::FDFDictionary.getJavaScript	method	ported	src/pdfbox/pdmodel/fdf.cr	ported: FDFDictionary differences/embedded_fdfs/javascript
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFDictionary.java::method::FDFDictionary.getPages	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFDictionary.java::method::FDFDictionary.getStatus	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFDictionary.java::method::FDFDictionary.getTarget	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFDictionary.java::method::FDFDictionary.setAnnotations	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFDictionary.java::method::FDFDictionary.setDifferences	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFDictionary.java::method::FDFDictionary.setEmbeddedFDFs	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFDictionary.java::method::FDFDictionary.setDifferences	method	ported	src/pdfbox/pdmodel/fdf.cr	ported: FDFDictionary differences/embedded_fdfs/javascript
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFDictionary.java::method::FDFDictionary.setEmbeddedFDFs	method	ported	src/pdfbox/pdmodel/fdf.cr	ported: FDFDictionary differences/embedded_fdfs/javascript
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFDictionary.java::method::FDFDictionary.setEncoding	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFDictionary.java::method::FDFDictionary.setFields	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFDictionary.java::method::FDFDictionary.setFile	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFDictionary.java::method::FDFDictionary.setID	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFDictionary.java::method::FDFDictionary.setJavaScript	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFDictionary.java::method::FDFDictionary.setJavaScript	method	ported	src/pdfbox/pdmodel/fdf.cr	ported: FDFDictionary differences/embedded_fdfs/javascript
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFDictionary.java::method::FDFDictionary.setPages	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFDictionary.java::method::FDFDictionary.setStatus	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFDictionary.java::method::FDFDictionary.setTarget	method	partial	src	auto-generated

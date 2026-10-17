@@ -7132,24 +7132,24 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFDictionary.java::class::FD
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFDictionary.java::const::LOG	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFDictionary.java::method::FDFDictionary.getAnnotations	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFDictionary.java::method::FDFDictionary.getCOSObject	ported	src/pdfbox/pdmodel/fdf.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFDictionary.java::method::FDFDictionary.getDifferences	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFDictionary.java::method::FDFDictionary.getEmbeddedFDFs	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFDictionary.java::method::FDFDictionary.getDifferences	ported	src/pdfbox/pdmodel/fdf.cr	ported: FDFDictionary differences/embedded_fdfs/javascript
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFDictionary.java::method::FDFDictionary.getEmbeddedFDFs	ported	src/pdfbox/pdmodel/fdf.cr	ported: FDFDictionary differences/embedded_fdfs/javascript
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFDictionary.java::method::FDFDictionary.getEncoding	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFDictionary.java::method::FDFDictionary.getFields	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFDictionary.java::method::FDFDictionary.getFile	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFDictionary.java::method::FDFDictionary.getID	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFDictionary.java::method::FDFDictionary.getJavaScript	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFDictionary.java::method::FDFDictionary.getJavaScript	ported	src/pdfbox/pdmodel/fdf.cr	ported: FDFDictionary differences/embedded_fdfs/javascript
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFDictionary.java::method::FDFDictionary.getPages	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFDictionary.java::method::FDFDictionary.getStatus	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFDictionary.java::method::FDFDictionary.getTarget	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFDictionary.java::method::FDFDictionary.setAnnotations	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFDictionary.java::method::FDFDictionary.setDifferences	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFDictionary.java::method::FDFDictionary.setEmbeddedFDFs	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFDictionary.java::method::FDFDictionary.setDifferences	ported	src/pdfbox/pdmodel/fdf.cr	ported: FDFDictionary differences/embedded_fdfs/javascript
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFDictionary.java::method::FDFDictionary.setEmbeddedFDFs	ported	src/pdfbox/pdmodel/fdf.cr	ported: FDFDictionary differences/embedded_fdfs/javascript
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFDictionary.java::method::FDFDictionary.setEncoding	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFDictionary.java::method::FDFDictionary.setFields	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFDictionary.java::method::FDFDictionary.setFile	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFDictionary.java::method::FDFDictionary.setID	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFDictionary.java::method::FDFDictionary.setJavaScript	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFDictionary.java::method::FDFDictionary.setJavaScript	ported	src/pdfbox/pdmodel/fdf.cr	ported: FDFDictionary differences/embedded_fdfs/javascript
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFDictionary.java::method::FDFDictionary.setPages	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFDictionary.java::method::FDFDictionary.setStatus	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFDictionary.java::method::FDFDictionary.setTarget	missing	-	baseline
