@@ -18,6 +18,11 @@ require "../common/pdstream"
 require "../common/pdrectangle"
 require "../../../fontbox/ttf/ttf_subsetter"
 
+# A document that can hold an embedded font. Java has a single PDDocument type; the
+# Crystal port has the real `Pdfbox::Pdmodel::Document` (returned by `Loader.load_pdf`
+# and `Document.create`) plus the legacy `Pdfbox::Pdmodel::PDDocument` stub.
+alias Pdfbox::Pdmodel::Font::EmbeddingDocument = Pdfbox::Pdmodel::Document | Pdfbox::Pdmodel::PDDocument
+
 class Pdfbox::Pdmodel::Font::PDType0Font < Pdfbox::Pdmodel::Font::PDFont
   include PDVectorFont
 
@@ -72,7 +77,7 @@ class Pdfbox::Pdmodel::Font::PDType0Font < Pdfbox::Pdmodel::Font::PDFont
   end
 
   # Constructor for creating a Type0 font from a TrueType font (for embedding)
-  protected def initialize(doc : Pdfbox::Pdmodel::PDDocument, ttf : Fontbox::TTF::TrueTypeFont, embed_subset : Bool, close_ttf : Bool, vertical : Bool)
+  protected def initialize(doc : EmbeddingDocument, ttf : Fontbox::TTF::TrueTypeFont, embed_subset : Bool, close_ttf : Bool, vertical : Bool)
     super() # embedding constructor - creates empty dictionary
 
     if !embed_subset && ttf.from_collection?
@@ -488,7 +493,7 @@ class Pdfbox::Pdmodel::Font::PDType0Font < Pdfbox::Pdmodel::Font::PDFont
   # @param input An input stream of a TrueType font.
   # @param embed_subset True if the font will be subset before embedding.
   # @return A Type0 font with a CIDFontType2 descendant.
-  def self.load(doc : Pdfbox::Pdmodel::PDDocument, input : ::IO, embed_subset : Bool = true) : self
+  def self.load(doc : EmbeddingDocument, input : ::IO, embed_subset : Bool = true) : self
     # Convert IO to RandomAccessReadBuffer
     random_access_read = Pdfbox::IO::RandomAccessReadBuffer.new(input)
 
@@ -506,13 +511,13 @@ class Pdfbox::Pdmodel::Font::PDType0Font < Pdfbox::Pdmodel::Font::PDFont
   # @param ttf A parsed TrueType font.
   # @param embed_subset True if the font will be subset before embedding.
   # @return A Type0 font with a CIDFontType2 descendant.
-  def self.load(doc : Pdfbox::Pdmodel::PDDocument, ttf : Fontbox::TTF::TrueTypeFont, embed_subset : Bool = true) : self
+  def self.load(doc : EmbeddingDocument, ttf : Fontbox::TTF::TrueTypeFont, embed_subset : Bool = true) : self
     # Create a new PDType0Font with the TrueType font
     # vertical = false for regular loading
     new(doc, ttf, embed_subset, true, false)
   end
 
-  def self.load(doc : Pdfbox::Pdmodel::PDDocument, file : ::File, embed_subset : Bool = true) : self
+  def self.load(doc : EmbeddingDocument, file : ::File, embed_subset : Bool = true) : self
     random_access_read = Pdfbox::IO::RandomAccessReadBufferedFile.new(file.path)
     parser = Fontbox::TTF::TTFParser.new
     ttf = parser.parse(random_access_read)
@@ -525,13 +530,13 @@ class Pdfbox::Pdmodel::Font::PDType0Font < Pdfbox::Pdmodel::Font::PDFont
   # @param input An input stream of a TrueType font.
   # @param embed_subset True if the font will be subset before embedding.
   # @return A Type0 font with a CIDFontType2 descendant.
-  def self.load_vertical(doc : Pdfbox::Pdmodel::PDDocument, input : ::IO, embed_subset : Bool = true) : self
+  def self.load_vertical(doc : EmbeddingDocument, input : ::IO, embed_subset : Bool = true) : self
     parser = Fontbox::TTF::TTFParser.new(true)
     ttf = parser.parse_embedded(input)
     new(doc, ttf, embed_subset, true, true)
   end
 
-  private def build_descendant_font_dictionary(doc : Pdfbox::Pdmodel::PDDocument, ttf : Fontbox::TTF::TrueTypeFont, base_font_name : String, vertical : Bool) : Pdfbox::Cos::Dictionary
+  private def build_descendant_font_dictionary(doc : EmbeddingDocument, ttf : Fontbox::TTF::TrueTypeFont, base_font_name : String, vertical : Bool) : Pdfbox::Cos::Dictionary
     descendant = Pdfbox::Cos::Dictionary.new
     descendant[Pdfbox::Cos::Name::TYPE] = Pdfbox::Cos::Name::FONT
     descendant[Pdfbox::Cos::Name::SUBTYPE] = Pdfbox::Cos::Name.new("CIDFontType2")
@@ -547,7 +552,7 @@ class Pdfbox::Pdmodel::Font::PDType0Font < Pdfbox::Pdmodel::Font::PDFont
     descendant
   end
 
-  private def build_font_descriptor(doc : Pdfbox::Pdmodel::PDDocument, ttf : Fontbox::TTF::TrueTypeFont, base_font_name : String) : PDFontDescriptor
+  private def build_font_descriptor(doc : EmbeddingDocument, ttf : Fontbox::TTF::TrueTypeFont, base_font_name : String) : PDFontDescriptor
     descriptor = PDFontDescriptor.new(Pdfbox::Cos::Dictionary.new)
     descriptor.font_name = base_font_name
     descriptor.non_symbolic = true
@@ -575,8 +580,22 @@ class Pdfbox::Pdmodel::Font::PDType0Font < Pdfbox::Pdmodel::Font::PDFont
     descriptor.italic_angle = ttf.postscript.try(&.italic_angle) || 0.0_f32
 
     font_data = ttf.original_data
-    descriptor.font_file2 = Pdfbox::Pdmodel::Common::PDStream.new(doc, font_data)
+    descriptor.font_file2 = font_file_stream(doc, font_data)
     descriptor
+  end
+
+  # Creates the font-file stream. The legacy document registers the stream in its
+  # COS document; the real document has no such registry, so the stream is detached
+  # and picked up by the writer through the font descriptor (as rebuild_subset_font does).
+  private def font_file_stream(doc : EmbeddingDocument, font_data : ::IO) : Pdfbox::Pdmodel::Common::PDStream
+    case doc
+    when Pdfbox::Pdmodel::PDDocument
+      Pdfbox::Pdmodel::Common::PDStream.new(doc, font_data)
+    else
+      buffer = ::IO::Memory.new
+      ::IO.copy(font_data, buffer)
+      Pdfbox::Pdmodel::Common::PDStream.new(Pdfbox::Cos::Stream.new(data: buffer.to_slice))
+    end
   end
 
   private def rebuild_subset_font(subset_bytes : Bytes, cid_to_gid : Hash(Int32, Int32)) : Nil

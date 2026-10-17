@@ -576,12 +576,12 @@ pdfbox/src/test/java/org/apache/pdfbox/cos/TestCOSFloat.java::method::TestCOSFlo
 pdfbox/src/test/java/org/apache/pdfbox/cos/TestCOSFloat.java::method::TestCOSFloat.testVerySmallValues	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/cos/TestCOSFloat.java::method::TestCOSFloat.testWritePDF	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/cos/TestCOSFloat.java::method::WritePDFTester.runTest	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/cos/TestCOSIncrement.java::class::TestCOSIncrement	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/cos/TestCOSIncrement.java::method::TestCOSIncrement.init	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/cos/TestCOSIncrement.java::method::TestCOSIncrement.loadDocument	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/cos/TestCOSIncrement.java::method::TestCOSIncrement.testConcurrentModification	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/cos/TestCOSIncrement.java::method::TestCOSIncrement.testIncrementallyCreateDocument	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/cos/TestCOSIncrement.java::method::TestCOSIncrement.testSubsetting	ported	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/cos/TestCOSIncrement.java::class::TestCOSIncrement	ported	spec/pdfbox/cos/increment_spec.cr	ported: upstream TestCOSIncrement
+pdfbox/src/test/java/org/apache/pdfbox/cos/TestCOSIncrement.java::method::TestCOSIncrement.init	ported	spec/pdfbox/cos/increment_spec.cr	ported: upstream TestCOSIncrement
+pdfbox/src/test/java/org/apache/pdfbox/cos/TestCOSIncrement.java::method::TestCOSIncrement.loadDocument	ported	spec/pdfbox/cos/increment_spec.cr	ported: upstream TestCOSIncrement
+pdfbox/src/test/java/org/apache/pdfbox/cos/TestCOSIncrement.java::method::TestCOSIncrement.testConcurrentModification	ported	spec/pdfbox/cos/increment_spec.cr	ported: upstream TestCOSIncrement
+pdfbox/src/test/java/org/apache/pdfbox/cos/TestCOSIncrement.java::method::TestCOSIncrement.testIncrementallyCreateDocument	ported	spec/pdfbox/cos/increment_spec.cr	ported: upstream TestCOSIncrement
+pdfbox/src/test/java/org/apache/pdfbox/cos/TestCOSIncrement.java::method::TestCOSIncrement.testSubsetting	ported	spec/pdfbox/cos/increment_spec.cr	ported: upstream TestCOSIncrement
 pdfbox/src/test/java/org/apache/pdfbox/cos/TestCOSInteger.java::class::TestCOSInteger	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/cos/TestCOSInteger.java::method::TestCOSInteger.setUp	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/cos/TestCOSInteger.java::method::TestCOSInteger.testAccept	ported	-	baseline

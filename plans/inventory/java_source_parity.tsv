@@ -7720,8 +7720,8 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PD
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.isEmbedded	ported	src/pdfbox/pdmodel/font/type0_font.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.isStandard14	ported	src/pdfbox/pdmodel/font/type0_font.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.isVertical	ported	src/pdfbox/pdmodel/font/type0_font.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.load	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.loadVertical	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.load	ported	src/pdfbox/pdmodel/font/type0_font.cr	ported: load(IO/TrueTypeFont/File) accepts Document or PDDocument
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.loadVertical	ported	src/pdfbox/pdmodel/font/type0_font.cr	ported: load_vertical accepts Document or PDDocument
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.readCode	ported	src/pdfbox/pdmodel/font/type0_font.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.readEncoding	ported	src/pdfbox/pdmodel/font/type0_font.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType0Font.java::method::PDType0Font.subset	ported	src/pdfbox/pdmodel/font/type0_font.cr	reconciled: method present
