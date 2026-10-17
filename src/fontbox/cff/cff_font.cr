@@ -89,6 +89,13 @@ module Fontbox::CFF
       @source
     end
 
+    # Returns the raw CFF data (Java CFFFont#getData).
+    def data : Bytes
+      source = @source
+      raise "CFF source is not set" unless source
+      source.bytes
+    end
+
     # Sets the global subroutine index.
     protected def global_subr_index=(global_subr_index : Array(Bytes)) : Nil
       @global_subr_index = global_subr_index
@@ -118,6 +125,63 @@ module Fontbox::CFF
     # Returns the number of glyphs in the font.
     def num_glyphs : Int32
       @char_strings.size
+    end
+
+    # Returns the number of charstrings (Java CFFFont#getNumCharStrings).
+    def num_char_strings : Int32
+      @char_strings.size
+    end
+
+    # Java CFFFont#toString: `<simple class name>[name=..., topDict=...,
+    # charset=..., charStrings=...]`.
+    #
+    # The Java string uses `LinkedHashMap.toString` (so `{key=value, ...}`) and
+    # `Arrays.deepToString` (signed decimal byte values); the same shape is
+    # reproduced here. `charset` keeps its default object representation (Java
+    # `Class@identityHash` is not reproducible), and floating-point values use
+    # Crystal's shortest representation (diverges from `Double.toString` only in
+    # scientific notation, e.g. `1.0e-05` vs `1.0E-5`).
+    def to_s(io : ::IO) : Nil
+      io << self.class.name.split("::").last
+      io << "[name=" << @font_name
+      io << ", topDict=" << java_map_string(@top_dict)
+      io << ", charset=" << (@charset ? @charset.to_s : "null")
+      io << ", charStrings=" << deep_to_string(@char_strings)
+      io << "]"
+    end
+
+    private def java_map_string(map : Hash(String, CFFDictValue)) : String
+      return "{}" if map.empty?
+
+      "{" + map.join(", ") { |key, value| "#{key}=#{java_value_string(value)}" } + "}"
+    end
+
+    private def java_value_string(value : CFFDictValue) : String
+      case item = value
+      when String           then item
+      when Bool             then item ? "true" : "false"
+      when Int32            then item.to_s
+      when Float64          then item.to_s
+      when Array(CFFNumber) then "[" + item.map { |number| java_value_string(number) }.join(", ") + "]"
+      else                       item.to_s
+      end
+    end
+
+    private def deep_to_string(char_strings : Array(Bytes)) : String
+      return "[]" if char_strings.empty?
+
+      "[" + char_strings.map { |bytes| deep_bytes_to_string(bytes) }.join(", ") + "]"
+    end
+
+    private def deep_bytes_to_string(bytes : Bytes) : String
+      return "[]" if bytes.empty?
+
+      "[" + bytes.map { |byte| signed_byte_string(byte) }.join(", ") + "]"
+    end
+
+    # Java renders `byte` values as signed decimals.
+    private def signed_byte_string(byte : UInt8) : String
+      byte < 128 ? byte.to_s : (byte.to_i32 - 256).to_s
     end
   end
 end

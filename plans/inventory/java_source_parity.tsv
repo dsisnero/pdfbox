@@ -1574,21 +1574,21 @@ fontbox/src/main/java/org/apache/fontbox/cff/CFFExpertSubsetCharset.java::const:
 fontbox/src/main/java/org/apache/fontbox/cff/CFFExpertSubsetCharset.java::method::CFFExpertSubsetCharset.getInstance	missing	-	baseline
 fontbox/src/main/java/org/apache/fontbox/cff/CFFFont.java::class::CFFFont	ported	src/fontbox/cff/cff_font.cr	reconciled: class present
 fontbox/src/main/java/org/apache/fontbox/cff/CFFFont.java::method::CFFFont.addValueToTopDict	ported	src/fontbox/cff/cff_font.cr	reconciled: method present
-fontbox/src/main/java/org/apache/fontbox/cff/CFFFont.java::method::CFFFont.getCharStringBytes	missing	-	baseline
+fontbox/src/main/java/org/apache/fontbox/cff/CFFFont.java::method::CFFFont.getCharStringBytes	ported	src/fontbox/cff/cff_font.cr	ported: CFFFont.char_strings getter
 fontbox/src/main/java/org/apache/fontbox/cff/CFFFont.java::method::CFFFont.getCharset	ported	src/fontbox/cff/cff_font.cr	reconciled: method present
-fontbox/src/main/java/org/apache/fontbox/cff/CFFFont.java::method::CFFFont.getData	missing	-	baseline
+fontbox/src/main/java/org/apache/fontbox/cff/CFFFont.java::method::CFFFont.getData	ported	src/fontbox/cff/cff_font.cr	ported: CFFFont#data
 fontbox/src/main/java/org/apache/fontbox/cff/CFFFont.java::method::CFFFont.getFontBBox	ported	src/fontbox/cff/cff_font.cr	reconciled: method present
 fontbox/src/main/java/org/apache/fontbox/cff/CFFFont.java::method::CFFFont.getFontMatrix	ported	src/fontbox/cff/cff_font.cr	reconciled: method present
 fontbox/src/main/java/org/apache/fontbox/cff/CFFFont.java::method::CFFFont.getGlobalSubrIndex	ported	src/fontbox/cff/cff_font.cr	reconciled: method present
 fontbox/src/main/java/org/apache/fontbox/cff/CFFFont.java::method::CFFFont.getName	ported	src/fontbox/cff/cff_font.cr	reconciled: method present
-fontbox/src/main/java/org/apache/fontbox/cff/CFFFont.java::method::CFFFont.getNumCharStrings	missing	-	baseline
+fontbox/src/main/java/org/apache/fontbox/cff/CFFFont.java::method::CFFFont.getNumCharStrings	ported	src/fontbox/cff/cff_font.cr	ported: CFFFont#num_char_strings
 fontbox/src/main/java/org/apache/fontbox/cff/CFFFont.java::method::CFFFont.getTopDict	ported	src/fontbox/cff/cff_font.cr	reconciled: method present
 fontbox/src/main/java/org/apache/fontbox/cff/CFFFont.java::method::CFFFont.getType2CharString	ported	src/fontbox/cff/cff_font.cr	reconciled: method present
 fontbox/src/main/java/org/apache/fontbox/cff/CFFFont.java::method::CFFFont.setCharset	ported	src/fontbox/cff/cff_font.cr	reconciled: method present
-fontbox/src/main/java/org/apache/fontbox/cff/CFFFont.java::method::CFFFont.setData	missing	-	baseline
+fontbox/src/main/java/org/apache/fontbox/cff/CFFFont.java::method::CFFFont.setData	ported	src/fontbox/cff/cff_font.cr	ported: protected source= setter
 fontbox/src/main/java/org/apache/fontbox/cff/CFFFont.java::method::CFFFont.setGlobalSubrIndex	ported	src/fontbox/cff/cff_font.cr	reconciled: method present
 fontbox/src/main/java/org/apache/fontbox/cff/CFFFont.java::method::CFFFont.setName	ported	src/fontbox/cff/cff_font.cr	reconciled: method present
-fontbox/src/main/java/org/apache/fontbox/cff/CFFFont.java::method::CFFFont.toString	missing	-	baseline
+fontbox/src/main/java/org/apache/fontbox/cff/CFFFont.java::method::CFFFont.toString	ported	src/fontbox/cff/cff_font.cr	ported: CFFFont#to_s
 fontbox/src/main/java/org/apache/fontbox/cff/CFFISOAdobeCharset.java::class::CFFISOAdobeCharset	missing	-	baseline
 fontbox/src/main/java/org/apache/fontbox/cff/CFFISOAdobeCharset.java::const::CHAR_CODE	missing	-	baseline
 fontbox/src/main/java/org/apache/fontbox/cff/CFFISOAdobeCharset.java::const::CHAR_NAME	missing	-	baseline

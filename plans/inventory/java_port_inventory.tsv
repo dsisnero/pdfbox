@@ -1574,21 +1574,21 @@ fontbox/src/main/java/org/apache/fontbox/cff/CFFExpertSubsetCharset.java::const:
 fontbox/src/main/java/org/apache/fontbox/cff/CFFExpertSubsetCharset.java::method::CFFExpertSubsetCharset.getInstance	method	missing	-	auto-generated
 fontbox/src/main/java/org/apache/fontbox/cff/CFFFont.java::class::CFFFont	class	partial	src	auto-generated
 fontbox/src/main/java/org/apache/fontbox/cff/CFFFont.java::method::CFFFont.addValueToTopDict	method	ported	src	auto-generated
-fontbox/src/main/java/org/apache/fontbox/cff/CFFFont.java::method::CFFFont.getCharStringBytes	method	partial	src	auto-generated
+fontbox/src/main/java/org/apache/fontbox/cff/CFFFont.java::method::CFFFont.getCharStringBytes	method	ported	src/fontbox/cff/cff_font.cr	ported: CFFFont.char_strings getter
 fontbox/src/main/java/org/apache/fontbox/cff/CFFFont.java::method::CFFFont.getCharset	method	ported	src	auto-generated
-fontbox/src/main/java/org/apache/fontbox/cff/CFFFont.java::method::CFFFont.getData	method	partial	src	auto-generated
+fontbox/src/main/java/org/apache/fontbox/cff/CFFFont.java::method::CFFFont.getData	method	ported	src/fontbox/cff/cff_font.cr	ported: CFFFont#data
 fontbox/src/main/java/org/apache/fontbox/cff/CFFFont.java::method::CFFFont.getFontBBox	method	ported	src	auto-generated
 fontbox/src/main/java/org/apache/fontbox/cff/CFFFont.java::method::CFFFont.getFontMatrix	method	ported	src	auto-generated
 fontbox/src/main/java/org/apache/fontbox/cff/CFFFont.java::method::CFFFont.getGlobalSubrIndex	method	ported	src	auto-generated
 fontbox/src/main/java/org/apache/fontbox/cff/CFFFont.java::method::CFFFont.getName	method	ported	src	auto-generated
-fontbox/src/main/java/org/apache/fontbox/cff/CFFFont.java::method::CFFFont.getNumCharStrings	method	partial	src	auto-generated
+fontbox/src/main/java/org/apache/fontbox/cff/CFFFont.java::method::CFFFont.getNumCharStrings	method	ported	src/fontbox/cff/cff_font.cr	ported: CFFFont#num_char_strings
 fontbox/src/main/java/org/apache/fontbox/cff/CFFFont.java::method::CFFFont.getTopDict	method	ported	src	auto-generated
 fontbox/src/main/java/org/apache/fontbox/cff/CFFFont.java::method::CFFFont.getType2CharString	method	ported	src	auto-generated
 fontbox/src/main/java/org/apache/fontbox/cff/CFFFont.java::method::CFFFont.setCharset	method	ported	src	auto-generated
-fontbox/src/main/java/org/apache/fontbox/cff/CFFFont.java::method::CFFFont.setData	method	partial	src	auto-generated
+fontbox/src/main/java/org/apache/fontbox/cff/CFFFont.java::method::CFFFont.setData	method	ported	src/fontbox/cff/cff_font.cr	ported: protected source= setter
 fontbox/src/main/java/org/apache/fontbox/cff/CFFFont.java::method::CFFFont.setGlobalSubrIndex	method	ported	src	auto-generated
 fontbox/src/main/java/org/apache/fontbox/cff/CFFFont.java::method::CFFFont.setName	method	ported	src	auto-generated
-fontbox/src/main/java/org/apache/fontbox/cff/CFFFont.java::method::CFFFont.toString	method	partial	src	auto-generated
+fontbox/src/main/java/org/apache/fontbox/cff/CFFFont.java::method::CFFFont.toString	method	ported	src/fontbox/cff/cff_font.cr	ported: CFFFont#to_s
 fontbox/src/main/java/org/apache/fontbox/cff/CFFISOAdobeCharset.java::class::CFFISOAdobeCharset	class	missing	-	auto-generated
 fontbox/src/main/java/org/apache/fontbox/cff/CFFISOAdobeCharset.java::const::CHAR_CODE	const	missing	-	auto-generated
 fontbox/src/main/java/org/apache/fontbox/cff/CFFISOAdobeCharset.java::const::CHAR_NAME	const	missing	-	auto-generated
