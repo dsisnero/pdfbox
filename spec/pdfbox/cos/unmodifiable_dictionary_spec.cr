@@ -1,6 +1,18 @@
 require "../../spec_helper"
 
 describe Pdfbox::Cos::UnmodifiableDictionary do
+  it "is a live view over the source dictionary (Java unmodifiableMap)" do
+    source = Pdfbox::Cos::Dictionary.new
+    view = source.as_unmodifiable_dictionary
+    key = Pdfbox::Cos::Name.new("A")
+
+    source.set_item(key, Pdfbox::Cos::Name.new("A"))
+    view.get_dictionary_object(key).should eq(Pdfbox::Cos::Name.new("A"))
+
+    source.clear
+    view.size.should eq(0)
+  end
+
   it "raises UnsupportedOperationError for mutation methods" do
     dict = Pdfbox::Cos::Dictionary.new.as_unmodifiable_dictionary
 

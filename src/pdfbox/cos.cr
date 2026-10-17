@@ -114,6 +114,12 @@ module Pdfbox::Cos
     def need_to_be_updated=(flag : Bool) : Nil
       update_state.update(flag)
     end
+
+    # Sets whether this object needs to be updated.
+    # Java COSUpdateInfo#setNeedToBeUpdated.
+    def set_need_to_be_updated(flag : Bool) : Nil # ameba:disable Naming/AccessorMethodName
+      self.need_to_be_updated = flag
+    end
   end
 
   # Marker for null values in PDF
@@ -1144,6 +1150,16 @@ module Pdfbox::Cos
       self[Name.new(key)] = value
     end
 
+    # Sets an item from a COSObjectable (Java setItem(COSName, COSObjectable)).
+    def set_item(key : Name, value : Pdfbox::Pdmodel::Common::COSObjectable) : Base
+      set_item(key, value.cos_object)
+    end
+
+    # Sets an item from a COSObjectable (Java setItem(String, COSObjectable)).
+    def set_item(key : ::String, value : Pdfbox::Pdmodel::Common::COSObjectable) : Base
+      set_item(Name.new(key), value)
+    end
+
     def [](key : Name) : Base?
       @entries[key]?
     end
@@ -2156,8 +2172,11 @@ module Pdfbox::Cos
   end
 
   class UnmodifiableDictionary < Dictionary
+    # Shares the source dictionary's entries, like Java's
+    # `items = Collections.unmodifiableMap(dict.items)`: reads see later changes
+    # made through the source dictionary, while every mutator raises.
     def initialize(entries : ::Hash(Name, Base) = {} of Name => Base)
-      super(entries.dup)
+      super(entries)
     end
 
     def []=(key : Name, value : Base) : Base

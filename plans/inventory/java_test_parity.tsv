@@ -633,19 +633,19 @@ pdfbox/src/test/java/org/apache/pdfbox/cos/TestCOSString.java::method::TestCOSSt
 pdfbox/src/test/java/org/apache/pdfbox/cos/TestCOSString.java::method::TestCOSString.writePDFTests	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/cos/TestCOSUpdateInfo.java::class::TestCOSUpdateInfo	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/cos/TestCOSUpdateInfo.java::method::TestCOSUpdateInfo.testIsSetNeedToBeUpdate	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/cos/UnmodifiableCOSDictionaryTest.java::class::UnmodifiableCOSDictionaryTest	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/cos/UnmodifiableCOSDictionaryTest.java::method::UnmodifiableCOSDictionaryTest.testSetBoolean	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/cos/UnmodifiableCOSDictionaryTest.java::method::UnmodifiableCOSDictionaryTest.testSetDate	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/cos/UnmodifiableCOSDictionaryTest.java::method::UnmodifiableCOSDictionaryTest.testSetEmbeddedDate	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/cos/UnmodifiableCOSDictionaryTest.java::method::UnmodifiableCOSDictionaryTest.testSetEmbeddedInt	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/cos/UnmodifiableCOSDictionaryTest.java::method::UnmodifiableCOSDictionaryTest.testSetEmbeddedString	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/cos/UnmodifiableCOSDictionaryTest.java::method::UnmodifiableCOSDictionaryTest.testSetFloat	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/cos/UnmodifiableCOSDictionaryTest.java::method::UnmodifiableCOSDictionaryTest.testSetInt	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/cos/UnmodifiableCOSDictionaryTest.java::method::UnmodifiableCOSDictionaryTest.testSetItem	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/cos/UnmodifiableCOSDictionaryTest.java::method::UnmodifiableCOSDictionaryTest.testSetLong	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/cos/UnmodifiableCOSDictionaryTest.java::method::UnmodifiableCOSDictionaryTest.testSetName	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/cos/UnmodifiableCOSDictionaryTest.java::method::UnmodifiableCOSDictionaryTest.testSetString	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/cos/UnmodifiableCOSDictionaryTest.java::method::UnmodifiableCOSDictionaryTest.testUnmodifiableCOSDictionary	ported	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/cos/UnmodifiableCOSDictionaryTest.java::class::UnmodifiableCOSDictionaryTest	ported	spec/pdfbox/cos/unmodifiable_cos_dictionary_test_spec.cr	ported: upstream UnmodifiableCOSDictionaryTest
+pdfbox/src/test/java/org/apache/pdfbox/cos/UnmodifiableCOSDictionaryTest.java::method::UnmodifiableCOSDictionaryTest.testSetBoolean	ported	spec/pdfbox/cos/unmodifiable_cos_dictionary_test_spec.cr	ported: upstream UnmodifiableCOSDictionaryTest
+pdfbox/src/test/java/org/apache/pdfbox/cos/UnmodifiableCOSDictionaryTest.java::method::UnmodifiableCOSDictionaryTest.testSetDate	ported	spec/pdfbox/cos/unmodifiable_cos_dictionary_test_spec.cr	ported: upstream UnmodifiableCOSDictionaryTest
+pdfbox/src/test/java/org/apache/pdfbox/cos/UnmodifiableCOSDictionaryTest.java::method::UnmodifiableCOSDictionaryTest.testSetEmbeddedDate	ported	spec/pdfbox/cos/unmodifiable_cos_dictionary_test_spec.cr	ported: upstream UnmodifiableCOSDictionaryTest
+pdfbox/src/test/java/org/apache/pdfbox/cos/UnmodifiableCOSDictionaryTest.java::method::UnmodifiableCOSDictionaryTest.testSetEmbeddedInt	ported	spec/pdfbox/cos/unmodifiable_cos_dictionary_test_spec.cr	ported: upstream UnmodifiableCOSDictionaryTest
+pdfbox/src/test/java/org/apache/pdfbox/cos/UnmodifiableCOSDictionaryTest.java::method::UnmodifiableCOSDictionaryTest.testSetEmbeddedString	ported	spec/pdfbox/cos/unmodifiable_cos_dictionary_test_spec.cr	ported: upstream UnmodifiableCOSDictionaryTest
+pdfbox/src/test/java/org/apache/pdfbox/cos/UnmodifiableCOSDictionaryTest.java::method::UnmodifiableCOSDictionaryTest.testSetFloat	ported	spec/pdfbox/cos/unmodifiable_cos_dictionary_test_spec.cr	ported: upstream UnmodifiableCOSDictionaryTest
+pdfbox/src/test/java/org/apache/pdfbox/cos/UnmodifiableCOSDictionaryTest.java::method::UnmodifiableCOSDictionaryTest.testSetInt	ported	spec/pdfbox/cos/unmodifiable_cos_dictionary_test_spec.cr	ported: upstream UnmodifiableCOSDictionaryTest
+pdfbox/src/test/java/org/apache/pdfbox/cos/UnmodifiableCOSDictionaryTest.java::method::UnmodifiableCOSDictionaryTest.testSetItem	ported	spec/pdfbox/cos/unmodifiable_cos_dictionary_test_spec.cr	ported: upstream UnmodifiableCOSDictionaryTest
+pdfbox/src/test/java/org/apache/pdfbox/cos/UnmodifiableCOSDictionaryTest.java::method::UnmodifiableCOSDictionaryTest.testSetLong	ported	spec/pdfbox/cos/unmodifiable_cos_dictionary_test_spec.cr	ported: upstream UnmodifiableCOSDictionaryTest
+pdfbox/src/test/java/org/apache/pdfbox/cos/UnmodifiableCOSDictionaryTest.java::method::UnmodifiableCOSDictionaryTest.testSetName	ported	spec/pdfbox/cos/unmodifiable_cos_dictionary_test_spec.cr	ported: upstream UnmodifiableCOSDictionaryTest
+pdfbox/src/test/java/org/apache/pdfbox/cos/UnmodifiableCOSDictionaryTest.java::method::UnmodifiableCOSDictionaryTest.testSetString	ported	spec/pdfbox/cos/unmodifiable_cos_dictionary_test_spec.cr	ported: upstream UnmodifiableCOSDictionaryTest
+pdfbox/src/test/java/org/apache/pdfbox/cos/UnmodifiableCOSDictionaryTest.java::method::UnmodifiableCOSDictionaryTest.testUnmodifiableCOSDictionary	ported	spec/pdfbox/cos/unmodifiable_cos_dictionary_test_spec.cr	ported: upstream UnmodifiableCOSDictionaryTest
 pdfbox/src/test/java/org/apache/pdfbox/encryption/TestPublicKeyEncryption.java::class::TestPublicKeyEncryption	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/encryption/TestPublicKeyEncryption.java::const::TESTRESULTSDIR	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/encryption/TestPublicKeyEncryption.java::method::TestPublicKeyEncryption.getKeyStore	ported	-	baseline

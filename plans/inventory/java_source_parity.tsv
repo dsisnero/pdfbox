@@ -3793,7 +3793,7 @@ pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictio
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.setFlag	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.setFloat	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.setInt	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.setItem	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.setItem	ported	src/pdfbox/cos.cr	ported: Dictionary#set_item (COSBase + COSObjectable overloads)
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.setLong	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.setName	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.setString	missing	-	baseline
@@ -4547,10 +4547,10 @@ pdfbox/src/main/java/org/apache/pdfbox/cos/COSString.java::method::COSString.has
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSString.java::method::COSString.parseHex	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSString.java::method::COSString.toHexString	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSString.java::method::COSString.toString	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSUpdateInfo.java::interface::COSUpdateInfo	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSUpdateInfo.java::method::getUpdateState	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSUpdateInfo.java::method::isNeedToBeUpdated	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSUpdateInfo.java::method::setNeedToBeUpdated	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSUpdateInfo.java::interface::COSUpdateInfo	ported	src/pdfbox/cos.cr	ported as Cos::Base update-state methods
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSUpdateInfo.java::method::getUpdateState	ported	src/pdfbox/cos.cr	ported: Base#update_state
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSUpdateInfo.java::method::isNeedToBeUpdated	ported	src/pdfbox/cos.cr	ported: Base#need_to_be_updated?
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSUpdateInfo.java::method::setNeedToBeUpdated	ported	src/pdfbox/cos.cr	ported: Base#set_need_to_be_updated
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSUpdateInfo.java::method::toIncrement	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSUpdateState.java::class::COSUpdateState	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSUpdateState.java::method::COSUpdateState.dereferenceChild	missing	-	baseline
@@ -4583,8 +4583,8 @@ pdfbox/src/main/java/org/apache/pdfbox/cos/PDFDocEncoding.java::method::PDFDocEn
 pdfbox/src/main/java/org/apache/pdfbox/cos/PDFDocEncoding.java::method::PDFDocEncoding.getBytes	ported	src/pdfbox/cos.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/cos/PDFDocEncoding.java::method::PDFDocEncoding.set	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/cos/PDFDocEncoding.java::method::PDFDocEncoding.toString	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/UnmodifiableCOSDictionary.java::class::UnmodifiableCOSDictionary	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/UnmodifiableCOSDictionary.java::method::UnmodifiableCOSDictionary.setNeedToBeUpdated	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/cos/UnmodifiableCOSDictionary.java::class::UnmodifiableCOSDictionary	ported	src/pdfbox/cos.cr	ported as UnmodifiableDictionary
+pdfbox/src/main/java/org/apache/pdfbox/cos/UnmodifiableCOSDictionary.java::method::UnmodifiableCOSDictionary.setNeedToBeUpdated	ported	src/pdfbox/cos.cr	ported: inherited set_need_to_be_updated raises via need_to_be_updated=
 pdfbox/src/main/java/org/apache/pdfbox/filter/ASCII85Filter.java::class::ASCII85Filter	ported	src/.../filter/ascii85_filter.cr	stale inventory; class ported
 pdfbox/src/main/java/org/apache/pdfbox/filter/ASCII85Filter.java::method::ASCII85Filter.decode	ported	src/.../filter/ascii85_filter.cr	stale inventory; class ported
 pdfbox/src/main/java/org/apache/pdfbox/filter/ASCII85Filter.java::method::ASCII85Filter.encode	ported	src/.../filter/ascii85_filter.cr	stale inventory; class ported

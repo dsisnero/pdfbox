@@ -3793,7 +3793,7 @@ pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictio
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.setFlag	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.setFloat	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.setInt	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.setItem	method	ported	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.setItem	method	ported	src/pdfbox/cos.cr	ported: Dictionary#set_item (COSBase + COSObjectable overloads)
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.setLong	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.setName	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDictionary.java::method::COSDictionary.setString	method	ported	src	auto-generated
@@ -4547,10 +4547,10 @@ pdfbox/src/main/java/org/apache/pdfbox/cos/COSString.java::method::COSString.has
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSString.java::method::COSString.parseHex	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSString.java::method::COSString.toHexString	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSString.java::method::COSString.toString	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSUpdateInfo.java::interface::COSUpdateInfo	interface	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSUpdateInfo.java::method::getUpdateState	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSUpdateInfo.java::method::isNeedToBeUpdated	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSUpdateInfo.java::method::setNeedToBeUpdated	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSUpdateInfo.java::interface::COSUpdateInfo	interface	ported	src/pdfbox/cos.cr	ported as Cos::Base update-state methods
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSUpdateInfo.java::method::getUpdateState	method	ported	src/pdfbox/cos.cr	ported: Base#update_state
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSUpdateInfo.java::method::isNeedToBeUpdated	method	ported	src/pdfbox/cos.cr	ported: Base#need_to_be_updated?
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSUpdateInfo.java::method::setNeedToBeUpdated	method	ported	src/pdfbox/cos.cr	ported: Base#set_need_to_be_updated
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSUpdateInfo.java::method::toIncrement	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSUpdateState.java::class::COSUpdateState	class	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSUpdateState.java::method::COSUpdateState.dereferenceChild	method	partial	src	auto-generated
@@ -4583,8 +4583,8 @@ pdfbox/src/main/java/org/apache/pdfbox/cos/PDFDocEncoding.java::method::PDFDocEn
 pdfbox/src/main/java/org/apache/pdfbox/cos/PDFDocEncoding.java::method::PDFDocEncoding.getBytes	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/cos/PDFDocEncoding.java::method::PDFDocEncoding.set	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/cos/PDFDocEncoding.java::method::PDFDocEncoding.toString	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/UnmodifiableCOSDictionary.java::class::UnmodifiableCOSDictionary	class	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/UnmodifiableCOSDictionary.java::method::UnmodifiableCOSDictionary.setNeedToBeUpdated	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/cos/UnmodifiableCOSDictionary.java::class::UnmodifiableCOSDictionary	class	ported	src/pdfbox/cos.cr	ported as UnmodifiableDictionary
+pdfbox/src/main/java/org/apache/pdfbox/cos/UnmodifiableCOSDictionary.java::method::UnmodifiableCOSDictionary.setNeedToBeUpdated	method	ported	src/pdfbox/cos.cr	ported: inherited set_need_to_be_updated raises via need_to_be_updated=
 pdfbox/src/main/java/org/apache/pdfbox/filter/ASCII85Filter.java::class::ASCII85Filter	class	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/filter/ASCII85Filter.java::method::ASCII85Filter.decode	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/filter/ASCII85Filter.java::method::ASCII85Filter.encode	method	ported	src	auto-generated
