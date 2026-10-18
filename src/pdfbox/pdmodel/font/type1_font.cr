@@ -154,12 +154,12 @@ class Pdfbox::Pdmodel::Font::PDType1Font < Pdfbox::Pdmodel::Font::PDSimpleFont
   end
 
   # Constructor for embedding (placeholder)
-  def initialize(doc : PDDocument, pfb_in : ::IO)
+  def initialize(doc : EmbeddingDocument, pfb_in : ::IO)
     initialize(doc, pfb_in, nil)
   end
 
   # Constructor with encoding (placeholder)
-  def initialize(doc : PDDocument, pfb_in : ::IO, encoding : Pdfbox::Pdmodel::Font::Encoding::Encoding?)
+  def initialize(doc : EmbeddingDocument, pfb_in : ::IO, encoding : Pdfbox::Pdmodel::Font::Encoding::Encoding?)
     super() # embedding constructor
     @standard14 = false
     embedder = Pdfbox::Pdmodel::Font::PDType1FontEmbedder.new(doc, @dict, pfb_in, encoding)

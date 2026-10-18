@@ -7679,7 +7679,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDTrueTypeFont.java::method:
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDTrueTypeFont.java::method::PDTrueTypeFont.hasGlyph	ported	src/pdfbox/pdmodel/font/true_type_font.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDTrueTypeFont.java::method::PDTrueTypeFont.isDamaged	ported	src/pdfbox/pdmodel/font/true_type_font.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDTrueTypeFont.java::method::PDTrueTypeFont.isEmbedded	ported	src/pdfbox/pdmodel/font/true_type_font.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDTrueTypeFont.java::method::PDTrueTypeFont.load	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDTrueTypeFont.java::method::PDTrueTypeFont.load	ported	src/pdfbox/pdmodel/font/true_type_font.cr	ported: load(File/IO/RandomAccessRead/TrueTypeFont) accepts Document or PDDocument
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDTrueTypeFont.java::method::PDTrueTypeFont.readCode	ported	src/pdfbox/pdmodel/font/true_type_font.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDTrueTypeFont.java::method::PDTrueTypeFont.readEncodingFromFont	ported	src/pdfbox/pdmodel/font/true_type_font.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDTrueTypeFontEmbedder.java::class::PDTrueTypeFontEmbedder	ported	src/pdfbox/pdmodel/font/true_type_font.cr	reconciled: class present
@@ -7780,10 +7780,10 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1Font.java::method::PD
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1Font.java::method::PDType1Font.repairLength1	ported	src/pdfbox/pdmodel/font/type1_font.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1Font.java::method::PDType1Font.repairLength2	ported	src/pdfbox/pdmodel/font/type1_font.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1FontEmbedder.java::class::PDType1FontEmbedder	ported	src/pdfbox/pdmodel/font/pdfont.cr	reconciled: class present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1FontEmbedder.java::method::PDType1FontEmbedder.buildFontDescriptor	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1FontEmbedder.java::method::PDType1FontEmbedder.getFontEncoding	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1FontEmbedder.java::method::PDType1FontEmbedder.buildFontDescriptor	ported	src/pdfbox/pdmodel/font/type1_font_embedder.cr	ported: PDType1FontEmbedder.build_font_descriptor
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1FontEmbedder.java::method::PDType1FontEmbedder.getFontEncoding	ported	src/pdfbox/pdmodel/font/type1_font_embedder.cr	ported: font_encoding (built-in encoding fallback)
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1FontEmbedder.java::method::PDType1FontEmbedder.getGlyphList	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1FontEmbedder.java::method::PDType1FontEmbedder.getType1Font	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1FontEmbedder.java::method::PDType1FontEmbedder.getType1Font	ported	src/pdfbox/pdmodel/font/type1_font_embedder.cr	ported: type1_font getter
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType3CharProc.java::class::PDType3CharProc	ported	src/pdfbox/pdmodel/font/type3_char_proc.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType3CharProc.java::const::LOG	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType3CharProc.java::method::PDType3CharProc.getBBox	missing	-	baseline

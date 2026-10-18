@@ -19,6 +19,7 @@ require "../../../fontbox/ttf/open_type_font"
 require "../../../fontbox/util/path"
 require "../common/pdstream"
 require "../common/pdrectangle"
+require "./embedding_document"
 
 class Pdfbox::Pdmodel::Font::PDTrueTypeFont < Pdfbox::Pdmodel::Font::PDSimpleFont
   include PDVectorFont
@@ -30,7 +31,7 @@ class Pdfbox::Pdmodel::Font::PDTrueTypeFont < Pdfbox::Pdmodel::Font::PDSimpleFon
     getter font_descriptor : PDFontDescriptor
     @font_descriptor : PDFontDescriptor
 
-    def initialize(doc : PDDocument, dict : Pdfbox::Cos::Dictionary, ttf : Fontbox::TTF::TrueTypeFont, encoding : Pdfbox::Pdmodel::Font::Encoding::Encoding, pd_font : PDTrueTypeFont)
+    def initialize(doc : EmbeddingDocument, dict : Pdfbox::Cos::Dictionary, ttf : Fontbox::TTF::TrueTypeFont, encoding : Pdfbox::Pdmodel::Font::Encoding::Encoding, pd_font : PDTrueTypeFont)
       dict[Pdfbox::Cos::Name::TYPE] = Pdfbox::Cos::Name::FONT
       # Set font subtype
       dict[Pdfbox::Cos::Name.new("Subtype")] = Pdfbox::Cos::Name.new("TrueType")
@@ -72,7 +73,7 @@ class Pdfbox::Pdmodel::Font::PDTrueTypeFont < Pdfbox::Pdmodel::Font::PDSimpleFon
 
       @font_descriptor.stem_v = 80.0_f32
       @font_descriptor.italic_angle = ttf.postscript.try(&.italic_angle) || 0.0_f32
-      @font_descriptor.font_file2 = Pdfbox::Pdmodel::Common::PDStream.new(doc, ttf.original_data)
+      @font_descriptor.font_file2 = Embedding.font_file_stream(doc, ttf.original_data)
 
       # Calculate and set widths
       set_widths(dict, ttf, encoding, pd_font)
@@ -144,7 +145,7 @@ class Pdfbox::Pdmodel::Font::PDTrueTypeFont < Pdfbox::Pdmodel::Font::PDSimpleFon
   end
 
   # Class methods for loading fonts
-  def self.load(doc : PDDocument, input : ::IO, encoding : Pdfbox::Pdmodel::Font::Encoding::Encoding) : PDTrueTypeFont
+  def self.load(doc : EmbeddingDocument, input : ::IO, encoding : Pdfbox::Pdmodel::Font::Encoding::Encoding) : PDTrueTypeFont
     # Read the font data into a RandomAccessReadBuffer
     random_access_read = Pdfbox::IO::RandomAccessReadBuffer.new(input)
 
@@ -156,7 +157,18 @@ class Pdfbox::Pdmodel::Font::PDTrueTypeFont < Pdfbox::Pdmodel::Font::PDSimpleFon
     load(doc, ttf, encoding)
   end
 
-  def self.load(doc : PDDocument, ttf : Fontbox::TTF::TrueTypeFont, encoding : Pdfbox::Pdmodel::Font::Encoding::Encoding) : PDTrueTypeFont
+  # Java PDTrueTypeFont#load(PDDocument, File, Encoding).
+  def self.load(doc : EmbeddingDocument, file : ::File, encoding : Pdfbox::Pdmodel::Font::Encoding::Encoding) : PDTrueTypeFont
+    load(doc, Pdfbox::IO::RandomAccessReadBufferedFile.new(file.path), encoding)
+  end
+
+  # Java PDTrueTypeFont#load(PDDocument, RandomAccessRead, Encoding).
+  def self.load(doc : EmbeddingDocument, input : Pdfbox::IO::RandomAccessRead, encoding : Pdfbox::Pdmodel::Font::Encoding::Encoding) : PDTrueTypeFont
+    ttf = Fontbox::TTF::TTFParser.new.parse(input)
+    new(doc, ttf, encoding, true)
+  end
+
+  def self.load(doc : EmbeddingDocument, ttf : Fontbox::TTF::TrueTypeFont, encoding : Pdfbox::Pdmodel::Font::Encoding::Encoding) : PDTrueTypeFont
     new(doc, ttf, encoding, false)
   end
 
@@ -230,7 +242,7 @@ class Pdfbox::Pdmodel::Font::PDTrueTypeFont < Pdfbox::Pdmodel::Font::PDSimpleFon
   end
 
   # Constructor for embedding (placeholder)
-  protected def initialize(doc : PDDocument, ttf : Fontbox::TTF::TrueTypeFont, encoding : Pdfbox::Pdmodel::Font::Encoding::Encoding, close_ttf : Bool)
+  protected def initialize(doc : EmbeddingDocument, ttf : Fontbox::TTF::TrueTypeFont, encoding : Pdfbox::Pdmodel::Font::Encoding::Encoding, close_ttf : Bool)
     super() # embedding constructor
     @ttf = ttf
     @otf = ttf.is_a?(Fontbox::TTF::OpenTypeFont) && ttf.supported_otf? ? ttf : nil

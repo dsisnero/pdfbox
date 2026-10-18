@@ -7679,7 +7679,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDTrueTypeFont.java::method:
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDTrueTypeFont.java::method::PDTrueTypeFont.hasGlyph	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDTrueTypeFont.java::method::PDTrueTypeFont.isDamaged	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDTrueTypeFont.java::method::PDTrueTypeFont.isEmbedded	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDTrueTypeFont.java::method::PDTrueTypeFont.load	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDTrueTypeFont.java::method::PDTrueTypeFont.load	method	ported	src/pdfbox/pdmodel/font/true_type_font.cr	ported: load(File/IO/RandomAccessRead/TrueTypeFont) accepts Document or PDDocument
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDTrueTypeFont.java::method::PDTrueTypeFont.readCode	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDTrueTypeFont.java::method::PDTrueTypeFont.readEncodingFromFont	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDTrueTypeFontEmbedder.java::class::PDTrueTypeFontEmbedder	class	partial	src	auto-generated
@@ -7780,10 +7780,10 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1Font.java::method::PD
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1Font.java::method::PDType1Font.repairLength1	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1Font.java::method::PDType1Font.repairLength2	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1FontEmbedder.java::class::PDType1FontEmbedder	class	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1FontEmbedder.java::method::PDType1FontEmbedder.buildFontDescriptor	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1FontEmbedder.java::method::PDType1FontEmbedder.getFontEncoding	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1FontEmbedder.java::method::PDType1FontEmbedder.buildFontDescriptor	method	ported	src/pdfbox/pdmodel/font/type1_font_embedder.cr	ported: PDType1FontEmbedder.build_font_descriptor
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1FontEmbedder.java::method::PDType1FontEmbedder.getFontEncoding	method	ported	src/pdfbox/pdmodel/font/type1_font_embedder.cr	ported: font_encoding (built-in encoding fallback)
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1FontEmbedder.java::method::PDType1FontEmbedder.getGlyphList	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1FontEmbedder.java::method::PDType1FontEmbedder.getType1Font	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType1FontEmbedder.java::method::PDType1FontEmbedder.getType1Font	method	ported	src/pdfbox/pdmodel/font/type1_font_embedder.cr	ported: type1_font getter
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType3CharProc.java::class::PDType3CharProc	class	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType3CharProc.java::const::LOG	const	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDType3CharProc.java::method::PDType3CharProc.getBBox	method	partial	src	auto-generated

@@ -4,22 +4,30 @@ require "../../../fontbox/pfb/pfb_parser"
 require "../../../fontbox/type1/type1_font"
 require "../common/pdstream"
 require "../common/pdrectangle"
+require "./embedding_document"
 
 class Pdfbox::Pdmodel::Font::PDType1FontEmbedder
   getter font_encoding : Pdfbox::Pdmodel::Font::Encoding::Encoding
   getter type1_font : Fontbox::Type1::Type1Font
 
-  def initialize(doc : Pdfbox::Pdmodel::PDDocument, dict : Pdfbox::Cos::Dictionary, pfb_stream : ::IO,
+  def initialize(doc : EmbeddingDocument, dict : Pdfbox::Cos::Dictionary, pfb_stream : ::IO,
                  encoding : Pdfbox::Pdmodel::Font::Encoding::Encoding?)
     dict[Pdfbox::Cos::Name::SUBTYPE] = Pdfbox::Cos::Name::TYPE1
 
     pfb_bytes = pfb_stream.getb_to_end
     pfb_parser = Fontbox::Pfb::PfbParser.new(pfb_bytes)
     @type1_font = Fontbox::Type1::Type1Font.create_with_pfb(pfb_bytes)
-    @font_encoding = encoding || Pdfbox::Pdmodel::Font::Encoding::Type1Encoding.new
+    # Java: fontEncoding = encoding == null
+    #   ? Type1Encoding.fromFontBox(type1.getEncoding()) : encoding
+    font_encoding = encoding
+    unless font_encoding
+      built_in = @type1_font.encoding
+      font_encoding = built_in ? Pdfbox::Pdmodel::Font::Encoding::Type1Encoding.from_font_box(built_in) : Pdfbox::Pdmodel::Font::Encoding::Type1Encoding.new
+    end
+    @font_encoding = font_encoding
 
     descriptor = self.class.build_font_descriptor(@type1_font)
-    font_stream = Pdfbox::Pdmodel::Common::PDStream.new(doc.document)
+    font_stream = Embedding.empty_stream(doc)
     output = font_stream.create_output_stream(Pdfbox::Cos::Name::FLATE_DECODE)
     output.write(pfb_bytes)
     output.close

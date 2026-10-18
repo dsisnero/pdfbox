@@ -14,14 +14,10 @@ require "./cid_font_type0"
 require "./cid_font_type2"
 require "./font_factory"
 require "./to_unicode_writer"
+require "./embedding_document"
 require "../common/pdstream"
 require "../common/pdrectangle"
 require "../../../fontbox/ttf/ttf_subsetter"
-
-# A document that can hold an embedded font. Java has a single PDDocument type; the
-# Crystal port has the real `Pdfbox::Pdmodel::Document` (returned by `Loader.load_pdf`
-# and `Document.create`) plus the legacy `Pdfbox::Pdmodel::PDDocument` stub.
-alias Pdfbox::Pdmodel::Font::EmbeddingDocument = Pdfbox::Pdmodel::Document | Pdfbox::Pdmodel::PDDocument
 
 class Pdfbox::Pdmodel::Font::PDType0Font < Pdfbox::Pdmodel::Font::PDFont
   include PDVectorFont
@@ -580,22 +576,8 @@ class Pdfbox::Pdmodel::Font::PDType0Font < Pdfbox::Pdmodel::Font::PDFont
     descriptor.italic_angle = ttf.postscript.try(&.italic_angle) || 0.0_f32
 
     font_data = ttf.original_data
-    descriptor.font_file2 = font_file_stream(doc, font_data)
+    descriptor.font_file2 = Embedding.font_file_stream(doc, font_data)
     descriptor
-  end
-
-  # Creates the font-file stream. The legacy document registers the stream in its
-  # COS document; the real document has no such registry, so the stream is detached
-  # and picked up by the writer through the font descriptor (as rebuild_subset_font does).
-  private def font_file_stream(doc : EmbeddingDocument, font_data : ::IO) : Pdfbox::Pdmodel::Common::PDStream
-    case doc
-    when Pdfbox::Pdmodel::PDDocument
-      Pdfbox::Pdmodel::Common::PDStream.new(doc, font_data)
-    else
-      buffer = ::IO::Memory.new
-      ::IO.copy(font_data, buffer)
-      Pdfbox::Pdmodel::Common::PDStream.new(Pdfbox::Cos::Stream.new(data: buffer.to_slice))
-    end
   end
 
   private def rebuild_subset_font(subset_bytes : Bytes, cid_to_gid : Hash(Int32, Int32)) : Nil
