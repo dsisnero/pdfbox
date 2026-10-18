@@ -3,6 +3,19 @@ require "../../../../../src/pdfbox"
 
 private RESOURCE_DIR = "spec/resources/pdfbox/pdmodel/interactive/form"
 
+# Java PDAcroFormFromAnnotsTest#CreateFieldsFixup: only rebuilds the fields from
+# the page-level widget annotations.
+private class CreateFieldsFixup
+  include Pdfbox::Pdmodel::Fixup::PDDocumentFixup
+
+  def initialize(@document : Pdfbox::Pdmodel::Document)
+  end
+
+  def apply : Nil
+    Pdfbox::Pdmodel::Interactive::Form::AcroFormOrphanWidgetsProcessor.new(@document).process
+  end
+end
+
 # Source of truth:
 #   vendor/pdfbox/pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroFormFromAnnotsTest.java
 # Fixtures downloaded from the Java JIRA attachment URLs (SHA512 recorded in
@@ -29,8 +42,8 @@ describe Pdfbox::Pdmodel::Document do
       cos_fields = fields_value.as(Pdfbox::Cos::Array)
       cos_fields.items.size.should eq(0)
 
+      # Java getAcroForm(): the default fixup rebuilds the fields (PDFBOX-4985).
       acro_form = document.document_catalog.not_nil!.acro_form
-      acro_form.not_nil!.rebuild_fields_from_widgets
       acro_form.not_nil!.get_field_tree.size.should eq(num_fields_by_acrobat)
     ensure
       document.close
@@ -58,9 +71,9 @@ describe Pdfbox::Pdmodel::Document do
       cos_fields = fields_value.as(Pdfbox::Cos::Array)
       cos_fields.items.size.should eq(0)
 
-      # Java getAcroForm(new AcroFormDefaultFixup(document)): explicit rebuild.
-      acro_form = document.document_catalog.not_nil!.acro_form
-      acro_form.not_nil!.rebuild_fields_from_widgets
+      # Java getAcroForm(new AcroFormDefaultFixup(document)).
+      fixup = Pdfbox::Pdmodel::Fixup::AcroFormDefaultFixup.new(document)
+      acro_form = document.document_catalog.not_nil!.acro_form(fixup)
       acro_form.not_nil!.get_field_tree.size.should eq(num_fields_by_acrobat)
     ensure
       document.close
@@ -80,7 +93,7 @@ describe Pdfbox::Pdmodel::Document do
       cos_fields.items.size.should eq(0)
 
       # Java getAcroForm(null): no fixup, fields stay empty.
-      acro_form = document.document_catalog.not_nil!.acro_form
+      acro_form = document.document_catalog.not_nil!.acro_form(nil)
       acro_form.not_nil!.fields.size.should eq(num_cos_form_fields)
     ensure
       document.close
@@ -126,8 +139,9 @@ describe Pdfbox::Pdmodel::Document do
       cos_fields = acro_form_dict.as(Pdfbox::Cos::Dictionary)[Pdfbox::Cos::Name.new("Fields")].as(Pdfbox::Cos::Array)
       cos_fields.items.size.should eq(0)
 
-      acro_form = document.document_catalog.not_nil!.acro_form
-      acro_form.not_nil!.rebuild_fields_from_widgets
+      # Java getAcroForm(new CreateFieldsFixup(testPdf)): only the orphan-widget rebuild.
+      fixup = CreateFieldsFixup.new(document)
+      acro_form = document.document_catalog.not_nil!.acro_form(fixup)
       acro_form.not_nil!.get_field_tree.size.should eq(num_fields_by_acrobat)
 
       acro_form.not_nil!.get_field_tree.each do |field|

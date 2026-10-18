@@ -5455,7 +5455,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::class::PD
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::const::LOG	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.addOutputIntent	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.findNamedDestinationPage	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getAcroForm	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getAcroForm	ported	src/pdfbox/pdmodel.cr	ported: acro_form / acro_form(fixup) applying AcroFormDefaultFixup
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getActions	ported	src/pdfbox/pdmodel.cr	ported: PDDocumentCatalog remaining accessors
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getCOSObject	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getDests	ported	src/pdfbox/pdmodel.cr	baseline
@@ -5476,7 +5476,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::P
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getURI	ported	src/pdfbox/pdmodel.cr	ported: PDDocumentCatalog remaining accessors
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getVersion	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getViewerPreferences	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setAcroForm	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setAcroForm	ported	src/pdfbox/pdmodel.cr	ported: acro_form=
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setActions	ported	src/pdfbox/pdmodel.cr	ported: PDDocumentCatalog remaining accessors
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setDocumentOutline	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setLanguage	ported	src/pdfbox/pdmodel.cr	ported: PDDocumentCatalog remaining accessors
@@ -7253,18 +7253,18 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFTemplate.java::method::FDF
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFTemplate.java::method::FDFTemplate.setRename	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFTemplate.java::method::FDFTemplate.setTemplateReference	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFTemplate.java::method::FDFTemplate.shouldRename	ported	src/pdfbox/pdmodel/fdf.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fixup/AbstractFixup.java::class::AbstractFixup	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fixup/AcroFormDefaultFixup.java::class::AcroFormDefaultFixup	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fixup/AcroFormDefaultFixup.java::method::AcroFormDefaultFixup.apply	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fixup/PDDocumentFixup.java::interface::PDDocumentFixup	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fixup/PDDocumentFixup.java::method::apply	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fixup/processor/AbstractProcessor.java::class::AbstractProcessor	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fixup/processor/AcroFormDefaultsProcessor.java::class::AcroFormDefaultsProcessor	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fixup/processor/AcroFormDefaultsProcessor.java::method::AcroFormDefaultsProcessor.process	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fixup/processor/AcroFormDefaultsProcessor.java::method::AcroFormDefaultsProcessor.verifyOrCreateDefaults	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fixup/processor/AcroFormGenerateAppearancesProcessor.java::class::AcroFormGenerateAppearancesProcessor	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fixup/AbstractFixup.java::class::AbstractFixup	ported	src/pdfbox/pdmodel/fixup.cr	ported: AbstractFixup
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fixup/AcroFormDefaultFixup.java::class::AcroFormDefaultFixup	ported	src/pdfbox/pdmodel/fixup.cr	ported: AcroFormDefaultFixup
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fixup/AcroFormDefaultFixup.java::method::AcroFormDefaultFixup.apply	ported	src/pdfbox/pdmodel/fixup.cr	ported: AcroFormDefaultFixup#apply
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fixup/PDDocumentFixup.java::interface::PDDocumentFixup	ported	src/pdfbox/pdmodel/fixup.cr	ported: PDDocumentFixup
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fixup/PDDocumentFixup.java::method::apply	ported	src/pdfbox/pdmodel/fixup.cr	ported: PDDocumentFixup#apply
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fixup/processor/AbstractProcessor.java::class::AbstractProcessor	ported	src/pdfbox/pdmodel/fixup.cr	ported: Processor::AbstractProcessor
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fixup/processor/AcroFormDefaultsProcessor.java::class::AcroFormDefaultsProcessor	ported	src/pdfbox/pdmodel/fixup.cr	ported: Processor::AcroFormDefaultsProcessor
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fixup/processor/AcroFormDefaultsProcessor.java::method::AcroFormDefaultsProcessor.process	ported	src/pdfbox/pdmodel/fixup.cr	ported: AcroFormDefaultsProcessor#process
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fixup/processor/AcroFormDefaultsProcessor.java::method::AcroFormDefaultsProcessor.verifyOrCreateDefaults	ported	src/pdfbox/pdmodel/fixup.cr	ported: verify_or_create_defaults
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fixup/processor/AcroFormGenerateAppearancesProcessor.java::class::AcroFormGenerateAppearancesProcessor	ported	src/pdfbox/pdmodel/fixup.cr	ported: Processor::AcroFormGenerateAppearancesProcessor
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fixup/processor/AcroFormGenerateAppearancesProcessor.java::const::LOG	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fixup/processor/AcroFormGenerateAppearancesProcessor.java::method::AcroFormGenerateAppearancesProcessor.process	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fixup/processor/AcroFormGenerateAppearancesProcessor.java::method::AcroFormGenerateAppearancesProcessor.process	ported	src/pdfbox/pdmodel/fixup.cr	ported: AcroFormGenerateAppearancesProcessor#process
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fixup/processor/AcroFormOrphanWidgetsProcessor.java::class::AcroFormOrphanWidgetsProcessor	ported	src/.../acro_form_orphan_widgets_processor.cr	stale inventory; class ported
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fixup/processor/AcroFormOrphanWidgetsProcessor.java::const::LOG	ported	src/.../acro_form_orphan_widgets_processor.cr	stale inventory; class ported
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fixup/processor/AcroFormOrphanWidgetsProcessor.java::method::AcroFormOrphanWidgetsProcessor.addFontFromWidget	ported	src/.../acro_form_orphan_widgets_processor.cr	stale inventory; class ported
@@ -7273,8 +7273,8 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fixup/processor/AcroFormOrphanWid
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fixup/processor/AcroFormOrphanWidgetsProcessor.java::method::AcroFormOrphanWidgetsProcessor.process	ported	src/.../acro_form_orphan_widgets_processor.cr	stale inventory; class ported
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fixup/processor/AcroFormOrphanWidgetsProcessor.java::method::AcroFormOrphanWidgetsProcessor.resolveFieldsFromWidgets	ported	src/.../acro_form_orphan_widgets_processor.cr	stale inventory; class ported
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fixup/processor/AcroFormOrphanWidgetsProcessor.java::method::AcroFormOrphanWidgetsProcessor.resolveNonRootField	ported	src/.../acro_form_orphan_widgets_processor.cr	stale inventory; class ported
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fixup/processor/PDDocumentProcessor.java::interface::PDDocumentProcessor	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fixup/processor/PDDocumentProcessor.java::method::process	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fixup/processor/PDDocumentProcessor.java::interface::PDDocumentProcessor	ported	src/pdfbox/pdmodel/fixup.cr	ported: Processor::PDDocumentProcessor
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fixup/processor/PDDocumentProcessor.java::method::process	ported	src/pdfbox/pdmodel/fixup.cr	ported: PDDocumentProcessor#process
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/CIDFontMapping.java::class::CIDFontMapping	ported	src/pdfbox/pdmodel/font/font_mapper.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/CIDFontMapping.java::method::CIDFontMapping.getTrueTypeFont	ported	src/pdfbox/pdmodel/font/font_mapper.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/CIDFontMapping.java::method::CIDFontMapping.isCIDFont	ported	src/pdfbox/pdmodel/font/font_mapper.cr	reconciled: method present

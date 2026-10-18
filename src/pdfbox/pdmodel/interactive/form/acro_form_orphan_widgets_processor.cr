@@ -12,7 +12,7 @@ module Pdfbox::Pdmodel::Interactive::Form
     end
 
     def process : Nil
-      acro_form = @document.document_catalog.try(&.acro_form)
+      acro_form = @document.document_catalog.try(&.acro_form(nil))
       return if acro_form.nil?
 
       resolve_fields_from_widgets(acro_form)

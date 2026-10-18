@@ -5455,7 +5455,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::class::PD
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::const::LOG	const	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.addOutputIntent	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.findNamedDestinationPage	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getAcroForm	method	ported	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getAcroForm	method	ported	src/pdfbox/pdmodel.cr	ported: acro_form / acro_form(fixup) applying AcroFormDefaultFixup
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getActions	method	ported	src/pdfbox/pdmodel.cr	ported: PDDocumentCatalog remaining accessors
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getCOSObject	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getDests	method	ported	src/pdfbox/pdmodel.cr	auto-generated
@@ -5476,7 +5476,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::P
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getURI	method	ported	src/pdfbox/pdmodel.cr	ported: PDDocumentCatalog remaining accessors
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getVersion	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.getViewerPreferences	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setAcroForm	method	ported	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setAcroForm	method	ported	src/pdfbox/pdmodel.cr	ported: acro_form=
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setActions	method	ported	src/pdfbox/pdmodel.cr	ported: PDDocumentCatalog remaining accessors
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setDocumentOutline	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocumentCatalog.java::method::PDDocumentCatalog.setLanguage	method	ported	src/pdfbox/pdmodel.cr	ported: PDDocumentCatalog remaining accessors
@@ -7253,18 +7253,18 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFTemplate.java::method::FDF
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFTemplate.java::method::FDFTemplate.setRename	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFTemplate.java::method::FDFTemplate.setTemplateReference	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fdf/FDFTemplate.java::method::FDFTemplate.shouldRename	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fixup/AbstractFixup.java::class::AbstractFixup	class	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fixup/AcroFormDefaultFixup.java::class::AcroFormDefaultFixup	class	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fixup/AcroFormDefaultFixup.java::method::AcroFormDefaultFixup.apply	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fixup/PDDocumentFixup.java::interface::PDDocumentFixup	interface	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fixup/PDDocumentFixup.java::method::apply	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fixup/processor/AbstractProcessor.java::class::AbstractProcessor	class	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fixup/processor/AcroFormDefaultsProcessor.java::class::AcroFormDefaultsProcessor	class	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fixup/processor/AcroFormDefaultsProcessor.java::method::AcroFormDefaultsProcessor.process	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fixup/processor/AcroFormDefaultsProcessor.java::method::AcroFormDefaultsProcessor.verifyOrCreateDefaults	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fixup/processor/AcroFormGenerateAppearancesProcessor.java::class::AcroFormGenerateAppearancesProcessor	class	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fixup/AbstractFixup.java::class::AbstractFixup	class	ported	src/pdfbox/pdmodel/fixup.cr	ported: AbstractFixup
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fixup/AcroFormDefaultFixup.java::class::AcroFormDefaultFixup	class	ported	src/pdfbox/pdmodel/fixup.cr	ported: AcroFormDefaultFixup
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fixup/AcroFormDefaultFixup.java::method::AcroFormDefaultFixup.apply	method	ported	src/pdfbox/pdmodel/fixup.cr	ported: AcroFormDefaultFixup#apply
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fixup/PDDocumentFixup.java::interface::PDDocumentFixup	interface	ported	src/pdfbox/pdmodel/fixup.cr	ported: PDDocumentFixup
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fixup/PDDocumentFixup.java::method::apply	method	ported	src/pdfbox/pdmodel/fixup.cr	ported: PDDocumentFixup#apply
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fixup/processor/AbstractProcessor.java::class::AbstractProcessor	class	ported	src/pdfbox/pdmodel/fixup.cr	ported: Processor::AbstractProcessor
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fixup/processor/AcroFormDefaultsProcessor.java::class::AcroFormDefaultsProcessor	class	ported	src/pdfbox/pdmodel/fixup.cr	ported: Processor::AcroFormDefaultsProcessor
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fixup/processor/AcroFormDefaultsProcessor.java::method::AcroFormDefaultsProcessor.process	method	ported	src/pdfbox/pdmodel/fixup.cr	ported: AcroFormDefaultsProcessor#process
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fixup/processor/AcroFormDefaultsProcessor.java::method::AcroFormDefaultsProcessor.verifyOrCreateDefaults	method	ported	src/pdfbox/pdmodel/fixup.cr	ported: verify_or_create_defaults
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fixup/processor/AcroFormGenerateAppearancesProcessor.java::class::AcroFormGenerateAppearancesProcessor	class	ported	src/pdfbox/pdmodel/fixup.cr	ported: Processor::AcroFormGenerateAppearancesProcessor
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fixup/processor/AcroFormGenerateAppearancesProcessor.java::const::LOG	const	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fixup/processor/AcroFormGenerateAppearancesProcessor.java::method::AcroFormGenerateAppearancesProcessor.process	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fixup/processor/AcroFormGenerateAppearancesProcessor.java::method::AcroFormGenerateAppearancesProcessor.process	method	ported	src/pdfbox/pdmodel/fixup.cr	ported: AcroFormGenerateAppearancesProcessor#process
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fixup/processor/AcroFormOrphanWidgetsProcessor.java::class::AcroFormOrphanWidgetsProcessor	class	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fixup/processor/AcroFormOrphanWidgetsProcessor.java::const::LOG	const	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fixup/processor/AcroFormOrphanWidgetsProcessor.java::method::AcroFormOrphanWidgetsProcessor.addFontFromWidget	method	ported	src	auto-generated
@@ -7273,8 +7273,8 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fixup/processor/AcroFormOrphanWid
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fixup/processor/AcroFormOrphanWidgetsProcessor.java::method::AcroFormOrphanWidgetsProcessor.process	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fixup/processor/AcroFormOrphanWidgetsProcessor.java::method::AcroFormOrphanWidgetsProcessor.resolveFieldsFromWidgets	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fixup/processor/AcroFormOrphanWidgetsProcessor.java::method::AcroFormOrphanWidgetsProcessor.resolveNonRootField	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fixup/processor/PDDocumentProcessor.java::interface::PDDocumentProcessor	interface	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fixup/processor/PDDocumentProcessor.java::method::process	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fixup/processor/PDDocumentProcessor.java::interface::PDDocumentProcessor	interface	ported	src/pdfbox/pdmodel/fixup.cr	ported: Processor::PDDocumentProcessor
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/fixup/processor/PDDocumentProcessor.java::method::process	method	ported	src/pdfbox/pdmodel/fixup.cr	ported: PDDocumentProcessor#process
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/CIDFontMapping.java::class::CIDFontMapping	class	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/CIDFontMapping.java::method::CIDFontMapping.getTrueTypeFont	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/CIDFontMapping.java::method::CIDFontMapping.isCIDFont	method	ported	src	auto-generated
