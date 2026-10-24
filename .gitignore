@@ -15,6 +15,9 @@
 test_*.cr
 test_*_release
 
+# Compiled binaries built in the repo root
+/font
+
 # Temporary files
 /temp/
 /target/
@@ -39,11 +42,6 @@ cff_parser/
 
 # Local agent/tool settings
 .claude/
-
-# Dolt database files (added by bd init)
-.dolt/
-*.db
-scripts/
 
 # Apple Double / Extended Attributes (macOS FAT32 artifacts)
 ._*
