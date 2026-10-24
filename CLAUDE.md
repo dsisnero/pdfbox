@@ -49,7 +49,7 @@ explicit fix targets: `make format-fix`, `make lint-fix`.
 - Port tests first and match Java behavior exactly; do not simplify behavior for convenience.
 - Prefer Crystal idioms only when they preserve the Java logic and observable semantics.
 - Keep the repo shippable: run format, ameba, and specs before committing.
-- Spec-dependent fixtures belong under `spec/` — `spec/fixtures` for standalone fixtures, or `spec/resources/<module>/` mirroring the Java `src/test/resources` layout for vendor-parity fixtures.
+- Spec-dependent fixtures belong under `spec/` — see [docs/testing.md](docs/testing.md) for the layout rules.
 - Use `./temp` only for ad-hoc scripts and throwaway artifacts; it is cleaned periodically, so never put spec dependencies there.
 - Keep parity tracking current: `plans/parity.md` and `plans/inventory/`.
 - Port upstream tests as first-class work; never weaken assertions or fixtures.

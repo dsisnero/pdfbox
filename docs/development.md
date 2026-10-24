@@ -44,8 +44,7 @@ green on a clean checkout, so any new offense is a regression.
 
 Ad hoc scripts, scratch outputs, and one-off PDFs belong in `./temp`, which is
 git-ignored and cleared by `make clean`. Spec-dependent fixtures must **not**
-live there — put them under `spec/` (`spec/fixtures`, or
-`spec/resources/<module>/` mirroring the Java `src/test/resources` layout).
+live there — see [testing.md](testing.md) for where they belong.
 
 ## Environment note (exFAT / network volume checkouts)
 

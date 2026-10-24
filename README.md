@@ -41,8 +41,8 @@ document.close
 The API mirrors the Java class names where Crystal allows it (e.g.
 `Loader`, `Pdmodel::Document`, `Pdmodel::PDPage`,
 `Text::PDFTextStripper`), so the
-[Java API documentation](https://pdfbox.apache.org/docs/2.0.27/javadocs/) and
-this repository's `vendor/pdfbox/` source are both usable as references.
+[Java API documentation](https://pdfbox.apache.org/docs/2.0.27/javadocs/) is a
+usable companion reference.
 
 ## Documentation
 
@@ -86,9 +86,9 @@ upstream source and the local workflow.
 
 This project is licensed under the MIT License — see the [LICENSE](LICENSE) file.
 
-Apache PDFBox itself is licensed under the Apache License 2.0. Its source is
-included as a git submodule at `vendor/pdfbox/` for reference during the port
-(`make submodule-init` / `make submodule-update`).
+Apache PDFBox itself is licensed under the Apache License 2.0. See
+[docs/development.md](docs/development.md) for how its vendored source is
+checked out and pinned.
 
 ## Contributors
 
