@@ -1,4 +1,4 @@
-# Ameba configuration for Logos library
+# Ameba configuration for pdfbox
 Version: "1.7.0-dev"
 
 Excluded:

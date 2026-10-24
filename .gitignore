@@ -57,3 +57,10 @@ fix_*.rb
 
 # chiasmus reconciliation bundle
 /plans/generated/
+
+# Inventory backups and classifier metadata (regenerated, not committed)
+/plans/inventory/*.bak.tsv
+/plans/inventory/*.metadata.json
+
+# Local session notes
+/session/

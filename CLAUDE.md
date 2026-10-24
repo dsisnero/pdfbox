@@ -1,23 +1,35 @@
 # PDFBox Crystal
 
-Crystal port of Apache PDFBox for creating, reading, and modifying PDF documents.
+> **How to resume:** read [`plans/parity.md`](plans/parity.md) first and use its
+> **Where we are** block (current focus + "Next up"), then run `make format`,
+> `make lint` and `make test`. Details: [docs/resuming.md](docs/resuming.md).
+> Do not re-derive state from git history.
 
-## Verified Commands
+Crystal port of Apache PDFBox for creating, reading, and modifying PDF
+documents, ported from [apache/pdfbox](https://github.com/apache/pdfbox) and
+vendored at `vendor/pdfbox/` (`4.0.0-SNAPSHOT`; see `.gitmodules`).
+
+## Commands
 
 ```bash
-make install
-make update
-make format
-make lint
-make test
-make clean
-
-crystal tool format --check src spec
-ameba src spec
-crystal spec
-shards install
-shards update
+make install          # shards install
+make update           # shards update
+make submodule-init   # check out the vendored Apache PDFBox source
+make submodule-update # move the vendored tree to its pinned upstream commit
+make format           # crystal tool format --check src spec (gate, writes nothing)
+make lint             # ameba src spec (gate, writes nothing)
+make test             # crystal spec
+make quality          # format + lint + test
+make clean            # remove ./temp contents
 ```
+
+`make format` and `make lint` are **checks**. To rewrite files instead, use the
+explicit fix targets: `make format-fix`, `make lint-fix`.
+
+> **Tooling:** `.ameba.yml` targets ameba `1.7.x`, the version pinned in
+> `shard.lock`. Run the linter through `make lint` (or `ameba` from `PATH`);
+> a stale `./bin/ameba` build (1.6.x) reports ~90 false failures. All three
+> gates are green on a clean checkout — treat any new offense as a regression.
 
 ## Documentation
 
@@ -45,7 +57,8 @@ shards update
 ## Workflow
 
 - Pick one **feature** at a time (one Java class or a small cluster), complete it, commit it.
-- Before committing, clean the quality gates: `crystal tool format --check src spec`, `ameba src spec`, and `crystal spec`.
+- Before committing, run the quality gates: `make format`, `make lint`, `make test`
+  (equivalently `crystal tool format --check src spec`, `ameba src spec`, `crystal spec`).
 - Update `plans/parity.md` and the inventory ledgers, then commit with a detailed description of what was implemented.
 
 ## Tracking Work
@@ -71,7 +84,6 @@ Each bullet states the feature, the accessors/behaviour added, the spec file, an
 
 > **The `missing` status is noisy.** The classifier only looks for `def`; it misses `property`, `getter`, `setter`, and members with a different owner. Before treating a row as a real gap, confirm the Crystal source truly lacks the behaviour. Likewise, prefer a trailing `# ameba:disable <Rule>` comment over renaming a Java-compatible method.
 
-
 ## Session continuity (read this first)
 
 `plans/parity.md` is the single source of truth for where we are. At the start
@@ -80,7 +92,8 @@ of every session:
 1. Read `plans/parity.md` and use its **Where we are** block to find the
    current focus and the next phase. Do not re-derive state from git history.
 2. Skim `git log --oneline -10` and `git status` to confirm the working tree.
-3. Run the gates (below) before making changes to confirm a clean baseline.
+3. Run the gates (`make format`, `make lint`, `make test`) before making
+   changes to confirm a clean baseline.
 
 ### Keeping parity.md resumable
 
@@ -101,8 +114,7 @@ must be committed as **one** atomic commit before starting the next feature:
 
 1. the API surface is implemented;
 2. upstream tests (or equivalent characterization specs) exist and pass;
-3. gates pass: `crystal tool format --check src spec`, `ameba src spec`,
-   `crystal spec`;
+3. gates pass: `make format`, `make lint`, `make test`;
 4. parity inventory rows for the feature are updated
    (`plans/inventory/java_port_inventory.tsv` and
    `plans/inventory/java_source_parity.tsv`);
@@ -118,4 +130,3 @@ Start with a one-line imperatively-worded subject (e.g. `Add …`, `Complete …
 what changed, then the upstream revision (`apache/pdfbox 4.0.0-SNAPSHOT`, see
 `vendor/pdfbox/`). Include new/changed files, divergences, and the gate results
 so a new session can resume from the commit alone.
-
