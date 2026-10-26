@@ -303,7 +303,9 @@ module Pdfbox::Pdmodel
 
     private def add_ext_g_state_to_resources(state : Graphics::State::PDExtendedGraphicsState) : Pdfbox::Cos::Name
       dictionary = @resources.cos_object.as(Pdfbox::Cos::Dictionary)
-      ext_g_states = dictionary[Pdfbox::Cos::Name.new("ExtGState")]?.as?(Pdfbox::Cos::Dictionary) || begin
+      # get_dictionary dereferences an indirect sub-dictionary, matching Java
+      # PDResources#getCOSObject().getCOSDictionary().
+      ext_g_states = dictionary.get_dictionary(Pdfbox::Cos::Name.new("ExtGState")) || begin
         created = Pdfbox::Cos::Dictionary.new
         dictionary[Pdfbox::Cos::Name.new("ExtGState")] = created
         created
@@ -323,7 +325,7 @@ module Pdfbox::Pdmodel
       return if @font_name
 
       dictionary = @resources.cos_object.as(Pdfbox::Cos::Dictionary)
-      fonts = dictionary[Pdfbox::Cos::Name.new("Font")]?.as?(Pdfbox::Cos::Dictionary) || begin
+      fonts = dictionary.get_dictionary(Pdfbox::Cos::Name.new("Font")) || begin
         created = Pdfbox::Cos::Dictionary.new
         dictionary[Pdfbox::Cos::Name.new("Font")] = created
         created
@@ -347,7 +349,7 @@ module Pdfbox::Pdmodel
 
     private def add_image_to_xobject_resources(image : Graphics::Image::PDImageXObject) : String
       dictionary = @resources.cos_object.as(Pdfbox::Cos::Dictionary)
-      xobjects = dictionary[Pdfbox::Cos::Name.new("XObject")]?.as?(Pdfbox::Cos::Dictionary) || begin
+      xobjects = dictionary.get_dictionary(Pdfbox::Cos::Name.new("XObject")) || begin
         created = Pdfbox::Cos::Dictionary.new
         dictionary[Pdfbox::Cos::Name.new("XObject")] = created
         created
@@ -362,7 +364,7 @@ module Pdfbox::Pdmodel
       font_name = @font_name
       return unless font_name
 
-      fonts = @resources.cos_object.as(Pdfbox::Cos::Dictionary)[Pdfbox::Cos::Name.new("Font")]?.as?(Pdfbox::Cos::Dictionary)
+      fonts = @resources.cos_object.as(Pdfbox::Cos::Dictionary).get_dictionary(Pdfbox::Cos::Name.new("Font"))
       return unless fonts
 
       font_dict = fonts[Pdfbox::Cos::Name.new(font_name)]?

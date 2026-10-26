@@ -23,6 +23,16 @@ module Pdfbox
       load_pdf(data, password)
     end
 
+    # Loads a PDF from an existing random-access source
+    # (Java Loader#loadPDF(RandomAccessRead)).
+    def self.load_pdf(source : Pdfbox::IO::RandomAccessRead, password : String = "") : Pdmodel::Document
+      parser = Pdfbox::Pdfparser::Parser.new(source)
+      parser.lenient = true
+      document = parser.parse(password)
+      document.decrypt(password)
+      document
+    end
+
     # Loads a PDF that may be protected with public key security, using the
     # PKCS#12 *key_store* (with the document password as keystore password) and
     # an optional key *key_alias*.

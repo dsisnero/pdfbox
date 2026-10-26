@@ -1,8 +1,6 @@
 module Pdfbox::Pdmodel::Interactive::DigitalSignature
   # Options for a visible signature (Java SignatureOptions): the visual-signature
-  # document, the page, and the preferred signature size. The Java
-  # setVisualSignature(PDVisibleSigProperties) overload is out of scope until the
-  # PDVisibleSig* cluster is ported.
+  # document, the page, and the preferred signature size.
   class SignatureOptions
     DEFAULT_SIGNATURE_SIZE = 0x2500
 
@@ -51,6 +49,16 @@ module Pdfbox::Pdmodel::Interactive::DigitalSignature
     # ameba:disable Naming/AccessorMethodName
     def set_visual_signature(path : String) : Nil
       @visual_signature = Pdfbox::Loader.load_pdf(path)
+    end
+
+    # Reads the visual signature from the given visible-signature properties
+    # (Java setVisualSignature(PDVisibleSigProperties)).
+    # ameba:disable Naming/AccessorMethodName
+    def set_visual_signature(properties : Visible::PDVisibleSigProperties) : Nil
+      data = properties.visible_signature
+      raise ::IO::Error.new("the visible signature has not been built") unless data
+
+      set_visual_signature(data)
     end
 
     # Closes the visual-signature document, if any (Java close).

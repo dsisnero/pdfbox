@@ -21,6 +21,13 @@ module Pdfbox::Pdmodel::Common
       @stream = document.document.create_cos_stream
     end
 
+    # Creates a new empty PDStream object attached to the given document
+    # (Java PDStream(PDDocument)). `Document` has no COS scratch document, so
+    # the stream is standalone, which is what `createCOSStream` produced there.
+    def initialize(_document : Pdfbox::Pdmodel::Document)
+      @stream = Cos::Stream.new
+    end
+
     # Creates a PDStream from input data, copying into a new stream
     def initialize(document : Pdmodel::PDDocument, input : ::IO)
       @stream = document.document.create_cos_stream

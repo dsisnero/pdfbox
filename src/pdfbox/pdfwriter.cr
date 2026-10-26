@@ -457,6 +457,11 @@ module Pdfbox::Pdfwriter
         end
         # Fall back to the original reference number
         @destination << value.object_number << ' ' << value.generation_number << " R"
+      when Pdfbox::Cos::Dictionary, Pdfbox::Cos::Array
+        # A direct dictionary/array nested in a stream dictionary (e.g. a form
+        # XObject's /Resources) still has an object key, so it must be written
+        # as an indirect reference: streams may never be direct objects.
+        write_value_with_refs(value, object_keys, object_wrapper)
       else
         cos_writer.write(value)
       end
@@ -669,6 +674,15 @@ module Pdfbox::Pdfwriter
         else
           @destination << "null"
         end
+      when Pdfbox::Cos::Stream
+        # Must come before Dictionary: a Stream is a Dictionary, and a stream may
+        # never be written as a direct object.
+        lookup_id = value.object_id.to_u64
+        if key = object_keys[lookup_id]?
+          @destination << key.number << " 0 R"
+        else
+          raise WriteError.new("Stream should have been collected")
+        end
       when Pdfbox::Cos::Dictionary
         # Check if this dictionary has an object number
         lookup_id = value.object_id.to_u64
@@ -683,13 +697,6 @@ module Pdfbox::Pdfwriter
           @destination << key.number << " 0 R"
         else
           write_array_with_refs(value, object_keys, object_wrapper)
-        end
-      when Pdfbox::Cos::Stream
-        lookup_id = value.object_id.to_u64
-        if key = object_keys[lookup_id]?
-          @destination << key.number << " 0 R"
-        else
-          raise WriteError.new("Stream should have been collected")
         end
       when Pdfbox::Cos::String
         write_encrypted_string(value)

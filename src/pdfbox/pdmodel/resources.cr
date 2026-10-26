@@ -154,6 +154,12 @@ module Pdfbox::Pdmodel
       add_resource("XObject", form.cos_object, prefix)
     end
 
+    # Sets the form XObject resource with the given name (Java put(COSName, PDFormXObject)).
+    def put(name : Pdfbox::Cos::Name, form : Graphics::Form::PDFormXObject) : Pdfbox::Cos::Name
+      subdictionary("XObject")[name] = form.cos_object
+      name
+    end
+
     def add(pattern : Graphics::Pattern::PDAbstractPattern, prefix : String = "Pattern") : Pdfbox::Cos::Name
       add_resource("Pattern", pattern.cos_object, prefix)
     end
@@ -196,6 +202,12 @@ module Pdfbox::Pdmodel
     # Adds an image XObject (name prefix "Im"). Java PDResources#add(PDImageXObject).
     def add(image : Graphics::Image::PDImageXObject) : Pdfbox::Cos::Name
       add_resource("XObject", image.cos_object, "Im")
+    end
+
+    # Adds an image XObject using an explicit name prefix (Java
+    # PDResources#add(PDXObject, String)).
+    def add(image : Graphics::Image::PDImageXObject, prefix : String) : Pdfbox::Cos::Name
+      add_resource("XObject", image.cos_object, prefix)
     end
 
     # Sets the color space resource with the given name (Java put(COSName, PDColorSpace)).

@@ -14,6 +14,11 @@ module Pdfbox::Pdmodel::Graphics::Form
       initialize(Pdfbox::Cos::Stream.new)
     end
 
+    # Wraps the given PDStream (Java PDFormXObject(PDStream)).
+    def initialize(stream : Pdfbox::Pdmodel::Common::PDStream)
+      initialize(stream.cos_object)
+    end
+
     def cos_object : Pdfbox::Cos::Base
       @stream
     end

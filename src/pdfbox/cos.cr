@@ -1523,10 +1523,17 @@ module Pdfbox::Cos
 
   # Stream object (dictionary with binary data)
   class Stream < Dictionary
-    @data : Bytes = Bytes.empty
+    @data : Bytes
+    # Java COSStream#hasData reports whether data was ever written (`randomAccess
+    # != null`) or parsed (`randomAccessReadView != null`), so a legitimately
+    # empty stream counts as having data. `@data` alone cannot express that, so
+    # presence is tracked separately.
+    @data_present : Bool
 
-    def initialize(entries : ::Hash(Name, Base) = {} of Name => Base, @data : Bytes = Bytes.empty)
+    def initialize(entries : ::Hash(Name, Base) = {} of Name => Base, data : Bytes? = nil)
       super(entries)
+      @data = data || Bytes.empty
+      @data_present = !data.nil?
     end
 
     def data : Bytes
@@ -1534,11 +1541,12 @@ module Pdfbox::Cos
     end
 
     def data=(@data : Bytes) : Bytes
+      @data_present = true
       @data
     end
 
     def has_data : Bool
-      !@data.empty?
+      @data_present
     end
 
     def has_data? : Bool
