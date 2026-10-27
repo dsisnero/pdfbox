@@ -26,10 +26,21 @@ module Pdfbox
     # Loads a PDF from an existing random-access source
     # (Java Loader#loadPDF(RandomAccessRead)).
     def self.load_pdf(source : Pdfbox::IO::RandomAccessRead, password : String = "") : Pdmodel::Document
+      # Keep the source bytes so save_incremental can append to the revision that
+      # was loaded (Java COSWriter re-reads the source document's bytes).
+      original_position = source.position
+      begin
+        source.seek(0_i64)
+        data = source.read_all
+      ensure
+        source.seek(original_position)
+      end
+
       parser = Pdfbox::Pdfparser::Parser.new(source)
       parser.lenient = true
       document = parser.parse(password)
       document.decrypt(password)
+      document.source_bytes = data
       document
     end
 

@@ -18,6 +18,14 @@ private def increment_xobject_names(resources : Pdfbox::Pdmodel::Resources) : Ar
   xobjects ? xobjects.entries.keys : [] of Pdfbox::Cos::Name
 end
 
+# Every saveIncremental in the upstream test appends a revision to the bytes it
+# loaded, so each intermediate `documentData` must be a prefix of the next one
+# (COSWriter writes the source verbatim and appends the update).
+private def increment_assert_appended(previous : Bytes, current : Bytes) : Nil
+  current.size.should be > previous.size
+  current[0, previous.size].should eq(previous)
+end
+
 describe "Pdfbox::Cos Incremental Integration" do
   it "TestCOSIncrement#testIncrementallyCreateDocument" do
     # Add page 1.
@@ -34,18 +42,22 @@ describe "Pdfbox::Cos Incremental Integration" do
     document.number_of_pages.should eq(1)
     document.add_page(increment_page(200.0))
     document.add_page(increment_page(100.0))
+    previous_bytes = bytes
     document.save_incremental(output)
     document.close
     bytes = output.to_slice
+    increment_assert_appended(previous_bytes, bytes)
 
     # Remove page 2.
     output = IO::Memory.new
     document = Pdfbox::Loader.load_pdf(bytes)
     document.number_of_pages.should eq(3)
     document.remove_page(document.get_page(1)).should be_true
+    previous_bytes = bytes
     document.save_incremental(output)
     document.close
     bytes = output.to_slice
+    increment_assert_appended(previous_bytes, bytes)
 
     # Add an image to page 1.
     output = IO::Memory.new
@@ -61,9 +73,11 @@ describe "Pdfbox::Cos Incremental Integration" do
       "spec/resources/pdfbox/cos/simple.png", document)
     content_stream.draw_image(image, 15, 20)
     content_stream.close
+    previous_bytes = bytes
     document.save_incremental(output)
     document.close
     bytes = output.to_slice
+    increment_assert_appended(previous_bytes, bytes)
 
     # Write a text to page 2.
     output = IO::Memory.new
@@ -83,9 +97,11 @@ describe "Pdfbox::Cos Incremental Integration" do
     content_stream.show_text("Page 2")
     content_stream.end_text
     content_stream.close
+    previous_bytes = bytes
     document.save_incremental(output)
     document.close
     bytes = output.to_slice
+    increment_assert_appended(previous_bytes, bytes)
 
     # Add an annotation to page 2.
     output = IO::Memory.new
@@ -106,17 +122,21 @@ describe "Pdfbox::Cos Incremental Integration" do
     text_annot.rectangle = Pdfbox::Pdmodel::Common::PDRectangle.new(4.0_f32, 5.0_f32, 10.0_f32, 10.0_f32)
     text_annot.construct_appearances(document)
     document.get_page(1).annotations.add(text_annot)
+    previous_bytes = bytes
     document.save_incremental(output)
     document.close
     bytes = output.to_slice
+    increment_assert_appended(previous_bytes, bytes)
 
     # Do nothing.
     output = IO::Memory.new
     document = Pdfbox::Loader.load_pdf(bytes)
     document.get_page(1).annotations.size.should eq(1)
+    previous_bytes = bytes
     document.save_incremental(output)
     document.close
     bytes = output.to_slice
+    increment_assert_appended(previous_bytes, bytes)
 
     # Check the result.
     document = Pdfbox::Loader.load_pdf(bytes)

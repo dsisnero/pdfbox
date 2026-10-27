@@ -5220,12 +5220,12 @@ pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWrit
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.doWriteBody	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.doWriteBodyCompressed	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.doWriteHeader	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.doWriteIncrement	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.doWriteIncrement	method	ported	src/pdfbox/pdfwriter.cr	ported: incremental save
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.doWriteObject	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.doWriteObjects	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.doWriteSignature	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.doWriteTrailer	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.doWriteXRefInc	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.doWriteXRefInc	method	ported	src/pdfbox/pdfwriter.cr	ported: incremental xref section
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.doWriteXRefTable	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.fillGapsWithFreeEntries	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.getDataToSign	method	partial	src	auto-generated
@@ -5237,7 +5237,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWrit
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.getXRefRanges	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.isCompress	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.isNeedToBeUpdated	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.prepareIncrement	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.prepareIncrement	method	ported	src/pdfbox/pdfwriter.cr	ported: collect_objects_incremental
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.setOutput	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.setStandardOutput	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.setStartxref	method	partial	src	auto-generated
@@ -5442,7 +5442,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocume
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.registerTrueTypeFontForClosing	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.removePage	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.save	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.saveIncremental	method	ported	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.saveIncremental	method	ported	src/pdfbox/pdmodel.cr;src/pdfbox/pdfwriter.cr	ported: real incremental update
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.saveIncrementalForExternalSigning	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.setAllSecurityToBeRemoved	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.setDocumentId	method	ported	src	auto-generated

@@ -719,6 +719,41 @@ module Pdfbox::Pdfparser
       nil
     end
 
+    # The numeric value following the last `startxref` keyword, i.e. the byte
+    # offset of the last cross-reference section (Java COSDocument#getStartXref).
+    # `locate_xref_offset` returns the offset of the keyword itself because that
+    # is what XrefParser consumes; an incremental update needs the value.
+    def locate_startxref_value : Int64?
+      original_pos = source.position
+      begin
+        file_size = source.length
+        read_size = 1024
+        start = file_size - read_size
+        start = 0_i64 if start < 0
+        source.seek(start)
+        str = String.new(source.read_all, "ISO-8859-1")
+        return unless keyword_index = str.rindex("startxref")
+
+        position = keyword_index + "startxref".size
+        while position < str.size && str[position].ascii_whitespace?
+          position += 1
+        end
+        value = 0_i64
+        digits = 0
+        while position < str.size
+          char = str[position]
+          break unless char.ascii_number?
+
+          value = value * 10 + (char.ord - '0'.ord)
+          digits += 1
+          position += 1
+        end
+        digits > 0 ? value : nil
+      ensure
+        source.seek(original_pos)
+      end
+    end
+
     # Parse page count from xref table (count page objects)
     private def parse_page_count_from_xref(xref : XRef) : Int32
       # Count objects with object number >= 3 that are in-use (page objects)
@@ -1575,6 +1610,11 @@ module Pdfbox::Pdfparser
 
       Log.debug { "catalog_dict = #{catalog_dict.inspect}" }
       doc = Pdfbox::Pdmodel::Document.new(catalog_dict, version, @trailer)
+
+      # Remember where the source cross-reference section starts so that
+      # save_incremental can append a new revision with /Prev pointing at it
+      # (Java COSDocument#getStartXref).
+      doc.start_xref = locate_startxref_value || xref_offset
 
       # Reuse the parser's encryption dictionary so the document exposes the
       # security handler that actually prepared decryption (mirrors PDFBox,

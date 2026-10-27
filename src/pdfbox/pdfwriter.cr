@@ -163,6 +163,17 @@ module Pdfbox::Pdfwriter
         return
       end
 
+      digest = document_id_digest(trailer)
+      id_array = Pdfbox::Cos::Array.new
+      id_array << Pdfbox::Cos::String.new(digest)
+      id_array << Pdfbox::Cos::String.new(digest)
+      trailer[Pdfbox::Cos::Name.new("ID")] = id_array
+    end
+
+    # SHA-256 of the current time plus the values of the /Info dictionary, as
+    # used by Java COSWriter for both the initial /ID and the second /ID value of
+    # an incremental update.
+    private def document_id_digest(trailer : Pdfbox::Cos::Dictionary) : Bytes
       sha256 = Digest::SHA256.new
       sha256.update(Time.utc.to_unix_ms.to_s)
 
@@ -175,11 +186,7 @@ module Pdfbox::Pdfwriter
         end
       end
 
-      digest = sha256.final
-      id_array = Pdfbox::Cos::Array.new
-      id_array << Pdfbox::Cos::String.new(digest)
-      id_array << Pdfbox::Cos::String.new(digest)
-      trailer[Pdfbox::Cos::Name.new("ID")] = id_array
+      sha256.final
     end
 
     # Write using compressed object streams (PDF 1.5+).
@@ -451,7 +458,7 @@ module Pdfbox::Pdfwriter
         if inner
           lookup_id = inner.object_id.to_u64
           if key = object_keys[lookup_id]?
-            @destination << key.number << " 0 R"
+            @destination << key.number << ' ' << key.generation << " R"
             return
           end
         end
@@ -538,6 +545,11 @@ module Pdfbox::Pdfwriter
           xref_write_u8(data_io, entry.objstm_index) # index within stream
         end
       end
+
+      # The stream has no /Filter, so /Length is the decoded size. Required for
+      # readers to find the end of the cross-reference stream (an incremental
+      # save chains off documents written by this writer).
+      xref_dict.set_int(Pdfbox::Cos::Name.new("Length"), data_io.size)
 
       xref_stream = Pdfbox::Cos::Stream.new
       xref_stream.entries.merge!(xref_dict.entries)
@@ -664,7 +676,7 @@ module Pdfbox::Pdfwriter
         if inner
           lookup_id = inner.object_id.to_u64
           if key = object_keys[lookup_id]?
-            @destination << key.number << " 0 R"
+            @destination << key.number << ' ' << key.generation << " R"
             return
           end
         end
@@ -754,7 +766,340 @@ module Pdfbox::Pdfwriter
     def write(password : String) : Nil
     end
 
+    # Appends an incremental update to the bytes the document was loaded from,
+    # following Java COSWriter's incremental constructor (no compressed object
+    # streams, output positioned right after the source) and doWriteXRefInc (a
+    # new cross-reference section whose /Prev points at the source startxref,
+    # written as an xref stream when the source used one and as a classic xref
+    # table otherwise).
+    #
+    # Divergences (documented in plans/parity.md):
+    #  - every object reachable from the document roots is written, not only the
+    #    objects flagged through COSUpdateState#setNeedToBeUpdated. The appended
+    #    revision is therefore larger than Java's, but it always carries every
+    #    change (the port does not track update flags).
+    #  - documents that are still encrypted, and documents that were not loaded
+    #    from bytes, fall back to a full save.
     def write_incremental : Nil
+      source = @document.source_bytes
+      previous_xref = @document.start_xref
+      if source.nil? || previous_xref.nil?
+        Log.warn { "Document has no source bytes to append to, falling back to a full save" }
+        write
+        return
+      end
+      if @will_encrypt
+        Log.warn { "Incremental save of an encrypted document is not supported, falling back to a full save" }
+        write
+        return
+      end
+
+      # Keep the source file verbatim, then append the new revision.
+      @destination.write(source)
+      # Java COSWriter always writes an EOL here so the appended object can never
+      # share a line with the source's %%EOF (PDFBOX-1051).
+      @destination << '\n'
+
+      cos_writer = COSWriter.new(@destination, false, nil)
+      trailer = @document.trailer || Pdfbox::Cos::Dictionary.new
+      catalog = @document.document_catalog
+
+      object_keys = {} of UInt64 => Pdfbox::Cos::ObjectKey
+      key_objects = {} of Pdfbox::Cos::ObjectKey => Pdfbox::Cos::Base
+      object_wrapper = {} of UInt64 => UInt64
+      roots = build_roots(catalog, trailer)
+      next_number = collect_objects_incremental(roots, object_keys, key_objects, object_wrapper,
+        @document.highest_object_number + 1)
+      object_wrapper.each do |wrapper_id, inner_id|
+        if inner_key = object_keys[inner_id]?
+          object_keys[wrapper_id] = inner_key
+        end
+      end
+
+      written = [] of Tuple(Int64, XRefEntry)
+      key_objects.keys.sort_by!(&.number).each do |key|
+        obj = key_objects[key]
+        next unless obj
+        position = @destination.pos.to_i64
+        written << {key.number, XRefEntry.new(position, key.generation, :in_use)}
+        @destination << key.number << ' ' << key.generation << " obj\n"
+        write_indirect_object(obj, cos_writer, object_keys, object_wrapper, key)
+        @destination << "\nendobj\n"
+      end
+
+      highest_number = Math.max(next_number - 1, written.max_of? { |(number, _)| number } || 0_i64)
+      new_start_xref = if source_uses_xref_stream?(source, previous_xref)
+                         write_incremental_xref_stream(written, catalog, trailer, object_keys,
+                           previous_xref, highest_number)
+                       else
+                         write_incremental_xref_table(written, catalog, trailer, object_keys, cos_writer,
+                           previous_xref, highest_number)
+                       end
+
+      # A subsequent incremental save from this in-memory document must chain
+      # onto this revision instead of the original one.
+      @document.start_xref = new_start_xref
+      @document.highest_object_number = highest_number
+    end
+
+    # True when the source cross-reference section (at *start_xref*) is an xref
+    # stream instead of a classic `xref` table.
+    private def source_uses_xref_stream?(source : Bytes, start_xref : Int64) : Bool
+      offset = start_xref.to_i
+      return true if offset < 0 || offset >= source.size
+
+      while offset < source.size && source[offset].unsafe_chr.ascii_whitespace?
+        offset += 1
+      end
+      remaining = source.size - offset
+      return true if remaining < 4
+
+      String.new(source[offset, Math.min(4, remaining)]) != "xref"
+    end
+
+    # Collects the objects to write for an incremental update. Objects parsed
+    # from the source keep their original object number (so the new revision can
+    # reference them); everything created in this session gets a number above
+    # the source document's highest object number.
+    private def collect_objects_incremental(roots : Array(Pdfbox::Cos::Base),
+                                            object_keys : Hash(UInt64, Pdfbox::Cos::ObjectKey),
+                                            key_objects : Hash(Pdfbox::Cos::ObjectKey, Pdfbox::Cos::Base),
+                                            object_wrapper : Hash(UInt64, UInt64),
+                                            next_number : Int64) : Int64
+      objects = [] of Pdfbox::Cos::Base
+      seen = Set(UInt64).new
+      queue = Deque(Pdfbox::Cos::Base).new
+      roots.each { |root_item| queue << root_item }
+
+      until queue.empty?
+        current = queue.shift
+        if current.is_a?(Pdfbox::Cos::Object)
+          if inner = current.object
+            object_wrapper[current.object_id.to_u64] = inner.object_id.to_u64
+            actual = inner
+          else
+            next
+          end
+        else
+          actual = current
+        end
+
+        case actual
+        when Pdfbox::Cos::Name, Pdfbox::Cos::String, Pdfbox::Cos::Integer,
+             Pdfbox::Cos::Float, Pdfbox::Cos::Boolean, Pdfbox::Cos::Null
+          next
+        end
+
+        id = actual.object_id.to_u64
+        next if seen.includes?(id)
+
+        seen << id
+        objects << actual
+
+        case actual
+        when Pdfbox::Cos::Dictionary # includes Stream
+          actual.entries.each_value { |val| queue << val }
+        when Pdfbox::Cos::Array
+          actual.items.each { |item| queue << item }
+        end
+      end
+
+      # Parsed objects first, so their numbers are reserved before new objects
+      # are numbered (a new object must never take a source object number).
+      objects.each do |object|
+        key = object.key
+        next unless key
+        next if key_objects.has_key?(key)
+
+        object_keys[object.object_id.to_u64] = key
+        key_objects[key] = object
+        next_number = Math.max(next_number, key.number + 1)
+      end
+
+      objects.each do |object|
+        id = object.object_id.to_u64
+        next if object_keys.has_key?(id)
+
+        key = Pdfbox::Cos::ObjectKey.new(next_number, 0_i64)
+        next_number += 1
+        object_keys[id] = key
+        key_objects[key] = object
+      end
+
+      next_number
+    end
+
+    # Classic xref table for the appended revision: object 0, then one
+    # subsection per contiguous run of written object numbers.
+    private def write_incremental_xref_table(written : Array(Tuple(Int64, XRefEntry)),
+                                             catalog : Pdfbox::Pdmodel::DocumentCatalog?,
+                                             trailer : Pdfbox::Cos::Dictionary?,
+                                             object_keys : Hash(UInt64, Pdfbox::Cos::ObjectKey),
+                                             cos_writer : COSWriter,
+                                             previous_xref : Int64,
+                                             highest_number : Int64) : Int64
+      xref_start = @destination.pos.to_i64
+      @destination << "xref\n"
+      @destination << "0 1\n"
+      @destination << "0000000000 65535 f \n"
+
+      entries = written.sort_by { |(number, _)| number }
+      index = 0
+      while index < entries.size
+        first_number = entries[index][0]
+        count = 1
+        while index + count < entries.size && entries[index + count][0] == first_number + count
+          count += 1
+        end
+
+        @destination << first_number << ' ' << count << "\n"
+        count.times do |offset|
+          entry = entries[index + offset][1]
+          @destination << entry.offset.to_s.rjust(10, '0') << ' '
+          @destination << entry.generation.to_s.rjust(5, '0') << ' ' << "n \n"
+        end
+        index += count
+      end
+
+      @destination << "trailer\n<<\n"
+      @destination << "/Size " << (highest_number + 1) << "\n"
+      @destination << "/Prev " << previous_xref << "\n"
+      write_incremental_trailer_references(catalog, trailer, object_keys, cos_writer)
+      @destination << ">>\n"
+      @destination << "startxref\n"
+      @destination << xref_start << "\n"
+      @destination << "%%EOF\n"
+      xref_start
+    end
+
+    # Cross-reference stream for the appended revision. Only the written object
+    # numbers are indexed (via /Index): an xref stream entry of type 0 would
+    # mark an unchanged source object as free.
+    private def write_incremental_xref_stream(written : Array(Tuple(Int64, XRefEntry)),
+                                              catalog : Pdfbox::Pdmodel::DocumentCatalog?,
+                                              trailer : Pdfbox::Cos::Dictionary?,
+                                              object_keys : Hash(UInt64, Pdfbox::Cos::ObjectKey),
+                                              previous_xref : Int64,
+                                              highest_number : Int64) : Int64
+      xref_number = highest_number + 1
+      position = @destination.pos.to_i64
+      # A cross-reference stream must list itself (PDF 32000-1 7.5.8.3), so the
+      # entry for this stream is part of the section it describes.
+      entries = written.map { |(number, entry)| {number, entry} }
+      entries << {xref_number, XRefEntry.new(position, 0_i64, :in_use)}
+      entries.sort_by! { |(number, _)| number }
+
+      index_array = Pdfbox::Cos::Array.new
+      data = ::IO::Memory.new
+      index = 0
+      while index < entries.size
+        first_number = entries[index][0]
+        count = 1
+        while index + count < entries.size && entries[index + count][0] == first_number + count
+          count += 1
+        end
+
+        index_array << Pdfbox::Cos::Integer.new(first_number)
+        index_array << Pdfbox::Cos::Integer.new(count.to_i64)
+        count.times do |offset|
+          entry = entries[index + offset][1]
+          data.write_byte(1_u8)
+          xref_write_u32(data, entry.offset)
+          xref_write_u8(data, entry.generation)
+        end
+        index += count
+      end
+
+      xref_dict = Pdfbox::Cos::Dictionary.new
+      xref_dict[Pdfbox::Cos::Name.new("Type")] = Pdfbox::Cos::Name.new("XRef")
+      xref_dict.set_int(Pdfbox::Cos::Name.new("Size"), xref_number + 1)
+      w_array = Pdfbox::Cos::Array.new
+      w_array << Pdfbox::Cos::Integer.new(1_i64)
+      w_array << Pdfbox::Cos::Integer.new(4_i64)
+      w_array << Pdfbox::Cos::Integer.new(1_i64)
+      xref_dict[Pdfbox::Cos::Name.new("W")] = w_array
+      xref_dict[Pdfbox::Cos::Name.new("Index")] = index_array
+      xref_dict.set_long(Pdfbox::Cos::Name.new("Prev"), previous_xref)
+      xref_dict.set_int(Pdfbox::Cos::Name.new("Length"), data.size)
+      write_incremental_trailer_references(catalog, trailer, object_keys, nil, xref_dict)
+
+      @destination << xref_number << " 0 obj\n"
+      @destination << "<<\n"
+      xref_dict.entries.each do |name, value|
+        @destination << '/' << name.value << ' '
+        value.write_pdf(@destination)
+        @destination << "\n"
+      end
+      @destination << ">>\n"
+      @destination << "stream\n"
+      @destination.write(data.to_slice)
+      @destination << "\nendstream\nendobj\n"
+      @destination << "startxref\n"
+      @destination << position << "\n"
+      @destination << "%%EOF\n"
+      position
+    end
+
+    # Writes the /Root, /Info and /ID entries of a new trailer.
+    private def write_incremental_trailer_references(catalog : Pdfbox::Pdmodel::DocumentCatalog?,
+                                                     trailer : Pdfbox::Cos::Dictionary?,
+                                                     object_keys : Hash(UInt64, Pdfbox::Cos::ObjectKey),
+                                                     cos_writer : COSWriter?,
+                                                     into : Pdfbox::Cos::Dictionary? = nil) : Nil
+      if catalog
+        if cat_key = object_keys[catalog.cos_object.object_id.to_u64]?
+          write_trailer_entry("Root", Pdfbox::Cos::Object.new(cat_key.number, cat_key.generation, nil), cos_writer, into)
+        end
+      end
+
+      if trailer
+        if info_val = trailer[Pdfbox::Cos::Name.new("Info")]?
+          info_base = info_val.is_a?(Pdfbox::Cos::Object) ? info_val.object : info_val
+          if info_base && (info_key = object_keys[info_base.object_id.to_u64]?)
+            write_trailer_entry("Info", Pdfbox::Cos::Object.new(info_key.number, info_key.generation, nil), cos_writer, into)
+          end
+        end
+      end
+
+      if new_id = incremental_document_id(trailer)
+        write_trailer_entry("ID", new_id, cos_writer, into)
+      end
+    end
+
+    private def write_trailer_entry(name : String,
+                                    value : Pdfbox::Cos::Base,
+                                    cos_writer : COSWriter?,
+                                    into : Pdfbox::Cos::Dictionary?) : Nil
+      if into
+        into[Pdfbox::Cos::Name.new(name)] = value
+        return
+      end
+
+      @destination << '/' << name << ' '
+      if value.is_a?(Pdfbox::Cos::Object)
+        @destination << value.object_number << ' ' << value.generation_number << " R\n"
+      elsif cos_writer
+        cos_writer.write(value)
+        @destination << "\n"
+      else
+        value.write_pdf(@destination)
+        @destination << "\n"
+      end
+    end
+
+    # Java COSWriter generates a new /ID for an incremental update: the first
+    # value is kept and the second one is a fresh SHA-256 of the time plus the
+    # /Info values.
+    private def incremental_document_id(trailer : Pdfbox::Cos::Dictionary?) : Pdfbox::Cos::Array?
+      return unless trailer
+
+      id_val = trailer[Pdfbox::Cos::Name.new("ID")]
+      return unless id_val.is_a?(Pdfbox::Cos::Array) && id_val.size == 2
+
+      id_array = Pdfbox::Cos::Array.new
+      id_array << id_val.items.first
+      id_array << Pdfbox::Cos::String.new(document_id_digest(trailer))
+      id_array
     end
 
     def compression=(level : Int32) : Int32

@@ -37,6 +37,8 @@ module Pdfbox::Pdmodel
     @all_security_to_be_removed : Bool = false
     @fonts_for_save = [] of Font::PDFont
     @source_bytes : Bytes? = nil
+    @start_xref : Int64? = nil
+    @highest_object_number : Int64? = nil
     @resource_cache : ResourceCache? = ResourceCacheFactory.create_resource_cache
 
     def initialize(cos_document : Cos::Dictionary? = nil, version : String = "1.4", trailer : Cos::Dictionary? = nil)
@@ -161,10 +163,17 @@ module Pdfbox::Pdmodel
       writer.write
     end
 
-    # Save the document incrementally.
-    # Falls back to a full save without compression (incremental updates don't use compressed objects).
+    # Save the document incrementally: the bytes the document was loaded from
+    # are kept and a new revision (objects plus a new cross-reference section
+    # with /Prev) is appended. Falls back to a full save when there is no source
+    # to append to (document created in memory) or when the document is still
+    # encrypted. Matching Java COSWriter's incremental constructor, compressed
+    # object streams are disabled for the appended revision.
     def save_incremental(io : ::IO) : Nil
-      save(io, Pdfbox::Pdfwriter::Compress::CompressParameters::NO_COMPRESSION)
+      subset_embedded_fonts
+
+      writer = Pdfbox::Pdfwriter::Writer.new(io, self, Pdfbox::Pdfwriter::Compress::CompressParameters::NO_COMPRESSION)
+      writer.write_incremental
     end
 
     # Add a page to the document
@@ -436,6 +445,26 @@ module Pdfbox::Pdmodel
 
     def source_bytes=(bytes : Bytes?) : Bytes?
       @source_bytes = bytes
+    end
+
+    # The `startxref` value of the source document (Java
+    # COSDocument#getStartXref). Together with `source_bytes` it is what an
+    # incremental update appends to; nil when the document was not parsed from a
+    # cross-reference-sectioned file.
+    property start_xref : Int64?
+
+    # Highest object number used by the source document. Defaults to the
+    # `/Size` of the source trailer (entry count, so the highest number is one
+    # less) and is advanced by every incremental save.
+    def highest_object_number : Int64
+      @highest_object_number || begin
+        size = @trailer.try(&.get_int(Cos::Name.new("Size"), 0_i64)) || 0_i64
+        size > 0 ? size - 1 : 0_i64
+      end
+    end
+
+    def highest_object_number=(value : Int64?) : Int64?
+      @highest_object_number = value
     end
 
     def set_document_id(document_id : Bytes?) : Nil # ameba:disable Naming/AccessorMethodName

@@ -5220,12 +5220,12 @@ pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWrit
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.doWriteBody	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.doWriteBodyCompressed	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.doWriteHeader	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.doWriteIncrement	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.doWriteIncrement	ported	src/pdfbox/pdfwriter.cr	ported: incremental save
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.doWriteObject	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.doWriteObjects	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.doWriteSignature	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.doWriteTrailer	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.doWriteXRefInc	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.doWriteXRefInc	ported	src/pdfbox/pdfwriter.cr	ported: incremental xref section
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.doWriteXRefTable	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.fillGapsWithFreeEntries	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.getDataToSign	missing	-	baseline
@@ -5237,7 +5237,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWrit
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.getXRefRanges	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.isCompress	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.isNeedToBeUpdated	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.prepareIncrement	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.prepareIncrement	ported	src/pdfbox/pdfwriter.cr	ported: collect_objects_incremental
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.setOutput	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.setStandardOutput	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.setStartxref	missing	-	baseline
@@ -5442,7 +5442,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocume
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.registerTrueTypeFontForClosing	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.removePage	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.save	ported	src/pdfbox/pdmodel/document.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.saveIncremental	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.saveIncremental	ported	src/pdfbox/pdmodel.cr;src/pdfbox/pdfwriter.cr	ported: real incremental update
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.saveIncrementalForExternalSigning	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.setAllSecurityToBeRemoved	ported	src/pdfbox/pdmodel/document.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.setDocumentId	missing	-	baseline
