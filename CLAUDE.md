@@ -68,7 +68,7 @@ Work is tracked in the tree (no external tracker), in five places:
 | Where | What it records |
 | --- | --- |
 | [`plans/parity.md`](plans/parity.md) | Entry point: **Where we are**, the Overview table, and the work-file index (split parts with their status). |
-| [`plans/parity/changelog.md`](plans/parity/changelog.md) (+ `plans/parity/changelog/*.md`) | **The running feature changelog**, newest-first, split into date-range parts. |
+| [`plans/parity/changelog.md`](plans/parity/changelog.md) (+ `plans/parity/changelog/`) | **The running feature changelog**, newest-first: one `current.md` plus frozen `archive-<newest date>-to-<oldest date>.md` parts. |
 | [`plans/parity/phases.md`](plans/parity/phases.md), [`plans/parity/upcoming-chunks.md`](plans/parity/upcoming-chunks.md), [`plans/parity/naming.md`](plans/parity/naming.md) | Historical roadmap (Phases 1–13), the Work Chunk A–AW plans, and the Java → Crystal naming notes. |
 | [`plans/inventory/java_source_parity.tsv`](plans/inventory/java_source_parity.tsv) | Per **Java source symbol** ledger. Columns: `source_api_id`, `status`, `crystal_refs`, `notes`. |
 | [`plans/inventory/java_port_inventory.tsv`](plans/inventory/java_port_inventory.tsv) | Per **ported symbol** ledger. Columns: `source_id`, `kind`, `status`, `crystal_refs`, `notes`. |
@@ -79,10 +79,11 @@ Work is tracked in the tree (no external tracker), in five places:
 [`plans/parity/changelog.md`](plans/parity/changelog.md), which indexes the
 newest-first part files under `plans/parity/changelog/`:
 
-- add a new entry at the **top of the newest part file** (e.g.
-  `changelog/2026-10a.md`);
-- when the newest part grows past ~60 KB, start a new part for the current
-  month and link it from `plans/parity/changelog.md`;
+- add a new entry at the **top of [`plans/parity/changelog/current.md`](plans/parity/changelog/current.md)**
+  (there is exactly one `current.md`, so "newest" is never ambiguous);
+- when `current.md` grows past ~60 KB, freeze it as
+  `changelog/archive-<newest date>-to-<oldest date>.md`, start a fresh
+  `current.md`, and list the archive in `plans/parity/changelog.md`;
 - `plans/parity.md` only links to the changelog (the `| Fixed since last
   update |` cell is a pointer, not a copy).
 
@@ -111,8 +112,8 @@ of every session:
 - Work chunks are feature-sized (roughly one branch/commit). The per-symbol
   state lives in `plans/inventory/java_port_inventory.tsv`, not in this plan.
 - **`plans/parity.md` is an entry point, not a dumping ground.** It was split
-  (2026-10-28) into `plans/parity/changelog.md` (+ `changelog/*.md` parts),
-  `phases.md`, `upcoming-chunks.md` and `naming.md`. When it grows too large,
+  (2026-10-28) into `plans/parity/changelog.md` (+ `changelog/current.md` and
+  `changelog/archive-*.md`), `phases.md`, `upcoming-chunks.md` and `naming.md`. When it grows too large,
   split the offending section into another `plans/parity/<module>.md`, link it
   from `plans/parity.md`, and in `plans/parity.md` mark each split file as
   complete/in-progress and name the file we are currently working in plus the

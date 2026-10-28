@@ -17,14 +17,14 @@ The document is split so this entry point stays small; every part is linked here
 
 | Work file | Contents | Status |
 | --- | --- | --- |
-| [`plans/parity/changelog.md`](parity/changelog.md) (+ [`changelog/`](parity/changelog/)) | newest-first feature changelog, split by date | **in progress** (append-only) |
+| [`plans/parity/changelog.md`](parity/changelog.md) (+ [`changelog/`](parity/changelog/)) | newest-first feature changelog: one `current.md` plus frozen `archive-<newest>-to-<oldest>.md` parts | **in progress** (append-only) |
 | [`plans/parity/phases.md`](parity/phases.md) | Phases 1–13 roadmap, chunk workflow, task tracking | complete (historical) |
 | [`plans/parity/upcoming-chunks.md`](parity/upcoming-chunks.md) | Work Chunks A–AW: goal / source of truth / done-when | complete |
 | [`plans/parity/naming.md`](parity/naming.md) | Java → Crystal class-name mapping and inventory-matcher notes | reference |
 | [`plans/inventory/*.tsv`](inventory/) | per-symbol source / port / test ledgers | **in progress** (updated per feature) |
 | [`plans/active/*.md`](active/) | one plan per branch-sized feature cluster | complete (superseded by the changelog) |
 
-- **Working in:** [`plans/parity/changelog/2026-10a.md`](parity/changelog/2026-10a.md) — add each
+- **Working in:** [`plans/parity/changelog/current.md`](parity/changelog/current.md) — add each
   new feature entry at its top, and update the two `plans/inventory/*.tsv` ledgers plus the
   Overview numbers below in the same commit.
 - **Next file/phase to start:** `phases.md` and `upcoming-chunks.md` are complete; the next

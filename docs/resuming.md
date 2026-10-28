@@ -8,8 +8,9 @@ not restate it.
 `plans/parity.md` is the single source of truth for where we are. It starts with
 a **`## Where we are`** block (`Current focus`, `Next up`, working-in file) and
 indexes the split parts; the running feature changelog lives in
-`plans/parity/changelog.md` (newest entry at the top of the newest part file
-under `plans/parity/changelog/`).
+`plans/parity/changelog.md` (newest entry at the top of
+`plans/parity/changelog/current.md`; older parts are frozen `archive-*.md`
+files).
 
 Per-symbol state lives in the inventory ledgers under `plans/inventory/` (see
 `AGENTS.md` → *Tracking Work*): `java_source_parity.tsv`, `java_port_inventory.tsv`,
@@ -21,7 +22,7 @@ Per-symbol state lives in the inventory ledgers under `plans/inventory/` (see
    it.
 2. Read the **`## Where we are`** block in `plans/parity.md` (current focus, next
    up, and the work file we are in) and the **top entry of
-   `plans/parity/changelog/2026-10a.md`**. That is the most recently completed
+   `plans/parity/changelog/current.md`**. That is the most recently completed
    feature; continue from there.
 3. `git log --oneline -10` to confirm the commit history.
 4. Run the gates to confirm the baseline:

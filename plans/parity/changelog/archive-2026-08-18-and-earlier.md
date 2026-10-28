@@ -1,8 +1,9 @@
-# Changelog — 2026-08-18 and the earlier phase summaries
+# Changelog archive — 2026-08-18 and the earlier phase summaries
 
-> Part of the running PDFBox Crystal parity changelog. Index:
-> [`../changelog.md`](../changelog.md). Newest first; append new entries at the
-> top of the newest part ([`2026-10a.md`](2026-10a.md)).
+> Frozen part of the PDFBox Crystal parity changelog (newest first). Do not
+> append here: new entries go at the top of
+> [`current.md`](current.md). Index and archiving rules:
+> [`../changelog.md`](../changelog.md).
 
 - **InvalidPasswordException port (2026-08-18)**: `InvalidPasswordException < IO::Error` ported in `src/pdfbox/pdmodel/encryption.cr` (Java `InvalidPasswordException extends IOException`); the StandardSecurityHandler password-validation failure now raises it with the Java-exact message "Cannot decrypt PDF, the password is incorrect" (matching `TestSymmetricKeyEncryption` which catches `IOException`). Covered by `spec/pdfbox/pdmodel/encryption/invalid_password_exception_spec.cr` (2 tests).
 - **XMLUtil port (2026-08-18)**: `XMLUtil` ported in `src/pdfbox/util/xml_util.cr` (Java `org.apache.pdfbox.util.XMLUtil`): `parse(IO/String)` via Crystal's `XML.parse` (namespace-aware — the local name + namespace href are exposed, as used by the xmpbox parser) and `get_node_value` (concatenated direct text children only, Java `getNodeValue` parity — descendant element text excluded). Covered by `spec/pdfbox/util/xml_util_spec.cr` (5 tests).
