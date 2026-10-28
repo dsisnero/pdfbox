@@ -170,7 +170,9 @@ module Pdfbox::Pdmodel::Common
         @parent_dict = nil
       end
       cos_items = to_cos_object_list(c_array)
-      @array.items.insert(index, *cos_items)
+      # Java COSArrayList#addAll(int, Collection) delegates to COSArray#addAll,
+      # so the backing array records the update.
+      cos_items.each_with_index { |item, offset| @array.add(index + offset, item) }
       @actual.insert(index, *c_array)
       true
     end
@@ -184,7 +186,7 @@ module Pdfbox::Pdmodel::Common
       index = @actual.index(o)
       if index
         @actual.delete_at(index)
-        @array.items.delete_at(index)
+        @array.delete_at(index)
         true
       else
         false
@@ -196,7 +198,7 @@ module Pdfbox::Pdmodel::Common
       if @is_filtered
         raise Cos::UnsupportedOperationError.new("removing entries from a filtered List is not permitted")
       end
-      @array.items.delete_at(index)
+      @array.delete_at(index)
       @actual.delete_at(index)
     end
 
@@ -209,7 +211,7 @@ module Pdfbox::Pdmodel::Common
         i = @array.size - 1
         while i >= 0
           if item_cos == @array.items[i]
-            @array.items.delete_at(i)
+            @array.delete_at(i)
             @actual.delete_at(i)
             changed = true
           end
@@ -234,7 +236,7 @@ module Pdfbox::Pdmodel::Common
         array_item = @array.items[i]
         # If the array item is a COSObject, check the inner object too
         unless retain_cos.includes?(array_item) || (array_item.is_a?(Cos::Object) && retain_cos.includes?(array_item.object))
-          @array.items.delete_at(i)
+          @array.delete_at(i)
           @actual.delete_at(i)
           changed = true
         end
@@ -264,13 +266,13 @@ module Pdfbox::Pdmodel::Common
         if (parent_dict = @parent_dict) && index == 0 && (dict_key = @dict_key)
           parent_dict[dict_key] = cos_item
         end
-        @array.items[index] = cos_item
+        @array[index] = cos_item
       elsif element.responds_to?(:cos_object)
         cos_item = element.cos_object
         if (parent_dict = @parent_dict) && index == 0 && (dict_key = @dict_key)
           parent_dict[dict_key] = cos_item
         end
-        @array.items[index] = cos_item
+        @array[index] = cos_item
       else
         raise "Unsupported element type"
       end
@@ -290,9 +292,9 @@ module Pdfbox::Pdmodel::Common
       end
       @actual.insert(index, element)
       if element.is_a?(String)
-        @array.items.insert(index, Cos::String.new(element))
+        @array.add(index, Cos::String.new(element))
       elsif element.responds_to?(:cos_object)
-        @array.items.insert(index, element.cos_object)
+        @array.add(index, element.cos_object)
       end
     end
 

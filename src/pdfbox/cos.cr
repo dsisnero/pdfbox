@@ -26,27 +26,122 @@ module Pdfbox::Cos
   end
 
   # Tracks incremental-update state for a COS object.
+  #
+  # Port of org.apache.pdfbox.cos.COSUpdateState. Links a DocumentState to the
+  # managed COS object, records whether the object changed after the document
+  # finished parsing, and hands out an Increment describing the objects that
+  # belong to the next incremental revision.
   class UpdateState
-    @origin_document_state : DocumentState?
+    @origin_document_state : DocumentState? = nil
     @updated = false
 
+    def initialize(@update_info : Base)
+    end
+
+    # Links *origin_document_state* to this object and all its contained
+    # structures. An already linked state is never replaced.
+    # Java COSUpdateState#setOriginDocumentState(COSDocumentState).
     def origin_document_state=(origin_document_state : DocumentState?) : Nil
-      return if @origin_document_state || origin_document_state.nil?
-      @origin_document_state = origin_document_state
-      update(true)
+      set_origin_document_state(origin_document_state, false)
     end
 
     def origin_document_state : DocumentState?
       @origin_document_state
     end
 
+    # Whether updates are accepted, which requires a linked origin document
+    # state that finished parsing. Java COSUpdateState#isAcceptingUpdates.
+    def accepting_updates? : Bool
+      state = @origin_document_state
+      !state.nil? && state.accepting_updates?
+    end
+
     def updated? : Bool
       @updated
     end
 
+    # Marks the object updated. Java COSUpdateState#update().
+    def update : Nil
+      update(true)
+    end
+
+    # Sets the updated flag. Java COSUpdateState#update(boolean).
     def update(updated : Bool) : Nil
-      return unless @origin_document_state.try(&.accepting_updates?)
-      @updated = updated
+      @updated = updated if accepting_updates?
+    end
+
+    # Marks this structure updated and links the given child, initializing the
+    # child's origin document state. Java COSUpdateState#update(COSBase).
+    def update(child : Base) : Nil
+      update
+      return unless updatable?(child)
+
+      child.update_state.set_origin_document_state(@origin_document_state, false)
+    end
+
+    # Java COSUpdateState#update(COSArray).
+    def update(children : Array) : Nil
+      update(children.items)
+    end
+
+    # Java COSUpdateState#update(Iterable<COSBase>).
+    def update(children : Enumerable(Base)) : Nil
+      update
+      children.each do |child|
+        next unless updatable?(child)
+
+        child.update_state.set_origin_document_state(@origin_document_state, false)
+      end
+    end
+
+    # Links a dereferenced child without marking it updated, so that resolving
+    # an indirect reference is not mistaken for a modification.
+    # Java COSUpdateState#dereferenceChild.
+    def dereference_child(child : Base) : Nil
+      return unless updatable?(child)
+
+      child.update_state.set_origin_document_state(@origin_document_state, true)
+    end
+
+    # Java COSUpdateState#toIncrement.
+    def to_increment : Increment
+      Increment.new(@update_info)
+    end
+
+    protected def set_origin_document_state(origin_document_state : DocumentState?,
+                                            dereferencing : Bool) : Nil
+      return if @origin_document_state || origin_document_state.nil?
+
+      @origin_document_state = origin_document_state
+      update unless dereferencing
+
+      case info = @update_info
+      when Dictionary
+        info.entries.each_value do |entry|
+          next unless updatable?(entry)
+
+          entry.update_state.set_origin_document_state(origin_document_state, dereferencing)
+        end
+      when Array
+        info.items.each do |entry|
+          next unless updatable?(entry)
+
+          entry.update_state.set_origin_document_state(origin_document_state, dereferencing)
+        end
+      when Object
+        return unless info.dereferenced?
+
+        reference = info.referenced_object
+        return if reference.nil? || !updatable?(reference)
+
+        reference.update_state.set_origin_document_state(origin_document_state, dereferencing)
+      end
+    end
+
+    # Java only recurses into the COSBase types implementing COSUpdateInfo:
+    # COSDictionary (including COSStream), COSArray and COSObject.
+    private def updatable?(base : Base) : Bool
+      base.is_a?(Dictionary) || base.is_a?(Array) || base.is_a?(Object)
     end
   end
 
@@ -104,7 +199,7 @@ module Pdfbox::Cos
     end
 
     def update_state : UpdateState
-      @update_state ||= UpdateState.new
+      @update_state ||= UpdateState.new(self)
     end
 
     def need_to_be_updated? : Bool
@@ -119,6 +214,12 @@ module Pdfbox::Cos
     # Java COSUpdateInfo#setNeedToBeUpdated.
     def set_need_to_be_updated(flag : Bool) : Nil # ameba:disable Naming/AccessorMethodName
       self.need_to_be_updated = flag
+    end
+
+    # Collects the objects that belong to the next incremental revision, based
+    # on this object's update state. Java COSUpdateInfo#toIncrement.
+    def to_increment : Increment
+      update_state.to_increment
     end
   end
 
@@ -887,12 +988,14 @@ module Pdfbox::Cos
 
     def add(item : Base) : self
       @items << item
+      update_state.update(item)
       self
     end
 
     # Insert item at index
     def add(index : Int, item : Base) : self
       @items.insert(index, item)
+      update_state.update(item)
       self
     end
 
@@ -910,6 +1013,8 @@ module Pdfbox::Cos
 
     def []=(index : Int, value : Base) : Base
       @items[index] = value
+      update_state.update(value)
+      value
     end
 
     def get_string(index : Int, default : ::String? = nil) : ::String?
@@ -959,6 +1064,7 @@ module Pdfbox::Cos
       values.each do |value|
         @items << Float.new(value.to_f64)
       end
+      update_state.update
     end
 
     def to_cos_number_float_list : ::Array(Float64?)
@@ -1011,6 +1117,7 @@ module Pdfbox::Cos
 
     def clear : Nil
       @items.clear
+      update_state.update
     end
 
     def remove(index : Int) : Base
@@ -1022,6 +1129,7 @@ module Pdfbox::Cos
       # the first equal occurrence.
       if index = @items.index { |item| item == value }
         @items.delete_at(index)
+        update_state.update
         return true
       end
       if value.is_a?(Dictionary)
@@ -1032,6 +1140,7 @@ module Pdfbox::Cos
         end
         if index
           @items.delete_at(index)
+          update_state.update
           return true
         end
       end
@@ -1040,11 +1149,13 @@ module Pdfbox::Cos
 
     def remove_all(values : Enumerable(Base)) : Nil
       values.each { |value| @items.delete(value) }
+      update_state.update
     end
 
     def retain_all(values : Enumerable(Base)) : Nil
       keep = values.to_set
       @items.select! { |item| keep.includes?(item) }
+      update_state.update
     end
 
     # Java COSArray#resetObjectKeys.
@@ -1079,6 +1190,7 @@ module Pdfbox::Cos
     def grow_to_size(size : Int, fill_value : Base = Null.instance) : Nil
       return if @items.size >= size
       (size - @items.size).times { @items << fill_value }
+      update_state.update
     end
 
     def size : Int32
@@ -1099,7 +1211,9 @@ module Pdfbox::Cos
 
     # Remove element at index and return it
     def delete_at(index : Int) : Base
-      @items.delete_at(index)
+      value = @items.delete_at(index)
+      update_state.update
+      value
     end
 
     # Write this array in PDF format to the given IO
@@ -1140,6 +1254,9 @@ module Pdfbox::Cos
 
     def []=(key : Name, value : Base) : Base
       @entries[key] = value
+      # Java COSDictionary#setItem updates the dictionary and links the value.
+      update_state.update(value)
+      value
     end
 
     def set_item(key : Name, value : Base) : Base
@@ -1185,7 +1302,9 @@ module Pdfbox::Cos
     end
 
     def delete(key : Name) : Base?
-      @entries.delete(key)
+      removed = @entries.delete(key)
+      update_state.update
+      removed
     end
 
     def remove_item(key : Name) : Base?
@@ -1194,6 +1313,7 @@ module Pdfbox::Cos
 
     def clear : Nil
       @entries.clear
+      update_state.update
     end
 
     def add_all(other : Dictionary) : Nil
@@ -1542,6 +1662,9 @@ module Pdfbox::Cos
 
     def data=(@data : Bytes) : Bytes
       @data_present = true
+      # A stream whose bytes were replaced belongs to the next revision; Java
+      # relies on the owning dictionary's setItem to notice that.
+      update_state.update
       @data
     end
 
@@ -1924,12 +2047,28 @@ module Pdfbox::Cos
           @is_dereferenced = true
           @base_object = parser.dereference_object(self)
           @parser = nil
+          # Dereferencing only links the resolved object to the document state,
+          # it never counts as a modification. Java COSObject#getObject.
+          if base = @base_object
+            update_state.dereference_child(base)
+          end
         rescue ex
           Log.error { "Can't dereference #{self}: #{ex.message}" }
           # Return nil on error
           return
         end
       end
+      @base_object
+    end
+
+    # Whether the referenced object has been resolved. Java COSObject#isDereferenced.
+    def dereferenced? : Bool
+      @is_dereferenced
+    end
+
+    # The referenced object without triggering dereferencing. Used when linking
+    # a document state down a structure.
+    def referenced_object : Base?
       @base_object
     end
 
@@ -1993,6 +2132,7 @@ module Pdfbox::Cos
     @trailer : Dictionary? = nil
     @stream_cache : Pdfbox::IO::RandomAccessStreamCache = Pdfbox::IO::RandomAccessStreamCacheImpl.new
     @closed = false
+    @document_state = DocumentState.new
 
     def write_pdf(io : ::IO) : Nil
       io << "%COSDocument"
@@ -2051,6 +2191,16 @@ module Pdfbox::Cos
 
     def trailer=(new_trailer : Dictionary) : Dictionary
       @trailer = new_trailer
+      # Java COSDocument#setTrailer links the document state to the trailer,
+      # which is the root of the update tracking for an incremental save.
+      new_trailer.update_state.origin_document_state = document_state
+      new_trailer
+    end
+
+    # The document's parse lifecycle, used to decide whether updates are
+    # accepted. Java COSDocument#getDocumentState.
+    def document_state : DocumentState
+      @document_state
     end
 
     # Whether the document is encrypted (the trailer has an /Encrypt entry).
@@ -2289,6 +2439,184 @@ module Pdfbox::Cos
 
     def set_float(key : ::String, value : Float64) : Nil
       raise UnsupportedOperationError.new("Unmodifiable dictionary")
+    end
+  end
+
+  # Collects the objects that belong to the next incremental revision.
+  #
+  # Port of org.apache.pdfbox.cos.COSIncrement. Collection starts at the
+  # COSUpdateInfo the increment was created for and follows the Java rules:
+  #  - direct structures are written by their parent, never as a top level
+  #    object of their own;
+  #  - arrays are always treated as direct structures;
+  #  - an indirect COSObject contributes its dereferenced base;
+  #  - entries linked to another document state count as updated.
+  class Increment
+    include Enumerable(Base)
+
+    @objects = [] of Base
+    @object_ids = Set(UInt64).new
+    @excluded_ids = Set(UInt64).new
+    @processed_ids = Set(UInt64).new
+    @initialized = false
+
+    def initialize(@increment_origin : Base?)
+    end
+
+    # The objects to write, in collection order. Evaluating the increment
+    # collects the updates on first use. Java COSIncrement#getObjects.
+    def objects : ::Array(Base)
+      unless @initialized
+        if origin = @increment_origin
+          collect(origin.cos_object)
+        end
+        @initialized = true
+      end
+      @objects
+    end
+
+    def each(& : Base ->) : Nil
+      objects.each { |base| yield base }
+    end
+
+    # Marks the given bases as not fit for inclusion in this increment, to allow
+    # method chaining. Java COSIncrement#exclude.
+    def exclude(*bases : Base) : self
+      bases.each { |base| @excluded_ids.add(base.object_id) }
+      self
+    end
+
+    # Whether the given base is already known to and processed by this
+    # increment. Java COSIncrement#contains.
+    def contains?(base : Base) : Bool
+      return true if @object_ids.includes?(base.object_id)
+
+      base.is_a?(Object) && @processed_ids.includes?(base.object_id)
+    end
+
+    private def collect(base : Base) : Bool
+      return false if contains?(base)
+
+      case base
+      when Dictionary then collect_dictionary(base)
+      when Object     then collect_object(base)
+      when Array      then collect_array(base)
+      else                 false
+      end
+    end
+
+    private def collect_dictionary(dictionary : Dictionary) : Bool
+      update_state = dictionary.update_state
+      # Is definitely part of the increment?
+      if !excluded?(dictionary) && !contains?(dictionary) && update_state.updated?
+        add(dictionary)
+      end
+      child_demands_parent_update = false
+      dictionary.entries.each_value do |entry|
+        # Primitives can not be part of an increment. (on top level)
+        next unless updatable?(entry)
+        next if contains?(entry)
+
+        entry_update_state = entry.update_state
+        # Entries with a different document origin must be part of the increment.
+        update_different_origin(entry_update_state)
+        # Always attempt to write arrays as direct objects.
+        if entry_update_state.updated? &&
+           ((!entry.is_a?(Object) && entry.direct?) || entry.is_a?(Array))
+          # Exclude direct entries from the increment.
+          exclude(entry)
+          child_demands_parent_update = true
+        end
+        # Collect descendants.
+        child_demands_parent_update = collect(entry) || child_demands_parent_update
+      end
+
+      return child_demands_parent_update if excluded?(dictionary)
+
+      if child_demands_parent_update && !contains?(dictionary)
+        add(dictionary)
+      end
+      false
+    end
+
+    private def collect_array(array : Array) : Bool
+      child_demands_parent_update = array.update_state.updated?
+      array.items.each do |entry|
+        # Primitives can not be part of an increment. (on top level)
+        next unless updatable?(entry)
+        next if contains?(entry)
+
+        update_different_origin(entry.update_state)
+        # Collect descendants.
+        child_demands_parent_update = collect(entry) || child_demands_parent_update
+      end
+      child_demands_parent_update
+    end
+
+    private def collect_object(object : Object) : Bool
+      return false if contains?(object)
+
+      add_processed(object)
+      update_state = object.update_state
+      # Objects with a different document origin must be part of the increment.
+      update_different_origin(update_state)
+      # Determine the actual object, if necessary or possible without
+      # dereferencing.
+      actual = nil.as(Base?)
+      if update_state.updated? || object.dereferenced?
+        base = object.object
+        actual = base if base && updatable?(base)
+      end
+      # Skip?
+      return false if actual.nil? || contains?(actual)
+
+      child_demands_parent_update = false
+      actual_update_state = actual.update_state
+      if actual_update_state.updated?
+        child_demands_parent_update = true
+      end
+      exclude(actual)
+      child_demands_parent_update = collect(actual) || child_demands_parent_update
+      if update_state.updated? || child_demands_parent_update
+        add(actual)
+      end
+      false
+    end
+
+    # Treats an entry originating from another document as updated, since it
+    # can only be written from this increment. Java updateDifferentOrigin.
+    private def update_different_origin(update_state : UpdateState) : Nil
+      origin = @increment_origin
+      return if origin.nil?
+
+      origin_state = origin.update_state.origin_document_state
+      return if origin_state == update_state.origin_document_state
+
+      update_state.update
+    end
+
+    private def add(base : Base?) : Nil
+      return if base.nil?
+
+      id = base.object_id
+      return if @object_ids.includes?(id)
+
+      @object_ids.add(id)
+      @objects << base
+    end
+
+    private def add_processed(base : Base?) : Nil
+      return if base.nil?
+
+      @processed_ids.add(base.object_id)
+    end
+
+    private def excluded?(base : Base) : Bool
+      @excluded_ids.includes?(base.object_id)
+    end
+
+    private def updatable?(base : Base) : Bool
+      base.is_a?(Dictionary) || base.is_a?(Array) || base.is_a?(Object)
     end
   end
 end

@@ -773,11 +773,16 @@ module Pdfbox::Pdfwriter
     # written as an xref stream when the source used one and as a classic xref
     # table otherwise).
     #
+    # The objects of the appended revision are collected the same way Java does
+    # it (COSWriter#write):
+    #   trailer.toIncrement().exclude(trailer)
+    # so only the structures flagged through COSUpdateState are rewritten.
+    #
     # Divergences (documented in plans/parity.md):
-    #  - every object reachable from the document roots is written, not only the
-    #    objects flagged through COSUpdateState#setNeedToBeUpdated. The appended
-    #    revision is therefore larger than Java's, but it always carries every
-    #    change (the port does not track update flags).
+    #  - Java writes the increment and lets COSWriter emit direct structures
+    #    inline; this writer allocates an object number for every structure, so
+    #    the objects created in this session are written as top level objects
+    #    too instead of being inlined.
     #  - documents that are still encrypted, and documents that were not loaded
     #    from bytes, fall back to a full save.
     def write_incremental : Nil
@@ -816,10 +821,15 @@ module Pdfbox::Pdfwriter
         end
       end
 
+      # Only the updated structures and the objects created in this session end
+      # up in the appended revision.
+      write_ids = incremental_write_ids(trailer.to_increment.exclude(trailer))
+
       written = [] of Tuple(Int64, XRefEntry)
       key_objects.keys.sort_by!(&.number).each do |key|
         obj = key_objects[key]
         next unless obj
+        next unless write_ids.includes?(obj.object_id.to_u64)
         position = @destination.pos.to_i64
         written << {key.number, XRefEntry.new(position, key.generation, :in_use)}
         @destination << key.number << ' ' << key.generation << " obj\n"
@@ -840,6 +850,47 @@ module Pdfbox::Pdfwriter
       # onto this revision instead of the original one.
       @document.start_xref = new_start_xref
       @document.highest_object_number = highest_number
+    end
+
+    # The ids of the objects an incremental revision has to carry: the objects of
+    # the COSIncrement rooted at the trailer, plus the structures created in this
+    # session. A created structure has no object number in the source revision,
+    # so the reference this writer emits for it would dangle unless the structure
+    # is written as well. (Java gets away without them because COSWriter writes
+    # direct structures inline; see the divergence note on #write_incremental.)
+    private def incremental_write_ids(increment : Pdfbox::Cos::Increment) : Set(UInt64)
+      ids = Set(UInt64).new
+      queue = Deque(Pdfbox::Cos::Base).new
+      increment.objects.each do |base|
+        ids << base.object_id.to_u64
+        queue << base
+      end
+
+      until queue.empty?
+        current = queue.shift
+        actual = current.is_a?(Pdfbox::Cos::Object) ? current.object : current
+        next unless actual
+
+        children = case actual
+                   when Pdfbox::Cos::Dictionary then actual.entries.each_value.to_a
+                   when Pdfbox::Cos::Array      then actual.items
+                   else                              [] of Pdfbox::Cos::Base
+                   end
+        children.each do |child|
+          inner = child.is_a?(Pdfbox::Cos::Object) ? child.object : child
+          next unless inner.is_a?(Pdfbox::Cos::Dictionary) || inner.is_a?(Pdfbox::Cos::Array)
+          # A structure that already had an object number in the source revision
+          # can be referenced from the new one as it is.
+          next if inner.key
+
+          id = inner.object_id.to_u64
+          next if ids.includes?(id)
+
+          ids << id
+          queue << inner
+        end
+      end
+      ids
     end
 
     # True when the source cross-reference section (at *start_xref*) is an xref

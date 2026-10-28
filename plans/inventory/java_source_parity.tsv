@@ -3806,7 +3806,7 @@ pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.close	ported	src/pdfbox/cos.cr	ported: COSDocument accessors
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.createCOSStream	ported	src/pdfbox/cos.cr	ported: COSDocument accessors
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.getDocumentID	ported	src/pdfbox/cos.cr	ported: COSDocument accessors
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.getDocumentState	partial	src/pdfbox/cos.cr	partial: COSDocumentState not ported
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.getDocumentState	ported	src/pdfbox/cos.cr	ported: Cos::Document#document_state
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.getEncryptionDictionary	ported	src/pdfbox/cos.cr	ported: COSDocument accessors
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.getHighestXRefObjectNumber	ported	src/pdfbox/cos.cr	ported: COSDocument accessors
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.getLinearizedDictionary	ported	src/pdfbox/cos.cr	ported: COSDocument accessors
@@ -3831,9 +3831,9 @@ pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.setStartXref	ported	src/pdfbox/cos.cr	ported: COSDocument accessors
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.setTrailer	ported	src/pdfbox/cos.cr	ported: COSDocument accessors
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.setVersion	ported	src/pdfbox/cos.cr	ported: COSDocument accessors
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocumentState.java::class::COSDocumentState	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocumentState.java::method::COSDocumentState.isAcceptingUpdates	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocumentState.java::method::COSDocumentState.setParsing	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocumentState.java::class::COSDocumentState	ported	src/pdfbox/cos.cr	ported: DocumentState
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocumentState.java::method::COSDocumentState.isAcceptingUpdates	ported	src/pdfbox/cos.cr	ported: DocumentState#accepting_updates?
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocumentState.java::method::COSDocumentState.setParsing	ported	src/pdfbox/cos.cr	ported: DocumentState#parsing=
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSFloat.java::class::COSFloat	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSFloat.java::const::ONE	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSFloat.java::const::ZERO	missing	-	baseline
@@ -3847,16 +3847,16 @@ pdfbox/src/main/java/org/apache/pdfbox/cos/COSFloat.java::method::COSFloat.intVa
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSFloat.java::method::COSFloat.longValue	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSFloat.java::method::COSFloat.toString	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSFloat.java::method::COSFloat.writePDF	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSIncrement.java::class::COSIncrement	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSIncrement.java::method::COSIncrement.add	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSIncrement.java::method::COSIncrement.addProcessedObject	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSIncrement.java::method::COSIncrement.collect	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSIncrement.java::method::COSIncrement.contains	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSIncrement.java::method::COSIncrement.exclude	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSIncrement.java::method::COSIncrement.getObjects	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSIncrement.java::method::COSIncrement.isExcluded	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSIncrement.java::method::COSIncrement.iterator	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSIncrement.java::method::COSIncrement.updateDifferentOrigin	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSIncrement.java::class::COSIncrement	ported	src/pdfbox/cos.cr	ported: Increment
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSIncrement.java::method::COSIncrement.add	ported	src/pdfbox/cos.cr	ported: Increment#add
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSIncrement.java::method::COSIncrement.addProcessedObject	ported	src/pdfbox/cos.cr	ported: Increment#add_processed
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSIncrement.java::method::COSIncrement.collect	ported	src/pdfbox/cos.cr	ported: Increment#collect
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSIncrement.java::method::COSIncrement.contains	ported	src/pdfbox/cos.cr	ported: Increment#contains?
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSIncrement.java::method::COSIncrement.exclude	ported	src/pdfbox/cos.cr	ported: Increment#exclude
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSIncrement.java::method::COSIncrement.getObjects	ported	src/pdfbox/cos.cr	ported: Increment#objects
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSIncrement.java::method::COSIncrement.isExcluded	ported	src/pdfbox/cos.cr	ported: Increment#excluded?
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSIncrement.java::method::COSIncrement.iterator	ported	src/pdfbox/cos.cr	ported: Increment#each
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSIncrement.java::method::COSIncrement.updateDifferentOrigin	ported	src/pdfbox/cos.cr	ported: Increment#update_different_origin
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSInputStream.java::class::COSInputStream	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSInputStream.java::method::COSInputStream.create	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSInputStream.java::method::COSInputStream.getDecodeResult	missing	-	baseline
@@ -4492,15 +4492,15 @@ pdfbox/src/main/java/org/apache/pdfbox/cos/COSNumber.java::method::COSNumber.get
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSNumber.java::method::COSNumber.intValue	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSNumber.java::method::COSNumber.isFloat	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSNumber.java::method::COSNumber.longValue	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSObject.java::class::COSObject	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSObject.java::class::COSObject	ported	src/pdfbox/cos.cr	ported: Cos::Object
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSObject.java::const::LOG	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSObject.java::method::COSObject.accept	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSObject.java::method::COSObject.getObject	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSObject.java::method::COSObject.getUpdateState	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSObject.java::method::COSObject.isDereferenced	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSObject.java::method::COSObject.isObjectNull	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSObject.java::method::COSObject.accept	ported	src/pdfbox/cos.cr	ported: Base#accept
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSObject.java::method::COSObject.getObject	ported	src/pdfbox/cos.cr	ported: Object#object
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSObject.java::method::COSObject.getUpdateState	ported	src/pdfbox/cos.cr	ported: Base#update_state
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSObject.java::method::COSObject.isDereferenced	ported	src/pdfbox/cos.cr	ported: Object#dereferenced?
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSObject.java::method::COSObject.isObjectNull	ported	src/pdfbox/cos.cr	ported: Object#object_null?
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSObject.java::method::COSObject.setToNull	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSObject.java::method::COSObject.toString	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSObject.java::method::COSObject.toString	ported	src/pdfbox/cos.cr	ported: Object#to_s
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSObjectKey.java::class::COSObjectKey	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSObjectKey.java::const::GENERATION_MASK	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSObjectKey.java::const::NUMBER_OFFSET	missing	-	baseline
@@ -4551,15 +4551,15 @@ pdfbox/src/main/java/org/apache/pdfbox/cos/COSUpdateInfo.java::interface::COSUpd
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSUpdateInfo.java::method::getUpdateState	ported	src/pdfbox/cos.cr	ported: Base#update_state
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSUpdateInfo.java::method::isNeedToBeUpdated	ported	src/pdfbox/cos.cr	ported: Base#need_to_be_updated?
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSUpdateInfo.java::method::setNeedToBeUpdated	ported	src/pdfbox/cos.cr	ported: Base#set_need_to_be_updated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSUpdateInfo.java::method::toIncrement	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSUpdateState.java::class::COSUpdateState	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSUpdateState.java::method::COSUpdateState.dereferenceChild	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSUpdateState.java::method::COSUpdateState.getOriginDocumentState	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSUpdateState.java::method::COSUpdateState.isAcceptingUpdates	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSUpdateState.java::method::COSUpdateState.isUpdated	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSUpdateState.java::method::COSUpdateState.setOriginDocumentState	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSUpdateState.java::method::COSUpdateState.toIncrement	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSUpdateState.java::method::COSUpdateState.update	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSUpdateInfo.java::method::toIncrement	ported	src/pdfbox/cos.cr	ported: Base#to_increment
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSUpdateState.java::class::COSUpdateState	ported	src/pdfbox/cos.cr	ported: UpdateState
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSUpdateState.java::method::COSUpdateState.dereferenceChild	ported	src/pdfbox/cos.cr	ported: UpdateState#dereference_child
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSUpdateState.java::method::COSUpdateState.getOriginDocumentState	ported	src/pdfbox/cos.cr	ported: UpdateState#origin_document_state
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSUpdateState.java::method::COSUpdateState.isAcceptingUpdates	ported	src/pdfbox/cos.cr	ported: UpdateState#accepting_updates?
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSUpdateState.java::method::COSUpdateState.isUpdated	ported	src/pdfbox/cos.cr	ported: UpdateState#updated?
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSUpdateState.java::method::COSUpdateState.setOriginDocumentState	ported	src/pdfbox/cos.cr	ported: UpdateState#origin_document_state=
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSUpdateState.java::method::COSUpdateState.toIncrement	ported	src/pdfbox/cos.cr	ported: UpdateState#to_increment
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSUpdateState.java::method::COSUpdateState.update	ported	src/pdfbox/cos.cr	ported: UpdateState#update (bool/COSBase/Iterable overloads)
 pdfbox/src/main/java/org/apache/pdfbox/cos/ICOSParser.java::interface::ICOSParser	ported	src/pdfbox/cos/icosparser.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/cos/ICOSParser.java::method::createRandomAccessReadView	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/cos/ICOSParser.java::method::dereferenceCOSObject	missing	-	baseline
@@ -5220,7 +5220,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWrit
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.doWriteBody	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.doWriteBodyCompressed	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.doWriteHeader	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.doWriteIncrement	ported	src/pdfbox/pdfwriter.cr	ported: incremental save
+pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.doWriteIncrement	ported	src/pdfbox/pdfwriter.cr	ported: write_incremental (increment objects + created structures)
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.doWriteObject	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.doWriteObjects	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.doWriteSignature	missing	-	baseline
@@ -5237,7 +5237,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWrit
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.getXRefRanges	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.isCompress	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.isNeedToBeUpdated	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.prepareIncrement	ported	src/pdfbox/pdfwriter.cr	ported: collect_objects_incremental
+pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.prepareIncrement	ported	src/pdfbox/pdfwriter.cr	ported: incremental_write_ids (BFS over Increment#objects)
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.setOutput	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.setStandardOutput	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.setStartxref	missing	-	baseline
@@ -5252,7 +5252,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWrit
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.visitFromObject	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.visitFromStream	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.visitFromString	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.write	ported	src/pdfbox/pdfwriter.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.write	ported	src/pdfbox/pdfwriter.cr	ported: Writer#write / Writer#write_incremental
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.writeArray	ported	src/pdfbox/pdfwriter.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.writeDictionary	ported	src/pdfbox/pdfwriter.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.writeExternalSignature	missing	-	baseline

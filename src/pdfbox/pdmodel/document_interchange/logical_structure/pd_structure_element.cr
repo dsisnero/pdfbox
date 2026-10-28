@@ -380,7 +380,7 @@ module Pdfbox::Pdmodel::DocumentInterchange::LogicalStructure
           if entry == attribute_object.cos_object
             next_base = array.items[i + 1]?
             if next_base.is_a?(Pdfbox::Cos::Integer)
-              array.items[i + 1] = Pdfbox::Cos::Integer.get(revision_number.to_i64)
+              array[i + 1] = Pdfbox::Cos::Integer.get(revision_number.to_i64)
             end
           end
         end

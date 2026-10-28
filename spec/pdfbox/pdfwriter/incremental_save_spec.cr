@@ -285,6 +285,103 @@ describe "Pdfbox::Pdfwriter incremental save" do
     end
   end
 
+  # COSWriter#write collects the objects to write with
+  #   trailer.toIncrement().exclude(trailer)
+  # so an incremental update only carries the objects that were changed (plus
+  # the objects created in this session). Without COSUpdateState tracking the
+  # appended revision would be a full rewrite of every reachable object.
+  it "writes no object bodies when the document was not modified" do
+    # Classic xref table: the appended revision then contains nothing but the
+    # cross-reference section and the trailer.
+    original = incremental_base_document(compress: false)
+
+    output = IO::Memory.new
+    document = Pdfbox::Loader.load_pdf(original)
+    document.save_incremental(output)
+    document.close
+
+    updated = output.to_slice
+    updated[0, original.size].should eq(original)
+    appended = String.new(updated[original.size..])
+    appended.should_not contain(" obj\n")
+    appended.should contain("/Prev #{incremental_start_xref(original)}")
+
+    reloaded = Pdfbox::Loader.load_pdf(updated)
+    begin
+      reloaded.number_of_pages.should eq(1)
+      reloaded.get_page(0).media_box.not_nil!.width.should eq(100.0)
+    ensure
+      reloaded.close
+    end
+  end
+
+  it "writes only the modified objects into the new revision" do
+    original = incremental_base_document(compress: true)
+
+    output = IO::Memory.new
+    document = Pdfbox::Loader.load_pdf(original)
+    document.get_page(0).media_box = Pdfbox::Pdmodel::Rectangle.from_dimensions(42.0, 42.0)
+    document.save_incremental(output)
+    document.close
+
+    updated = output.to_slice
+    updated[0, original.size].should eq(original)
+    appended = String.new(updated[original.size..])
+    # The changed page dictionary is written ...
+    appended.should contain("/MediaBox")
+    # ... and nothing else: a full rewrite would carry the catalog, page tree,
+    # trailer references and every stream.
+    appended.should_not contain("/Type /Catalog")
+    appended.should_not contain("/Type /Pages")
+
+    reloaded = Pdfbox::Loader.load_pdf(updated)
+    begin
+      reloaded.number_of_pages.should eq(1)
+      reloaded.get_page(0).media_box.not_nil!.width.should eq(42.0)
+    ensure
+      reloaded.close
+    end
+  end
+
+  # Java keeps DocumentInformation changes incremental: only the /Info dictionary
+  # is appended, the rest of the document is left untouched.
+  it "appends only the document information object when the metadata changed" do
+    output = IO::Memory.new
+    document = Pdfbox::Pdmodel::Document.create
+    document.add_page(incremental_page(100.0))
+    information = Pdfbox::Pdmodel::DocumentInformation.new
+    information.title = "Original Title"
+    document.set_document_information(information)
+    document.save(output, Pdfbox::Pdfwriter::Compress::CompressParameters::NO_COMPRESSION)
+    document.close
+    original = output.to_slice
+
+    incremental = IO::Memory.new
+    loaded = Pdfbox::Loader.load_pdf(original)
+    begin
+      loaded.document_information.not_nil!.title.should eq("Original Title")
+      loaded.document_information.not_nil!.title = "Incremental Title"
+      loaded.save_incremental(incremental)
+    ensure
+      loaded.close
+    end
+
+    updated = incremental.to_slice
+    updated[0, original.size].should eq(original)
+    appended = String.new(updated[original.size..])
+    appended.should contain("Incremental Title")
+    appended.should_not contain("/Type /Catalog")
+    appended.should_not contain("/Type /Pages")
+
+    reloaded = Pdfbox::Loader.load_pdf(updated)
+    begin
+      reloaded.document_information.not_nil!.title.should eq("Incremental Title")
+      reloaded.number_of_pages.should eq(1)
+    ensure
+      reloaded.close
+    end
+  end
+
   it "falls back to a full save for a document that has no source bytes" do
     output = IO::Memory.new
     document = Pdfbox::Pdmodel::Document.create

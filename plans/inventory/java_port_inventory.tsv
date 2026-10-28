@@ -3806,7 +3806,7 @@ pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.close	method	ported	src/pdfbox/cos.cr	ported: COSDocument accessors
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.createCOSStream	method	ported	src/pdfbox/cos.cr	ported: COSDocument accessors
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.getDocumentID	method	ported	src/pdfbox/cos.cr	ported: COSDocument accessors
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.getDocumentState	method	partial	src/pdfbox/cos.cr	partial: COSDocumentState not ported
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.getDocumentState	method	ported	src/pdfbox/cos.cr	ported: Cos::Document#document_state
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.getEncryptionDictionary	method	ported	src/pdfbox/cos.cr	ported: COSDocument accessors
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.getHighestXRefObjectNumber	method	ported	src/pdfbox/cos.cr	ported: COSDocument accessors
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.getLinearizedDictionary	method	ported	src/pdfbox/cos.cr	ported: COSDocument accessors
@@ -3831,9 +3831,9 @@ pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.setStartXref	method	ported	src/pdfbox/cos.cr	ported: COSDocument accessors
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.setTrailer	method	ported	src/pdfbox/cos.cr	ported: COSDocument accessors
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocument.java::method::COSDocument.setVersion	method	ported	src/pdfbox/cos.cr	ported: COSDocument accessors
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocumentState.java::class::COSDocumentState	class	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocumentState.java::method::COSDocumentState.isAcceptingUpdates	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocumentState.java::method::COSDocumentState.setParsing	method	ported	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocumentState.java::class::COSDocumentState	class	ported	src/pdfbox/cos.cr	ported: DocumentState
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocumentState.java::method::COSDocumentState.isAcceptingUpdates	method	ported	src/pdfbox/cos.cr	ported: DocumentState#accepting_updates?
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSDocumentState.java::method::COSDocumentState.setParsing	method	ported	src/pdfbox/cos.cr	ported: DocumentState#parsing=
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSFloat.java::class::COSFloat	class	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSFloat.java::const::ONE	const	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSFloat.java::const::ZERO	const	missing	-	auto-generated
@@ -3847,16 +3847,16 @@ pdfbox/src/main/java/org/apache/pdfbox/cos/COSFloat.java::method::COSFloat.intVa
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSFloat.java::method::COSFloat.longValue	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSFloat.java::method::COSFloat.toString	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSFloat.java::method::COSFloat.writePDF	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSIncrement.java::class::COSIncrement	class	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSIncrement.java::method::COSIncrement.add	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSIncrement.java::method::COSIncrement.addProcessedObject	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSIncrement.java::method::COSIncrement.collect	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSIncrement.java::method::COSIncrement.contains	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSIncrement.java::method::COSIncrement.exclude	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSIncrement.java::method::COSIncrement.getObjects	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSIncrement.java::method::COSIncrement.isExcluded	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSIncrement.java::method::COSIncrement.iterator	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSIncrement.java::method::COSIncrement.updateDifferentOrigin	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSIncrement.java::class::COSIncrement	class	ported	src/pdfbox/cos.cr	ported: Increment
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSIncrement.java::method::COSIncrement.add	method	ported	src/pdfbox/cos.cr	ported: Increment#add
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSIncrement.java::method::COSIncrement.addProcessedObject	method	ported	src/pdfbox/cos.cr	ported: Increment#add_processed
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSIncrement.java::method::COSIncrement.collect	method	ported	src/pdfbox/cos.cr	ported: Increment#collect
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSIncrement.java::method::COSIncrement.contains	method	ported	src/pdfbox/cos.cr	ported: Increment#contains?
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSIncrement.java::method::COSIncrement.exclude	method	ported	src/pdfbox/cos.cr	ported: Increment#exclude
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSIncrement.java::method::COSIncrement.getObjects	method	ported	src/pdfbox/cos.cr	ported: Increment#objects
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSIncrement.java::method::COSIncrement.isExcluded	method	ported	src/pdfbox/cos.cr	ported: Increment#excluded?
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSIncrement.java::method::COSIncrement.iterator	method	ported	src/pdfbox/cos.cr	ported: Increment#each
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSIncrement.java::method::COSIncrement.updateDifferentOrigin	method	ported	src/pdfbox/cos.cr	ported: Increment#update_different_origin
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSInputStream.java::class::COSInputStream	class	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSInputStream.java::method::COSInputStream.create	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSInputStream.java::method::COSInputStream.getDecodeResult	method	missing	-	auto-generated
@@ -4492,15 +4492,15 @@ pdfbox/src/main/java/org/apache/pdfbox/cos/COSNumber.java::method::COSNumber.get
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSNumber.java::method::COSNumber.intValue	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSNumber.java::method::COSNumber.isFloat	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSNumber.java::method::COSNumber.longValue	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSObject.java::class::COSObject	class	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSObject.java::class::COSObject	class	ported	src/pdfbox/cos.cr	ported: Cos::Object
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSObject.java::const::LOG	const	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSObject.java::method::COSObject.accept	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSObject.java::method::COSObject.getObject	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSObject.java::method::COSObject.getUpdateState	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSObject.java::method::COSObject.isDereferenced	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSObject.java::method::COSObject.isObjectNull	method	ported	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSObject.java::method::COSObject.accept	method	ported	src/pdfbox/cos.cr	ported: Base#accept
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSObject.java::method::COSObject.getObject	method	ported	src/pdfbox/cos.cr	ported: Object#object
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSObject.java::method::COSObject.getUpdateState	method	ported	src/pdfbox/cos.cr	ported: Base#update_state
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSObject.java::method::COSObject.isDereferenced	method	ported	src/pdfbox/cos.cr	ported: Object#dereferenced?
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSObject.java::method::COSObject.isObjectNull	method	ported	src/pdfbox/cos.cr	ported: Object#object_null?
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSObject.java::method::COSObject.setToNull	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSObject.java::method::COSObject.toString	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSObject.java::method::COSObject.toString	method	ported	src/pdfbox/cos.cr	ported: Object#to_s
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSObjectKey.java::class::COSObjectKey	class	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSObjectKey.java::const::GENERATION_MASK	const	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSObjectKey.java::const::NUMBER_OFFSET	const	missing	-	auto-generated
@@ -4551,15 +4551,15 @@ pdfbox/src/main/java/org/apache/pdfbox/cos/COSUpdateInfo.java::interface::COSUpd
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSUpdateInfo.java::method::getUpdateState	method	ported	src/pdfbox/cos.cr	ported: Base#update_state
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSUpdateInfo.java::method::isNeedToBeUpdated	method	ported	src/pdfbox/cos.cr	ported: Base#need_to_be_updated?
 pdfbox/src/main/java/org/apache/pdfbox/cos/COSUpdateInfo.java::method::setNeedToBeUpdated	method	ported	src/pdfbox/cos.cr	ported: Base#set_need_to_be_updated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSUpdateInfo.java::method::toIncrement	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSUpdateState.java::class::COSUpdateState	class	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSUpdateState.java::method::COSUpdateState.dereferenceChild	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSUpdateState.java::method::COSUpdateState.getOriginDocumentState	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSUpdateState.java::method::COSUpdateState.isAcceptingUpdates	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSUpdateState.java::method::COSUpdateState.isUpdated	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSUpdateState.java::method::COSUpdateState.setOriginDocumentState	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSUpdateState.java::method::COSUpdateState.toIncrement	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/cos/COSUpdateState.java::method::COSUpdateState.update	method	ported	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSUpdateInfo.java::method::toIncrement	method	ported	src/pdfbox/cos.cr	ported: Base#to_increment
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSUpdateState.java::class::COSUpdateState	class	ported	src/pdfbox/cos.cr	ported: UpdateState
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSUpdateState.java::method::COSUpdateState.dereferenceChild	method	ported	src/pdfbox/cos.cr	ported: UpdateState#dereference_child
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSUpdateState.java::method::COSUpdateState.getOriginDocumentState	method	ported	src/pdfbox/cos.cr	ported: UpdateState#origin_document_state
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSUpdateState.java::method::COSUpdateState.isAcceptingUpdates	method	ported	src/pdfbox/cos.cr	ported: UpdateState#accepting_updates?
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSUpdateState.java::method::COSUpdateState.isUpdated	method	ported	src/pdfbox/cos.cr	ported: UpdateState#updated?
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSUpdateState.java::method::COSUpdateState.setOriginDocumentState	method	ported	src/pdfbox/cos.cr	ported: UpdateState#origin_document_state=
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSUpdateState.java::method::COSUpdateState.toIncrement	method	ported	src/pdfbox/cos.cr	ported: UpdateState#to_increment
+pdfbox/src/main/java/org/apache/pdfbox/cos/COSUpdateState.java::method::COSUpdateState.update	method	ported	src/pdfbox/cos.cr	ported: UpdateState#update (bool/COSBase/Iterable overloads)
 pdfbox/src/main/java/org/apache/pdfbox/cos/ICOSParser.java::interface::ICOSParser	interface	ported	src/pdfbox/cos/icosparser.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/cos/ICOSParser.java::method::createRandomAccessReadView	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/cos/ICOSParser.java::method::dereferenceCOSObject	method	missing	-	auto-generated
@@ -5220,7 +5220,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWrit
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.doWriteBody	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.doWriteBodyCompressed	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.doWriteHeader	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.doWriteIncrement	method	ported	src/pdfbox/pdfwriter.cr	ported: incremental save
+pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.doWriteIncrement	method	ported	src/pdfbox/pdfwriter.cr	ported: write_incremental (increment objects + created structures)
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.doWriteObject	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.doWriteObjects	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.doWriteSignature	method	partial	src	auto-generated
@@ -5237,7 +5237,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWrit
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.getXRefRanges	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.isCompress	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.isNeedToBeUpdated	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.prepareIncrement	method	ported	src/pdfbox/pdfwriter.cr	ported: collect_objects_incremental
+pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.prepareIncrement	method	ported	src/pdfbox/pdfwriter.cr	ported: incremental_write_ids (BFS over Increment#objects)
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.setOutput	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.setStandardOutput	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.setStartxref	method	partial	src	auto-generated
@@ -5252,7 +5252,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWrit
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.visitFromObject	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.visitFromStream	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.visitFromString	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.write	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.write	method	ported	src/pdfbox/pdfwriter.cr	ported: Writer#write / Writer#write_incremental
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.writeArray	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.writeDictionary	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.writeExternalSignature	method	partial	src	auto-generated

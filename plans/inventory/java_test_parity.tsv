@@ -631,8 +631,8 @@ pdfbox/src/test/java/org/apache/pdfbox/cos/TestCOSString.java::method::TestCOSSt
 pdfbox/src/test/java/org/apache/pdfbox/cos/TestCOSString.java::method::TestCOSString.testUnicode	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/cos/TestCOSString.java::method::TestCOSString.testWritePDF	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/cos/TestCOSString.java::method::TestCOSString.writePDFTests	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/cos/TestCOSUpdateInfo.java::class::TestCOSUpdateInfo	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/cos/TestCOSUpdateInfo.java::method::TestCOSUpdateInfo.testIsSetNeedToBeUpdate	ported	-	baseline
+pdfbox/src/test/java/org/apache/pdfbox/cos/TestCOSUpdateInfo.java::class::TestCOSUpdateInfo	ported	spec/pdfbox/cos/update_info_spec.cr	ported: upstream TestCOSUpdateInfo
+pdfbox/src/test/java/org/apache/pdfbox/cos/TestCOSUpdateInfo.java::method::TestCOSUpdateInfo.testIsSetNeedToBeUpdate	ported	spec/pdfbox/cos/update_info_spec.cr	ported: upstream TestCOSUpdateInfo
 pdfbox/src/test/java/org/apache/pdfbox/cos/UnmodifiableCOSDictionaryTest.java::class::UnmodifiableCOSDictionaryTest	ported	spec/pdfbox/cos/unmodifiable_cos_dictionary_test_spec.cr	ported: upstream UnmodifiableCOSDictionaryTest
 pdfbox/src/test/java/org/apache/pdfbox/cos/UnmodifiableCOSDictionaryTest.java::method::UnmodifiableCOSDictionaryTest.testSetBoolean	ported	spec/pdfbox/cos/unmodifiable_cos_dictionary_test_spec.cr	ported: upstream UnmodifiableCOSDictionaryTest
 pdfbox/src/test/java/org/apache/pdfbox/cos/UnmodifiableCOSDictionaryTest.java::method::UnmodifiableCOSDictionaryTest.testSetDate	ported	spec/pdfbox/cos/unmodifiable_cos_dictionary_test_spec.cr	ported: upstream UnmodifiableCOSDictionaryTest

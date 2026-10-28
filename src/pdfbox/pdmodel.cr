@@ -40,6 +40,7 @@ module Pdfbox::Pdmodel
     @start_xref : Int64? = nil
     @highest_object_number : Int64? = nil
     @resource_cache : ResourceCache? = ResourceCacheFactory.create_resource_cache
+    @document_state = Cos::DocumentState.new
 
     def initialize(cos_document : Cos::Dictionary? = nil, version : String = "1.4", trailer : Cos::Dictionary? = nil)
       @version = version
@@ -55,7 +56,21 @@ module Pdfbox::Pdmodel
         @catalog.try(&.version=(@version))
       end
 
+      # Link the document state to the trailer while the document still counts
+      # as parsing, exactly like Java: COSDocument#setTrailer links it during
+      # parsing and PDDocument flips the state afterwards. Linking first would
+      # mark the whole parsed structure as updated (COSUpdateState#update),
+      # which would turn every incremental save into a full rewrite.
+      @trailer.try { |current| current.update_state.origin_document_state = @document_state }
+      @document_state.parsing = false
+
       load_trailer_state
+    end
+
+    # The document's parse lifecycle and update-tracking root.
+    # Java PDDocument#getDocument().getDocumentState().
+    def document_state : Cos::DocumentState
+      @document_state
     end
 
     def self.build_default_catalog_dictionary : Cos::Dictionary
