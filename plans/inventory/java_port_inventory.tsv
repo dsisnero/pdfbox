@@ -5216,7 +5216,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::const::XREF_FRE
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::const::XREF_USED	const	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.addObjectToWrite	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.addXRefEntry	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.detectPossibleSignature	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.detectPossibleSignature	method	ported	src/pdfbox/pdfwriter.cr	ported: Writer#detect_possible_signature
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.doWriteBody	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.doWriteBodyCompressed	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.doWriteHeader	method	partial	src	auto-generated
@@ -5228,7 +5228,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWrit
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.doWriteXRefInc	method	ported	src/pdfbox/pdfwriter.cr	ported: incremental xref section
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.doWriteXRefTable	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.fillGapsWithFreeEntries	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.getDataToSign	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.getDataToSign	method	ported	src/pdfbox/pdfwriter.cr	ported: Writer#data_to_sign
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.getObjectKey	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.getOutput	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.getStandardOutput	method	partial	src	auto-generated
@@ -5255,7 +5255,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWrit
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.write	method	ported	src/pdfbox/pdfwriter.cr	ported: Writer#write / Writer#write_incremental
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.writeArray	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.writeDictionary	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.writeExternalSignature	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.writeExternalSignature	method	ported	src/pdfbox/pdfwriter.cr	ported: Writer#write_external_signature
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.writeReference	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.writeString	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.writeXrefEntry	method	partial	src	auto-generated
@@ -5408,20 +5408,20 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDestinationNameTreeNode.java::m
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDestinationNameTreeNode.java::method::PDDestinationNameTreeNode.createChildNode	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::class::PDDocument	class	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::const::LOG	const	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::const::RESERVE_BYTE_RANGE	const	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::const::RESERVE_BYTE_RANGE	const	ported	src/pdfbox/pdmodel/interactive/form/document_signatures.cr	ported: Document::RESERVE_BYTE_RANGE
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.addPage	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.addSignature	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.assignAcroFormDefaultResource	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.assignAppearanceDictionary	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.assignSignatureRectangle	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.checkSignatureAnnotation	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.checkSignatureField	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.addSignature	method	ported	src/pdfbox/pdmodel/interactive/form/document_signatures.cr	ported: Document#add_signature (SignatureInterface overload not ported)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.assignAcroFormDefaultResource	method	ported	src/pdfbox/pdmodel/interactive/form/document_signatures.cr	ported: Document#assign_acro_form_default_resource
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.assignAppearanceDictionary	method	ported	src/pdfbox/pdmodel/interactive/form/document_signatures.cr	ported: Document#assign_appearance_dictionary
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.assignSignatureRectangle	method	ported	src/pdfbox/pdmodel/interactive/form/document_signatures.cr	ported: Document#assign_signature_rectangle
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.checkSignatureAnnotation	method	ported	src/pdfbox/pdmodel/interactive/form/document_signatures.cr	ported: Document#check_signature_annotation
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.checkSignatureField	method	ported	src/pdfbox/pdmodel/interactive/form/document_signatures.cr	ported: Document#check_signature_field
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.close	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.findSignatureField	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.findSignatureField	method	ported	src/pdfbox/pdmodel/interactive/form/document_signatures.cr	ported: Document#find_signature_field
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.getCurrentAccessPermission	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.getDocument	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.getDocumentCatalog	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.getDocumentId	method	ported	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.getDocumentId	method	ported	src/pdfbox/pdmodel.cr	ported: Document#document_id_seed
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.getDocumentInformation	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.getEncryption	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.getFontsToSubset	method	ported	src/pdfbox/pdmodel.cr	ported: PDDocument getFontsToSubset
@@ -5436,16 +5436,16 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocume
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.importPage	method	ported	src/pdfbox/pdmodel.cr	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.isAllSecurityToBeRemoved	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.isEncrypted	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.prepareNonVisibleSignature	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.prepareVisibleSignature	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.prepareNonVisibleSignature	method	ported	src/pdfbox/pdmodel/interactive/form/document_signatures.cr	ported: Document#prepare_non_visible_signature
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.prepareVisibleSignature	method	ported	src/pdfbox/pdmodel/interactive/form/document_signatures.cr	ported: Document#prepare_visible_signature (walks annotations/fields instead of the COS pool)
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.protect	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.registerTrueTypeFontForClosing	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.removePage	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.save	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.saveIncremental	method	ported	src/pdfbox/pdmodel.cr;src/pdfbox/pdfwriter.cr	ported: real incremental update
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.saveIncrementalForExternalSigning	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.saveIncrementalForExternalSigning	method	ported	src/pdfbox/pdmodel/interactive/form/document_signatures.cr	ported: Document#save_incremental_for_external_signing
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.setAllSecurityToBeRemoved	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.setDocumentId	method	ported	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.setDocumentId	method	ported	src/pdfbox/pdmodel.cr	ported: Document#set_document_id(Int64) (Bytes overload keeps the /ID override)
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.setDocumentInformation	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.setEncryptionDictionary	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.setResourceCache	method	ported	src/pdfbox/pdmodel.cr	ported: PDDocument resource cache
@@ -9731,9 +9731,9 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/COSF
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/COSFilterInputStream.java::method::COSFilterInputStream.nextRange	method	ported	src/pdfbox/pdmodel/interactive/digitalsignature/cos_filter_input_stream.cr	ported: COSFilterInputStream
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/COSFilterInputStream.java::method::COSFilterInputStream.read	method	ported	src/pdfbox/pdmodel/interactive/digitalsignature/cos_filter_input_stream.cr	ported: COSFilterInputStream
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/COSFilterInputStream.java::method::COSFilterInputStream.toByteArray	method	ported	src/pdfbox/pdmodel/interactive/digitalsignature/cos_filter_input_stream.cr	ported: COSFilterInputStream
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/ExternalSigningSupport.java::interface::ExternalSigningSupport	interface	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/ExternalSigningSupport.java::method::getContent	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/ExternalSigningSupport.java::method::setSignature	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/ExternalSigningSupport.java::interface::ExternalSigningSupport	interface	ported	src/pdfbox/pdmodel/interactive/digitalsignature/signing_support.cr	ported: ExternalSigningSupport
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/ExternalSigningSupport.java::method::getContent	method	ported	src/pdfbox/pdmodel/interactive/digitalsignature/signing_support.cr	ported: ExternalSigningSupport#content (returns Bytes, not an InputStream)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/ExternalSigningSupport.java::method::setSignature	method	ported	src/pdfbox/pdmodel/interactive/digitalsignature/signing_support.cr	ported: ExternalSigningSupport#set_signature
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDPropBuild.java::class::PDPropBuild	class	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDPropBuild.java::method::PDPropBuild.getApp	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDPropBuild.java::method::PDPropBuild.getCOSObject	method	missing	-	auto-generated
@@ -9902,10 +9902,10 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/Sign
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/SignatureOptions.java::method::SignatureOptions.setPage	method	ported	src/pdfbox/pdmodel/interactive/digitalsignature/signature_options.cr	ported: SignatureOptions
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/SignatureOptions.java::method::SignatureOptions.setPreferredSignatureSize	method	ported	src/pdfbox/pdmodel/interactive/digitalsignature/signature_options.cr	ported: SignatureOptions
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/SignatureOptions.java::method::SignatureOptions.setVisualSignature	method	ported	src/pdfbox/pdmodel/interactive/digitalsignature/signature_options.cr	ported: SignatureOptions
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/SigningSupport.java::class::SigningSupport	class	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/SigningSupport.java::method::SigningSupport.close	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/SigningSupport.java::method::SigningSupport.getContent	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/SigningSupport.java::method::SigningSupport.setSignature	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/SigningSupport.java::class::SigningSupport	class	ported	src/pdfbox/pdmodel/interactive/digitalsignature/signing_support.cr	ported: SigningSupport
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/SigningSupport.java::method::SigningSupport.close	method	ported	src/pdfbox/pdmodel/interactive/digitalsignature/signing_support.cr	ported: SigningSupport#close
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/SigningSupport.java::method::SigningSupport.getContent	method	ported	src/pdfbox/pdmodel/interactive/digitalsignature/signing_support.cr	ported: SigningSupport#content
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/SigningSupport.java::method::SigningSupport.setSignature	method	ported	src/pdfbox/pdmodel/interactive/digitalsignature/signing_support.cr	ported: SigningSupport#set_signature
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/visible/PDFTemplateBuilder.java::interface::PDFTemplateBuilder	interface	ported	src/pdfbox/pdmodel/interactive/digitalsignature/visible.cr	ported: visible signature template builder
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/visible/PDFTemplateBuilder.java::method::closeTemplate	method	ported	src/pdfbox/pdmodel/interactive/digitalsignature/visible.cr	ported: visible signature template builder
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/visible/PDFTemplateBuilder.java::method::createAcroForm	method	ported	src/pdfbox/pdmodel/interactive/digitalsignature/visible.cr	ported: visible signature template builder

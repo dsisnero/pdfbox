@@ -5216,7 +5216,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::const::XREF_FRE
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::const::XREF_USED	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.addObjectToWrite	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.addXRefEntry	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.detectPossibleSignature	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.detectPossibleSignature	ported	src/pdfbox/pdfwriter.cr	ported: Writer#detect_possible_signature
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.doWriteBody	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.doWriteBodyCompressed	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.doWriteHeader	missing	-	baseline
@@ -5228,7 +5228,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWrit
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.doWriteXRefInc	ported	src/pdfbox/pdfwriter.cr	ported: incremental xref section
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.doWriteXRefTable	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.fillGapsWithFreeEntries	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.getDataToSign	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.getDataToSign	ported	src/pdfbox/pdfwriter.cr	ported: Writer#data_to_sign
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.getObjectKey	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.getOutput	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.getStandardOutput	missing	-	baseline
@@ -5255,7 +5255,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWrit
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.write	ported	src/pdfbox/pdfwriter.cr	ported: Writer#write / Writer#write_incremental
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.writeArray	ported	src/pdfbox/pdfwriter.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.writeDictionary	ported	src/pdfbox/pdfwriter.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.writeExternalSignature	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.writeExternalSignature	ported	src/pdfbox/pdfwriter.cr	ported: Writer#write_external_signature
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.writeReference	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.writeString	ported	src/pdfbox/pdfwriter.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.writeXrefEntry	missing	-	baseline
@@ -5408,20 +5408,20 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDestinationNameTreeNode.java::m
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDestinationNameTreeNode.java::method::PDDestinationNameTreeNode.createChildNode	ported	src/pdfbox/pdmodel/common/pddestination_name_tree_node.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::class::PDDocument	ported	src/pdfbox/pdmodel/document.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::const::LOG	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::const::RESERVE_BYTE_RANGE	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::const::RESERVE_BYTE_RANGE	ported	src/pdfbox/pdmodel/interactive/form/document_signatures.cr	ported: Document::RESERVE_BYTE_RANGE
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.addPage	ported	src/pdfbox/pdmodel/document.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.addSignature	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.assignAcroFormDefaultResource	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.assignAppearanceDictionary	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.assignSignatureRectangle	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.checkSignatureAnnotation	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.checkSignatureField	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.addSignature	ported	src/pdfbox/pdmodel/interactive/form/document_signatures.cr	ported: Document#add_signature (SignatureInterface overload not ported)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.assignAcroFormDefaultResource	ported	src/pdfbox/pdmodel/interactive/form/document_signatures.cr	ported: Document#assign_acro_form_default_resource
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.assignAppearanceDictionary	ported	src/pdfbox/pdmodel/interactive/form/document_signatures.cr	ported: Document#assign_appearance_dictionary
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.assignSignatureRectangle	ported	src/pdfbox/pdmodel/interactive/form/document_signatures.cr	ported: Document#assign_signature_rectangle
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.checkSignatureAnnotation	ported	src/pdfbox/pdmodel/interactive/form/document_signatures.cr	ported: Document#check_signature_annotation
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.checkSignatureField	ported	src/pdfbox/pdmodel/interactive/form/document_signatures.cr	ported: Document#check_signature_field
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.close	ported	src/pdfbox/pdmodel/document.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.findSignatureField	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.findSignatureField	ported	src/pdfbox/pdmodel/interactive/form/document_signatures.cr	ported: Document#find_signature_field
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.getCurrentAccessPermission	ported	src/pdfbox/pdmodel/document.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.getDocument	ported	src/pdfbox/pdmodel/document.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.getDocumentCatalog	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.getDocumentId	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.getDocumentId	ported	src/pdfbox/pdmodel.cr	ported: Document#document_id_seed
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.getDocumentInformation	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.getEncryption	ported	src/pdfbox/pdmodel/document.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.getFontsToSubset	ported	src/pdfbox/pdmodel.cr	ported: PDDocument getFontsToSubset
@@ -5436,16 +5436,16 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocume
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.importPage	ported	src/pdfbox/pdmodel.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.isAllSecurityToBeRemoved	ported	src/pdfbox/pdmodel/document.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.isEncrypted	ported	src/pdfbox/pdmodel/document.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.prepareNonVisibleSignature	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.prepareVisibleSignature	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.prepareNonVisibleSignature	ported	src/pdfbox/pdmodel/interactive/form/document_signatures.cr	ported: Document#prepare_non_visible_signature
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.prepareVisibleSignature	ported	src/pdfbox/pdmodel/interactive/form/document_signatures.cr	ported: Document#prepare_visible_signature (walks annotations/fields instead of the COS pool)
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.protect	ported	src/pdfbox/pdmodel/document.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.registerTrueTypeFontForClosing	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.removePage	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.save	ported	src/pdfbox/pdmodel/document.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.saveIncremental	ported	src/pdfbox/pdmodel.cr;src/pdfbox/pdfwriter.cr	ported: real incremental update
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.saveIncrementalForExternalSigning	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.saveIncrementalForExternalSigning	ported	src/pdfbox/pdmodel/interactive/form/document_signatures.cr	ported: Document#save_incremental_for_external_signing
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.setAllSecurityToBeRemoved	ported	src/pdfbox/pdmodel/document.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.setDocumentId	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.setDocumentId	ported	src/pdfbox/pdmodel.cr	ported: Document#set_document_id(Int64) (Bytes overload keeps the /ID override)
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.setDocumentInformation	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.setEncryptionDictionary	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.setResourceCache	ported	src/pdfbox/pdmodel.cr	ported: PDDocument resource cache
@@ -9731,9 +9731,9 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/COSF
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/COSFilterInputStream.java::method::COSFilterInputStream.nextRange	ported	src/pdfbox/pdmodel/interactive/digitalsignature/cos_filter_input_stream.cr	ported: COSFilterInputStream
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/COSFilterInputStream.java::method::COSFilterInputStream.read	ported	src/pdfbox/pdmodel/interactive/digitalsignature/cos_filter_input_stream.cr	ported: COSFilterInputStream
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/COSFilterInputStream.java::method::COSFilterInputStream.toByteArray	ported	src/pdfbox/pdmodel/interactive/digitalsignature/cos_filter_input_stream.cr	ported: COSFilterInputStream
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/ExternalSigningSupport.java::interface::ExternalSigningSupport	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/ExternalSigningSupport.java::method::getContent	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/ExternalSigningSupport.java::method::setSignature	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/ExternalSigningSupport.java::interface::ExternalSigningSupport	ported	src/pdfbox/pdmodel/interactive/digitalsignature/signing_support.cr	ported: ExternalSigningSupport
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/ExternalSigningSupport.java::method::getContent	ported	src/pdfbox/pdmodel/interactive/digitalsignature/signing_support.cr	ported: ExternalSigningSupport#content (returns Bytes, not an InputStream)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/ExternalSigningSupport.java::method::setSignature	ported	src/pdfbox/pdmodel/interactive/digitalsignature/signing_support.cr	ported: ExternalSigningSupport#set_signature
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDPropBuild.java::class::PDPropBuild	ported	src/pdfbox/pdmodel/interactive/form/pd_prop_build.cr	ported: PDPropBuild
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDPropBuild.java::method::PDPropBuild.getApp	ported	src/pdfbox/pdmodel/interactive/form/pd_prop_build.cr	ported: PDPropBuild
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/PDPropBuild.java::method::PDPropBuild.getCOSObject	ported	src/pdfbox/pdmodel/interactive/form/pd_prop_build.cr	ported: PDPropBuild
@@ -9902,10 +9902,10 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/Sign
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/SignatureOptions.java::method::SignatureOptions.setPage	ported	src/pdfbox/pdmodel/interactive/digitalsignature/signature_options.cr	ported: SignatureOptions
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/SignatureOptions.java::method::SignatureOptions.setPreferredSignatureSize	ported	src/pdfbox/pdmodel/interactive/digitalsignature/signature_options.cr	ported: SignatureOptions
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/SignatureOptions.java::method::SignatureOptions.setVisualSignature	ported	src/pdfbox/pdmodel/interactive/digitalsignature/signature_options.cr	ported: SignatureOptions
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/SigningSupport.java::class::SigningSupport	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/SigningSupport.java::method::SigningSupport.close	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/SigningSupport.java::method::SigningSupport.getContent	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/SigningSupport.java::method::SigningSupport.setSignature	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/SigningSupport.java::class::SigningSupport	ported	src/pdfbox/pdmodel/interactive/digitalsignature/signing_support.cr	ported: SigningSupport
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/SigningSupport.java::method::SigningSupport.close	ported	src/pdfbox/pdmodel/interactive/digitalsignature/signing_support.cr	ported: SigningSupport#close
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/SigningSupport.java::method::SigningSupport.getContent	ported	src/pdfbox/pdmodel/interactive/digitalsignature/signing_support.cr	ported: SigningSupport#content
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/SigningSupport.java::method::SigningSupport.setSignature	ported	src/pdfbox/pdmodel/interactive/digitalsignature/signing_support.cr	ported: SigningSupport#set_signature
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/visible/PDFTemplateBuilder.java::interface::PDFTemplateBuilder	ported	src/pdfbox/pdmodel/interactive/digitalsignature/visible.cr	ported: visible signature template builder
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/visible/PDFTemplateBuilder.java::method::closeTemplate	ported	src/pdfbox/pdmodel/interactive/digitalsignature/visible.cr	ported: visible signature template builder
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/digitalsignature/visible/PDFTemplateBuilder.java::method::createAcroForm	ported	src/pdfbox/pdmodel/interactive/digitalsignature/visible.cr	ported: visible signature template builder

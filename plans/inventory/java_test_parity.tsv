@@ -42,7 +42,7 @@ examples/src/test/java/org/apache/pdfbox/examples/pdmodel/TestCreateSignature.ja
 examples/src/test/java/org/apache/pdfbox/examples/pdmodel/TestCreateSignature.java::method::TestCreateSignature.testDetachedSHA256	ported	-	baseline
 examples/src/test/java/org/apache/pdfbox/examples/pdmodel/TestCreateSignature.java::method::TestCreateSignature.testDetachedSHA256WithTSA	ported	-	baseline
 examples/src/test/java/org/apache/pdfbox/examples/pdmodel/TestCreateSignature.java::method::TestCreateSignature.testDoubleVisibleSignatureOnEncryptedFile	ported	-	baseline
-examples/src/test/java/org/apache/pdfbox/examples/pdmodel/TestCreateSignature.java::method::TestCreateSignature.testPDFBox3811	ported	-	baseline
+examples/src/test/java/org/apache/pdfbox/examples/pdmodel/TestCreateSignature.java::method::TestCreateSignature.testPDFBox3811	ported	spec/pdfbox/pdmodel/interactive/digitalsignature/external_signing_spec.cr	ported: repeated saveIncrementalForExternalSigning digest (no CMS needed)
 examples/src/test/java/org/apache/pdfbox/examples/pdmodel/TestCreateSignature.java::method::TestCreateSignature.testPDFBox3978	ported	-	baseline
 examples/src/test/java/org/apache/pdfbox/examples/pdmodel/TestCreateSignature.java::method::TestCreateSignature.testPDFBox4784	ported	-	baseline
 examples/src/test/java/org/apache/pdfbox/examples/pdmodel/TestCreateSignature.java::method::TestCreateSignature.testPDFBox5521	ported	-	baseline

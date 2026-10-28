@@ -108,6 +108,23 @@ module Pdfbox::Pdfwriter
     @encryption_object_ids : Set(UInt64)?
     @use_xref_streams : Bool = true
 
+    # External-signature bookkeeping, ported from COSWriter's signatureOffset,
+    # signatureLength, byteRangeOffset, byteRangeLength, byteRangeArray,
+    # incrementPart and incrementalInput. Positions are absolute offsets in the
+    # final file (the source bytes plus the appended revision).
+    @signature_tracking = false
+    @reached_signature = false
+    @signature_base = 0_i64
+    @signature_offset = 0_i64
+    @signature_length = 0_i64
+    @byte_range_offset = 0_i64
+    @byte_range_length = 0_i64
+    @byte_range_array : Pdfbox::Cos::Array?
+    @signing_source : Bytes?
+    @signing_increment : Bytes?
+    @signing_start_xref = 0_i64
+    @signing_highest_number = 0_i64
+
     def initialize(@destination : ::IO, @document : Pdfbox::Pdmodel::Document, @parameters : Pdfbox::Pdfwriter::Compress::CompressParameters = Pdfbox::Pdfwriter::Compress::CompressParameters::DEFAULT_COMPRESSION)
       if @document.all_security_to_be_removed?
         # Matching Java COSWriter: when security is to be removed, do not
@@ -175,7 +192,10 @@ module Pdfbox::Pdfwriter
     # an incremental update.
     private def document_id_digest(trailer : Pdfbox::Cos::Dictionary) : Bytes
       sha256 = Digest::SHA256.new
-      sha256.update(Time.utc.to_unix_ms.to_s)
+      # Java COSWriter uses pdDocument.getDocumentId() when set, so that repeated
+      # saves of the same document produce a stable /ID.
+      seed = @document.document_id_seed
+      sha256.update((seed || Time.utc.to_unix_ms).to_s)
 
       if info_val = trailer[Pdfbox::Cos::Name.new("Info")]?
         info_base = info_val.is_a?(Pdfbox::Cos::Object) ? info_val.object : info_val
@@ -645,9 +665,31 @@ module Pdfbox::Pdfwriter
     private def write_dictionary_with_refs(dict : Pdfbox::Cos::Dictionary,
                                            object_keys : Hash(UInt64, Pdfbox::Cos::ObjectKey),
                                            object_wrapper : Hash(UInt64, UInt64)) : Nil
+      detect_possible_signature(dict) if @signature_tracking
       @destination << "<<\n"
       dict.entries.each do |key, value|
         @destination << '/' << key.value << ' '
+        if @signature_tracking && @reached_signature
+          # While writing the signature dictionary itself, remember where the
+          # /Contents value and the /ByteRange array land (Java visitFromDictionary).
+          if key.value == "Contents"
+            @signature_offset = absolute_position
+            write_value_with_refs(value, object_keys, object_wrapper)
+            @signature_length = absolute_position - @signature_offset
+            @destination << "\n"
+            next
+          elsif key.value == "ByteRange" && value.is_a?(Pdfbox::Cos::Array)
+            @byte_range_array = value
+            @byte_range_offset = absolute_position
+            # Written inline: the reserved /ByteRange must be patched in place, so
+            # it may not become an indirect reference.
+            write_array_with_refs(value, object_keys, object_wrapper)
+            @byte_range_length = absolute_position - @byte_range_offset
+            @reached_signature = false
+            @destination << "\n"
+            next
+          end
+        end
         write_value_with_refs(value, object_keys, object_wrapper)
         @destination << "\n"
       end
@@ -786,6 +828,9 @@ module Pdfbox::Pdfwriter
     #  - documents that are still encrypted, and documents that were not loaded
     #    from bytes, fall back to a full save.
     def write_incremental : Nil
+      # Positions are relative to the destination unless a buffered signing save
+      # set a source-based base.
+      @signature_base = 0_i64
       source = @document.source_bytes
       previous_xref = @document.start_xref
       if source.nil? || previous_xref.nil?
@@ -805,6 +850,200 @@ module Pdfbox::Pdfwriter
       # share a line with the source's %%EOF (PDFBOX-1051).
       @destination << '\n'
 
+      new_start_xref, highest_number = write_incremental_revision(source, previous_xref)
+
+      # A subsequent incremental save from this in-memory document must chain
+      # onto this revision instead of the original one.
+      @document.start_xref = new_start_xref
+      @document.highest_object_number = highest_number
+    end
+
+    # Prepares an incremental revision for external signing (Java
+    # PDDocument#saveIncrementalForExternalSigning, which uses COSWriter's
+    # incremental constructor). The revision is written into a buffer so that the
+    # /ByteRange and /Contents positions can be patched before anything reaches
+    # the real output: SigningSupport#content returns the data to sign and
+    # SigningSupport#set_signature finishes the file.
+    #
+    # Unlike #write_incremental this never falls back to a full save: signing a
+    # rewritten file would invalidate the byte ranges.
+    def write_incremental_for_external_signing : Pdfbox::Pdmodel::Interactive::DigitalSignature::SigningSupport
+      source = @document.source_bytes
+      previous_xref = @document.start_xref
+      if source.nil? || previous_xref.nil?
+        raise Pdfbox::Pdmodel::IllegalStateError.new("document was not loaded from a file or a stream")
+      end
+      if @will_encrypt
+        raise Pdfbox::Pdmodel::IllegalStateError.new("incremental signing of an encrypted document is not supported")
+      end
+
+      buffer = ::IO::Memory.new
+      saved_destination = @destination
+      # The revision is written into a buffer, starting with the EOL that Java
+      # writes before an appended revision (visitFromDocument, PDFBOX-1051).
+      # Absolute positions are the source length plus the buffer position.
+      @signature_base = source.size.to_i64
+      @signature_tracking = true
+      @destination = buffer
+      new_start_xref, highest_number = begin
+        buffer << '\n'
+        write_incremental_revision(source, previous_xref)
+      ensure
+        @destination = saved_destination
+        @signature_tracking = false
+        @reached_signature = false
+      end
+
+      if @signature_offset.zero? || @byte_range_offset.zero?
+        raise Pdfbox::Pdmodel::IllegalStateError.new("PDF not prepared for signing")
+      end
+
+      increment = buffer.to_slice.dup
+      after_offset = @signature_offset + @signature_length
+      after_length = @signature_base + increment.size - after_offset
+
+      # Java doWriteSignature assigns the computed values to the actual COSArray
+      # so that the caller can read them back (and restore the reserve value).
+      if array = @byte_range_array
+        array[0] = Pdfbox::Cos::Integer.new(0_i64)
+        array[1] = Pdfbox::Cos::Integer.new(@signature_offset)
+        array[2] = Pdfbox::Cos::Integer.new(after_offset)
+        array[3] = Pdfbox::Cos::Integer.new(after_length)
+      end
+
+      byte_range = "[0 #{@signature_offset} #{after_offset} #{after_length}]"
+      if byte_range.bytesize > @byte_range_length
+        raise ::IO::Error.new(
+          "Can't write new byteRange '#{byte_range}' not enough space: " \
+          "byteRange.length(): #{byte_range.bytesize}, byteRangeLength: #{@byte_range_length}, " \
+          "byteRangeOffset: #{@byte_range_offset}, inLength: #{source.size}"
+        )
+      end
+      copy_into_increment(increment, @byte_range_offset - @signature_base, byte_range.to_slice,
+        @byte_range_length)
+
+      @signing_source = source
+      @signing_increment = increment
+      @signing_start_xref = new_start_xref
+      @signing_highest_number = highest_number
+      Pdfbox::Pdmodel::Interactive::DigitalSignature::SigningSupport.new(self)
+    end
+
+    # The data a signer has to sign: the whole file with the /Contents hex string
+    # cut out (Java COSWriter#getDataToSign).
+    def data_to_sign : Bytes
+      source = @signing_source
+      increment = @signing_increment
+      if source.nil? || increment.nil?
+        raise Pdfbox::Pdmodel::IllegalStateError.new("PDF not prepared for signing")
+      end
+
+      signature_start = (@signature_offset - @signature_base).to_i
+      signature_end = signature_start + @signature_length.to_i
+      data = ::IO::Memory.new(source.size + increment.size - @signature_length.to_i)
+      data.write(source)
+      data.write(increment[0, signature_start])
+      data.write(increment[signature_end, increment.size - signature_end])
+      data.to_slice
+    end
+
+    # Writes an externally created CMS signature into the reserved /Contents
+    # entry and then emits the file: the source bytes followed by the patched
+    # revision (Java COSWriter#writeExternalSignature).
+    def write_external_signature(cms_signature : Bytes) : Nil
+      source = @signing_source
+      increment = @signing_increment
+      if source.nil? || increment.nil?
+        raise Pdfbox::Pdmodel::IllegalStateError.new("PDF not prepared for setting signature")
+      end
+
+      hex = cms_signature.hexstring.upcase
+      if hex.bytesize > @signature_length - 2
+        raise ::IO::Error.new(
+          "Can't write signature, not enough space; " \
+          "adjust it with SignatureOptions.setPreferredSignatureSize"
+        )
+      end
+
+      # /Contents is written as <HEX>, so the digits start one byte after the
+      # value itself.
+      signature_start = (@signature_offset - @signature_base).to_i + 1
+      patched = increment.dup
+      hex.to_slice.copy_to(patched.to_unsafe + signature_start, hex.bytesize)
+
+      @destination.write(source)
+      @destination.write(patched)
+
+      # The document now carries this revision; a further use of the prepared
+      # increment is rejected (Java sets incrementPart = null).
+      @document.start_xref = @signing_start_xref
+      @document.highest_object_number = @signing_highest_number
+      @signing_increment = nil
+    end
+
+    # Copies *bytes* into the prepared increment at *offset* and pads the rest of
+    # the reserved *region* with spaces, like Java doWriteSignature does for the
+    # /ByteRange placeholder.
+    private def copy_into_increment(increment : Bytes, offset : Int64,
+                                    bytes : Bytes, region : Int64) : Nil
+      index = 0
+      while index < region
+        increment[offset.to_i + index] = index < bytes.size ? bytes[index] : 0x20_u8
+        index += 1
+      end
+    end
+
+    # Java COSWriter#detectPossibleSignature: the signature of the revision being
+    # written is a /Type /Sig (or /Type /DocTimeStamp) dictionary whose /ByteRange
+    # points past the end of the source. Older signatures reachable from the
+    # document keep their final byte range and are ignored (PDFBOX-5521).
+    private def detect_possible_signature(dict : Pdfbox::Cos::Dictionary) : Nil
+      return if @reached_signature
+
+      source = @document.source_bytes
+      return unless source
+      return unless signature_dictionary?(dict, source)
+
+      @reached_signature = true
+    end
+
+    # Whether *dict* is the signature dictionary of the revision being written:
+    # /Type /Sig (or /Type /DocTimeStamp) with a four-entry /ByteRange whose third
+    # value points past the end of the source (PDFBOX-5521).
+    private def signature_dictionary?(dict : Pdfbox::Cos::Dictionary, source : Bytes) : Bool
+      type = resolve(dict[Pdfbox::Cos::Name.new("Type")])
+      return false unless type.is_a?(Pdfbox::Cos::Name)
+      return false unless type.value == "Sig" || type.value == "DocTimeStamp"
+
+      byte_range = dictionary_byte_range(dict)
+      return false unless byte_range
+
+      third = resolve(byte_range[2])
+      third.is_a?(Pdfbox::Cos::Integer) && third.value > source.size
+    end
+
+    # The /ByteRange array of *dict*, or nil.
+    private def dictionary_byte_range(dict : Pdfbox::Cos::Dictionary) : Pdfbox::Cos::Array?
+      byte_range = resolve(dict[Pdfbox::Cos::Name.new("ByteRange")])
+      byte_range.as?(Pdfbox::Cos::Array).try do |array|
+        array.size == 4 ? array : nil
+      end
+    end
+
+    # Dereferences a COS object if needed.
+    private def resolve(base : Pdfbox::Cos::Base?) : Pdfbox::Cos::Base?
+      base.is_a?(Pdfbox::Cos::Object) ? base.object : base
+    end
+
+    # Absolute position in the final file of the next byte written.
+    private def absolute_position : Int64
+      @signature_base + @destination.pos.to_i64
+    end
+
+    # Writes the objects, cross-reference section and trailer of the appended
+    # revision, returning the new startxref and the highest object number in use.
+    private def write_incremental_revision(source : Bytes,
+                                           previous_xref : Int64) : Tuple(Int64, Int64)
       cos_writer = COSWriter.new(@destination, false, nil)
       trailer = @document.trailer || Pdfbox::Cos::Dictionary.new
       catalog = @document.document_catalog
@@ -825,12 +1064,24 @@ module Pdfbox::Pdfwriter
       # up in the appended revision.
       write_ids = incremental_write_ids(trailer.to_increment.exclude(trailer))
 
+      # The signature's /ByteRange is written inline in its dictionary so that its
+      # bytes can be patched; it must not be emitted as an object of its own.
+      if @signature_tracking
+        key_objects.each_value do |obj|
+          next unless obj.is_a?(Pdfbox::Cos::Dictionary)
+          next unless signature_dictionary?(obj, source)
+          next unless (array = dictionary_byte_range(obj)).is_a?(Pdfbox::Cos::Array)
+
+          write_ids.delete(array.object_id.to_u64)
+        end
+      end
+
       written = [] of Tuple(Int64, XRefEntry)
       key_objects.keys.sort_by!(&.number).each do |key|
         obj = key_objects[key]
         next unless obj
         next unless write_ids.includes?(obj.object_id.to_u64)
-        position = @destination.pos.to_i64
+        position = absolute_position
         written << {key.number, XRefEntry.new(position, key.generation, :in_use)}
         @destination << key.number << ' ' << key.generation << " obj\n"
         write_indirect_object(obj, cos_writer, object_keys, object_wrapper, key)
@@ -846,10 +1097,7 @@ module Pdfbox::Pdfwriter
                            previous_xref, highest_number)
                        end
 
-      # A subsequent incremental save from this in-memory document must chain
-      # onto this revision instead of the original one.
-      @document.start_xref = new_start_xref
-      @document.highest_object_number = highest_number
+      {new_start_xref, highest_number}
     end
 
     # The ids of the objects an incremental revision has to carry: the objects of
@@ -989,7 +1237,9 @@ module Pdfbox::Pdfwriter
                                              cos_writer : COSWriter,
                                              previous_xref : Int64,
                                              highest_number : Int64) : Int64
-      xref_start = @destination.pos.to_i64
+      # Absolute: the buffered revision of an external-signing save starts after
+      # the source bytes (see Writer#absolute_position).
+      xref_start = absolute_position
       @destination << "xref\n"
       @destination << "0 1\n"
       @destination << "0000000000 65535 f \n"
@@ -1033,7 +1283,7 @@ module Pdfbox::Pdfwriter
                                               previous_xref : Int64,
                                               highest_number : Int64) : Int64
       xref_number = highest_number + 1
-      position = @destination.pos.to_i64
+      position = absolute_position
       # A cross-reference stream must list itself (PDF 32000-1 7.5.8.3), so the
       # entry for this stream is part of the section it describes.
       entries = written.map { |(number, entry)| {number, entry} }

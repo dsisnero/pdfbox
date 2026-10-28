@@ -33,6 +33,7 @@ module Pdfbox::Pdmodel
     @trailer : Cos::Dictionary?
     @encryption : Encryption::PDEncryption?
     @document_id : Bytes?
+    @document_id_seed : Int64? = nil
     @current_access_permission : Encryption::AccessPermission?
     @all_security_to_be_removed : Bool = false
     @fonts_for_save = [] of Font::PDFont
@@ -484,6 +485,19 @@ module Pdfbox::Pdmodel
 
     def set_document_id(document_id : Bytes?) : Nil # ameba:disable Naming/AccessorMethodName
       @document_id = document_id
+    end
+
+    # The seed for the /ID digest (Java PDDocument#getDocumentId). When set, the
+    # writer uses it instead of the current time, which makes repeated saves of
+    # the same document produce the same /ID (and therefore the same bytes).
+    def document_id_seed : Int64?
+      @document_id_seed
+    end
+
+    # Sets the /ID digest seed (Java PDDocument#setDocumentId(Long)).
+    # ameba:disable Naming/AccessorMethodName
+    def set_document_id(document_id : Int64) : Nil
+      @document_id_seed = document_id
     end
 
     # Attempt to decrypt the document with the given password
