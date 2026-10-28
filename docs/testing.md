@@ -29,4 +29,5 @@ layout for vendor-parity fixtures. Do not put spec dependencies in `./temp`,
 which is cleaned periodically.
 
 Record the example-count delta (e.g. `2,572→2,573 examples, 0 failures`) in the
-`plans/parity.md` changelog when a feature lands.
+`plans/parity/changelog/` part file when a feature lands (`plans/parity.md`
+only links the changelog).
