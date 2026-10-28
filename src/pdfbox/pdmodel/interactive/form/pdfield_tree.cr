@@ -1,9 +1,8 @@
 module Pdfbox::Pdmodel::Interactive::Form
-  # The field tree (Java PDFieldTree): walks every field of an AcroForm with the
-  # parents before their children, guarding against a `/Kids` entry that is
-  # reachable twice through an identity set on the COS dictionaries (PDFBOX-5044;
-  # the guard cannot use the PDField objects because a new PDField is created on
-  # every lookup).
+  # The field tree (Java PDFieldTree): an `Iterable`-style collection that hands
+  # out a fresh `FieldIterator` per traversal (Crystal's `Enumerable` is the
+  # counterpart of Java's `Iterable`; the tree itself is not an `Iterator`, so it
+  # can be walked again and again).
   class PDFieldTree
     include Enumerable(PDField)
 
@@ -14,39 +13,57 @@ module Pdfbox::Pdmodel::Interactive::Form
       raise ArgumentError.new("root cannot be null") if @acro_form.nil?
     end
 
-    # Walks all fields in the tree, in order (Java PDFieldTree#iterator). Like
-    # Java's FieldIterator, which enqueues the whole tree when it is created, the
-    # traversal is built once per iteration, so a tree can be iterated repeatedly.
-    def each(& : PDField ->) : Nil
-      form = @acro_form
-      return unless form
-
-      nodes = [] of PDField
-      seen = Set(UInt64).new
-      form.fields.each { |field| collect(field, seen, nodes) }
-      nodes.each { |node| yield node }
-    end
-
     # Java PDFieldTree#iterator: a fresh traversal per call.
-    def each : Iterator(PDField)
-      nodes = [] of PDField
-      each { |node| nodes << node }
-      nodes.each
+    def each : FieldIterator
+      form = @acro_form
+      raise ArgumentError.new("root cannot be null") unless form
+
+      FieldIterator.new(form)
     end
 
-    private def collect(node : PDField, seen : Set(UInt64), nodes : Array(PDField)) : Nil
-      nodes << node
-      seen.add(node.cos_object.object_id)
-      return unless node.is_a?(PDNonTerminalField)
+    def each(& : PDField ->) : Nil
+      each.each { |field| yield field }
+    end
 
-      node.children.each do |kid|
-        if seen.includes?(kid.cos_object.object_id)
-          # Java logs this at error level (PDFBOX-5044).
-          Log.error do
-            "Child of field '#{node.fully_qualified_name}' already exists elsewhere, ignored to avoid recursion"
+    # Java PDFieldTree.FieldIterator: walks the field tree in
+    # parent-before-children order. The identity set on the COS dictionaries stops
+    # a `/Kids` entry that is reachable twice from recursing forever
+    # (PDFBOX-5044; the guard cannot use PDField because a new one is created on
+    # every lookup).
+    #
+    # Like Java, the whole tree is enqueued when the iterator is created (Java
+    # queues it in the FieldIterator constructor) and `next` then pops from that
+    # queue, so a top-level field that is also reachable as a kid is still yielded
+    # from the top-level list — that is what the PDFBOX-4131-0 fixture expects.
+    class FieldIterator
+      include Iterator(PDField)
+
+      def initialize(@acro_form : PDAcroForm)
+        @queue = Deque(PDField).new
+        @seen = Set(UInt64).new
+        @acro_form.fields.each { |field| enqueue_kids(field) }
+      end
+
+      def next : PDField | Iterator::Stop
+        return stop if @queue.empty?
+
+        @queue.shift
+      end
+
+      private def enqueue_kids(node : PDField) : Nil
+        @queue << node
+        @seen.add(node.cos_object.object_id)
+        return unless node.is_a?(PDNonTerminalField)
+
+        node.children.each do |kid|
+          if @seen.includes?(kid.cos_object.object_id)
+            # Java logs this at error level (PDFBOX-5044).
+            PDFieldTree::Log.error do
+              "Child of field '#{node.fully_qualified_name}' already exists elsewhere, ignored to avoid recursion"
+            end
+          else
+            enqueue_kids(kid)
           end
-        else
-          collect(kid, seen, nodes)
         end
       end
     end

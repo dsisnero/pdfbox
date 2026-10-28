@@ -8,7 +8,7 @@
 
 ## Where we are
 
-- **Current focus:** the post-roadmap **pdmodel / text / rendering / io / cos / filter / pdfwriter / multipdf / fdf / fontbox / util / XMPBox accessor-completeness** grind — one Java class or small cluster per commit, test-first (red→green). Latest: **`PDFieldTree`** — the AcroForm field tree is now the Java `Iterable` class (`get_field_tree` returns a `PDFieldTree`, parents before children, with the PDFBOX-5044 identity guard) instead of a rebuilt `Array`.
+- **Current focus:** the post-roadmap **pdmodel / text / rendering / io / cos / filter / pdfwriter / multipdf / fdf / fontbox / util / XMPBox accessor-completeness** grind — one Java class or small cluster per commit, test-first (red→green). Latest: **`PDFieldTree`** — the AcroForm field tree is now the Java `Iterable` class (`get_field_tree` returns a `PDFieldTree` whose `PDFieldTree::FieldIterator` is a pull-based `Iterator(PDField)`, parents before children, with the PDFBOX-5044 identity guard) instead of a rebuilt `Array`.
 - **Next up:** the next genuine gap — a Java symbol under `vendor/pdfbox/` that is `missing` in the inventory with no matching Crystal `def`/`property`/`getter`. Known loose ends that are *not* missing symbols: the writer still emits object numbers for created direct structures where Java inlines them (documented divergence at `Writer#write_incremental`), `Pdmodel::Document#trailer` stays nil for `Document.create` (so `document_information` is nil for in-memory documents until metadata is set), and the `SignatureInterface` (CMS/BouncyCastle signing) side of `PDDocument#addSignature` is not ported — external signing is the supported path.
 
 ### Work files
@@ -36,7 +36,7 @@ The document is split so this entry point stays small; every part is linked here
 |---|---|
 | Java source files (vendor) | ~1,064 (main sources) |
 | Crystal source files (ported) | ~520 (`src/` has 563 `.cr` files) |
-| Passing tests | 2,804 |
+| Passing tests | 2,806 |
 | Pending tests | 0 |
 | Failures | 0 |
 | Errors | 0 |

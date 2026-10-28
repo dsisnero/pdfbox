@@ -94,4 +94,44 @@ describe Pdfbox::Pdmodel::Interactive::Form::PDFieldTree do
       document.close
     end
   end
+
+  # Java PDFieldTree#iterator() returns a PDFieldTree.FieldIterator: a
+  # pull-based iterator, not a materialized sequence.
+  it "returns a pull-based FieldIterator from each and from field_iterator" do
+    document, acro_form = field_tree_form
+    begin
+      iterator = acro_form.field_iterator
+      iterator.should be_a(Pdfbox::Pdmodel::Interactive::Form::PDFieldTree::FieldIterator)
+      iterator.should be_a(Iterator(Pdfbox::Pdmodel::Interactive::Form::PDField))
+
+      names = [] of String
+      while (field = iterator.next).is_a?(Pdfbox::Pdmodel::Interactive::Form::PDField)
+        names << field.fully_qualified_name.not_nil!
+      end
+      names.should eq(["parent", "parent.kid1", "parent.kid2"])
+
+      # the tree hands out a fresh iterator per call, so it can be re-iterated
+      acro_form.get_field_tree.each
+        .should be_a(Pdfbox::Pdmodel::Interactive::Form::PDFieldTree::FieldIterator)
+    ensure
+      document.close
+    end
+  end
+
+  it "stops an iteration early without consuming the rest" do
+    document, acro_form = field_tree_form
+    begin
+      tree = acro_form.get_field_tree
+      seen = [] of String
+      tree.each do |field|
+        seen << field.fully_qualified_name.not_nil!
+        break
+      end
+      seen.should eq(["parent"])
+      # a second pass starts from the top again
+      tree.map(&.fully_qualified_name).should eq(["parent", "parent.kid1", "parent.kid2"])
+    ensure
+      document.close
+    end
+  end
 end
