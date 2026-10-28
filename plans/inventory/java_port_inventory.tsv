@@ -5214,7 +5214,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::const::VERSION	
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::const::XREF	const	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::const::XREF_FREE	const	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::const::XREF_USED	const	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.addObjectToWrite	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.addObjectToWrite	method	ported	src/pdfbox/pdfwriter.cr	ported: explicit write set in Writer#write_incremental (no object queue)
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.addXRefEntry	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.detectPossibleSignature	method	ported	src/pdfbox/pdfwriter.cr	ported: Writer#detect_possible_signature
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.doWriteBody	method	partial	src	auto-generated
@@ -5222,7 +5222,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWrit
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.doWriteHeader	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.doWriteIncrement	method	ported	src/pdfbox/pdfwriter.cr	ported: write_incremental (increment objects + created structures)
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.doWriteObject	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.doWriteObjects	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.doWriteObjects	method	ported	src/pdfbox/pdfwriter.cr	ported: object write loop in Writer#write_incremental_revision (no object queue)
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.doWriteSignature	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.doWriteTrailer	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.doWriteXRefInc	method	ported	src/pdfbox/pdfwriter.cr	ported: incremental xref section
@@ -5442,7 +5442,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocume
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.registerTrueTypeFontForClosing	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.removePage	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.save	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.saveIncremental	method	ported	src/pdfbox/pdmodel.cr;src/pdfbox/pdfwriter.cr	ported: real incremental update
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.saveIncremental	method	ported	src/pdfbox/pdmodel.cr;src/pdfbox/pdfwriter.cr	ported: both overloads (plain + explicit COSDictionary set)
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.saveIncrementalForExternalSigning	method	ported	src/pdfbox/pdmodel/interactive/form/document_signatures.cr	ported: Document#save_incremental_for_external_signing
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.setAllSecurityToBeRemoved	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.setDocumentId	method	ported	src/pdfbox/pdmodel.cr	ported: Document#set_document_id(Int64) (Bytes overload keeps the /ID override)

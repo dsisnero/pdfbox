@@ -828,6 +828,16 @@ module Pdfbox::Pdfwriter
     #  - documents that are still encrypted, and documents that were not loaded
     #    from bytes, fall back to a full save.
     def write_incremental : Nil
+      write_incremental([] of Pdfbox::Cos::Dictionary)
+    end
+
+    # Incremental save that also writes the given dictionaries, even when nothing
+    # is flagged with COSUpdateInfo#setNeedToBeUpdated (Java
+    # PDDocument#saveIncremental(OutputStream, Set<COSDictionary>) /
+    # COSWriter(OutputStream, RandomAccessRead, Set<COSDictionary>)). Java adds
+    # them to the queue of objects to write; this writer adds their ids to the
+    # computed write set, which is the same result without a queue.
+    def write_incremental(objects_to_write : Enumerable(Pdfbox::Cos::Dictionary)) : Nil
       # Positions are relative to the destination unless a buffered signing save
       # set a source-based base.
       @signature_base = 0_i64
@@ -850,7 +860,7 @@ module Pdfbox::Pdfwriter
       # share a line with the source's %%EOF (PDFBOX-1051).
       @destination << '\n'
 
-      new_start_xref, highest_number = write_incremental_revision(source, previous_xref)
+      new_start_xref, highest_number = write_incremental_revision(source, previous_xref, objects_to_write)
 
       # A subsequent incremental save from this in-memory document must chain
       # onto this revision instead of the original one.
@@ -1043,7 +1053,8 @@ module Pdfbox::Pdfwriter
     # Writes the objects, cross-reference section and trailer of the appended
     # revision, returning the new startxref and the highest object number in use.
     private def write_incremental_revision(source : Bytes,
-                                           previous_xref : Int64) : Tuple(Int64, Int64)
+                                           previous_xref : Int64,
+                                           objects_to_write : Enumerable(Pdfbox::Cos::Dictionary) = [] of Pdfbox::Cos::Dictionary) : Tuple(Int64, Int64)
       cos_writer = COSWriter.new(@destination, false, nil)
       trailer = @document.trailer || Pdfbox::Cos::Dictionary.new
       catalog = @document.document_catalog
@@ -1063,6 +1074,9 @@ module Pdfbox::Pdfwriter
       # Only the updated structures and the objects created in this session end
       # up in the appended revision.
       write_ids = incremental_write_ids(trailer.to_increment.exclude(trailer))
+      # ... plus the dictionaries the caller listed explicitly (Java adds them to
+      # objectsToWrite, so an unchanged object can still be rewritten).
+      objects_to_write.each { |dictionary| write_ids.add(dictionary.object_id.to_u64) }
 
       # The signature's /ByteRange is written inline in its dictionary so that its
       # bytes can be patched; it must not be emitted as an object of its own.

@@ -382,6 +382,95 @@ describe "Pdfbox::Pdfwriter incremental save" do
     end
   end
 
+  # Java PDDocument#saveIncremental(OutputStream, Set<COSDictionary>) is for
+  # "experienced users": it writes the listed dictionaries even when nothing has
+  # isNeedToBeUpdated() set, which keeps the appended revision minimal (e.g.
+  # changing a signed file without invalidating the signature). Upstream has no
+  # unit test for the overload, so these examples pin the Java semantics
+  # (only COSDictionary entries, union with the update-flag set, no duplicates).
+  it "writes an explicitly listed object even when nothing was changed" do
+    original = incremental_base_document(compress: false)
+    output = IO::Memory.new
+    document = Pdfbox::Loader.load_pdf(original)
+    begin
+      page_dictionary = document.get_page(0).cos_object.not_nil!
+      document.save_incremental(output, [page_dictionary])
+    ensure
+      document.close
+    end
+
+    updated = output.to_slice
+    updated[0, original.size].should eq(original)
+    appended = String.new(updated[original.size..])
+    appended.should contain("/Type /Page")
+    appended.should_not contain("/Type /Catalog")
+    appended.should_not contain("/Type /Pages")
+
+    reloaded = Pdfbox::Loader.load_pdf(updated)
+    begin
+      reloaded.number_of_pages.should eq(1)
+      reloaded.get_page(0).media_box.not_nil!.width.should eq(100.0)
+    ensure
+      reloaded.close
+    end
+  end
+
+  it "writes no object bodies for an empty explicit list" do
+    original = incremental_base_document(compress: false)
+    output = IO::Memory.new
+    document = Pdfbox::Loader.load_pdf(original)
+    begin
+      document.save_incremental(output, [] of Pdfbox::Cos::Dictionary)
+    ensure
+      document.close
+    end
+
+    updated = output.to_slice
+    updated[0, original.size].should eq(original)
+    appended = String.new(updated[original.size..])
+    appended.should_not contain(" obj\n")
+    appended.should contain("/Prev #{incremental_start_xref(original)}")
+
+    reloaded = Pdfbox::Loader.load_pdf(updated)
+    begin
+      reloaded.number_of_pages.should eq(1)
+    ensure
+      reloaded.close
+    end
+  end
+
+  it "writes the union of the changed objects and the explicit list exactly once" do
+    original = incremental_base_document(compress: false)
+    output = IO::Memory.new
+    document = Pdfbox::Loader.load_pdf(original)
+    page_key = nil.as(Pdfbox::Cos::ObjectKey?)
+    begin
+      page = document.get_page(0)
+      page.media_box = Pdfbox::Pdmodel::Rectangle.from_dimensions(23.0, 23.0)
+      page_dictionary = page.cos_object.not_nil!
+      page_key = page_dictionary.key
+      # the same page dictionary is both changed and listed
+      document.save_incremental(output, [page_dictionary])
+    ensure
+      document.close
+    end
+
+    updated = output.to_slice
+    appended = String.new(updated[original.size..])
+    appended.should contain("/MediaBox")
+    # Listing an already-changed dictionary must not write it twice.
+    key = page_key.not_nil!
+    appended.scan(/\n#{key.number} #{key.generation} obj\n/).size.should eq(1)
+    appended.should_not contain("/Type /Catalog")
+
+    reloaded = Pdfbox::Loader.load_pdf(updated)
+    begin
+      reloaded.get_page(0).media_box.not_nil!.width.should eq(23.0)
+    ensure
+      reloaded.close
+    end
+  end
+
   it "falls back to a full save for a document that has no source bytes" do
     output = IO::Memory.new
     document = Pdfbox::Pdmodel::Document.create

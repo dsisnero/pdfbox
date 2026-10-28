@@ -186,10 +186,26 @@ module Pdfbox::Pdmodel
     # encrypted. Matching Java COSWriter's incremental constructor, compressed
     # object streams are disabled for the appended revision.
     def save_incremental(io : ::IO) : Nil
+      save_incremental(io, [] of Cos::Dictionary)
+    end
+
+    # Save the document incrementally and write the given dictionaries even when
+    # nothing is flagged with `COSUpdateInfo#setNeedToBeUpdated`
+    # (Java PDDocument#saveIncremental(OutputStream, Set<COSDictionary>)). This is
+    # for callers that know exactly which objects they changed — the appended
+    # revision then stays minimal, which is what keeps an existing signature
+    # valid. Only dictionaries are supported; to update another object, list its
+    # parent dictionary.
+    #
+    # Divergence: Java assigns a fresh object number to a listed dictionary that
+    # the document does not reference; this writer only writes objects that are
+    # reachable from the document (they carry the object number), so an orphan
+    # dictionary is ignored.
+    def save_incremental(io : ::IO, objects_to_write : Enumerable(Cos::Dictionary)) : Nil
       subset_embedded_fonts
 
       writer = Pdfbox::Pdfwriter::Writer.new(io, self, Pdfbox::Pdfwriter::Compress::CompressParameters::NO_COMPRESSION)
-      writer.write_incremental
+      writer.write_incremental(objects_to_write)
     end
 
     # Add a page to the document
