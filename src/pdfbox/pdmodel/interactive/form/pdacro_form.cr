@@ -117,31 +117,11 @@ module Pdfbox::Pdmodel::Interactive::Form
     end
 
     # Get the field tree: all fields in the form, in order, recursing into
-    # non-terminal children. Java PDAcroForm#getFieldTree (PDFBOX-5044 cycle guard).
+    # non-terminal children (Java PDAcroForm#getFieldTree, which returns a
+    # PDFieldTree).
     # ameba:disable Naming/AccessorMethodName
-    def get_field_tree : Array(PDField)
-      result = [] of PDField
-      seen = Set(UInt64).new
-
-      fields.each do |field|
-        walk_field_tree(field, seen, result)
-      end
-
-      result
-    end
-
-    private def walk_field_tree(node : PDField, seen : Set(UInt64), result : Array(PDField)) : Nil
-      result << node
-      seen.add(node.cos_object.object_id)
-      return unless node.is_a?(PDNonTerminalField)
-
-      node.children.each do |kid|
-        if seen.includes?(kid.cos_object.object_id)
-          Log.warn { "Child of field '#{node.fully_qualified_name}' already exists elsewhere, ignored to avoid recursion" }
-        else
-          walk_field_tree(kid, seen, result)
-        end
-      end
+    def get_field_tree : PDFieldTree
+      PDFieldTree.new(self)
     end
 
     # Check if signatures exist
@@ -170,7 +150,8 @@ module Pdfbox::Pdmodel::Interactive::Form
       value
     end
 
-    # Iterates the field tree. Java PDAcroForm#getFieldIterator.
+    # Iterates the field tree. Java PDAcroForm#getFieldIterator, which returns
+    # `new PDFieldTree(this).iterator()`.
     def field_iterator : Iterator(PDField)
       get_field_tree.each
     end
@@ -282,7 +263,8 @@ module Pdfbox::Pdmodel::Interactive::Form
     # the page's content stream, then remove all fields and their annotations.
     # Java PDAcroForm#flatten.
     def flatten : Nil
-      flatten(get_field_tree, false)
+      # Java copies getFieldTree() into a List before calling the List overload.
+      flatten(get_field_tree.to_a, false)
     end
 
     # Rebuild the /Fields entry from page-level widget annotations when it is

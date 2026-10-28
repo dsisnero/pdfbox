@@ -10240,15 +10240,15 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java:
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.createWidgetDictionarySet	ported	src/pdfbox/pdmodel/interactive/form/pdacro_form.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.exportFDF	ported	src/pdfbox/pdmodel/interactive/form/pdacro_form.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.fillPagesAnnotationMap	ported	src/pdfbox/pdmodel/interactive/form/pdacro_form.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.flatten	ported	src/pdfbox/pdmodel/interactive/form/pdacro_form.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.flatten	ported	src/pdfbox/pdmodel/interactive/form/pdacro_form.cr	ported: flatten copies get_field_tree to an Array
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.getCOSObject	ported	src/pdfbox/pdmodel/interactive/form/pdacro_form.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.getCalcOrder	ported	src/pdfbox/pdmodel/interactive/form/pdacro_form.cr	ported: PDAcroForm calc order
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.getDefaultAppearance	ported	src/pdfbox/pdmodel/interactive/form/pdacro_form.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.getDefaultResources	ported	src/pdfbox/pdmodel/interactive/form/pdacro_form.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.getDocument	ported	src/pdfbox/pdmodel/interactive/form/pdacro_form.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.getField	ported	src/pdfbox/pdmodel/interactive/form/pdacro_form.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.getFieldIterator	ported	src/pdfbox/pdmodel/interactive/form/pdacro_form.cr	PDAcroForm refreshAppearances/fieldIterator/cacheFields
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.getFieldTree	ported	src/pdfbox/pdmodel/interactive/form/pdacro_form.cr	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.getFieldIterator	ported	src/pdfbox/pdmodel/interactive/form/pdacro_form.cr	ported: PDAcroForm#field_iterator (PDFieldTree#each)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.getFieldTree	ported	src/pdfbox/pdmodel/interactive/form/pdacro_form.cr	ported: PDAcroForm#get_field_tree returns PDFieldTree
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.getFields	ported	src/pdfbox/pdmodel/interactive/form/pdacro_form.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.getNeedAppearances	ported	src/pdfbox/pdmodel/interactive/form/pdacro_form.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDAcroForm.java::method::PDAcroForm.getQ	ported	src/pdfbox/pdmodel/interactive/form/pdacro_form.cr	ported: PDAcroForm XFA/Q
@@ -10394,14 +10394,14 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDFieldFactory.j
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDFieldFactory.java::method::PDFieldFactory.createChoiceSubType	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDFieldFactory.java::method::PDFieldFactory.createField	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDFieldFactory.java::method::PDFieldFactory.findFieldType	ported	src/pdfbox/pdmodel/interactive/form/pdfield_factory.cr	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDFieldTree.java::class::FieldIterator	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDFieldTree.java::class::PDFieldTree	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDFieldTree.java::class::FieldIterator	ported	src/pdfbox/pdmodel/interactive/form/pdfield_tree.cr	ported: PDFieldTree#each (Crystal Iterator, no separate class)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDFieldTree.java::class::PDFieldTree	ported	src/pdfbox/pdmodel/interactive/form/pdfield_tree.cr	ported: PDFieldTree
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDFieldTree.java::const::LOG	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDFieldTree.java::method::FieldIterator.enqueueKids	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDFieldTree.java::method::FieldIterator.hasNext	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDFieldTree.java::method::FieldIterator.next	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDFieldTree.java::method::FieldIterator.remove	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDFieldTree.java::method::PDFieldTree.iterator	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDFieldTree.java::method::FieldIterator.enqueueKids	ported	src/pdfbox/pdmodel/interactive/form/pdfield_tree.cr	ported: PDFieldTree#collect
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDFieldTree.java::method::FieldIterator.hasNext	ported	src/pdfbox/pdmodel/interactive/form/pdfield_tree.cr	ported: PDFieldTree#each (Iterator from the collected nodes)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDFieldTree.java::method::FieldIterator.next	ported	src/pdfbox/pdmodel/interactive/form/pdfield_tree.cr	ported: PDFieldTree#each (Iterator from the collected nodes)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDFieldTree.java::method::FieldIterator.remove	ported	src/pdfbox/pdmodel/interactive/form/pdfield_tree.cr	ported: read-only Crystal iterator (no remove, like Java's UnsupportedOperationException)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDFieldTree.java::method::PDFieldTree.iterator	ported	src/pdfbox/pdmodel/interactive/form/pdfield_tree.cr	ported: PDFieldTree#each (returns an Iterator)
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDListBox.java::class::PDListBox	ported	src/pdfbox/pdmodel/interactive/form/pdlist_box.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDListBox.java::method::PDListBox.constructAppearances	ported	src/pdfbox/pdmodel/interactive/form/pdlist_box.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDListBox.java::method::PDListBox.getTopIndex	ported	src/pdfbox/pdmodel/interactive/form/pdlist_box.cr	reconciled: method present
