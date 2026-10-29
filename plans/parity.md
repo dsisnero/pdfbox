@@ -9,7 +9,29 @@
 ## Where we are
 
 - **Current focus:** the post-roadmap **pdmodel / text / rendering / io / cos / filter / pdfwriter / multipdf / fdf / fontbox / util / XMPBox accessor-completeness** grind — one Java class or small cluster per commit, test-first (red→green). Latest: **`PDFStreamEngine` device-space helpers** — `graphics_stack_size`, `transformed_point` and `transform_width` are ported for custom engines, and the constructor now pushes the initial graphics state like Java.
-- **Next up:** the next genuine gap — a Java symbol under `vendor/pdfbox/` that is `missing` in the inventory with no matching Crystal `def`/`property`/`getter`. Known loose ends that are *not* missing symbols: the writer still emits object numbers for created dictionaries (Java would inline a dictionary reachable from a single place, but this port numbers it to avoid duplicating it when it is reachable twice), and the `SignatureInterface` (CMS/BouncyCastle signing) side of `PDDocument#addSignature` is not ported — external signing is the supported path.
+- **Next up:** the next **genuine** gap. The inventory's `missing` rows are mostly classifier noise (it matches `def` names only), so pick a lead below, confirm against `vendor/pdfbox/` that the Crystal behaviour really differs, then write the failing spec first.
+
+### How to find the next gap (the techniques that worked)
+
+1. **Class-vs-Java accessor diff** — for one Java class, list its `public`/`protected` methods and compare against the Crystal class, stripping `get`/`set`/`is`/`has` before snake-casing (`getMediaBox` → `media_box`, `isNodeOpen` → `node_open?`). Anything left is a candidate; then read the Java body — it may be a no-op there too.
+2. **Single-literal method scan** — find `def` bodies that are just `nil`/`false`/`true`/`0`/`Vector.new`, then check Java: several were faithful (`PDType3Font#isEmbedded` → true, `PDSimpleFont#willBeSubset` → false), some were not (`PDNonTerminalField#getValueAsString`, `PDPattern#getInitialColor`).
+3. **TODO/stub grep** — `grep -rn "TODO\|not supported\|not implemented" src/pdfbox`; the highest-value recent finds were TODO stubs on public accessors (`Pdfparser::Parser#encrypted?/#version/#catalog/#document_information`).
+4. **Divergence comments** — `grep -rn "ivergence" src/pdfbox`; these are self-documented differences, some closable (the writer's created-arrays note became a feature).
+5. **Vendored-fixture test port** — check whether a `partial` test row's fixture is actually vendored under `spec/resources/` (two `PDButtonTest` cases were wrongly marked "fixture not vendored"); the port sometimes passes immediately, which means the row is just stale.
+6. **Object-model diff for inheritance/lookup** — compare Java's `getInheritableAttribute`/`getDictionaryObject` usage with ours (this is how the inherited `/MediaBox`/`/CropBox`/`/Rotate` bug was found).
+
+### Leads for the next session (not yet verified as gaps)
+
+- `PDFStreamEngine` still lacks the rendering hooks `process_soft_mask`, `process_transparency_group`, `process_tiling_pattern`, `show_form`, `show_annotation`, `show_type3_glyph`, `show_font_glyph`, `process_child_stream`, `clip_to_rect` (the port handles some of these inline elsewhere — check before porting).
+- `PDPattern#getPattern(PDColor)` needs a `PDResources` reference on `PDPattern` (Java holds one; the port's constructor only takes an optional underlying colour space) — a small constructor/ownership refactor.
+- `src/pdfbox/pdf_parser/xref_parser.cr` still has the stubs `setHasHybridXRef`, `setTrailer`, `setIsXRefStream` and "copy xref table to document" — check whether `XrefParser` is still on a live path before wiring them.
+- Dead code: `PDSimpleFont#non_zero_bounding_box?` is defined once and never called (Type 1C/Type 3 have their own copies).
+
+### Not ported by design (do not chase)
+
+- `SignatureInterface` / CMS signing (needs BouncyCastle/JCA): external signing via `Document#save_incremental_for_external_signing` is the supported path.
+- AWT-only paths: `toRawImage`/`toRGBImage`, `Paint`-based shading classes, `PageDrawer`/`PDFRenderer` Graphics2D methods, `rendering/SoftMask` paints, ImageIO-based image factories.
+- The writer numbers created **dictionaries** instead of inlining them (Java inlines a dictionary reachable from one place); the port does it to avoid duplicating a dictionary reachable from two places (see `Writer#write_incremental`).
 
 ### Work files
 
@@ -28,7 +50,8 @@ The document is split so this entry point stays small; every part is linked here
   new feature entry at its top, and update the two `plans/inventory/*.tsv` ledgers plus the
   Overview numbers below in the same commit.
 - **Next file/phase to start:** `phases.md` and `upcoming-chunks.md` are complete; the next
-  feature is chosen from the inventory (see **Next up**).
+  feature comes from **Leads for the next session** above (or the search recipe, if that list
+  runs dry), verified against `vendor/pdfbox/` before writing the failing spec.
 
 ## Overview
 

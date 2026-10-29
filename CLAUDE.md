@@ -107,8 +107,11 @@ of every session:
 ### Keeping parity.md resumable
 
 - `plans/parity.md` starts with a **Where we are** block: `Current focus`,
-  `Next up`, and the **work files** table with each split file's status plus
-  the file we are currently working in. Keep it accurate after every feature.
+  `Next up`, **how to find the next gap** (the techniques that worked), an
+  explicit **leads** list, the **not-ported-by-design** list, and the **work
+  files** table with each split file's status plus the file we are currently
+  working in. Keep all of it accurate after every feature, and add a lead when a
+  search turns one up.
 - Work chunks are feature-sized (roughly one branch/commit). The per-symbol
   state lives in `plans/inventory/java_port_inventory.tsv`, not in this plan.
 - **`plans/parity.md` is an entry point, not a dumping ground.** It was split
