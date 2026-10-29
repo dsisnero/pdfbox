@@ -8,7 +8,7 @@
 
 ## Where we are
 
-- **Current focus:** the post-roadmap **pdmodel / text / rendering / io / cos / filter / pdfwriter / multipdf / fdf / fontbox / util / XMPBox accessor-completeness** grind — one Java class or small cluster per commit, test-first (red→green). Latest: **`PDFieldTree`** — the AcroForm field tree is now the Java `Iterable` class (`get_field_tree` returns a `PDFieldTree` whose `PDFieldTree::FieldIterator` is a pull-based `Iterator(PDField)`, parents before children, with the PDFBOX-5044 identity guard) instead of a rebuilt `Array`.
+- **Current focus:** the post-roadmap **pdmodel / text / rendering / io / cos / filter / pdfwriter / multipdf / fdf / fontbox / util / XMPBox accessor-completeness** grind — one Java class or small cluster per commit, test-first (red→green). Latest: **incremental save of encrypted documents** — `save_incremental` keeps the source and appends an encrypted revision (objects encrypted with their object key, `/Encrypt` repeated in the new trailer, the decryption key reused instead of re-keying), instead of falling back to a full rewrite.
 - **Next up:** the next genuine gap — a Java symbol under `vendor/pdfbox/` that is `missing` in the inventory with no matching Crystal `def`/`property`/`getter`. Known loose ends that are *not* missing symbols: the writer still emits object numbers for created direct structures where Java inlines them (documented divergence at `Writer#write_incremental`), `Pdmodel::Document#trailer` stays nil for `Document.create` (so `document_information` is nil for in-memory documents until metadata is set), and the `SignatureInterface` (CMS/BouncyCastle signing) side of `PDDocument#addSignature` is not ported — external signing is the supported path.
 
 ### Work files
@@ -36,17 +36,17 @@ The document is split so this entry point stays small; every part is linked here
 |---|---|
 | Java source files (vendor) | ~1,064 (main sources) |
 | Crystal source files (ported) | ~520 (`src/` has 563 `.cr` files) |
-| Passing tests | 2,806 |
+| Passing tests | 2,808 |
 | Pending tests | 0 |
 | Failures | 0 |
 | Errors | 0 |
 | Text extraction: exact match | 40/40 PDFs (100%) |
 | Text extraction: known deviations | 0 PDFs (0%) |
 | Text extraction: fixed this session | PDFBOX-3127, PDFBOX-3053, PDFBOX-3061, PDFBOX-4532 |
-| Inventory: ported | 7,374 source + 1,715 test |
+| Inventory: ported | 7,375 source + 1,715 test |
 | Inventory: partial | 37 source + 221 test |
-| Inventory: missing | 5,018 source (mostly fontbox internals / pdmodel interactive/graphics/font / debugger / examples / xmpbox; test-parity inventory fully reconciled at 0) |
+| Inventory: missing | 5,017 source (mostly fontbox internals / pdmodel interactive/graphics/font / debugger / examples / xmpbox; test-parity inventory fully reconciled at 0) |
 | Active porting plans | 36 (`plans/active/{CosParserPort,AppearanceGeneratorPort,CertificateEncryptionTools,CCITTFaxEncoderPort,CCITTFactoryImagePort,PNGConverterImagePort,OutlineItemModelPort,PredictorDecodePort,ParserXrefDecodePort,StopFilterDecodePort,GraphicsFormXObjectPort,FreeTextAppearancePort,StreamToTextStringPort,GraphicsOperatorNamesPort,ShadingFillPort,InlineImageDrawPort,InlineImageRenderPort,PathOperatorsPort,MarkedContentPort,LayerUtilityPort,PDFCloneUtilityPort,PDFMergerUtilityPort,PDFMergerUtilityMergePort,NamedDestinationsMergePort,OpenActionMergePort,SplitterPhase,StructureTreeMergePort,PDFBoxIORemainderPort,AppendDocumentCatalogMergePort,PDFParserTestsPort,CMapAndFontCleanupPort,TTFSubsetterAndPlaceholderCleanupPort,MarkedContentExtractorPort,ArtifactMarkedContentPort,MarkInfoPort,SubsetFontReusePort}.md`) |
-| Fixed since last update | See [`plans/parity/changelog.md`](parity/changelog.md); the newest entry is **PDFieldTree (2026-10-28)**. |
+| Fixed since last update | See [`plans/parity/changelog.md`](parity/changelog.md); the newest entry is **incremental save of encrypted documents (2026-10-28)**. |
 
 ---

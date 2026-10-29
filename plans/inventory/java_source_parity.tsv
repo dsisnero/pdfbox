@@ -5224,8 +5224,8 @@ pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWrit
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.doWriteObject	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.doWriteObjects	ported	src/pdfbox/pdfwriter.cr	ported: object write loop in Writer#write_incremental_revision (no object queue)
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.doWriteSignature	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.doWriteTrailer	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.doWriteXRefInc	ported	src/pdfbox/pdfwriter.cr	ported: incremental xref section
+pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.doWriteTrailer	ported	src/pdfbox/pdfwriter.cr	ported: write_incremental_trailer_references (Root/Info/Encrypt/ID)
+pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.doWriteXRefInc	ported	src/pdfbox/pdfwriter.cr	ported: incremental xref section (encrypted documents included)
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.doWriteXRefTable	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.fillGapsWithFreeEntries	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.getDataToSign	ported	src/pdfbox/pdfwriter.cr	ported: Writer#data_to_sign
@@ -5252,7 +5252,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWrit
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.visitFromObject	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.visitFromStream	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.visitFromString	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.write	ported	src/pdfbox/pdfwriter.cr	ported: Writer#write / Writer#write_incremental
+pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.write	ported	src/pdfbox/pdfwriter.cr	ported: Writer#write (prepares encryption only for a full save) / Writer#write_incremental
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.writeArray	ported	src/pdfbox/pdfwriter.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.writeDictionary	ported	src/pdfbox/pdfwriter.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.writeExternalSignature	ported	src/pdfbox/pdfwriter.cr	ported: Writer#write_external_signature

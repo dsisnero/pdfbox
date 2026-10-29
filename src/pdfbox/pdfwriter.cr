@@ -134,7 +134,10 @@ module Pdfbox::Pdfwriter
       elsif encryption = @document.encryption
         @security_handler = encryption.security_handler
         @will_encrypt = !@security_handler.nil?
-        @security_handler.try(&.prepare_document_for_encryption(@document))
+        # The encryption dictionary is only prepared for a full save (Java does it
+        # in COSWriter#write and only when !incrementalUpdate): an incremental
+        # save must keep the key the document was decrypted with, otherwise the
+        # new objects are encrypted with a key the existing /O//U no longer match.
       end
     end
 
@@ -144,6 +147,12 @@ module Pdfbox::Pdfwriter
     end
 
     def write : Nil
+      # Java COSWriter#write prepares the encryption dictionary only for a full
+      # save; an incremental save reuses the decryption key (see #initialize).
+      if @will_encrypt
+        @security_handler.try(&.prepare_document_for_encryption(@document))
+      end
+
       header = header_version_for_write
       if @parameters.compress? || (v = header.to_f32?) && v >= 1.6_f32
         @document.set_version(header.to_f32)
@@ -825,8 +834,11 @@ module Pdfbox::Pdfwriter
     #    inline; this writer allocates an object number for every structure, so
     #    the objects created in this session are written as top level objects
     #    too instead of being inlined.
-    #  - documents that are still encrypted, and documents that were not loaded
-    #    from bytes, fall back to a full save.
+    #  - documents that were not loaded from bytes fall back to a full save.
+    #  - an encrypted document is written incrementally too: the objects of the new
+    #    revision are encrypted with their object key and the trailer repeats
+    #    /Encrypt, like Java COSWriter (whose incremental constructor keeps
+    #    willEncrypt set for a document with an encryption dictionary).
     def write_incremental : Nil
       write_incremental([] of Pdfbox::Cos::Dictionary)
     end
@@ -848,12 +860,6 @@ module Pdfbox::Pdfwriter
         write
         return
       end
-      if @will_encrypt
-        Log.warn { "Incremental save of an encrypted document is not supported, falling back to a full save" }
-        write
-        return
-      end
-
       # Keep the source file verbatim, then append the new revision.
       @destination.write(source)
       # Java COSWriter always writes an EOL here so the appended object can never
@@ -1055,7 +1061,10 @@ module Pdfbox::Pdfwriter
     private def write_incremental_revision(source : Bytes,
                                            previous_xref : Int64,
                                            objects_to_write : Enumerable(Pdfbox::Cos::Dictionary) = [] of Pdfbox::Cos::Dictionary) : Tuple(Int64, Int64)
-      cos_writer = COSWriter.new(@destination, false, nil)
+      # An encrypted document stays encrypted: the revision's strings and streams
+      # are encrypted with their object key (Java keeps willEncrypt set in the
+      # incremental constructor).
+      cos_writer = COSWriter.new(@destination, @will_encrypt, @security_handler)
       trailer = @document.trailer || Pdfbox::Cos::Dictionary.new
       catalog = @document.document_catalog
 
@@ -1372,6 +1381,17 @@ module Pdfbox::Pdfwriter
           info_base = info_val.is_a?(Pdfbox::Cos::Object) ? info_val.object : info_val
           if info_base && (info_key = object_keys[info_base.object_id.to_u64]?)
             write_trailer_entry("Info", Pdfbox::Cos::Object.new(info_key.number, info_key.generation, nil), cos_writer, into)
+          end
+        end
+      end
+
+      # An encrypted document's trailer must repeat /Encrypt, as an indirect
+      # reference to the encryption dictionary that the source already contains
+      # (Java writes the whole document trailer, which carries it).
+      if trailer
+        if encrypt_value = trailer[Pdfbox::Cos::Name.new("Encrypt")]?
+          if encrypt_reference = encrypt_value.as?(Pdfbox::Cos::Object)
+            write_trailer_entry("Encrypt", encrypt_reference, cos_writer, into)
           end
         end
       end

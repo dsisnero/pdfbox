@@ -5224,8 +5224,8 @@ pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWrit
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.doWriteObject	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.doWriteObjects	method	ported	src/pdfbox/pdfwriter.cr	ported: object write loop in Writer#write_incremental_revision (no object queue)
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.doWriteSignature	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.doWriteTrailer	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.doWriteXRefInc	method	ported	src/pdfbox/pdfwriter.cr	ported: incremental xref section
+pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.doWriteTrailer	method	ported	src/pdfbox/pdfwriter.cr	ported: write_incremental_trailer_references (Root/Info/Encrypt/ID)
+pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.doWriteXRefInc	method	ported	src/pdfbox/pdfwriter.cr	ported: incremental xref section (encrypted documents included)
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.doWriteXRefTable	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.fillGapsWithFreeEntries	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.getDataToSign	method	ported	src/pdfbox/pdfwriter.cr	ported: Writer#data_to_sign
@@ -5252,7 +5252,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWrit
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.visitFromObject	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.visitFromStream	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.visitFromString	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.write	method	ported	src/pdfbox/pdfwriter.cr	ported: Writer#write / Writer#write_incremental
+pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.write	method	ported	src/pdfbox/pdfwriter.cr	ported: Writer#write (prepares encryption only for a full save) / Writer#write_incremental
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.writeArray	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.writeDictionary	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdfwriter/COSWriter.java::method::COSWriter.writeExternalSignature	method	ported	src/pdfbox/pdfwriter.cr	ported: Writer#write_external_signature
