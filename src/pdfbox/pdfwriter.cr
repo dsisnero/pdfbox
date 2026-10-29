@@ -1124,11 +1124,8 @@ module Pdfbox::Pdfwriter
     end
 
     # The ids of the objects an incremental revision has to carry: the objects of
-    # the COSIncrement rooted at the trailer, plus the structures created in this
-    # session. A created structure has no object number in the source revision,
-    # so the reference this writer emits for it would dangle unless the structure
-    # is written as well. (Java gets away without them because COSWriter writes
-    # direct structures inline; see the divergence note on #write_incremental.)
+    # the COSIncrement rooted at the trailer, plus the dictionaries and streams
+    # created in this session (created arrays are written inline).
     private def incremental_write_ids(increment : Pdfbox::Cos::Increment) : Set(UInt64)
       ids = Set(UInt64).new
       queue = Deque(Pdfbox::Cos::Base).new
@@ -1241,6 +1238,13 @@ module Pdfbox::Pdfwriter
       objects.each do |object|
         id = object.object_id.to_u64
         next if object_keys.has_key?(id)
+        # Created arrays are written inline, like Java's direct structures, instead
+        # of becoming an orphan object of their own. Created dictionaries and
+        # streams keep an object number: a dictionary can be reachable from more
+        # than one place (a signature field hangs off both /AcroForm/Fields and the
+        # page /Annots), and writing it inline twice would duplicate it in the
+        # revision; streams can never be direct.
+        next if object.is_a?(Pdfbox::Cos::Array)
 
         key = Pdfbox::Cos::ObjectKey.new(next_number, 0_i64)
         next_number += 1

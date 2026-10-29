@@ -486,4 +486,32 @@ describe "Pdfbox::Pdfwriter incremental save" do
       reloaded.close
     end
   end
+
+  # Java COSWriter writes created direct structures inline (only COSObject values
+  # become indirect), so replacing a page's /MediaBox appends the page dictionary
+  # and nothing else. The port used to give every new array its own object number,
+  # which added an orphan object to every such revision.
+  it "inlines a created structure instead of writing it as its own object" do
+    original = incremental_base_document(compress: false)
+    output = IO::Memory.new
+    document = Pdfbox::Loader.load_pdf(original)
+    begin
+      document.get_page(0).media_box = Pdfbox::Pdmodel::Rectangle.from_dimensions(42.0, 42.0)
+      document.save_incremental(output)
+    ensure
+      document.close
+    end
+
+    appended = String.new(output.to_slice[original.size..])
+    appended.scan(/\n\d+ \d+ obj\n/).size.should eq(1)
+    appended.should contain("/MediaBox")
+    appended.should contain("/MediaBox [0.0 0.0 42.0 42.0]")
+
+    reloaded = Pdfbox::Loader.load_pdf(output.to_slice)
+    begin
+      reloaded.get_page(0).media_box.not_nil!.width.should eq(42.0)
+    ensure
+      reloaded.close
+    end
+  end
 end

@@ -8,8 +8,8 @@
 
 ## Where we are
 
-- **Current focus:** the post-roadmap **pdmodel / text / rendering / io / cos / filter / pdfwriter / multipdf / fdf / fontbox / util / XMPBox accessor-completeness** grind — one Java class or small cluster per commit, test-first (red→green). Latest: **inherited page attributes** — `PDPage#media_box`/`#crop_box`/`#rotation`/`#resources` now inherit from the `/Pages` nodes like Java (`PDPageTree.get_inheritable_attribute`), with the Letter fallback, the MediaBox clipping and the rotation normalization.
-- **Next up:** the next genuine gap — a Java symbol under `vendor/pdfbox/` that is `missing` in the inventory with no matching Crystal `def`/`property`/`getter`. Known loose ends that are *not* missing symbols: the writer still emits object numbers for created direct structures where Java inlines them (documented divergence at `Writer#write_incremental`), and the `SignatureInterface` (CMS/BouncyCastle signing) side of `PDDocument#addSignature` is not ported — external signing is the supported path.
+- **Current focus:** the post-roadmap **pdmodel / text / rendering / io / cos / filter / pdfwriter / multipdf / fdf / fontbox / util / XMPBox accessor-completeness** grind — one Java class or small cluster per commit, test-first (red→green). Latest: **created arrays are written inline** — an incremental save of a `/MediaBox` change now appends exactly one object (Java `COSWriter` semantics) instead of an extra orphan array, closing the last documented writer divergence.
+- **Next up:** the next genuine gap — a Java symbol under `vendor/pdfbox/` that is `missing` in the inventory with no matching Crystal `def`/`property`/`getter`. Known loose ends that are *not* missing symbols: the writer still emits object numbers for created dictionaries (Java would inline a dictionary reachable from a single place, but this port numbers it to avoid duplicating it when it is reachable twice), and the `SignatureInterface` (CMS/BouncyCastle signing) side of `PDDocument#addSignature` is not ported — external signing is the supported path.
 
 ### Work files
 
@@ -36,7 +36,7 @@ The document is split so this entry point stays small; every part is linked here
 |---|---|
 | Java source files (vendor) | ~1,064 (main sources) |
 | Crystal source files (ported) | ~520 (`src/` has 563 `.cr` files) |
-| Passing tests | 2,826 |
+| Passing tests | 2,827 |
 | Pending tests | 0 |
 | Failures | 0 |
 | Errors | 0 |
@@ -47,6 +47,6 @@ The document is split so this entry point stays small; every part is linked here
 | Inventory: partial | 37 source + 221 test |
 | Inventory: missing | 5,004 source (mostly fontbox internals / pdmodel interactive/graphics/font / debugger / examples / xmpbox; test-parity inventory fully reconciled at 0) |
 | Active porting plans | 36 (`plans/active/{CosParserPort,AppearanceGeneratorPort,CertificateEncryptionTools,CCITTFaxEncoderPort,CCITTFactoryImagePort,PNGConverterImagePort,OutlineItemModelPort,PredictorDecodePort,ParserXrefDecodePort,StopFilterDecodePort,GraphicsFormXObjectPort,FreeTextAppearancePort,StreamToTextStringPort,GraphicsOperatorNamesPort,ShadingFillPort,InlineImageDrawPort,InlineImageRenderPort,PathOperatorsPort,MarkedContentPort,LayerUtilityPort,PDFCloneUtilityPort,PDFMergerUtilityPort,PDFMergerUtilityMergePort,NamedDestinationsMergePort,OpenActionMergePort,SplitterPhase,StructureTreeMergePort,PDFBoxIORemainderPort,AppendDocumentCatalogMergePort,PDFParserTestsPort,CMapAndFontCleanupPort,TTFSubsetterAndPlaceholderCleanupPort,MarkedContentExtractorPort,ArtifactMarkedContentPort,MarkInfoPort,SubsetFontReusePort}.md`) |
-| Fixed since last update | See [`plans/parity/changelog.md`](parity/changelog.md); the newest entry is **inherited page box/rotation attributes (2026-10-29)**. |
+| Fixed since last update | See [`plans/parity/changelog.md`](parity/changelog.md); the newest entry is **incremental save writes created arrays inline (2026-10-29)**. |
 
 ---
