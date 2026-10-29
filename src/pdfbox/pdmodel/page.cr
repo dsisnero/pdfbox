@@ -20,28 +20,15 @@ module Pdfbox::Pdmodel
       @cos_page
     end
 
-    # Get page media box (boundaries)
+    # Get page media box (boundaries). Java PDPage#getMediaBox: the box is
+    # inherited from the /Pages nodes and US Letter is used when it is missing.
     def media_box : Rectangle?
       cos_page = @cos_page
       return unless cos_page
 
-      media_box = cos_page[Cos::Name.new("MediaBox")]
-      return unless media_box
-
-      if media_box.is_a?(Cos::Object)
-        media_box = media_box.object
-      end
-
-      return unless media_box.is_a?(Cos::Array)
-      return unless media_box.size == 4
-
-      llx = to_float(media_box[0]?)
-      lly = to_float(media_box[1]?)
-      urx = to_float(media_box[2]?)
-      ury = to_float(media_box[3]?)
-      return unless llx && lly && urx && ury
-
-      Rectangle.new(llx, lly, urx, ury)
+      base = inherited_attribute(Cos::Name.new("MediaBox"))
+      box = rectangle_from(base)
+      box || PageSizes::LETTER
     end
 
     # Set page media box
@@ -58,28 +45,16 @@ module Pdfbox::Pdmodel
       rect
     end
 
-    # Get page crop box
+    # Get page crop box. Java PDPage#getCropBox: inherited like the MediaBox,
+    # clipped to it, and replaced by the MediaBox when absent.
     def crop_box : Rectangle?
       cos_page = @cos_page
       return media_box unless cos_page
 
-      crop_box = cos_page[Cos::Name.new("CropBox")]?
-      return media_box unless crop_box
+      box = rectangle_from(inherited_attribute(Cos::Name.new("CropBox")))
+      return media_box unless box
 
-      if crop_box.is_a?(Cos::Object)
-        crop_box = crop_box.object
-      end
-
-      return media_box unless crop_box.is_a?(Cos::Array)
-      return media_box unless crop_box.size == 4
-
-      llx = to_float(crop_box[0]?)
-      lly = to_float(crop_box[1]?)
-      urx = to_float(crop_box[2]?)
-      ury = to_float(crop_box[3]?)
-      return media_box unless llx && lly && urx && ury
-
-      Rectangle.new(llx, lly, urx, ury)
+      clip_to_media_box(box)
     end
 
     # Set page crop box
@@ -203,26 +178,21 @@ module Pdfbox::Pdmodel
       Util::Matrix.new
     end
 
-    # Get page rotation
+    # Get page rotation. Java PDPage#getRotation: inherited from the /Pages
+    # nodes, only multiples of 90 are accepted, normalized to 0..359.
     def rotation : Int32
       cos_page = @cos_page
       return 0 unless cos_page
 
-      rotate = cos_page[Cos::Name.new("Rotate")]?
-      return 0 unless rotate
+      rotate = inherited_attribute(Cos::Name.new("Rotate"))
+      angle = case rotate
+              when Cos::Integer then rotate.value.to_i32
+              when Cos::Float   then rotate.value.to_i32
+              else                   return 0
+              end
+      return 0 unless angle % 90 == 0
 
-      if rotate.is_a?(Cos::Object)
-        rotate = rotate.object
-      end
-
-      case rotate
-      when Cos::Integer
-        rotate.value.to_i32
-      when Cos::Float
-        rotate.value.to_i32
-      else
-        0
-      end
+      (angle % 360 + 360) % 360
     end
 
     # Set page rotation
@@ -254,10 +224,7 @@ module Pdfbox::Pdmodel
       cos_page = @cos_page
       return unless cos_page
 
-      resources_value = cos_page[Cos::Name.new("Resources")]
-      unless resources_value
-        resources_value = get_inheritable_resource(cos_page)
-      end
+      resources_value = inherited_attribute(Cos::Name.new("Resources"))
       return unless resources_value
 
       if resources_value.is_a?(Cos::Object)
@@ -269,25 +236,40 @@ module Pdfbox::Pdmodel
       Resources.new(resources_value)
     end
 
-    # Walk up parent chain to find inherited Resources (PDF spec section 7.8.3).
-    # Uses a visited set to break circular parent references.
-    private def get_inheritable_resource(dict : Cos::Dictionary, visited : Set(UInt64) = Set(UInt64).new) : Cos::Base?
-      id = dict.object_id.to_u64
-      return nil if visited.includes?(id)
-      visited.add(id)
+    # Java PDPageTree#getInheritableAttribute for this page (inheritable page
+    # attributes are defined on the /Pages nodes, PDF 32000-1 7.7.3.4).
+    private def inherited_attribute(name : Cos::Name) : Cos::Base?
+      cos_page = @cos_page
+      return unless cos_page
 
-      value = dict[Cos::Name.new("Resources")]
-      return value if value
+      PDPageTree.get_inheritable_attribute(cos_page, name)
+    end
 
-      parent = dict[Cos::Name.new("Parent")]
-      if parent.is_a?(Cos::Object)
-        parent = parent.object
-      end
-      if parent.is_a?(Cos::Dictionary)
-        return get_inheritable_resource(parent, visited)
-      end
+    # Reads a four-number COS array as a rectangle, or nil.
+    private def rectangle_from(base : Cos::Base?) : Rectangle?
+      base = base.object if base.is_a?(Cos::Object)
+      return unless base.is_a?(Cos::Array) && base.size == 4
 
-      nil
+      llx = to_float(base[0]?)
+      lly = to_float(base[1]?)
+      urx = to_float(base[2]?)
+      ury = to_float(base[3]?)
+      return unless llx && lly && urx && ury
+
+      Rectangle.new(llx, lly, urx, ury)
+    end
+
+    # Java PDPage#clipToMediaBox.
+    private def clip_to_media_box(box : Rectangle) : Rectangle
+      media = media_box
+      return box unless media
+
+      Rectangle.new(
+        Math.max(media.lower_left_x, box.lower_left_x),
+        Math.max(media.lower_left_y, box.lower_left_y),
+        Math.min(media.upper_right_x, box.upper_right_x),
+        Math.min(media.upper_right_y, box.upper_right_y)
+      )
     end
 
     # Set page resources

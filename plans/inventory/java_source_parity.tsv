@@ -5539,7 +5539,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDJavascriptNameTreeNode.java::me
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::class::PDPage	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::const::DELIMITER	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::const::LOG	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.clipToMediaBox	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.clipToMediaBox	ported	src/pdfbox/pdmodel/page.cr	ported: Page#clip_to_media_box
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.equals	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getActions	ported	src/pdfbox/pdmodel/page.cr	PDPage bleed/trim/art boxes + page additional actions
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getAnnotations	missing	-	baseline
@@ -5551,14 +5551,14 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getCo
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getContents	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getContentsForRandomAccess	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getContentsForStreamParsing	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getCropBox	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getCropBox	ported	src/pdfbox/pdmodel/page.cr	ported: Page#crop_box (inherited, clipped to the MediaBox)
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getIndirectResourceObjects	ported	src/pdfbox/pdmodel/page.cr	ported: PDPage removePageResourceFromCache
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getMatrix	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getMediaBox	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getMediaBox	ported	src/pdfbox/pdmodel/page.cr	ported: Page#media_box (inherited + Letter fallback)
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getMetadata	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getResourceCache	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getResources	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getRotation	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getResources	ported	src/pdfbox/pdmodel/page.cr	ported: Page#resources (PDPageTree.get_inheritable_attribute)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getRotation	ported	src/pdfbox/pdmodel/page.cr	ported: Page#rotation (inherited, multiple of 90, normalized)
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getStructParents	ported	src/pdfbox/pdmodel/page.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getThreadBeads	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getTransition	missing	-	baseline
@@ -5600,7 +5600,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPageTree.java::method::PDPageTr
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPageTree.java::method::PDPageTree.get	ported	src/pdfbox/pdmodel/page_tree.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPageTree.java::method::PDPageTree.getCOSObject	ported	src/pdfbox/pdmodel/page_tree.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPageTree.java::method::PDPageTree.getCount	ported	src/pdfbox/pdmodel/page_tree.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPageTree.java::method::PDPageTree.getInheritableAttribute	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPageTree.java::method::PDPageTree.getInheritableAttribute	ported	src/pdfbox/pdmodel/page_tree.cr	ported: PDPageTree.get_inheritable_attribute (identity visited set)
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPageTree.java::method::PDPageTree.getKids	ported	src/pdfbox/pdmodel/page_tree.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPageTree.java::method::PDPageTree.increaseParents	ported	src/pdfbox/pdmodel/page_tree.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPageTree.java::method::PDPageTree.indexOf	ported	src/pdfbox/pdmodel/page_tree.cr	reconciled: method present

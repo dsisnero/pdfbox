@@ -50,13 +50,18 @@ module Pdfbox::Pdmodel
     end
 
     # Returns the given attribute, inheriting from parent tree nodes if necessary.
+    #
+    # Java uses an identity set here (COSDictionary#equals is identity); a value
+    # based Crystal Set would hash the whole dictionary and overflow the stack on
+    # the cyclic page <-> /Pages /Parent chain, so identity is tracked by object id.
     def self.get_inheritable_attribute(node : Cos::Dictionary, key : Cos::Name) : Cos::Base?
-      get_inheritable_attribute(node, key, Set(Cos::Dictionary).new)
+      get_inheritable_attribute(node, key, Set(UInt64).new)
     end
 
-    private def self.get_inheritable_attribute(node : Cos::Dictionary, key : Cos::Name, visited : Set(Cos::Dictionary)) : Cos::Base?
-      return if visited.includes?(node)
-      visited.add(node)
+    private def self.get_inheritable_attribute(node : Cos::Dictionary, key : Cos::Name, visited : Set(UInt64)) : Cos::Base?
+      id = node.object_id.to_u64
+      return if visited.includes?(id)
+      visited.add(id)
 
       value = node[key]
       return value if value

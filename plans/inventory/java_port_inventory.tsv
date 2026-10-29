@@ -5539,7 +5539,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDJavascriptNameTreeNode.java::me
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::class::PDPage	class	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::const::DELIMITER	const	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::const::LOG	const	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.clipToMediaBox	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.clipToMediaBox	method	ported	src/pdfbox/pdmodel/page.cr	ported: Page#clip_to_media_box
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.equals	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getActions	method	ported	src	PDPage bleed/trim/art boxes + page additional actions
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getAnnotations	method	ported	src	auto-generated
@@ -5551,14 +5551,14 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getCo
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getContents	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getContentsForRandomAccess	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getContentsForStreamParsing	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getCropBox	method	ported	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getCropBox	method	ported	src/pdfbox/pdmodel/page.cr	ported: Page#crop_box (inherited, clipped to the MediaBox)
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getIndirectResourceObjects	method	ported	src/pdfbox/pdmodel/page.cr	ported: PDPage removePageResourceFromCache
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getMatrix	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getMediaBox	method	ported	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getMediaBox	method	ported	src/pdfbox/pdmodel/page.cr	ported: Page#media_box (inherited + Letter fallback)
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getMetadata	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getResourceCache	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getResources	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getRotation	method	ported	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getResources	method	ported	src/pdfbox/pdmodel/page.cr	ported: Page#resources (PDPageTree.get_inheritable_attribute)
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getRotation	method	ported	src/pdfbox/pdmodel/page.cr	ported: Page#rotation (inherited, multiple of 90, normalized)
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getStructParents	method	ported	src/pdfbox/pdmodel/page.cr	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getThreadBeads	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java::method::PDPage.getTransition	method	ported	src	auto-generated
@@ -5600,7 +5600,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPageTree.java::method::PDPageTr
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPageTree.java::method::PDPageTree.get	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPageTree.java::method::PDPageTree.getCOSObject	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPageTree.java::method::PDPageTree.getCount	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPageTree.java::method::PDPageTree.getInheritableAttribute	method	ported	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPageTree.java::method::PDPageTree.getInheritableAttribute	method	ported	src/pdfbox/pdmodel/page_tree.cr	ported: PDPageTree.get_inheritable_attribute (identity visited set)
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPageTree.java::method::PDPageTree.getKids	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPageTree.java::method::PDPageTree.increaseParents	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPageTree.java::method::PDPageTree.indexOf	method	ported	src	auto-generated
