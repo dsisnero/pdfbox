@@ -22,6 +22,8 @@ module Pdfbox::Pdfparser
     MAX_XREF_ENTRIES       = 1_000_000
     MAX_OBJECT_PARSE_SIZE  = 4_096_i64 # 4KB
     @trailer : Pdfbox::Cos::Dictionary?
+    @parsed_version : String? = nil
+    @parsed_catalog : Pdfbox::Cos::Dictionary? = nil
     @xref : XRef?
     @xref_trailer_resolver : XrefTrailerResolver?
     @object_pool : Hash(Cos::ObjectKey, Cos::Object)
@@ -1478,6 +1480,7 @@ module Pdfbox::Pdfparser
       Log.debug { "PARSER: START parsing PDF document" }
       # puts "DEBUG: Parser.parse started (lenient=#{@lenient})" if @lenient
       version = parse_header
+      @parsed_version = version
       pages = [] of Pdfbox::Pdmodel::Page
 
       xref_offset = locate_xref_offset
@@ -1609,6 +1612,7 @@ module Pdfbox::Pdfparser
                      end
 
       Log.debug { "catalog_dict = #{catalog_dict.inspect}" }
+      @parsed_catalog = catalog_dict
       doc = Pdfbox::Pdmodel::Document.new(catalog_dict, version, @trailer)
 
       # Remember where the source cross-reference section starts so that
@@ -1721,28 +1725,35 @@ module Pdfbox::Pdfparser
       parse
     end
 
-    # Check if PDF is encrypted
+    # Whether the parsed document has an /Encrypt dictionary
+    # (Java COSDocument#isEncrypted).
     def encrypted? : Bool
-      # TODO: Implement encryption detection
-      false
+      trailer = @trailer
+      return false unless trailer
+
+      !trailer[Pdfbox::Cos::Name.new("Encrypt")]?.nil?
     end
 
-    # Get PDF version
+    # The version from the PDF header (Java COSDocument#getVersion); "1.4" when
+    # nothing has been parsed yet.
     def version : String
-      # TODO: Implement version detection
-      "1.4"
+      @parsed_version || "1.4"
     end
 
-    # Get document information dictionary
+    # The document information dictionary from the trailer /Info
+    # (Java COSDocument#getTrailer + COSDictionary#getDictionaryObject).
     def document_information : Pdfbox::Cos::Dictionary?
-      # TODO: Implement document info retrieval
-      nil
+      trailer = @trailer
+      return unless trailer
+
+      info = trailer[Pdfbox::Cos::Name.new("Info")]?
+      info = info.object if info.is_a?(Pdfbox::Cos::Object)
+      info.as?(Pdfbox::Cos::Dictionary)
     end
 
-    # Get document catalog
+    # The parsed document catalog (the trailer /Root dictionary).
     def catalog : Pdfbox::Cos::Dictionary?
-      # TODO: Implement catalog retrieval
-      nil
+      @parsed_catalog
     end
 
     # Get trailer dictionary
