@@ -58,11 +58,11 @@ private class RecordingImageEngine < Pdfbox::Contentstream::PDFGraphicsStreamEng
   end
 
   def show_font_glyph(text_rendering_matrix : Pdfbox::Util::Matrix, font : Pdfbox::Pdmodel::Font::PDFont,
-                      code : Int32, displacement : Tuple(Float32, Float32)) : Nil
+                      code : Int32, displacement : Pdfbox::Pdmodel::Font::PDFont::Vector) : Nil
   end
 
   def show_type3_glyph(text_rendering_matrix : Pdfbox::Util::Matrix, font : Pdfbox::Pdmodel::Font::PDType3Font,
-                       code : Int32, displacement : Tuple(Float32, Float32)) : Nil
+                       code : Int32, displacement : Pdfbox::Pdmodel::Font::PDFont::Vector) : Nil
   end
 end
 

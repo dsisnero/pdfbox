@@ -35,10 +35,13 @@ module Pdfbox::Contentstream
     def initialize(@page : Pdmodel::Page?)
       super()
       @line_path = Path2D.new
-      @graphics_state_stack = [] of Pdmodel::Graphics::State::PDGraphicsState
-      # Initialize with a proper PDGraphicsState to avoid type mismatch with parent's stack
-      @graphics_state_stack << Pdmodel::Graphics::State::PDGraphicsState.new
       register_operators
+    end
+
+    # The graphics engine keeps the Java-shaped graphics state (colour, clipping
+    # and text state live there) on the engine's single graphics-state stack.
+    protected def create_graphics_state : Pdmodel::Graphics::State::PDGraphicsState
+      Pdmodel::Graphics::State::PDGraphicsState.new
     end
 
     # Returns the page.
@@ -67,19 +70,18 @@ module Pdfbox::Contentstream
 
     # Returns the current graphics state.
     def graphics_state : Pdmodel::Graphics::State::PDGraphicsState
-      @graphics_state_stack.last || raise "Graphics state stack empty"
+      @graphics_stack.last.as(Pdmodel::Graphics::State::PDGraphicsState)
     end
 
-    # Save the graphics state - override to use properly typed stack
+    # Save the graphics state. Java PDFStreamEngine#saveGraphicsState pushes a
+    # copy of the current state.
     def save_graphics_state : Nil
-      @graphics_state_stack << graphics_state
+      @graphics_stack << graphics_state.clone
     end
 
-    # Restore the graphics state - override to use properly typed stack
+    # Restore the graphics state
     def restore_graphics_state : Nil
-      if @graphics_state_stack.size > 0
-        @graphics_state_stack.pop
-      end
+      @graphics_stack.pop if @graphics_stack.size > 1
     end
 
     # Returns the current line path.
@@ -139,17 +141,9 @@ module Pdfbox::Contentstream
     # End a text object.
     abstract def end_text : Nil
 
-    # Show a glyph from a font.
-    abstract def show_font_glyph(text_rendering_matrix : Util::Matrix,
-                                 font : Pdmodel::Font::PDFont,
-                                 code : Int32,
-                                 displacement : Tuple(Float32, Float32)) : Nil
-
-    # Show a Type 3 glyph.
-    abstract def show_type3_glyph(text_rendering_matrix : Util::Matrix,
-                                  font : Pdmodel::Font::PDType3Font,
-                                  code : Int32,
-                                  displacement : Tuple(Float32, Float32)) : Nil
+    # Glyphs: Java declares showFontGlyph/showType3Glyph on PDFStreamEngine (with
+    # a no-op and a Type 3 stream walk as defaults), not on this class, so they
+    # are inherited rather than abstract here.
 
     # --- Path manipulation helpers ---
 

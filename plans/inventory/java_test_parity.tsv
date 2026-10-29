@@ -714,10 +714,10 @@ pdfbox/src/test/java/org/apache/pdfbox/multipdf/OverlayTest.java::const::OUT_DIR
 pdfbox/src/test/java/org/apache/pdfbox/multipdf/OverlayTest.java::method::OverlayTest.checkIdenticalRendering	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/multipdf/OverlayTest.java::method::OverlayTest.createBaseFile	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/multipdf/OverlayTest.java::method::OverlayTest.setUp	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/multipdf/OverlayTest.java::method::OverlayTest.testOverlayOnRotatedSourcePages	ported	spec/pdfbox/multipdf/multipdf_spec.cr	baseline
+pdfbox/src/test/java/org/apache/pdfbox/multipdf/OverlayTest.java::method::OverlayTest.testOverlayOnRotatedSourcePages	ported	spec/pdfbox/multipdf/multipdf_spec.cr	ports PDFBOX-6049 adjustRotation
 pdfbox/src/test/java/org/apache/pdfbox/multipdf/OverlayTest.java::method::OverlayTest.testRotatedOverlay	ported	-	baseline
-pdfbox/src/test/java/org/apache/pdfbox/multipdf/OverlayTest.java::method::OverlayTest.testRotatedOverlays	ported	spec/pdfbox/multipdf/multipdf_spec.cr	baseline
-pdfbox/src/test/java/org/apache/pdfbox/multipdf/OverlayTest.java::method::OverlayTest.testRotatedOverlaysMap	ported	spec/pdfbox/multipdf/multipdf_spec.cr	baseline
+pdfbox/src/test/java/org/apache/pdfbox/multipdf/OverlayTest.java::method::OverlayTest.testRotatedOverlays	ported	spec/pdfbox/multipdf/multipdf_spec.cr	now compares real rendered overlays
+pdfbox/src/test/java/org/apache/pdfbox/multipdf/OverlayTest.java::method::OverlayTest.testRotatedOverlaysMap	ported	spec/pdfbox/multipdf/multipdf_spec.cr	now compares real rendered overlays
 pdfbox/src/test/java/org/apache/pdfbox/multipdf/PDFCloneUtilityTest.java::class::PDFCloneUtilityTest	ported	-	baseline
 pdfbox/src/test/java/org/apache/pdfbox/multipdf/PDFCloneUtilityTest.java::method::PDFCloneUtilityTest.testClonePDFWithCosArrayStream	ported	spec/pdfbox/multipdf/multipdf_spec.cr	baseline
 pdfbox/src/test/java/org/apache/pdfbox/multipdf/PDFCloneUtilityTest.java::method::PDFCloneUtilityTest.testClonePDFWithCosArrayStream2	ported	spec/pdfbox/multipdf/multipdf_spec.cr	via PDFMergerUtility#append_document

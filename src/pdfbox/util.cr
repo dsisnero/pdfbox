@@ -351,6 +351,19 @@ module Pdfbox::Util
       @single[(row * 3) + column] = value
     end
 
+    # Transforms a point by this matrix (Java Matrix#transformPoint). Java
+    # returns a `Point2D.Float`; the port returns an `{x, y}` tuple instead of
+    # using AWT.
+    def transform_point(x : Float64, y : Float64) : Tuple(Float64, Float64)
+      a = @single[0]
+      b = @single[1]
+      c = @single[3]
+      d = @single[4]
+      e = @single[6]
+      f = @single[7]
+      {x * a + y * c + e, x * b + y * d + f}
+    end
+
     def values : Array(Array(Float32))
       [
         [@single[0], @single[1], @single[2]],

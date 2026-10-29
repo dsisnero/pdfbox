@@ -20,8 +20,10 @@ module Pdfbox::Pdmodel::Graphics::State
     property alpha_constant : Float64
     property non_stroking_alpha_constant : Float64
     property alpha_source : Bool # ameba:disable Naming/QueryBoolMethods
-    property text_matrix : Pdfbox::Util::Matrix?
-    property text_line_matrix : Pdfbox::Util::Matrix?
+    # Java PDGraphicsState declares both text matrices as `new Matrix()`, so they
+    # are never null.
+    property text_matrix : Pdfbox::Util::Matrix
+    property text_line_matrix : Pdfbox::Util::Matrix
     property transfer : Pdfbox::Cos::Base?
 
     # Device-dependent parameters
@@ -51,8 +53,8 @@ module Pdfbox::Pdmodel::Graphics::State
       @alpha_constant = 1.0
       @non_stroking_alpha_constant = 1.0
       @alpha_source = false
-      @text_matrix = nil
-      @text_line_matrix = nil
+      @text_matrix = Pdfbox::Util::Matrix.new
+      @text_line_matrix = Pdfbox::Util::Matrix.new
       @overprint = false
       @non_stroking_overprint = false
       @overprint_mode = 0
@@ -80,8 +82,8 @@ module Pdfbox::Pdmodel::Graphics::State
       @alpha_constant = 1.0
       @non_stroking_alpha_constant = 1.0
       @alpha_source = false
-      @text_matrix = nil
-      @text_line_matrix = nil
+      @text_matrix = Pdfbox::Util::Matrix.new
+      @text_line_matrix = Pdfbox::Util::Matrix.new
       @overprint = false
       @non_stroking_overprint = false
       @overprint_mode = 0
@@ -110,8 +112,8 @@ module Pdfbox::Pdmodel::Graphics::State
       copy.alpha_constant = @alpha_constant
       copy.non_stroking_alpha_constant = @non_stroking_alpha_constant
       copy.alpha_source = @alpha_source
-      copy.text_line_matrix = @text_line_matrix.try(&.clone)
-      copy.text_matrix = @text_matrix.try(&.clone)
+      copy.text_line_matrix = @text_line_matrix.clone
+      copy.text_matrix = @text_matrix.clone
       copy.overprint = @overprint
       copy.non_stroking_overprint = @non_stroking_overprint
       copy.overprint_mode = @overprint_mode
@@ -119,6 +121,89 @@ module Pdfbox::Pdmodel::Graphics::State
       copy.smoothness = @smoothness
       copy.transfer = @transfer
       copy
+    end
+
+    # --- Text state accessors used by PDFStreamEngine ---
+    #
+    # Java's stream engine reads and writes `getGraphicsState().getTextState()`
+    # directly. The port's engine drives two graphics-state classes: the plain
+    # `GraphicsState` of `PDFStreamEngine` and this Java-shaped state of
+    # `PDFGraphicsStreamEngine`. Both answer to the same messages, so the shared
+    # operator handling works on either. The types here match `GraphicsState`
+    # (Float64/Int32); PDTextState stores Java floats, so values are narrowed on
+    # the way in.
+    def font : Pdfbox::Pdmodel::Font::PDFont?
+      @text_state.font
+    end
+
+    def font=(value : Pdfbox::Pdmodel::Font::PDFont?) : Pdfbox::Pdmodel::Font::PDFont?
+      @text_state.font = value
+    end
+
+    def font_size : Float64
+      @text_state.font_size.to_f64
+    end
+
+    def font_size=(value : Float64) : Float64
+      @text_state.font_size = value.to_f32
+      value
+    end
+
+    def horizontal_scaling : Float64
+      @text_state.horizontal_scaling.to_f64
+    end
+
+    def horizontal_scaling=(value : Float64) : Float64
+      @text_state.horizontal_scaling = value.to_f32
+      value
+    end
+
+    def character_spacing : Float64
+      @text_state.character_spacing.to_f64
+    end
+
+    def character_spacing=(value : Float64) : Float64
+      @text_state.character_spacing = value.to_f32
+      value
+    end
+
+    def word_spacing : Float64
+      @text_state.word_spacing.to_f64
+    end
+
+    def word_spacing=(value : Float64) : Float64
+      @text_state.word_spacing = value.to_f32
+      value
+    end
+
+    # Java PDTextState#getLeading; the engine calls it text leading.
+    def text_leading : Float64
+      @text_state.leading.to_f64
+    end
+
+    def text_leading=(value : Float64) : Float64
+      @text_state.leading = value.to_f32
+      value
+    end
+
+    def text_rise : Float64
+      @text_state.rise.to_f64
+    end
+
+    def text_rise=(value : Float64) : Float64
+      @text_state.rise = value.to_f32
+      value
+    end
+
+    # Java PDTextState#get/setRenderingMode, addressed with the operator's
+    # integer value like the engine's `Tr` handling.
+    def text_rendering_mode : Int32
+      @text_state.rendering_mode.int_value
+    end
+
+    def text_rendering_mode=(value : Int32) : Int32
+      @text_state.rendering_mode = RenderingMode.from_int(value)
+      value
     end
   end
 end

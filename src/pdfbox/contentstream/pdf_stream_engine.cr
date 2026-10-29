@@ -31,7 +31,15 @@ module Pdfbox::Contentstream
     # Creates a new PDFStreamEngine. Like Java's constructor, an initial graphics
     # state is pushed so that subclasses can query it before a page is processed.
     def initialize
-      @graphics_stack << GraphicsState.new
+      @graphics_stack << create_graphics_state
+    end
+
+    # Creates the graphics state pushed for a page and for the constructor.
+    # Java only has PDGraphicsState; the plain engine uses the port's lighter
+    # `GraphicsState`, while `PDFGraphicsStreamEngine` overrides this to keep the
+    # Java-shaped `PDGraphicsState` (colour, clipping and text state live there).
+    protected def create_graphics_state : GraphicsState | Pdmodel::Graphics::State::PDGraphicsState
+      GraphicsState.new
     end
 
     # Adds an operator processor to the engine.
@@ -43,7 +51,7 @@ module Pdfbox::Contentstream
     private def init_page(page : Pdmodel::Page) : Nil
       @current_page = page
       @graphics_stack.clear
-      @graphics_stack << GraphicsState.new
+      @graphics_stack << create_graphics_state
       @resources = nil
       @initial_matrix = page.matrix
     end
@@ -85,38 +93,51 @@ module Pdfbox::Contentstream
       width * Math.sqrt((x * x + y * y) * 0.5)
     end
 
-    def graphics_state : GraphicsState
-      @graphics_stack.last.as(GraphicsState)
+    # Get the graphics state. Java's engine has a single PDGraphicsState stack;
+    # the port also runs a lighter `GraphicsState` for plain engines, so this
+    # returns whichever state the engine pushes. Callers address both through the
+    # same messages (see the text-state accessors on PDGraphicsState).
+    def graphics_state : GraphicsState | Pdmodel::Graphics::State::PDGraphicsState
+      @graphics_stack.last
     end
 
-    # Get the graphics state (internal, used by process_operator)
-    private def base_graphics_state : GraphicsState
-      @graphics_stack.last.as(GraphicsState)
+    # Saves the entire graphics stack (Java PDFStreamEngine#saveGraphicsStack).
+    # The current state becomes a clone of the previous top of the stack.
+    protected def save_graphics_stack : Array(GraphicsState | Pdmodel::Graphics::State::PDGraphicsState)
+      snapshot = @graphics_stack
+      @graphics_stack = [snapshot.last.clone]
+      snapshot
+    end
+
+    # Restores the entire graphics stack (Java
+    # PDFStreamEngine#restoreGraphicsStack).
+    protected def restore_graphics_stack(snapshot : Array(GraphicsState | Pdmodel::Graphics::State::PDGraphicsState)) : Nil
+      @graphics_stack = snapshot
     end
 
     # Get the text matrix
     def text_matrix : Util::Matrix
-      base_graphics_state.text_matrix
+      graphics_state.text_matrix
     end
 
     # Set the text matrix
     def text_matrix=(matrix : Util::Matrix) : Nil
-      base_graphics_state.text_matrix = matrix
+      graphics_state.text_matrix = matrix
     end
 
     # Get the text line matrix
     def text_line_matrix : Util::Matrix
-      base_graphics_state.text_line_matrix
+      graphics_state.text_line_matrix
     end
 
     # Set the text line matrix
     def text_line_matrix=(matrix : Util::Matrix) : Nil
-      base_graphics_state.text_line_matrix = matrix
+      graphics_state.text_line_matrix = matrix
     end
 
     # Save the graphics state
     def save_graphics_state : Nil
-      @graphics_stack << base_graphics_state.clone
+      @graphics_stack << graphics_state.clone
     end
 
     # Restore the graphics state
@@ -155,13 +176,13 @@ module Pdfbox::Contentstream
     private def process_stream(page : Pdmodel::Page) : Nil
       parent_resources = @resources
       parent_initial_matrix = @initial_matrix
-      saved_stack = @graphics_stack.as(Array).map(&.clone)
+      saved_stack = save_graphics_stack
 
       @resources = page.resources || Pdmodel::Resources.new(Cos::Dictionary.new)
-      ctm = base_graphics_state.current_transformation_matrix
+      ctm = graphics_state.current_transformation_matrix
       ctm.concatenate(page.matrix)
-      base_graphics_state.current_transformation_matrix = ctm
-      @initial_matrix = base_graphics_state.current_transformation_matrix.clone
+      graphics_state.current_transformation_matrix = ctm
+      @initial_matrix = graphics_state.current_transformation_matrix.clone
 
       # Get the page's content stream
       cos_page = page.cos_object
@@ -198,7 +219,7 @@ module Pdfbox::Contentstream
     ensure
       @initial_matrix = parent_initial_matrix
       @resources = parent_resources
-      @graphics_stack = saved_stack.as(Array)
+      restore_graphics_stack(saved_stack) if saved_stack
     end
 
     # Process operators from content stream bytes
@@ -243,9 +264,9 @@ module Pdfbox::Contentstream
           f = to_float(arguments[5])
           if a && b && c && d && e && f
             matrix = Util::Matrix.new(a.to_f32, b.to_f32, c.to_f32, d.to_f32, e.to_f32, f.to_f32)
-            ctm = base_graphics_state.current_transformation_matrix
+            ctm = graphics_state.current_transformation_matrix
             ctm.concatenate(matrix)
-            base_graphics_state.current_transformation_matrix = ctm
+            graphics_state.current_transformation_matrix = ctm
           end
         end
       when "BT"
@@ -256,25 +277,25 @@ module Pdfbox::Contentstream
         # Set character spacing
         if arguments.size >= 1
           spacing = to_float(arguments[0])
-          base_graphics_state.character_spacing = spacing if spacing
+          graphics_state.character_spacing = spacing if spacing
         end
       when "Tw"
         # Set word spacing
         if arguments.size >= 1
           spacing = to_float(arguments[0])
-          base_graphics_state.word_spacing = spacing if spacing
+          graphics_state.word_spacing = spacing if spacing
         end
       when "Tz"
         # Set horizontal scaling
         if arguments.size >= 1
           scaling = to_float(arguments[0])
-          base_graphics_state.horizontal_scaling = scaling if scaling
+          graphics_state.horizontal_scaling = scaling if scaling
         end
       when "TL"
         # Set text leading
         if arguments.size >= 1
           leading = to_float(arguments[0])
-          base_graphics_state.text_leading = leading if leading
+          graphics_state.text_leading = leading if leading
         end
       when "Tf"
         # Set font and size
@@ -290,13 +311,13 @@ module Pdfbox::Contentstream
         # Set text rendering mode
         if arguments.size >= 1
           mode = to_int(arguments[0])
-          base_graphics_state.text_rendering_mode = mode if mode
+          graphics_state.text_rendering_mode = mode if mode
         end
       when "Ts"
         # Set text rise
         if arguments.size >= 1
           rise = to_float(arguments[0])
-          base_graphics_state.text_rise = rise if rise
+          graphics_state.text_rise = rise if rise
         end
       when "Td"
         # Move text position
@@ -314,7 +335,7 @@ module Pdfbox::Contentstream
           ty = to_float(arguments[1])
           if tx && ty
             move_text(tx, ty)
-            base_graphics_state.text_leading = -ty
+            graphics_state.text_leading = -ty
           end
         end
       when "Tm"
@@ -334,7 +355,7 @@ module Pdfbox::Contentstream
         end
       when "T*"
         # Move to next line
-        leading = base_graphics_state.text_leading
+        leading = graphics_state.text_leading
         move_text(0, -leading)
       when "Tj"
         # Show text
@@ -352,7 +373,7 @@ module Pdfbox::Contentstream
         end
       when "'"
         # Move to next line and show text
-        leading = base_graphics_state.text_leading
+        leading = graphics_state.text_leading
         move_text(0, -leading)
         if arguments.size >= 1
           show_text_string(arguments[0])
@@ -362,9 +383,9 @@ module Pdfbox::Contentstream
         if arguments.size >= 3
           word_spacing = to_float(arguments[0])
           char_spacing = to_float(arguments[1])
-          base_graphics_state.word_spacing = word_spacing if word_spacing
-          base_graphics_state.character_spacing = char_spacing if char_spacing
-          leading = base_graphics_state.text_leading
+          graphics_state.word_spacing = word_spacing if word_spacing
+          graphics_state.character_spacing = char_spacing if char_spacing
+          leading = graphics_state.text_leading
           move_text(0, -leading)
           show_text_string(arguments[2])
         end
@@ -442,8 +463,8 @@ module Pdfbox::Contentstream
       # Create font from dictionary
       font = Pdmodel::Font::PDFontFactory.create_font(font_dict)
       if font
-        base_graphics_state.font = font
-        base_graphics_state.font_size = font_size
+        graphics_state.font = font
+        graphics_state.font_size = font_size
       end
     end
 
@@ -488,7 +509,7 @@ module Pdfbox::Contentstream
     def process_form_xobject(stream : Cos::Stream) : Nil
       parent_resources = @resources
       parent_initial_matrix = @initial_matrix
-      saved_stack = @graphics_stack.as(Array).map(&.clone)
+      saved_stack = save_graphics_stack
 
       form_resources = stream[Cos::Name.new("Resources")]
       if form_resources.is_a?(Cos::Object)
@@ -498,18 +519,59 @@ module Pdfbox::Contentstream
 
       form_matrix = matrix_from_cos_array(stream[Cos::Name.new("Matrix")])
       if form_matrix
-        ctm = base_graphics_state.current_transformation_matrix
+        ctm = graphics_state.current_transformation_matrix
         ctm.concatenate(form_matrix)
-        base_graphics_state.current_transformation_matrix = ctm
+        graphics_state.current_transformation_matrix = ctm
       end
-      @initial_matrix = base_graphics_state.current_transformation_matrix.clone
+      @initial_matrix = graphics_state.current_transformation_matrix.clone
 
       input = stream.create_input_stream
       process_stream_operators(input.getb_to_end)
     ensure
       @initial_matrix = parent_initial_matrix
       @resources = parent_resources
-      @graphics_stack = saved_stack.as(Array)
+      restore_graphics_stack(saved_stack) if saved_stack
+    end
+
+    # Processes a Type 3 character stream (Java PDFStreamEngine#processType3Stream).
+    # The text rendering matrix replaces the CTM, concatenated with the charproc's
+    # matrix (the font matrix), and text starts from an empty matrix. The bounding
+    # box is deliberately not clipped: it is often wrong (PDFBOX-1917).
+    def process_type3_stream(char_proc : Pdmodel::Font::PDType3CharProc, text_rendering_matrix : Util::Matrix) : Nil
+      unless @current_page
+        raise Exception.new("No current page, call #process_child_stream(PDContentStream, PDPage) instead")
+      end
+
+      parent_resources = @resources
+      saved_stack = save_graphics_stack
+
+      begin
+        char_proc_resources = char_proc.resources
+        if char_proc_resources
+          resources_object = char_proc_resources.cos_object
+          if resources_object.is_a?(Cos::Dictionary)
+            @resources = Pdmodel::Resources.new(resources_object)
+          end
+        end
+
+        state = graphics_state
+        # replace the CTM with the TRM, then transform it using the stream's
+        # matrix (this is the FontMatrix)
+        ctm = text_rendering_matrix.clone
+        font_matrix = char_proc.matrix
+        ctm.concatenate(Util::Matrix.new(
+          font_matrix.a, font_matrix.b, font_matrix.c,
+          font_matrix.d, font_matrix.e, font_matrix.f
+        ))
+        state.current_transformation_matrix = ctm
+        state.text_matrix = Util::Matrix.new
+        state.text_line_matrix = Util::Matrix.new
+
+        process_stream_operators(char_proc.cos_object.create_input_stream.getb_to_end)
+      ensure
+        restore_graphics_stack(saved_stack) if saved_stack
+        @resources = parent_resources
+      end
     end
 
     private def matrix_from_cos_array(base : Cos::Base?) : Util::Matrix?
@@ -553,12 +615,12 @@ module Pdfbox::Contentstream
 
     # Show text strings with adjustments
     def show_text_strings(array : Cos::Array) : Nil
-      font = base_graphics_state.font
+      font = graphics_state.font
       return unless font
 
       is_vertical = font.vertical?
-      font_size = base_graphics_state.font_size
-      horizontal_scaling = base_graphics_state.horizontal_scaling / 100.0
+      font_size = graphics_state.font_size
+      horizontal_scaling = graphics_state.horizontal_scaling / 100.0
 
       array.items.each do |item|
         # Resolve indirect references
@@ -591,10 +653,10 @@ module Pdfbox::Contentstream
 
     # Show text bytes
     def show_text(bytes : Bytes) : Nil
-      font = base_graphics_state.font
+      font = graphics_state.font
       return unless font
 
-      state = base_graphics_state
+      state = graphics_state
       font_size = state.font_size
       horizontal_scaling = state.horizontal_scaling / 100.0
       char_spacing = state.character_spacing
@@ -636,10 +698,26 @@ module Pdfbox::Contentstream
       end
     end
 
-    # Called when a glyph is to be processed.
-    # Subclasses should override this method.
+    # Called when a glyph is to be processed (Java PDFStreamEngine#showGlyph).
+    # Type 3 fonts go to show_type3_glyph, everything else to show_font_glyph.
     def show_glyph(text_rendering_matrix : Util::Matrix, font : Pdmodel::Font::PDFont, code : Int32, displacement : Pdmodel::Font::PDFont::Vector) : Nil
-      # Default implementation does nothing
+      if font.is_a?(Pdmodel::Font::PDType3Font)
+        show_type3_glyph(text_rendering_matrix, font, code, displacement)
+      else
+        show_font_glyph(text_rendering_matrix, font, code, displacement)
+      end
+    end
+
+    # Called when a glyph of a simple or composite font is to be processed. The
+    # default implementation does nothing; subclasses override it.
+    def show_font_glyph(text_rendering_matrix : Util::Matrix, font : Pdmodel::Font::PDFont, code : Int32, displacement : Pdmodel::Font::PDFont::Vector) : Nil
+    end
+
+    # Called when a Type 3 glyph is to be processed. The default implementation
+    # processes the character procedure stream, like Java.
+    def show_type3_glyph(text_rendering_matrix : Util::Matrix, font : Pdmodel::Font::PDType3Font, code : Int32, displacement : Pdmodel::Font::PDFont::Vector) : Nil
+      char_proc = font.get_char_proc(code)
+      process_type3_stream(char_proc, text_rendering_matrix) if char_proc
     end
 
     # Called when text position is processed.

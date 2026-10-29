@@ -37,6 +37,8 @@ module Pdfbox::Multipdf
     @even_page_overlay_document : Pdmodel::Document?
     @input_pdf_document : Pdmodel::Document?
     @specific_page_overlay_layout_page_map = {} of Int32 => LayoutPage
+    # Java: rotatedDefaultOverlayPagesMap
+    @rotated_default_overlay_pages_map = {} of Int32 => LayoutPage
     @open_documents = [] of Pdmodel::Document
     @position : Position = Position::BACKGROUND
     @adjust_rotation : Bool = false
@@ -307,6 +309,13 @@ module Pdfbox::Multipdf
       end
 
       if lp = @default_overlay_page
+        # PDFBOX-6049: consider the rotation of the document page
+        if @adjust_rotation
+          if input_document = @input_pdf_document
+            rotation = input_document.get_page(page_number - 1).rotation
+            return create_adjusted_layout_page(rotation) if rotation != 0
+          end
+        end
         return lp
       end
 
@@ -316,6 +325,23 @@ module Pdfbox::Multipdf
       end
 
       nil
+    end
+
+    # Java: createAdjustedLayoutPage(int)
+    private def create_adjusted_layout_page(rotation : Int32) : LayoutPage?
+      if cached = @rotated_default_overlay_pages_map[rotation]?
+        return cached
+      end
+
+      # createLayoutPage must be called because we can't reuse the COSStream
+      overlay_document = @default_overlay_document
+      return nil unless overlay_document
+
+      rotated_layout_page = create_layout_page(overlay_document.get_page(0))
+      new_rotation = (rotated_layout_page.overlay_rotation - rotation + 360) % 360
+      rotated_layout_page.overlay_rotation = new_rotation
+      @rotated_default_overlay_pages_map[rotation] = rotated_layout_page
+      rotated_layout_page
     end
 
     # Java: createLayoutPageFromDocument(PDDocument)
@@ -361,17 +387,19 @@ module Pdfbox::Multipdf
         Cos::Float.new(bbox.upper_right_y),
       ] of Cos::Base)
 
-      # Java: rotation handling
+      # Java: AffineTransform#translate followed by #quadrantRotate, flattened
+      # into a b c d e f. Rotation 90 rotates by 270 and translates by the width;
+      # rotation 270 rotates by 90 and translates by the height.
       rotation = layout_page.overlay_rotation
       case rotation
       when 90
         matrix = Cos::Array.new([
           Cos::Float.new(0.0_f64),
-          Cos::Float.new(1.0_f64),
           Cos::Float.new(-1.0_f64),
+          Cos::Float.new(1.0_f64),
           Cos::Float.new(0.0_f64),
-          Cos::Float.new(layout_page.overlay_media_box.height.to_f64),
           Cos::Float.new(0.0_f64),
+          Cos::Float.new(layout_page.overlay_media_box.width.to_f64),
         ] of Cos::Base)
       when 180
         matrix = Cos::Array.new([
@@ -385,11 +413,11 @@ module Pdfbox::Multipdf
       when 270
         matrix = Cos::Array.new([
           Cos::Float.new(0.0_f64),
-          Cos::Float.new(-1.0_f64),
           Cos::Float.new(1.0_f64),
+          Cos::Float.new(-1.0_f64),
           Cos::Float.new(0.0_f64),
+          Cos::Float.new(layout_page.overlay_media_box.height.to_f64),
           Cos::Float.new(0.0_f64),
-          Cos::Float.new(layout_page.overlay_media_box.width.to_f64),
         ] of Cos::Base)
       else
         matrix = Cos::Array.new([
@@ -430,14 +458,16 @@ module Pdfbox::Multipdf
       end
 
       # Java: build overlay stream: q\nq\n ... cm\n /name Do Q\nQ\n
+      # Java writes AffineTransform#getMatrix's flat a b c d e f, so the
+      # calculated translate(hShift, vShift) is written as 1 0 0 1 h v.
       content = String.build do |io|
         io << "q\nq\n"
-        io << FloatString.float_to_string(h_shift) << ' '
-        io << FloatString.float_to_string(0.0_f32) << ' '
-        io << FloatString.float_to_string(0.0_f32) << ' '
-        io << FloatString.float_to_string(v_shift) << ' '
         io << FloatString.float_to_string(1.0_f32) << ' '
         io << FloatString.float_to_string(0.0_f32) << ' '
+        io << FloatString.float_to_string(0.0_f32) << ' '
+        io << FloatString.float_to_string(1.0_f32) << ' '
+        io << FloatString.float_to_string(h_shift) << ' '
+        io << FloatString.float_to_string(v_shift) << ' '
         io << " cm\n"
         io << " /" << x_object_id.value << " Do Q\nQ\n"
       end

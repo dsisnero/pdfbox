@@ -11,6 +11,9 @@ require "../../spec_helper"
 
 private class RecordingColorEngine < Pdfbox::Contentstream::PDFGraphicsStreamEngine
   getter fills = 0
+  getter strokes = 0
+  getter stroking_colors = [] of Array(Float32)
+  getter non_stroking_colors = [] of Array(Float32)
 
   def append_rectangle(p0 : Tuple(Float32, Float32), p1 : Tuple(Float32, Float32),
                        p2 : Tuple(Float32, Float32), p3 : Tuple(Float32, Float32)) : Nil
@@ -42,10 +45,13 @@ private class RecordingColorEngine < Pdfbox::Contentstream::PDFGraphicsStreamEng
   end
 
   def stroke_path : Nil
+    @strokes += 1
+    @stroking_colors << graphics_state.stroking_color.components
   end
 
   def fill_path(winding_rule : Int32) : Nil
     @fills += 1
+    @non_stroking_colors << graphics_state.non_stroking_color.components
   end
 
   def fill_and_stroke_path(winding_rule : Int32) : Nil
@@ -61,11 +67,11 @@ private class RecordingColorEngine < Pdfbox::Contentstream::PDFGraphicsStreamEng
   end
 
   def show_font_glyph(text_rendering_matrix : Pdfbox::Util::Matrix, font : Pdfbox::Pdmodel::Font::PDFont,
-                      code : Int32, displacement : Tuple(Float32, Float32)) : Nil
+                      code : Int32, displacement : Pdfbox::Pdmodel::Font::PDFont::Vector) : Nil
   end
 
   def show_type3_glyph(text_rendering_matrix : Pdfbox::Util::Matrix, font : Pdfbox::Pdmodel::Font::PDType3Font,
-                       code : Int32, displacement : Tuple(Float32, Float32)) : Nil
+                       code : Int32, displacement : Pdfbox::Pdmodel::Font::PDFont::Vector) : Nil
   end
 end
 
@@ -85,16 +91,18 @@ describe "PDFGraphicsStreamEngine operator names" do
   end
 
   it "handles SCN (stroking color on pattern-capable spaces)" do
-    page = operator_page("1 0 0 RG 0 1 0 SCN")
+    page = operator_page("1 0 0 RG 0 1 0 SCN 0 0 10 10 re S")
     engine = RecordingColorEngine.new(page)
     engine.process_page(page)
-    engine.graphics_state.stroking_color.components.should eq([0.0_f32, 1.0_f32, 0.0_f32])
+    # processStream saves and restores the graphics state, so the colour has to
+    # be observed while the stream is running.
+    engine.stroking_colors.should eq([[0.0_f32, 1.0_f32, 0.0_f32]])
   end
 
   it "handles scn (non-stroking color on pattern-capable spaces)" do
-    page = operator_page("1 0 0 rg 0 1 0 scn")
+    page = operator_page("1 0 0 rg 0 1 0 scn 0 0 10 10 re f")
     engine = RecordingColorEngine.new(page)
     engine.process_page(page)
-    engine.graphics_state.non_stroking_color.components.should eq([0.0_f32, 1.0_f32, 0.0_f32])
+    engine.non_stroking_colors.should eq([[0.0_f32, 1.0_f32, 0.0_f32]])
   end
 end

@@ -511,7 +511,7 @@ module Tools
       def show_font_glyph(text_rendering_matrix : Pdfbox::Util::Matrix,
                           font : Pdfbox::Pdmodel::Font::PDFont,
                           code : Int32,
-                          displacement : Tuple(Float32, Float32)) : Nil
+                          displacement : Pdfbox::Pdmodel::Font::PDFont::Vector) : Nil
         _ = text_rendering_matrix
         _ = font
         _ = code
@@ -528,7 +528,7 @@ module Tools
       def show_type3_glyph(text_rendering_matrix : Pdfbox::Util::Matrix,
                            font : Pdfbox::Pdmodel::Font::PDType3Font,
                            code : Int32,
-                           displacement : Tuple(Float32, Float32)) : Nil
+                           displacement : Pdfbox::Pdmodel::Font::PDFont::Vector) : Nil
         _ = text_rendering_matrix
         _ = font
         _ = code

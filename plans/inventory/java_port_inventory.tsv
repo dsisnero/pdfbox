@@ -3351,7 +3351,7 @@ pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::metho
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.processStreamOperators	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.processTilingPattern	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.processTransparencyGroup	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.processType3Stream	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.processType3Stream	method	ported	src/pdfbox/contentstream/pdf_stream_engine.cr	ported: glyph rendering
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.pushResources	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.restoreGraphicsStack	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.restoreGraphicsState	method	ported	src	auto-generated
@@ -3361,14 +3361,14 @@ pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::metho
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.setTextLineMatrix	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.setTextMatrix	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.showAnnotation	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.showFontGlyph	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.showFontGlyph	method	ported	src/pdfbox/contentstream/pdf_stream_engine.cr	ported: glyph rendering
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.showForm	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.showGlyph	method	ported	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.showGlyph	method	ported	src/pdfbox/contentstream/pdf_stream_engine.cr	ported: glyph rendering
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.showText	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.showTextString	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.showTextStrings	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.showTransparencyGroup	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.showType3Glyph	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.showType3Glyph	method	ported	src/pdfbox/contentstream/pdf_stream_engine.cr	ported: glyph rendering
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.transformWidth	method	ported	src/pdfbox/contentstream/pdf_stream_engine.cr	ported: PDFStreamEngine#transform_width
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.transformedPoint	method	ported	src/pdfbox/contentstream/pdf_stream_engine.cr	ported: PDFStreamEngine#transformed_point (returns {x, y}, no AWT Point2D)
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.unsupportedOperator	method	partial	src	auto-generated
@@ -4805,19 +4805,19 @@ pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::enum::Position	enu
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.addOriginalContent	method	ported	src/pdfbox/multipdf.cr	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.calculateAffineTransform	method	ported	src/pdfbox/multipdf.cr	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.close	method	ported	src/pdfbox/multipdf.cr	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.createAdjustedLayoutPage	method	ported	src/pdfbox/multipdf.cr	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.createAdjustedLayoutPage	method	ported	src/pdfbox/multipdf.cr	ported: adjustRotation (PDFBOX-6049)
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.createCombinedContentStream	method	ported	src/pdfbox/multipdf.cr	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.createContentStreamList	method	ported	src/pdfbox/multipdf.cr	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.createLayoutPage	method	ported	src/pdfbox/multipdf.cr	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.createLayoutPageFromDocument	method	ported	src/pdfbox/multipdf.cr	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.createOverlayFormXObject	method	ported	src/pdfbox/multipdf.cr	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.createOverlayStream	method	ported	src/pdfbox/multipdf.cr	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.createOverlayFormXObject	method	ported	src/pdfbox/multipdf.cr	ported: 90/270 quadrant matrices match Java
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.createOverlayStream	method	ported	src/pdfbox/multipdf.cr	ported: writes flat a b c d e f (1 0 0 1 h v)
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.createPageOverlayLayoutPageMap	method	ported	src/pdfbox/multipdf.cr	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.createStream	method	ported	src/pdfbox/multipdf.cr	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.float2String	method	ported	src/pdfbox/multipdf.cr	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.getDefaultOverlayFile	method	ported	src/pdfbox/multipdf.cr	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.getInputFile	method	ported	src/pdfbox/multipdf.cr	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.getLayoutPage	method	ported	src/pdfbox/multipdf.cr	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.getLayoutPage	method	ported	src/pdfbox/multipdf.cr	ported: adjustRotation branch
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.loadPDF	method	ported	src/pdfbox/multipdf.cr	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.loadPDFs	method	ported	src/pdfbox/multipdf.cr	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/multipdf/Overlay.java::method::Overlay.overlay	method	ported	src/pdfbox/multipdf.cr	auto-generated
@@ -5597,7 +5597,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPageTree.java::class::SearchCon
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPageTree.java::const::LOG	const	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPageTree.java::method::PDPageTree.add	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPageTree.java::method::PDPageTree.findPage	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPageTree.java::method::PDPageTree.get	method	ported	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPageTree.java::method::PDPageTree.get	method	ported	src/pdfbox/pdmodel/page_tree.cr	ported: one dictionary per page object (Java COSObject identity)
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPageTree.java::method::PDPageTree.getCOSObject	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPageTree.java::method::PDPageTree.getCount	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPageTree.java::method::PDPageTree.getInheritableAttribute	method	ported	src/pdfbox/pdmodel/page_tree.cr	ported: PDPageTree.get_inheritable_attribute (identity visited set)
@@ -11126,7 +11126,7 @@ pdfbox/src/main/java/org/apache/pdfbox/util/Matrix.java::method::Matrix.setValue
 pdfbox/src/main/java/org/apache/pdfbox/util/Matrix.java::method::Matrix.toCOSArray	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/util/Matrix.java::method::Matrix.toString	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/util/Matrix.java::method::Matrix.transform	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/util/Matrix.java::method::Matrix.transformPoint	method	ported	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/util/Matrix.java::method::Matrix.transformPoint	method	ported	src/pdfbox/util.cr	ported: matrix transformPoint
 pdfbox/src/main/java/org/apache/pdfbox/util/Matrix.java::method::Matrix.translate	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/util/NumberFormatUtil.java::class::NumberFormatUtil	class	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/util/NumberFormatUtil.java::const::MAX_FRACTION_DIGITS	const	missing	-	auto-generated

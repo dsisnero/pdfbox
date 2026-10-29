@@ -249,54 +249,69 @@ module Pdfbox::Rendering
     def end_text : Nil
     end
 
+    # Draws a glyph: the outline of the character code through the font's vector
+    # interface, transformed from glyph space to device space (Java
+    # PageDrawer#showFontGlyph + GlyphCache#getPathForCharacterCode).
     def show_font_glyph(text_rendering_matrix : Pdfbox::Util::Matrix,
                         font : Pdfbox::Pdmodel::Font::PDFont,
                         code : Int32,
-                        displacement : Tuple(Float32, Float32)) : Nil
+                        displacement : Pdfbox::Pdmodel::Font::PDFont::Vector) : Nil
       return unless @image
 
-      glyph_name = font.encoding.try(&.name(code)) || font.glyph_name(code) || ""
-      path = font.path(glyph_name)
-      return if path.empty?
+      vector_font = font.as?(Pdfbox::Pdmodel::Font::PDVectorFont)
+      return unless vector_font
 
-      gs = graphics_state
-      font_size = gs.text_state.font_size
-      scale = font_size / 1000.0
-      trm_x = text_rendering_matrix.translate_x
-      trm_y = text_rendering_matrix.translate_y
+      # Java GlyphCache#getPathForCharacterCode may hand back null and
+      # PageDrawer#drawGlyph only renders when the path is not null.
+      path = vector_font.get_normalized_path(code)
+      return if path.nil? || path.empty?
+
+      # glyph space -> text space -> device space
+      font_matrix = font.font_matrix
+      matrix = text_rendering_matrix.multiply(
+        Pdfbox::Util::Matrix.new(
+          font_matrix.a, font_matrix.b, font_matrix.c,
+          font_matrix.d, font_matrix.e, font_matrix.f
+        )
+      )
 
       path.each_command do |cmd_sym, args|
         case cmd_sym
         when :move_to
-          move_to((args[0] * scale + trm_x).to_f32, (args[1] * scale + trm_y).to_f32)
+          point = matrix.transform_point(args[0], args[1])
+          move_to(point[0].to_f32, point[1].to_f32)
         when :line_to
-          line_to((args[0] * scale + trm_x).to_f32, (args[1] * scale + trm_y).to_f32)
+          point = matrix.transform_point(args[0], args[1])
+          line_to(point[0].to_f32, point[1].to_f32)
         when :curve_to
-          curve_to((args[0] * scale + trm_x).to_f32, (args[1] * scale + trm_y).to_f32,
-            (args[2] * scale + trm_x).to_f32, (args[3] * scale + trm_y).to_f32,
-            (args[4] * scale + trm_x).to_f32, (args[5] * scale + trm_y).to_f32)
+          c1 = matrix.transform_point(args[0], args[1])
+          c2 = matrix.transform_point(args[2], args[3])
+          p = matrix.transform_point(args[4], args[5])
+          curve_to(c1[0].to_f32, c1[1].to_f32, c2[0].to_f32, c2[1].to_f32,
+            p[0].to_f32, p[1].to_f32)
         when :close_path
           close_path
         end
       end
 
-      rm = gs.text_state.rendering_mode
-      if rm.fill?
+      rendering_mode = graphics_state.text_state.rendering_mode
+      if rendering_mode.fills_text?
         fill_path(0)
-      elsif rm.stroke?
-        stroke_path
-      elsif rm.fill_stroke?
-        fill_and_stroke_path(0)
-      else
+      end
+      stroke_path if rendering_mode.strokes_text?
+      if !rendering_mode.fills_text? && !rendering_mode.strokes_text?
         @path.clear
         @pt = nil
       end
     end
 
+    # Java PageDrawer#showType3Glyph: nothing is drawn in the NEITHER rendering
+    # mode, otherwise the character procedure stream is processed.
     def show_type3_glyph(text_rendering_matrix : Pdfbox::Util::Matrix,
                          font : Pdfbox::Pdmodel::Font::PDType3Font,
                          code : Int32,
-                         displacement : Tuple(Float32, Float32)) : Nil
+                         displacement : Pdfbox::Pdmodel::Font::PDFont::Vector) : Nil
+      super unless graphics_state.text_state.rendering_mode.neither?
     end
 
     # --- Private drawing helpers ---

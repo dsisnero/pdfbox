@@ -29,7 +29,8 @@ Archives are append-only history: never add new entries to them.
 
 | Part | Covers | Entries |
 |---|---|---|
-| [`current.md`](changelog/current.md) | 2026-10-28 → 2026-10-15 (open) | 43 |
+| [`current.md`](changelog/current.md) | 2026-10-29 → (open) | 1 |
+| [`archive-2026-10-29-to-2026-10-15.md`](changelog/archive-2026-10-29-to-2026-10-15.md) | 2026-10-29 → 2026-10-15 | 56 |
 | [`archive-2026-10-14-to-2026-10-13.md`](changelog/archive-2026-10-14-to-2026-10-13.md) | 2026-10-14 → 2026-10-13 | 61 |
 | [`archive-2026-10-13-to-2026-10-07.md`](changelog/archive-2026-10-13-to-2026-10-07.md) | 2026-10-13 → 2026-10-07 | 92 |
 | [`archive-2026-08-18-and-earlier.md`](changelog/archive-2026-08-18-and-earlier.md) | 2026-08-18 and the earlier phase summaries | 14 |

@@ -1158,7 +1158,7 @@ module Pdfbox::Pdfparser
       kids_obj = pages_dict[Cos::Name.new("Kids")]
       if kids_obj.is_a?(Cos::Array)
         kids_obj.items.each do |kid|
-          resolved_kid = resolve_object(kid, xref)
+          resolved_kid = resolve_page_tree_node(kid, xref)
           if resolved_kid.is_a?(Cos::Dictionary)
             result.concat(parse_pages_tree(resolved_kid, xref))
           end
@@ -1166,6 +1166,23 @@ module Pdfbox::Pdfparser
       end
 
       result
+    end
+
+    # Resolves a page tree child through the shared object pool.
+    #
+    # Java has one COSObject per object key, so the page dictionaries collected
+    # here are the very same instances later reached through the catalog's
+    # /Pages tree. Parsing them directly (bypassing the pool) produced a second
+    # dictionary for each page, so edits made through one instance were dropped
+    # when the writer serialized the other one.
+    private def resolve_page_tree_node(kid : Cos::Base, xref : XRef) : Cos::Base?
+      unless kid.is_a?(Cos::Object)
+        return kid
+      end
+      unless key = kid.key
+        return resolve_object(kid, xref)
+      end
+      object_from_pool(key).object
     end
 
     # Resolve a COS object using the xref table
