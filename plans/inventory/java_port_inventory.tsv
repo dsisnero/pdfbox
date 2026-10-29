@@ -8212,7 +8212,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDOutputIntent.jav
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDPattern.java::class::PDPattern	class	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDPattern.java::const::EMPTY_PATTERN	const	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDPattern.java::method::PDPattern.getDefaultDecode	method	ported	src	PDColorSpace#default_decode abstract + per-subclass overrides
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDPattern.java::method::PDPattern.getInitialColor	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDPattern.java::method::PDPattern.getInitialColor	method	ported	src/pdfbox/pdmodel/graphics/color/pdpattern.cr	ported: PDPattern#initial_color (EMPTY_PATTERN: no components, no colour space)
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDPattern.java::method::PDPattern.getName	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDPattern.java::method::PDPattern.getNumberOfComponents	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDPattern.java::method::PDPattern.getPattern	method	partial	src	auto-generated

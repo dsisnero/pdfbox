@@ -23,6 +23,13 @@ module Pdfbox::Pdmodel::Graphics::Color
       @underlying_color_space.try(&.number_of_components) || 0
     end
 
+    # Java PDPattern#getInitialColor returns EMPTY_PATTERN: a colour with no
+    # components and no colour space ("a pattern which leaves no marks on the
+    # page"), which differs from the zero-filled colour the base class builds.
+    def initial_color : PDColor
+      PDColor.new([] of Float32, nil)
+    end
+
     # Java PDPattern#getDefaultDecode always throws.
     def default_decode(bits_per_component : Int32) : Array(Float32)
       raise Cos::UnsupportedOperationError.new("Unsupported operation")
