@@ -3329,7 +3329,7 @@ pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::metho
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.getAppearance	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.getCurrentPage	ported	src/pdfbox/contentstream/pdf_stream_engine.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.getDefaultFont	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.getGraphicsStackSize	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.getGraphicsStackSize	ported	src/pdfbox/contentstream/pdf_stream_engine.cr	ported: PDFStreamEngine#graphics_stack_size
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.getGraphicsState	ported	src/pdfbox/contentstream/pdf_stream_engine.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.getInitialMatrix	ported	src/pdfbox/contentstream/pdf_stream_engine.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.getLevel	ported	src/pdfbox/contentstream/pdf_stream_engine.cr	reconciled: method present
@@ -3369,8 +3369,8 @@ pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::metho
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.showTextStrings	ported	src/pdfbox/contentstream/pdf_stream_engine.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.showTransparencyGroup	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.showType3Glyph	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.transformWidth	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.transformedPoint	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.transformWidth	ported	src/pdfbox/contentstream/pdf_stream_engine.cr	ported: PDFStreamEngine#transform_width
+pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.transformedPoint	ported	src/pdfbox/contentstream/pdf_stream_engine.cr	ported: PDFStreamEngine#transformed_point (returns {x, y}, no AWT Point2D)
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.unsupportedOperator	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/DrawObject.java::class::DrawObject	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/DrawObject.java::const::LOG	missing	-	baseline

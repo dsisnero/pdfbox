@@ -28,8 +28,10 @@ module Pdfbox::Contentstream
     @default_font : Pdmodel::Font::PDFont?
     @should_process_color_operators : Bool = true
 
-    # Creates a new PDFStreamEngine.
+    # Creates a new PDFStreamEngine. Like Java's constructor, an initial graphics
+    # state is pushed so that subclasses can query it before a page is processed.
     def initialize
+      @graphics_stack << GraphicsState.new
     end
 
     # Adds an operator processor to the engine.
@@ -57,6 +59,32 @@ module Pdfbox::Contentstream
     end
 
     # Get the graphics state
+    # The number of graphics states on the stack (Java
+    # PDFStreamEngine#getGraphicsStackSize).
+    def graphics_stack_size : Int32
+      @graphics_stack.size
+    end
+
+    # Transforms a point with the current transformation matrix (Java
+    # PDFStreamEngine#transformedPoint). Java returns a `Point2D.Float`; the port
+    # returns an `{x, y}` tuple instead of using AWT.
+    def transformed_point(x : Float64, y : Float64) : Tuple(Float64, Float64)
+      matrix = graphics_state.current_transformation_matrix
+      {
+        (matrix.get_value(0, 0) * x + matrix.get_value(1, 0) * y + matrix.get_value(2, 0)).to_f64,
+        (matrix.get_value(0, 1) * x + matrix.get_value(1, 1) * y + matrix.get_value(2, 1)).to_f64,
+      }
+    end
+
+    # Transforms a width using the current transformation matrix (Java
+    # PDFStreamEngine#transformWidth).
+    def transform_width(width : Float64) : Float64
+      matrix = graphics_state.current_transformation_matrix
+      x = matrix.scale_x + matrix.shear_x
+      y = matrix.scale_y + matrix.shear_y
+      width * Math.sqrt((x * x + y * y) * 0.5)
+    end
+
     def graphics_state : GraphicsState
       @graphics_stack.last.as(GraphicsState)
     end

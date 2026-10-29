@@ -3329,7 +3329,7 @@ pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::metho
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.getAppearance	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.getCurrentPage	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.getDefaultFont	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.getGraphicsStackSize	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.getGraphicsStackSize	method	ported	src/pdfbox/contentstream/pdf_stream_engine.cr	ported: PDFStreamEngine#graphics_stack_size
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.getGraphicsState	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.getInitialMatrix	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.getLevel	method	partial	src	auto-generated
@@ -3369,8 +3369,8 @@ pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::metho
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.showTextStrings	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.showTransparencyGroup	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.showType3Glyph	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.transformWidth	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.transformedPoint	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.transformWidth	method	ported	src/pdfbox/contentstream/pdf_stream_engine.cr	ported: PDFStreamEngine#transform_width
+pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.transformedPoint	method	ported	src/pdfbox/contentstream/pdf_stream_engine.cr	ported: PDFStreamEngine#transformed_point (returns {x, y}, no AWT Point2D)
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.unsupportedOperator	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/DrawObject.java::class::DrawObject	class	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/DrawObject.java::const::LOG	const	missing	-	auto-generated
