@@ -8041,7 +8041,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDColor.java::meth
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDColor.java::method::PDColor.toRGB	ported	src/pdfbox/pdmodel/graphics/color/pdcolor.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDColor.java::method::PDColor.toString	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDColorSpace.java::class::PDColorSpace	ported	src/pdfbox/pdmodel/graphics/color/pdcolor_space.cr	reconciled: class present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDColorSpace.java::method::PDColorSpace.create	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDColorSpace.java::method::PDColorSpace.create	ported	src/pdfbox/pdmodel/graphics/color/pdcolor_space.cr	ported: create(cos_base, resources) keeps the resources for /Pattern (both the name and the [/Pattern] / [/Pattern cs] array forms)
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDColorSpace.java::method::PDColorSpace.createFromCOSObject	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDColorSpace.java::method::PDColorSpace.getCOSObject	ported	src/pdfbox/pdmodel/graphics/color/pdcolor_space.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDColorSpace.java::method::PDColorSpace.getDefaultDecode	missing	-	baseline
@@ -8215,7 +8215,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDPattern.java::me
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDPattern.java::method::PDPattern.getInitialColor	ported	src/pdfbox/pdmodel/graphics/color/pdpattern.cr	ported: PDPattern#initial_color (EMPTY_PATTERN: no components, no colour space)
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDPattern.java::method::PDPattern.getName	ported	src/pdfbox/pdmodel/graphics/color/pdpattern.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDPattern.java::method::PDPattern.getNumberOfComponents	ported	src/pdfbox/pdmodel/graphics/color/pdpattern.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDPattern.java::method::PDPattern.getPattern	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDPattern.java::method::PDPattern.getPattern	ported	src/pdfbox/pdmodel/graphics/color/pdpattern.cr	ported: PDPattern#get_pattern resolves the colour's pattern name through the resources and raises IO::Error
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDPattern.java::method::PDPattern.getUnderlyingColorSpace	ported	src/pdfbox/pdmodel/graphics/color/pdpattern.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDPattern.java::method::PDPattern.toRGB	ported	src/pdfbox/pdmodel/graphics/color/pdpattern.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDPattern.java::method::PDPattern.toRGBImage	missing	-	baseline

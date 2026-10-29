@@ -1,14 +1,41 @@
 # Pattern color space
 module Pdfbox::Pdmodel::Graphics::Color
   class PDPattern < PDColorSpace
+    @resources : Pdfbox::Pdmodel::PDResources?
     @underlying_color_space : PDColorSpace?
 
-    def initialize(@underlying_color_space : PDColorSpace? = nil)
+    # Creates a pattern colour space for the given resources.
+    # Java PDPattern(PDResources).
+    def initialize(@resources : Pdfbox::Pdmodel::PDResources? = nil)
+    end
+
+    # Creates an uncoloured tiling pattern colour space.
+    # Java PDPattern(PDResources, PDColorSpace).
+    def initialize(@resources : Pdfbox::Pdmodel::PDResources?,
+                   @underlying_color_space : PDColorSpace)
+    end
+
+    # The resources of the page this colour space was created for. Java keeps
+    # this reference so a pattern name can be resolved (PDPattern#getPattern).
+    def resources : Pdfbox::Pdmodel::PDResources?
+      @resources
     end
 
     # Returns the underlying color space for uncolored tiling patterns
     def underlying_color_space : PDColorSpace?
       @underlying_color_space
+    end
+
+    # Returns the pattern the given colour refers to.
+    # Java PDPattern#getPattern(PDColor): looks the pattern name up in the
+    # resources and throws an IOException when it is not there.
+    def get_pattern(color : PDColor) : Pdfbox::Pdmodel::Graphics::Pattern::PDAbstractPattern
+      name = color.pattern_name
+      pattern = name ? @resources.try(&.pattern(name)) : nil
+      unless pattern
+        raise ::IO::Error.new("pattern #{name.try(&.value) || "null"} was not found")
+      end
+      pattern
     end
 
     def cos_object : Cos::Base

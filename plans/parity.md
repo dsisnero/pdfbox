@@ -8,7 +8,7 @@
 
 ## Where we are
 
-- **Current focus:** the post-roadmap **pdmodel / text / rendering / io / cos / filter / pdfwriter / multipdf / fdf / fontbox / util / XMPBox accessor-completeness** grind — one Java class or small cluster per commit, test-first (red→green). Latest: **`PDFStreamEngine` device-space helpers** — `graphics_stack_size`, `transformed_point` and `transform_width` are ported for custom engines, and the constructor now pushes the initial graphics state like Java.
+- **Current focus:** the post-roadmap **pdmodel / text / rendering / io / cos / filter / pdfwriter / multipdf / fdf / fontbox / util / XMPBox accessor-completeness** grind — one Java class or small cluster per commit, test-first (red→green). Latest: **`PDPattern` owns its resources** — the pattern colour space now keeps the `PDResources` it was created from (Java's two constructors), `get_pattern(color)` resolves a `PDColor`'s pattern name and raises when it is missing, and `PDColorSpace.create` takes the resources so `/Pattern` and `[/Pattern cs]` are built with them.
 - **Next up:** the next **genuine** gap. The inventory's `missing` rows are mostly classifier noise (it matches `def` names only), so pick a lead below, confirm against `vendor/pdfbox/` that the Crystal behaviour really differs, then write the failing spec first.
 
 ### How to find the next gap (the techniques that worked)
@@ -23,7 +23,7 @@
 ### Leads for the next session (not yet verified as gaps)
 
 - `PDFStreamEngine` still lacks the rendering hooks `process_soft_mask`, `process_transparency_group`, `process_tiling_pattern`, `show_form`, `show_annotation`, `show_type3_glyph`, `show_font_glyph`, `process_child_stream`, `clip_to_rect` (the port handles some of these inline elsewhere — check before porting).
-- `PDPattern#getPattern(PDColor)` needs a `PDResources` reference on `PDPattern` (Java holds one; the port's constructor only takes an optional underlying colour space) — a small constructor/ownership refactor.
+- `PDColorSpace.create` now takes the resources, but only the `/Pattern` forms use them: Java also builds `PDDeviceN`, `PDIndexed`, `PDSeparation` and `PDICCBased` with the resources (`new PDDeviceN(array, resources)` etc.), and the port's constructors take only the COS array. Threading them through is the next step for those four spaces.
 - `src/pdfbox/pdf_parser/xref_parser.cr` still has the stubs `setHasHybridXRef`, `setTrailer`, `setIsXRefStream` and "copy xref table to document" — check whether `XrefParser` is still on a live path before wiring them.
 - Dead code: `PDSimpleFont#non_zero_bounding_box?` is defined once and never called (Type 1C/Type 3 have their own copies).
 
@@ -59,17 +59,17 @@ The document is split so this entry point stays small; every part is linked here
 |---|---|
 | Java source files (vendor) | ~1,064 (main sources) |
 | Crystal source files (ported) | ~520 (`src/` has 563 `.cr` files) |
-| Passing tests | 2,839 |
+| Passing tests | 2,845 |
 | Pending tests | 0 |
 | Failures | 0 |
 | Errors | 0 |
 | Text extraction: exact match | 40/40 PDFs (100%) |
 | Text extraction: known deviations | 0 PDFs (0%) |
 | Text extraction: fixed this session | PDFBOX-3127, PDFBOX-3053, PDFBOX-3061, PDFBOX-4532 |
-| Inventory: ported | 7,393 source + 1,715 test |
+| Inventory: ported | 7,395 source + 1,715 test |
 | Inventory: partial | 37 source + 221 test |
-| Inventory: missing | 4,999 source (mostly fontbox internals / pdmodel interactive/graphics/font / debugger / examples / xmpbox; test-parity inventory fully reconciled at 0) |
+| Inventory: missing | 4,997 source (mostly fontbox internals / pdmodel interactive/graphics/font / debugger / examples / xmpbox; test-parity inventory fully reconciled at 0) |
 | Active porting plans | 36 (`plans/active/{CosParserPort,AppearanceGeneratorPort,CertificateEncryptionTools,CCITTFaxEncoderPort,CCITTFactoryImagePort,PNGConverterImagePort,OutlineItemModelPort,PredictorDecodePort,ParserXrefDecodePort,StopFilterDecodePort,GraphicsFormXObjectPort,FreeTextAppearancePort,StreamToTextStringPort,GraphicsOperatorNamesPort,ShadingFillPort,InlineImageDrawPort,InlineImageRenderPort,PathOperatorsPort,MarkedContentPort,LayerUtilityPort,PDFCloneUtilityPort,PDFMergerUtilityPort,PDFMergerUtilityMergePort,NamedDestinationsMergePort,OpenActionMergePort,SplitterPhase,StructureTreeMergePort,PDFBoxIORemainderPort,AppendDocumentCatalogMergePort,PDFParserTestsPort,CMapAndFontCleanupPort,TTFSubsetterAndPlaceholderCleanupPort,MarkedContentExtractorPort,ArtifactMarkedContentPort,MarkInfoPort,SubsetFontReusePort}.md`) |
-| Fixed since last update | See [`plans/parity/changelog.md`](parity/changelog.md); the newest entry is **`PDFStreamEngine` device-space helpers (2026-10-29)**. |
+| Fixed since last update | See [`plans/parity/changelog.md`](parity/changelog.md); the newest entry is **`PDPattern` owns its resources + `get_pattern` (2026-10-29)**. |
 
 ---

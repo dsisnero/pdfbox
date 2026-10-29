@@ -69,7 +69,9 @@ module Pdfbox::Pdmodel::Interactive::Annotation::Handlers
 
       form_resources = form.resources || raise "Squiggly form resources missing"
       pattern_name = form_resources.add(pattern)
-      pattern_color_space = Graphics::Color::PDPattern.new(Graphics::Color::PDDeviceRGB::INSTANCE)
+      pattern_color_space = Graphics::Color::PDPattern.new(
+        form_resources, Graphics::Color::PDDeviceRGB::INSTANCE
+      )
       pattern_color = Graphics::Color::PDColor.new(color.components, pattern_name, pattern_color_space)
       form_content_stream.non_stroking_color = pattern_color
       form_content_stream.add_rect(

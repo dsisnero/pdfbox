@@ -123,7 +123,10 @@ module Pdfbox::Pdmodel
     # The color space resource (/ColorSpace), or nil (Java getColorSpace).
     def color_space(name : Pdfbox::Cos::Name) : Graphics::Color::PDColorSpace?
       base = resource_entry("ColorSpace", name)
-      base ? Graphics::Color::PDColorSpace.create(base) : nil
+      # Java passes the resources along, which is what lets a pattern colour
+      # space resolve its pattern names (and is why it is never cached,
+      # PDFBOX-2370).
+      base ? Graphics::Color::PDColorSpace.create(base, self) : nil
     end
 
     # Whether a color space with the given name exists (Java hasColorSpace).

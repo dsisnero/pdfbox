@@ -23,8 +23,12 @@ module Pdfbox::Pdmodel::Graphics::Color
       PDColor.new(components, self)
     end
 
-    # Create a color space from a COS name or array.
-    def self.create(cos_base : Cos::Base) : PDColorSpace?
+    # Create a color space from a COS name or array. *resources* is the
+    # resource dictionary the color space was found in; Java needs it for the
+    # pattern colour space, which resolves pattern names against it later.
+    # Java PDColorSpace#create(COSBase, PDResources).
+    def self.create(cos_base : Cos::Base,
+                    resources : Pdfbox::Pdmodel::PDResources? = nil) : PDColorSpace?
       case cos_base
       when Cos::Name
         case cos_base.value
@@ -34,6 +38,8 @@ module Pdfbox::Pdmodel::Graphics::Color
           PDDeviceRGB::INSTANCE
         when "DeviceCMYK", "CMYK"
           PDDeviceCMYK::INSTANCE
+        when "Pattern"
+          PDPattern.new(resources)
         end
       when Cos::Array
         if cos_base.size > 0
@@ -61,6 +67,15 @@ module Pdfbox::Pdmodel::Graphics::Color
               PDSeparation.new(cos_base)
             when "DeviceN"
               PDDeviceN.new(cos_base)
+            when "Pattern"
+              if cos_base.size == 1
+                PDPattern.new(resources)
+              else
+                underlying = create(cos_base[1], resources)
+                raise ::IO::Error.new("Invalid pattern colour space") unless underlying
+
+                PDPattern.new(resources, underlying)
+              end
             else
               nil
             end

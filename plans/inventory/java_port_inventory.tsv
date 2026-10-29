@@ -5621,7 +5621,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDResources.java::method::PDResou
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDResources.java::method::PDResources.createKey	method	ported	src/pdfbox/pdmodel/resources.cr	ported: PDResources add/put overloads
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDResources.java::method::PDResources.get	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDResources.java::method::PDResources.getCOSObject	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDResources.java::method::PDResources.getColorSpace	method	ported	src/pdfbox/pdmodel/resources.cr	ported: PDResources
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDResources.java::method::PDResources.getColorSpace	method	ported	src/pdfbox/pdmodel/resources.cr	ported: PDResources#color_space passes itself to PDColorSpace.create (pattern ownership)
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDResources.java::method::PDResources.getColorSpaceNames	method	ported	src/pdfbox/pdmodel/resources.cr	ported: PDResources
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDResources.java::method::PDResources.getExtGState	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDResources.java::method::PDResources.getExtGStateNames	method	ported	src	auto-generated
@@ -8041,7 +8041,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDColor.java::meth
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDColor.java::method::PDColor.toRGB	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDColor.java::method::PDColor.toString	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDColorSpace.java::class::PDColorSpace	class	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDColorSpace.java::method::PDColorSpace.create	method	ported	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDColorSpace.java::method::PDColorSpace.create	method	ported	src/pdfbox/pdmodel/graphics/color/pdcolor_space.cr	ported: create(cos_base, resources) + Pattern/PDPattern array forms
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDColorSpace.java::method::PDColorSpace.createFromCOSObject	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDColorSpace.java::method::PDColorSpace.getCOSObject	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDColorSpace.java::method::PDColorSpace.getDefaultDecode	method	partial	src	auto-generated
@@ -8215,7 +8215,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDPattern.java::me
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDPattern.java::method::PDPattern.getInitialColor	method	ported	src/pdfbox/pdmodel/graphics/color/pdpattern.cr	ported: PDPattern#initial_color (EMPTY_PATTERN: no components, no colour space)
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDPattern.java::method::PDPattern.getName	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDPattern.java::method::PDPattern.getNumberOfComponents	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDPattern.java::method::PDPattern.getPattern	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDPattern.java::method::PDPattern.getPattern	method	ported	src/pdfbox/pdmodel/graphics/color/pdpattern.cr	ported: PDPattern#get_pattern(color)
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDPattern.java::method::PDPattern.getUnderlyingColorSpace	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDPattern.java::method::PDPattern.toRGB	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/color/PDPattern.java::method::PDPattern.toRGBImage	method	partial	src	auto-generated

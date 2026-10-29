@@ -22,7 +22,7 @@ describe Pdfbox::Pdmodel::Graphics::Color::PDPattern do
 
   it "has an empty initial color in an uncoloured pattern space" do
     pattern = Pdfbox::Pdmodel::Graphics::Color::PDPattern.new(
-      Pdfbox::Pdmodel::Graphics::Color::PDDeviceRGB::INSTANCE
+      nil, Pdfbox::Pdmodel::Graphics::Color::PDDeviceRGB::INSTANCE
     )
     color = pattern.initial_color
 
