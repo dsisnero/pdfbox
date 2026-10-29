@@ -5422,7 +5422,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocume
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.getDocument	ported	src/pdfbox/pdmodel/document.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.getDocumentCatalog	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.getDocumentId	ported	src/pdfbox/pdmodel.cr	ported: Document#document_id_seed
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.getDocumentInformation	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.getDocumentInformation	ported	src/pdfbox/pdmodel.cr	ported: Document#document_information (never nil, lazily adds /Info, cached)
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.getEncryption	ported	src/pdfbox/pdmodel/document.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.getFontsToSubset	ported	src/pdfbox/pdmodel.cr	ported: PDDocument getFontsToSubset
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.getLastSignatureDictionary	ported	src/pdfbox/pdmodel/interactive/form/document_signatures.cr	ported: Document signatures
@@ -5446,7 +5446,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocume
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.saveIncrementalForExternalSigning	ported	src/pdfbox/pdmodel/interactive/form/document_signatures.cr	ported: Document#save_incremental_for_external_signing
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.setAllSecurityToBeRemoved	ported	src/pdfbox/pdmodel/document.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.setDocumentId	ported	src/pdfbox/pdmodel.cr	ported: Document#set_document_id(Int64) (Bytes overload keeps the /ID override)
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.setDocumentInformation	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.setDocumentInformation	ported	src/pdfbox/pdmodel.cr	ported: Document#set_document_information (nil removes /Info, an extension over Java's NPE)
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.setEncryptionDictionary	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.setResourceCache	ported	src/pdfbox/pdmodel.cr	ported: PDDocument resource cache
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDDocument.java::method::PDDocument.setVersion	missing	-	baseline

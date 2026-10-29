@@ -64,8 +64,12 @@ describe Pdfbox::Pdmodel::Document do
       loaded.should_not be_nil
       loaded.as(Pdfbox::Pdmodel::DocumentInformation).title.should eq("Spec Title")
 
+      # Java's getDocumentInformation() never returns null: after clearing, the
+      # accessor recreates an empty information dictionary.
       doc.set_document_information(nil)
-      doc.get_document_information.should be_nil
+      cleared = doc.get_document_information
+      cleared.title.should be_nil
+      cleared.metadata_keys.should be_empty
     end
 
     it "TestPDDocumentInformation#testMetadataExtraction" do

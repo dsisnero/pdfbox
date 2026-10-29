@@ -7,8 +7,9 @@ private RESOURCE_DIR   = "spec/resources/pdfbox/pdmodel/interactive/form"
 
 # Source of truth:
 #   vendor/pdfbox/pdfbox/src/test/java/org/apache/pdfbox/pdmodel/interactive/form/PDButtonTest.java
-# Fixture-based tests against AcroFormsBasicFields.pdf (target/pdfs fixtures for
-# PDFBOX-3656/3682 are generated at build time and are not checked in).
+# Fixture-based tests against AcroFormsBasicFields.pdf plus the PDFBOX-3656
+# (radio button with /Opt) and PDFBOX-3682 (option names that are not indices)
+# files, which are vendored under spec/resources/.
 describe Pdfbox::Pdmodel::Interactive::Form::PDButton do
   it "PDButtonTest#retrieveAcrobatCheckBoxProperties" do
     file = SpecPaths.resolve("#{ANNOTATION_DIR}/#{NAME_OF_PDF}")
@@ -269,6 +270,49 @@ describe Pdfbox::Pdmodel::Interactive::Form::PDButton do
       radio_button.widgets[2].cos_object.get_name_as_string(Pdfbox::Cos::Name.new("AS")).should_not eq("2")
 
       # test for the correct behavior
+      radio_button.value_as_string.should eq("c")
+      radio_button.widgets[2].cos_object.get_name_as_string(Pdfbox::Cos::Name.new("AS")).should eq("c")
+    ensure
+      document.close
+    end
+  end
+
+  # PDFBOX-3656: setting a radio button to Off must clear every widget's /AS.
+  it "PDButtonTest#testRadioButtonWithOptions" do
+    file = SpecPaths.resolve("#{RESOURCE_DIR}/PDFBOX-3656.pdf")
+    document = Pdfbox::Loader.load_pdf(file)
+    begin
+      acro_form = document.document_catalog.not_nil!.acro_form.not_nil!
+      field = acro_form.get_field("Checking/Savings")
+      field.should_not be_nil
+      radio_button = field.not_nil!.as(Pdfbox::Pdmodel::Interactive::Form::PDRadioButton)
+      radio_button.value = "Off"
+
+      radio_button.widgets.each do |widget|
+        widget.cos_object.get_name_as_string(Pdfbox::Cos::Name.new("AS")).should eq("Off")
+      end
+    ensure
+      document.close
+    end
+  end
+
+  # PDFBOX-3682: a radio button with /Opt whose On state is named after the
+  # option (not after the index) must use that name for /V and /AS.
+  it "PDButtonTest#testOptionsAndNamesNotNumbers" do
+    file = SpecPaths.resolve("#{RESOURCE_DIR}/PDFBOX-3682.pdf")
+    document = Pdfbox::Loader.load_pdf(file)
+    begin
+      acro_form = document.document_catalog.not_nil!.acro_form.not_nil!
+      field = acro_form.get_field("RadioButton")
+      field.should_not be_nil
+      radio_button = field.not_nil!.as(Pdfbox::Pdmodel::Interactive::Form::PDRadioButton)
+      radio_button.value = "c"
+
+      # the old index-based behavior is invalid
+      radio_button.value_as_string.should_not eq("2")
+      radio_button.widgets[2].cos_object.get_name_as_string(Pdfbox::Cos::Name.new("AS")).should_not eq("2")
+
+      # the option name is the value
       radio_button.value_as_string.should eq("c")
       radio_button.widgets[2].cos_object.get_name_as_string(Pdfbox::Cos::Name.new("AS")).should eq("c")
     ensure

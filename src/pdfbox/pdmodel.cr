@@ -33,6 +33,7 @@ module Pdfbox::Pdmodel
     @trailer : Cos::Dictionary?
     @encryption : Encryption::PDEncryption?
     @document_id : Bytes?
+    @document_information : DocumentInformation? = nil
     @document_id_seed : Int64? = nil
     @current_access_permission : Encryption::AccessPermission?
     @all_security_to_be_removed : Bool = false
@@ -442,6 +443,14 @@ module Pdfbox::Pdmodel
       @trailer
     end
 
+    # Replaces the trailer and links the document state to it, like the
+    # constructor does (Java COSDocument#setTrailer).
+    def trailer=(new_trailer : Cos::Dictionary) : Cos::Dictionary
+      @trailer = new_trailer
+      new_trailer.update_state.origin_document_state = @document_state
+      new_trailer
+    end
+
     # Get the encryption dictionary, if present
     def encryption : Encryption::PDEncryption?
       @encryption
@@ -566,32 +575,38 @@ module Pdfbox::Pdmodel
       end
     end
 
-    # Get document information (metadata)
-    def document_information : DocumentInformation?
-      trailer = @trailer
-      return unless trailer
-
-      # Get /Info dictionary from trailer
-      info_dict = trailer[Cos::Name.new("Info")]
-      return unless info_dict
-
-      # Handle indirect references
-      if info_dict.is_a?(Cos::Object)
-        info_dict = info_dict.object
+    # Get document information (metadata): never nil (Java
+    # PDDocument#getDocumentInformation). When the trailer has no /Info, an empty
+    # dictionary is added to it, and the wrapper is cached like Java's
+    # `documentInformation` field.
+    def document_information : DocumentInformation
+      if cached = @document_information
+        return cached
       end
 
-      return unless info_dict.is_a?(Cos::Dictionary)
+      info_key = Cos::Name.new("Info")
+      trailer = @trailer || (self.trailer = Cos::Dictionary.new)
+      info_value = trailer[info_key]
+      info_value = info_value.object if info_value.is_a?(Cos::Object)
+      unless info_value.is_a?(Cos::Dictionary)
+        info_value = Cos::Dictionary.new
+        trailer[info_key] = info_value
+      end
 
-      DocumentInformation.new(info_dict)
+      @document_information = DocumentInformation.new(info_value)
     end
 
-    def get_document_information : DocumentInformation? # ameba:disable Naming/AccessorMethodName
+    def get_document_information : DocumentInformation # ameba:disable Naming/AccessorMethodName
       document_information
     end
 
+    # Sets the document information. Unlike Java (which would throw on null), a
+    # nil argument removes /Info from the trailer; the next access recreates an
+    # empty dictionary like Java's accessor does.
     def set_document_information(info : DocumentInformation?) : Nil # ameba:disable Naming/AccessorMethodName
-      trailer = (@trailer ||= Cos::Dictionary.new)
+      @document_information = info
       key = Cos::Name.new("Info")
+      trailer = @trailer || (self.trailer = Cos::Dictionary.new)
       if info
         trailer[key] = info.cos_object
       else

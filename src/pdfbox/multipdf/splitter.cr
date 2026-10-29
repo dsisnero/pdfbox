@@ -116,16 +116,17 @@ module Pdfbox::Multipdf
       document = Pdmodel::Document.create
       document.set_version(source.version)
 
-      if info = source.document_information
-        dest_info = Cos::Dictionary.new
-        info.cos_object.entries.each do |key, value|
-          next if key == Cos::Name::TYPE
-          raw = value.is_a?(Cos::Object) ? value.object : value
-          next if raw.is_a?(Cos::Dictionary)
-          dest_info[key] = value
-        end
-        document.set_document_information(Pdmodel::DocumentInformation.new(dest_info))
+      # Java Splitter#createNewDocument copies the /Info entries; the accessor is
+      # never nil, so an empty source metadata dictionary simply copies nothing.
+      info = source.document_information
+      dest_info = Cos::Dictionary.new
+      info.cos_object.entries.each do |key, value|
+        next if key == Cos::Name::TYPE
+        raw = value.is_a?(Cos::Object) ? value.object : value
+        next if raw.is_a?(Cos::Dictionary)
+        dest_info[key] = value
       end
+      document.set_document_information(Pdmodel::DocumentInformation.new(dest_info))
 
       dest_catalog = document.document_catalog
       source_catalog = source.document_catalog

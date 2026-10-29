@@ -18,7 +18,7 @@ module Tools
     end
 
     def start_document(document : Pdfbox::Pdmodel::Document) : Nil
-      title = document.document_information.try(&.title) || ""
+      title = document.document_information.title || ""
       html = String.build(INITIAL_PDF_TO_HTML_BYTES) do |io|
         io << "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"\n"
         io << "\"http://www.w3.org/TR/html4/loose.dtd\">\n"

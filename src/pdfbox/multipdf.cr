@@ -1478,17 +1478,17 @@ module Pdfbox::Multipdf
     # destination (deep-cloning values). Java PDFMergerUtility#mergeInto used by
     # appendDocument for the /Info dictionary.
     private def merge_information(destination : Pdmodel::Document, source : Pdmodel::Document, cloner : PDFCloneUtility) : Nil
+      # Both accessors are never nil (Java getDocumentInformation), so merging
+      # into a document without /Info simply fills the lazily created one.
       src_info = source.document_information
-      return unless src_info
-
       dest_info = destination.document_information
-      dest_dict = dest_info.try(&.cos_object) || Cos::Dictionary.new
+      dest_dict = dest_info.cos_object
       src_info.cos_object.entries.each do |key, value|
         next if dest_dict.has_key?(key)
         cloned = cloner.clone_for_new_document(value)
         dest_dict[key] = cloned || Cos::Null::INSTANCE
       end
-      destination.set_document_information(Pdmodel::DocumentInformation.new(dest_dict)) unless dest_info
+      destination.set_document_information(dest_info)
     end
 
     # Copy the source /OpenAction into the destination if it has none. Java
