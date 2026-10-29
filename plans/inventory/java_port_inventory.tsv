@@ -5373,7 +5373,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::met
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.setLineWidth	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.setMarkedContentPoint	method	ported	src/pdfbox/pdmodel/page_content_stream.cr	ported: PDPageContentStream text state + MC points + comment
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.setMarkedContentPointWithProperties	method	ported	src/pdfbox/pdmodel/page_content_stream.cr	ported: PDPageContentStream text state + MC points + comment
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.setMaximumFractionDigits	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.setMaximumFractionDigits	method	ported	src/pdfbox/pdmodel/page_content_stream.cr;src/pdfbox/pdmodel/pdappearance_content_stream.cr;src/pdfbox/pdmodel/pdform_content_stream.cr	ported: #maximum_fraction_digits= (public here, protected in Java; default 4)
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.setMiterLimit	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.setNonStrokingColor	method	ported	src/pdfbox/pdmodel/page_content_stream.cr	ported: PDPageContentStream PDColor setters
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.setNonStrokingColorSpaceStack	method	ported	src/pdfbox/pdmodel/page_content_stream.cr	ported: PDPageContentStream PDColor setters
@@ -5393,7 +5393,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::met
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.writeAffineTransform	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.writeBytes	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.writeLine	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.writeOperand	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.writeOperand	method	ported	src/pdfbox/pdmodel/page_content_stream.cr;src/pdfbox/pdmodel/pdappearance_content_stream.cr;src/pdfbox/pdmodel/pdform_content_stream.cr	ported: #format_number + #write_operands (float via NumberFormatUtil, 4 digits by default)
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.writeOperator	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAppearanceContentStream.java::class::PDAppearanceContentStream	class	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAppearanceContentStream.java::method::PDAppearanceContentStream.drawShape	method	ported	src	auto-generated
@@ -11132,9 +11132,9 @@ pdfbox/src/main/java/org/apache/pdfbox/util/NumberFormatUtil.java::class::Number
 pdfbox/src/main/java/org/apache/pdfbox/util/NumberFormatUtil.java::const::MAX_FRACTION_DIGITS	const	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/util/NumberFormatUtil.java::const::POWER_OF_TENS	const	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/util/NumberFormatUtil.java::const::POWER_OF_TENS_INT	const	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/util/NumberFormatUtil.java::method::NumberFormatUtil.formatFloatFast	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/util/NumberFormatUtil.java::method::NumberFormatUtil.formatPositiveNumber	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/util/NumberFormatUtil.java::method::NumberFormatUtil.getExponent	method	ported	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/util/NumberFormatUtil.java::method::NumberFormatUtil.formatFloatFast	method	ported	src/pdfbox/util.cr	ported: NumberFormatUtil.format_float_fast
+pdfbox/src/main/java/org/apache/pdfbox/util/NumberFormatUtil.java::method::NumberFormatUtil.formatPositiveNumber	method	ported	src/pdfbox/util.cr	ported inline in format_float_fast
+pdfbox/src/main/java/org/apache/pdfbox/util/NumberFormatUtil.java::method::NumberFormatUtil.getExponent	method	ported	src/pdfbox/util.cr	ported inline in format_float_fast
 pdfbox/src/main/java/org/apache/pdfbox/util/StringUtil.java::class::StringUtil	class	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/util/StringUtil.java::const::PATTERN_SPACE	const	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/util/StringUtil.java::method::StringUtil.splitOnSpace	method	ported	src	auto-generated

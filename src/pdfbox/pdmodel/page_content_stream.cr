@@ -833,20 +833,36 @@ module Pdfbox::Pdmodel
       subdict.as(Cos::Dictionary)
     end
 
+    # The maximum number of fraction digits written for real operands (Java
+    # PDAbstractContentStream's `formatDecimal`, which defaults to 4).
+    @maximum_fraction_digits = 4
+
+    def maximum_fraction_digits : Int32
+      @maximum_fraction_digits
+    end
+
+    def maximum_fraction_digits=(digits : Int) : Int32
+      @maximum_fraction_digits = digits.to_i32
+    end
+
+    # Java PDAbstractContentStream#writeOperand: the fast formatter is asked for
+    # `maximum_fraction_digits` digits and falls back to a plain format (Java's
+    # DecimalFormat) when it refuses the value.
     private def format_number(value : Number) : String
       case value
       when Int
         value.to_s
       when Float32, Float64
         float_value = value.to_f32
+        digits = @maximum_fraction_digits
         rounded = float_value.round
         return rounded.to_i.to_s if rounded == float_value
 
         ascii_buffer = Bytes.new(32, 0_u8)
-        used = Pdfbox::Util::NumberFormatUtil.format_float_fast(float_value, 5, ascii_buffer)
+        used = Pdfbox::Util::NumberFormatUtil.format_float_fast(float_value, digits, ascii_buffer)
         return String.new(ascii_buffer[0, used]) if used >= 0
 
-        formatted = "%.5f" % float_value
+        formatted = "%.#{digits}f" % float_value
         formatted = formatted.gsub(/\.?0+$/, "")
         formatted == "-0" ? "0" : formatted
       else

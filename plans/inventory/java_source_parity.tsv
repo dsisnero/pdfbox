@@ -5373,7 +5373,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::met
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.setLineWidth	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.setMarkedContentPoint	ported	src/pdfbox/pdmodel/page_content_stream.cr	ported: PDPageContentStream text state + MC points + comment
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.setMarkedContentPointWithProperties	ported	src/pdfbox/pdmodel/page_content_stream.cr	ported: PDPageContentStream text state + MC points + comment
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.setMaximumFractionDigits	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.setMaximumFractionDigits	ported	src/pdfbox/pdmodel/page_content_stream.cr;src/pdfbox/pdmodel/pdappearance_content_stream.cr;src/pdfbox/pdmodel/pdform_content_stream.cr	ported: #maximum_fraction_digits= (public here, protected in Java; default 4)
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.setMiterLimit	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.setNonStrokingColor	ported	src/pdfbox/pdmodel/page_content_stream.cr	ported: PDPageContentStream PDColor setters
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.setNonStrokingColorSpaceStack	ported	src/pdfbox/pdmodel/page_content_stream.cr	ported: PDPageContentStream PDColor setters
@@ -5393,7 +5393,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::met
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.writeAffineTransform	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.writeBytes	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.writeLine	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.writeOperand	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.writeOperand	ported	src/pdfbox/pdmodel/page_content_stream.cr;src/pdfbox/pdmodel/pdappearance_content_stream.cr;src/pdfbox/pdmodel/pdform_content_stream.cr	ported: #format_number + #write_operands (float via NumberFormatUtil, 4 digits by default)
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAbstractContentStream.java::method::PDAbstractContentStream.writeOperator	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAppearanceContentStream.java::class::PDAppearanceContentStream	ported	src/pdfbox/pdmodel/pdappearance_content_stream.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDAppearanceContentStream.java::method::PDAppearanceContentStream.drawShape	ported	src/pdfbox/pdmodel/pdappearance_content_stream.cr	reconciled: method present
@@ -11132,9 +11132,9 @@ pdfbox/src/main/java/org/apache/pdfbox/util/NumberFormatUtil.java::class::Number
 pdfbox/src/main/java/org/apache/pdfbox/util/NumberFormatUtil.java::const::MAX_FRACTION_DIGITS	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/util/NumberFormatUtil.java::const::POWER_OF_TENS	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/util/NumberFormatUtil.java::const::POWER_OF_TENS_INT	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/util/NumberFormatUtil.java::method::NumberFormatUtil.formatFloatFast	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/util/NumberFormatUtil.java::method::NumberFormatUtil.formatPositiveNumber	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/util/NumberFormatUtil.java::method::NumberFormatUtil.getExponent	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/util/NumberFormatUtil.java::method::NumberFormatUtil.formatFloatFast	ported	src/pdfbox/util.cr	ported: NumberFormatUtil.format_float_fast
+pdfbox/src/main/java/org/apache/pdfbox/util/NumberFormatUtil.java::method::NumberFormatUtil.formatPositiveNumber	ported	src/pdfbox/util.cr	ported inline in format_float_fast
+pdfbox/src/main/java/org/apache/pdfbox/util/NumberFormatUtil.java::method::NumberFormatUtil.getExponent	ported	src/pdfbox/util.cr	ported inline in format_float_fast
 pdfbox/src/main/java/org/apache/pdfbox/util/StringUtil.java::class::StringUtil	ported	src/pdfbox/util.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/util/StringUtil.java::const::PATTERN_SPACE	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/util/StringUtil.java::method::StringUtil.splitOnSpace	missing	-	baseline

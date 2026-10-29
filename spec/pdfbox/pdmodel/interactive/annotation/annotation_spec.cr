@@ -406,7 +406,7 @@ describe "text markup appearance handlers" do
     resources.xobject_names.map(&.value).should eq(["Fm1"])
 
     content = String.new(appearance.content_stream.create_input_stream.getb_to_end)
-    content.should contain("0.5 0 0 0.27778 10 10 cm")
+    content.should contain("0.5 0 0 0.2778 10 10 cm")
     content.should contain("/Fm1 Do")
 
     form1_stream = resources.cos_object.not_nil!
@@ -723,7 +723,7 @@ describe Pdfbox::Pdmodel::Interactive::Annotation::PDAnnotationFileAttachment do
 
     content = String.new(appearance.content_stream.create_input_stream.getb_to_end)
     content.should contain("0.022 0 0 -0.022 0 18 cm")
-    content.should contain("586.46997 178.97 cm")
+    content.should contain("586.47 178.97 cm")
     content.should contain("m")
     content.should contain("c")
     content.should contain("f")
@@ -740,7 +740,7 @@ describe Pdfbox::Pdmodel::Interactive::Annotation::PDAnnotationFileAttachment do
     content = String.new(file_attachment.normal_appearance_stream.not_nil!.content_stream.create_input_stream.getb_to_end)
     content.should contain("q")
     content.should contain("Q")
-    content.should contain("209.25999 128.32001 cm")
+    content.should contain("209.26 128.32 cm")
     content.should contain("382.22 79.91 cm")
     content.should contain("f")
   end
@@ -1095,7 +1095,7 @@ describe Pdfbox::Pdmodel::Interactive::Annotation::PDAnnotationText do
     content.should contain("1 j")
     content.should contain("0 J")
     content.should contain("0.59 w")
-    content.should contain("0.70711 0.70711 -0.70711 0.70711 8 -4 cm")
+    content.should contain("0.7071 0.7071 -0.7071 0.7071 8 -4 cm")
     content.should contain("8.5 19 l")
     content.should contain("b")
   end
