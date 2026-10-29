@@ -10414,7 +10414,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDNonTerminalFie
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDNonTerminalField.java::method::PDNonTerminalField.getFieldFlags	ported	src/pdfbox/pdmodel/interactive/form/pdnon_terminal_field.cr	ported
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDNonTerminalField.java::method::PDNonTerminalField.getFieldType	ported	src/pdfbox/pdmodel/interactive/form/pdnon_terminal_field.cr	ported
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDNonTerminalField.java::method::PDNonTerminalField.getValue	ported	src/pdfbox/pdmodel/interactive/form/pdnon_terminal_field.cr	ported
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDNonTerminalField.java::method::PDNonTerminalField.getValueAsString	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDNonTerminalField.java::method::PDNonTerminalField.getValueAsString	ported	src/pdfbox/pdmodel/interactive/form/pdnon_terminal_field.cr	ported: PDField#value_as_string (local /V, COSBase#toString forms)
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDNonTerminalField.java::method::PDNonTerminalField.getWidgets	ported	src/pdfbox/pdmodel/interactive/form/pdnon_terminal_field.cr	ported
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDNonTerminalField.java::method::PDNonTerminalField.importFDF	ported	src/pdfbox/pdmodel/interactive/form/fdf_support.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/interactive/form/PDNonTerminalField.java::method::PDNonTerminalField.setChildren	ported	src/pdfbox/pdmodel/interactive/form/pdnon_terminal_field.cr	ported

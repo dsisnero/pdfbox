@@ -10,8 +10,22 @@ module Pdfbox::Pdmodel::Interactive::Form
       @dictionary.get_name_as_string(Cos::Name.new("FT")) || ""
     end
 
+    # The local /V value, without inheritance (Java PDNonTerminalField
+    # #getValueAsString returns `fieldValue.toString()`).
+    #
+    # PDFBox's `COSBase#toString()` implementations are debug forms
+    # (`COSString{...}`, `COSName{...}`, `COSInt{...}`, `COSFloat{...}`), and they
+    # are reproduced here rather than simplified to the bare value.
     def value_as_string : String
-      ""
+      value = @dictionary.get_dictionary_object(Cos::Name.new("V"))
+      return "" unless value
+
+      case value
+      when Cos::String  then "COSString{#{value.value}}"
+      when Cos::Name    then "COSName{#{value.value}}"
+      when Cos::Integer then "COSInt{#{value.value}}"
+      else                   value.to_s
+      end
     end
 
     def value=(value : String)
