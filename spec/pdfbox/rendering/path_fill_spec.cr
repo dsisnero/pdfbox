@@ -34,10 +34,11 @@ private def render_content(content : String, &)
   end
 end
 
-# The raster starts as transparent black, so a pixel carries ink once something
-# has been painted onto it.
+# A page render is cleared to opaque white (Java `ImageType.RGB`), so a pixel
+# carries content when it differs from that paper colour.
 private def inked?(image : CrImage::RGBA, x : Int32, y : Int32) : Bool
-  image[x, y].to_rgba8.a > 0
+  c = image[x, y].to_rgba8
+  c.a > 0 && (c.r < 250 || c.g < 250 || c.b < 250)
 end
 
 private def rgba(image : CrImage::RGBA, x : Int32, y : Int32) : Tuple(UInt8, UInt8, UInt8, UInt8)
@@ -89,7 +90,9 @@ describe "PageDrawer path filling" do
     # A horizontal line has zero height, so there is no area to fill.
     render_content("0 0 m 100 0 l f") do |image|
       any_ink = false
-      image.each_pixel { |_, _, color| any_ink = true if color.to_rgba8.a > 0 }
+      image.each_pixel do |x, y, _|
+        any_ink = true if inked?(image, x, y)
+      end
       any_ink.should be_false
     end
   end

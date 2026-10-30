@@ -10734,8 +10734,8 @@ pdfbox/src/main/java/org/apache/pdfbox/rendering/GroupGraphics.java::method::Gro
 pdfbox/src/main/java/org/apache/pdfbox/rendering/GroupGraphics.java::method::GroupGraphics.shear	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/rendering/GroupGraphics.java::method::GroupGraphics.transform	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/rendering/GroupGraphics.java::method::GroupGraphics.translate	method	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/rendering/ImageType.java::enum::ImageType	enum	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/rendering/ImageType.java::method::toBufferedImageType	method	missing	-	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/rendering/ImageType.java::enum::ImageType	enum	ported	src/pdfbox/rendering/image_type.cr	ported: rendering/ImageType (BINARY/GRAY rejected at render time)
+pdfbox/src/main/java/org/apache/pdfbox/rendering/ImageType.java::method::toBufferedImageType	method	missing	-	not ported: AWT BufferedImage types; opaque_background? covers the behaviour
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PDFRenderer.java::class::PDFRenderer	class	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PDFRenderer.java::method::PDFRenderer.createDefaultRenderingHints	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PDFRenderer.java::method::PDFRenderer.createPageDrawer	method	partial	src	auto-generated
@@ -10748,8 +10748,8 @@ pdfbox/src/main/java/org/apache/pdfbox/rendering/PDFRenderer.java::method::PDFRe
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PDFRenderer.java::method::PDFRenderer.isBitonal	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PDFRenderer.java::method::PDFRenderer.isGroupEnabled	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PDFRenderer.java::method::PDFRenderer.isSubsamplingAllowed	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/rendering/PDFRenderer.java::method::PDFRenderer.renderImage	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/rendering/PDFRenderer.java::method::PDFRenderer.renderImageWithDPI	method	ported	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/rendering/PDFRenderer.java::method::PDFRenderer.renderImage	method	partial	src/pdfbox/rendering/pdf_renderer.cr	partial: page/scale/ImageType overloads; rotation overload not ported
+pdfbox/src/main/java/org/apache/pdfbox/rendering/PDFRenderer.java::method::PDFRenderer.renderImageWithDPI	method	ported	src/pdfbox/rendering/pdf_renderer.cr	ported: dpi + ImageType, clears white for RGB
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PDFRenderer.java::method::PDFRenderer.renderPageToGraphics	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PDFRenderer.java::method::PDFRenderer.setAnnotationsFilter	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PDFRenderer.java::method::PDFRenderer.setDefaultDestination	method	ported	src/pdfbox/rendering/pdf_renderer.cr	ported: PDFRenderer destination/threshold

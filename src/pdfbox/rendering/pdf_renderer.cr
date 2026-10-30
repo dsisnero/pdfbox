@@ -6,6 +6,9 @@ require "../contentstream/pdf_graphics_stream_engine"
 
 module Pdfbox::Rendering
   class PDFRenderer
+    # Java clears RGB renders to `Color.WHITE`.
+    WHITE = CrImage::Color::RGBA.new(255_u8, 255_u8, 255_u8, 255_u8).as(CrImage::Color::Color)
+
     getter document : Pdfbox::Pdmodel::Document
     property? subsampling_allowed : Bool = false
 
@@ -35,12 +38,24 @@ module Pdfbox::Rendering
       @image_downscaling_optimization_threshold = value
     end
 
+    # Returns the page as an image at 72 dpi (Java `renderImage(int)`, which
+    # defaults to `ImageType.RGB` and therefore a white page).
     def render_image(page_index : Int32) : CrImage::RGBA
-      render_image_with_dpi(page_index, 72)
+      render_image(page_index, 1.0, ImageType::RGB)
     end
 
-    def render_image_with_dpi(page_index : Int32, dpi : Number) : CrImage::RGBA
-      scale = dpi.to_f / 72.0
+    # Java `renderImage(int, float, ImageType)`. The page image is cleared to
+    # opaque white for the types without alpha and left transparent for ARGB
+    # (Java `PDFRenderer#renderImage`). GRAY and BINARY need AWT's grey and
+    # 1-bit rasters, which the port does not model.
+    def render_image(page_index : Int32, scale : Float64,
+                     image_type : ImageType = ImageType::RGB) : CrImage::RGBA
+      case image_type
+      when ImageType::GRAY, ImageType::BINARY
+        raise Pdfbox::Cos::UnsupportedOperationError.new(
+          "#{image_type} rendering is not ported; use ImageType::RGB or ImageType::ARGB")
+      end
+
       page = @document.get_page(page_index)
       raise "Page #{page_index} not found" unless page
 
@@ -48,12 +63,20 @@ module Pdfbox::Rendering
       width = (box.width * scale).round.to_i32
       height = (box.height * scale).round.to_i32
 
-      drawer = PageDrawer.new(page, width, height, scale)
+      background = image_type.opaque_background? ? WHITE : nil
+      drawer = PageDrawer.new(page, width, height, scale, background)
       drawer.render
     end
 
-    def render_image_png(page_index : Int32, dpi : Number = 72) : Bytes
-      img = render_image_with_dpi(page_index, dpi)
+    # Java `renderImageWithDPI(int, float[, ImageType])`.
+    def render_image_with_dpi(page_index : Int32, dpi : Number,
+                              image_type : ImageType = ImageType::RGB) : CrImage::RGBA
+      render_image(page_index, dpi.to_f / 72.0, image_type)
+    end
+
+    def render_image_png(page_index : Int32, dpi : Number = 72,
+                         image_type : ImageType = ImageType::RGB) : Bytes
+      img = render_image_with_dpi(page_index, dpi, image_type)
       io = ::IO::Memory.new
       CrImage::PNG.write(io, img)
       io.to_slice
@@ -77,18 +100,28 @@ module Pdfbox::Rendering
     private record FillEdge, x1 : Float64, y1 : Float64, x2 : Float64, y2 : Float64
 
     def initialize(page : Pdfbox::Pdmodel::Page, @width : Int32, @height : Int32,
-                   @scale : Float64 = 1.0)
+                   @scale : Float64 = 1.0, @background : CrImage::Color::Color? = nil)
       super(page)
       @image = nil
     end
 
     def render : CrImage::RGBA
-      img = CrImage.rgba(@width, @height)
+      img = clear_image
       @image = img
       page = @page || raise "Page not set on PageDrawer"
       process_page(page)
       process_annotations
       img
+    end
+
+    # Clears the raster like Java does before drawing a page: white paper for
+    # images without alpha, transparent otherwise.
+    private def clear_image : CrImage::RGBA
+      if background = @background
+        CrImage.rgba(@width, @height, background)
+      else
+        CrImage.rgba(@width, @height)
+      end
     end
 
     private def process_annotations : Nil

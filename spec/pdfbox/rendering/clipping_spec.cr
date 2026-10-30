@@ -35,8 +35,11 @@ private def render_clipped(content : String, &)
   end
 end
 
+# A page render is cleared to opaque white (Java `ImageType.RGB`), so a pixel
+# carries content when it differs from that paper colour.
 private def inked?(image : CrImage::RGBA, x : Int32, y : Int32) : Bool
-  image[x, y].to_rgba8.a > 0
+  c = image[x, y].to_rgba8
+  c.a > 0 && (c.r < 250 || c.g < 250 || c.b < 250)
 end
 
 describe "PageDrawer clipping" do

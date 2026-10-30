@@ -34,8 +34,11 @@ private def render_stroke(content : String, &)
   end
 end
 
+# A page render is cleared to opaque white (Java `ImageType.RGB`), so a pixel
+# carries content when it differs from that paper colour.
 private def inked?(image : CrImage::RGBA, x : Int32, y : Int32) : Bool
-  image[x, y].to_rgba8.a > 0
+  c = image[x, y].to_rgba8
+  c.a > 0 && (c.r < 250 || c.g < 250 || c.b < 250)
 end
 
 describe "PageDrawer stroke geometry" do
@@ -118,7 +121,9 @@ describe "PageDrawer stroke geometry" do
     # PDFBOX-5168: Adobe shows such a line as invisible.
     render_stroke("10 w [0 0] 0 d 0 100 m 200 100 l S") do |image|
       any_ink = false
-      image.each_pixel { |_, _, color| any_ink = true if color.to_rgba8.a > 0 }
+      image.each_pixel do |x, y, _|
+        any_ink = true if inked?(image, x, y)
+      end
       any_ink.should be_false
     end
   end

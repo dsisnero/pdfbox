@@ -10734,8 +10734,8 @@ pdfbox/src/main/java/org/apache/pdfbox/rendering/GroupGraphics.java::method::Gro
 pdfbox/src/main/java/org/apache/pdfbox/rendering/GroupGraphics.java::method::GroupGraphics.shear	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/rendering/GroupGraphics.java::method::GroupGraphics.transform	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/rendering/GroupGraphics.java::method::GroupGraphics.translate	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/rendering/ImageType.java::enum::ImageType	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/rendering/ImageType.java::method::toBufferedImageType	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/rendering/ImageType.java::enum::ImageType	ported	src/pdfbox/rendering/image_type.cr	ported: rendering/ImageType (BINARY/GRAY rejected at render time)
+pdfbox/src/main/java/org/apache/pdfbox/rendering/ImageType.java::method::toBufferedImageType	missing	-	not ported: AWT BufferedImage types; opaque_background? covers the behaviour
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PDFRenderer.java::class::PDFRenderer	ported	src/pdfbox/rendering/pdf_renderer.cr	reconciled: class present
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PDFRenderer.java::method::PDFRenderer.createDefaultRenderingHints	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PDFRenderer.java::method::PDFRenderer.createPageDrawer	missing	-	baseline
@@ -10748,8 +10748,8 @@ pdfbox/src/main/java/org/apache/pdfbox/rendering/PDFRenderer.java::method::PDFRe
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PDFRenderer.java::method::PDFRenderer.isBitonal	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PDFRenderer.java::method::PDFRenderer.isGroupEnabled	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PDFRenderer.java::method::PDFRenderer.isSubsamplingAllowed	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/rendering/PDFRenderer.java::method::PDFRenderer.renderImage	ported	src/pdfbox/rendering/pdf_renderer.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/rendering/PDFRenderer.java::method::PDFRenderer.renderImageWithDPI	ported	src/pdfbox/rendering/pdf_renderer.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/rendering/PDFRenderer.java::method::PDFRenderer.renderImage	partial	src/pdfbox/rendering/pdf_renderer.cr	partial: page/scale/ImageType overloads; rotation overload not ported
+pdfbox/src/main/java/org/apache/pdfbox/rendering/PDFRenderer.java::method::PDFRenderer.renderImageWithDPI	ported	src/pdfbox/rendering/pdf_renderer.cr	ported: dpi + ImageType, clears white for RGB
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PDFRenderer.java::method::PDFRenderer.renderPageToGraphics	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PDFRenderer.java::method::PDFRenderer.setAnnotationsFilter	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PDFRenderer.java::method::PDFRenderer.setDefaultDestination	ported	src/pdfbox/rendering/pdf_renderer.cr	ported: PDFRenderer destination/threshold
