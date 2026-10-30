@@ -10769,21 +10769,21 @@ pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDr
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.applySoftMaskToPaint	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.applyTransferFunction	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.beginMarkedContentSequence	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.beginText	ported	src/pdfbox/rendering/pdf_renderer.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.beginTextClip	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.beginText	ported	src/pdfbox/rendering/pdf_renderer.cr	ported: starts the text clip buffer
+pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.beginTextClip	ported	src/pdfbox/rendering/pdf_renderer.cr	ported: inline in begin_text
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.clampColor	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.clip	ported	src/pdfbox/rendering/pdf_renderer.cr	ported: builds the graphics state clip path
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.closePath	ported	src/pdfbox/rendering/pdf_renderer.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.curveTo	ported	src/pdfbox/rendering/pdf_renderer.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.drawBufferedImage	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.drawGlyph	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.drawGlyph	partial	src/pdfbox/rendering/pdf_renderer.cr	partial: fill/stroke/clip per mode; no width-stretch for substituted fonts
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.drawImage	ported	src/pdfbox/rendering/pdf_renderer.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.drawPage	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.drawTilingPattern	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.endMarkedContentSequence	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.endPath	ported	src/pdfbox/rendering/pdf_renderer.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.endText	ported	src/pdfbox/rendering/pdf_renderer.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.endTextClip	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.endText	ported	src/pdfbox/rendering/pdf_renderer.cr	ported: applies the buffered text clip
+pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.endTextClip	ported	src/pdfbox/rendering/pdf_renderer.cr	ported: inline in end_text
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.fillAndStrokePath	ported	src/pdfbox/rendering/pdf_renderer.cr	ported: fill then stroke
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.fillPath	ported	src/pdfbox/rendering/pdf_renderer.cr	ported: scanline area fill with winding rule
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.getAnnotationFilter	missing	-	baseline

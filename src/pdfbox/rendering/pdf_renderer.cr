@@ -92,6 +92,9 @@ module Pdfbox::Rendering
     @scale : Float64
     @path : Array(PathSegment) = [] of PathSegment
     @pt : Tuple(Float32, Float32)? = nil
+    # Glyph outlines buffered for the text clipping modes (Java
+    # PageDrawer#textClippings); they are united at `end_text`.
+    @text_clippings : Array(Array(Tuple(Float64, Float64))) = [] of Array(Tuple(Float64, Float64))
 
     private record PathSegment, kind : Symbol, x1 : Float64 = 0.0, y1 : Float64 = 0.0,
       x2 : Float64 = 0.0, y2 : Float64 = 0.0, x3 : Float64 = 0.0, y3 : Float64 = 0.0
@@ -294,9 +297,18 @@ module Pdfbox::Rendering
     # --- Text rendering ---
 
     def begin_text : Nil
+      # Java PageDrawer#beginTextClip: buffer the glyph clippings of this object
+      @text_clippings.clear
     end
 
     def end_text : Nil
+      # Java PageDrawer#endTextClip: the buffered glyphs form one clipping area
+      if graphics_state.text_state.rendering_mode.clips_text? && !@text_clippings.empty?
+        path = Pdfbox::Util::ClipPath.new(
+          @text_clippings.dup, Pdfbox::Util::ClipPath::WIND_NON_ZERO)
+        graphics_state.intersect_clipping_path(path)
+      end
+      @text_clippings.clear
     end
 
     # Draws a glyph: the outline of the character code through the font's vector
@@ -316,14 +328,15 @@ module Pdfbox::Rendering
       path = vector_font.get_normalized_path(code)
       return if path.nil? || path.empty?
 
-      # glyph space -> text space -> device space
+      # glyph space -> text space -> device space (Java PageDrawer#showFontGlyph
+      # concatenates the font matrix onto the text rendering matrix, i.e. the
+      # point is transformed by the font matrix first; with this row-vector Matrix
+      # that is font_matrix * text_rendering_matrix).
       font_matrix = font.font_matrix
-      matrix = text_rendering_matrix.multiply(
-        Pdfbox::Util::Matrix.new(
-          font_matrix.a, font_matrix.b, font_matrix.c,
-          font_matrix.d, font_matrix.e, font_matrix.f
-        )
-      )
+      matrix = Pdfbox::Util::Matrix.new(
+        font_matrix.a, font_matrix.b, font_matrix.c,
+        font_matrix.d, font_matrix.e, font_matrix.f
+      ).multiply(text_rendering_matrix)
 
       path.each_command do |cmd_sym, args|
         case cmd_sym
@@ -345,6 +358,10 @@ module Pdfbox::Rendering
       end
 
       rendering_mode = graphics_state.text_state.rendering_mode
+      # Java PageDrawer#drawGlyph buffers the outline for the clipping modes
+      if rendering_mode.clips_text?
+        each_subpath { |points| @text_clippings << points }
+      end
       if rendering_mode.fills_text?
         fill_path(0)
       end

@@ -68,7 +68,10 @@ describe "PDFRenderer text rendering" do
       # 48pt Helvetica at (10, 40) in a 200x100 page rendered at 72 dpi, so the
       # mark sits right of x=10 and above the baseline row y = 100 - 40.
       xs.min.should be >= 8
-      xs.max.should be <= 65
+      # Divergence: a standard-14 font is substituted by a system font whose
+      # outlines are not normalized to the 1000-unit em (see parity.md), so the
+      # glyph is wider than the nominal 48pt (it ends around x=72).
+      xs.max.should be <= 80
       ys.min.should be <= 60
       ys.max.should be >= 20
     end

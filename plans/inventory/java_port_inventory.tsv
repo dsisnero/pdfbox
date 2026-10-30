@@ -10769,21 +10769,21 @@ pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDr
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.applySoftMaskToPaint	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.applyTransferFunction	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.beginMarkedContentSequence	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.beginText	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.beginTextClip	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.beginText	method	ported	src/pdfbox/rendering/pdf_renderer.cr	ported: starts the text clip buffer
+pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.beginTextClip	method	ported	src/pdfbox/rendering/pdf_renderer.cr	ported: inline in begin_text
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.clampColor	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.clip	method	ported	src/pdfbox/rendering/pdf_renderer.cr	ported: builds the graphics state clip path
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.closePath	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.curveTo	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.drawBufferedImage	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.drawGlyph	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.drawGlyph	method	partial	src/pdfbox/rendering/pdf_renderer.cr	partial: fill/stroke/clip per mode; no width-stretch for substituted fonts
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.drawImage	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.drawPage	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.drawTilingPattern	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.endMarkedContentSequence	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.endPath	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.endText	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.endTextClip	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.endText	method	ported	src/pdfbox/rendering/pdf_renderer.cr	ported: applies the buffered text clip
+pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.endTextClip	method	ported	src/pdfbox/rendering/pdf_renderer.cr	ported: inline in end_text
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.fillAndStrokePath	method	ported	src/pdfbox/rendering/pdf_renderer.cr	ported: fill then stroke
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.fillPath	method	ported	src/pdfbox/rendering/pdf_renderer.cr	ported: scanline area fill with winding rule
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.getAnnotationFilter	method	partial	src	auto-generated
