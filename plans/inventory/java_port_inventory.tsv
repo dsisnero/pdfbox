@@ -10784,8 +10784,8 @@ pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDr
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.endPath	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.endText	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.endTextClip	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.fillAndStrokePath	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.fillPath	method	ported	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.fillAndStrokePath	method	ported	src/pdfbox/rendering/pdf_renderer.cr	ported: fill then stroke
+pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.fillPath	method	ported	src/pdfbox/rendering/pdf_renderer.cr	ported: scanline area fill with winding rule
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.getAnnotationFilter	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.getCurrentPoint	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.getDashArray	method	partial	src	auto-generated

@@ -73,6 +73,9 @@ module Pdfbox::Rendering
     private record PathSegment, kind : Symbol, x1 : Float64 = 0.0, y1 : Float64 = 0.0,
       x2 : Float64 = 0.0, y2 : Float64 = 0.0, x3 : Float64 = 0.0, y3 : Float64 = 0.0
 
+    # A device-space edge of a filled path, kept for the scanline fill.
+    private record FillEdge, x1 : Float64, y1 : Float64, x2 : Float64, y2 : Float64
+
     def initialize(page : Pdfbox::Pdmodel::Page, @width : Int32, @height : Int32,
                    @scale : Float64 = 1.0)
       super(page)
@@ -184,13 +187,13 @@ module Pdfbox::Rendering
     end
 
     def fill_path(winding_rule : Int32) : Nil
-      draw_filled(fill_color)
+      fill_area(fill_color, winding_rule)
       @path.clear
       @pt = nil
     end
 
     def fill_and_stroke_path(winding_rule : Int32) : Nil
-      draw_filled(fill_color)
+      fill_area(fill_color, winding_rule)
       draw_lines(stroke_color)
       @path.clear
       @pt = nil
@@ -355,8 +358,112 @@ module Pdfbox::Rendering
       end
     end
 
-    private def draw_filled(color : CrImage::Color::Color?) : Nil
-      draw_lines(color) # simplified: fill using line drawing
+    # Java PageDrawer#fillPath hands the device-space path to
+    # `Graphics2D#fill(Shape)` with the path's winding rule
+    # (`linePath.setWindingRule`). The port rasterizes the same area with a
+    # scanline fill: for every device row it collects the edge crossings, orders
+    # them by x and paints the spans that the winding rule reports as inside.
+    private def fill_area(color : CrImage::Color::Color?, winding_rule : Int32) : Nil
+      return unless c = color
+      return unless img = @image
+
+      edges, min_y, max_y = collect_fill_edges
+      # a path with no area (e.g. a single horizontal line) paints nothing
+      return if edges.empty? || max_y < min_y
+
+      first_row = {min_y.floor.to_i32, 0}.max
+      last_row = {max_y.ceil.to_i32, @height - 1}.min
+      return if last_row < first_row
+
+      even_odd = winding_rule == 1
+      crossings = [] of Tuple(Float64, Int32)
+
+      (first_row..last_row).each do |row|
+        y = row + 0.5
+        crossings.clear
+        edges.each do |edge|
+          # half-open test so a vertex shared by two edges counts once
+          next unless (edge.y1 <= y && edge.y2 > y) || (edge.y2 <= y && edge.y1 > y)
+          t = (y - edge.y1) / (edge.y2 - edge.y1)
+          crossings << {edge.x1 + t * (edge.x2 - edge.x1), edge.y2 > edge.y1 ? 1 : -1}
+        end
+        next if crossings.empty?
+        crossings.sort_by! { |(x, _)| x }
+
+        winding = 0
+        span_start = nil.as(Float64?)
+        crossings.each do |x, direction|
+          inside_before = inside?(winding, even_odd)
+          winding += even_odd ? 1 : direction
+          inside_after = inside?(winding, even_odd)
+          if !inside_before && inside_after
+            span_start = x
+          elsif inside_before && !inside_after
+            if start = span_start
+              fill_span(img, start, x, row, c)
+              span_start = nil
+            end
+          end
+        end
+      end
+    end
+
+    private def inside?(winding : Int32, even_odd : Bool) : Bool
+      even_odd ? winding.odd? : winding != 0
+    end
+
+    private def fill_span(img : CrImage::RGBA, x_start : Float64, x_end : Float64,
+                          py : Int32, c : CrImage::Color::Color) : Nil
+      return if x_end <= x_start
+      # pixel centres are at x + 0.5
+      first = {(x_start - 0.5).ceil.to_i32, 0}.max
+      last = {(x_end - 0.5).ceil.to_i32 - 1, @width - 1}.min
+      return if last < first
+      (first..last).each { |col| img[col, py] = c }
+    end
+
+    # Collects the path as device-space edges for a scanline fill. Every subpath
+    # is implicitly closed, like Java's `Graphics2D#fill`. Returns the edges and
+    # their combined y range.
+    private def collect_fill_edges : Tuple(Array(FillEdge), Float64, Float64)
+      edges = [] of FillEdge
+      px = 0.0
+      py = 0.0
+      start_x = 0.0
+      start_y = 0.0
+
+      @path.each do |seg|
+        case seg.kind
+        when :move
+          # close the subpath we were in, if any
+          edges << FillEdge.new(px, py, start_x, start_y) if px != start_x || py != start_y
+          start_x, start_y = seg.x1, seg.y1
+          px, py = seg.x1, seg.y1
+        when :line
+          edges << FillEdge.new(px, py, seg.x1, seg.y1)
+          px, py = seg.x1, seg.y1
+        when :curve
+          bezier_segments(px, py, seg.x1, seg.y1, seg.x2, seg.y2, seg.x3, seg.y3).each do |bx1, by1, bx2, by2|
+            edges << FillEdge.new(bx1, by1, bx2, by2)
+          end
+          px, py = seg.x3, seg.y3
+        when :close
+          edges << FillEdge.new(px, py, start_x, start_y)
+          px, py = start_x, start_y
+        end
+      end
+      # an unclosed final subpath is closed implicitly
+      edges << FillEdge.new(px, py, start_x, start_y) if px != start_x || py != start_y
+
+      min_y = Float64::MAX
+      max_y = -Float64::MAX
+      edges.each do |edge|
+        low = edge.y1 < edge.y2 ? edge.y1 : edge.y2
+        high = edge.y1 < edge.y2 ? edge.y2 : edge.y1
+        min_y = low if low < min_y
+        max_y = high if high > max_y
+      end
+      {edges, min_y, max_y}
     end
 
     private def collect_segments : Array(Tuple(Int32, Int32, Int32, Int32))

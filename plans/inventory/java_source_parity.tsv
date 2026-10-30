@@ -10784,8 +10784,8 @@ pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDr
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.endPath	ported	src/pdfbox/rendering/pdf_renderer.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.endText	ported	src/pdfbox/rendering/pdf_renderer.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.endTextClip	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.fillAndStrokePath	ported	src/pdfbox/rendering/pdf_renderer.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.fillPath	ported	src/pdfbox/rendering/pdf_renderer.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.fillAndStrokePath	ported	src/pdfbox/rendering/pdf_renderer.cr	ported: fill then stroke
+pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.fillPath	ported	src/pdfbox/rendering/pdf_renderer.cr	ported: scanline area fill with winding rule
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.getAnnotationFilter	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.getCurrentPoint	ported	src/pdfbox/rendering/pdf_renderer.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.getDashArray	missing	-	baseline
