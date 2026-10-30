@@ -8821,8 +8821,8 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.ja
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.clone	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.getAlphaConstant	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.getBlendMode	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.getCurrentClippingPath	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.getCurrentClippingPaths	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.getCurrentClippingPath	method	ported	src/pdfbox/rendering/pdf_renderer.cr	ported: PageDrawer#clipped_at? tests the intersection
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.getCurrentClippingPaths	method	ported	src/pdfbox/pdmodel/graphics/state/pd_graphics_state.cr	ported: clipping_paths getter
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.getCurrentTransformationMatrix	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.getFlatness	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.getLineCap	method	partial	src	auto-generated
@@ -8845,7 +8845,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.ja
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.getTextMatrix	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.getTextState	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.getTransfer	method	ported	src/pdfbox/pdmodel/graphics/state/pd_graphics_state.cr	ported: PDGraphicsState transfer
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.intersectClippingPath	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.intersectClippingPath	method	ported	src/pdfbox/pdmodel/graphics/state/pd_graphics_state.cr	ported: lazy-copied clipping path list
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.isAlphaSource	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.isNonStrokingOverprint	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.isOverprint	method	partial	src	auto-generated
@@ -10763,7 +10763,7 @@ pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::const::IS_LINU
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::const::IS_WINDOWS	const	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::const::LOG	const	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::const::OS_NAME	const	missing	-	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.adjustClip	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.adjustClip	method	missing	-	not ported: downscale workaround (PDFBOX-4583) has no rasterizer equivalent
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.adjustImage	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.appendRectangle	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.applySoftMaskToPaint	method	partial	src	auto-generated
@@ -10772,7 +10772,7 @@ pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDr
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.beginText	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.beginTextClip	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.clampColor	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.clip	method	ported	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.clip	method	ported	src/pdfbox/rendering/pdf_renderer.cr	ported: builds the graphics state clip path
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.closePath	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.curveTo	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.drawBufferedImage	method	partial	src	auto-generated
@@ -10813,7 +10813,7 @@ pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDr
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.lineTo	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.moveTo	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.setAnnotationFilter	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.setClip	method	ported	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.setClip	method	partial	src/pdfbox/rendering/pdf_renderer.cr	partial: clip tested per painted pixel (no Graphics2D clip transfer)
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.setRenderingHints	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.shadingFill	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.shouldSkipAnnotation	method	partial	src	auto-generated
@@ -10824,7 +10824,7 @@ pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDr
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.showTransparencyGroupOnGraphics	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.showType3Glyph	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.strokePath	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.transferClip	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.transferClip	method	partial	src/pdfbox/rendering/pdf_renderer.cr	partial: clip tested per painted pixel (no Graphics2D clip transfer)
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::TransparencyGroup.create2ByteGrayAlphaImage	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::TransparencyGroup.getBBox	method	missing	-	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::TransparencyGroup.getBounds	method	missing	-	auto-generated

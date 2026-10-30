@@ -489,6 +489,54 @@ module Pdfbox::Util
     end
   end
 
+  # A clipping path: the subpaths of one `W`/`W*` in device space plus the winding
+  # rule that decides whether a point is inside.
+  #
+  # The AWT-free stand-in for the `Path2D`/`Area` pair the Java renderer keeps as
+  # clipping paths (Java `PDGraphicsState#getCurrentClippingPaths`). Every subpath
+  # belongs to the same path, so a nested rectangle is a hole under
+  # `WIND_EVEN_ODD` — and a second `W` intersects, matching `graphics.clip(area)`.
+  struct ClipPath
+    WIND_NON_ZERO = 0
+    WIND_EVEN_ODD = 1
+
+    getter subpaths : Array(Array(Tuple(Float64, Float64)))
+    getter winding_rule : Int32
+
+    def initialize(@subpaths : Array(Array(Tuple(Float64, Float64))),
+                   @winding_rule : Int32 = WIND_NON_ZERO)
+    end
+
+    def empty? : Bool
+      @subpaths.all? { |subpath| subpath.size < 3 }
+    end
+
+    # Whether the point lies inside the path under its winding rule. The test
+    # casts a ray to +x and inspects the edges it crosses, across all subpaths
+    # (half-open in y so a vertex shared by two edges counts once).
+    def contains?(x : Float64, y : Float64) : Bool
+      winding = 0
+      crossings = 0
+      @subpaths.each do |subpath|
+        next if subpath.size < 3
+        subpath.each_with_index do |(x1, y1), i|
+          x2, y2 = subpath[(i + 1) % subpath.size]
+          next if y1 == y2
+          next unless (y1 <= y && y2 > y) || (y2 <= y && y1 > y)
+          cross_x = x1 + ((y - y1) / (y2 - y1)) * (x2 - x1)
+          next if cross_x <= x
+          crossings += 1
+          winding += y2 > y1 ? 1 : -1
+        end
+      end
+      @winding_rule == WIND_EVEN_ODD ? crossings.odd? : winding != 0
+    end
+
+    def clone : ClipPath
+      ClipPath.new(@subpaths.map(&.dup), @winding_rule)
+    end
+  end
+
   # Ported from Apache PDFBox DateConverter (targeted parity subset).
   module DateConverter
     MINUTES_PER_HOUR    = 60_i64

@@ -8821,8 +8821,8 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.ja
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.clone	ported	src/pdfbox/pdmodel/graphics/state/pd_graphics_state.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.getAlphaConstant	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.getBlendMode	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.getCurrentClippingPath	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.getCurrentClippingPaths	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.getCurrentClippingPath	ported	src/pdfbox/rendering/pdf_renderer.cr	ported: PageDrawer#clipped_at? tests the intersection
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.getCurrentClippingPaths	ported	src/pdfbox/pdmodel/graphics/state/pd_graphics_state.cr	ported: clipping_paths getter
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.getCurrentTransformationMatrix	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.getFlatness	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.getLineCap	missing	-	baseline
@@ -8845,7 +8845,7 @@ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.ja
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.getTextMatrix	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.getTextState	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.getTransfer	ported	src/pdfbox/pdmodel/graphics/state/pd_graphics_state.cr	ported: PDGraphicsState transfer
-pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.intersectClippingPath	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.intersectClippingPath	ported	src/pdfbox/pdmodel/graphics/state/pd_graphics_state.cr	ported: lazy-copied clipping path list
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.isAlphaSource	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.isNonStrokingOverprint	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/state/PDGraphicsState.java::method::PDGraphicsState.isOverprint	missing	-	baseline
@@ -10763,7 +10763,7 @@ pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::const::IS_LINU
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::const::IS_WINDOWS	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::const::LOG	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::const::OS_NAME	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.adjustClip	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.adjustClip	missing	-	not ported: downscale workaround (PDFBOX-4583) has no rasterizer equivalent
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.adjustImage	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.appendRectangle	ported	src/pdfbox/rendering/pdf_renderer.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.applySoftMaskToPaint	missing	-	baseline
@@ -10772,7 +10772,7 @@ pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDr
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.beginText	ported	src/pdfbox/rendering/pdf_renderer.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.beginTextClip	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.clampColor	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.clip	ported	src/pdfbox/rendering/pdf_renderer.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.clip	ported	src/pdfbox/rendering/pdf_renderer.cr	ported: builds the graphics state clip path
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.closePath	ported	src/pdfbox/rendering/pdf_renderer.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.curveTo	ported	src/pdfbox/rendering/pdf_renderer.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.drawBufferedImage	missing	-	baseline
@@ -10813,7 +10813,7 @@ pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDr
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.lineTo	ported	src/pdfbox/rendering/pdf_renderer.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.moveTo	ported	src/pdfbox/rendering/pdf_renderer.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.setAnnotationFilter	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.setClip	ported	src/pdfbox/rendering/pdf_renderer.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.setClip	partial	src/pdfbox/rendering/pdf_renderer.cr	partial: clip tested per painted pixel (no Graphics2D clip transfer)
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.setRenderingHints	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.shadingFill	ported	src/pdfbox/rendering/pdf_renderer.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.shouldSkipAnnotation	missing	-	baseline
@@ -10824,7 +10824,7 @@ pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDr
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.showTransparencyGroupOnGraphics	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.showType3Glyph	ported	src/pdfbox/rendering/pdf_renderer.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.strokePath	ported	src/pdfbox/rendering/pdf_renderer.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.transferClip	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.transferClip	partial	src/pdfbox/rendering/pdf_renderer.cr	partial: clip tested per painted pixel (no Graphics2D clip transfer)
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::TransparencyGroup.create2ByteGrayAlphaImage	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::TransparencyGroup.getBBox	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::TransparencyGroup.getBounds	missing	-	baseline

@@ -200,6 +200,12 @@ module Pdfbox::Rendering
     end
 
     def clip(winding_rule : Int32) : Nil
+      # Java PageDrawer#clip: hand the current path to the graphics state's
+      # clipping paths. The path is not consumed here — the following painting
+      # operator or `n` clears it.
+      path = collect_clip_path(winding_rule)
+      return unless path
+      graphics_state.intersect_clipping_path(path)
     end
 
     def shading_fill(shading_name : String) : Nil
@@ -222,6 +228,7 @@ module Pdfbox::Rendering
         w = pd_image.width
         h = pd_image.height
         bpp = data.size // (w * h) > 0 ? data.size // (w * h) : 3
+        clip_paths = graphics_state.clipping_paths
 
         h.times do |row|
           w.times do |col|
@@ -229,7 +236,8 @@ module Pdfbox::Rendering
             break if si + 2 >= data.size
             px = ox + col
             py = oy + h - 1 - row
-            if px >= 0 && px < @width && py >= 0 && py < @height
+            if px >= 0 && px < @width && py >= 0 && py < @height &&
+               clipped_at?(clip_paths, px + 0.5, py + 0.5)
               c = CrImage::Color::RGBA.new(
                 bpp >= 3 ? data[si] : data[si],
                 bpp >= 3 ? data[si + 1] : data[si],
@@ -353,8 +361,9 @@ module Pdfbox::Rendering
       return unless c = color
       return unless img = @image
       segments = collect_segments
+      clip_paths = graphics_state.clipping_paths
       segments.each do |seg|
-        bresenham(img, seg[0], seg[1], seg[2], seg[3], c)
+        bresenham(img, seg[0], seg[1], seg[2], seg[3], c, clip_paths)
       end
     end
 
@@ -376,6 +385,7 @@ module Pdfbox::Rendering
       return if last_row < first_row
 
       even_odd = winding_rule == 1
+      clip_paths = graphics_state.clipping_paths
       crossings = [] of Tuple(Float64, Int32)
 
       (first_row..last_row).each do |row|
@@ -400,7 +410,7 @@ module Pdfbox::Rendering
             span_start = x
           elsif inside_before && !inside_after
             if start = span_start
-              fill_span(img, start, x, row, c)
+              fill_span(img, start, x, row, c, clip_paths)
               span_start = nil
             end
           end
@@ -412,21 +422,70 @@ module Pdfbox::Rendering
       even_odd ? winding.odd? : winding != 0
     end
 
+    # Whether a device-space point survives the current clipping paths (Java
+    # `PageDrawer#setClip` + `Area#contains`). Written as a plain loop so the
+    # per-pixel test does not allocate a closure on unclipped pages.
+    private def clipped_at?(clip_paths : Array(Pdfbox::Util::ClipPath),
+                            x : Float64, y : Float64) : Bool
+      return true if clip_paths.empty?
+      clip_paths.each do |clip_path|
+        return false unless clip_path.contains?(x, y)
+      end
+      true
+    end
+
     private def fill_span(img : CrImage::RGBA, x_start : Float64, x_end : Float64,
-                          py : Int32, c : CrImage::Color::Color) : Nil
+                          py : Int32, c : CrImage::Color::Color,
+                          clip_paths : Array(Pdfbox::Util::ClipPath)) : Nil
       return if x_end <= x_start
       # pixel centres are at x + 0.5
       first = {(x_start - 0.5).ceil.to_i32, 0}.max
       last = {(x_end - 0.5).ceil.to_i32 - 1, @width - 1}.min
       return if last < first
-      (first..last).each { |col| img[col, py] = c }
+      if clip_paths.empty?
+        (first..last).each { |col| img[col, py] = c }
+      else
+        (first..last).each do |col|
+          img[col, py] = c if clipped_at?(clip_paths, col + 0.5, py + 0.5)
+        end
+      end
     end
 
-    # Collects the path as device-space edges for a scanline fill. Every subpath
-    # is implicitly closed, like Java's `Graphics2D#fill`. Returns the edges and
-    # their combined y range.
+    # Collects the path as device-space edges for a scanline fill, plus their
+    # combined y range. Every subpath is implicitly closed, like Java's
+    # `Graphics2D#fill`.
     private def collect_fill_edges : Tuple(Array(FillEdge), Float64, Float64)
       edges = [] of FillEdge
+      min_y = Float64::MAX
+      max_y = -Float64::MAX
+
+      each_subpath do |points|
+        points.each_with_index do |(x1, y1), i|
+          x2, y2 = points[(i + 1) % points.size]
+          edges << FillEdge.new(x1, y1, x2, y2)
+          low = y1 < y2 ? y1 : y2
+          high = y1 < y2 ? y2 : y1
+          min_y = low if low < min_y
+          max_y = high if high > max_y
+        end
+      end
+      {edges, min_y, max_y}
+    end
+
+    # Collects the path as one device-space clipping path (nil when the path has
+    # no area, like Java's empty-path check before intersecting).
+    private def collect_clip_path(winding_rule : Int32) : Pdfbox::Util::ClipPath?
+      subpaths = [] of Array(Tuple(Float64, Float64))
+      each_subpath { |points| subpaths << points }
+      return nil if subpaths.empty?
+      path = Pdfbox::Util::ClipPath.new(subpaths, winding_rule)
+      path.empty? ? nil : path
+    end
+
+    # Walks the path and yields each subpath as its point list, implicitly
+    # closing open subpaths (Java `Graphics2D#fill` and `Area` both do).
+    private def each_subpath(&) : Nil
+      points = [] of Tuple(Float64, Float64)
       px = 0.0
       py = 0.0
       start_x = 0.0
@@ -435,35 +494,26 @@ module Pdfbox::Rendering
       @path.each do |seg|
         case seg.kind
         when :move
-          # close the subpath we were in, if any
-          edges << FillEdge.new(px, py, start_x, start_y) if px != start_x || py != start_y
+          yield points if points.size >= 3
+          points = [{seg.x1, seg.y1}]
           start_x, start_y = seg.x1, seg.y1
           px, py = seg.x1, seg.y1
         when :line
-          edges << FillEdge.new(px, py, seg.x1, seg.y1)
+          points << {seg.x1, seg.y1}
           px, py = seg.x1, seg.y1
         when :curve
-          bezier_segments(px, py, seg.x1, seg.y1, seg.x2, seg.y2, seg.x3, seg.y3).each do |bx1, by1, bx2, by2|
-            edges << FillEdge.new(bx1, by1, bx2, by2)
+          bezier_segments(px, py, seg.x1, seg.y1, seg.x2, seg.y2, seg.x3, seg.y3).each do |_, _, bx2, by2|
+            points << {bx2, by2}
           end
           px, py = seg.x3, seg.y3
         when :close
-          edges << FillEdge.new(px, py, start_x, start_y)
+          yield points if points.size >= 3
+          # a closed subpath starts over at its start point
+          points = [{start_x, start_y}]
           px, py = start_x, start_y
         end
       end
-      # an unclosed final subpath is closed implicitly
-      edges << FillEdge.new(px, py, start_x, start_y) if px != start_x || py != start_y
-
-      min_y = Float64::MAX
-      max_y = -Float64::MAX
-      edges.each do |edge|
-        low = edge.y1 < edge.y2 ? edge.y1 : edge.y2
-        high = edge.y1 < edge.y2 ? edge.y2 : edge.y1
-        min_y = low if low < min_y
-        max_y = high if high > max_y
-      end
-      {edges, min_y, max_y}
+      yield points if points.size >= 3
     end
 
     private def collect_segments : Array(Tuple(Int32, Int32, Int32, Int32))
@@ -512,13 +562,18 @@ module Pdfbox::Rendering
     end
 
     private def bresenham(img : CrImage::RGBA, x1 : Int32, y1 : Int32,
-                          x2 : Int32, y2 : Int32, c : CrImage::Color::Color) : Nil
+                          x2 : Int32, y2 : Int32, c : CrImage::Color::Color,
+                          clip_paths : Array(Pdfbox::Util::ClipPath)) : Nil
       dx = (x2 - x1).abs; dy = -(y2 - y1).abs
       sx = x1 < x2 ? 1 : -1; sy = y1 < y2 ? 1 : -1
       err = dx + dy
       cx, cy = x1, y1
+      clipped = !clip_paths.empty?
       loop do
-        img[cx, cy] = c if cx >= 0 && cx < @width && cy >= 0 && cy < @height
+        if cx >= 0 && cx < @width && cy >= 0 && cy < @height &&
+           (!clipped || clipped_at?(clip_paths, cx + 0.5, cy + 0.5))
+          img[cx, cy] = c
+        end
         break if cx == x2 && cy == y2
         e2 = 2 * err
         if e2 >= dy

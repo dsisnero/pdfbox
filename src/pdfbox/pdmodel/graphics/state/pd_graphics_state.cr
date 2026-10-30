@@ -33,6 +33,27 @@ module Pdfbox::Pdmodel::Graphics::State
     property flatness : Float64
     property smoothness : Float64
 
+    # The clipping paths added by `W`/`W*` (Java
+    # PDGraphicsState#getCurrentClippingPaths). Painting is limited to their
+    # intersection, and an empty list means "not clipped", which matches Java's
+    # default page-sized clip because the renderer already bounds the raster.
+    property clipping_paths : Array(Pdfbox::Util::ClipPath) = [] of Pdfbox::Util::ClipPath
+
+    # Java PDGraphicsState#isClippingPathDirty: the list is copied lazily so that
+    # cloning a state (every `q`) does not copy the paths until one side grows its
+    # own (Java `intersectClippingPath`).
+    property clipping_paths_dirty : Bool = false # ameba:disable Naming/QueryBoolMethods
+
+    # Java PDGraphicsState#intersectClippingPath: add a path to the clipping
+    # paths, copying the shared list first.
+    def intersect_clipping_path(path : Pdfbox::Util::ClipPath) : Nil
+      unless @clipping_paths_dirty
+        @clipping_paths = @clipping_paths.dup
+        @clipping_paths_dirty = true
+      end
+      @clipping_paths << path
+    end
+
     # Constructor with a given page size to initialize the clipping path.
     def initialize(page : Pdfbox::Pdmodel::Common::PDRectangle)
       @current_transformation_matrix = Pdfbox::Util::Matrix.new
@@ -120,6 +141,10 @@ module Pdfbox::Pdmodel::Graphics::State
       copy.flatness = @flatness
       copy.smoothness = @smoothness
       copy.transfer = @transfer
+      # Java shares the clipping-path list with the clone and re-arms the lazy
+      # copy, so a `q` does not duplicate the paths.
+      copy.clipping_paths = @clipping_paths
+      copy.clipping_paths_dirty = false
       copy
     end
 
