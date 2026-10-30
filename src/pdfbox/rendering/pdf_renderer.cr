@@ -181,7 +181,7 @@ module Pdfbox::Rendering
     # --- Drawing ---
 
     def stroke_path : Nil
-      draw_lines(stroke_color)
+      stroke_area(stroke_color)
       @path.clear
       @pt = nil
     end
@@ -194,7 +194,7 @@ module Pdfbox::Rendering
 
     def fill_and_stroke_path(winding_rule : Int32) : Nil
       fill_area(fill_color, winding_rule)
-      draw_lines(stroke_color)
+      stroke_area(stroke_color)
       @path.clear
       @pt = nil
     end
@@ -357,26 +357,22 @@ module Pdfbox::Rendering
       end
     end
 
-    private def draw_lines(color : CrImage::Color::Color?) : Nil
-      return unless c = color
-      return unless img = @image
-      segments = collect_segments
-      clip_paths = graphics_state.clipping_paths
-      segments.each do |seg|
-        bresenham(img, seg[0], seg[1], seg[2], seg[3], c, clip_paths)
-      end
-    end
-
     # Java PageDrawer#fillPath hands the device-space path to
     # `Graphics2D#fill(Shape)` with the path's winding rule
     # (`linePath.setWindingRule`). The port rasterizes the same area with a
     # scanline fill: for every device row it collects the edge crossings, orders
     # them by x and paints the spans that the winding rule reports as inside.
     private def fill_area(color : CrImage::Color::Color?, winding_rule : Int32) : Nil
+      edges, min_y, max_y = collect_fill_edges
+      scan_fill(edges, min_y, max_y, winding_rule, color)
+    end
+
+    # Paints the area enclosed by *edges* with the given winding rule. Pixel
+    # centres are sampled at the integer device coordinates.
+    private def scan_fill(edges : Array(FillEdge), min_y : Float64, max_y : Float64,
+                          winding_rule : Int32, color : CrImage::Color::Color?) : Nil
       return unless c = color
       return unless img = @image
-
-      edges, min_y, max_y = collect_fill_edges
       # a path with no area (e.g. a single horizontal line) paints nothing
       return if edges.empty? || max_y < min_y
 
@@ -389,7 +385,7 @@ module Pdfbox::Rendering
       crossings = [] of Tuple(Float64, Int32)
 
       (first_row..last_row).each do |row|
-        y = row + 0.5
+        y = row.to_f64
         crossings.clear
         edges.each do |edge|
           # half-open test so a vertex shared by two edges counts once
@@ -438,15 +434,15 @@ module Pdfbox::Rendering
                           py : Int32, c : CrImage::Color::Color,
                           clip_paths : Array(Pdfbox::Util::ClipPath)) : Nil
       return if x_end <= x_start
-      # pixel centres are at x + 0.5
-      first = {(x_start - 0.5).ceil.to_i32, 0}.max
-      last = {(x_end - 0.5).ceil.to_i32 - 1, @width - 1}.min
+      # pixel centres are sampled at the integer device coordinates
+      first = {x_start.ceil.to_i32, 0}.max
+      last = {x_end.ceil.to_i32 - 1, @width - 1}.min
       return if last < first
       if clip_paths.empty?
         (first..last).each { |col| img[col, py] = c }
       else
         (first..last).each do |col|
-          img[col, py] = c if clipped_at?(clip_paths, col + 0.5, py + 0.5)
+          img[col, py] = c if clipped_at?(clip_paths, col.to_f64, py.to_f64)
         end
       end
     end
@@ -516,33 +512,387 @@ module Pdfbox::Rendering
       yield points if points.size >= 3
     end
 
-    private def collect_segments : Array(Tuple(Int32, Int32, Int32, Int32))
-      result = [] of Tuple(Int32, Int32, Int32, Int32)
-      fx = 0.0; fy = 0.0; px = 0.0; py = 0.0; started = false
-      @path.each do |seg|
-        case seg.kind
-        when :move
-          fx = seg.x1; fy = seg.y1; px = seg.x1; py = seg.y1; started = true
-        when :line
-          if started
-            result << {px.to_i32, py.to_i32, seg.x1.to_i32, seg.y1.to_i32}
-            px = seg.x1; py = seg.y1
-          end
-        when :curve
-          if started
-            bezier_segments(px, py, seg.x1, seg.y1, seg.x2, seg.y2, seg.x3, seg.y3).each do |bx1, by1, bx2, by2|
-              result << {bx1.to_i32, by1.to_i32, bx2.to_i32, by2.to_i32}
-            end
-            px = seg.x3; py = seg.y3
-          end
-        when :close
-          if started
-            result << {px.to_i32, py.to_i32, fx.to_i32, fy.to_i32}
-            px = fx; py = fy
+    # --- Stroking ---
+
+    # The stroke parameters Java builds a `BasicStroke` from
+    # (PageDrawer#getStroke): width and dash lengths are already scaled to device
+    # space, the cap/join are clamped to their legal 0..2 range, an out-of-range
+    # miter limit falls back to 10, and `visible` is false for an all-zero dash
+    # array (PDFBOX-5168 paints those invisible).
+    private record StrokeStyle, width : Float64, cap : Int32, join : Int32,
+      miter_limit : Float64, dashes : Array(Float64), phase : Float64, visible : Bool
+
+    private def stroke_style : StrokeStyle
+      state = graphics_state
+      # Adobe Reader's minimum line width (Java PageDrawer#getStroke)
+      width = transform_width(state.line_width.to_f64)
+      width = 0.25 if width < 0.25
+
+      cap = state.line_cap.clamp(0, 2)
+      join = state.line_join.clamp(0, 2)
+      miter_limit = state.miter_limit.to_f64
+      miter_limit = 10.0 if miter_limit < 1.0
+
+      pattern = state.line_dash_pattern
+      raw_dashes = pattern.dash_array
+      dashes = [] of Float64
+      visible = true
+      unless raw_dashes.empty?
+        if raw_dashes.any? { |dash| !dash.finite? }
+          # Java getDashArray: unusable values fall back to a solid line
+        else
+          visible = false if raw_dashes.all? { |dash| dash == 0.0 }
+          # Java getDashArray scales every element and clamps it to a small
+          # minimum; it picks 0.2 when xformScalingFactorX < 0.5 (a JVM workaround),
+          # the port always uses the 0.062 minimum.
+          dashes = raw_dashes.map { |dash| Math.max(transform_width(dash), 0.062) }
+        end
+      end
+      phase = transform_width(pattern.phase.to_f64)
+
+      StrokeStyle.new(width, cap, join, miter_limit, dashes, phase, visible)
+    end
+
+    # Java PageDrawer#strokePath: `Graphics2D#draw(linePath)` with the current
+    # stroke. The port builds the stroke outline as polygons and scanline-fills
+    # them, which is what `draw` does for an unantialiased rasterizer.
+    private def stroke_area(color : CrImage::Color::Color?) : Nil
+      return unless color
+      return unless @image
+
+      style = stroke_style
+      return unless style.visible
+
+      half_width = style.width / 2.0
+      polygons = [] of Array(Tuple(Float64, Float64))
+      each_polyline do |points, closed|
+        if style.dashes.empty?
+          stroke_run(points, closed, style, half_width, polygons)
+        else
+          dash_runs(points, closed, style).each do |run|
+            stroke_run(run, false, style, half_width, polygons)
           end
         end
       end
-      result
+      return if polygons.empty?
+
+      edges = [] of FillEdge
+      min_y = Float64::MAX
+      max_y = -Float64::MAX
+      polygons.each do |polygon|
+        polygon.each_with_index do |(x1, y1), i|
+          x2, y2 = polygon[(i + 1) % polygon.size]
+          edges << FillEdge.new(x1, y1, x2, y2)
+          low = y1 < y2 ? y1 : y2
+          high = y1 < y2 ? y2 : y1
+          min_y = low if low < min_y
+          max_y = high if high > max_y
+        end
+      end
+      scan_fill(edges, min_y, max_y, Pdfbox::Util::ClipPath::WIND_NON_ZERO, color)
+    end
+
+    # Strokes one polyline: a quad per segment, a join at every interior vertex
+    # and a cap at the free ends of an open subpath.
+    private def stroke_run(points : Array(Tuple(Float64, Float64)), closed : Bool,
+                           style : StrokeStyle, half_width : Float64,
+                           polygons : Array(Array(Tuple(Float64, Float64)))) : Nil
+      return if points.size < 2
+
+      segments = closed ? points.size : points.size - 1
+      segments.times do |i|
+        x0, y0 = points[i]
+        x1, y1 = points[(i + 1) % points.size]
+        emit_segment(x0, y0, x1, y1, half_width, polygons)
+      end
+
+      # joins only happen between two segments: every vertex of a closed path,
+      # the interior vertices of an open one
+      if closed
+        points.size.times do |i|
+          prev = points[(i - 1 + points.size) % points.size]
+          upcoming = points[(i + 1) % points.size]
+          emit_join(prev, points[i], upcoming, style, half_width, polygons)
+        end
+      else
+        (1...(points.size - 1)).each do |i|
+          emit_join(points[i - 1], points[i], points[i + 1], style, half_width, polygons)
+        end
+      end
+
+      return if closed
+      emit_cap(points[0], points[1], true, style, half_width, polygons)
+      emit_cap(points[-1], points[-2], false, style, half_width, polygons)
+    end
+
+    private def emit_segment(x0 : Float64, y0 : Float64, x1 : Float64, y1 : Float64,
+                             half_width : Float64,
+                             polygons : Array(Array(Tuple(Float64, Float64)))) : Nil
+      dx = x1 - x0
+      dy = y1 - y0
+      length = Math.sqrt(dx * dx + dy * dy)
+      return if length < 1e-9
+      nx = -dy / length * half_width
+      ny = dx / length * half_width
+      emit_polygon([
+        {x0 + nx, y0 + ny},
+        {x1 + nx, y1 + ny},
+        {x1 - nx, y1 - ny},
+        {x0 - nx, y0 - ny},
+      ], polygons)
+    end
+
+    # Java `BasicStroke` join: 0 = miter (falling back to bevel past the miter
+    # limit), 1 = round, 2 = bevel.
+    private def emit_join(prev : Tuple(Float64, Float64), vertex : Tuple(Float64, Float64),
+                          upcoming : Tuple(Float64, Float64), style : StrokeStyle,
+                          half_width : Float64,
+                          polygons : Array(Array(Tuple(Float64, Float64)))) : Nil
+      direction0 = unit_vector(prev, vertex)
+      return unless direction0
+      direction1 = unit_vector(vertex, upcoming)
+      return unless direction1
+      d0x, d0y = direction0
+      d1x, d1y = direction1
+
+      cross = d0x * d1y - d0y * d1x
+      return if cross.abs < 1e-9 # collinear, the segment quads already meet
+
+      # the outer side of the turn
+      if cross > 0
+        n0x = d0y * half_width
+        n0y = -d0x * half_width
+        n1x = d1y * half_width
+        n1y = -d1x * half_width
+      else
+        n0x = -d0y * half_width
+        n0y = d0x * half_width
+        n1x = -d1y * half_width
+        n1y = d1x * half_width
+      end
+
+      vx, vy = vertex
+      case style.join
+      when 1 # round
+        from = Math.atan2(n0y, n0x)
+        to = Math.atan2(n1y, n1x)
+        emit_arc(vx, vy, half_width, from, sweep_towards(from, to, cross > 0), polygons)
+      when 2 # bevel
+        emit_polygon([{vx, vy}, {vx + n0x, vy + n0y}, {vx + n1x, vy + n1y}], polygons)
+      else # miter
+        miter = miter_point(vx, vy, d0x, d0y, n0x, n0y, d1x, d1y, n1x, n1y)
+        if miter && distance(vx, vy, miter[0], miter[1]) <= style.miter_limit * half_width
+          emit_polygon([
+            {vx, vy},
+            {vx + n0x, vy + n0y},
+            miter,
+            {vx + n1x, vy + n1y},
+          ], polygons)
+        else
+          emit_polygon([{vx, vy}, {vx + n0x, vy + n0y}, {vx + n1x, vy + n1y}], polygons)
+        end
+      end
+    end
+
+    # Intersection of the two offset edges, i.e. the outer miter tip.
+    private def miter_point(vx : Float64, vy : Float64,
+                            d0x : Float64, d0y : Float64, n0x : Float64, n0y : Float64,
+                            d1x : Float64, d1y : Float64, n1x : Float64, n1y : Float64) : Tuple(Float64, Float64)?
+      ax = vx + n0x
+      ay = vy + n0y
+      bx = vx + n1x
+      by = vy + n1y
+      denominator = d0x * d1y - d0y * d1x
+      return nil if denominator.abs < 1e-9
+      t = ((bx - ax) * d1y - (by - ay) * d1x) / denominator
+      {ax + d0x * t, ay + d0y * t}
+    end
+
+    # Java `BasicStroke` cap: 0 = butt (nothing), 1 = round, 2 = square.
+    private def emit_cap(end_point : Tuple(Float64, Float64), neighbour : Tuple(Float64, Float64),
+                         at_start : Bool, style : StrokeStyle, half_width : Float64,
+                         polygons : Array(Array(Tuple(Float64, Float64)))) : Nil
+      return if style.cap == 0
+      direction = unit_vector(end_point, neighbour)
+      return unless direction
+      dx, dy = direction
+      # point away from the line
+      dx = -dx if at_start
+      dy = -dy if at_start
+
+      ex, ey = end_point
+      case style.cap
+      when 1 # round
+        from = Math.atan2(-dy * half_width, -dx * half_width)
+        # sweep through the outward direction (-d, pointing away from the line)
+        outward = Math.atan2(dy, dx)
+        delta = (outward - from) % (2 * Math::PI)
+        sweep = delta < Math::PI ? Math::PI : -Math::PI
+        emit_arc(ex, ey, half_width, from, sweep, polygons)
+      else # square
+        nx = -dy * half_width
+        ny = dx * half_width
+        emit_polygon([
+          {ex + nx, ey + ny},
+          {ex + nx + dx * half_width, ey + ny + dy * half_width},
+          {ex - nx + dx * half_width, ey - ny + dy * half_width},
+          {ex - nx, ey - ny},
+        ], polygons)
+      end
+    end
+
+    # Emits a fan polygon approximating an arc of `sweep` radians (signed)
+    # starting at angle `from` around the centre.
+    private def emit_arc(cx : Float64, cy : Float64, radius : Float64,
+                         from : Float64, sweep : Float64,
+                         polygons : Array(Array(Tuple(Float64, Float64)))) : Nil
+      steps = 8
+      points = [{cx, cy}] of Tuple(Float64, Float64)
+      (0..steps).each do |step|
+        angle = from + sweep * step / steps
+        points << {cx + radius * Math.cos(angle), cy + radius * Math.sin(angle)}
+      end
+      emit_polygon(points, polygons)
+    end
+
+    # Adds a polygon, oriented consistently so the non-zero winding of the
+    # overlapping stroke pieces is their union.
+    private def emit_polygon(points : Array(Tuple(Float64, Float64)),
+                             polygons : Array(Array(Tuple(Float64, Float64)))) : Nil
+      return if points.size < 3
+      area = 0.0
+      points.each_with_index do |(x1, y1), i|
+        x2, y2 = points[(i + 1) % points.size]
+        area += x1 * y2 - x2 * y1
+      end
+      polygons << (area < 0 ? points.reverse : points)
+    end
+
+    # The signed sweep from `first` to `second`, in (0, 2pi) when `positive` and
+    # in (-2pi, 0) otherwise.
+    private def sweep_towards(first : Float64, second : Float64, positive : Bool) : Float64
+      two_pi = 2 * Math::PI
+      delta = second - first
+      if positive
+        while delta <= 0
+          delta += two_pi
+        end
+        while delta > two_pi
+          delta -= two_pi
+        end
+      else
+        while delta >= 0
+          delta -= two_pi
+        end
+        while delta < -two_pi
+          delta += two_pi
+        end
+      end
+      delta
+    end
+
+    private def unit_vector(from : Tuple(Float64, Float64),
+                            to : Tuple(Float64, Float64)) : Tuple(Float64, Float64)?
+      dx = to[0] - from[0]
+      dy = to[1] - from[1]
+      length = Math.sqrt(dx * dx + dy * dy)
+      return nil if length < 1e-9
+      {dx / length, dy / length}
+    end
+
+    private def distance(x1 : Float64, y1 : Float64, x2 : Float64, y2 : Float64) : Float64
+      Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
+    end
+
+    # Splits a polyline into the painted runs of the dash pattern (Java
+    # `BasicStroke` dashing): the array alternates on/off lengths and `phase`
+    # shifts the pattern along the path.
+    private def dash_runs(points : Array(Tuple(Float64, Float64)), closed : Bool,
+                          style : StrokeStyle) : Array(Array(Tuple(Float64, Float64)))
+      path = closed ? points + [points[0]] : points
+      dashes = style.dashes
+      total = dashes.sum
+      return [path] if total <= 0
+
+      # starting position inside the pattern
+      offset = style.phase % total
+      index = 0
+      while offset >= dashes[index]
+        offset -= dashes[index]
+        index = (index + 1) % dashes.size
+      end
+      remaining = dashes[index] - offset
+      on = index.even?
+
+      runs = [] of Array(Tuple(Float64, Float64))
+      run = [] of Tuple(Float64, Float64)
+      run << path[0] if on
+
+      (0...(path.size - 1)).each do |i|
+        x0, y0 = path[i]
+        x1, y1 = path[i + 1]
+        dx = x1 - x0
+        dy = y1 - y0
+        length = Math.sqrt(dx * dx + dy * dy)
+        next if length < 1e-9
+        ux = dx / length
+        uy = dy / length
+        travelled = 0.0
+        while travelled < length
+          step = Math.min(remaining, length - travelled)
+          travelled += step
+          remaining -= step
+          if on
+            run << {x0 + ux * travelled, y0 + uy * travelled}
+          end
+          next if remaining > 1e-9
+          # this dash element ends here
+          if on
+            runs << run if run.size >= 2
+            run = [] of Tuple(Float64, Float64)
+          else
+            run = [{x0 + ux * travelled, y0 + uy * travelled}]
+          end
+          on = !on
+          index = (index + 1) % dashes.size
+          remaining = dashes[index]
+        end
+      end
+      runs << run if on && run.size >= 2
+      runs
+    end
+
+    # Walks the path and yields every subpath as an open or closed polyline
+    # (stroke paths are not implicitly closed, unlike fills).
+    private def each_polyline(&) : Nil
+      points = [] of Tuple(Float64, Float64)
+      px = 0.0
+      py = 0.0
+      start_x = 0.0
+      start_y = 0.0
+
+      @path.each do |seg|
+        case seg.kind
+        when :move
+          yield points, false if points.size >= 2
+          points = [{seg.x1, seg.y1}]
+          start_x, start_y = seg.x1, seg.y1
+          px, py = seg.x1, seg.y1
+        when :line
+          points << {seg.x1, seg.y1}
+          px, py = seg.x1, seg.y1
+        when :curve
+          bezier_segments(px, py, seg.x1, seg.y1, seg.x2, seg.y2, seg.x3, seg.y3).each do |_, _, bx2, by2|
+            points << {bx2, by2}
+          end
+          px, py = seg.x3, seg.y3
+        when :close
+          yield points, true if points.size >= 2
+          points = [{start_x, start_y}]
+          px, py = start_x, start_y
+        end
+      end
+      yield points, false if points.size >= 2
     end
 
     private def bezier_segments(x0 : Float64, y0 : Float64, x1 : Float64, y1 : Float64,
@@ -559,30 +909,6 @@ module Pdfbox::Rendering
         px, py = bx, by
       end
       result
-    end
-
-    private def bresenham(img : CrImage::RGBA, x1 : Int32, y1 : Int32,
-                          x2 : Int32, y2 : Int32, c : CrImage::Color::Color,
-                          clip_paths : Array(Pdfbox::Util::ClipPath)) : Nil
-      dx = (x2 - x1).abs; dy = -(y2 - y1).abs
-      sx = x1 < x2 ? 1 : -1; sy = y1 < y2 ? 1 : -1
-      err = dx + dy
-      cx, cy = x1, y1
-      clipped = !clip_paths.empty?
-      loop do
-        if cx >= 0 && cx < @width && cy >= 0 && cy < @height &&
-           (!clipped || clipped_at?(clip_paths, cx + 0.5, cy + 0.5))
-          img[cx, cy] = c
-        end
-        break if cx == x2 && cy == y2
-        e2 = 2 * err
-        if e2 >= dy
-          err += dy; cx += sx
-        end
-        if e2 <= dx
-          err += dx; cy += sy
-        end
-      end
     end
   end
 end

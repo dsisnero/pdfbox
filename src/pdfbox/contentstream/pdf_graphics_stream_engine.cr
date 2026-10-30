@@ -366,10 +366,13 @@ module Pdfbox::Contentstream
     end
 
     def process(arguments : Array(Cos::Base)) : Nil
+      # Java MoveTo: the point is passed through the CTM first
+      # (PDFStreamEngine#transformedPoint) and then to the engine.
       x = arguments[0].as(Cos::Number).value.to_f32
       y = arguments[1].as(Cos::Number).value.to_f32
-      context.add_move_to(x, y)
-      context.move_to(x, y)
+      px, py = context.transformed_point(x.to_f64, y.to_f64)
+      context.add_move_to(px.to_f32, py.to_f32)
+      context.move_to(px.to_f32, py.to_f32)
     end
   end
 
@@ -382,8 +385,9 @@ module Pdfbox::Contentstream
     def process(arguments : Array(Cos::Base)) : Nil
       x = arguments[0].as(Cos::Number).value.to_f32
       y = arguments[1].as(Cos::Number).value.to_f32
-      context.add_line_to(x, y)
-      context.line_to(x, y)
+      px, py = context.transformed_point(x.to_f64, y.to_f64)
+      context.add_line_to(px.to_f32, py.to_f32)
+      context.line_to(px.to_f32, py.to_f32)
     end
   end
 
@@ -400,8 +404,11 @@ module Pdfbox::Contentstream
       y2 = arguments[3].as(Cos::Number).value.to_f32
       x3 = arguments[4].as(Cos::Number).value.to_f32
       y3 = arguments[5].as(Cos::Number).value.to_f32
-      context.add_curve_to(x1, y1, x2, y2, x3, y3)
-      context.curve_to(x1, y1, x2, y2, x3, y3)
+      x1, y1 = context.transformed_point(x1.to_f64, y1.to_f64)
+      x2, y2 = context.transformed_point(x2.to_f64, y2.to_f64)
+      x3, y3 = context.transformed_point(x3.to_f64, y3.to_f64)
+      context.add_curve_to(x1.to_f32, y1.to_f32, x2.to_f32, y2.to_f32, x3.to_f32, y3.to_f32)
+      context.curve_to(x1.to_f32, y1.to_f32, x2.to_f32, y2.to_f32, x3.to_f32, y3.to_f32)
     end
   end
 
@@ -420,8 +427,10 @@ module Pdfbox::Contentstream
       if current
         x1 = current[0]
         y1 = current[1]
-        context.add_curve_to(x1, y1, x2, y2, x3, y3)
-        context.curve_to(x1, y1, x2, y2, x3, y3)
+        tx2, ty2 = context.transformed_point(x2.to_f64, y2.to_f64)
+        tx3, ty3 = context.transformed_point(x3.to_f64, y3.to_f64)
+        context.add_curve_to(x1, y1, tx2.to_f32, ty2.to_f32, tx3.to_f32, ty3.to_f32)
+        context.curve_to(x1, y1, tx2.to_f32, ty2.to_f32, tx3.to_f32, ty3.to_f32)
       end
     end
   end
@@ -437,8 +446,10 @@ module Pdfbox::Contentstream
       y1 = arguments[1].as(Cos::Number).value.to_f32
       x3 = arguments[2].as(Cos::Number).value.to_f32
       y3 = arguments[3].as(Cos::Number).value.to_f32
-      context.add_curve_to(x1, y1, x3, y3, x3, y3)
-      context.curve_to(x1, y1, x3, y3, x3, y3)
+      x1, y1 = context.transformed_point(x1.to_f64, y1.to_f64)
+      x3, y3 = context.transformed_point(x3.to_f64, y3.to_f64)
+      context.add_curve_to(x1.to_f32, y1.to_f32, x3.to_f32, y3.to_f32, x3.to_f32, y3.to_f32)
+      context.curve_to(x1.to_f32, y1.to_f32, x3.to_f32, y3.to_f32, x3.to_f32, y3.to_f32)
     end
   end
 
@@ -465,10 +476,14 @@ module Pdfbox::Contentstream
       y = arguments[1].as(Cos::Number).value.to_f32
       w = arguments[2].as(Cos::Number).value.to_f32
       h = arguments[3].as(Cos::Number).value.to_f32
-      p0 = {x, y}
-      p1 = {x + w, y}
-      p2 = {x + w, y + h}
-      p3 = {x, y + h}
+      x0, y0 = context.transformed_point(x.to_f64, y.to_f64)
+      x1, y1 = context.transformed_point((x + w).to_f64, y.to_f64)
+      x2, y2 = context.transformed_point((x + w).to_f64, (y + h).to_f64)
+      x3, y3 = context.transformed_point(x.to_f64, (y + h).to_f64)
+      p0 = {x0.to_f32, y0.to_f32}
+      p1 = {x1.to_f32, y1.to_f32}
+      p2 = {x2.to_f32, y2.to_f32}
+      p3 = {x3.to_f32, y3.to_f32}
       context.add_rectangle_to_path(p0, p1, p2, p3)
       context.append_rectangle(p0, p1, p2, p3)
     end

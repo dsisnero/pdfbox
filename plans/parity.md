@@ -8,7 +8,7 @@
 
 ## Where we are
 
-- **Current focus:** the post-roadmap **pdmodel / text / rendering / io / cos / filter / pdfwriter / multipdf / fdf / fontbox / util / XMPBox accessor-completeness** grind — one Java class or small cluster per commit, test-first (red→green). Latest: **clipping** — `W`/`W*` now restrict painting. `PDGraphicsState` keeps the clipping-path list (`clipping_paths`/`intersect_clipping_path`/`clipped?`, Java's lazy copy-on-clone), the new `Pdfbox::Util::ClipPath` is the AWT-free stand-in for `Path2D`+`Area` (one winding rule across all subpaths), and `PageDrawer#clip` plus clip-aware `fill_span`/`bresenham`/`draw_image` enforce it. Previous: **real area fills** — `fill_path`/`fill_and_stroke_path` rasterize the path area (scanline, `WIND_NON_ZERO`/`WIND_EVEN_ODD`); before that **glyph rendering** (`showGlyph` dispatch, single graphics-state stack, Type 3 charprocs), which also fixed three overlay bugs and a page-tree duplication in `Parser#parse_pages_from_catalog`.
+- **Current focus:** the post-roadmap **pdmodel / text / rendering / io / cos / filter / pdfwriter / multipdf / fdf / fontbox / util / XMPBox accessor-completeness** grind — one Java class or small cluster per commit, test-first (red→green). Latest: **stroke geometry** — `PageDrawer#stroke_path` now builds the stroke outline Java's `BasicStroke` would (`StrokeStyle`: CTM-scaled width with the 0.25 minimum, cap/join, miter limit, dash array/phase incl. the all-zero invisible case) and scanline-fills it, so `/w`, `/J`, `/j`, `/m` and `/d` show up in the raster; the work also fixed the path operators ignoring the CTM (they now go through `transformed_point`, as the Java operator classes do). Previous: **clipping** (`W`/`W*` restrict painting via `PDGraphicsState#clipping_paths` + `Util::ClipPath`), **real area fills** (scanline, both winding rules) and **glyph rendering** (`showGlyph` dispatch, single graphics-state stack, Type 3 charprocs).
 - **Next up:** the next **genuine** gap. The inventory's `missing` rows are mostly classifier noise (it matches `def` names only), so pick a lead below, confirm against `vendor/pdfbox/` that the Crystal behaviour really differs, then write the failing spec first.
 
 ### How to find the next gap (the techniques that worked)
@@ -22,12 +22,12 @@
 
 ### Leads for the next session (not yet verified as gaps)
 
-- `PDFStreamEngine` now dispatches glyphs, but the remaining Java rendering hooks are still missing: `processSoftMask`, `processTransparencyGroup`, `processTilingPattern`, `showForm`, `showAnnotation`, `processChildStream`, `clipToRect` (the port handles some of these inline elsewhere — check before porting).
-- **Stroke geometry is still a 1-pixel line**: `PageDrawer#draw_lines` paints bresenham lines and ignores `/w`, `/J`, `/j`, `/m` and `/d`, so line width, joins, caps and dash patterns do not show up in the raster (Java sets a `BasicStroke` from the graphics state and lets `Graphics2D#draw` do it). This is the next meaningful raster gap after fills and clipping.
-- **Fills are hard-edged**: the scanline fill samples pixel centres with no antialiasing (Java antialiases non-rectangular paths and disables it for rectangular ones, PDFBOX-2302).
+- `PDFStreamEngine` still lacks the rendering hooks `processSoftMask`, `processTransparencyGroup`, `processTilingPattern`, `showForm`, `showAnnotation`, `processChildStream`, `clipToRect` (the port handles some of these inline elsewhere — check before porting).
+- **Fills and strokes are hard-edged**: the scanline fill samples pixel centres with no antialiasing and round joins/caps are 8-step polygon fans (Java antialiases non-rectangular paths and disables it for rectangular ones, PDFBOX-2302).
 - **The raster has no background**: `CrImage.rgba` starts as transparent black, so a page without content renders transparent instead of Java's opaque white (`BufferedImage` with `Graphics2D` background). Any spec that counts "dark pixels" must check `alpha > 0`; painting the background is still unported.
 - **The initial clip is not the page box**: Java seeds `PDGraphicsState` with `page.getCropBox()`; the port starts unclipped and relies on the raster bounds (fine for painting, but `clipped?` answers differ and `adjustClip`'s downscale workaround, PDFBOX-4583/4949, has no equivalent).
 - **Text rendering mode `Tr 3`/`7` (invisible)** and `Tr 4..7` (clip) are only partly wired: `PageDrawer#show_font_glyph` handles fills/strokes but never adds the glyph to the clip path.
+- **Soft masks and transparency groups** are ignored (`applySoftMaskToPaint`, `pdfGraphicsState.getSoftMask()`), so content inside a `/SMask` renders at full alpha.
 - `PDFStreamEngine` has no `should_process_color_operators`/d1 (marked content) gating, and `show_text_strings` still ignores `PDFont#is_vertical`.
 - `PDColorSpace.create` now takes the resources, but only the `/Pattern` forms use them: Java also builds `PDDeviceN`, `PDIndexed`, `PDSeparation` and `PDICCBased` with the resources (`new PDDeviceN(array, resources)` etc.), and the port's constructors take only the COS array. Threading them through is the next step for those four spaces.
 - `src/pdfbox/pdf_parser/xref_parser.cr` still has the stubs `setHasHybridXRef`, `setTrailer`, `setIsXRefStream` and "copy xref table to document" — check whether `XrefParser` is still on a live path before wiring them.
@@ -36,7 +36,7 @@
 ### Not ported by design (do not chase)
 
 - `SignatureInterface` / CMS signing (needs BouncyCastle/JCA): external signing via `Document#save_incremental_for_external_signing` is the supported path.
-- AWT-only paths: `toRawImage`/`toRGBImage`, `Paint`-based shading classes, `PageDrawer`/`PDFRenderer` Graphics2D methods, `rendering/SoftMask` paints, ImageIO-based image factories. The *effects* those methods produce are reimplemented on `CrImage` where feasible (`fill_path`, clipping, glyph outlines); antialiasing and stroke geometry are still missing (see leads).
+- AWT-only paths: `toRawImage`/`toRGBImage`, `Paint`-based shading classes, `PageDrawer`/`PDFRenderer` Graphics2D methods, `rendering/SoftMask` paints, ImageIO-based image factories. The *effects* those methods produce are reimplemented on `CrImage` where feasible (`fill_path`, clipping, stroke outlines, glyph outlines); antialiasing is still missing (see leads).
 - The writer numbers created **dictionaries** instead of inlining them (Java inlines a dictionary reachable from one place); the port does it to avoid duplicating a dictionary reachable from two places (see `Writer#write_incremental`).
 
 ### Work files

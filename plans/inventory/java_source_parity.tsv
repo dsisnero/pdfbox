@@ -3507,9 +3507,9 @@ pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetStrokingD
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetStrokingDeviceRGBColor.java::class::SetStrokingDeviceRGBColor	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetStrokingDeviceRGBColor.java::method::SetStrokingDeviceRGBColor.getName	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetStrokingDeviceRGBColor.java::method::SetStrokingDeviceRGBColor.process	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/AppendRectangleToPath.java::class::AppendRectangleToPath	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/AppendRectangleToPath.java::method::AppendRectangleToPath.getName	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/AppendRectangleToPath.java::method::AppendRectangleToPath.process	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/AppendRectangleToPath.java::class::AppendRectangleToPath	ported	src/pdfbox/contentstream/pdf_graphics_stream_engine.cr	ported: OperatorAppendRectangle
+pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/AppendRectangleToPath.java::method::AppendRectangleToPath.getName	ported	src/pdfbox/contentstream/pdf_graphics_stream_engine.cr	ported: #name
+pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/AppendRectangleToPath.java::method::AppendRectangleToPath.process	ported	src/pdfbox/contentstream/pdf_graphics_stream_engine.cr	ported: corners go through transformed_point (CTM)
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/BeginInlineImage.java::class::BeginInlineImage	ported	src/pdfbox/contentstream/pdf_graphics_stream_engine.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/BeginInlineImage.java::method::BeginInlineImage.getName	ported	src/pdfbox/contentstream/pdf_graphics_stream_engine.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/BeginInlineImage.java::method::BeginInlineImage.process	ported	src/pdfbox/contentstream/pdf_graphics_stream_engine.cr	baseline
@@ -3532,18 +3532,18 @@ pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/ClosePath
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/ClosePath.java::const::LOG	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/ClosePath.java::method::ClosePath.getName	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/ClosePath.java::method::ClosePath.process	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/CurveTo.java::class::CurveTo	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/CurveTo.java::const::LOG	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/CurveTo.java::method::CurveTo.getName	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/CurveTo.java::method::CurveTo.process	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/CurveToReplicateFinalPoint.java::class::CurveToReplicateFinalPoint	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/CurveToReplicateFinalPoint.java::const::LOG	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/CurveToReplicateFinalPoint.java::method::CurveToReplicateFinalPoint.getName	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/CurveToReplicateFinalPoint.java::method::CurveToReplicateFinalPoint.process	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/CurveToReplicateInitialPoint.java::class::CurveToReplicateInitialPoint	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/CurveToReplicateInitialPoint.java::const::LOG	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/CurveToReplicateInitialPoint.java::method::CurveToReplicateInitialPoint.getName	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/CurveToReplicateInitialPoint.java::method::CurveToReplicateInitialPoint.process	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/CurveTo.java::class::CurveTo	ported	src/pdfbox/contentstream/pdf_graphics_stream_engine.cr	ported: OperatorCurveTo
+pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/CurveTo.java::const::LOG	missing	-	not ported: no logger in the operator
+pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/CurveTo.java::method::CurveTo.getName	ported	src/pdfbox/contentstream/pdf_graphics_stream_engine.cr	ported: #name
+pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/CurveTo.java::method::CurveTo.process	ported	src/pdfbox/contentstream/pdf_graphics_stream_engine.cr	ported: coordinates go through transformed_point (CTM)
+pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/CurveToReplicateFinalPoint.java::class::CurveToReplicateFinalPoint	ported	src/pdfbox/contentstream/pdf_graphics_stream_engine.cr	ported: OperatorCurveToReplicateFinalPoint
+pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/CurveToReplicateFinalPoint.java::const::LOG	missing	-	not ported: no logger in the operator
+pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/CurveToReplicateFinalPoint.java::method::CurveToReplicateFinalPoint.getName	ported	src/pdfbox/contentstream/pdf_graphics_stream_engine.cr	ported: #name
+pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/CurveToReplicateFinalPoint.java::method::CurveToReplicateFinalPoint.process	ported	src/pdfbox/contentstream/pdf_graphics_stream_engine.cr	ported: coordinates go through transformed_point (CTM)
+pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/CurveToReplicateInitialPoint.java::class::CurveToReplicateInitialPoint	ported	src/pdfbox/contentstream/pdf_graphics_stream_engine.cr	ported: OperatorCurveToReplicateInitialPoint
+pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/CurveToReplicateInitialPoint.java::const::LOG	missing	-	not ported: no logger in the operator
+pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/CurveToReplicateInitialPoint.java::method::CurveToReplicateInitialPoint.getName	ported	src/pdfbox/contentstream/pdf_graphics_stream_engine.cr	ported: #name
+pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/CurveToReplicateInitialPoint.java::method::CurveToReplicateInitialPoint.process	ported	src/pdfbox/contentstream/pdf_graphics_stream_engine.cr	ported: coordinates go through transformed_point (CTM)
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/DrawObject.java::class::DrawObject	ported	src/pdfbox/contentstream/pdf_graphics_stream_engine.cr	form XObject Do + 50-level recursion guard
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/DrawObject.java::const::LOG	ported	src/pdfbox/contentstream/pdf_graphics_stream_engine.cr	form XObject Do + 50-level recursion guard
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/DrawObject.java::method::DrawObject.getName	ported	src/pdfbox/contentstream/pdf_graphics_stream_engine.cr	form XObject Do + 50-level recursion guard
@@ -3567,13 +3567,13 @@ pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/GraphicsO
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/GraphicsOperatorProcessor.java::method::GraphicsOperatorProcessor.getGraphicsContext	ported	src/pdfbox/contentstream/pdf_graphics_stream_engine.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/LegacyFillNonZeroRule.java::class::LegacyFillNonZeroRule	ported	src/pdfbox/contentstream/pdf_graphics_stream_engine.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/LegacyFillNonZeroRule.java::method::LegacyFillNonZeroRule.getName	ported	src/pdfbox/contentstream/pdf_graphics_stream_engine.cr	baseline
-pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/LineTo.java::class::LineTo	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/LineTo.java::const::LOG	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/LineTo.java::method::LineTo.getName	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/LineTo.java::method::LineTo.process	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/MoveTo.java::class::MoveTo	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/MoveTo.java::method::MoveTo.getName	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/MoveTo.java::method::MoveTo.process	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/LineTo.java::class::LineTo	ported	src/pdfbox/contentstream/pdf_graphics_stream_engine.cr	ported: OperatorLineTo
+pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/LineTo.java::const::LOG	missing	-	not ported: no logger in the operator
+pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/LineTo.java::method::LineTo.getName	ported	src/pdfbox/contentstream/pdf_graphics_stream_engine.cr	ported: #name
+pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/LineTo.java::method::LineTo.process	ported	src/pdfbox/contentstream/pdf_graphics_stream_engine.cr	ported: coordinates go through transformed_point (CTM)
+pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/MoveTo.java::class::MoveTo	ported	src/pdfbox/contentstream/pdf_graphics_stream_engine.cr	ported: OperatorMoveTo
+pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/MoveTo.java::method::MoveTo.getName	ported	src/pdfbox/contentstream/pdf_graphics_stream_engine.cr	ported: #name
+pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/MoveTo.java::method::MoveTo.process	ported	src/pdfbox/contentstream/pdf_graphics_stream_engine.cr	ported: coordinates go through transformed_point (CTM)
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/ShadingFill.java::class::ShadingFill	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/ShadingFill.java::method::ShadingFill.getName	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/ShadingFill.java::method::ShadingFill.process	missing	-	baseline
@@ -10795,7 +10795,7 @@ pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDr
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.getNonStrokingPaint	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.getPaint	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.getRenderer	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.getStroke	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.getStroke	ported	src/pdfbox/rendering/pdf_renderer.cr	ported: StrokeStyle (width/cap/join/miter/dash)
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.getStrokingPaint	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.getSubsampling	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.hasBlendMode	missing	-	baseline
@@ -10823,7 +10823,7 @@ pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDr
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.showTransparencyGroup	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.showTransparencyGroupOnGraphics	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.showType3Glyph	ported	src/pdfbox/rendering/pdf_renderer.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.strokePath	ported	src/pdfbox/rendering/pdf_renderer.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.strokePath	ported	src/pdfbox/rendering/pdf_renderer.cr	ported: stroke outline scanline-filled
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::PageDrawer.transferClip	partial	src/pdfbox/rendering/pdf_renderer.cr	partial: clip tested per painted pixel (no Graphics2D clip transfer)
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::TransparencyGroup.create2ByteGrayAlphaImage	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/rendering/PageDrawer.java::method::TransparencyGroup.getBBox	missing	-	baseline
