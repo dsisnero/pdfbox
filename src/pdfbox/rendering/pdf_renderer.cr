@@ -162,15 +162,21 @@ module Pdfbox::Rendering
       end
     end
 
-    private def tx(x : Float32) : Float64
+    protected def tx(x : Float32) : Float64
       (x.to_f64 * @scale).round.to_f64
     end
 
-    private def ty(y : Float32) : Float64
+    protected def ty(y : Float32) : Float64
       (@height - 1 - (y.to_f64 * @scale).round).to_f64
     end
 
     # --- Path building ---
+
+    # The clipping path lives in device space, so boxes the engine contributes
+    # (a Form XObject's `/BBox`) are mapped here (Java PageDrawer#transferClip).
+    protected def device_point(x : Float64, y : Float64) : Tuple(Float64, Float64)
+      {tx(x.to_f32), ty(y.to_f32)}
+    end
 
     def move_to(x : Float32, y : Float32) : Nil
       @path << PathSegment.new(kind: :move, x1: tx(x), y1: ty(y))

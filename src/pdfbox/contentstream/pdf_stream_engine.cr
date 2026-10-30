@@ -549,12 +549,35 @@ module Pdfbox::Contentstream
       end
       @initial_matrix = graphics_state.current_transformation_matrix.clone
 
+      # Java processStream: clip to the stream's bounding box
+      clip_to_rect(rect_from_cos_array(stream[Cos::Name.new("BBox")]))
+
       input = stream.create_input_stream
       process_stream_operators(input.getb_to_end)
     ensure
       @initial_matrix = parent_initial_matrix
       @resources = parent_resources
       restore_graphics_stack(saved_stack) if saved_stack
+    end
+
+    # Clips to the given bounding box (Java PDFStreamEngine#clipToRect, used for
+    # a Form XObject's `/BBox`). Only the rendering engine keeps a clipping path,
+    # so the base engine does nothing.
+    protected def clip_to_rect(bbox : Pdmodel::Rectangle?) : Nil
+    end
+
+    # Parses a `/BBox`-style COS array into a rectangle.
+    protected def rect_from_cos_array(base : Cos::Base?) : Pdmodel::Rectangle?
+      array = base.is_a?(Cos::Object) ? base.object : base
+      return unless array.is_a?(Cos::Array)
+      values = [] of Float64
+      array.each do |item|
+        item = item.object if item.is_a?(Cos::Object)
+        return unless item.is_a?(Cos::Number)
+        values << item.value.to_f64
+      end
+      return unless values.size >= 4
+      Pdmodel::Rectangle.new(values[0], values[1], values[2], values[3])
     end
 
     # Processes a Type 3 character stream (Java PDFStreamEngine#processType3Stream).

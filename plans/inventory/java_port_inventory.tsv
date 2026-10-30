@@ -3322,7 +3322,7 @@ pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::metho
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.applyTextAdjustment	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.beginMarkedContentSequence	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.beginText	method	ported	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.clipToRect	method	partial	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.clipToRect	method	ported	src/pdfbox/contentstream/pdf_stream_engine.cr	ported: clips to a stream BBox (PDFGraphicsStreamEngine maps to device)
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.decreaseLevel	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.endMarkedContentSequence	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.endText	method	ported	src	auto-generated
@@ -3347,7 +3347,7 @@ pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::metho
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.processOperator	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.processPage	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.processSoftMask	method	partial	src	auto-generated
-pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.processStream	method	ported	src	auto-generated
+pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.processStream	method	ported	src/pdfbox/contentstream/pdf_stream_engine.cr	ported: clips to the stream BBox before the operators
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.processStreamOperators	method	ported	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.processTilingPattern	method	partial	src	auto-generated
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.processTransparencyGroup	method	partial	src	auto-generated

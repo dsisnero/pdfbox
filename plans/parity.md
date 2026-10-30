@@ -8,7 +8,7 @@
 
 ## Where we are
 
-- **Current focus:** the post-roadmap **pdmodel / text / rendering / io / cos / filter / pdfwriter / multipdf / fdf / fontbox / util / XMPBox accessor-completeness** grind — one Java class or small cluster per commit, test-first (red→green). Latest: **`d1` colour gating** — a Type 3 charproc that starts with `d1` now keeps the text colour, because `PDFStreamEngine` tracks Java's `shouldProcessColorOperators` (disabled for `d1` charprocs, restored after the stream) and the eight colour/colour-space operators honour it. Previous: **`ImageType` + page background** (white paper for RGB, transparent for ARGB, GRAY/BINARY rejected), **stroke geometry** (`StrokeStyle` outlines + the path-operator CTM fix), **clipping**, **real area fills** and **glyph rendering**.
+- **Current focus:** the post-roadmap **pdmodel / text / rendering / io / cos / filter / pdfwriter / multipdf / fdf / fontbox / util / XMPBox accessor-completeness** grind — one Java class or small cluster per commit, test-first (red→green). Latest: **form `/BBox` clipping** — `process_form_xobject` now clips to the form's bounding box like Java's `processStream` (`clip_to_rect` + `Util::Matrix#transform_point`, with a `device_point` hook that `PageDrawer` maps through `tx`/`ty`). Previous: **`d1` colour gating** (Type 3 glyphs keep the text colour), **`ImageType` + page background** (white paper for RGB), **stroke geometry**, **clipping**, **real area fills** and **glyph rendering**.
 - **Next up:** the next **genuine** gap. The inventory's `missing` rows are mostly classifier noise (it matches `def` names only), so pick a lead below, confirm against `vendor/pdfbox/` that the Crystal behaviour really differs, then write the failing spec first.
 
 ### How to find the next gap (the techniques that worked)
@@ -22,7 +22,7 @@
 
 ### Leads for the next session (not yet verified as gaps)
 
-- `PDFStreamEngine` still lacks the rendering hooks `processSoftMask`, `processTransparencyGroup`, `processTilingPattern`, `showForm`, `showAnnotation`, `processChildStream`, `clipToRect` (the port handles some of these inline elsewhere — check before porting).
+- `PDFStreamEngine` still lacks the rendering hooks `processSoftMask`, `processTransparencyGroup`, `processTilingPattern`, `showForm`, `showAnnotation`, `processChildStream` (`clipToRect` now exists and is used for form BBoxes; Java also uses it for transparency groups, tiling patterns and soft masks).
 - **Fills and strokes are hard-edged**: the scanline fill samples pixel centres with no antialiasing and round joins/caps are 8-step polygon fans (Java antialiases non-rectangular paths and disables it for rectangular ones, PDFBOX-2302).
 - **Only two image types render**: `ImageType::GRAY` and `BINARY` raise because the port has no grey or 1-bit raster; Java returns `TYPE_BYTE_GRAY`/`TYPE_BYTE_BINARY` images. `PDFRenderer#renderImage(page, scale, rotation, ImageType)` rotation is also unported (the raster size never swaps for 90/270).
 - **The initial clip is not the page box**: Java seeds `PDGraphicsState` with `page.getCropBox()`; the port starts unclipped and relies on the raster bounds (fine for painting, but `clipped?` answers differ and `adjustClip`'s downscale workaround, PDFBOX-4583/4949, has no equivalent).

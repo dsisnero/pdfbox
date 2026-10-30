@@ -3322,7 +3322,7 @@ pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::metho
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.applyTextAdjustment	ported	src/pdfbox/contentstream/pdf_stream_engine.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.beginMarkedContentSequence	ported	src/pdfbox/contentstream/pdf_stream_engine.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.beginText	ported	src/pdfbox/contentstream/pdf_stream_engine.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.clipToRect	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.clipToRect	ported	src/pdfbox/contentstream/pdf_stream_engine.cr	ported: clips to a stream BBox (PDFGraphicsStreamEngine maps to device)
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.decreaseLevel	ported	src/pdfbox/contentstream/pdf_stream_engine.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.endMarkedContentSequence	ported	src/pdfbox/contentstream/pdf_stream_engine.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.endText	ported	src/pdfbox/contentstream/pdf_stream_engine.cr	reconciled: method present
@@ -3347,7 +3347,7 @@ pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::metho
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.processOperator	ported	src/pdfbox/contentstream/pdf_stream_engine.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.processPage	ported	src/pdfbox/contentstream/pdf_stream_engine.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.processSoftMask	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.processStream	ported	src/pdfbox/contentstream/pdf_stream_engine.cr	reconciled: method present
+pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.processStream	ported	src/pdfbox/contentstream/pdf_stream_engine.cr	ported: clips to the stream BBox before the operators
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.processStreamOperators	ported	src/pdfbox/contentstream/pdf_stream_engine.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.processTilingPattern	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.processTransparencyGroup	missing	-	baseline

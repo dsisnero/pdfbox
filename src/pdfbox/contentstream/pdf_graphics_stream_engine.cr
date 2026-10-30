@@ -145,6 +145,26 @@ module Pdfbox::Contentstream
     # a no-op and a Type 3 stream walk as defaults), not on this class, so they
     # are inherited rather than abstract here.
 
+    # Clips to the given bounding box (Java PDFStreamEngine#clipToRect), using the
+    # path representation the graphics state keeps.
+    protected def clip_to_rect(bbox : Pdmodel::Rectangle?) : Nil
+      return unless bbox
+      matrix = graphics_state.current_transformation_matrix
+      p0 = matrix.transform_point(bbox.lower_left_x, bbox.lower_left_y)
+      p1 = matrix.transform_point(bbox.upper_right_x, bbox.lower_left_y)
+      p2 = matrix.transform_point(bbox.upper_right_x, bbox.upper_right_y)
+      p3 = matrix.transform_point(bbox.lower_left_x, bbox.upper_right_y)
+      points = [p0, p1, p2, p3].map { |point| device_point(point[0], point[1]) }
+      graphics_state.intersect_clipping_path(Util::ClipPath.new([points]))
+    end
+
+    # Maps a point in transformation-matrix space to the space the clipping path
+    # is expressed in. Rendering overrides it with the device mapping; other
+    # engines keep identity coordinates.
+    protected def device_point(x : Float64, y : Float64) : Tuple(Float64, Float64)
+      {x, y}
+    end
+
     # --- Path manipulation helpers ---
 
     # Add a rectangle to the line path.
