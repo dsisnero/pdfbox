@@ -26,6 +26,7 @@ module Pdfbox::Contentstream
     @initial_matrix : Util::Matrix?
     @level : Int32 = 0
     @default_font : Pdmodel::Font::PDFont?
+    # Java PDFStreamEngine#shouldProcessColorOperators
     @should_process_color_operators : Bool = true
 
     # Creates a new PDFStreamEngine. Like Java's constructor, an initial graphics
@@ -82,6 +83,14 @@ module Pdfbox::Contentstream
         (matrix.get_value(0, 0) * x + matrix.get_value(1, 0) * y + matrix.get_value(2, 0)).to_f64,
         (matrix.get_value(0, 1) * x + matrix.get_value(1, 1) * y + matrix.get_value(2, 1)).to_f64,
       }
+    end
+
+    # Whether colour operators are applied (Java
+    # PDFStreamEngine#isShouldProcessColorOperators). It is turned off for a Type
+    # 3 character procedure that starts with `d1`, so the glyph keeps the text
+    # colour.
+    def should_process_color_operators? : Bool
+      @should_process_color_operators
     end
 
     # Transforms a width using the current transformation matrix (Java
@@ -223,17 +232,32 @@ module Pdfbox::Contentstream
     end
 
     # Process operators from content stream bytes
-    private def process_stream_operators(bytes : Bytes) : Nil
+    # Processes the operators of one stream. Java's processStreamOperators turns
+    # colour processing off for a Type 3 character procedure whose first operator
+    # is `d1`, and restores the previous value afterwards.
+    private def process_stream_operators(bytes : Bytes, type3_char_proc : Bool = false) : Nil
       arguments = [] of Cos::Base
       parser = Pdfparser::PDFStreamParser.new(bytes)
 
-      while token = parser.parse_next_token
-        if token.is_a?(ContentStream::Operator)
-          process_operator(token, arguments)
-          arguments.clear
-        else
-          arguments << token.as(Cos::Base)
+      previous_should_process = @should_process_color_operators
+      @should_process_color_operators = true
+      first_operator = true
+      begin
+        while token = parser.parse_next_token
+          if token.is_a?(ContentStream::Operator)
+            operator = token
+            if first_operator && type3_char_proc && operator.name == "d1"
+              @should_process_color_operators = false
+            end
+            first_operator = false
+            process_operator(operator, arguments)
+            arguments.clear
+          else
+            arguments << token.as(Cos::Base)
+          end
         end
+      ensure
+        @should_process_color_operators = previous_should_process
       end
     end
 
@@ -567,7 +591,8 @@ module Pdfbox::Contentstream
         state.text_matrix = Util::Matrix.new
         state.text_line_matrix = Util::Matrix.new
 
-        process_stream_operators(char_proc.cos_object.create_input_stream.getb_to_end)
+        process_stream_operators(char_proc.cos_object.create_input_stream.getb_to_end,
+          type3_char_proc: true)
       ensure
         restore_graphics_stack(saved_stack) if saved_stack
         @resources = parent_resources

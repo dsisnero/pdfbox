@@ -3338,7 +3338,7 @@ pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::metho
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.getTextMatrix	ported	src/pdfbox/contentstream/pdf_stream_engine.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.increaseLevel	ported	src/pdfbox/contentstream/pdf_stream_engine.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.initPage	ported	src/pdfbox/contentstream/pdf_stream_engine.cr	reconciled: method present
-pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.isShouldProcessColorOperators	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.isShouldProcessColorOperators	ported	src/pdfbox/contentstream/pdf_stream_engine.cr	ported: should_process_color_operators? (d1 charprocs disable it)
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.markedContentPoint	ported	src/pdfbox/contentstream/pdf_stream_engine.cr	reconciled: method present
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.operatorException	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFStreamEngine.java::method::PDFStreamEngine.popResources	missing	-	baseline
@@ -3476,18 +3476,18 @@ pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetNonStroki
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetNonStrokingColor.java::method::SetNonStrokingColor.setColor	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetNonStrokingColorN.java::class::SetNonStrokingColorN	ported	src/pdfbox/contentstream/pdf_graphics_stream_engine.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetNonStrokingColorN.java::method::SetNonStrokingColorN.getName	ported	src/pdfbox/contentstream/pdf_graphics_stream_engine.cr	baseline
-pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetNonStrokingColorSpace.java::class::SetNonStrokingColorSpace	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetNonStrokingColorSpace.java::method::SetNonStrokingColorSpace.getName	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetNonStrokingColorSpace.java::method::SetNonStrokingColorSpace.process	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetNonStrokingDeviceCMYKColor.java::class::SetNonStrokingDeviceCMYKColor	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetNonStrokingDeviceCMYKColor.java::method::SetNonStrokingDeviceCMYKColor.getName	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetNonStrokingDeviceCMYKColor.java::method::SetNonStrokingDeviceCMYKColor.process	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetNonStrokingDeviceGrayColor.java::class::SetNonStrokingDeviceGrayColor	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetNonStrokingDeviceGrayColor.java::method::SetNonStrokingDeviceGrayColor.getName	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetNonStrokingDeviceGrayColor.java::method::SetNonStrokingDeviceGrayColor.process	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetNonStrokingDeviceRGBColor.java::class::SetNonStrokingDeviceRGBColor	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetNonStrokingDeviceRGBColor.java::method::SetNonStrokingDeviceRGBColor.getName	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetNonStrokingDeviceRGBColor.java::method::SetNonStrokingDeviceRGBColor.process	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetNonStrokingColorSpace.java::class::SetNonStrokingColorSpace	ported	src/pdfbox/contentstream/pdf_graphics_stream_engine.cr	ported: OperatorSetNonStrokingColorSpace
+pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetNonStrokingColorSpace.java::method::SetNonStrokingColorSpace.getName	ported	src/pdfbox/contentstream/pdf_graphics_stream_engine.cr	ported: #name
+pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetNonStrokingColorSpace.java::method::SetNonStrokingColorSpace.process	ported	src/pdfbox/contentstream/pdf_graphics_stream_engine.cr	ported: gated by should_process_color_operators?
+pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetNonStrokingDeviceCMYKColor.java::class::SetNonStrokingDeviceCMYKColor	ported	src/pdfbox/contentstream/pdf_graphics_stream_engine.cr	ported: OperatorSetNonStrokingDeviceCMYKColor
+pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetNonStrokingDeviceCMYKColor.java::method::SetNonStrokingDeviceCMYKColor.getName	ported	src/pdfbox/contentstream/pdf_graphics_stream_engine.cr	ported: #name
+pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetNonStrokingDeviceCMYKColor.java::method::SetNonStrokingDeviceCMYKColor.process	ported	src/pdfbox/contentstream/pdf_graphics_stream_engine.cr	ported: gated by should_process_color_operators?
+pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetNonStrokingDeviceGrayColor.java::class::SetNonStrokingDeviceGrayColor	ported	src/pdfbox/contentstream/pdf_graphics_stream_engine.cr	ported: OperatorSetNonStrokingDeviceGrayColor
+pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetNonStrokingDeviceGrayColor.java::method::SetNonStrokingDeviceGrayColor.getName	ported	src/pdfbox/contentstream/pdf_graphics_stream_engine.cr	ported: #name
+pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetNonStrokingDeviceGrayColor.java::method::SetNonStrokingDeviceGrayColor.process	ported	src/pdfbox/contentstream/pdf_graphics_stream_engine.cr	ported: gated by should_process_color_operators?
+pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetNonStrokingDeviceRGBColor.java::class::SetNonStrokingDeviceRGBColor	ported	src/pdfbox/contentstream/pdf_graphics_stream_engine.cr	ported: OperatorSetNonStrokingDeviceRGBColor
+pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetNonStrokingDeviceRGBColor.java::method::SetNonStrokingDeviceRGBColor.getName	ported	src/pdfbox/contentstream/pdf_graphics_stream_engine.cr	ported: #name
+pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetNonStrokingDeviceRGBColor.java::method::SetNonStrokingDeviceRGBColor.process	ported	src/pdfbox/contentstream/pdf_graphics_stream_engine.cr	ported: gated by should_process_color_operators?
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetStrokingColor.java::class::SetStrokingColor	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetStrokingColor.java::method::SetStrokingColor.getColor	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetStrokingColor.java::method::SetStrokingColor.getColorSpace	missing	-	baseline
@@ -3495,18 +3495,18 @@ pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetStrokingC
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetStrokingColor.java::method::SetStrokingColor.setColor	missing	-	baseline
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetStrokingColorN.java::class::SetStrokingColorN	ported	src/pdfbox/contentstream/pdf_graphics_stream_engine.cr	baseline
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetStrokingColorN.java::method::SetStrokingColorN.getName	ported	src/pdfbox/contentstream/pdf_graphics_stream_engine.cr	baseline
-pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetStrokingColorSpace.java::class::SetStrokingColorSpace	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetStrokingColorSpace.java::method::SetStrokingColorSpace.getName	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetStrokingColorSpace.java::method::SetStrokingColorSpace.process	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetStrokingDeviceCMYKColor.java::class::SetStrokingDeviceCMYKColor	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetStrokingDeviceCMYKColor.java::method::SetStrokingDeviceCMYKColor.getName	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetStrokingDeviceCMYKColor.java::method::SetStrokingDeviceCMYKColor.process	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetStrokingDeviceGrayColor.java::class::SetStrokingDeviceGrayColor	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetStrokingDeviceGrayColor.java::method::SetStrokingDeviceGrayColor.getName	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetStrokingDeviceGrayColor.java::method::SetStrokingDeviceGrayColor.process	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetStrokingDeviceRGBColor.java::class::SetStrokingDeviceRGBColor	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetStrokingDeviceRGBColor.java::method::SetStrokingDeviceRGBColor.getName	missing	-	baseline
-pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetStrokingDeviceRGBColor.java::method::SetStrokingDeviceRGBColor.process	missing	-	baseline
+pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetStrokingColorSpace.java::class::SetStrokingColorSpace	ported	src/pdfbox/contentstream/pdf_graphics_stream_engine.cr	ported: OperatorSetStrokingColorSpace
+pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetStrokingColorSpace.java::method::SetStrokingColorSpace.getName	ported	src/pdfbox/contentstream/pdf_graphics_stream_engine.cr	ported: #name
+pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetStrokingColorSpace.java::method::SetStrokingColorSpace.process	ported	src/pdfbox/contentstream/pdf_graphics_stream_engine.cr	ported: gated by should_process_color_operators?
+pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetStrokingDeviceCMYKColor.java::class::SetStrokingDeviceCMYKColor	ported	src/pdfbox/contentstream/pdf_graphics_stream_engine.cr	ported: OperatorSetStrokingDeviceCMYKColor
+pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetStrokingDeviceCMYKColor.java::method::SetStrokingDeviceCMYKColor.getName	ported	src/pdfbox/contentstream/pdf_graphics_stream_engine.cr	ported: #name
+pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetStrokingDeviceCMYKColor.java::method::SetStrokingDeviceCMYKColor.process	ported	src/pdfbox/contentstream/pdf_graphics_stream_engine.cr	ported: gated by should_process_color_operators?
+pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetStrokingDeviceGrayColor.java::class::SetStrokingDeviceGrayColor	ported	src/pdfbox/contentstream/pdf_graphics_stream_engine.cr	ported: OperatorSetStrokingDeviceGrayColor
+pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetStrokingDeviceGrayColor.java::method::SetStrokingDeviceGrayColor.getName	ported	src/pdfbox/contentstream/pdf_graphics_stream_engine.cr	ported: #name
+pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetStrokingDeviceGrayColor.java::method::SetStrokingDeviceGrayColor.process	ported	src/pdfbox/contentstream/pdf_graphics_stream_engine.cr	ported: gated by should_process_color_operators?
+pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetStrokingDeviceRGBColor.java::class::SetStrokingDeviceRGBColor	ported	src/pdfbox/contentstream/pdf_graphics_stream_engine.cr	ported: OperatorSetStrokingDeviceRGBColor
+pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetStrokingDeviceRGBColor.java::method::SetStrokingDeviceRGBColor.getName	ported	src/pdfbox/contentstream/pdf_graphics_stream_engine.cr	ported: #name
+pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/color/SetStrokingDeviceRGBColor.java::method::SetStrokingDeviceRGBColor.process	ported	src/pdfbox/contentstream/pdf_graphics_stream_engine.cr	ported: gated by should_process_color_operators?
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/AppendRectangleToPath.java::class::AppendRectangleToPath	ported	src/pdfbox/contentstream/pdf_graphics_stream_engine.cr	ported: OperatorAppendRectangle
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/AppendRectangleToPath.java::method::AppendRectangleToPath.getName	ported	src/pdfbox/contentstream/pdf_graphics_stream_engine.cr	ported: #name
 pdfbox/src/main/java/org/apache/pdfbox/contentstream/operator/graphics/AppendRectangleToPath.java::method::AppendRectangleToPath.process	ported	src/pdfbox/contentstream/pdf_graphics_stream_engine.cr	ported: corners go through transformed_point (CTM)

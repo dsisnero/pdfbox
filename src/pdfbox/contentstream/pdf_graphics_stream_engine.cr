@@ -1017,6 +1017,9 @@ module Pdfbox::Contentstream
     end
 
     def process(arguments : Array(Cos::Base)) : Nil
+      # Java Set*Color/Set*ColorSpace: ignored while colour processing is off, so
+      # a `d1` Type 3 glyph keeps the text colour.
+      return unless context.should_process_color_operators?
       return if arguments.empty?
       name_arg = arguments[0]
       return unless name_arg.is_a?(Cos::Name)
@@ -1036,6 +1039,9 @@ module Pdfbox::Contentstream
     end
 
     def process(arguments : Array(Cos::Base)) : Nil
+      # Java Set*Color/Set*ColorSpace: ignored while colour processing is off, so
+      # a `d1` Type 3 glyph keeps the text colour.
+      return unless context.should_process_color_operators?
       return if arguments.empty?
       name_arg = arguments[0]
       return unless name_arg.is_a?(Cos::Name)
@@ -1055,6 +1061,9 @@ module Pdfbox::Contentstream
     end
 
     def process(arguments : Array(Cos::Base)) : Nil
+      # Java Set*Color/Set*ColorSpace: ignored while colour processing is off, so
+      # a `d1` Type 3 glyph keeps the text colour.
+      return unless context.should_process_color_operators?
       gray = arguments[0].as(Cos::Number).value.to_f32
       context.graphics_state.stroking_color_space = Pdmodel::Graphics::Color::PDDeviceGray::INSTANCE
       context.graphics_state.stroking_color = Pdmodel::Graphics::Color::PDColor.new([gray], Pdmodel::Graphics::Color::PDDeviceGray::INSTANCE)
@@ -1068,6 +1077,9 @@ module Pdfbox::Contentstream
     end
 
     def process(arguments : Array(Cos::Base)) : Nil
+      # Java Set*Color/Set*ColorSpace: ignored while colour processing is off, so
+      # a `d1` Type 3 glyph keeps the text colour.
+      return unless context.should_process_color_operators?
       gray = arguments[0].as(Cos::Number).value.to_f32
       context.graphics_state.non_stroking_color_space = Pdmodel::Graphics::Color::PDDeviceGray::INSTANCE
       context.graphics_state.non_stroking_color = Pdmodel::Graphics::Color::PDColor.new([gray], Pdmodel::Graphics::Color::PDDeviceGray::INSTANCE)
@@ -1081,6 +1093,9 @@ module Pdfbox::Contentstream
     end
 
     def process(arguments : Array(Cos::Base)) : Nil
+      # Java Set*Color/Set*ColorSpace: ignored while colour processing is off, so
+      # a `d1` Type 3 glyph keeps the text colour.
+      return unless context.should_process_color_operators?
       r = arguments[0].as(Cos::Number).value.to_f32
       g = arguments[1].as(Cos::Number).value.to_f32
       b = arguments[2].as(Cos::Number).value.to_f32
@@ -1096,6 +1111,9 @@ module Pdfbox::Contentstream
     end
 
     def process(arguments : Array(Cos::Base)) : Nil
+      # Java Set*Color/Set*ColorSpace: ignored while colour processing is off, so
+      # a `d1` Type 3 glyph keeps the text colour.
+      return unless context.should_process_color_operators?
       r = arguments[0].as(Cos::Number).value.to_f32
       g = arguments[1].as(Cos::Number).value.to_f32
       b = arguments[2].as(Cos::Number).value.to_f32
@@ -1111,6 +1129,9 @@ module Pdfbox::Contentstream
     end
 
     def process(arguments : Array(Cos::Base)) : Nil
+      # Java Set*Color/Set*ColorSpace: ignored while colour processing is off, so
+      # a `d1` Type 3 glyph keeps the text colour.
+      return unless context.should_process_color_operators?
       c = arguments[0].as(Cos::Number).value.to_f32
       m = arguments[1].as(Cos::Number).value.to_f32
       y = arguments[2].as(Cos::Number).value.to_f32
@@ -1127,6 +1148,9 @@ module Pdfbox::Contentstream
     end
 
     def process(arguments : Array(Cos::Base)) : Nil
+      # Java Set*Color/Set*ColorSpace: ignored while colour processing is off, so
+      # a `d1` Type 3 glyph keeps the text colour.
+      return unless context.should_process_color_operators?
       c = arguments[0].as(Cos::Number).value.to_f32
       m = arguments[1].as(Cos::Number).value.to_f32
       y = arguments[2].as(Cos::Number).value.to_f32
