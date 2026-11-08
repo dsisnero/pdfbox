@@ -33,9 +33,10 @@ Per-symbol state lives in the inventory ledgers under `plans/inventory/` (see
    make test
    ```
 
-   `make lint` uses ameba `1.7.x` (pinned in `shard.lock`); a stale
-   `./bin/ameba` build (1.6.x) reports ~90 false failures, so run the gate as
-   `make lint`. All three gates are green on a clean checkout.
+   All three gates are green on a clean checkout, and they strip the
+   AppleDouble `._*` sidecars that exFAT checkouts leave behind (a
+   `._foo_spec.cr` breaks spec discovery). [testing.md](testing.md) owns the gate
+   details, including the stale-`./bin/ameba` trap.
 5. Pick the next feature (see below), then run the per-feature loop in
    `AGENTS.md`.
 

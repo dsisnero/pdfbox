@@ -23,6 +23,13 @@ build (1.6.x) reports ~90 false failures, so always run the gate as
 `make lint`. The gates are green on a clean checkout; a new offense is a
 regression.
 
+Every gate target depends on `make sidecars`, which deletes the macOS
+AppleDouble `._*` sidecars that an exFAT checkout leaves behind (a
+`._foo_spec.cr` sidecar breaks spec discovery). Run `make sidecars` alone when a
+stale sidecar surprises the compiler; see
+[development.md](development.md#environment-note-exfat--network-volume-checkouts)
+for the other exFAT symptoms.
+
 Spec-dependent fixtures belong under `spec/`: `spec/fixtures` for standalone
 fixtures, or `spec/resources/<module>/` mirroring the Java `src/test/resources`
 layout for vendor-parity fixtures. Do not put spec dependencies in `./temp`,

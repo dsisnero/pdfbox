@@ -1,7 +1,8 @@
 # PR Workflow
 
 - Keep commits focused and describe the behavior change in imperative form.
-- Before pushing, run the gates locally: `make format`, `make lint`, `make test`.
+- Before pushing, run the gates locally (`make quality`); see
+  [testing.md](testing.md) for what each gate checks.
 - Push completed work instead of leaving parity changes stranded locally.
 - Call out remaining parity gaps explicitly in commit messages or handoff notes.
 

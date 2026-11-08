@@ -25,20 +25,21 @@ When the Crystal code and the Java code disagree, the Java code wins. See
 
 ## Local loop
 
+Run the gates after every change:
+
 ```bash
-make format   # crystal tool format --check src spec   (gate, writes nothing)
-make lint     # ameba src spec                          (gate, writes nothing)
-make test     # crystal spec
-make quality  # all three
+make quality  # format + lint + test
 ```
 
-The gates are checks. When you actually want files rewritten, use the explicit
-fix targets: `make format-fix` and `make lint-fix`.
+[testing.md](testing.md) owns the gate details: what each target checks,
+the `make format-fix` / `make lint-fix` rewrite variants, and the ameba-version
+trap that makes a stale `./bin/ameba` report false failures. The gates are green
+on a clean checkout, so any new offense is a regression.
 
-`make lint` uses ameba `1.7.x` (the version pinned in `shard.lock` and named in
-`.ameba.yml`). A stale `./bin/ameba` build (1.6.x) reports ~90 false failures —
-run the gate as `make lint`, not through an old local binary. The gates are
-green on a clean checkout, so any new offense is a regression.
+One repository-specific prerequisite is wired into the Makefile: macOS writes
+AppleDouble `._*` sidecars on exFAT volumes, a `._foo_spec.cr` sidecar breaks
+spec discovery, so `format`/`lint`/`test` depend on the `sidecars` target, which
+deletes them from `src/` and `spec/` first (`make sidecars` runs it alone).
 
 ## Temporary files
 
