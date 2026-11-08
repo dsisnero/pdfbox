@@ -1,9 +1,9 @@
-.PHONY: help install update submodule-init submodule-update format format-fix \
+.PHONY: help install update submodule-init submodule-update sidecars format format-fix \
 	lint lint-fix test quality clean
 
 help: ## Show the available targets
 	@grep -hE '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) \
-		| awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-17s\033[0m %s\n", $$1, $$2}'
+		| awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-18s\033[0m %s\n", $$1, $$2}'
 
 install: ## Install Crystal dependencies
 	shards install
@@ -17,22 +17,26 @@ submodule-init: ## Check out the vendored Apache PDFBox source
 submodule-update: ## Move the vendored Apache PDFBox to its pinned upstream commit
 	git submodule update --remote --recursive vendor/pdfbox
 
-format: ## Format gate (writes nothing)
+sidecars: ## Delete macOS AppleDouble ._* sidecars that break spec discovery
+	@find src spec -name '._*' -delete 2>/dev/null || true
+
+format: sidecars ## Format gate (writes nothing)
 	crystal tool format --check src spec
 
-format-fix: ## Rewrite formatting in place
+format-fix: sidecars ## Rewrite formatting in place
 	crystal tool format src spec
 
-lint: ## Lint gate (writes nothing)
+lint: sidecars ## Lint gate (writes nothing)
 	ameba src spec
 
-lint-fix: ## Lint and apply safe fixes
+lint-fix: sidecars ## Lint and apply safe fixes
 	ameba --fix src spec
 
-test: ## Run the spec suite
+test: sidecars ## Run the spec suite
 	crystal spec
 
 quality: format lint test ## Run every gate
 
-clean: ## Remove ./temp contents
-	rm -rf ./temp/*
+clean: ## Remove ./temp contents (including dotfiles)
+	@mkdir -p ./temp
+	@find ./temp -mindepth 1 -maxdepth 1 -exec rm -rf {} +

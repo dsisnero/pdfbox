@@ -1,6 +1,11 @@
 # rumdl configuration file
 
 [global]
+# Long lines are the convention here: the docs tables and the parity changelog
+# bullets are single-line entries (a bullet can be a paragraph), so a hard
+# line-length limit would flag most of the tree.
+disable = ["MD013"]
+
 exclude = [
     ".git",
     ".github",

@@ -16,11 +16,12 @@ make install          # shards install
 make update           # shards update
 make submodule-init   # check out the vendored Apache PDFBox source
 make submodule-update # move the vendored tree to its pinned upstream commit
+make sidecars         # delete macOS AppleDouble ._* sidecars (gates run it too)
 make format           # crystal tool format --check src spec (gate, writes nothing)
 make lint             # ameba src spec (gate, writes nothing)
 make test             # crystal spec
 make quality          # format + lint + test
-make clean            # remove ./temp contents
+make clean            # remove ./temp contents, including dotfiles
 ```
 
 `make format` and `make lint` are **checks**. To rewrite files instead, use the

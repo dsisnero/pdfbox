@@ -43,6 +43,9 @@ cff_parser/
 # Local agent/tool settings
 .claude/
 
+# Markdown linter (rumdl) cache
+/.rumdl_cache/
+
 # Apple Double / Extended Attributes (macOS FAT32 artifacts)
 ._*
 .DS_Store
