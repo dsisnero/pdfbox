@@ -1,12 +1,18 @@
 # TTFSubsetter Port Implementation Plan
 
-> **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.
+> **Status:** completed — this is a historical plan kept for provenance. The
+> port landed; see the changelog
+> ([`plans/parity/changelog/current.md`](../parity/changelog/current.md)) for the
+> entry and
+> [`TTFSubsetterAndPlaceholderCleanupPort.md`](TTFSubsetterAndPlaceholderCleanupPort.md)
+> for the follow-up cleanup. It was drafted under `docs/plans/` and moved here
+> during the repo-scaffolding pass.
 
 **Goal:** Port TTFSubsetter.java (1165 lines) and TTFSubsetterTest.java (392 lines) from Apache PDFBox to Crystal, completing the last unported TTF test from fontbox/ttf.
 
 **Architecture:** Follow the Java implementation closely, adapting Java patterns to Crystal idioms. Use TDD approach: port tests first, then implement missing functionality. The TTFSubsetter creates font subsets by selecting specific glyphs and rewriting font tables.
 
-**Tech Stack:** Crystal 1.19.1, existing Fontbox TTF classes (TrueTypeFont, CmapLookup, etc.), Crystal standard library.
+**Tech Stack:** Crystal 1.22.x (1.19.1 when this plan was written), existing Fontbox TTF classes (TrueTypeFont, CmapLookup, etc.), Crystal standard library.
 
 ---
 
@@ -215,7 +221,7 @@ Tables are written in optimized order: OS/2, cmap, glyf, head, hhea, hmtx, loca,
 **Step 4: Commit documentation**
 
 ```bash
-git add docs/plans/2026-02-12-ttf-subsetter-port.md
+git add plans/active/TTFSubsetterPort.md
 git commit -m "docs: analyze TTFSubsetter Java implementation"
 ```
 
@@ -522,7 +528,7 @@ git commit -m "feat: complete TTFSubsetter port from Apache PDFBox"
 
 ## Execution Options
 
-Plan complete and saved to `docs/plans/2026-02-12-ttf-subsetter-port.md`. Two execution options:
+Plan complete and saved to `plans/active/TTFSubsetterPort.md`. Two execution options:
 
 **1. Subagent-Driven (this session)** - I dispatch fresh subagent per task, review between tasks, fast iteration
 

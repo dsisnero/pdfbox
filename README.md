@@ -60,18 +60,13 @@ usable companion reference.
 ```bash
 make submodule-init   # check out the vendored Apache PDFBox source
 make install          # shards install
-make format           # formatting gate (writes nothing)
-make lint             # ameba gate (writes nothing)
-make test             # crystal spec
-make quality          # format + lint + test
-make clean            # remove ./temp contents
+make quality          # format, lint, and test gates
 ```
 
-`make help` lists every target. To apply fixes instead of checking, use
-`make format-fix` and `make lint-fix`.
-
-See [docs/development.md](docs/development.md) for the pin of the vendored
-upstream source and the local workflow.
+`make help` lists every target. See [docs/development.md](docs/development.md)
+for the pinned upstream source and the local loop, and
+[docs/testing.md](docs/testing.md) for the parity test workflow and what each
+gate checks.
 
 ## Contributing
 
@@ -92,4 +87,4 @@ checked out and pinned.
 
 ## Contributors
 
-- [your-name-here](https://github.com/dsisnero) — creator and maintainer
+- [dsisnero](https://github.com/dsisnero) — creator and maintainer
